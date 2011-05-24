@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.dllearner.algorithm.tbsl.converter.DRS2SPARQL_Converter;
 import org.dllearner.algorithm.tbsl.converter.DUDE2UDRS_Converter;
-import org.dllearner.algorithm.tbsl.ltag.data.TreeNode;
 import org.dllearner.algorithm.tbsl.ltag.parser.LTAGLexicon;
 import org.dllearner.algorithm.tbsl.ltag.parser.LTAG_Lexicon_Constructor;
 import org.dllearner.algorithm.tbsl.ltag.parser.Parser;
@@ -69,64 +68,40 @@ public class Templator {
         else {
         try {
         	p.buildDerivedTrees(g);
-//            for (TreeNode dtree : p.buildDerivedTrees(g)) {
-//                if (!dtree.getAnchor().trim().equals(tagged.toLowerCase())) {
-//                    System.err.println("[Templator.java] Anchors don't match the input. (Nevermind...)");
-//                    break;
-//                }
-//            }
         } catch (ParseException e) {
             System.err.println("[Templator.java] ParseException at '" + e.getMessage() + "'");
         }
         }
 
-        List<DRS> drses = new ArrayList<DRS>();
+        Set<DRS> drses = new HashSet<DRS>();
         Set<Template> templates = new HashSet<Template>();
         
         for (Dude dude : p.getDudes()) {
- //       	System.out.println("DUDE: " + dude); // DEBUG
             UDRS udrs = d2u.convert(dude);
             if (udrs != null) { 
-                for (DRS drs : udrs.initResolve()) {
-//                	System.out.println(drs); // DEBUG
-                	if (!drses.contains(drs)) {
+                
+            	for (DRS drs : udrs.initResolve()) {
+                	
+                	List<Slot> slots = new ArrayList<Slot>();
+            		slots.addAll(dude.getSlots());
+            		d2s.setSlots(slots);
+                	d2s.redundantEqualRenaming(drs);
+                	
+                	if (!containsModuloRenaming(drses,drs)) {
+                    	System.out.println(drs); // DEBUG
                 		drses.add(drs);
-                		List<Slot> slots = new ArrayList<Slot>();
-                    	slots.addAll(dude.getSlots());
-//                    	//DEBUG 
-//                    	for (Slot sl : slots) {
-//                    		System.out.println(sl);
-//                    	}
-//                    	//
-                        try {
-                            Template temp = d2s.convert(drs,slots);
-                            templates.add(temp);
-                        } catch (java.lang.ClassCastException e) {
-                            continue;
-                        }
-                	}
-                	if (ONE_SCOPE_ONLY) { break; }
+                		
+                		try {
+                			Template temp = d2s.convert(drs,slots);
+                			templates.add(temp);
+                		} catch (java.lang.ClassCastException e) {
+                			continue;
+                		}
+                		if (ONE_SCOPE_ONLY) { break; }
+                	}	
                 }
             }
         }
-                
-//                for (DRS drs : drses) {
-////                	System.out.println("DRS:  " + drs); // DEBUG
-//                	List<Slot> slots = new ArrayList<Slot>();
-//                	slots.addAll(dude.getSlots());
-////                	//DEBUG 
-////                	for (Slot sl : slots) {
-////                		System.out.println(sl);
-////                	}
-////                	//
-//                    try {
-//                        Template temp = d2s.convert(drs,slots);
-//                        templates.add(temp);
-//                    } catch (java.lang.ClassCastException e) {
-//                        continue;
-//                    }
-//                    if (ONE_SCOPE_ONLY) { break; }
-//                }
  
         if (clearAgain) {
         	p.clear(g,p.getTemps());
@@ -135,5 +110,15 @@ public class Templator {
         
         return templates;
     }
+	
+	private boolean containsModuloRenaming(Set<DRS> drses, DRS drs) {
+
+		for (DRS d : drses) {
+			if (d.equalsModuloRenaming(drs)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

@@ -10,6 +10,7 @@ import org.dllearner.algorithm.tbsl.sem.util.Label;
 import org.dllearner.algorithm.tbsl.sem.util.SemanticRepresentation;
 
 
+
 public class DRS implements SemanticRepresentation {
 
 	// A DRS has a set(!) of discourse referents
@@ -379,6 +380,8 @@ public class DRS implements SemanticRepresentation {
 		}
 	}
 
+ 
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -420,7 +423,8 @@ public class DRS implements SemanticRepresentation {
 			return false;
 		return true;
 	}
-
+	
+	
 	public boolean equalsModuloLabel(Object obj) {
 		if (this == obj)
 			return true;
@@ -442,5 +446,51 @@ public class DRS implements SemanticRepresentation {
 		return true;
 	}
 
+	public boolean equalsModuloRenaming(DRS drs) {
+			
+		DRS drs1 = this.clone();
+		DRS drs2 = drs.clone();
+		
+		drs1.setLabel("l1"); drs2.setLabel("l1");		
+		if (drs1.equals(drs2)) { return true; }
+		
+		Set<String> thisVars = drs1.collectVariables();
+		Set<String> drsVars = drs2.collectVariables();
+		
+		if (thisVars.size() != drsVars.size()) {
+			return false;
+		}
+
+		List<String> thisVarsR = new ArrayList<String>();
+		List<String> drsVarsR = new ArrayList<String>();
+		for (String s : thisVars) {
+			if (!drsVars.contains(s)) {
+				thisVarsR.add(s);
+			}
+		}
+		for (String s : drsVars) {
+			if (!thisVars.contains(s)) {
+				drsVarsR.add(s);
+			}
+		}
+		
+		String oldV; String newV;
+		for (int i=0; i < thisVarsR.size(); i++) {
+			oldV = thisVarsR.get(i);
+			newV = drsVarsR.get(i);
+			drs1.replaceReferent(oldV,newV);
+		}
+		
+		// Hack: If it looks the same, it is the same.
+		
+		DRS_Constructor dc = new DRS_Constructor();
+		if (dc.construct(drs1.toString()).equals(dc.construct(drs2.toString()))) {
+			return true;
+		} 
+		else {
+			return false;
+		}
+		
+	}
 
 }
