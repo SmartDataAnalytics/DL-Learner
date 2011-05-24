@@ -11,13 +11,14 @@ public class PatternMatchingTest {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		String s = "New/NNP York/NNP City/NNP is/VBZ a/DT US/NNP state/NN";
+		String nep = "World";
+		String s = "Who/WP developed/VBD the/DT video/NN game/NN World/NN of/IN Warcraft/NNP";
 		
-		Pattern nprepPattern = Pattern.compile("\\s?((\\w+)/NNP[S]?)\\s(\\w+)/NN[S]?(\\W|$)");
-		Matcher m = nprepPattern.matcher(s);
+		Pattern p = Pattern.compile("(\\s)?(" + nep + "/([A-Z]+))(\\s)?");
+		Matcher m = p.matcher(s);
 		while (m.find()) {
-			System.out.println("Found!");
-			s = s.replaceFirst(m.group(1),m.group(2) + "/JJ");
+			System.out.println("Found! " + m.group(2));
+			s = s.replaceFirst(m.group(2),nep+"/NNP");
 		}
 		
 		System.out.println(s);

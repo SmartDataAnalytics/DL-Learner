@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.dllearner.algorithm.tbsl.nlp.LingPipeNER;
+import org.dllearner.algorithm.tbsl.nlp.NER;
 import org.dllearner.algorithm.tbsl.sem.util.Pair;
 
 public class Preprocessor {
@@ -160,4 +162,49 @@ public class Preprocessor {
 		
 		return flat;
 	}
+	
+	public static String findNEs(String tagged,String untagged) {
+		
+		String out = tagged;
+		
+		NER ner = new LingPipeNER();
+		List<String> namedentities = ner.getNamedEntitites(untagged);
+		List<String> usefulnamedentities = new ArrayList<String>();
+		
+		System.out.println("Proposed NEs: " + namedentities);
+		
+		// keep only longest matches (e.g. keep 'World of Warcraft' and forget about 'Warcraft') 
+		// containing at least one upper case letter (in order to filter out errors like 'software')
+		for (String s1 : namedentities) {
+			if (s1.matches(".*[A-Z].*")) {
+				boolean isLongestMatch = true;
+				for (String s2 : namedentities) {
+					if (!s2.equals(s1) && s2.contains(s1)) {
+						isLongestMatch = false;
+					}
+				}
+				if (isLongestMatch) {
+					usefulnamedentities.add(s1);
+				}
+			}
+		}
+		
+		System.out.println("Accepted NEs: " + usefulnamedentities);
+		
+		// replace POS tags accordingly
+		for (String ne : usefulnamedentities) {
+			String[] neparts = ne.split(" ");
+			Pattern p; Matcher m;
+			for (String nep : neparts) {
+				p = Pattern.compile("(\\s)?(" + nep + "/([A-Z]+))(\\s)?");
+				m = p.matcher(out);
+				while (m.find()) {
+					out = out.replaceFirst(m.group(2),nep+"/NNP");
+				}
+			}
+		}
+		
+		return out;
+	}
+	
 }
