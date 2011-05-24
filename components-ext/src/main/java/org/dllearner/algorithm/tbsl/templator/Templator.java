@@ -53,8 +53,8 @@ public class Templator {
 	    s = Preprocessor.normalize(s);
         String tagged = tagger.tag(s);
         System.out.println("Tagged input: " + tagged);
-        
-		String newtagged = Preprocessor.condenseNominals(tagged);
+ 
+		String newtagged = Preprocessor.condenseNominals(Preprocessor.findNEs(tagged,s));
         newtagged = Preprocessor.condense(newtagged);
 		System.out.println("Preprocessed: " + newtagged);
         
@@ -88,7 +88,12 @@ public class Templator {
                 	d2s.redundantEqualRenaming(drs);
                 	
                 	if (!containsModuloRenaming(drses,drs)) {
-                    	System.out.println(drs); // DEBUG
+//                    	// DEBUG                		
+//                		System.out.println(drs);
+//                		for (Slot sl : slots) {
+//                			System.out.println(sl.toString());
+//                		}
+//                		//
                 		drses.add(drs);
                 		
                 		try {

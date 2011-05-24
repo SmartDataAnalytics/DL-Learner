@@ -80,7 +80,7 @@ public class Parser {
 			internalParse(parseGrammar.getDPInitTrees(), n);
 		}
 
-		System.out.println("Constructed " + derivationTrees.size() + " derivation trees.");
+		System.out.println("Constructed " + derivationTrees.size() + " derivation trees.\n");
 		return derivationTrees;
 
 	}

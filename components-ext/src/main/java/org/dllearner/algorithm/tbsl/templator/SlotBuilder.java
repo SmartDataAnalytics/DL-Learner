@@ -66,6 +66,7 @@ public class SlotBuilder {
 					slotX += next; slotP += next; slotC += next;
 					if (i.hasNext()) { slotX += "^"; slotP += "^"; slotC += "^"; }
 				}
+				// treetoken
 				String treetoken = "N:'" + token.toLowerCase() + "'";
 				if (token.trim().contains(" ")) {
 					String[] tokenParts = token.split(" ");
@@ -75,17 +76,26 @@ public class SlotBuilder {
 					}
 					treetoken = treetoken.trim();
 				}
+				//
 				if (pos.equals("NN") || pos.equals("NNS")) {
 					/* DP */
-					String[] dpEntry = {token,
+					String[] dpEntry1 = {token,
 							"(DP (NP " + treetoken + "))",
 							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slotP + "]>"};
-					result.add(dpEntry);
+					String[] dpEntry2 = {token,
+							"(DP (NP " + treetoken + " DP[name]))",
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x), equal(x,y) ] ],[ (l2,y,name,<<e,t>,t>) ],[l2=l1],[" + slotP + "]>"};
+					result.add(dpEntry1);
+					result.add(dpEntry2);
 					/* NP */
-					String[] npEntry = {token,
+					String[] npEntry1 = {token,
 							"(NP " + treetoken + ")",
 							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slotP + "]>"};
-					result.add(npEntry);	
+					String[] npEntry2 = {token,
+							"(NP " + treetoken + " DP[name])",
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x), equal(x,y) ] ],[ (l2,y,name,<<e,t>,t>) ],[l2=l1],[" + slotP + "]>"};
+					result.add(npEntry1);
+					result.add(npEntry2);	
 				} 
 				else if (pos.equals("NNP") || pos.equals("NNPS")) {
 					/* DP */
@@ -215,7 +225,7 @@ public class SlotBuilder {
 			/* ADJECTIVES */
 			else if (equalsOneOf(pos,adjective)) {
 				
-				String slot = "SLOT_" + token + "/PROPERTY/";
+				String slot = "SLOT_" + token + "/PROPERTY/" + token;
 				List<String> preds = wordnet.getAttributes(token);
 				for (Iterator<String> i = preds.iterator(); i.hasNext();) {
 					slot += i.next();
