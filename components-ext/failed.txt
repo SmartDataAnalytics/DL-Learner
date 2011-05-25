@@ -1,16 +1,10 @@
-Who is the daughter of Bill Clinton married to?
-Where did Abraham Lincoln die?
-In which country does the Nile start?
-Is proinsulin a protein?
-Which classis does the Millepede belong to?
-How tall is Claudia Schiffer?
-Give me the capitals of all U.S. states.
-Is Egypts largest city also its capital?
-In which country is the Limerick Lake?
-In which films directed by Garry Marshall was Julia Roberts starring?
-Was U.S. president Jackson involved in a war?
-Which state of the United States of America has the highest density?
-Which countries in the European Union adopted the Euro?
-Through which countries does the Yenisei river flow?
-When was the Battle of Gettysburg?
-What did Bruce Carver die from?
+Which/WDT presidents/NNS were/VBD born/VBN in/IN 1945/CD
+List/VB all/DT episodes/NNS of/IN the/DT first/JJ season/NN of/IN the/DT HBO/NNP television/NN series/NN The/DT Sopranos/NNPS
+Which/WDT people/NNS have/VBP as/IN their/PRP$ given/VBN name/NN Jimmy/NNP
+Is/VBZ there/RB a/DT video/NN game/NN called/VBN Battle/NNP Chess/NNP
+Which/WDT companies/NNS work/VBP in/IN the/DT aerospace/NN industry/NN as/RB well/RB as/IN on/IN nuclear/JJ reactor/NN technology/NN
+Which/WDT cities/NNS have/VBP more/JJR than/IN 2/CD million/CD inhabitants/NNS
+Who/WP has/VBZ been/VBN the/DT 5th/JJ president/NN of/IN the/DT United/NNP States/NNPS of/IN America/NNP
+In/IN which/WDT films/NNS did/VBD Julia/NNP Roberts/NNP as/RB well/RB as/IN Richard/NNP Gere/NNP play/VB
+Who/WP wrote/VBD the/DT book/NN The/DT pillars/NNS of/IN the/DT Earth/NNP
+Which/WDT organizations/NNS were/VBD founded/VBN in/IN 1950/CD

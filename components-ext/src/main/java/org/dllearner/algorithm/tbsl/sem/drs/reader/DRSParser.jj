@@ -172,7 +172,7 @@ DRS_Condition Condition() :
     |
 
     drs1=DRS()  (quantifier=<EVERY> | quantifier=<SOME> | quantifier=<AFEW> | quantifier=<MOST> | quantifier=<THEMOST> | quantifier=<THELEAST> |
-                 quantifier=<HOWMANY> | quantifier=<MANY> | quantifier=<NO>) dr= <WORD> drs2=DRS()
+                 quantifier=<HOWMANY> | quantifier=<MANY> | quantifier=<NO>) dr=dr() drs2=DRS()
     {
 		Complex_DRS_Condition drs;
         drs = new Complex_DRS_Condition();

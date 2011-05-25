@@ -59,13 +59,16 @@ public class TemplateGenerationTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		File file = new File("src/main/resources/tbsl/evaluation/dbpedia-test-questions.xml");
+		
+		File file = new File("src/main/resources/tbsl/evaluation/dbpedia-train-tagged(ideal).xml");
 		List<String> questions = readQuestions(file);
 		
 		StringBuilder successful = new StringBuilder();
 		StringBuilder failed = new StringBuilder();
 		
 		Templator templateGenerator = new Templator();
+		templateGenerator.setUNTAGGED_INPUT(false);
+		
 		int cnt = 0;
 		for(String question : questions){
 			System.out.println("Question: " + question);

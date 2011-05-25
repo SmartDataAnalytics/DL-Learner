@@ -177,7 +177,7 @@ public class DRSParser implements DRSParserConstants {
         jj_consume_token(-1);
         throw new ParseException();
       }
-      dr = jj_consume_token(WORD);
+      dr = dr();
       drs2 = DRS();
                 Complex_DRS_Condition drs;
         drs = new Complex_DRS_Condition();
