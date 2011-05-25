@@ -141,7 +141,7 @@ public class ResultPanel extends ContentPanel {
 //		});
 		queryResultTab = new TabItem("Table");
 		queryResultTab.setLayout(new RowLayout(Orientation.VERTICAL));
-		resultPanel = new SPARQLQueryResultPanel(false);queryResultTab.add(resultPanel, new RowData(1, 1));
+		resultPanel = new SPARQLQueryResultPanel(false, true);queryResultTab.add(resultPanel, new RowData(1, 1));
 //		queryResultTab.add(grid, new RowData(1, 1));
 //		queryResultTab.add(toolbar, new RowData(1, -1));
 		mainPanel.add(queryResultTab);
@@ -164,7 +164,7 @@ public class ResultPanel extends ContentPanel {
 	public void refresh(List<String> posExamples, List<String> negExamples){
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
-		
+		resultPanel.setExamples(posExamples, negExamples);
 //		updateTable();
 		updateQuery();
 	}
@@ -185,11 +185,9 @@ public class ResultPanel extends ContentPanel {
 			@Override
 			public void onSuccess(String result) {
 				queryTab.removeAll();
-				queryTab.addText("<pre class=\"resultquery add-padding\"><code>"+result+"</code></pre>");
+				queryTab.addText("<pre class=\"resultquery add-padding\"><code>"+encodeHTML(result)+"</code></pre>");
 				queryTab.layout();
-				System.out.println(result);
-				System.out.println(URL.decode(result));
-				resultPanel.setQuery(result);resultPanel.refresh();
+				resultPanel.setQuery(result);resultPanel.loadProperties();resultPanel.refresh();
 //				updateTable();
 			}
 		});
@@ -210,5 +208,18 @@ public class ResultPanel extends ContentPanel {
 				
 			}
 		});
+	}
+	
+	private String encodeHTML(String s) {
+		StringBuffer out = new StringBuffer();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c > 127 || c == '"' || c == '<' || c == '>') {
+				out.append("&#" + (int) c + ";");
+			} else {
+				out.append(c);
+			}
+		}
+		return out.toString();
 	}
 }

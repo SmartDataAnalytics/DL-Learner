@@ -271,7 +271,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	@Override
 	public PagingLoadResult<Example> getSPARQLQueryResultWithProperties(String query, List<String> properties,
 			PagingLoadConfig config) throws AutoSPARQLException {
-		logger.info("Retrieving results for SPARQL query(" + getSession().getId() + ")");
+		logger.info("Retrieving results for SPARQL query with properties(" + getSession().getId() + ")");
 		return getAutoSPARQLSession().getSPARQLQueryResultWithProperties(query, properties, config);
 	}
 

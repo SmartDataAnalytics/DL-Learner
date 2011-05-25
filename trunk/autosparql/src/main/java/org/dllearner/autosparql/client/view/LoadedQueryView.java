@@ -88,7 +88,7 @@ public class LoadedQueryView  extends View {
 	    queryField = new HTML();
 		mainPanel.add(queryField, new RowData(1, -1));
 		
-		resultPanel = new SPARQLQueryResultPanel(true);//createResultPanel();
+		resultPanel = new SPARQLQueryResultPanel(true, false);//createResultPanel();
 		mainPanel.add(resultPanel, new RowData(1, 0.7));
 		
 		Button editButton = new Button("Edit");

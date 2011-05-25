@@ -3,7 +3,6 @@ package org.dllearner.autosparql.client.view;
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.AsyncCallbackEx;
 import org.dllearner.autosparql.client.SPARQLService;
-import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 import org.dllearner.autosparql.client.widget.ExamplesPanel;
@@ -155,14 +154,21 @@ public class QueryView extends View {
 		}
 		if (examplesPanel.getPositiveExamplesURIs().size() >= 2) {
 			SPARQLService.Util.getInstance().setExamples(examplesPanel.getPositiveExamplesURIs(),
-					examplesPanel.getNegativeExamplesUris(), new AsyncCallbackEx<Void>() {
+					examplesPanel.getNegativeExamplesUris(), new AsyncCallback<Void>() {
 
 						@Override
 						public void onSuccess(Void result) {
 							if(type == Example.Type.POSITIVE){
-								resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
-										examplesPanel.getNegativeExamplesUris());
+//								resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
+//										examplesPanel.getNegativeExamplesUris());
+								showSimilarExample();
 							}
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							System.out.println("ERROR ON SET EXAMPLES");
+							
 						}
 					});
 			
@@ -177,7 +183,7 @@ public class QueryView extends View {
 			showInteractivePanel();
 		}
 		if (!examplesPanel.getPositiveExamplesURIs().isEmpty()) {
-		interactivePanel.mask("Searching...");
+		interactivePanel.mask("Searching new example...");
 		SPARQLService.Util.getInstance().getSimilarExample(
 				examplesPanel.getPositiveExamplesURIs(),
 				examplesPanel.getNegativeExamplesUris(),
@@ -187,6 +193,8 @@ public class QueryView extends View {
 					public void onSuccess(Example result) {
 						interactivePanel.unmask();
 						interactivePanel.setExample(result);
+						resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
+								examplesPanel.getNegativeExamplesUris());
 					}
 
 				});
