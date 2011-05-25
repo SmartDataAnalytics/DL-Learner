@@ -14,7 +14,7 @@ public class SlotBuilder {
 	private String[] noun = {"NN","NNS","NNP","NNPS","NPREP"};
 	private String[] adjective = {"JJ","JJR","JJS","JJH"};
 	private String[] verb = {"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN","GERUNDIN","VPREP","WHEN","WHERE"};
-	private String[] preps = {"IN"};
+	private String[] preps = {"IN","TO"};
 	
 	public SlotBuilder() {
 		
@@ -144,7 +144,7 @@ public class SlotBuilder {
 							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
 					String[] passEntry2 = {token,
 							"(S DP[wh] (VP DP[dp] V:'" + token + "'))",
-							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(y,x) ] ],[(l2,x,wh,<<e,t>,t>),(l3,y,dp,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,wh,<<e,t>,t>),(l3,y,dp,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
 					result.add(passEntry1);
 					result.add(passEntry2);
 				}
@@ -180,13 +180,23 @@ public class SlotBuilder {
 					String[] passEntry = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
 							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
+					String[] whEntry = {token,
+							"(S DP[obj] (VP DP[subj] V:'" + token + "'))",
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
 					result.add(passEntry);
+					result.add(whEntry);
 				}
-				else if (pos.equals("VBD") || pos.equals("VBZ") || pos.equals("VBP") || pos.equals("VB")) {
+				else if (pos.equals("VBD") || pos.equals("VBZ") || pos.equals("VBP")) {
 					String[] vEntry = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
 							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
 					result.add(vEntry);
+				} 
+				else if (pos.equals("VB")) {
+					String[] whEntry = {token,
+							"(S DP[obj] (VP DP[subj] V:'" + token + "'))",
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
+					result.add(whEntry);
 				} 
 				else if (pos.equals("VBG") || pos.equals("VBN")) {
 					String[] gerEntry = {token,

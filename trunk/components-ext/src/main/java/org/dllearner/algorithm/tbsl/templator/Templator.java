@@ -31,6 +31,7 @@ public class Templator {
 	Parser p;
 	
 	boolean ONE_SCOPE_ONLY = true;
+	boolean UNTAGGED_INPUT = true;
 	
 	public Templator() {
 		
@@ -43,6 +44,10 @@ public class Templator {
 	    p.USE_DPS_AS_INITTREES = true;
 	    p.CONSTRUCT_SEMANTICS = true;
 	}
+	
+	public void setUNTAGGED_INPUT(boolean b) {
+		UNTAGGED_INPUT = b;
+	}
 
 	public Set<Template> buildTemplates(String s) {
 		
@@ -50,13 +55,19 @@ public class Templator {
         DRS2SPARQL_Converter d2s = new DRS2SPARQL_Converter();
 		boolean clearAgain = true;
         
-	    s = Preprocessor.normalize(s);
-        String tagged = tagger.tag(s);
-        System.out.println("Tagged input: " + tagged);
- 
+		String tagged;
+		if (UNTAGGED_INPUT) {		
+			s = Preprocessor.normalize(s);
+			tagged = tagger.tag(s);
+			System.out.println("Tagged input: " + tagged);
+		}
+		else {
+			tagged = s;
+		}
+		
 		String newtagged = Preprocessor.condenseNominals(Preprocessor.findNEs(tagged,s));
-        newtagged = Preprocessor.condense(newtagged);
-		System.out.println("Preprocessed: " + newtagged);
+		newtagged = Preprocessor.condense(newtagged);
+		System.out.println("Preprocessed: " + newtagged); 
         
         p.parse(newtagged,g);
         
