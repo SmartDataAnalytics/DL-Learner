@@ -29,6 +29,7 @@ import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.GridViewConfig;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.menu.CheckMenuItem;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
@@ -37,6 +38,8 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SPARQLQueryResultPanel extends ContentPanel{
+	
+	private static final String LABEL_URI = "http://www.w3.org/2000/01/rdf-schema#label";
 	
 	private PagingLoader<PagingLoadResult<ModelData>> loader;
 	
@@ -49,7 +52,12 @@ public class SPARQLQueryResultPanel extends ContentPanel{
 	
 	private Button propertiesButton;
 	
-	public SPARQLQueryResultPanel(boolean showHeader){
+	private boolean highlightPosNeg;
+	private List<String> posExamples;
+	private List<String> negExamples;
+	
+	public SPARQLQueryResultPanel(boolean showHeader, boolean highlightPosNeg){
+		this.highlightPosNeg = highlightPosNeg;
 		setHeaderVisible(showHeader);
 		initUI();
 	}
@@ -93,17 +101,44 @@ public class SPARQLQueryResultPanel extends ContentPanel{
 		
 		ColumnConfig c = new ColumnConfig();		
 		c = new ColumnConfig();
-		c.setId("label");
+		c.setId(LABEL_URI);//c.setId("label");
 		c.setHeader("Label");
 		c.setSortable(true);
 		columns.add(c);
+		visibleProperties.add(LABEL_URI);
 		
 		ColumnModel cm = new ColumnModel(columns);
 		
 		grid = new Grid<Example>(store, cm);
-		grid.setAutoExpandColumn("label");
+		grid.setAutoExpandColumn(LABEL_URI);//grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.getView().setEmptyText("");
+		
+		if(highlightPosNeg){
+			grid.getView().setViewConfig(new GridViewConfig(){
+				@Override
+				public String getRowStyle(ModelData model, int rowIndex,
+						ListStore<ModelData> ds) {
+					// TODO Auto-generated method stub
+//					if(rowIndex % 2 == 0){
+//						return "row-Style-Odd";
+//					} else {
+//						return "row-Style-Even";
+//					}
+					String uri = model.get("uri");
+					if(posExamples.contains(uri)){
+						return "row-Style-Positive";
+					} else if(negExamples.contains(uri)){
+						return "row-Style-Negative";
+					} else if(rowIndex % 2 == 0){
+							return "row-Style-Odd";
+						} else {
+							return "row-Style-Even";
+						
+					}
+				}
+			});
+		}
 
 		add(grid);
 		setBottomComponent(toolbar);
@@ -115,6 +150,11 @@ public class SPARQLQueryResultPanel extends ContentPanel{
 	
 	public void refresh(){
 		loader.load();
+	}
+	
+	public void setExamples(List<String> posExamples, List<String> negExamples){
+		this.posExamples = posExamples;
+		this.negExamples = negExamples;
 	}
 	
 	public void loadProperties(){
@@ -161,7 +201,7 @@ public class SPARQLQueryResultPanel extends ContentPanel{
 		
 		ColumnConfig c = new ColumnConfig();		
 		c = new ColumnConfig();
-		c.setId("label");
+		c.setId(LABEL_URI);//		c.setId("label");
 		c.setHeader("Label");
 		c.setSortable(true);
 		columns.add(c);
