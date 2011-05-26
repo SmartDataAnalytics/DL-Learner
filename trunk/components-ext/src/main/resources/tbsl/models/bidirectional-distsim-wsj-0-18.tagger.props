@@ -1,7 +1,7 @@
-## tagger training invoked at Mon Dec 21 23:21:02 PST 2009 with arguments:
+## tagger training invoked at Fri Apr 15 01:00:51 PDT 2011 with arguments:
                    model = bidirectional-distsim-wsj-0-18.tagger
-                    arch = bidirectional5words,naacl2003unknowns,wordshapes(-1,1),distsim(/u/nlp/data/pos_tags_are_useless/egw.bnc.200.pruned,-1,1),distsimconjunction(/u/nlp/data/pos_tags_are_useless/egw.bnc.200.pruned,-1,1)
-               trainFile = /u/nlp/data/pos-tagger/train-wsj-0-18
+                    arch = bidirectional5words,naacl2003unknowns,wordshapes(-1,1),distsim(../data/pos-tagger/training/english/egw.bnc.200.pruned,-1,1),distsimconjunction(../data/pos-tagger/training/english/egw.bnc.200.pruned,-1,1)
+               trainFile = ../data/pos-tagger/training/english/train-wsj-0-18
          closedClassTags = 
  closedClassTagThreshold = 40
  curWordMinFeatureThresh = 2
@@ -9,7 +9,6 @@
              debugPrefix = 
             tagSeparator = _
                 encoding = UTF-8
-           initFromTrees = false
               iterations = 100
                     lang = english
     learnClosedClassTags = false
@@ -24,10 +23,9 @@ rareWordMinFeatureThresh = 5
                tagInside = 
                 tokenize = true
         tokenizerFactory = 
-               treeRange = 
-          treeNormalizer = 
-         treeTransformer = 
+        tokenizerOptions = 
                  verbose = false
+          verboseResults = true
     veryCommonWordThresh = 250
                 xmlInput = 
               outputFile = 
