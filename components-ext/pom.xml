@@ -14,14 +14,19 @@
 			<id>Simmetrics</id>
 			<url>http://maven.mse.jhu.edu/m2repository/</url>
 		</repository>
+		<!--
 		<repository>
 			<id>Harvard Med</id>
 			<url>http://repo.open.med.harvard.edu/nexus/content/repositories/public/</url>
-		</repository>
+		</repository>-->
 		<repository>
 			<id>Annolab</id>
 			<url>http://annolab.org/m2/releases/</url>
 		</repository>
+		<!-- <repository>
+			<id>Mirror for WSTX</id>
+			<url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
+		</repository> -->
 	</repositories>
 
 	<parent>
@@ -48,7 +53,7 @@
 		<dependency>
 			<groupId>edu.stanford</groupId>
 			<artifactId>postagger</artifactId>
-			<version>1.0</version>
+			<version>3.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>lbj</groupId>
@@ -127,8 +132,8 @@
 
 	</dependencies>
 	<build>
-	<plugins>
-	<plugin>
+		<plugins>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
@@ -138,6 +143,26 @@
 					</excludes>
 				</configuration>
 			</plugin>
-	</plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+
+					<execution>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-Xms512m</argument>
+						<argument>-Xmx4000m</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 </project>
