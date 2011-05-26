@@ -29,7 +29,7 @@ public class QuestionProcessor {
 	
 	public QuestionProcessor(){
 		try {
-			tagger = new MaxentTagger("src/main/resources/de/simba/ner/models/left3words-wsj-0-18.tagger");
+			tagger = new MaxentTagger(this.getClass().getClassLoader().getResource("de/simba/ner/models/left3words-wsj-0-18.tagger").getPath());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
