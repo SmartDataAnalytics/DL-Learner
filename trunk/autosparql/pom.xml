@@ -136,7 +136,7 @@
 		<dependency>
 			<groupId>edu.stanford</groupId>
 			<artifactId>postagger</artifactId>
-			<version>1.0</version>
+			<version>3.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>lbj</groupId>

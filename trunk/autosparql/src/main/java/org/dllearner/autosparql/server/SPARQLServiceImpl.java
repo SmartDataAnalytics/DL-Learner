@@ -69,9 +69,9 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		
-		ApplicationContext ctx = new ClassPathXmlApplicationContext("autosparql.xml", "autosparql-session.xml");
-		AutoSPARQLConfig aConfig = (AutoSPARQLConfig) ctx.getBean("autosparqlconfig");
-		AutoSPARQLSession aSession = (AutoSPARQLSession) ctx.getBean("autosparql.session");
+//		ApplicationContext ctx = new ClassPathXmlApplicationContext("autosparql.xml", "autosparql-session.xml");
+//		AutoSPARQLConfig aConfig = (AutoSPARQLConfig) ctx.getBean("autosparqlconfig");
+//		AutoSPARQLSession aSession = (AutoSPARQLSession) ctx.getBean("autosparql.session");
 		
 		String configPath = config.getInitParameter("configPath");
 		loadConfig(configPath);
