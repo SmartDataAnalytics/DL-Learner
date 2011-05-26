@@ -33,10 +33,10 @@ public class StanfordPartOfSpeechTagger implements PartOfSpeechTagger{
 		ArrayList<TaggedWord> tagged = new ArrayList<TaggedWord>(); 
 		
 		StringReader reader = new StringReader(sentence);
-		List<ArrayList<? extends HasWord>> text = tagger.tokenizeText(reader);
+		List<List<HasWord>> text = MaxentTagger.tokenizeText(reader);
 			
 		if (text.size() == 1) {
-			tagged = tagger.processSentence(text.get(0));
+			tagged = tagger.tagSentence(text.get(0));
 		}
 		
 		for (TaggedWord t : tagged) {
