@@ -7,11 +7,10 @@ package de.simba.ner;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -99,8 +98,8 @@ public class QueryProcessor {
 
             //tag and write output
             String buffer = "";
-            List<ArrayList<? extends HasWord>> sentences = tagger.tokenizeText(new BufferedReader(new FileReader(temp)));
-            for (ArrayList<? extends HasWord> sentence : sentences) {
+            List<List<HasWord>> sentences = MaxentTagger.tokenizeText(new BufferedReader(new StringReader(s)));
+            for (List<HasWord> sentence : sentences) {
                 ArrayList<TaggedWord> tSentence = tagger.tagSentence(sentence);
                 for(TaggedWord taWo : tSentence){
                 	System.out.println("Word:" + taWo.word() + " Tag: " + taWo.tag());

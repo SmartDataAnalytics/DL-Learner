@@ -56,8 +56,8 @@ public class QuestionProcessor {
 	
 	private List<String> getWords(String question){
 		List<String> words = new ArrayList<String>();
-		List<ArrayList<? extends HasWord>> sentences = tagger.tokenizeText(new BufferedReader(new StringReader(question)));
-		for (ArrayList<? extends HasWord> sentence : sentences) {
+		List<List<HasWord>> sentences = MaxentTagger.tokenizeText(new BufferedReader(new StringReader(question)));
+		for (List<HasWord> sentence : sentences) {
 		    ArrayList<TaggedWord> tSentence = tagger.tagSentence(sentence);System.out.println(tSentence);
 		    String nounPhrase = "";
 		    boolean firstWord = true;
