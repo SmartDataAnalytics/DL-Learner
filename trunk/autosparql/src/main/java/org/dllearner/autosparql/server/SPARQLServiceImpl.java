@@ -254,7 +254,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	private void loadSPARQLQueriesFromFile(){
 		logger.info("Loading stored SPARQL queries");
 		try {
-			store = new SimpleFileStore(SPARQL_QUERIES_FILE);
+			store = new SimpleFileStore(getServletContext().getRealPath("app/" + SPARQL_QUERIES_FILE));
 			storedSPARQLQueries = store.getStoredSPARQLQueries();
 		} catch (Exception e) {
 			logger.error("Error while loading stored SPARQL queries.", e);
