@@ -1,7 +1,7 @@
-## tagger training invoked at Mon Dec 21 23:25:07 PST 2009 with arguments:
+## tagger training invoked at Fri Apr 15 07:35:09 PDT 2011 with arguments:
                    model = left3words-wsj-0-18.tagger
                     arch = left3words,naacl2003unknowns,wordshapes(-1,1)
-               trainFile = /u/nlp/data/pos-tagger/train-wsj-0-18
+               trainFile = ../data/pos-tagger/training/english/train-wsj-0-18
          closedClassTags = 
  closedClassTagThreshold = 40
  curWordMinFeatureThresh = 2
@@ -9,7 +9,6 @@
              debugPrefix = 
             tagSeparator = _
                 encoding = UTF-8
-           initFromTrees = false
               iterations = 100
                     lang = english
     learnClosedClassTags = false
@@ -24,10 +23,9 @@ rareWordMinFeatureThresh = 10
                tagInside = 
                 tokenize = true
         tokenizerFactory = 
-               treeRange = 
-          treeNormalizer = 
-         treeTransformer = 
+        tokenizerOptions = 
                  verbose = false
+          verboseResults = true
     veryCommonWordThresh = 250
                 xmlInput = 
               outputFile = 
