@@ -100,7 +100,13 @@ public class DBpediaSolrIndexCreator {
 		SolrCore core = new SolrCore(CORE_NAME, root
 				+ File.separator + CORE_NAME + "/data", config, null, coreName);
 		coreContainer.register(core, false);
-		EmbeddedSolrServer solr = new EmbeddedSolrServer(coreContainer, CORE_NAME);
+		EmbeddedSolrServer solr = null;
+		try {
+			solr = new EmbeddedSolrServer(coreContainer, CORE_NAME);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return solr;
 	}
 	

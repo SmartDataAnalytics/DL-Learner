@@ -147,8 +147,8 @@ public class HomeView extends View {
                 maincontent = new HtmlContainer(
                     "<h2>How to use?</h2>"+
                     "<ol>"+
-                        "<li>search for a query result, e.g. if you want to query &quot;cities in France&quot;, you could search for &quot;Paris&quot;</li>"+
-                        "<li>once you have found &quot;Paris&quot; and marked it with &quot;+&quot;</li>"+
+                        "<li>search for a query result, e.g. if you want to query &quot;soccer clubs in Premier League&quot;, you could search for &quot;Liverpool F.C.&quot; and &quot;Chelsea F.C.&quot;</li>"+
+                        "<li>once you have found &quot;Liverpool F.C.&quot; and &quot;Chelsea F.C.&quot; and marked them with &quot;+&quot;</li>"+
                         "<li>an interactive guide will ask you further questions</li>"+
                         "<li>which lead you to your desired query</li>"+
                     "</ol>"+

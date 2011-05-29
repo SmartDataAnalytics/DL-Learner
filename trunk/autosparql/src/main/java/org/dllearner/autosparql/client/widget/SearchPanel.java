@@ -251,41 +251,40 @@ public class SearchPanel extends ContentPanel {
 	}
 	
 	private void onSearch(){
-//		showLoadingMessage(true);
-//		loader.load();
+		showLoadingMessage(true);
+		loader.load();
 //		if(firstSearch){
 //			firstSearch = false;
 //			Dispatcher.forwardEvent(AppEvents.ShowInteractiveMode);
 //		}
-		String prefix = inputField.getValue();
-		String url = "http://139.18.2.173:8080/apache-solr-3.1.0/dbpedia_resources/terms?terms=true&terms.fl=label&terms.lower=" + prefix + "&terms.prefix=" + prefix + "&terms.lower.incl=false&indent=true&wt=json";
-//		String url = "http://139.18.2.173:8080/apache-solr-3.1.0/dbpedia_resources/select?q=soccer+club&wt=json&start=0&rows=10&fl=uri";
-		JsonpRequestBuilder builder = new JsonpRequestBuilder();
-		builder.setCallbackParam("json.wrf");
-		builder.requestObject(url,
-			     new AsyncCallback<SolrResponse>() { // Type-safe!
-			       public void onFailure(Throwable throwable) {
-			        System.out.println("ERROR: " + throwable);
-			       }
+		
+//		String prefix = inputField.getValue();
+//		String url = "http://139.18.2.173:8080/apache-solr-3.1.0/dbpedia_resources/terms?terms=true&terms.fl=label&terms.lower=" + prefix + "&terms.prefix=" + prefix + "&terms.lower.incl=false&indent=true&wt=json";
+//		JsonpRequestBuilder builder = new JsonpRequestBuilder();
+//		builder.setCallbackParam("json.wrf");
+//		builder.requestObject(url,
+//			     new AsyncCallback<SolrResponse>() { // Type-safe!
+//			       public void onFailure(Throwable throwable) {
+//			        System.out.println("ERROR: " + throwable);
+//			       }
+//
+//			       public void onSuccess(SolrResponse response) {
+//			         	JsArrayMixed a = response.getLabels();
+//			         	for(int i = 0; i < a.length(); i++){
+//			         		if(i%2 == 0){
+//			         			System.out.println(a.getString(i));
+//			         		}
+//			         		
+//			         	}
+//			         	
+//			         	
+//			         }
+//			       
+//			     });
+		
+		
+		
 
-			       public void onSuccess(SolrResponse response) {
-			         	JsArrayMixed a = response.getLabels();
-			         	for(int i = 0; i < a.length(); i++){
-			         		if(i%2 == 0){
-			         			System.out.println(a.getString(i));
-			         		}
-			         		
-			         	}
-			         	
-			         	
-			         }
-			       
-			     });
-		
-		
-		
-//		url=URL.encode(url) + "&callback=";
-//		getJson(jsonRequestId++, url, this);
 		
 
 	}
@@ -306,54 +305,7 @@ public class SearchPanel extends ContentPanel {
 		inputField.focus();
 	}
 	
-	private int jsonRequestId = 0;
 	
-	/**
-	   * Make call to remote server.
-	   */
-	public native static void getJson(int requestId, String url,
-		      SearchPanel handler) /*-{
-	   var callback = "callback" + requestId;
-
-	   // [1] Create a script element.
-	   var script = document.createElement("script");
-	   script.setAttribute("src", url+callback);
-	   script.setAttribute("type", "text/javascript");
-
-	   // [2] Define the callback function on the window object.
-	   window[callback] = function(jsonObj) {
-	   // [3]
-	     handler.@org.dllearner.autosparql.client.widget.SearchPanel::handleJsonResponse(Lcom/google/gwt/core/client/JavaScriptObject;)(jsonObj);
-	     window[callback + "done"] = true;
-	   }
-
-	   // [4] JSON download has 1-second timeout.
-	   setTimeout(function() {
-	     if (!window[callback + "done"]) {
-	       handler.@org.dllearner.autosparql.client.widget.SearchPanel::handleJsonResponse(Lcom/google/gwt/core/client/JavaScriptObject;)(null);
-	     }
-
-	     // [5] Cleanup. Remove script and callback elements.
-	     document.body.removeChild(script);
-	     delete window[callback];
-	     delete window[callback + "done"];
-	   }, 1000);
-
-	   // [6] Attach the script element to the document body.
-	   document.body.appendChild(script);
-	  }-*/;
-	  
-	  /**
-	   * Handle the response to the request for stock data from a remote server.
-	   */
-	  public void handleJsonResponse(JavaScriptObject jso) {
-	    if (jso == null) {
-	      System.out.println("Couldn't retrieve JSON");
-	      return;
-	    }
-	    System.out.println("TEST: " + jso);
-
-	  }
 	  
 	
 
