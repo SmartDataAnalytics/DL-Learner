@@ -135,12 +135,6 @@ public class LuceneSearch implements Search{
 	}
 	
 	public int getIndexSize(){
-		try {
-			return searcher.maxDoc();
-		} catch (IOException e) {
-			logger.error("Error while getting index size.", e);
-			e.printStackTrace();
-		}
-		return -1;
+		return searcher.maxDoc();
 	}
 }
