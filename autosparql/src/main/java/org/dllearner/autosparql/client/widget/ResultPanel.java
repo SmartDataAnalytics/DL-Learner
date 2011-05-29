@@ -17,6 +17,7 @@ import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
@@ -205,7 +206,7 @@ public class ResultPanel extends ContentPanel {
 
 			@Override
 			public void onSuccess(Void result) {
-				
+				Info.display("Message", "The query was successfully saved.");
 			}
 		});
 	}

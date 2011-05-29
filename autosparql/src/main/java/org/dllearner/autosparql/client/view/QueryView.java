@@ -24,6 +24,7 @@ import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
@@ -74,14 +75,29 @@ public class QueryView extends View {
 	    searchPanel = new SearchPanel();
 	    vPanel.add(searchPanel, new RowData(1, 0.6, new Margins(5, 0, 0, 0)));
 	   
-	    vPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
+//	    vPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
+//	    mainPanel.add(vPanel, new RowData(0.7, 1, new Margins(0, 0, 0, 5)));
+//	    
+//		resultPanel = new ResultPanel();
+//		vPanel.add(resultPanel, new RowData(1, 0.5, new Margins(10, 0, 0, 0)));
+//		
+//		examplesPanel = new ExamplesPanel();
+//	    vPanel.add(examplesPanel, new RowData(1, 0.5, new Margins(0, 0, 5, 0)));
+	    final BorderLayout layout = new BorderLayout();
+	    vPanel = new LayoutContainer(layout);
 	    mainPanel.add(vPanel, new RowData(0.7, 1, new Margins(0, 0, 0, 5)));
 	    
+	    BorderLayoutData layoutData;
+	    
 		resultPanel = new ResultPanel();
-		vPanel.add(resultPanel, new RowData(1, 0.5, new Margins(10, 0, 0, 0)));
+		layoutData = new BorderLayoutData(LayoutRegion.CENTER, 0.6f);
+	    layoutData.setSplit(true);
+		vPanel.add(resultPanel, layoutData);
 		
 		examplesPanel = new ExamplesPanel();
-	    vPanel.add(examplesPanel, new RowData(1, 0.5, new Margins(0, 0, 5, 0)));
+		layoutData = new BorderLayoutData(LayoutRegion.SOUTH, 0.4f);
+	    layoutData.setSplit(true);
+	    vPanel.add(examplesPanel, layoutData);
 	}
 	
 	@Override
