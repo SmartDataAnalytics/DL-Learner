@@ -68,6 +68,7 @@ public class ResultPanel extends ContentPanel {
 		add(mainPanel, new RowData(1, 1));
 		
 		saveButton = new Button("Save");
+		saveButton.addStyleName("save-button");
 		saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			
 			@Override
@@ -75,7 +76,7 @@ public class ResultPanel extends ContentPanel {
 				onSave();
 			}
 		});
-		add(saveButton);
+		add(saveButton, new RowData(-1, -1));
 		
 		createResultGrid();
 		createQueryTab();
