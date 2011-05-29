@@ -173,24 +173,26 @@ public class SPARQLQueryResultPanel extends ContentPanel{
 		Menu menu = new Menu();
 		CheckMenuItem item;
 		for(final Entry<String, String> entry : properties.entrySet()){
-			final String propertyURI = entry.getKey();
-			String propertyLabel = entry.getValue();
-			item = new CheckMenuItem(propertyLabel);
-			item.setHideOnClick(false);
-			item.addSelectionListener(new SelectionListener<MenuEvent>() {
-		        public void componentSelected(MenuEvent ce) {
-		        	ColumnModel cm = grid.getColumnModel();
-			          if(visibleProperties.contains(propertyURI)){
-			        	  visibleProperties.remove(propertyURI);
-			        	  cm.setHidden(cm.getIndexById(propertyURI), true);
-			          } else {
-			        	  visibleProperties.add(propertyURI);
-			        	  cm.setHidden(cm.getIndexById(propertyURI), false);
-			          }
-			          loader.load();
-			        }
-			      });
-			menu.add(item);
+			if(!entry.getKey().equals(LABEL_URI)){
+				final String propertyURI = entry.getKey();
+				String propertyLabel = entry.getValue();
+				item = new CheckMenuItem(propertyLabel);
+				item.setHideOnClick(false);
+				item.addSelectionListener(new SelectionListener<MenuEvent>() {
+			        public void componentSelected(MenuEvent ce) {
+			        	ColumnModel cm = grid.getColumnModel();
+				          if(visibleProperties.contains(propertyURI)){
+				        	  visibleProperties.remove(propertyURI);
+				        	  cm.setHidden(cm.getIndexById(propertyURI), true);
+				          } else {
+				        	  visibleProperties.add(propertyURI);
+				        	  cm.setHidden(cm.getIndexById(propertyURI), false);
+				          }
+				          loader.load();
+				        }
+				      });
+				menu.add(item);
+			}
 		}
 		propertiesButton.setMenu(menu);
 		

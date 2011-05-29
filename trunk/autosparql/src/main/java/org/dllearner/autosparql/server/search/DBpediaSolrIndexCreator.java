@@ -64,7 +64,7 @@ public class DBpediaSolrIndexCreator {
 	private SolrServer solr;
 	private CoreContainer coreContainer;
 	
-	private static final String CORE_NAME = "dbpedia3";
+	private static final String CORE_NAME = "dbpedia_resources";
 	
 	public DBpediaSolrIndexCreator(){
 		try {
@@ -155,6 +155,9 @@ public class DBpediaSolrIndexCreator {
 				}
 				if(stmt.getPredicate().stringValue().equals(labelProperty)){
 					label = stmt.getObject().stringValue();
+					if(label.toLowerCase().contains(" list of ")){
+						skip = true;
+					}
 				} else if(stmt.getPredicate().stringValue().equals(abstractProperty)){
 					abstr = stmt.getObject().stringValue();
 				} else if(stmt.getPredicate().stringValue().equals(imageProperty)){

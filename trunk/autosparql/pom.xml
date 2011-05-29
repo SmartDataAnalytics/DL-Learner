@@ -191,13 +191,7 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.solr.solr</groupId>
-			<artifactId>solr-parent</artifactId>
-			<version>1.4.1</version>
-			<type>pom</type>
-			<scope>compile</scope>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
