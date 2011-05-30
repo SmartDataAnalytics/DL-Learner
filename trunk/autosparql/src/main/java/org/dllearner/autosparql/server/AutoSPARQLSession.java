@@ -173,6 +173,7 @@ public class AutoSPARQLSession {
 		}
 		try {
 			Example example = exampleFinder.findSimilarExample(posExamples, negExamples);
+			examplesCache.put(example.getURI(), example);
 			return example;
 		} catch (Exception e) {
 			e.printStackTrace();
