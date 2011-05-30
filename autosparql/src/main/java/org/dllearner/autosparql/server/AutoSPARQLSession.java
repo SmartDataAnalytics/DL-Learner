@@ -315,7 +315,7 @@ public class AutoSPARQLSession {
 			
 			System.out.println("Query with properties:\n" + newQuery.toString());
 			try {
-				ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, modifyQuery(newQuery + " LIMIT 100")));
+				ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, modifyQuery(newQuery + " LIMIT 1000")));
 				
 				String uri;
 				String label = "";
@@ -323,7 +323,7 @@ public class AutoSPARQLSession {
 				RDFNode object;
 				while(rs.hasNext()){
 					qs = rs.next();
-					uri = qs.getResource("x0").getURI();
+					uri = qs.getResource("x0").getURI();	System.out.println("URI: " + uri);
 					label = qs.getLiteral("label").getLexicalForm();
 					Map<String, String> properties2Value = propertiesCache.get(uri);
 					if(properties2Value == null){
@@ -336,7 +336,7 @@ public class AutoSPARQLSession {
 					String property;
 					for(Entry<String, String> entry : var2URIMap.entrySet()){
 						value = "";
-						property = entry.getValue();
+						property = entry.getValue();System.out.println("PROPERTY: " + property);
 						
 						object = qs.get(entry.getKey() + "_label");
 						if(object == null){
@@ -348,7 +348,7 @@ public class AutoSPARQLSession {
 							} else if(object.isLiteral()){
 								value = object.asLiteral().getLexicalForm();
 							}
-						}
+						}System.out.println("VALUE: " + value);
 						String oldValue = properties2Value.get(property);
 						if(oldValue != null){
 							value = oldValue + ", " + value;
