@@ -20,4 +20,24 @@
 		</predicateFilters>
 	</endpoint>
 	
+	<endpoint>
+		<url>http://linkedgeodata.org/sparql/</url>
+		<label>LinkedGeoData</label>
+		<defaultGraphURI>http://linkedgeodata.org</defaultGraphURI>
+		<predicateFilters/>
+	</endpoint>
+	
+	<endpoint>
+		<url>http://dbtune.org/musicbrainz/sparql</url>
+		<label>MusicBrainz</label>
+		<defaultGraphURI></defaultGraphURI>
+		<predicateFilters/>
+	</endpoint>
+	
+	<endpoint>
+		<url>http://chebi.bio2rdf.org/sparql</url>
+		<label>Chebi</label>
+		<defaultGraphURI/>
+		<predicateFilters/>
+	</endpoint>
 </endpoints>

@@ -23,6 +23,8 @@ public class SolrSearch implements Search{
 	private int hitsPerPage = 10;
 	private int lastTotalHits = 0;
 	
+	private QuestionProcessor preprocessor;
+	
 	public SolrSearch(String solrServerURL){
 		try {
 			server = new CommonsHttpSolrServer(solrServerURL);
@@ -30,6 +32,7 @@ public class SolrSearch implements Search{
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
+		preprocessor = new QuestionProcessor();
 	}
 
 	@Override
@@ -102,11 +105,28 @@ public class SolrSearch implements Search{
 		QueryResponse response;
 		try {
 			ModifiableSolrParams params = new ModifiableSolrParams();
-			params.set("q", queryString);
+			if(queryString.startsWith("label:") || queryString.startsWith("uri:")){
+				params.set("q", queryString);
+			} else {
+				List<String> relevantWords = preprocessor.getRelevantWords(queryString);
+				params.set("q", "{!boost b=pagerank v=$qq}");
+				StringBuilder sb = new StringBuilder();
+				for(String word : relevantWords){
+					sb.append("comment:\"").append(word).append("\" ");
+				}
+				sb.append(" AND ");
+				for(int i = 0; i < relevantWords.size(); i++){
+					sb.append("-label:\"").append(relevantWords.get(i)).append("\"");
+					if(i < relevantWords.size()-1){
+						sb.append(" AND ");
+					}
+				}
+				params.set("qq", sb.toString());
+			}
 			params.set("rows", hitsPerPage);
 			params.set("start", offset);
 //			params.set("sort", "score+desc,pagerank+desc");
-			response = server.query(params);
+			response = server.query(params);System.out.println(response.getRequestUrl());
 			SolrDocumentList docList = response.getResults();
 			lastTotalHits = (int) docList.getNumFound();
 			Example example;

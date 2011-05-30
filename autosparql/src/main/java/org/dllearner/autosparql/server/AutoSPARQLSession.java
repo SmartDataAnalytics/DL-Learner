@@ -169,7 +169,7 @@ public class AutoSPARQLSession {
 		logger.info("Pos examples: " + posExamples);
 		logger.info("Neg examples: " + negExamples);
 		if(negExamples.isEmpty()){
-			negExamples = getIntermediateNegativeExamples(posExamples);
+//			negExamples = getIntermediateNegativeExamples(posExamples);
 		}
 		try {
 			Example example = exampleFinder.findSimilarExample(posExamples, negExamples);

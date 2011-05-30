@@ -172,7 +172,6 @@ public class HomeView extends View {
                 SPARQLService.Util.getInstance().getSavedSPARQLQueries(new AsyncCallbackEx<List<StoredSPARQLQuery>>() {
 					@Override
 					public void onSuccess(List<StoredSPARQLQuery> result) {
-						System.out.println(result);
 						for(final StoredSPARQLQuery query : result){
 							Hyperlink link = new Hyperlink(query.getQuestion(), HistoryTokens.LOADQUERY);
 							link.addClickListener(new ClickListener() {
