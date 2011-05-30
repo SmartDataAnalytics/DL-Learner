@@ -6,9 +6,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.collections15.ListUtils;
+import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.cache.ModelCache;
 import org.dllearner.algorithm.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithm.qtl.datastructures.QueryTree;
+import org.dllearner.algorithm.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithm.qtl.exception.QTLException;
 import org.dllearner.algorithm.qtl.filters.QueryTreeFilter;
 import org.dllearner.algorithm.qtl.operations.NBR;
@@ -27,6 +29,8 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.Filter;
 
 public class QTL {
+	
+	private static final Logger logger = Logger.getLogger(QTL.class);
 	
 	private SparqlEndpoint endpoint;
 	private ExtractionDBCache cache;
@@ -76,12 +80,20 @@ public class QTL {
 		posExampleTrees.addAll(getQueryTrees(posExamples));
 		negExampleTrees.addAll(getQueryTrees(negExamples));
 		
+		if(negExamples.isEmpty()){
+			QueryTree<String> dummyNegTree = new QueryTreeImpl<String>("?");
+			dummyNegTree.addChild(new QueryTreeImpl<String>("?"), "dummy");
+			negExampleTrees.add(dummyNegTree);
+		}
+		
 		lgg = lggGenerator.getLGG(posExampleTrees);
-		System.out.println(lgg.getStringRepresentation());
+		
 		if(queryTreeFilter != null){
 			lgg = queryTreeFilter.getFilteredQueryTree(lgg);
 		}
-		System.out.println(lgg.getStringRepresentation());
+		if(logger.isInfoEnabled()){
+			logger.info("LGG: \n" + lgg.getStringRepresentation());
+		}
 		
 		if(coversNegativeQueryTree(lgg)){
 			throw new QTLException("Could not learn SPARQL query. Reason: LGG covers negative tree.");
@@ -128,9 +140,17 @@ public class QTL {
 	private List<QueryTree<String>> getQueryTrees(List<String> resources){
 		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
 		Model model;
+		QueryTree<String> tree;
 		for(String resource : resources){
+			if(logger.isInfoEnabled()){
+				logger.info("Tree for resource " + resource);
+			}
 			model = modelCache.getModel(resource);
-			trees.add(treeCache.getQueryTree(resource, model));
+			tree = treeCache.getQueryTree(resource, model);
+			if(logger.isInfoEnabled()){
+				logger.info(tree.getStringRepresentation());
+			}
+			trees.add(tree);
 		}
 		return trees;
 	}
@@ -150,7 +170,7 @@ public class QTL {
 	
 	private SortedSet<String> getResources(QueryTree<String> tree){
 		SortedSet<String> resources = new TreeSet<String>();
-		String query = getDistinctSPARQLQuery(tree);System.out.println(query);
+		String query = getDistinctSPARQLQuery(tree);
 		String result = cache.executeSelectQuery(endpoint, query);
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
@@ -159,7 +179,7 @@ public class QTL {
 			qs = rs.next();
 			uri = qs.getResource("x0").getURI();
 			resources.add(uri);
-		}System.out.println(resources);
+		}
 		return resources;
 	}
 	
