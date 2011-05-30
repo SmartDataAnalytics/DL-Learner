@@ -167,7 +167,7 @@ body.home_view #x-auto-1
 
 #demo-selector-query .x-form-field-wrap
 {
-    width:270px !important;
+    width:230px !important;
 }
 
 #demo-selector-query .x-form-field
@@ -188,18 +188,18 @@ body.home_view #x-auto-1
 
 #demo-selector-endpoints
 {
-    width:270px;
+    width:220px;
     float:left;
 }
 
 #demo-selector-endpoints .x-form-field-wrap
 {
-    width:260px !important;
+    width:230px !important;
 }
 
 #demo-selector-endpoints .x-form-field
 {
-    width:226px !important;
+    width:216px !important;
     padding-top:4px;
     font-size: 20px;
     line-height: 36px;
@@ -215,14 +215,14 @@ body.home_view #x-auto-1
 
 #demo-selector-button
 {
-    margin-left:560px;
+    margin-left:520px;
 }
 
 #demo-selector-button a
 {
     display:block;
     width:110px;
-    font-size: 1em;
+    font-size: 18px;
     font-weight:normal;
     line-height: 42px;
     height:42px;
