@@ -329,6 +329,9 @@ public class NBR<N> {
 			}
 			
 //			QueryTree<N> newTree = getNewResource(tree2, knownResources);
+			if(logger.isDebugEnabled()){
+				logger.debug("Testing tree\n" + tree2.getQueryTree().getStringRepresentation());
+			}
 			String newResource = getNewResource2(fSparql(lgg, tree2.getChanges()), knownResources);
 			if(isTerminationCriteriaReached()){
 				throw new TimeOutException(maxExecutionTimeInSeconds);
@@ -394,6 +397,7 @@ public class NBR<N> {
 	}
 	
 	private String findMostSpecificResourceTree2(List<GeneralisedQueryTree<N>> trees, List<String> knownResources, int low, int high) throws TimeOutException {
+		
 //		if(low==high) {
 //			return low;
 //		}
@@ -403,6 +407,9 @@ public class NBR<N> {
 //		QueryTree<N> t = getNewResource(trees.get(testIndex), knownResources);
 		String t = null;
 		GeneralisedQueryTree<N> genTree = trees.get(testIndex);
+		if(logger.isDebugEnabled()){
+			logger.debug("Binary search: Testing tree\n" + genTree.getQueryTree().getStringRepresentation());
+		}
 		try {
 			t = getNewResource2(fSparql(lgg, genTree.getChanges()), knownResources);
 		} catch (HTTPException e) {
@@ -418,6 +425,9 @@ public class NBR<N> {
 		if(t == null) {
 			return findMostSpecificResourceTree2(trees,knownResources,testIndex+1,high);
 		} else {
+			if(logger.isDebugEnabled()){
+				logger.debug("Binary search: Found new resource \"" + t + "\"");
+			}
 			return findMostSpecificResourceTree2(trees,knownResources,low,testIndex);
 		}
 	}
@@ -935,7 +945,7 @@ public class NBR<N> {
     }
     
     private String fSparql(QueryTree<N> tree, List<QueryTreeChange> changes){
-    	logger.info("fSparql uses:" + changes);
+    	logger.debug("fSparql uses:" + changes);
     	QueryTree<N> copy = new QueryTreeImpl<N>(tree);
     	StringBuilder query = new StringBuilder();
     	StringBuilder triples = new StringBuilder();
@@ -944,6 +954,9 @@ public class NBR<N> {
     	query.append("SELECT DISTINCT ?x0 WHERE{\n");
 //    	buildSPARQLQueryString(copy, triples);
     	buildSPARQLQueryString(copy, changes, triples, optionals, filters);
+    	if(triples.toString().isEmpty()){
+    		triples.append("?x0 ?p ?o.\n");
+    	}
     	query.append(triples.toString());
     	for(String optional : optionals){
     		query.append("OPTIONAL{").append(optional + "}\n");
@@ -957,6 +970,9 @@ public class NBR<N> {
     		query.append(")\n");
     	}
     	query.append("}");
+    	if(logger.isDebugEnabled()){
+    		logger.debug("fsparql: generated query: \n" + query.toString());
+    	}
     	return query.toString();
     	
     }
