@@ -74,6 +74,8 @@ public class SimpleFileStore implements Store {
 	}
 
 	private void put(String question, String query, String endpoint, List<Example> posExamples, List<Example> negExamples, Example lastSuggestedExample) {
+		System.out.println(posExamples);
+		System.out.println(negExamples);
 		try {
 			StoredSPARQLQuery storedQuery = new StoredSPARQLQuery(question, query, HTMLUtils.encodeHTML(query), endpoint, posExamples, negExamples, lastSuggestedExample);
 			question2QueryMap.put(question, storedQuery.toStoredSPARQLQuerySer());

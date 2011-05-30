@@ -174,7 +174,7 @@ body.home_view #x-auto-1
 {
     width:226px !important;
     padding-top:4px;
-    font-size: 24px;
+    font-size: 20px;
     line-height: 36px;
     height:43px;
 }
@@ -201,7 +201,7 @@ body.home_view #x-auto-1
 {
     width:226px !important;
     padding-top:4px;
-    font-size: 24px;
+    font-size: 20px;
     line-height: 36px;
     height:43px;
 }
@@ -222,7 +222,7 @@ body.home_view #x-auto-1
 {
     display:block;
     width:110px;
-    font-size: 18px;
+    font-size: 1em;
     font-weight:normal;
     line-height: 42px;
     height:42px;
@@ -399,6 +399,11 @@ div.message-box-error, div.message-box-warning, div.message-box-success {
     color:white !important;
     background:red !important;
 }
+
+.save-button button
+{
+	-moz-transform: rotate(90deg);
+	}
 
 /* -- Layout Helper --------------------------------------------------------- */
 
