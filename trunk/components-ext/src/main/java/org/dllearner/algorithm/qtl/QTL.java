@@ -77,6 +77,9 @@ public class QTL {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		
+		posExampleTrees.clear();
+		negExampleTrees.clear();
+		
 		posExampleTrees.addAll(getQueryTrees(posExamples));
 		negExampleTrees.addAll(getQueryTrees(negExamples));
 		
