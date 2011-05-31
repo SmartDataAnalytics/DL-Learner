@@ -15,6 +15,8 @@ public class Preprocessor {
 	static final String[] genericReplacements = { "\"", "", "'", "", "[!?.,;]", "" };
 	static final String[] englishReplacements = { "don't", "do not", "doesn't", "does not" };
 	
+	static NER ner = new LingPipeNER();
+	
 	public Preprocessor() {
 	}
 	
@@ -186,7 +188,7 @@ public class Preprocessor {
 				"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN",
 				"GERUNDIN","VPREP","WHEN","WHERE","IN","TO","DT"};
 		
-		NER ner = new LingPipeNER();
+//		NER ner = new LingPipeNER();
 		List<String> namedentities = ner.getNamedEntitites(untagged);
 		List<String> usefulnamedentities = new ArrayList<String>();
 		

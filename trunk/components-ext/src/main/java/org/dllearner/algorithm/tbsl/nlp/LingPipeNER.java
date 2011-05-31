@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.aliasi.chunk.Chunk;
 import com.aliasi.chunk.Chunker;
 import com.aliasi.chunk.Chunking;
@@ -15,12 +17,14 @@ import com.aliasi.util.AbstractExternalizable;
 
 public class LingPipeNER implements NER{
 	
-	private static final String DICTIONARY_PATH = "src/main/resources/tbsl/models/dbpedia_lingpipe.dictionary";
+	private static Logger logger = Logger.getLogger(LingPipeNER.class);
+	
+	private static final String DICTIONARY_PATH = "tbsl/models/dbpedia_lingpipe.dictionary";
 	
 	private Chunker ner;
 	
 	public LingPipeNER() {
-		this(true, true);
+		this(true, false);
 	}
 	
 	public LingPipeNER(boolean caseSensitive) {
@@ -29,8 +33,12 @@ public class LingPipeNER implements NER{
 	
 	public LingPipeNER(boolean caseSensitive, boolean allMatches) {
 		try {
-			Dictionary<String> dictionary = (Dictionary<String>) AbstractExternalizable.readObject(new File(DICTIONARY_PATH));
+			long startTime = System.currentTimeMillis();
+			logger.info("Initializing LingPipe NER...");
+			String path = this.getClass().getClassLoader().getResource(DICTIONARY_PATH).getPath();
+			Dictionary<String> dictionary = (Dictionary<String>) AbstractExternalizable.readObject(new File(path));
 			ner = new ExactDictionaryChunker(dictionary, IndoEuropeanTokenizerFactory.INSTANCE, allMatches, caseSensitive);
+			logger.info("Done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
