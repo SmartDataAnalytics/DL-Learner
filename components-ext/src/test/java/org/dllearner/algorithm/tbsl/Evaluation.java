@@ -31,15 +31,17 @@ import org.xml.sax.SAXException;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
-public class Evaluation implements Oracle{
+public class Evaluation{
 	
 	private static Logger logger = Logger.getLogger(Evaluation.class);
 	
 	private File evaluationFile;
 	
-	private Map<String, String> question2query = new Hashtable<String, String>();
-	private SortedMap<String, Set<String>> question2Answers = new TreeMap<String, Set<String>>();
+	private Map<Integer, String> id2Question = new Hashtable<Integer, String>();
+	private Map<Integer, String> id2Query = new Hashtable<Integer, String>();
+	private SortedMap<Integer, Object> id2Answer = new TreeMap<Integer, Object>();
 	
 	private SparqlEndpoint endpoint;
 	
@@ -64,11 +66,14 @@ public class Evaluation implements Oracle{
 			Document doc = db.parse(file);
 			doc.getDocumentElement().normalize();
 			NodeList questionNodes = doc.getElementsByTagName("question");
+			int id;
 			String question;
 			String query;
 			Set<String> answers;
 			for(int i = 0; i < questionNodes.getLength(); i++){
 				Element questionNode = (Element) questionNodes.item(i);
+				//read question ID
+				id = Integer.valueOf(questionNode.getAttribute("id"));
 				//Read question
 				question = ((Element)questionNode.getElementsByTagName("string").item(0)).getChildNodes().item(0).getNodeValue().trim();
 				//Read SPARQL query
@@ -81,7 +86,8 @@ public class Evaluation implements Oracle{
 //					answers.add(((Element)answerNode.getElementsByTagName("uri").item(0)).getChildNodes().item(0).getNodeValue().trim());
 //				}
 				
-				question2query.put(question, query);
+				id2Question.put(id, question);
+				id2Query.put(id, query);
 //				question2Answers.put(question, answers);
 				
 			}
@@ -98,13 +104,15 @@ public class Evaluation implements Oracle{
 	}
 	
 	private void loadAnswers(){
+		int questionId;
 		String question;
-		Set<String> answers;
-		for(Entry<String, String> entry : question2query.entrySet()){
-			question = entry.getKey();
+		Object answer;
+		for(Entry<Integer, String> entry : id2Query.entrySet()){
+			questionId = entry.getKey();
+			question = entry.getValue();
 			try {
-				answers = getResources(entry.getValue());
-				question2Answers.put(question, answers);
+				answer = getAnswerForSPARQLQuery(question, "uri");
+				id2Answer.put(questionId, answer);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -124,6 +132,40 @@ public class Evaluation implements Oracle{
 		return resources;
 	}
 	
+	private Object getAnswerForSPARQLQuery(String query, String targetVar){
+		logger.info("Query: " + query);
+		Object answer = null;
+		
+		if(query.contains("ASK")){
+			answer = endpoint.executeAsk(query);
+		} else if(query.contains("COUNT")){
+			
+		} else {
+			answer = new HashSet<String>();
+			ResultSet rs = endpoint.executeSelect(query);
+			String variable;
+			if(rs.getResultVars().size() == 1){
+				variable = rs.getResultVars().get(0);
+			} else {
+				variable = targetVar;
+			}
+			QuerySolution qs;
+			RDFNode node;
+			while(rs.hasNext()){
+				qs = rs.next();
+				node = qs.get(variable);
+				if(node.isURIResource()){
+					((HashSet)answer).add(node.asResource().getURI());
+				} else if(node.isLiteral()){
+					((HashSet)answer).add(node.asLiteral().getLexicalForm());
+				}
+				
+			}
+		}
+		logger.info("Answer: " + answer);
+		return answer;
+	}
+	
 	public void setEndpoint(SparqlEndpoint endpoint){
 		this.endpoint = endpoint;
 	}
@@ -133,32 +175,43 @@ public class Evaluation implements Oracle{
 	}
 	
 	public void run(){
-		int cnt = 0;
+		SPARQLTemplateBasedLearner stbl = new SPARQLTemplateBasedLearner();
+		int failed = 0;
+		int learnedCnt = 0;
+		int learnedCorrectlyCnt = 0;
+		int questionId;
 		String question;
-		for(Entry<String, Set<String>> entry : question2Answers.entrySet()){
+		Object answer;
+		for(Entry<Integer, String> entry : id2Question.entrySet()){
 			try {
-				question = entry.getKey();
-				SPARQLTemplateBasedLearner stbl = new SPARQLTemplateBasedLearner();
+				questionId = entry.getKey();
+				question = entry.getValue();
+				answer = id2Answer.get(questionId);
+				//set the question
 				stbl.setQuestion(question);
-				stbl.setOracle(this);
+				//start learning
 				stbl.learnSPARQLQueries();
-				List<String> queries = stbl.getCurrentlyBestSPARQLQueries(1);
-				System.out.println(queries);
+				String learnedQuery = stbl.getBestSPARQLQuery();
+				//get result for best learned query
+				Object learnedAnswer = getAnswerForSPARQLQuery(learnedQuery, "y");
+				//compare to answers in target query
+				if(learnedAnswer.equals(answer)){
+					learnedCorrectlyCnt++;
+				} else {
+					learnedCnt++;
+				}
 			} catch (NoTemplateFoundException e) {
 				e.printStackTrace();
-				cnt++;
+				failed++;
 			} catch(Exception e){
 				e.printStackTrace();
+				failed++;
 			}
 		}
+		logger.info("Could generate SPARQL queries for " + learnedCnt + "/" + id2Question.size() 
+				+ " question from which " + learnedCorrectlyCnt  +  " are the correct answer.");
 	}
 
-	@Override
-	public List<Double> classifyIndividuals(List<Individual> individuals) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	/**
 	 * @param args
 	 */

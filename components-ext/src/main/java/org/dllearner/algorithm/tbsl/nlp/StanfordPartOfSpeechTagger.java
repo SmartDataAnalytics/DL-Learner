@@ -11,13 +11,14 @@ import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 public class StanfordPartOfSpeechTagger implements PartOfSpeechTagger{
+
+	private static final String MODEL = "tbsl/models/bidirectional-distsim-wsj-0-18.tagger";
 	
 	private MaxentTagger tagger;
 	
 	public StanfordPartOfSpeechTagger(){
 		try {
-//			String modelPath = ClassLoader.getSystemResource("tbsl/models/bidirectional-distsim-wsj-0-18.tagger").toString();
-			String modelPath = "src/main/resources/tbsl/models/bidirectional-distsim-wsj-0-18.tagger";
+			String modelPath = this.getClass().getClassLoader().getResource(MODEL).getPath();
 			tagger = new MaxentTagger(modelPath);
 		} catch (IOException e) {
 			e.printStackTrace();
