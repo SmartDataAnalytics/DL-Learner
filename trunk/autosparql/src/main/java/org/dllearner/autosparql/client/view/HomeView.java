@@ -39,9 +39,13 @@ import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -113,7 +117,7 @@ public class HomeView extends View {
                 intro.add(new Image("logo-dl.png"), "#demo-intro-logo");
                 queryField = new TextField<String>();
                 queryField.setWidth(150);
-                queryField.setEmptyText("Enter your query");queryField.setValue("soccer clubs in Premier League");
+                queryField.setEmptyText("Enter your query");//queryField.setValue("films starring Brad Pitt");
                 intro.add(queryField, "#demo-selector-query");
 //                intro.add(createComboxBox(), "#demo-selector-query");
 //                intro.add(new AutoCompleteTextBox(), "#demo-selector-query");
@@ -161,9 +165,9 @@ public class HomeView extends View {
 
                 // sidecontent
                 sidecontent = new HtmlContainer(
-                		  "<h2>Warning! The AutoSPARQL service is currently under construction. We are working on it and will hopfully reactivate it soon.</h2>"+
-//                    "<h2>Watch the Screencast</h2>"+
-//                    "<object width=\"400\" height=\"233\"><param name=\"allowfullscreen\" value=\"true\" /><param name=\"allowscriptaccess\" value=\"always\" /><param name=\"movie\" value=\"http://vimeo.com/moogaloop.swf?clip_id=1878254&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" /><embed src=\"http://vimeo.com/moogaloop.swf?clip_id=1878254&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" allowscriptaccess=\"always\" width=\"400\" height=\"233\"></embed></object>"+
+//                		  "<h2>Warning! The AutoSPARQL service is currently under construction. We are working on it and will hopfully reactivate it soon.</h2>"+
+                    "<h2>Watch the Screencast</h2>"+
+                    "<object width=\"400\" height=\"233\"><param name=\"allowfullscreen\" value=\"true\" /><param name=\"allowscriptaccess\" value=\"always\" /><param name=\"movie\" value=\"http://vimeo.com/moogaloop.swf?clip_id=1878254&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" /><embed src=\"http://vimeo.com/moogaloop.swf?clip_id=1878254&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" allowscriptaccess=\"always\" width=\"400\" height=\"233\"></embed></object>"+
                     "<p>powered by<br/><a href=\"http://dl-learner.org\"><span class=hideme>DL-Learner</span><span id=dllearnerlogo></span><span id=storedqueries></span></a></p>"
                         );
 
@@ -172,7 +176,20 @@ public class HomeView extends View {
                 SPARQLService.Util.getInstance().getSavedSPARQLQueries(new AsyncCallbackEx<List<StoredSPARQLQuery>>() {
 					@Override
 					public void onSuccess(List<StoredSPARQLQuery> result) {
+						LayoutContainer linkContainer = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
 						for(final StoredSPARQLQuery query : result){
+//							Anchor a = new Anchor(query.getQuestion());
+//							a.addClickHandler(new ClickHandler() {
+//								
+//								@Override
+//								public void onClick(ClickEvent event) {
+//									Registry.register("query", query);
+//									Registry.register("QUERY_TITLE", query.getQuestion());
+//									Registry.register("ENDPOINT", query.getEndpoint());
+//									History.newItem(HistoryTokens.LOADQUERY);
+//									
+//								}
+//							});
 							Hyperlink link = new Hyperlink(query.getQuestion(), HistoryTokens.LOADQUERY);
 							link.addClickListener(new ClickListener() {
 								
@@ -184,9 +201,12 @@ public class HomeView extends View {
 									
 								}
 							});
-							sidecontent.add(link, "#storedqueries");
+							linkContainer.add(link);
+//							sidecontent.add(link, "#storedqueries");
 							
-						}container.layout();
+						}
+						sidecontent.add(linkContainer, "#storedqueries");
+//						container.layout();
 					}
 				});
 

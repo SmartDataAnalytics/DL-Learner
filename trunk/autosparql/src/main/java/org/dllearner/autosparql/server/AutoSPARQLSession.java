@@ -1,6 +1,8 @@
 package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,13 +22,18 @@ import org.dllearner.autosparql.server.search.SolrSearch;
 import org.dllearner.autosparql.server.store.Store;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.semanticweb.owlapi.model.OWLDatatype;
 
+import com.clarkparsia.owlapiv3.XSD;
+import com.clarkparsia.pellet.datatypes.Datatype;
 import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -52,8 +59,9 @@ public class AutoSPARQLSession {
 	
 	private Map<String, String> property2LabelMap;
 	
-	private SortedMap<String, Map<String, String>> propertiesCache;
+	private SortedMap<String, Map<String, Object>> propertiesCache;
 	private int currentQueryResultSize = -1;
+	private Map<String, Class> property2DatatypeMap;
 	
 	private Map<String, Example> examplesCache;
 	
@@ -70,7 +78,8 @@ public class AutoSPARQLSession {
 		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
 		
 		property2LabelMap = new TreeMap<String, String>();
-		propertiesCache = new TreeMap<String, Map<String,String>>();
+		property2DatatypeMap = new HashMap<String, Class>();
+		propertiesCache = new TreeMap<String, Map<String,Object>>();
 		examplesCache = new HashMap<String, Example>();
 	}
 	
@@ -207,6 +216,7 @@ public class AutoSPARQLSession {
 			}
 		}
 		property2LabelMap.put(RDFS.label.getURI(),"label");
+		
 		return property2LabelMap;
 	}
 	
@@ -274,7 +284,8 @@ public class AutoSPARQLSession {
 		totalLength = currentQueryResultSize;
 		
 		List<String> propertiesToDo = new ArrayList<String>(properties);
-		for(Map<String, String> prop2Value : propertiesCache.values()){
+		
+		for(Map<String, Object> prop2Value : propertiesCache.values()){
 			propertiesToDo.removeAll(prop2Value.keySet());
 		}
 		
@@ -284,17 +295,18 @@ public class AutoSPARQLSession {
 			Map<String, String> var2URIMap = new HashMap<String, String>(propertiesToDo.size());
 			
 			if(propertiesToDo.size() == 1 && propertiesToDo.get(0).equals(RDFS.label.getURI())){
-				newQuery.append("SELECT DISTINCT ?x0 ?label {");
+				newQuery.append("SELECT DISTINCT ?x0 ?label ?imageURL{");
 				newQuery.append(queryTriples);
 				newQuery.append("?x0 <").append(RDFS.label).append("> ?label.\n");
+				newQuery.append("OPTIONAL{?x0 <").append("http://dbpedia.org/ontology/thumbnail").append("> ?imageURL.}\n");
 				newQuery.append("FILTER(LANGMATCHES(LANG(?label),'en'))");
 				newQuery.append("}");
 			} else {
 				for(String property : propertiesToDo){
-					var2URIMap.put(property2LabelMap.get(property).replace(" ", "_"), property);
+					var2URIMap.put(property2LabelMap.get(property).replace(" ", "_").replace("(", "").replace(")", ""), property);
 				}
 				
-				newQuery.append("SELECT DISTINCT ?x0 ?label ");
+				newQuery.append("SELECT DISTINCT ?x0 ?label ?imageURL ");
 				for(String var : var2URIMap.keySet()){
 					newQuery.append("?").append(var).append(" ");
 					newQuery.append("?").append(var).append("_label ");
@@ -302,6 +314,7 @@ public class AutoSPARQLSession {
 				newQuery.append("{");
 				newQuery.append(queryTriples);
 				newQuery.append("?x0 <").append(RDFS.label).append("> ?label.\n");
+				newQuery.append("OPTIONAL{?x0 <").append("http://dbpedia.org/ontology/thumbnail").append("> ?imageURL.}\n");
 				for(Entry<String, String> entry : var2URIMap.entrySet()){
 					newQuery.append("OPTIONAL{?x0 <").append(entry.getValue()).append("> ?").append(entry.getKey()).append(".}\n");
 				}
@@ -313,30 +326,33 @@ public class AutoSPARQLSession {
 				newQuery.append("}");
 			}
 			
-			System.out.println("Query with properties:\n" + newQuery.toString());
+			logger.info("Query with properties:\n" + newQuery.toString());
 			try {
 				ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, modifyQuery(newQuery + " LIMIT 1000")));
 				
 				String uri;
 				String label = "";
+				String imageURL = "";
 				QuerySolution qs;
 				RDFNode object;
 				while(rs.hasNext()){
 					qs = rs.next();
-					uri = qs.getResource("x0").getURI();	System.out.println("URI: " + uri);
+					uri = qs.getResource("x0").getURI();	
 					label = qs.getLiteral("label").getLexicalForm();
-					Map<String, String> properties2Value = propertiesCache.get(uri);
+					imageURL = qs.getResource("imageURL") != null ? qs.getResource("imageURL").getURI() : "";
+					Map<String, Object> properties2Value = propertiesCache.get(uri);
 					if(properties2Value == null){
-						properties2Value = new HashMap<String, String>();
+						properties2Value = new HashMap<String, Object>();
 						properties2Value.put(RDFS.label.getURI(), label);
+						properties2Value.put("http://dbpedia.org/ontology/thumbnail", imageURL);
 						propertiesCache.put(uri, properties2Value);
 					} 
 					
-					String value;
+					Object value;
 					String property;
 					for(Entry<String, String> entry : var2URIMap.entrySet()){
 						value = "";
-						property = entry.getValue();System.out.println("PROPERTY: " + property);
+						property = entry.getValue();
 						
 						object = qs.get(entry.getKey() + "_label");
 						if(object == null){
@@ -346,11 +362,28 @@ public class AutoSPARQLSession {
 							if(object.isURIResource()){
 								value = object.asResource().getURI();
 							} else if(object.isLiteral()){
+								Literal lit = object.asLiteral();
+//								if(lit.getDatatypeURI().equals(XSD.BOOLEAN)){
+//									property2DatatypeMap.put(property, Boolean.class);
+//									value = lit.getBoolean();
+//								} else if(lit.getDatatypeURI().equals(XSD.INT)){
+//									property2DatatypeMap.put(property, Integer.class);
+//									value = lit.getInt();
+//								} else if(lit.getDatatypeURI().equals(XSD.DOUBLE)){
+//									property2DatatypeMap.put(property, Double.class);
+//									value = lit.getDouble();
+//								} else if(lit.getDatatypeURI().equals(XSD.FLOAT)){
+//									property2DatatypeMap.put(property, Float.class);
+//									value = lit.getFloat();
+//								} else {
+//									property2DatatypeMap.put(property, String.class);
+//									value = object.asLiteral().getLexicalForm();
+//								}
 								value = object.asLiteral().getLexicalForm();
 							}
-						}System.out.println("VALUE: " + value);
-						String oldValue = properties2Value.get(property);
-						if(oldValue != null){
+						}
+						Object oldValue = properties2Value.get(property);
+						if(oldValue != null && value != null){
 							value = oldValue + ", " + value;
 						}
 						properties2Value.put(property, value);
@@ -363,23 +396,61 @@ public class AutoSPARQLSession {
 		
 		Example example;
 		int cnt = 0;
-		for(Entry<String, Map<String, String>> uri2PropertyValues : propertiesCache.entrySet()){
-			if(cnt++ == limit+offset){
-				break;
-			}
-			if(cnt > offset){
+		for(Entry<String, Map<String, Object>> uri2PropertyValues : propertiesCache.entrySet()){
+//			if(cnt++ == limit+offset){
+//				break;
+//			}
+//			if(cnt > offset){
 				example = new Example();
 				example.setAllowNestedValues(false);
 				example.set("uri", uri2PropertyValues.getKey());
-				for(Entry<String, String> property2Value : uri2PropertyValues.getValue().entrySet()){
-					example.set(property2Value.getKey(), property2Value.getValue());
+				Object value;
+				String property;
+				for(Entry<String, Object> property2Value : uri2PropertyValues.getValue().entrySet()){
+					property = property2Value.getKey();
+					value = property2Value.getValue();
+//					if(value == null){
+//						Class cls = property2DatatypeMap.get(property);
+//						if(cls == String.class){
+//							value = "";
+//						} else if(cls == Integer.class){
+//							value = Integer.valueOf(-1);
+//						} else if(cls == Double.class){
+//							value = Double.valueOf(-1);
+//						} else if(cls == Float.class){
+//							value = Float.valueOf(-1);
+//						} else if(cls == Boolean.class){
+//							value = Boolean.FALSE;
+//						}
+//					}
+					example.set(property, value);
 				}
 				queryResult.add(example);
-			}
+//			}
 			
 		}
+		if (config.getSortInfo().getSortField() != null) {  
+			final String sortField = config.getSortInfo().getSortField();
+			Collections.sort(queryResult, config.getSortInfo().getSortDir().comparator(new Comparator<Example>() {
+	
+				@Override
+				public int compare(Example o1, Example o2) {
+					return ((String)o1.get(sortField)).compareTo((String)o2.get(sortField));
+				}
+			}));
+		}
+		int start = config.getOffset();  
+		int end = queryResult.size();  
+		if (limit > 0) {  
+			end = Math.min(start + limit, end);  
+		}  
+//		queryResult = queryResult.subList(start, end);
+		ArrayList<Example> tmp = new ArrayList<Example>();
+		for (int i = start; i < end; i++){
+			tmp.add(queryResult.get(i));
+		}
 		
-		PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(queryResult);
+		PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(tmp);
 		result.setOffset(offset);
 		result.setTotalLength(totalLength);
 		

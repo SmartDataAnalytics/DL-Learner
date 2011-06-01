@@ -161,20 +161,20 @@ body.home_view #x-auto-1
 
 #demo-selector-query
 {
-    width:230px;
+    width:190px;
     float:left;
 }
 
 #demo-selector-query .x-form-field-wrap
 {
-    width:230px !important;
+    width:190px !important;
 }
 
 #demo-selector-query .x-form-field
 {
-    width:226px !important;
+    width:186px !important;
     padding-top:4px;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 36px;
     height:43px;
 }
@@ -188,20 +188,20 @@ body.home_view #x-auto-1
 
 #demo-selector-endpoints
 {
-    width:220px;
+    width:180px;
     float:left;
 }
 
 #demo-selector-endpoints .x-form-field-wrap
 {
-    width:230px !important;
+    width:190px !important;
 }
 
 #demo-selector-endpoints .x-form-field
 {
-    width:216px !important;
+    width:176px !important;
     padding-top:4px;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 36px;
     height:43px;
 }
@@ -215,14 +215,14 @@ body.home_view #x-auto-1
 
 #demo-selector-button
 {
-    margin-left:520px;
+    margin-left:450px;
 }
 
 #demo-selector-button a
 {
     display:block;
-    width:110px;
-    font-size: 18px;
+    width:130px;
+    font-size: 16px;
     font-weight:normal;
     line-height: 42px;
     height:42px;
@@ -403,6 +403,7 @@ div.message-box-error, div.message-box-warning, div.message-box-success {
 .save-button button
 {
 	-moz-transform: rotate(90deg);
+	font-size: 15px arial,tahoma,verdana,helvetica;
 	}
 
 /* -- Layout Helper --------------------------------------------------------- */

@@ -90,12 +90,12 @@ public class QueryView extends View {
 	    BorderLayoutData layoutData;
 	    
 		resultPanel = new ResultPanel();
-		layoutData = new BorderLayoutData(LayoutRegion.CENTER, 0.6f);
+		layoutData = new BorderLayoutData(LayoutRegion.CENTER, 0.6f);layoutData.setMargins(new Margins(0, 0, 5, 0));
 	    layoutData.setSplit(true);
 		vPanel.add(resultPanel, layoutData);
 		
 		examplesPanel = new ExamplesPanel();
-		layoutData = new BorderLayoutData(LayoutRegion.SOUTH, 0.4f);
+		layoutData = new BorderLayoutData(LayoutRegion.SOUTH, 0.4f);layoutData.setMargins(new Margins(5, 0, 5, 0));
 	    layoutData.setSplit(true);
 	    vPanel.add(examplesPanel, layoutData);
 	}

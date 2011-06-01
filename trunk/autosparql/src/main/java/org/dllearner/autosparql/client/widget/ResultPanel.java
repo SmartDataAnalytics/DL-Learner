@@ -76,7 +76,7 @@ public class ResultPanel extends ContentPanel {
 				onSave();
 			}
 		});
-		add(saveButton, new RowData(-1, -1));
+		add(saveButton, new RowData(-1, 1));
 		
 		createResultGrid();
 		createQueryTab();
