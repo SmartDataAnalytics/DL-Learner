@@ -25,6 +25,8 @@ import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Dispatcher;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
@@ -54,12 +56,14 @@ public class InteractivePanel extends ContentPanel {
 	private List<String> negExamples;
 	
 	public InteractivePanel(){
-		setLayout(new RowLayout(Orientation.HORIZONTAL));
+		setLayout(new RowLayout(Orientation.VERTICAL));
 		setHeading("Interactive");
 		setCollapsible(true);
 		setAnimCollapse(false);
 		setSize(WIDTH, HEIGHT);
 //		collapse();
+		
+		add(new Text("<strong class=\"is-headline add-padding\">Should this belong to query result?</strong>"), new RowData(1, -1));
 		
 		createExampleGrid();
 	}

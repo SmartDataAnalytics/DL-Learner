@@ -23,18 +23,25 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.util.Format;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
 import com.extjs.gxt.ui.client.widget.grid.GridViewConfig;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.menu.CheckMenuItem;
+import com.extjs.gxt.ui.client.widget.menu.Item;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
+import com.extjs.gxt.ui.client.widget.menu.MenuItem;
+import com.extjs.gxt.ui.client.widget.tips.QuickTip;
 import com.extjs.gxt.ui.client.widget.toolbar.PagingToolBar;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SPARQLQueryResultPanel extends ContentPanel{
@@ -90,6 +97,7 @@ public class SPARQLQueryResultPanel extends ContentPanel{
 		};
 		
 		loader = new BasePagingLoader<PagingLoadResult<ModelData>>(proxy);
+		loader.setRemoteSort(true);
 		
 		final PagingToolBar toolbar = new PagingToolBar(10);
 		toolbar.bind(loader);
@@ -139,6 +147,54 @@ public class SPARQLQueryResultPanel extends ContentPanel{
 				}
 			});
 		}
+		
+		//show tooltip
+		new QuickTip(grid);
+		final String title = "Info";
+		c.setRenderer(new GridCellRenderer<Example>() {
+		    @Override
+		    public Object render(Example example, String property,
+		           ColumnData config, int rowIndex,
+		           int colIndex, ListStore<Example> store,
+		           Grid< Example> grid) {
+		                String uri = example.getURI();
+		                if (uri != null) {
+		                     return "<div qtitle='" + Format.htmlEncode(title) + 
+		                            "' qtip='" + Format.htmlEncode(uri) + 
+		                            "'>" + uri + "</div>";
+		                }
+		                return example.getLabel();
+		           }
+		});
+		
+		
+		//Add context menu on right mouse click
+		Menu m = new Menu();
+		Item item = new MenuItem( "Show DBpedia page",  new SelectionListener<MenuEvent>() {
+			@Override
+			public void componentSelected(MenuEvent ce) {
+				String uri = grid.getSelectionModel().getSelectedItem().getURI();
+				if(uri != null && !uri.isEmpty()){
+					Window.open(uri, "DBpedia page of " + grid.getSelectionModel().getSelectedItem().getLabel(), "");
+				}
+			}
+
+		});
+		m.add( item );
+		item = new MenuItem( "Show Wikipedia page",  new SelectionListener<MenuEvent>() {
+			@Override
+			public void componentSelected(MenuEvent ce) {
+				String uri = grid.getSelectionModel().getSelectedItem().getURI();
+				if(uri != null && !uri.isEmpty()){
+					uri = "http://en.wikipedia.org/wiki/" + uri.substring(uri.lastIndexOf('/')+1);
+					Window.open(uri, "Wikipedia page of " + grid.getSelectionModel().getSelectedItem().getLabel(), "");
+				}
+			}
+
+		});
+		m.add(item);
+		grid.setContextMenu( m );
+		
 
 		add(grid);
 		setBottomComponent(toolbar);
@@ -207,6 +263,27 @@ public class SPARQLQueryResultPanel extends ContentPanel{
 		c.setHeader("Label");
 		c.setSortable(true);
 		columns.add(c);
+//		c.setRenderer(new GridCellRenderer<Example>() {
+//			@Override
+//			public Object render(Example example, String property, ColumnData config, int rowIndex, int colIndex,
+//					ListStore<Example> store, Grid<Example> grid) {
+//				String uri = example.getURI();
+//				String label = example.getLabel();
+//				String imageURL = example.get("http://dbpedia.org/ontology/thumbnail");
+//				if (uri != null) {
+//					String tip = "<div qtitle='" + Format.htmlEncode("Info") + "'";
+//
+//					if (!imageURL.isEmpty()) {
+//						tip += " imgsrc='" + imageURL + "' border='0' style='vertical-align:middle;'";
+//					}
+//
+//					tip += " qtip='" + Format.htmlEncode(uri);
+//					tip += "'>" + label + "</div>";
+//					return tip;
+//				}
+//				return label;
+//			}
+//		});
 		
 		for(Entry<String, String> entry : properties.entrySet()){
 			c = new ColumnConfig();
