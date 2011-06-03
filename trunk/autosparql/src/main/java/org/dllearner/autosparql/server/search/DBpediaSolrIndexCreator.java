@@ -133,7 +133,6 @@ public class DBpediaSolrIndexCreator {
 			public void handleStatement(org.openrdf.model.Statement stmt) throws RDFHandlerException {
 				if(first){
 					uri = stmt.getSubject().stringValue();
-					pageRank = getPageRank(uri);
 					first = false;
 				}
 				
@@ -141,10 +140,10 @@ public class DBpediaSolrIndexCreator {
 				
 				if(!newURI.equals(uri)){
 					if(!skip){
+						pageRank = getPageRank(uri);
 						addDocument(uri, label, abstr, imageURL, pageRank);
 					}
 					uri = newURI;
-					pageRank = getPageRank(uri);
 					label = "";
 					abstr = "";
 					imageURL = "";
@@ -197,7 +196,7 @@ public class DBpediaSolrIndexCreator {
 		} catch (SolrServerException e) {
 			e.printStackTrace();
 		} finally {
-			core.close();
+//			core.close();
 			coreContainer.shutdown();
 		}
 	}
@@ -228,6 +227,17 @@ public class DBpediaSolrIndexCreator {
 	}
 	
 	private void addDocument(String uri, String label, String comment, String imageURL, int pagerank){
+		doc = new SolrInputDocument();
+		uriField = new SolrInputField("uri");
+		labelField = new SolrInputField("label");
+		commentField = new SolrInputField("comment");
+		imageURLField = new SolrInputField("imageURL");
+		pagerankField = new SolrInputField("pagerank");
+		doc.put("uri", uriField);
+		doc.put("label", labelField);
+		doc.put("comment", commentField);
+		doc.put("imageURL", imageURLField);
+		doc.put("pagerank", pagerankField);
 		uriField.setValue(uri, 1.0f);
 		labelField.setValue(label, 1.0f);
 		commentField.setValue(comment, 1.0f);
