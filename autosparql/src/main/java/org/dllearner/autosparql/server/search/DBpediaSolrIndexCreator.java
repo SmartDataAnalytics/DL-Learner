@@ -11,15 +11,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggerFactory;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.search.DefaultSimilarity;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -42,7 +41,6 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
-import org.slf4j.Logger;
 import org.xml.sax.SAXException;
 
 public class DBpediaSolrIndexCreator {
@@ -62,7 +60,10 @@ public class DBpediaSolrIndexCreator {
 	
 	private SolrInputDocument doc;
 	private SolrServer solr;
+	private SolrCore core;
 	private CoreContainer coreContainer;
+	
+	private Set<SolrInputDocument> docs;
 	
 	private static final String CORE_NAME = "dbpedia_resources";
 	
@@ -82,6 +83,8 @@ public class DBpediaSolrIndexCreator {
 		}
 		initDocument();
 		connect2Database();
+		
+		docs = new java.util.HashSet<SolrInputDocument>();
 	}
 	
 	private SolrServer getRemoteSolrServer() throws MalformedURLException, SolrServerException{
@@ -91,13 +94,13 @@ public class DBpediaSolrIndexCreator {
 	}
 	
 	private SolrServer getEmbeddedSolrServer() throws ParserConfigurationException, IOException, SAXException{
-		File root = new File("/opt/solr");
+		File root = new File("/opt/solr3");
 		coreContainer = new CoreContainer();
 		SolrConfig config = new SolrConfig(root + File.separator + CORE_NAME,
 				"solrconfig.xml", null);
 		CoreDescriptor coreName = new CoreDescriptor(coreContainer,
 				CORE_NAME, root + "/solr");
-		SolrCore core = new SolrCore(CORE_NAME, root
+		core = new SolrCore(CORE_NAME, root
 				+ File.separator + CORE_NAME + "/data", config, null, coreName);
 		coreContainer.register(core, false);
 		EmbeddedSolrServer solr = null;
@@ -138,7 +141,7 @@ public class DBpediaSolrIndexCreator {
 				
 				if(!newURI.equals(uri)){
 					if(!skip){
-						write2Index(uri, label, abstr, imageURL, pageRank);
+						addDocument(uri, label, abstr, imageURL, pageRank);
 					}
 					uri = newURI;
 					pageRank = getPageRank(uri);
@@ -147,15 +150,11 @@ public class DBpediaSolrIndexCreator {
 					imageURL = "";
 					skip = false;
 					cnt++;
-					if(cnt % 100000 == 0){
-						try {
-							solr.commit();
-							System.out.println(cnt);
-						}  catch (IOException e) {
-							e.printStackTrace();
-						} catch (SolrServerException e) {
-							e.printStackTrace();
-						}
+					if(cnt % 100 == 0){
+						write2Index();
+					}
+					if(cnt % 10000000 == 0){
+						System.out.println(cnt);
 					}
 					
 				}
@@ -187,7 +186,6 @@ public class DBpediaSolrIndexCreator {
 			parser.parse(new BufferedInputStream(new FileInputStream(dataFile)), "http://dbpedia.org");
 			solr.commit();
 			solr.optimize();
-			coreContainer.shutdown();
 		} catch (RDFParseException e) {
 			e.printStackTrace();
 		} catch (RDFHandlerException e) {
@@ -198,6 +196,9 @@ public class DBpediaSolrIndexCreator {
 			e.printStackTrace();
 		} catch (SolrServerException e) {
 			e.printStackTrace();
+		} finally {
+			core.close();
+			coreContainer.shutdown();
 		}
 	}
 	
@@ -226,14 +227,20 @@ public class DBpediaSolrIndexCreator {
 		doc.put("pagerank", pagerankField);
 	}
 	
-	private void write2Index(String uri, String label, String comment, String imageURL, int pagerank){
+	private void addDocument(String uri, String label, String comment, String imageURL, int pagerank){
 		uriField.setValue(uri, 1.0f);
 		labelField.setValue(label, 1.0f);
 		commentField.setValue(comment, 1.0f);
 		imageURLField.setValue(imageURL, 1.0f);
 		pagerankField.setValue(pagerank, 1.0f);
+		
+		docs.add(doc);
+	}
+	
+	private void write2Index(){
 		try {
-			solr.add(doc);
+			solr.add(docs);
+			docs.clear();
 		}  catch (SolrServerException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
