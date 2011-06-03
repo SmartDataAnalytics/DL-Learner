@@ -143,7 +143,7 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 	}
 
 	// added by Josue
-	public double getFuzzyMembership(OWLClassExpression oce, OWLIndividual i, double truthDegree) {
+	public double getFuzzyMembership(OWLClassExpression oce, OWLIndividual i) {
 
 			Individual fIndividual = fuzzyKB.getIndividual(shortFormParser.getShortForm((OWLEntity) i));
 			Concept fConcept = OWLAPI_fuzzyDLObjectParser.getFuzzyDLExpresion(oce);
@@ -177,7 +177,8 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 //				sc.nextLine();		
 			}
 			
-			return (1 - Math.abs(truthDegree - queryResult.getSolution()));
+			// return (1 - Math.abs(truthDegree - queryResult.getSolution()));
+			return queryResult.getSolution();
 	}
 
 	public KnowledgeBase getFuzzyKB() {
