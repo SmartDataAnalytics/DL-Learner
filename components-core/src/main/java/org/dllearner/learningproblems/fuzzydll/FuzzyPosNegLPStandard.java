@@ -513,10 +513,11 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 
 		double crispAccuracy = crispAccuracy(description, noise);
 		// if I erase next line, fuzzy reasoning fails
-		if (crispAccuracy == -1) {
-//			System.out.println("crisp return -1");
-			 // return -1;
-		}
+//		if (crispAccuracy == -1) {
+//			System.out.print(description);
+//			System.out.println();
+//			 // return -1;
+//		}
 		
 		// BEGIN
 		// added by Josue
@@ -524,6 +525,10 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 //		double posMembership = 0;
 //		double negMembership = 0;
 		double descriptionMembership = 0;
+		double singleMembership = 0;
+		// double accumulatedSingleMembership = 0;
+		double nonAccumulativeDescriptionMembership = 0;
+		double accumulativeDescriptionMembership = 0;
 		
 //		System.out.println("noise = " + noise);
 		
@@ -531,15 +536,15 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		// int individualCounter = fuzzyExamples.size();
 		double individualCounter = totalTruth;
 		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
-			descriptionMembership += reasoner.hasTypeFuzzyMembership(description, fuzzyExample);
-			// individualCounter--;
-			if (individualCounter >= 1) individualCounter -= fuzzyExample.getTruthDegree(); // before it was individual--;
-			// before
-//			if ((descriptionMembership + individualCounter) / fuzzyExamples.size() < noise)
-//				return -1;
-			// after (to match the noise management of the crisp part)
-			if ((descriptionMembership + individualCounter) < ((1 - noise) * totalTruth))
+			singleMembership = reasoner.hasTypeFuzzyMembership(description, fuzzyExample);
+			// accumulatedSingleMembership += singleMembership;
+			nonAccumulativeDescriptionMembership = 1 - Math.abs(fuzzyExample.getTruthDegree() - singleMembership);
+			descriptionMembership += nonAccumulativeDescriptionMembership;
+			individualCounter -= fuzzyExample.getTruthDegree();
+			if ((accumulativeDescriptionMembership + (nonAccumulativeDescriptionMembership * fuzzyExample.getTruthDegree()) + individualCounter) < ((1 - noise) * totalTruth))
 				return -1;
+			accumulativeDescriptionMembership += nonAccumulativeDescriptionMembership * fuzzyExample.getTruthDegree();
+
 		}
 		
 		double fuzzyAccuracy = descriptionMembership / (double)fuzzyExamples.size();
@@ -590,12 +595,14 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		double coveredMembershipDegree = 0;
 		double totalMembershipDegree = 0;
 		double invertedCoveredMembershipDegree = 0;
+		double lastMembershipDegree = 0;
 
 		// TODO to optimize
 		for (FuzzyIndividual ind: fuzzyExamples) {
-			coveredMembershipDegree += reasoner.hasTypeFuzzyMembership(description, ind) * ind.getTruthDegree();
+			lastMembershipDegree = (1 - Math.abs(ind.getTruthDegree() - reasoner.hasTypeFuzzyMembership(description, ind)));
+			coveredMembershipDegree += lastMembershipDegree * ind.getTruthDegree();
 			totalMembershipDegree += ind.getTruthDegree();
-			invertedCoveredMembershipDegree += (1 - ind.getTruthDegree()) * (1 - reasoner.hasTypeFuzzyMembership(description, ind));
+			invertedCoveredMembershipDegree += (1 - ind.getTruthDegree()) * (1 - lastMembershipDegree);
 		}
 		double fuzzyRecall = totalMembershipDegree == 0 ? 0 :coveredMembershipDegree/totalMembershipDegree;
 		// TODO this is like this??? not sure

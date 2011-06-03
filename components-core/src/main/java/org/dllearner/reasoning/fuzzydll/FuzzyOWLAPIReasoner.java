@@ -624,7 +624,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 		// return crispReasonerOutput;
 		
 		// added by Josue to make be fuzzyDL and not Pellet to answer this method
-		double fuzzyReasonerOutput = ((FuzzyDLReasonerManager) reasoner).getFuzzyMembership(d, i, 1);
+		double fuzzyReasonerOutput = ((FuzzyDLReasonerManager) reasoner).getFuzzyMembership(d, i);
 		
 		return fuzzyReasonerOutput == 0 ? false : true;
 	}
@@ -1138,7 +1138,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 		OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
 		OWLIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));		
 		
-		double fuzzyReasonerOutput = ((FuzzyDLReasonerManager) reasoner).getFuzzyMembership(desc, ind, individual.getTruthDegree());
+		double fuzzyReasonerOutput = ((FuzzyDLReasonerManager) reasoner).getFuzzyMembership(desc, ind);
 		
 //		System.out.println("- d: " + d);
 //		System.out.println("- i: " + i);
