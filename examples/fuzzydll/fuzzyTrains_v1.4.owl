@@ -30,13 +30,19 @@ Developed by Josue Iglesias (josue at grpss.ssr.upm.es)
 Some concepts of v1.1 and v1.2 are merged:
 - (Train) hasCar (Train)
 - (Train) or (Car) isInFrontOf (Car)</rdfs:comment>
-        <rdfs:comment xml:lang="en">v1.4: Instead of defining fuzzy data types as (double[&gt;= 5.0] and double[&lt;= 15.0]), this is change to
+        <rdfs:comment xml:lang="en">v1.4: Instead of defining fuzzy data types as (double[&gt;= 5.0] and double[&lt;= 50.0]), this is change to
 
-- fuzzyShortCar (double[&gt;= 5.0] and double[&lt;= 15.0])
-- fuzzyMediumLengthCar (double[&gt;= 15.0] and double[&lt;= 40.0])
-- fuzzyLongCar (double[&gt;= 40.0] and double[&lt;= 50.0])
+- fuzzyShortCar (double[&gt;= 5.0] and double[&lt;= 150.0])
+- fuzzyMediumLengthCar (double[&gt;= -100.0] and double[&lt;= 100.0])
+- fuzzyLongCar (double[&gt;= -150.0] and double[&lt;= 50.0])
 
-in order crisp reasoners not to infer that ShortCar, MediumLengthCar and LongCar to be equivalent clases</rdfs:comment>
+Now, hasLength range has changed to
+
+(double[&gt;= -1000.0] and double[&lt;= 1000.0])
+
+This is done in order crisp reasoners not to infer that ShortCar, MediumLengthCar and LongCar to be equivalent clases.
+
+Note that although for a crip reasoner, e.g., fuzzyShortCar range from 5 to 150, for a fuzzy reasoner it would range from 5 to 50 (as it also applies the fuzzy annotations attched to fuzzyShortCar).</rdfs:comment>
     </owl:Ontology>
     
 
@@ -75,7 +81,7 @@ in order crisp reasoners not to infer that ShortCar, MediumLengthCar and LongCar
                         <owl:onDatatype rdf:resource="&xsd;double"/>
                         <owl:withRestrictions rdf:parseType="Collection">
                             <rdf:Description>
-                                <xsd:minInclusive rdf:datatype="&xsd;double">40.0</xsd:minInclusive>
+                                <xsd:minInclusive rdf:datatype="&xsd;double">-150.0</xsd:minInclusive>
                             </rdf:Description>
                         </owl:withRestrictions>
                     </rdfs:Datatype>
@@ -107,7 +113,7 @@ in order crisp reasoners not to infer that ShortCar, MediumLengthCar and LongCar
                         <owl:onDatatype rdf:resource="&xsd;double"/>
                         <owl:withRestrictions rdf:parseType="Collection">
                             <rdf:Description>
-                                <xsd:minInclusive rdf:datatype="&xsd;double">15.0</xsd:minInclusive>
+                                <xsd:minInclusive rdf:datatype="&xsd;double">-100.0</xsd:minInclusive>
                             </rdf:Description>
                         </owl:withRestrictions>
                     </rdfs:Datatype>
@@ -115,7 +121,7 @@ in order crisp reasoners not to infer that ShortCar, MediumLengthCar and LongCar
                         <owl:onDatatype rdf:resource="&xsd;double"/>
                         <owl:withRestrictions rdf:parseType="Collection">
                             <rdf:Description>
-                                <xsd:maxInclusive rdf:datatype="&xsd;double">40.0</xsd:maxInclusive>
+                                <xsd:maxInclusive rdf:datatype="&xsd;double">100.0</xsd:maxInclusive>
                             </rdf:Description>
                         </owl:withRestrictions>
                     </rdfs:Datatype>
@@ -147,7 +153,7 @@ in order crisp reasoners not to infer that ShortCar, MediumLengthCar and LongCar
                         <owl:onDatatype rdf:resource="&xsd;double"/>
                         <owl:withRestrictions rdf:parseType="Collection">
                             <rdf:Description>
-                                <xsd:maxInclusive rdf:datatype="&xsd;double">15.0</xsd:maxInclusive>
+                                <xsd:maxInclusive rdf:datatype="&xsd;double">150.0</xsd:maxInclusive>
                             </rdf:Description>
                         </owl:withRestrictions>
                     </rdfs:Datatype>
@@ -230,7 +236,7 @@ in order crisp reasoners not to infer that ShortCar, MediumLengthCar and LongCar
                         <owl:onDatatype rdf:resource="&xsd;double"/>
                         <owl:withRestrictions rdf:parseType="Collection">
                             <rdf:Description>
-                                <xsd:minInclusive rdf:datatype="&xsd;double">5.0</xsd:minInclusive>
+                                <xsd:minInclusive rdf:datatype="&xsd;double">-1000.0</xsd:minInclusive>
                             </rdf:Description>
                         </owl:withRestrictions>
                     </rdfs:Datatype>
@@ -238,7 +244,7 @@ in order crisp reasoners not to infer that ShortCar, MediumLengthCar and LongCar
                         <owl:onDatatype rdf:resource="&xsd;double"/>
                         <owl:withRestrictions rdf:parseType="Collection">
                             <rdf:Description>
-                                <xsd:maxInclusive rdf:datatype="&xsd;double">50.0</xsd:maxInclusive>
+                                <xsd:maxInclusive rdf:datatype="&xsd;double">1000.0</xsd:maxInclusive>
                             </rdf:Description>
                         </owl:withRestrictions>
                     </rdfs:Datatype>

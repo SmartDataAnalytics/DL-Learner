@@ -533,7 +533,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
 			descriptionMembership += reasoner.hasTypeFuzzyMembership(description, fuzzyExample);
 			// individualCounter--;
-			if (individualCounter != 0) individualCounter--;
+			if (individualCounter >= 1) individualCounter -= fuzzyExample.getTruthDegree(); // before it was individual--;
 			// before
 //			if ((descriptionMembership + individualCounter) / fuzzyExamples.size() < noise)
 //				return -1;

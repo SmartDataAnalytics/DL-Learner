@@ -7,17 +7,22 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
@@ -42,8 +47,16 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
 import org.semanticweb.owlapi.reasoner.TimeOutException;
 import org.semanticweb.owlapi.reasoner.UnsupportedEntailmentTypeException;
+import org.semanticweb.owlapi.reasoner.impl.DefaultNode;
+import org.semanticweb.owlapi.reasoner.impl.NodeFactory;
+import org.semanticweb.owlapi.reasoner.impl.OWLClassNode;
+import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet;
+import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNode;
+import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.semanticweb.owlapi.util.Version;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
@@ -68,9 +81,16 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 	private FuzzyOwl2toFuzzyDL fuzzyFileParser;
 	private int auxCounter = 0;
 	private PelletReasoner crispReasoner;
+	private OWLDataFactory factory;
+	private String baseURI;
+	private NodeSet<OWLClass> newOwlInstances;
 	// private FileOutputStream errorFile;
 
-	public FuzzyDLReasonerManager(String ontologyFile, OWLOntology ontology, OWLReasonerConfiguration conf) throws Exception {
+	public FuzzyDLReasonerManager(String ontologyFile, OWLOntology ontology, OWLReasonerConfiguration conf, OWLDataFactory factory, String baseURI) throws Exception {
+		
+		this.factory = factory;
+		
+		this.baseURI = baseURI;
 		
 		startPellet(ontology, conf);
 		
@@ -308,7 +328,52 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 			ClassExpressionNotInProfileException, FreshEntitiesException,
 			ReasonerInterruptedException, TimeOutException {
 		
-		return crispReasoner.getInstances(arg0, arg1);
+		// commented by Josue in order to use fuzzyDL and not Pellet to answer this OWLAPI method
+		// return crispReasoner.getInstances(arg0, arg1);
+		
+		// added by Josue in order to use fuzzyDL and not Pellet to answer this OWLAPI method
+		boolean differentInstances = false;
+		Solution localQuerySolution = null;
+		NodeSet<OWLNamedIndividual> owlApiOutput = crispReasoner.getInstances(arg0, arg1);
+		Set<OWLNamedIndividual> owlApiInstances = owlApiOutput.getFlattened();
+		for (Individual fuzzyIndividual : fuzzyKB.individuals.values()) {
+			// TODO this "query process" is repeated several times --> create a (private) method
+			Query localQuery = new MinInstanceQuery(OWLAPI_fuzzyDLObjectParser.getFuzzyDLExpresion(arg0), fuzzyIndividual);
+			try {
+				KnowledgeBase clonedFuzzyKB = fuzzyKB.clone();
+				localQuerySolution = localQuery.solve(clonedFuzzyKB);
+				if (!localQuerySolution.isConsistentKB()){
+					System.err.println("Fuzzy KB is inconsistent.");
+					System.err.println("This may be a fuzzyDL reasoner bug. Press enter to continue.");
+					System.err.println("concept: " + arg0 + " individual: " + fuzzyIndividual);
+					Scanner sc = new Scanner(System.in);
+					sc.nextLine();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();		
+			}
+			if (localQuerySolution.getSolution() == 0) {
+				for (OWLNamedIndividual owlApiSingleInstance : owlApiOutput.getFlattened()) {
+					String a = baseURI.concat(fuzzyIndividual.toString());
+					String b = owlApiSingleInstance.toStringID();
+					if (a.equals(b)) {
+						owlApiInstances.remove(owlApiSingleInstance);	
+						differentInstances = true;					}
+				}	
+			}
+		}
+		
+		if (differentInstances){
+			Set<Node<OWLNamedIndividual>> instances = new HashSet<Node<OWLNamedIndividual>>();
+			Iterator<OWLNamedIndividual> fi = owlApiInstances.iterator();
+			while (fi.hasNext()) {
+				DefaultNode<OWLNamedIndividual> e = NodeFactory.getOWLNamedIndividualNode( fi.next() );
+				instances.add(e);
+			}
+			return new OWLNamedIndividualNodeSet( instances );
+		}
+		else 
+			return owlApiOutput;
 	}
 
 	@Override
@@ -530,8 +595,8 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 			UnsupportedEntailmentTypeException, TimeOutException,
 			AxiomNotInProfileException, FreshEntitiesException,
 			InconsistentOntologyException {
-		
-		return crispReasoner.isEntailed(arg0);
+
+		 return crispReasoner.isEntailed(arg0);
 	}
 
 	@Override
@@ -541,7 +606,13 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 			AxiomNotInProfileException, FreshEntitiesException,
 			InconsistentOntologyException {
 		
-		return crispReasoner.isEntailed(arg0);
+		// commented by Josue
+		// return crispReasoner.isEntailed(arg0);
+		
+		// added by Josue
+		System.err.println("Method not supported yet");
+		System.exit(0);
+		return false;
 	}
 
 	@Override

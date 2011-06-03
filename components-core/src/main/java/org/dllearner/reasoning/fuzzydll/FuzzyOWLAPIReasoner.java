@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
@@ -346,7 +347,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 			// create actual fuzzy reasoner and computes initial fuzzy memberships
 			// ontology and conf are passed so FuzzyDLReasonerManager can instanciate also a Pellet reasoner
 			try {
-				reasoner = new FuzzyDLReasonerManager(((OWLFile)sources.iterator().next()).getURL().toString(), ontology, conf);
+				reasoner = new FuzzyDLReasonerManager(((OWLFile)sources.iterator().next()).getURL().toString(), ontology, conf, factory, baseURI);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -618,8 +619,14 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 		OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
 		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
 		
-		boolean crispReasonerOutput = reasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));		
-		return crispReasonerOutput;
+		// commented by Josue to make be fuzzyDL and not Pellet to answer this method
+		// boolean crispReasonerOutput = reasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));		
+		// return crispReasonerOutput;
+		
+		// added by Josue to make be fuzzyDL and not Pellet to answer this method
+		double fuzzyReasonerOutput = ((FuzzyDLReasonerManager) reasoner).getFuzzyMembership(d, i, 1);
+		
+		return fuzzyReasonerOutput == 0 ? false : true;
 	}
 	
 	@Override
