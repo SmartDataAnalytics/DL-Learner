@@ -47,11 +47,11 @@ import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
  */
 public class FuzzyDLLTest_noFuzzyTrains {
 	
-	String[] posEx = {
+	String[] negEx = {
 			"http://www.example.com/fuzzyTrains.owl#east1",
 			"http://www.example.com/fuzzyTrains.owl#east2"
 	};
-	String[] negEx = {
+	String[] posEx = {
 			"http://www.example.com/fuzzyTrains.owl#west6",
 			"http://www.example.com/fuzzyTrains.owl#west7"
 	};
