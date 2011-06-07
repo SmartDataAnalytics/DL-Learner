@@ -11,6 +11,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -43,6 +45,8 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.xml.sax.SAXException;
 
+import com.hp.hpl.jena.vocabulary.RDF;
+
 public class DBpediaSolrIndexCreator {
 	
 	public static final String imageProperty = "http://dbpedia.org/ontology/thumbnail";
@@ -55,6 +59,7 @@ public class DBpediaSolrIndexCreator {
 	private SolrInputField commentField = new SolrInputField("comment");
 	private SolrInputField imageURLField = new SolrInputField("imageURL");
 	private SolrInputField pagerankField = new SolrInputField("pagerank");
+	private SolrInputField typesField = new SolrInputField("types");
 	
 	private PreparedStatement ps;
 	
@@ -124,6 +129,7 @@ public class DBpediaSolrIndexCreator {
 			String imageURL = "";
 			String abstr = "";
 			int pageRank = 0;
+			List<String> types = new ArrayList<String>();
 			String newURI;
 			boolean skip = false;
 			@Override
@@ -141,12 +147,14 @@ public class DBpediaSolrIndexCreator {
 				if(!newURI.equals(uri)){
 					if(!skip){
 						pageRank = getPageRank(uri);
-						addDocument(uri, label, abstr, imageURL, pageRank);
+						addDocument(uri, label, abstr, imageURL, pageRank, types);
 					}
 					uri = newURI;
 					label = "";
 					abstr = "";
 					imageURL = "";
+					pageRank = 0;
+					types.clear();
 					skip = false;
 					cnt++;
 					if(cnt % 100 == 0){
@@ -168,6 +176,8 @@ public class DBpediaSolrIndexCreator {
 					imageURL = stmt.getObject().stringValue();
 				} else if(stmt.getPredicate().stringValue().equals(redirectProperty) || stmt.getSubject().stringValue().startsWith("http://upload.")){
 					skip = true;
+				} else if(stmt.getPredicate().stringValue().equals(RDF.type.getURI())){
+					types.add(stmt.getPredicate().stringValue());
 				}
 				
 				
@@ -224,25 +234,29 @@ public class DBpediaSolrIndexCreator {
 		doc.put("comment", commentField);
 		doc.put("imageURL", imageURLField);
 		doc.put("pagerank", pagerankField);
+		doc.put("types", typesField);
 	}
 	
-	private void addDocument(String uri, String label, String comment, String imageURL, int pagerank){
+	private void addDocument(String uri, String label, String comment, String imageURL, int pagerank, List<String> types){
 		doc = new SolrInputDocument();
 		uriField = new SolrInputField("uri");
 		labelField = new SolrInputField("label");
 		commentField = new SolrInputField("comment");
 		imageURLField = new SolrInputField("imageURL");
 		pagerankField = new SolrInputField("pagerank");
+		typesField = new SolrInputField("types");
 		doc.put("uri", uriField);
 		doc.put("label", labelField);
 		doc.put("comment", commentField);
 		doc.put("imageURL", imageURLField);
 		doc.put("pagerank", pagerankField);
+		doc.put("types", typesField);
 		uriField.setValue(uri, 1.0f);
 		labelField.setValue(label, 1.0f);
 		commentField.setValue(comment, 1.0f);
 		imageURLField.setValue(imageURL, 1.0f);
 		pagerankField.setValue(pagerank, 1.0f);
+		typesField.addValue(types, 1.0f);
 		
 		docs.add(doc);
 	}
@@ -287,7 +301,7 @@ public class DBpediaSolrIndexCreator {
 			String url =
 	            "jdbc:mysql://"+dbServer+"/"+dbName;
 			Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
-			ps = conn.prepareStatement("SELECT rank from pagerank WHERE uri = ?");
+			ps = conn.prepareStatement("SELECT MAX(rank) from pagerank2 WHERE uri = ?");
 		} catch (BackingStoreException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
