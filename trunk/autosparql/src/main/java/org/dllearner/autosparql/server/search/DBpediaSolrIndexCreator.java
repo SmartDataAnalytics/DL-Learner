@@ -45,6 +45,7 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.xml.sax.SAXException;
 
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class DBpediaSolrIndexCreator {
@@ -177,7 +178,10 @@ public class DBpediaSolrIndexCreator {
 				} else if(stmt.getPredicate().stringValue().equals(redirectProperty) || stmt.getSubject().stringValue().startsWith("http://upload.")){
 					skip = true;
 				} else if(stmt.getPredicate().stringValue().equals(RDF.type.getURI())){
-					types.add(stmt.getPredicate().stringValue());
+					if(!stmt.getObject().stringValue().equals(OWL.Thing.getURI())){
+						types.add(stmt.getObject().stringValue());
+					}
+					
 				}
 				
 				
