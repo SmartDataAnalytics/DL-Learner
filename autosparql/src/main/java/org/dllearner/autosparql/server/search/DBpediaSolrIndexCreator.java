@@ -305,7 +305,7 @@ public class DBpediaSolrIndexCreator {
 			String url =
 	            "jdbc:mysql://"+dbServer+"/"+dbName;
 			Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
-			ps = conn.prepareStatement("SELECT MAX(rank) from pagerank2 WHERE uri = ?");
+			ps = conn.prepareStatement("SELECT MAX(rank) as rank from pagerank2 WHERE uri = ?");
 		} catch (BackingStoreException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
