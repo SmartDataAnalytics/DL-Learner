@@ -14,8 +14,6 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Level;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
@@ -40,8 +38,11 @@ import org.openrdf.vocabulary.RDFS;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -55,6 +56,8 @@ public class DBpediaPropertiesSolrIndexCreator {
 	private SolrInputField uriField = new SolrInputField("uri");
 	private SolrInputField labelField = new SolrInputField("label");
 	private SolrInputField commentField = new SolrInputField("comment");
+	private SolrInputField domainField = new SolrInputField("domain");
+	private SolrInputField rangeField = new SolrInputField("range");
 	
 	private SolrInputDocument doc;
 	private SolrServer solr;
@@ -181,7 +184,7 @@ public class DBpediaPropertiesSolrIndexCreator {
 			e.printStackTrace();
 		} catch (SolrServerException e) {
 			e.printStackTrace();
-		}
+		} 
 	}
 	
 	public void createIndexFromOWLFile(String owlFile){
@@ -193,6 +196,8 @@ public class DBpediaPropertiesSolrIndexCreator {
 			String uri = "";
 			String label = "";
 			String comment = "";
+			String domain = "";
+			String range = "";
 			Set<OWLEntity> properties = new HashSet<OWLEntity>();
 			properties.addAll(ont.getObjectPropertiesInSignature());
 			properties.addAll(ont.getDataPropertiesInSignature());
@@ -200,6 +205,8 @@ public class DBpediaPropertiesSolrIndexCreator {
 				uri = prop.toStringID();
 				label = "";
 				comment = "";
+				domain = "";
+				range = "";
 				for(OWLAnnotation lab : prop.getAnnotations(ont, labelProperty)){
 					if(lab.getValue() instanceof OWLLiteral){
 						OWLLiteral lit = (OWLLiteral)lab.getValue();
@@ -217,8 +224,17 @@ public class DBpediaPropertiesSolrIndexCreator {
 						}
 					}
 				}
-				write2Index(uri, label, comment);
+				if(prop instanceof OWLObjectProperty){
+					domain = prop.asOWLObjectProperty().getDomains(ont).iterator().next().asOWLClass().toStringID();
+					range = prop.asOWLObjectProperty().getRanges(ont).iterator().next().asOWLClass().toStringID();
+				} else if(prop instanceof OWLDataProperty){
+					domain = prop.asOWLDataProperty().getDomains(ont).iterator().next().asOWLClass().toStringID();
+					range = prop.asOWLDataProperty().getRanges(ont).iterator().next().asOWLDatatype().toStringID();
+				}
+				
+				write2Index(uri, label, comment, domain, range);
 			}
+			
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
@@ -247,18 +263,32 @@ public class DBpediaPropertiesSolrIndexCreator {
 		doc.put("comment", commentField);
 	}
 	
+	private void write2Index(String uri, String label, String comment, String domain, String range){
+		uriField.setValue(uri, 1.0f);
+		labelField.setValue(label, 1.0f);
+		commentField.setValue(comment, 1.0f);
+		domainField.setValue(domain, 1.0f);
+		rangeField.setValue(range, 1.0f);
+		try {
+			solr.add(doc);
+		}  catch (SolrServerException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void write2Index(String uri, String label, String comment){
-		System.out.println(uri);System.out.println(label);System.out.println(comment);
-//		uriField.setValue(uri, 1.0f);
-//		labelField.setValue(label, 1.0f);
-//		commentField.setValue(comment, 1.0f);
-//		try {
-//			solr.add(doc);
-//		}  catch (SolrServerException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		uriField.setValue(uri, 1.0f);
+		labelField.setValue(label, 1.0f);
+		commentField.setValue(comment, 1.0f);
+		try {
+			solr.add(doc);
+		}  catch (SolrServerException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
