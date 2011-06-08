@@ -643,6 +643,19 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
+	public SortedSet<FuzzyIndividual> getFuzzyIndividualsImpl(Description concept) {
+//		OWLDescription d = getOWLAPIDescription(concept);
+		OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
+		Set<OWLNamedIndividual> individuals = reasoner.getInstances(d, false).getFlattened();
+		SortedSet<FuzzyIndividual> inds = new TreeSet<FuzzyIndividual>();
+		for(OWLNamedIndividual ind : individuals)
+			//ugly code
+			if(ind != null)
+				inds.add(new FuzzyIndividual(ind.toStringID(), this.hasTypeFuzzyMembershipImpl(concept, new FuzzyIndividual(ind.toStringID(),1))));
+		return inds;
+	}
+	
+	@Override
 	public Set<NamedClass> getTypesImpl(Individual individual) {
 		Set<Node<OWLClass>> result = null;
 		

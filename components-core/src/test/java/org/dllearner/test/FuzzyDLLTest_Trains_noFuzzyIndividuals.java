@@ -41,22 +41,15 @@ import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
  * @author Jens Lehmann
  *
  */
-public class FuzzyDLLTest_Trains {
-	
-//	String[] posEx = {
-//			"http://www.example.com/fuzzyTrains.owl#east1",
-//			"http://www.example.com/fuzzyTrains.owl#east2"
-//	};
-//	String[] negEx = {
-//			"http://www.example.com/fuzzyTrains.owl#west6",
-//			"http://www.example.com/fuzzyTrains.owl#west7"
-//	};
+public class FuzzyDLLTest_Trains_noFuzzyIndividuals {
 	
 	String[] posEx = {
-			"http://www.example.com/fuzzyTrains.owl#carPositive"
+			"http://www.example.com/fuzzyTrains.owl#east1",
+			"http://www.example.com/fuzzyTrains.owl#east2"
 	};
 	String[] negEx = {
-			"http://www.example.com/fuzzyTrains.owl#carNegative"
+			"http://www.example.com/fuzzyTrains.owl#west6",
+			"http://www.example.com/fuzzyTrains.owl#west7"
 	};
 		
 	public Description learn() throws LearningProblemUnsupportedException, IOException, ComponentInitException {	
@@ -87,14 +80,14 @@ public class FuzzyDLLTest_Trains {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_simplestExample_fuzzyLoad.owl"));
+		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_v2.1a.owl"));
 		ks.init();
 
 //		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 		FuzzyOWLAPIReasoner rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
 		rc.getConfigurator().setReasonerType("fuzzydl");
 		rc.init();
-		System.out.println(rc.getClassHierarchy());
+		// System.out.println(rc.getClassHierarchy());
 		
 		FuzzyPosNegLPStandard lp = cm.learningProblem(FuzzyPosNegLPStandard.class, rc);
 		//PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
@@ -117,7 +110,7 @@ public class FuzzyDLLTest_Trains {
 		fc.getConfigurator().setUseCardinalityRestrictions(false);
 		fc.getConfigurator().setWriteSearchTree(true);
 		fc.getConfigurator().setSearchTreeFile("log/searchTreeFuzzy.txt");
-		fc.getConfigurator().setNoisePercentage(100);
+		fc.getConfigurator().setNoisePercentage(10);
 		fc.init();
 		fc.start();		
 		
@@ -127,7 +120,7 @@ public class FuzzyDLLTest_Trains {
 	public static void main(String args[]) throws LearningProblemUnsupportedException, IOException, ComponentInitException {
 		long start = System.currentTimeMillis();
 
-		FuzzyDLLTest_Trains test = new FuzzyDLLTest_Trains();
+		FuzzyDLLTest_Trains_noFuzzyIndividuals test = new FuzzyDLLTest_Trains_noFuzzyIndividuals();
 		test.learn();
 		
 		System.err.println("running time (s) = " + (System.currentTimeMillis() - start)/1000);
