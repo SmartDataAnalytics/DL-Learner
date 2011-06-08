@@ -14,6 +14,8 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Level;
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
@@ -39,7 +41,6 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLEntity;
@@ -68,20 +69,20 @@ public class DBpediaPropertiesSolrIndexCreator {
 	private static final String CORE_NAME = "dbpedia_properties";
 	
 	public DBpediaPropertiesSolrIndexCreator(){
-//		try {
-//			solr = getEmbeddedSolrServer();
-//		} catch (CorruptIndexException e) {
-//			e.printStackTrace();
-//		} catch (LockObtainFailedException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (ParserConfigurationException e) {
-//			e.printStackTrace();
-//		} catch (SAXException e) {
-//			e.printStackTrace();
-//		}
-//		initDocument();
+		try {
+			solr = getEmbeddedSolrServer();
+		} catch (CorruptIndexException e) {
+			e.printStackTrace();
+		} catch (LockObtainFailedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
+		initDocument();
 	}
 	
 	private SolrServer getRemoteSolrServer() throws MalformedURLException, SolrServerException{
@@ -275,6 +276,8 @@ public class DBpediaPropertiesSolrIndexCreator {
 		doc.put("uri", uriField);
 		doc.put("label", labelField);
 		doc.put("comment", commentField);
+		doc.put("domain", domainField);
+		doc.put("range", rangeField);
 	}
 	
 	private void write2Index(String uri, String label, String comment, String domain, String range){
