@@ -38,8 +38,10 @@ import org.openrdf.vocabulary.RDFS;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
@@ -225,11 +227,23 @@ public class DBpediaPropertiesSolrIndexCreator {
 					}
 				}
 				if(prop instanceof OWLObjectProperty){
-					domain = prop.asOWLObjectProperty().getDomains(ont).iterator().next().asOWLClass().toStringID();
-					range = prop.asOWLObjectProperty().getRanges(ont).iterator().next().asOWLClass().toStringID();
+					Set<OWLClassExpression> domains = prop.asOWLObjectProperty().getDomains(ont);
+					if(!domains.isEmpty()){
+						domain = domains.iterator().next().asOWLClass().toStringID();
+					}
+					Set<OWLClassExpression> ranges = prop.asOWLObjectProperty().getRanges(ont);
+					if(!ranges.isEmpty()){
+						range = ranges.iterator().next().asOWLClass().toStringID();
+					}
 				} else if(prop instanceof OWLDataProperty){
-					domain = prop.asOWLDataProperty().getDomains(ont).iterator().next().asOWLClass().toStringID();
-					range = prop.asOWLDataProperty().getRanges(ont).iterator().next().asOWLDatatype().toStringID();
+					Set<OWLClassExpression> domains = prop.asOWLDataProperty().getDomains(ont);
+					if(!domains.isEmpty()){
+						domain = domains.iterator().next().asOWLClass().toStringID();
+					}
+					Set<OWLDataRange> ranges = prop.asOWLDataProperty().getRanges(ont);
+					if(!ranges.isEmpty()){
+						range = ranges.iterator().next().asOWLDatatype().toStringID();
+					}
 				}
 				
 				write2Index(uri, label, comment, domain, range);
