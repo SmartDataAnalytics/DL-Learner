@@ -49,11 +49,17 @@ public class FuzzyDLLTest_noFuzzyTrains {
 	
 	String[] negEx = {
 			"http://www.example.com/fuzzyTrains.owl#east1",
-			"http://www.example.com/fuzzyTrains.owl#east2"
+			"http://www.example.com/fuzzyTrains.owl#east2",
+			"http://www.example.com/fuzzyTrains.owl#east3",
+			"http://www.example.com/fuzzyTrains.owl#east4",
+			"http://www.example.com/fuzzyTrains.owl#east5"
 	};
 	String[] posEx = {
 			"http://www.example.com/fuzzyTrains.owl#west6",
-			"http://www.example.com/fuzzyTrains.owl#west7"
+			"http://www.example.com/fuzzyTrains.owl#west7",
+			"http://www.example.com/fuzzyTrains.owl#west8",
+			"http://www.example.com/fuzzyTrains.owl#west9",
+			"http://www.example.com/fuzzyTrains.owl#west0"
 	};
 	
 	public Description learn() throws LearningProblemUnsupportedException, IOException, ComponentInitException {	
@@ -85,7 +91,7 @@ public class FuzzyDLLTest_noFuzzyTrains {
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
 		// ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/fuzzyTrains/fuzzyTrains_v1.0.owl"));
-		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/noFuzzyTrains_v1.3.owl"));
+		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/noFuzzyTrains_v1.5.owl"));
 		ks.init();
 
 		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);

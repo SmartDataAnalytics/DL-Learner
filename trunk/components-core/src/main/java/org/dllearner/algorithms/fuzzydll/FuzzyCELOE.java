@@ -19,7 +19,11 @@
  */
 package org.dllearner.algorithms.fuzzydll;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -59,6 +63,7 @@ import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.refinementoperators.fuzzydll.FuzzyRhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -144,6 +149,10 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
 	
+	// TODO remove this variable, just for testing purposes
+	private int counter = 0;
+	private PrintWriter out;
+	
 	@Override
 	public FuzzyCELOEConfigurator getConfigurator() {
 		return configurator;
@@ -196,6 +205,17 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	
 	@Override
 	public void init() throws ComponentInitException {
+		
+		// TODO remove, just for testing purposes
+		FileWriter fstream;
+		try {			
+			fstream = new FileWriter("../examples/fuzzydll/testOut_TriRecEq.log");
+			out = new PrintWriter(fstream);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
@@ -210,7 +230,7 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 		singleSuggestionMode = configurator.getSingleSuggestionMode();
 		
 		// create refinement operator
-		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
+		operator = new FuzzyRhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
 		if(configurator.getWriteSearchTree()) {
@@ -315,7 +335,6 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 		} else if (learningProblem instanceof FuzzyPosNegLP) {
 			examples = Helper.union(((FuzzyPosNegLP)learningProblem).getPositiveExamples(),((FuzzyPosNegLP)learningProblem).getNegativeExamples());
 		}
-		
 	}
 
 	@Override
@@ -375,11 +394,14 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 			Monitor mon = MonitorFactory.start("refineNode");
 			TreeSet<Description> refinements = refineNode(nextNode);
 			mon.stop();
-				
-//			System.out.println("next node: " + nextNode);
-//			for(Description refinement : refinements) {
-//				System.out.println("refinement: " + refinement);
-//			}
+			
+			// TODO just for testing purposes
+			counter++;
+			System.out.println(counter + " next node: " + nextNode);
+			for(Description refinement : refinements) {
+				System.out.println("refinement: " + refinement);
+			}
+			System.out.println();
 			
 			while(refinements.size() != 0) {
 				// pick element from set
@@ -483,20 +505,18 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	// add node to search tree if it is not too weak
 	// returns true if node was added and false otherwise
 	private boolean addNode(Description description, FuzzyOENode parentNode) {
-		
-//		System.out.println(description);
-		
+		// counter++;
+		// System.out.println(counter + " " + description);
+
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
 			return false;
 		}
-		
 		// check whether the description is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
 			return false;
-		}
-		
+		}	
 //		System.out.println("Test " + new Date());
 		// quality of description (return if too weak)
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
@@ -544,6 +564,18 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 		// necessary since rewriting is expensive
 		boolean isCandidate = !bestEvaluatedDescriptions.isFull();
 		if(!isCandidate) {
+			
+			// TODO remove, just testing purposes
+//			Iterator i = bestEvaluatedDescriptions.getSet().iterator();
+//			int j = 0;
+//			out.println(counter + " " + description);
+//			while (i.hasNext()) {
+//				j++;
+//				// System.err.println(j + " -> " + i.next());
+//				out.println(j + " -> " + i.next());
+//			}
+//			out.println();
+			
 			EvaluatedDescription worst = bestEvaluatedDescriptions.getWorst();
 			double accThreshold = worst.getAccuracy();
 			isCandidate = 

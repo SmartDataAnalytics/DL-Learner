@@ -358,6 +358,31 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
+	
+	@Override
+	public final SortedSet<FuzzyIndividual> getFuzzyIndividuals(Description concept) {
+		reasoningStartTimeTmp = System.nanoTime();
+		SortedSet<FuzzyIndividual> result;
+		try {
+			result = getFuzzyIndividualsImpl(concept);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+		nrOfRetrievals++;
+		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
+		retrievalReasoningTimeNs += reasoningDurationTmp;
+		overallReasoningTimeNs += reasoningDurationTmp;
+		if(logger.isTraceEnabled()) {
+			logger.trace("reasoner query getIndividuals: " + concept + " " + result);
+		}
+		return result;
+	}
+
+	protected SortedSet<FuzzyIndividual> getFuzzyIndividualsImpl(Description concept)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
 
 	@Override
 	public final boolean hasType(Description concept, Individual s) {

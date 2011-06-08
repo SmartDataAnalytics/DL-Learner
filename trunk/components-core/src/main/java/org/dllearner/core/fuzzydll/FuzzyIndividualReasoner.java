@@ -1,5 +1,7 @@
 package org.dllearner.core.fuzzydll;
 
+import java.util.SortedSet;
+
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 
@@ -20,4 +22,5 @@ public interface FuzzyIndividualReasoner {
 	 * @return fuzzy membership degree of <code>individual</code> satisfying <code>description</code> [0-1].
 	 */
 	public double hasTypeFuzzyMembership(Description description, FuzzyIndividual individual);
+	public SortedSet<FuzzyIndividual> getFuzzyIndividuals(Description concept);
 }

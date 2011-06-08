@@ -511,7 +511,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		
 		// System.out.println(errorIndex++);
 
-		double crispAccuracy = crispAccuracy(description, noise);
+		// double crispAccuracy = crispAccuracy(description, noise);
 		// if I erase next line, fuzzy reasoning fails
 //		if (crispAccuracy == -1) {
 //			System.out.print(description);
@@ -525,20 +525,17 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 //		double posMembership = 0;
 //		double negMembership = 0;
 		double descriptionMembership = 0;
-		double singleMembership = 0;
 		// double accumulatedSingleMembership = 0;
 		double nonAccumulativeDescriptionMembership = 0;
 		double accumulativeDescriptionMembership = 0;
 		
 //		System.out.println("noise = " + noise);
 		
-		// TODO in order the noise check to work ... is it necessary to have the examples ordered by its truthBelief?
 		// int individualCounter = fuzzyExamples.size();
 		double individualCounter = totalTruth;
 		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
-			singleMembership = reasoner.hasTypeFuzzyMembership(description, fuzzyExample);
 			// accumulatedSingleMembership += singleMembership;
-			nonAccumulativeDescriptionMembership = 1 - Math.abs(fuzzyExample.getTruthDegree() - singleMembership);
+			nonAccumulativeDescriptionMembership = 1 - Math.abs(fuzzyExample.getTruthDegree() - reasoner.hasTypeFuzzyMembership(description, fuzzyExample));
 			descriptionMembership += nonAccumulativeDescriptionMembership;
 			individualCounter -= fuzzyExample.getTruthDegree();
 			if ((accumulativeDescriptionMembership + (nonAccumulativeDescriptionMembership * fuzzyExample.getTruthDegree()) + individualCounter) < ((1 - noise) * totalTruth))
@@ -552,15 +549,15 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 //		System.err.println("crispAccuracy = fuzzyAccuracy");
 //		crispAccuracy = fuzzyAccuracy;
 		
-		if (crispAccuracy != fuzzyAccuracy) {
-			System.err.println("***********************************************");
-			//System.err.println("* " + (errorIndex++));
-			System.err.println("* (crispAccuracy[" + crispAccuracy + "] != fuzzyAccuracy[" + fuzzyAccuracy + "])");
-			System.err.println("* DESC: " + description);
-			System.err.println("***********************************************");
-			Scanner sc = new Scanner(System.in);
-			sc.nextLine();
-		}
+//		if (crispAccuracy != fuzzyAccuracy) {
+//			System.err.println("***********************************************");
+//			//System.err.println("* " + (errorIndex++));
+//			System.err.println("* (crispAccuracy[" + crispAccuracy + "] != fuzzyAccuracy[" + fuzzyAccuracy + "])");
+//			System.err.println("* DESC: " + description);
+//			System.err.println("***********************************************");
+//			Scanner sc = new Scanner(System.in);
+//			sc.nextLine();
+//		}
 		
 		return fuzzyAccuracy;
 	}
@@ -587,31 +584,9 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		}		
 		return (positiveExamples.size() - notCoveredPos + notCoveredNeg) / (double) allExamples.size();
 	}
-
-	public double getFMeasureOrTooWeakExact(Description description, double noise) {
-		
-		// added by Josue
-		// fuzzy F-measure
-		double coveredMembershipDegree = 0;
-		double totalMembershipDegree = 0;
-		double invertedCoveredMembershipDegree = 0;
-		double lastMembershipDegree = 0;
-
-		// TODO to optimize
-		for (FuzzyIndividual ind: fuzzyExamples) {
-			lastMembershipDegree = (1 - Math.abs(ind.getTruthDegree() - reasoner.hasTypeFuzzyMembership(description, ind)));
-			coveredMembershipDegree += lastMembershipDegree * ind.getTruthDegree();
-			totalMembershipDegree += ind.getTruthDegree();
-			invertedCoveredMembershipDegree += (1 - ind.getTruthDegree()) * (1 - lastMembershipDegree);
-		}
-		double fuzzyRecall = totalMembershipDegree == 0 ? 0 :coveredMembershipDegree/totalMembershipDegree;
-		// TODO this is like this??? not sure
-		if(fuzzyRecall < 1 - noise) {
-			return -1;
-		}
-		double fuzzyPrecision = (coveredMembershipDegree + invertedCoveredMembershipDegree) == 0 ? 0: coveredMembershipDegree / (coveredMembershipDegree + invertedCoveredMembershipDegree);
-		double fuzzyFmeasure = Heuristics.getFScore(fuzzyRecall, fuzzyPrecision);		
-		
+	
+	// added by Josue
+	private double crispfMeasure(Description description, double noise) {
 		// crisp F-measure
 		int additionalInstances = 0;
 		for(Individual ind : negativeExamples) {
@@ -635,19 +610,45 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		
 		double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 		
-//		return getFMeasure(recall, precision);
-		double crispFmeasure = Heuristics.getFScore(recall, precision);
+		return Heuristics.getFScore(recall, precision);
+	}
+	
+	public double getFMeasureOrTooWeakExact(Description description, double noise) {
+		
+		// added by Josue
+		// fuzzy F-measure
+		double coveredMembershipDegree = 0;
+		double totalMembershipDegree = 0;
+		double invertedCoveredMembershipDegree = 0;
+		double lastMembershipDegree = 0;
+
+		// TODO to optimize
+		for (FuzzyIndividual ind: fuzzyExamples) {
+			lastMembershipDegree = (1 - Math.abs(ind.getTruthDegree() - reasoner.hasTypeFuzzyMembership(description, ind)));
+			coveredMembershipDegree += lastMembershipDegree * ind.getTruthDegree();
+			totalMembershipDegree += ind.getTruthDegree();
+			invertedCoveredMembershipDegree += (1 - ind.getTruthDegree()) * (1 - lastMembershipDegree);
+		}
+		double fuzzyRecall = totalMembershipDegree == 0 ? 0 :coveredMembershipDegree/totalMembershipDegree;
+		// TODO this is like this??? not sure
+		if(fuzzyRecall < 1 - noise) {
+			return -1;
+		}
+		double fuzzyPrecision = (coveredMembershipDegree + invertedCoveredMembershipDegree) == 0 ? 0: coveredMembershipDegree / (coveredMembershipDegree + invertedCoveredMembershipDegree);
+		double fuzzyFmeasure = Heuristics.getFScore(fuzzyRecall, fuzzyPrecision);		
+
+		// double crispFmeasure = crispfMeasure(description, noise);
 		
 		// crispFmeasure = fuzzyFmeasure;
 		
-		if (crispFmeasure != fuzzyFmeasure) {
-			System.err.println("************************");
-			System.err.println("* crispFmeasuer = " + crispFmeasure);
-			System.err.println("* fuzzyFmeasuer = " + fuzzyFmeasure);
-			System.err.println("************************");
-			Scanner sc = new Scanner(System.in);
-			sc.nextLine();
-		}
+//		if (crispFmeasure != fuzzyFmeasure) {
+//			System.err.println("************************");
+//			System.err.println("* crispFmeasuer = " + crispFmeasure);
+//			System.err.println("* fuzzyFmeasuer = " + fuzzyFmeasure);
+//			System.err.println("************************");
+//			Scanner sc = new Scanner(System.in);
+//			sc.nextLine();
+//		}
 
 		return fuzzyFmeasure;
 	}
