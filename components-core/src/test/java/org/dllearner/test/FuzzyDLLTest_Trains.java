@@ -43,6 +43,21 @@ import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
  */
 public class FuzzyDLLTest_Trains {
 	
+	String[] posEx = {
+			"http://www.example.com/fuzzyTrains.owl#east1",
+			"http://www.example.com/fuzzyTrains.owl#east2",
+			"http://www.example.com/fuzzyTrains.owl#east3",
+			"http://www.example.com/fuzzyTrains.owl#east4",
+			"http://www.example.com/fuzzyTrains.owl#east5"
+	};
+	String[] negEx = {
+			"http://www.example.com/fuzzyTrains.owl#west6",
+			"http://www.example.com/fuzzyTrains.owl#west7",
+			"http://www.example.com/fuzzyTrains.owl#west8",
+			"http://www.example.com/fuzzyTrains.owl#west9",
+			"http://www.example.com/fuzzyTrains.owl#west0"
+	};
+	
 //	String[] posEx = {
 //			"http://www.example.com/fuzzyTrains.owl#east1",
 //			"http://www.example.com/fuzzyTrains.owl#east2"
@@ -52,12 +67,12 @@ public class FuzzyDLLTest_Trains {
 //			"http://www.example.com/fuzzyTrains.owl#west7"
 //	};
 	
-	String[] posEx = {
-			"http://www.example.com/fuzzyTrains.owl#carPositive"
-	};
-	String[] negEx = {
-			"http://www.example.com/fuzzyTrains.owl#carNegative"
-	};
+//	String[] posEx = {
+//			"http://www.example.com/fuzzyTrains.owl#carPositive"
+//	};
+//	String[] negEx = {
+//			"http://www.example.com/fuzzyTrains.owl#carNegative"
+//	};
 		
 	public Description learn() throws LearningProblemUnsupportedException, IOException, ComponentInitException {	
 				
@@ -87,7 +102,7 @@ public class FuzzyDLLTest_Trains {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_simplestExample_fuzzyLoad.owl"));
+		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_v2.0.owl"));
 		ks.init();
 
 //		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
@@ -111,13 +126,13 @@ public class FuzzyDLLTest_Trains {
 //		Set<String> aaaaaaaaaa = new TreeSet<String>();
 //		aaaaaaaaaa.add("Nothing");
 //		fc.getConfigurator().setIgnoredConcepts(aaaaaaaaaa);
-		fc.getConfigurator().setMaxClassDescriptionTests(1000);
+		fc.getConfigurator().setMaxClassDescriptionTests(10000);
 		fc.getConfigurator().setMaxExecutionTimeInSeconds(0);
 		fc.getConfigurator().setUseDoubleDatatypes(false);
 		fc.getConfigurator().setUseCardinalityRestrictions(false);
 		fc.getConfigurator().setWriteSearchTree(true);
 		fc.getConfigurator().setSearchTreeFile("log/searchTreeFuzzy.txt");
-		fc.getConfigurator().setNoisePercentage(100);
+		fc.getConfigurator().setNoisePercentage(30);
 		fc.init();
 		fc.start();		
 		
