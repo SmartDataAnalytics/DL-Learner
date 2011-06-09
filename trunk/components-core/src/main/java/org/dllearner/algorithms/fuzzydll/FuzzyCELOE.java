@@ -209,7 +209,7 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 		// TODO remove, just for testing purposes
 		FileWriter fstream;
 		try {			
-			fstream = new FileWriter("../examples/fuzzydll/testOut_TriRecEq.log");
+			fstream = new FileWriter("../examples/fuzzydll/testOut_v2.0_noise30_10000.log");
 			out = new PrintWriter(fstream);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -397,11 +397,11 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 			
 			// TODO just for testing purposes
 			counter++;
-			System.out.println(counter + " next node: " + nextNode);
+			out.println(counter + " next node: " + nextNode);
 			for(Description refinement : refinements) {
-				System.out.println("refinement: " + refinement);
+				out.println("refinement: " + refinement);
 			}
-			System.out.println();
+			out.println();
 			
 			while(refinements.size() != 0) {
 				// pick element from set
@@ -471,12 +471,19 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	}
 
 	private FuzzyOENode getNextNodeToExpand() {
+		// TODO: remove, just for testing purposes
+//		Iterator<FuzzyOENode> itx = nodes.descendingIterator();
+//		while(itx.hasNext()) {
+//			FuzzyOENode node = itx.next();
+//			out.println(node.getAccuracy() + " " + node.getHorizontalExpansion() + " " + node.getDescription().getLength() + " " + node);
+//		}
 		// we expand the best node of those, which have not achieved 100% accuracy
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
 		Iterator<FuzzyOENode> it = nodes.descendingIterator();
 		while(it.hasNext()) {
 			FuzzyOENode node = it.next();
+			// TODO: in a fuzzy environment ... has sense to return nodes with accuracy < 1 ???
 			if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
 				return node;
 			}
