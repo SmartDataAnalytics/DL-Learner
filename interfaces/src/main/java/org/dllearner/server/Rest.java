@@ -15,7 +15,7 @@ import java.net.URLEncoder;
 import java.security.InvalidParameterException;
 
 
-public abstract class Rest extends HttpServlet {
+public class Rest extends HttpServlet {
     private static Logger log = LoggerFactory.getLogger(Rest.class);
 
     @Override
