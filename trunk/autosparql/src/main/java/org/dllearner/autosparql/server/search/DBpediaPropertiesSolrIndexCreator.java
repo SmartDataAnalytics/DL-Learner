@@ -92,7 +92,7 @@ public class DBpediaPropertiesSolrIndexCreator {
 	}
 	
 	private SolrServer getEmbeddedSolrServer() throws ParserConfigurationException, IOException, SAXException{
-		File root = new File("/opt/solr");
+		File root = new File("/opt/solr3");
 		coreContainer = new CoreContainer();
 		SolrConfig config = new SolrConfig(root + File.separator + CORE_NAME,
 				"solrconfig.xml", null);

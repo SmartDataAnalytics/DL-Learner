@@ -71,6 +71,8 @@ public class SimpleFileStore implements Store {
 	@Override
 	public void incrementHitCount(StoredSPARQLQuery query) {
 		query.setHitCount(query.getHitCount() + 1);
+		question2QueryMap.put(query.getQuestion(), query.toStoredSPARQLQuerySer());
+		saveMap();
 	}
 
 	private void put(String question, String query, String endpoint, List<Example> posExamples, List<Example> negExamples, Example lastSuggestedExample) {

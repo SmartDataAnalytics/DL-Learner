@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.SPARQLService;
+import org.dllearner.autosparql.client.SPARQLServiceAsync;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 import org.dllearner.autosparql.client.widget.SPARQLQueryResultPanel;
@@ -197,8 +198,23 @@ public class LoadedQueryView  extends View {
 	private void onLoadSPARQLQuery(StoredSPARQLQuery query){
 		this.query = query.getQuery();
 		resultPanel.setQuery(this.query);
-		resultPanel.loadProperties();
-		resultPanel.refresh();
+		SPARQLService.Util.getInstance().loadSPARQLQuery(query, new AsyncCallback<Void>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+				resultPanel.loadProperties();
+				resultPanel.refresh();
+				
+			}
+		
+		});
+		
 //		SPARQLService.Util.getInstance().loadSPARQLQuery(query, new AsyncCallback<Void>() {
 //
 //			@Override
