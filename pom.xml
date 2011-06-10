@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
- 
+
     <groupId>org.dllearner</groupId>
     <artifactId>dllearner-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -33,7 +34,8 @@
     <!--This is the SCM information, which needs to be here so we can use the maven release plugin-->
     <scm>
         <connection>scm:svn:https://dl-learner.svn.sourceforge.net/svnroot/dl-learner/trunk</connection>
-        <developerConnection>scm:svn:https://dl-learner.svn.sourceforge.net/svnroot/dl-learner/trunk</developerConnection>
+        <developerConnection>scm:svn:https://dl-learner.svn.sourceforge.net/svnroot/dl-learner/trunk
+        </developerConnection>
         <url>https://dl-learner.svn.sourceforge.net/svnroot/dl-learner/trunk</url>
     </scm>
 
@@ -183,11 +185,11 @@
                 <version>2.2.0</version>
             </dependency>
 
-			<dependency>
-				<groupId>com.jamonapi</groupId>
-				<artifactId>jamon</artifactId>
-				<version>2.7</version>
-			</dependency>
+            <dependency>
+                <groupId>com.jamonapi</groupId>
+                <artifactId>jamon</artifactId>
+                <version>2.7</version>
+            </dependency>
 
 
             <!--JENA ARQ is in central - we use the latest-->
@@ -304,24 +306,24 @@
                 <artifactId>dig-xmlbeans</artifactId>
                 <version>1.1</version>
             </dependency>
-            
+
             <dependency>
-                 <groupId>com.h2database</groupId>
-                 <artifactId>h2</artifactId>
-                 <version>1.2.143</version>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>1.2.143</version>
             </dependency>
 
-			<dependency>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.13</version>
-			</dependency>
-			
-			<dependency>
-        	<groupId>commons-configuration</groupId>
-        	<artifactId>commons-configuration</artifactId>
-        	<version>1.6</version>
-        </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.13</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-configuration</groupId>
+                <artifactId>commons-configuration</artifactId>
+                <version>1.6</version>
+            </dependency>
 
             <!--GWT Dependencies-->
             <dependency>
@@ -340,22 +342,42 @@
                 <artifactId>postgresql</artifactId>
                 <version>8.4-701.jdbc4</version>
             </dependency>
-            
+
             <dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>r07</version>
-		</dependency>
-	<dependency>
-               <groupId>com.dumontierlab</groupId>
-               <artifactId>pdb2rdf-parser</artifactId>
-               <version>0.0.8</version>
-        </dependency>
-	<dependency>
-               <groupId>com.dumontierlab</groupId>
-               <artifactId>pdb2rdf-cli</artifactId>
-               <version>0.0.9</version>
-        </dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>r07</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dumontierlab</groupId>
+                <artifactId>pdb2rdf-parser</artifactId>
+                <version>0.0.8</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dumontierlab</groupId>
+                <artifactId>pdb2rdf-cli</artifactId>
+                <version>0.0.9</version>
+            </dependency>
+
+            <!--used in the webservice in interfaces-->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.4</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jsp-api</artifactId>
+                <version>2.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>1.0.3</version>
+                <scope>provided</scope>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -419,11 +441,11 @@
             </snapshots>
         </repository>
         <!-- This repository contains the jars for pdb2rdf -->
-		<repository>
-			<id>semanticscience.org</id>
-			<name>Semanticscience projects</name>
-			<url>http://s1.semanticscience.org:8080/nexus/content/groups/public/</url>
-		</repository>
+        <repository>
+            <id>semanticscience.org</id>
+            <name>Semanticscience projects</name>
+            <url>http://s1.semanticscience.org:8080/nexus/content/groups/public/</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -431,12 +453,15 @@
             <id>maven.codehaus.plugin.snapshots</id>
             <name>Codehaus plugin Repository</name>
             <url>https://nexus.codehaus.org/content/repositories/public</url>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </pluginRepository>
     </pluginRepositories>
 
-    
 
     <distributionManagement>
         <repository>
