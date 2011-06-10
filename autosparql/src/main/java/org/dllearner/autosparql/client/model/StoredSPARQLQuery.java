@@ -100,7 +100,7 @@ public class StoredSPARQLQuery implements Serializable{
 		if(this.lastSuggestedExample != null){
 			lastSuggestedExample = this.lastSuggestedExample.toExampleSer();
 		}
-		return new StoredSPARQLQuerySer(question, query, queryHTML, endpoint, posExamples, negExamples, lastSuggestedExample);
+		return new StoredSPARQLQuerySer(question, query, queryHTML, endpoint, posExamples, negExamples, lastSuggestedExample, hitCount);
 	}
 
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 
 import javax.servlet.ServletConfig;
@@ -24,8 +23,6 @@ import org.dllearner.autosparql.server.store.SimpleFileStore;
 import org.dllearner.autosparql.server.store.Store;
 import org.dllearner.autosparql.server.util.Endpoints;
 import org.ini4j.Ini;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
@@ -183,18 +180,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 
 	@Override
 	public List<Endpoint> getEndpoints() throws AutoSPARQLException{
-//		logger.info("Loading endpoints from file: " + getServletContext().getRealPath("app/endpoints.xml"));
 		try {
-//			if(endpoints == null){
-//				endpoints = new Endpoints(getServletContext().getRealPath("app/endpoints.xml")).getEndpoints();
-//			}
-//			List<Endpoint> endpoints = new ArrayList<Endpoint>();
-//			
-//			for(SPARQLEndpointEx endpoint : this.endpoints){
-//				logger.info("Loaded endpoint: " + endpoint);
-//				endpoints.add(new Endpoint(this.endpoints.indexOf(endpoint), endpoint.getLabel()));
-//			}
-//			
 			return new ArrayList<Endpoint>(endpointsMap.keySet());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -210,7 +196,6 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
 		logger.info("Creating new AutoSPARQL user session object(" + getSession().getId() + ")");
-		System.out.println(getSession().getId());
 		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir),
 				getServletContext().getRealPath(""), solrURL);
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
@@ -247,8 +232,10 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 
 	@Override
-	public void loadSPARQLQuery(StoredSPARQLQuery query) {
-		createNewAutoSPARQLSession(endpointsMap.get(new Endpoint(query.getEndpoint())));
+	public void loadSPARQLQuery(StoredSPARQLQuery storedQuery) {
+		logger.info("Loading stored query \"" + storedQuery.getQuestion() + "\"");
+		store.incrementHitCount(storedQuery);
+		createNewAutoSPARQLSession(endpointsMap.get(new Endpoint(storedQuery.getEndpoint())));
 	}
 	
 	private void loadSPARQLQueriesFromFile(){

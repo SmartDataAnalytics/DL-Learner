@@ -8,14 +8,11 @@ import org.dllearner.autosparql.client.HistoryTokens;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
-import org.dllearner.autosparql.client.widget.AutoCompleteTextBox;
 
 import com.extjs.gxt.ui.client.Registry;
 import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.BasePagingLoader;
 import com.extjs.gxt.ui.client.data.JsonReader;
-import com.extjs.gxt.ui.client.data.ListLoadResult;
 import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
@@ -23,8 +20,6 @@ import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoader;
 import com.extjs.gxt.ui.client.data.ScriptTagProxy;
-import com.extjs.gxt.ui.client.event.EventType;
-import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
@@ -34,19 +29,13 @@ import com.extjs.gxt.ui.client.mvc.View;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.HtmlContainer;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.button.IconButton;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.jsonp.client.JsonpRequestBuilder;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -58,6 +47,11 @@ public class HomeView extends View {
 	public static final String SEARCH_PANEL = "searchpanel";
 	public static final String HEADER_PANEL = "headerpanel";
 	public static final String VIEWPORT = "viewport";
+	
+	private int maxFrequency    = 0;  
+    private int minFrequency    = 600000000; 
+	private static final int MIN_FONT_SIZE = 5;  
+    private static final int MAX_FONT_SIZE = 25;  
 	
 	private LayoutContainer container;
 	private HtmlContainer intro;
@@ -123,7 +117,7 @@ public class HomeView extends View {
 //                intro.add(createComboxBox(), "#demo-selector-query");
 //                intro.add(new AutoCompleteTextBox(), "#demo-selector-query");
                 intro.add(createEndpointSelector(), "#demo-selector-endpoints");
-                Hyperlink link = new Hyperlink("Learn Query", HistoryTokens.QUERY);
+                Hyperlink link = new Hyperlink("Query", HistoryTokens.QUERY);
                link.addClickListener(new ClickListener() {
 				
 				@Override
@@ -163,29 +157,38 @@ public class HomeView extends View {
                         "<a href=\"http://aksw.org/Groups/MOLE\">MOLE</a>  @ <a href=\"http://aksw.org\">AKSW</a>, <a href=\"http://www.zv.uni-leipzig.de/en/\">University of Leipzig</a>"+
                     "</p>"
                         );
-
+                
                 // sidecontent
                 sidecontent = new HtmlContainer(
+                		
 //                		  "<h2>Warning! The AutoSPARQL service is currently under construction. We are working on it and will hopfully reactivate it soon.</h2>"+
-//                    "<h2>Watch the Screencast</h2>"+
-                		"<h2>A Screencast will be available soon!</h2>"+
-//                    "<object width=\"400\" height=\"233\"><param name=\"allowfullscreen\" value=\"true\" /><param name=\"allowscriptaccess\" value=\"always\" /><param name=\"movie\" value=\"http://vimeo.com/moogaloop.swf?clip_id=1878254&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" /><embed src=\"http://vimeo.com/moogaloop.swf?clip_id=1878254&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" allowscriptaccess=\"always\" width=\"400\" height=\"233\"></embed></object>"+
-//                    "<object width=\"400\" height=\"233\">" +
-//                    "<param name=\"allowfullscreen\" value=\"true\" />" +
-//                    "<param name=\"allowscriptaccess\" value=\"always\" />" +
-//                    "<param name=\"movie\" value=\"http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/autosparql/screencast/autosparql_copy.swf&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" />" +
-//                    "<embed src=\"http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/autosparql/screencast/autosparql_copy.swf&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" allowscriptaccess=\"always\" width=\"400\" height=\"233\">" +
-//                    "</embed>" +
-//                    "</object>"+
-                    "<p>powered by<br/><a href=\"http://dl-learner.org\"><span class=hideme>DL-Learner</span><span id=dllearnerlogo></span><span id=storedqueries></span></a></p>"
+                    "<p><span id=storedqueries></span></p><br/><h2>Watch the Screencast</h2>"+
+                		"<object id=\"scPlayer\"  width=\"800\" height=\"450\" type=\"application/x-shockwave-flash\" " +
+                		"data=\"http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/mp4h264player.swf\" >" +
+                		"<param name=\"movie\" value=\"http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/mp4h264player.swf\" />" +
+                		"<param name=\"quality\" value=\"high\" />" +
+                		"<param name=\"bgcolor\" value=\"#FFFFFF\" />" +
+                		"<param name=\"flashVars\" value=\"thumb=http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/FirstFrame.png&containerwidth=800&containerheight=450&showstartscreen=true&showendscreen=true&loop=false&autostart=false&color=1A1A1A,1A1A1A&thumb=FirstFrame.png&thumbscale=45&content=http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/autosparql.mp4&blurover=false\" />" +
+                		"<param name=\"allowFullScreen\" value=\"true\" />" +
+                		"<param name=\"scale\" value=\"showall\" />" +
+                		"<param name=\"allowScriptAccess\" value=\"always\" />" +
+                		"<param name=\"base\" value=\"http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/\" />" +
+                		"<iframe type=\"text/html\" frameborder=\"0\" scrolling=\"no\" style=\"overflow:hidden;\" src=\"http://www.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/embed\" height=\"450\" width=\"800\" >" +
+                		"</iframe></object>"+
+
+                    "<p>powered by<br/><a href=\"http://dl-learner.org\"><span class=hideme>DL-Learner</span><span id=dllearnerlogo></span></a></p>"
                         );
 
-                sidecontent.add(new Image("dl-learner_logo.gif"), "#dllearnerlogo");
+//                sidecontent.add(new Image("dl-learner_logo.gif"), "#dllearnerlogo");
                 
                 SPARQLService.Util.getInstance().getSavedSPARQLQueries(new AsyncCallbackEx<List<StoredSPARQLQuery>>() {
 					@Override
 					public void onSuccess(List<StoredSPARQLQuery> result) {
-						LayoutContainer linkContainer = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
+						LayoutContainer linkContainer = new LayoutContainer();
+						linkContainer.setStylePrimaryName("cloudWrap"); 
+						
+						setFrequencies(result);
+						
 						for(final StoredSPARQLQuery query : result){
 //							Anchor a = new Anchor(query.getQuestion());
 //							a.addClickHandler(new ClickHandler() {
@@ -199,7 +202,7 @@ public class HomeView extends View {
 //									
 //								}
 //							});
-							Hyperlink link = new Hyperlink(query.getQuestion(), HistoryTokens.LOADQUERY);
+							Hyperlink link = new Hyperlink(query.getQuestion() + " (" + query.getHitCount() + ")", HistoryTokens.LOADQUERY);
 							link.addClickListener(new ClickListener() {
 								
 								@Override
@@ -210,14 +213,18 @@ public class HomeView extends View {
 									
 								}
 							});
+							link.setStylePrimaryName("cloudTags");
 							linkContainer.add(link);
-//							sidecontent.add(link, "#storedqueries");
+							
+							Style linkStyle = link.getElement().getStyle();  
+			                linkStyle.setProperty("fontSize",getLabelSize(query.getHitCount()));  
 							
 						}
 						sidecontent.add(linkContainer, "#storedqueries");
-//						container.layout();
 					}
 				});
+                
+                sidecontent.add(new Image("dl-learner_logo.gif"), "#dllearnerlogo");
 
                 // put page together
                 page.add(intro, ".teaser");
@@ -247,51 +254,7 @@ public class HomeView extends View {
                 
 	}
 	
-	private ComboBox<ModelData> createComboxBox(){
-		String url = "http://139.18.2.173:8080/apache-solr-3.1.0/dbpedia_resources/terms?terms.fl=label&terms.lower=soc&terms.prefix=soc&terms.lower.incl=false&wt=json";
-		ScriptTagProxy<PagingLoadResult<ModelData>> proxy = new ScriptTagProxy<PagingLoadResult<ModelData>>(
-		        url);
-
-		    ModelType type = new ModelType();
-		    type.setRoot("terms");
-		    type.addField("label");
-
-		    JsonReader<PagingLoadConfig> reader = new JsonReader<PagingLoadConfig>(type){
-		    	@Override
-		    	protected int getTotalCount(JSONObject root) {
-		    		System.out.println("ROOT: " + root);
-		    		return 10;
-		    	}
-		    	
-		    	@Override
-		    	public PagingLoadConfig read(Object loadConfig, Object data) {
-		    		System.out.println(data);// TODO Auto-generated method stub
-		    		return super.read(loadConfig, data);
-		    	}
-		    	
-		    };
-		    
-		    
-		    PagingLoader loader = new BasePagingLoader(proxy, reader);
-		    loader.addLoadListener(new LoadListener(){
-		    	@Override
-		    	public void loaderBeforeLoad(LoadEvent le) {
-		    		super.loaderBeforeLoad(le);
-		    	}
-		    	
-		    	
-		    });
-
-		    ListStore<ModelData> store = new ListStore<ModelData>(loader);
-
-		    ComboBox<ModelData> combo = new ComboBox<ModelData>();
-		    combo.setWidth(580);
-		    combo.setDisplayField("label");
-		    combo.setStore(store);
-		    combo.setHideTrigger(true);
-		    combo.setPageSize(10);
-		    return combo;
-	}
+	
 	
 	private ComboBox<Endpoint> createEndpointSelector(){
 		final ListStore<Endpoint> endpoints = new ListStore<Endpoint>();  
@@ -312,7 +275,7 @@ public class HomeView extends View {
 		});
 	  
 	    combo.setEditable(false);
-	    combo.setEmptyText("Select an endpoint...");  
+	    combo.setEmptyText("Select endpoint...");  
 	    combo.setDisplayField("label");  
 	    combo.setWidth(150);  
 	    combo.setStore(endpoints);  
@@ -339,7 +302,7 @@ public class HomeView extends View {
 	
 	@Override
 	protected void handleEvent(AppEvent event) {
-		if (event.getType() == AppEvents.NavHome) {System.out.println("Go to HomeView");
+		if (event.getType() == AppEvents.NavHome) {
 		      LayoutContainer wrapper = (LayoutContainer) Registry.get(ApplicationView.CENTER_PANEL);
 		      wrapper.removeAll();
 		      wrapper.add(container);
@@ -350,5 +313,25 @@ public class HomeView extends View {
 		}
 		 
 	}
+	
+	private void setFrequencies(List<StoredSPARQLQuery> queries){
+		int frequency;
+		for(StoredSPARQLQuery query : queries){
+			frequency = query.getHitCount();  
+			  
+	        if (minFrequency > frequency)  
+	            minFrequency = frequency;  
+
+	        if (maxFrequency < frequency)  
+	            maxFrequency = frequency;
+		}
+		
+	}
+	
+	private String getLabelSize(int frequency){  
+        double weight = (Math.log(frequency) - Math.log(minFrequency)) / (Math.log(maxFrequency) - Math.log(minFrequency));  
+        int fontSize = MIN_FONT_SIZE + (int)Math.round((MAX_FONT_SIZE - MIN_FONT_SIZE) * weight);  
+        return Integer.toString(fontSize) + "pt";  
+    }
 
 }

@@ -1,4 +1,4 @@
-package org.dllearner.autosparql.client.widget;
+package org.dllearner.autosparql.client.widget.autocomplete;
 
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.KeyboardListener;

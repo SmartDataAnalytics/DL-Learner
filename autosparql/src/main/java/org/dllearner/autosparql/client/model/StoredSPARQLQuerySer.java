@@ -21,13 +21,14 @@ public class StoredSPARQLQuerySer implements Serializable{
 	public StoredSPARQLQuerySer(){
 	}
 	
-	public StoredSPARQLQuerySer(String question, String query, String queryHTML, String endpoint, List<ExampleSer> posExamples, List<ExampleSer> negExamples, ExampleSer lastSuggestedExample){
+	public StoredSPARQLQuerySer(String question, String query, String queryHTML, String endpoint, List<ExampleSer> posExamples, List<ExampleSer> negExamples, ExampleSer lastSuggestedExample, int hitCount){
 		this.question = question;
 		this.query = query;
 		this.endpoint = endpoint;
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		this.lastSuggestedExample = lastSuggestedExample;
+		this.hitCount = hitCount;
 	}
 	
 	public String getQuestion() {
@@ -100,7 +101,9 @@ public class StoredSPARQLQuerySer implements Serializable{
 		if(this.lastSuggestedExample != null){
 			lastSuggestedExample = this.lastSuggestedExample.toExample();
 		}
-		return new StoredSPARQLQuery(question, query, queryHTML, endpoint, posExamples, negExamples, lastSuggestedExample);
+		StoredSPARQLQuery q = new StoredSPARQLQuery(question, query, queryHTML, endpoint, posExamples, negExamples, lastSuggestedExample);
+		q.setHitCount(this.hitCount);
+		return q;
 	}
 
 }

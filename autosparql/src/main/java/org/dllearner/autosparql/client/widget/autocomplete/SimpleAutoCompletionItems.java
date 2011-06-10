@@ -1,4 +1,4 @@
-package org.dllearner.autosparql.client.widget;
+package org.dllearner.autosparql.client.widget.autocomplete;
 
 import java.util.ArrayList;
 

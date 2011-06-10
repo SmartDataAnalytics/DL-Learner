@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.client.widget.autocomplete.SearchSuggestOracle;
 
 import com.extjs.gxt.ui.client.core.XTemplate;
 import com.extjs.gxt.ui.client.data.BasePagingLoader;
@@ -54,6 +55,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SuggestBox;
 
 
 public class SearchPanel extends ContentPanel {
@@ -100,6 +102,9 @@ public class SearchPanel extends ContentPanel {
 		});
 		c.add(inputField);
 		
+//		SuggestBox suggest = new SuggestBox(new SearchSuggestOracle("label", "test"));
+//		c.add(suggest);
+		
 		searchButton = new Button("Search");
 		searchButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			
@@ -109,6 +114,8 @@ public class SearchPanel extends ContentPanel {
 			}
 		});
 		c.add(searchButton);
+		
+		
 		
 		add(c, new RowData(1, -1));
 	}
