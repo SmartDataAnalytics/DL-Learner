@@ -5,7 +5,6 @@
 <web-app>
     <display-name>DL-Learner</display-name>
 
-
     <servlet>
         <servlet-name>rest</servlet-name>
         <servlet-class>org.dllearner.server.Rest</servlet-class>
