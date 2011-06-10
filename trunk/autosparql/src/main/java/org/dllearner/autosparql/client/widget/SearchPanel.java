@@ -152,27 +152,7 @@ public class SearchPanel extends ContentPanel {
 		expander.setTemplate(tpl);
 		columns.add(expander);
 		
-		GridCellRenderer<Example> imageRender = new GridCellRenderer<Example>() {
-
-			@Override
-			public Object render(Example model, String property,
-					ColumnData config, int rowIndex, int colIndex,
-					ListStore<Example> store, Grid<Example> grid) {
-				String imageURL = model.getImageURL().isEmpty() ? "no_images.jpeg" : model.getImageURL();
-				final Image image = new Image(imageURL);
-				image.addErrorHandler(new ErrorHandler() {
-					
-					@Override
-					public void onError(ErrorEvent event) {
-						image.setUrl("no_images.jpeg");
-						
-					}
-				});
-				image.setPixelSize(40, 40);
-				return image;
-			}
-		
-		};
+		GridCellRenderer<Example> imageRender = new ImageCellRenderer();
 		
 		ColumnConfig c = new ColumnConfig();
 		c.setId("imageURL");
