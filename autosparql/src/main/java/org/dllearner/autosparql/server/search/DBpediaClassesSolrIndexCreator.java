@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -74,6 +75,8 @@ public class DBpediaClassesSolrIndexCreator {
 			e.printStackTrace();
 		}
 		initDocument();
+		
+		docs = new HashSet<SolrInputDocument>();
 	}
 	
 	private SolrServer getRemoteSolrServer() throws MalformedURLException, SolrServerException{
