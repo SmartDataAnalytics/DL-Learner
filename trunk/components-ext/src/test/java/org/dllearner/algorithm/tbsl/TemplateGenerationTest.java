@@ -60,7 +60,7 @@ public class TemplateGenerationTest {
 	 */
 	public static void main(String[] args) {
 		
-		File file = new File("src/main/resources/tbsl/evaluation/dbpedia-train-tagged(ideal).xml");
+		File file = new File("src/main/resources/tbsl/evaluation/dbpedia-test-questions-tagged(ideal).xml");
 		List<String> questions = readQuestions(file);
 		
 		StringBuilder successful = new StringBuilder();
