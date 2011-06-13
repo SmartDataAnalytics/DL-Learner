@@ -1,8 +1,13 @@
 package org.dllearner.autosparql.server.search;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -23,6 +28,13 @@ import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.CoreDescriptor;
 import org.apache.solr.core.SolrConfig;
 import org.apache.solr.core.SolrCore;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.Rio;
+import org.openrdf.vocabulary.RDFS;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -82,6 +94,17 @@ public class DBpediaClassesSolrIndexCreator {
 		return solr;
 	}
 	
+	public void createIndex(List<String> dataFiles){
+		for(String file : dataFiles){
+			if(file.endsWith(".nt")){
+				createIndexFromNTriplesFile(file);
+			} else if(file.endsWith(".owl")){
+				createIndexFromOWLFile(file);
+			}
+		}
+		coreContainer.shutdown();
+	}
+	
 	public void createIndexFromOWLFile(String owlFile){
 		try {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
@@ -124,6 +147,73 @@ public class DBpediaClassesSolrIndexCreator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void createIndexFromNTriplesFile(String dataFile){
+		RDFFormat format = RDFFormat.NTRIPLES;
+		RDFParser parser = Rio.createParser(format);
+		parser.setRDFHandler(new RDFHandler() {
+			boolean first = true;
+			int cnt = 1;
+			String uri = "";
+			String label = "";
+			String comment = "";
+			String newURI;
+			@Override
+			public void startRDF() throws RDFHandlerException {}
+			
+			@Override
+			public void handleStatement(org.openrdf.model.Statement stmt) throws RDFHandlerException {
+				if(first){
+					uri = stmt.getSubject().stringValue();
+					first = false;
+				}
+				
+				newURI = stmt.getSubject().stringValue();
+				
+				if(!newURI.equals(uri)){
+					write2Index(uri, label, comment);
+					uri = newURI;
+					label = "";
+					cnt++;
+					if(cnt % 100000 == 0){
+						try {
+							solr.commit();
+							System.out.println(cnt);
+						}  catch (IOException e) {
+							e.printStackTrace();
+						} catch (SolrServerException e) {
+							e.printStackTrace();
+						}
+					}
+					
+				}
+				label = stmt.getObject().stringValue();
+				
+			}
+			
+			@Override
+			public void handleNamespace(String arg0, String arg1) throws RDFHandlerException {}
+			@Override
+			public void handleComment(String arg0) throws RDFHandlerException {}
+			@Override
+			public void endRDF() throws RDFHandlerException {}
+		});
+		try {
+			parser.parse(new BufferedInputStream(new FileInputStream(dataFile)), "http://dbpedia.org");
+			solr.commit();
+			solr.optimize();
+		} catch (RDFParseException e) {
+			e.printStackTrace();
+		} catch (RDFHandlerException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SolrServerException e) {
+			e.printStackTrace();
+		} 
 	}
 	
 	private void printTestSearch(){
@@ -175,9 +265,12 @@ public class DBpediaClassesSolrIndexCreator {
 			System.exit(0);
 		}
 		
-		String dataFile = args[0];
+		List<String> dataFiles = new ArrayList<String>();
+		for(int i = 0; i < args.length; i++){
+			dataFiles.add(args[i]);
+		}
 		
-		new DBpediaClassesSolrIndexCreator().createIndexFromOWLFile(dataFile);
+		new DBpediaClassesSolrIndexCreator().createIndex(dataFiles);
 		
 		
 
