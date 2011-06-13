@@ -197,6 +197,7 @@ public class DBpediaSolrIndexCreator {
 		});
 		try {
 			parser.parse(new BufferedInputStream(new FileInputStream(dataFile)), "http://dbpedia.org");
+			write2Index();
 			solr.commit();
 			solr.optimize();
 		} catch (RDFParseException e) {
