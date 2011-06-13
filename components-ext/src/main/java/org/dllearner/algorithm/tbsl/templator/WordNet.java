@@ -8,7 +8,7 @@ import edu.smu.tspell.wordnet.*;
 
 public class WordNet {
 
-	public String path;
+	public String path = "tbsl/dict/";
 	public WordNetDatabase database;
 	
 	public WordNet(String s) {
@@ -16,7 +16,7 @@ public class WordNet {
 		
 	}
 	public WordNet() {
-		path = "src/main/resources/tbsl/dict/";
+		path = this.getClass().getClassLoader().getResource(path).getPath();
 	}
 	
 	public void setWordNetPath(String s) {

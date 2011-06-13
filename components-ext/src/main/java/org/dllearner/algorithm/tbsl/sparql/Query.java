@@ -355,6 +355,37 @@ public class Query
 			
 		}
 	}
+	
+	public void replaceVarWithPrefixedURI(String var, String uri){
+		SPARQL_Value subject;
+		SPARQL_Value property;
+		SPARQL_Value object;
+		
+		for(SPARQL_Triple triple : conditions){
+			subject = triple.getVariable();
+			property = triple.getProperty();
+			object = triple.getValue();
+			if(subject.isVariable()){
+				if(subject.getName().equals(var)){
+					subject.setName(uri);
+					subject.setIsVariable(false);
+				}
+			}
+			if(property.isVariable()){
+				if(property.getName().equals(var)){
+					property.setName(uri);
+					property.setIsVariable(false);
+				}
+			}
+			if(object.isVariable()){
+				if(object.getName().equals(var)){
+					object.setName(uri);
+					object.setIsVariable(false);
+				}
+			}
+			
+		}
+	}
 
 	@Override
 	public int hashCode() {

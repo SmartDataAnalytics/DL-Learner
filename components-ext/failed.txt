@@ -1,10 +1,6 @@
-Which/WDT presidents/NNS were/VBD born/VBN in/IN 1945/CD
-List/VB all/DT episodes/NNS of/IN the/DT first/JJ season/NN of/IN the/DT HBO/NNP television/NN series/NN The/DT Sopranos/NNPS
-Which/WDT people/NNS have/VBP as/IN their/PRP$ given/VBN name/NN Jimmy/NNP
-Is/VBZ there/RB a/DT video/NN game/NN called/VBN Battle/NNP Chess/NNP
-Which/WDT companies/NNS work/VBP in/IN the/DT aerospace/NN industry/NN as/RB well/RB as/IN on/IN nuclear/JJ reactor/NN technology/NN
-Which/WDT cities/NNS have/VBP more/JJR than/IN 2/CD million/CD inhabitants/NNS
-Who/WP has/VBZ been/VBN the/DT 5th/JJ president/NN of/IN the/DT United/NNP States/NNPS of/IN America/NNP
-In/IN which/WDT films/NNS did/VBD Julia/NNP Roberts/NNP as/RB well/RB as/IN Richard/NNP Gere/NNP play/VB
-Who/WP wrote/VBD the/DT book/NN The/DT pillars/NNS of/IN the/DT Earth/NNP
-Which/WDT organizations/NNS were/VBD founded/VBN in/IN 1950/CD
+How/WRB tall/JJ is/VBZ Claudia/NNP Schiffer/NNP
+Is/NNP Egypts/NNPS largest/JJS city/NN also/RB its/PRP$ capital/NN
+Which/WDT states/VBZ border/VBZ Utah/NNP
+In/IN which/WDT films/NNS directed/VBN by/IN Garry/NNP Marshall/NNP was/VBD Julia/NNP Roberts/NNP starring/VBG
+Was/VBD US/NNP president/NNP Jackson/NNP involved/VBD in/IN a/DT war/NN
+Which/WDT countries/NNS in/IN the/DT European/NNP Union/NNP adopted/VBD the/DT Euro/NNP

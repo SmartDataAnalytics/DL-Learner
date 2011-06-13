@@ -122,7 +122,7 @@ public class ModelCreationTest {
 		int proCnt = Runtime.getRuntime().availableProcessors();
 		logger.info("Number of processor: " + proCnt);
 		Future<Model>[] ret = new Future[proCnt];
-		List<String> queries = 	queries = createSearchQueries("Hamburg", "Vienna", "Stuttgart", "Frankfurt", "Kiel");;//createQueries(resource, proCnt);
+		List<String> queries =  createSearchQueries("Hamburg", "Vienna", "Stuttgart", "Frankfurt", "Kiel");;//createQueries(resource, proCnt);
 		
 		ExecutorService es = Executors.newFixedThreadPool(proCnt);
 		for(int i = 0; i < 5; i++){

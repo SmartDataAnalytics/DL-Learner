@@ -18,9 +18,12 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
+import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
+import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
 import org.dllearner.algorithm.tbsl.search.SolrSearch;
 import org.dllearner.algorithm.tbsl.sparql.Query;
 import org.dllearner.algorithm.tbsl.sparql.RatedQuery;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Prefix;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
@@ -38,6 +41,9 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -71,7 +77,17 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private Oracle oracle;
 	
+	private Map<String, List<String>> resourcesURICache;
+	private Map<String, List<String>> classesURICache;
+	private Map<String, List<String>> propertiesURICache;
+	
 	private Map<String, List<String>> learnedSPARQLQueries;
+	private Set<Template> templates;
+	private Collection<? extends Query> sparqlQueryCandidates;
+	
+	private Map<String, String> prefixMap;
+	
+	private Lemmatizer lemmatizer = new LingPipeLemmatizer();// StanfordLemmatizer();
 	
 	
 	public SPARQLTemplateBasedLearner(){
@@ -85,6 +101,15 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		Set<String> predicateFilters = new HashSet<String>();
 		predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 		predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+		
+		prefixMap = new HashMap<String, String>();
+		prefixMap.put(RDF.getURI(), "rdf");
+		prefixMap.put(RDFS.getURI(), "rdfs");
+		prefixMap.put("http://dbpedia.org/ontology/", "dbo");
+		prefixMap.put("http://dbpedia.org/property/", "dbp");
+		prefixMap.put("http://dbpedia.org/resource/", "dbr");
+		prefixMap.put(FOAF.getURI(), "foaf");
+		
 		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
 		
 		templateGenerator = new Templator();
@@ -112,10 +137,13 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	public void learnSPARQLQueries() throws NoTemplateFoundException{
 		learnedSPARQLQueries = new HashMap<String, List<String>>();
+		resourcesURICache = new HashMap<String, List<String>>();
+		classesURICache = new HashMap<String, List<String>>();
+		propertiesURICache = new HashMap<String, List<String>>();
 		//generate SPARQL query templates
 		logger.info("Generating SPARQL query templates...");
 		mon.start();
-		Set<Template> templates = templateGenerator.buildTemplates(question);
+		templates = templateGenerator.buildTemplates(question);
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
 		if(templates.isEmpty()){
@@ -127,7 +155,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		}
 		
 		//generate SPARQL query candidates
-		Collection<? extends Query> sparqlQueryCandidates = getSPARQLQueryCandidates(templates, ranking);
+		sparqlQueryCandidates = getSPARQLQueryCandidates(templates, ranking);
 		
 		//test candidates
 		if(useRemoteEndpointValidation){ //on remote endpoint
@@ -136,6 +164,48 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			validateAgainstLocalModel(sparqlQueryCandidates);
 		}
 		
+	}
+	
+	public List<String> getSPARQLQueries() throws NoTemplateFoundException{
+		logger.info("Generating SPARQL query templates...");
+		mon.start();
+		templates = templateGenerator.buildTemplates(question);
+		mon.stop();
+		logger.info("Done in " + mon.getLastValue() + "ms.");
+		if(templates.isEmpty()){
+			throw new NoTemplateFoundException();
+		}
+		logger.info("Templates:");
+		for(Template t : templates){
+			logger.info(t);
+		}
+		
+		//generate SPARQL query candidates
+		logger.info("Generating SPARQL query candidates...");
+		mon.start();
+		sparqlQueryCandidates = getSPARQLQueryCandidates(templates, ranking);
+		mon.stop();
+		logger.info("Done in " + mon.getLastValue() + "ms.");
+		
+		List<String> queries = new ArrayList<String>();
+		for(Query q : sparqlQueryCandidates){
+			queries.add(q.toString());
+		}
+		
+		return queries;
+	}
+	
+	public Set<Template> getTemplates(){
+		return templates;
+	}
+	
+	public List<String> getGeneratedSPARQLQueries(){
+		List<String> queries = new ArrayList<String>();
+		for(Query q : sparqlQueryCandidates){
+			queries.add(q.toString());
+		}
+		
+		return queries;
 	}
 	
 	private Model getWorkingModel(List<String> resources){
@@ -256,21 +326,37 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		logger.info("Generating candidate SPARQL queries...");
 		mon.start();
 		List<Query> queries = new ArrayList<Query>();
-		
+		List<String> uriCandidates;
 		for(Template template : templates){
 			queries.add(template.getQuery());
 			for(Slot slot : template.getSlots()){
 				List<Query> tmp = new ArrayList<Query>();
 				String var = slot.getAnchor();
 				List<String> words = slot.getWords();
-				for(String uri : getCandidateURIsSortedBySimilarity(slot)){
+				SPARQL_Prefix prefix = null;
+				uriCandidates = getCandidateURIsSortedBySimilarity(slot);
+				for(String uri : uriCandidates){
+					for(Entry<String, String> uri2prefix : prefixMap.entrySet()){
+						if(uri.startsWith(uri2prefix.getKey())){
+							prefix = new SPARQL_Prefix(uri2prefix.getValue(), uri2prefix.getKey());
+							uri = uri.replace(uri2prefix.getKey(), uri2prefix.getValue() + ":");
+							break;
+						} 
+					}
 					for(Query query : queries){
 						Query newQuery = new Query(query);
-						newQuery.replaceVarWithURI(var, uri);
+						if(prefix != null){
+							newQuery.addPrefix(prefix);
+							newQuery.replaceVarWithPrefixedURI(var, uri);
+						} else {
+							newQuery.replaceVarWithURI(var, uri);
+						}
+						
 						tmp.add(newQuery);
 					}
+					prefix = null;
 				}
-				if(!words.isEmpty()){
+				if(!words.isEmpty() && !uriCandidates.isEmpty()){
 					queries.clear();
 					queries.addAll(tmp);
 				}
@@ -304,21 +390,63 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	
 	private List<String> getCandidateURIsSortedBySimilarity(Slot slot){
+		logger.info("Generating URI candidates for " + slot.getWords() + "...");
+		mon.start();
 		List<String> sortedURIs = new ArrayList<String>();
-		
+		//get the appropriate index based on slot type
 		SolrSearch index = getIndexBySlotType(slot);
+		//get the appropriate cache for URIs to avoid redundant queries to index
+		Map<String, List<String>> uriCache = getCacheBySlotType(slot);
 		
 		SortedSet<String> tmp;
 		List<String> uris;
-		for(String word : slot.getWords()){
+		
+		//prune the word list with lemmatizer only when slot type is not RESOURCE
+		List<String> words;
+		if(slot.getSlotType() == SlotType.RESOURCE){
+			words = slot.getWords();
+		} else {
+			words = getLemmatizedWords(slot.getWords());
+		}
+		
+		for(String word : words){
 			tmp = new TreeSet<String>(new StringSimilarityComparator(word));
-			uris = index.getResources("label:\"" + word + "\"");
+			uris = uriCache.get(word);
+			if(uris == null){
+				uris = index.getResources("label:\"" + word + "\"");
+				uriCache.put(word, uris);
+			}
 			tmp.addAll(uris);
 			sortedURIs.addAll(tmp);
 			tmp.clear();
 		}
-		
+		mon.stop();
+		logger.info("Done in " + mon.getLastValue() + "ms.");
+		logger.info("URIs: " + sortedURIs);
 		return sortedURIs;
+	}
+	
+	private List<String> getLemmatizedWords(List<String> words){
+		logger.info("Pruning word list " + words + "...");
+		mon.start();
+		List<String> pruned = new ArrayList<String>();
+		for(String word : words){
+			//currently only stem single words
+			if(word.contains(" ")){
+				pruned.add(word);
+			} else {
+				String lemWord = lemmatizer.stem(word);
+				new LingPipeLemmatizer().stem(word);
+				if(!pruned.contains(lemWord)){
+					pruned.add(lemWord);
+				}
+			}
+			
+		}
+		mon.stop();
+		logger.info("Done in " + mon.getLastValue() + "ms.");
+		logger.info("Pruned list: " + pruned);
+		return pruned;
 	}
 	
 	class StringSimilarityComparator implements Comparator<String>{
@@ -330,6 +458,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		
 		@Override
 		public int compare(String s1, String s2) {
+			
 			double sim1 = Similarity.getSimilarity(s, s1);
 			double sim2 = Similarity.getSimilarity(s, s2);
 			
@@ -354,6 +483,18 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			index = resource_index;
 		}
 		return index;
+	}
+	
+	private Map<String, List<String>> getCacheBySlotType(Slot slot){
+		Map<String, List<String>> cache = null;
+		if(slot.getSlotType() == SlotType.CLASS){
+			cache = classesURICache;
+		} else if(slot.getSlotType() == SlotType.PROPERTY){
+			cache = propertiesURICache;
+		} else if(slot.getSlotType() == SlotType.RESOURCE){
+			cache = resourcesURICache;
+		}
+		return cache;
 	}
 	
 	private Map<String, Float> getCandidateURIsWithScore(Slot slot){
@@ -431,11 +572,17 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private List<String> getResultFromRemoteEndpoint(String query){
 		List<String> resources = new ArrayList<String>();
-		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query + " LIMIT 10"));
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			resources.add(qs.get("y").toString());
+		try {
+			ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query + " LIMIT 10"));
+			QuerySolution qs;
+			String projectionVar;
+			while(rs.hasNext()){
+				qs = rs.next();
+				projectionVar = qs.varNames().next();
+				resources.add(qs.get(projectionVar).toString());
+			}
+		} catch (Exception e) {
+			logger.error("Query execution failed.", e);
 		}
 		return resources;
 	}
@@ -459,7 +606,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	 * @throws NoTemplateFoundException 
 	 */
 	public static void main(String[] args) throws MalformedURLException, NoTemplateFoundException {
-		String question = "Give me all soccer clubs in Premier League";
+//		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
+//		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
+//		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
+		String question = "Who are the presidents of the United States?";
 //		String question = "Give me all films starring Brad Pitt";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"), 
@@ -482,7 +632,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 
 	@Override
 	public String getBestSPARQLQuery() {
-		return learnedSPARQLQueries.keySet().iterator().next();
+		if(!learnedSPARQLQueries.isEmpty()){
+			return learnedSPARQLQueries.keySet().iterator().next();
+		} else {
+			return null;
+		}
 	}
 
 	
