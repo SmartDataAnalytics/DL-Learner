@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -34,7 +35,6 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
-import org.openrdf.vocabulary.RDFS;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -54,6 +54,8 @@ public class DBpediaClassesSolrIndexCreator {
 	private SolrInputDocument doc;
 	private SolrServer solr;
 	private CoreContainer coreContainer;
+	
+	private Set<SolrInputDocument> docs;
 	
 	private static final String CORE_NAME = "dbpedia_classes";
 	
@@ -135,11 +137,11 @@ public class DBpediaClassesSolrIndexCreator {
 						}
 					}
 				}
-				write2Index(uri, label, comment);
+				addDocument(uri, label, comment);
+				write2Index();
 			}
 			solr.commit();
 			solr.optimize();
-			coreContainer.shutdown();
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (SolrServerException e) {
@@ -172,19 +174,15 @@ public class DBpediaClassesSolrIndexCreator {
 				newURI = stmt.getSubject().stringValue();
 				
 				if(!newURI.equals(uri)){
-					write2Index(uri, label, comment);
+					addDocument(uri, label, comment);
 					uri = newURI;
 					label = "";
 					cnt++;
-					if(cnt % 100000 == 0){
-						try {
-							solr.commit();
-							System.out.println(cnt);
-						}  catch (IOException e) {
-							e.printStackTrace();
-						} catch (SolrServerException e) {
-							e.printStackTrace();
-						}
+					if(cnt % 100 == 0){
+						write2Index();
+					}
+					if(cnt % 10000000 == 0){
+						System.out.println(cnt);
 					}
 					
 				}
@@ -201,6 +199,7 @@ public class DBpediaClassesSolrIndexCreator {
 		});
 		try {
 			parser.parse(new BufferedInputStream(new FileInputStream(dataFile)), "http://dbpedia.org");
+			write2Index();
 			solr.commit();
 			solr.optimize();
 		} catch (RDFParseException e) {
@@ -239,13 +238,25 @@ public class DBpediaClassesSolrIndexCreator {
 		doc.put("comment", commentField);
 	}
 	
-	private void write2Index(String uri, String label, String comment){
-//		System.out.println(uri);System.out.println(label);System.out.println(comment);
+	private void addDocument(String uri, String label, String comment){
+		doc = new SolrInputDocument();
+		uriField = new SolrInputField("uri");
+		labelField = new SolrInputField("label");
+		commentField = new SolrInputField("comment");
+		doc.put("uri", uriField);
+		doc.put("label", labelField);
+		doc.put("comment", commentField);
 		uriField.setValue(uri, 1.0f);
 		labelField.setValue(label, 1.0f);
 		commentField.setValue(comment, 1.0f);
+		
+		docs.add(doc);
+	}
+	
+	private void write2Index(){
 		try {
-			solr.add(doc);
+			solr.add(docs);
+			docs.clear();
 		}  catch (SolrServerException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
