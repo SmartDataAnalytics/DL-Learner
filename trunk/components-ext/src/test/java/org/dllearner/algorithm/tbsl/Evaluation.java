@@ -3,9 +3,12 @@ package org.dllearner.algorithm.tbsl;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -116,6 +119,7 @@ public class Evaluation{
 		String question;
 		Object answer;
 		for(Entry<Integer, String> entry : id2Query.entrySet()){
+			if(entry.getKey() != 23)continue;
 			questionId = entry.getKey();
 			question = entry.getValue();
 			try {
@@ -150,7 +154,7 @@ public class Evaluation{
 			answer = new HashSet<String>();
 			if(!query.contains("LIMIT")){
 				query = query + " LIMIT 200";
-			}
+			}System.out.println(query);
 			ResultSet rs = endpoint.executeSelect(query);
 			String variable;
 			if(rs.getResultVars().size() == 1){
@@ -158,6 +162,7 @@ public class Evaluation{
 			} else {
 				variable = targetVar;
 			}
+			
 			QuerySolution qs;
 			RDFNode node;
 			while(rs.hasNext()){
@@ -177,6 +182,12 @@ public class Evaluation{
 	
 	public void setEndpoint(SparqlEndpoint endpoint){
 		this.endpoint = endpoint;
+		try {
+			stbl.setEndpoint(new org.dllearner.kb.sparql.SparqlEndpoint(
+					new URL(endpoint.id().substring(endpoint.id().indexOf("_")+1)), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void setUseRemoteValidation(boolean useRemoteValidation){
@@ -188,23 +199,26 @@ public class Evaluation{
 		int topN2Print = 10;
 		
 		
-		int questionId;
-		String question;
-		String query;
-		Object answer;
+		int questionId = -1;
+		String question = "";
+		String targetQuery;
+		Object targetAnswer;
+		double precision = -1;
+		double recall = -1;
 		LatexWriter latex = new LatexWriter();
-		latex.beginDocument();
 		int i = 0;
 		for(Entry<Integer, String> entry : id2Question.entrySet()){
-//			if(i++ == 1)break;
+			if(entry.getKey() != 23)continue;
 			try {
 				questionId = entry.getKey();
 				question = entry.getValue();
-				query = id2Query.get(questionId);
-				answer = id2Answer.get(questionId);
+				targetQuery = id2Query.get(questionId);
+				targetAnswer = id2Answer.get(questionId);
+				precision = -1;
+				recall = -1;
 				logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 				logger.info("QUESTION: " + question + "\n");
-				logger.info("TARGET QUERY:\n" + query + "\n");
+				logger.info("TARGET QUERY:\n" + targetQuery + "\n");
 				
 				
 				//write new section for query
@@ -213,10 +227,10 @@ public class Evaluation{
 				latex.beginSubsection("Target");
 				//write subsubsection for target query
 				latex.beginSubSubsection("Query");
-				latex.addListing(query);
+				latex.addListing(targetQuery);
 				//write subsubsection for target result
-				latex.beginSubSubsection("Result" + ((answer instanceof Collection<?>) ? "(" + ((Collection)answer).size()+")" : ""));
-				latex.addText(escapeAnswerString(answer));
+				latex.beginSubSubsection("Result" + ((targetAnswer instanceof Collection<?>) ? "(" + ((Collection)targetAnswer).size()+")" : ""));
+				latex.addText(escapeAnswerString(targetAnswer));
 				
 				//set the question
 				stbl.setQuestion(question);
@@ -269,27 +283,71 @@ public class Evaluation{
 					k++;
 				}
 				
-				
 				//write solution subsection if exists
 				if(learnedQuery != null){
 					latex.beginSubsection("Solution");
 					latex.beginSubSubsection("Query");
 					latex.addListing(learnedQuery);
 					latex.beginSubSubsection("Result" + ((learnedAnswer instanceof Collection<?>) ? "(" + ((Collection)learnedAnswer).size()+")" : ""));
-					latex.addText(escapeAnswerString(learnedAnswer, answer));
+					latex.addText(escapeAnswerString(learnedAnswer, targetAnswer));
+					precision = computePrecision(targetAnswer, learnedAnswer);
+					recall = computeRecall(targetAnswer, learnedAnswer);
 				}
-			
+				latex.addSummaryTableEntry(questionId, question, precision, recall);
 				
 			} catch (NoTemplateFoundException e) {
 				e.printStackTrace();
 				logger.error("Template generation failed");
+				latex.addSummaryTableEntry(questionId, question, precision, recall);
 			} catch(Exception e){
 				e.printStackTrace();
 				logger.error("ERROR");
+				latex.addSummaryTableEntry(questionId, question, precision, recall);
 			}
 		}
-		latex.endDocument();
 		latex.write("log/evaluation.tex");
+	}
+	
+	private double computeRecall(Object targetAnswer, Object answer){
+		if(answer == null){
+			return -1;
+		}
+		double recall = 0;
+		if(targetAnswer instanceof Collection<?> && answer instanceof Collection<?>){
+			Set<String> targetAnswerColl = new HashSet<String>((Collection<? extends String>) targetAnswer);
+			Set<String> answerColl = new HashSet<String>((Collection<? extends String>) answer);
+			int targetSize = targetAnswerColl.size();
+			targetAnswerColl.retainAll(answerColl);
+			recall = targetAnswerColl.size() / targetSize;
+		} else {
+			if(targetAnswer.equals(answer)){
+				recall = 1;
+			} else {
+				recall = 0;
+			}
+		}
+		return recall;
+	}
+	
+	private double computePrecision(Object targetAnswer, Object answer){
+		if(answer == null){
+			return -1;
+		}
+		double precision = 0;
+		if(targetAnswer instanceof Collection<?> && answer instanceof Collection<?>){
+			Set<String> targetAnswerColl = new HashSet<String>((Collection<? extends String>) targetAnswer);
+			Set<String> answerColl = new HashSet<String>((Collection<? extends String>) answer);
+			int learnedSize = targetAnswerColl.size();
+			targetAnswerColl.retainAll(answerColl);
+			precision = targetAnswerColl.size() / learnedSize;
+		} else {
+			if(targetAnswer.equals(answer)){
+				precision = 1;
+			} else {
+				precision = 0;
+			}
+		}
+		return precision;
 	}
 	
 	public void run_without_testing_answer(){
@@ -304,7 +362,7 @@ public class Evaluation{
 		latex.beginDocument();
 		int i = 0;
 		for(Entry<Integer, String> entry : id2Question.entrySet()){
-//			if(i++ == 1)break;
+			if(entry.getKey() != 23)continue;
 			try {
 				questionId = entry.getKey();
 				question = entry.getValue();
@@ -445,8 +503,7 @@ public class Evaluation{
 		
 		
 		File file = new File("src/main/resources/tbsl/evaluation/dbpedia-train.xml");
-		SparqlEndpoint endpoint = new CachingSparqlEndpoint(new HttpSparqlEndpoint("http://live.dbpedia.org/sparql/", "http://dbpedia.org/sparql"), "cache");
-		
+		SparqlEndpoint endpoint = new CachingSparqlEndpoint(new HttpSparqlEndpoint("http://139.18.2.96:8910/sparql", "http://dbpedia.org"), "cache");System.out.println(endpoint.id());
 		Evaluation eval = new Evaluation(file);
 		eval.setEndpoint(endpoint);
 		eval.setUseRemoteValidation(true);

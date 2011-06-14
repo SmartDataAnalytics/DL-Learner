@@ -15,7 +15,7 @@ public class Preprocessor {
 	static final String[] genericReplacements = { "\"", "", "'", "", "[!?.,;]", "" };
 	static final String[] englishReplacements = { "don't", "do not", "doesn't", "does not" };
 	
-	static NER ner = new LingPipeNER(false);//not case sensitive best solution?
+	static NER ner = new LingPipeNER(true);//not case sensitive best solution?
 	
 	public Preprocessor() {
 	}

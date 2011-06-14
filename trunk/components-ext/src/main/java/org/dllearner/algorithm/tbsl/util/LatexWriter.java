@@ -13,19 +13,22 @@ public class LatexWriter {
 	private static String NL = System.getProperty("line.separator");
 	private static final String PRAEAMBEL_FILE = "tbsl/evaluation/praeambel.tex";
 	private StringBuilder sb;
+	private StringBuilder summary;
 	
 	public LatexWriter() {
 		sb = new StringBuilder();
+		summary = new StringBuilder();
 		
-		loadPraeambel();
+		beginSummaryTable();
 	}
 	
-	private void loadPraeambel(){
+	private String loadPraeambel(){
+		StringBuilder praeamble = new StringBuilder();
 		try {
 			Scanner scanner = new Scanner(new FileInputStream(this.getClass().getClassLoader().getResource(PRAEAMBEL_FILE).getPath()));
 			try {
 			  while (scanner.hasNextLine()){
-			    sb.append(scanner.nextLine() + NL);
+				  praeamble.append(scanner.nextLine() + NL);
 			  }
 			}
 			finally{
@@ -34,6 +37,7 @@ public class LatexWriter {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		return praeamble.toString();
 	}
 	
 	public void makeTitle(){
@@ -95,11 +99,38 @@ public class LatexWriter {
 		sb.append(text).append("\n");
 	}
 	
+	public void beginSummaryTable(){
+		summary.append("\\begin{tabular}{| c | l | c | c |}\\hline\n");
+		summary.append("id & question & P & R \\\\\\hline\\hline\n");
+	}
+	
+	public void endSummaryTable(){
+		
+		summary.append("\\end{tabular}\n");
+	}
+	
+	public void addSummaryTableEntry(int id, String question, double precision, double recall){
+		summary.append(id).append(" & ").append(question).append(" & ").append(precision).append(" & ").append(recall).append("\\\\\\hline\n");
+	}
+	
 	public void write(String file){
+		endSummaryTable();
+		StringBuilder latex = new StringBuilder();
+		latex.append(loadPraeambel());
+		latex.append("\\begin{document}");
+		latex.append("\\maketitle\n");
+		latex.append("\\newpage\n");
+		latex.append(summary.toString());
+		latex.append("\\newpage\n");
+		latex.append("\\tableofcontents\n");
+		latex.append("\\newpage\n");
+		latex.append(sb.toString());
+		latex.append("\\end{document}");
+		
 		try {
 			Writer output = new BufferedWriter(new FileWriter(file));
 			    try {
-			      output.write( sb.toString() );
+			      output.write( latex.toString() );
 			    }
 			    finally {
 			      output.close();
