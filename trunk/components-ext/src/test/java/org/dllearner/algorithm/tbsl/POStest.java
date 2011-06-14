@@ -3,7 +3,6 @@ package org.dllearner.algorithm.tbsl;
 import java.io.IOException;
 import java.util.List;
 
-import org.annolab.tt4j.TreeTaggerException;
 import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.LingPipePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
@@ -12,7 +11,7 @@ import org.dllearner.algorithm.tbsl.nlp.TreeTagger;
 
 public class POStest {
 
-	public static void main(String[] args) throws IOException, ClassNotFoundException, TreeTaggerException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		
 		String sentence = "When did Nirvana record Nevermind?";
 //		String sentence = "Which rivers does the Brooklyn Bridge cross?";

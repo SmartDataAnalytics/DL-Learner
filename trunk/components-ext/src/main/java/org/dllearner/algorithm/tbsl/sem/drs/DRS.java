@@ -219,15 +219,28 @@ public class DRS implements SemanticRepresentation {
 	public void removeCondition(DRS_Condition condition) {
 	
 		m_DRS_Conditions.remove(condition);
+		Set<DRS_Condition> donotkeep = new HashSet<DRS_Condition>();
 		for (DRS_Condition c : m_DRS_Conditions) {
+			if (c.equals(condition)) {
+				donotkeep.add(c);
+			}
 			if (c.isNegatedCondition()) {
 				((Negated_DRS) c).getDRS().removeCondition(condition);
 			}
-			else if (condition.isComplexCondition()) {
+			else if (c.isComplexCondition()) {
 				((Complex_DRS_Condition) c).getRestrictor().removeCondition(condition);
 				((Complex_DRS_Condition) c).getScope().removeCondition(condition);
 			}
 		}
+		
+		// only because remove sometimes fails (for whatever mysterious reason)
+		Set<DRS_Condition> newconditions = new HashSet<DRS_Condition>();
+		for (DRS_Condition c : m_DRS_Conditions) {
+			if (!c.equals(condition)) {
+				newconditions.add(c);
+			}
+		}		
+		m_DRS_Conditions = newconditions;
 	}
 	
 

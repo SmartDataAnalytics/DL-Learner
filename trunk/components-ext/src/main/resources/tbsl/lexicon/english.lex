@@ -16,7 +16,10 @@
 	which are || (NP NP* (S C:'which' (VP V:'are' DP[object]))) || <x, l1, t, [ l1:[ | x=y ] ], [ (l2,y,object,<<e,t>,t>) ], [ l2=l1 ],[]>
 	that are || (NP NP* (S C:'that' (VP V:'are' DP[object]))) || <x, l1, t, [ l1:[ | x=y ] ], [ (l2,y,object,<<e,t>,t>) ], [ l2=l1 ],[]>
 
-	is there || (S V:'is' C:'there' DP[dp]) || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
+	is there  || (S V:'is' C:'there' DP[dp])  || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
+	are there || (S V:'are' C:'there' DP[dp]) || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
+	is there  || (S DP[dp] V:'is' C:'there')  || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
+	are there || (S DP[dp] V:'are' C:'there') || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
 
 // TO BE: YES/NO QUESTIONS
 
@@ -141,7 +144,7 @@
 // EXISTENTIAL
 // -----------
 
-	there || (DP (NP EX:'there')) || <x,l1,<<e,t>,t>,[l1:[x|]],[],[],[]>
+	there || (DP (NP EX:'there')) || <x,l1,<<e,t>,t>,[l1:[|]],[],[],[]>
 
 
 // ORDINAL NUMBERS (1-10)
