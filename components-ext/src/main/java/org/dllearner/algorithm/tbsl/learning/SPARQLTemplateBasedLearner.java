@@ -40,8 +40,10 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -92,7 +94,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private Lemmatizer lemmatizer = new LingPipeLemmatizer();// StanfordLemmatizer();
 	
-	private int maxQueryExecutionTimeInSeconds = 10;
+	private int maxQueryExecutionTimeInSeconds = 20;
 	
 	
 	public SPARQLTemplateBasedLearner(){
@@ -432,19 +434,19 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		SortedSet<String> tmp;
 		List<String> uris;
 		
-		//prune the word list with lemmatizer only when slot type is not RESOURCE
+		//prune the word list with only when slot type is not RESOURCE
 		List<String> words;
 		if(slot.getSlotType() == SlotType.RESOURCE){
 			words = slot.getWords();
 		} else {
-			words = getLemmatizedWords(slot.getWords());
+			words = pruneList(slot.getWords());//getLemmatizedWords(slot.getWords());
 		}
 		
 		for(String word : words){
 			tmp = new TreeSet<String>(new StringSimilarityComparator(word));
 			uris = uriCache.get(word);
 			if(uris == null){
-				uris = index.getResources("label:\"" + word + "\"");
+				uris = index.getResources("label:\"" + word + "\"~0.7");
 				uriCache.put(word, uris);
 			}
 			tmp.addAll(uris);
@@ -455,6 +457,27 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		logger.info("Done in " + mon.getLastValue() + "ms.");
 		logger.info("URIs: " + sortedURIs);
 		return sortedURIs;
+	}
+	
+	private List<String> pruneList(List<String> words){
+		List<String> prunedList = new ArrayList<String>();
+		for(String w1 : words){
+			boolean smallest = true;
+			for(String w2 : words){
+				if(!w1.equals(w2)){
+					if(w2.contains(w1)){
+						smallest = false;
+						break;
+					}
+				}
+			}
+			if(smallest){
+				prunedList.add(w1);
+			}
+		}
+		logger.info("Pruned list: " + prunedList);
+//		return getLemmatizedWords(words);
+		return prunedList;
 	}
 	
 	private List<String> getLemmatizedWords(List<String> words){
@@ -618,6 +641,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	
 	private List<String> getResultFromRemoteEndpoint(String query){
+		System.out.println(query);
 		List<String> resources = new ArrayList<String>();
 		try {
 			ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query + " LIMIT 10"));
@@ -656,11 +680,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Give me all school types.";
+		String question = "Who are the presidents of the United States?";
 //		String question = "Give me all films starring Brad Pitt";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"), 
-				Collections.<String>singletonList("http://dbpedia.org"), Collections.<String>emptyList());
+				Collections.<String>singletonList("http://live.dbpedia.org"), Collections.<String>emptyList());
 		learner.setEndpoint(endpoint);
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();
