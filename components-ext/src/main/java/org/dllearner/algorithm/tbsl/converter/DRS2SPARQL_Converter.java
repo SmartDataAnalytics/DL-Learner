@@ -165,7 +165,7 @@ public class DRS2SPARQL_Converter {
                 System.out.print("|quantor:" + quant);
             }
             switch (quant) {
-                case HOW_MANY:
+                case HOWMANY:
                     query.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT));
                     break;
                 case EVERY:
@@ -185,13 +185,13 @@ public class DRS2SPARQL_Converter {
                     break;
                 case SOME: //
                     break;
-                case THE_LEAST:
+                case THELEAST:
                 	fresh = "c"+createFresh();
                     query.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT,true, new SPARQL_Term(fresh)));
                     query.addOrderBy(new SPARQL_Term(fresh, SPARQL_OrderBy.ASC));
                     query.setLimit(1);
                     break;
-                case THE_MOST:
+                case THEMOST:
                 	fresh = "c"+createFresh();
                     query.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT,true, new SPARQL_Term(fresh)));
                     query.addOrderBy(new SPARQL_Term(fresh, SPARQL_OrderBy.DESC));
@@ -353,7 +353,19 @@ public class DRS2SPARQL_Converter {
                 }
             }
         }
-
+        
+        // finally remove all conditions that ended up of form equal(y,y)
+        Set<Simple_DRS_Condition> equalEqualsConditions = new HashSet<Simple_DRS_Condition>();
+        for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
+        	if(c.getPredicate().equals("equal") && c.getArguments().get(0).getValue().equals(c.getArguments().get(1).getValue())) {
+        		System.out.println("Found " + c); // DEBUG
+        		equalEqualsConditions.add(c);
+        	}
+        }
+        for (Simple_DRS_Condition c : equalEqualsConditions) {
+        	drs.removeCondition(c);
+        }
+        System.out.println("DRS: " + drs);
     }
 
     private boolean isUri(String arg) {

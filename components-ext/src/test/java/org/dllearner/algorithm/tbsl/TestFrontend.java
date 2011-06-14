@@ -16,7 +16,7 @@ public class TestFrontend {
     public static void main(String[] args) {
 
     	Templator templator = new Templator();
-    	templator.setUNTAGGED_INPUT(false);
+    	templator.setUNTAGGED_INPUT(true);
   
         System.out.println("======= SPARQL Templator v0.1 =============");       
         System.out.println("\nType ':q' to quit.");

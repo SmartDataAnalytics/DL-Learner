@@ -369,11 +369,11 @@ DRS_Condition Condition() :
 		if (quantifier.toString().equals("EVERY")) {drs.setQuantifier(DRS_Quantifier.EVERY);}
 		if (quantifier.toString().equals("SOME")) {drs.setQuantifier(DRS_Quantifier.SOME);}
 		if (quantifier.toString().equals("MOST")) {drs.setQuantifier(DRS_Quantifier.MOST);}
-		if (quantifier.toString().equals("THEMOST")) {drs.setQuantifier(DRS_Quantifier.THE_MOST);}
-		if (quantifier.toString().equals("THELEAST")) {drs.setQuantifier(DRS_Quantifier.THE_LEAST);}
+		if (quantifier.toString().equals("THEMOST")) {drs.setQuantifier(DRS_Quantifier.THEMOST);}
+		if (quantifier.toString().equals("THELEAST")) {drs.setQuantifier(DRS_Quantifier.THELEAST);}
 		if (quantifier.toString().equals("AFEW")) {drs.setQuantifier(DRS_Quantifier.FEW);}
 		if (quantifier.toString().equals("MANY")) {drs.setQuantifier(DRS_Quantifier.MANY);}
-		if (quantifier.toString().equals("HOWMANY")) {drs.setQuantifier(DRS_Quantifier.HOW_MANY);}
+		if (quantifier.toString().equals("HOWMANY")) {drs.setQuantifier(DRS_Quantifier.HOWMANY);}
 		if (quantifier.toString().equals("NO")) {drs.setQuantifier(DRS_Quantifier.NO);}
 
 	return drs;
@@ -442,6 +442,7 @@ Slot Slot() :
      }
 	 if (type.toString().equals("CLASS")) { slottype = SlotType.CLASS; }
 	 else if (type.toString().equals("RESOURCE")) { slottype = SlotType.RESOURCE; }	 else if (type.toString().equals("PROPERTY")) { slottype = SlotType.PROPERTY; }
+	 else if (type.toString().equals("SYMPROPERTY")) { slottype = SlotType.SYMPROPERTY; }
 	 else { slottype = SlotType.UNSPEC; }	   
      return new Slot(ref.toString(),slottype,words);
    }

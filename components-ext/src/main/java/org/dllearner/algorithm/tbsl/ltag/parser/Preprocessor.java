@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 
 import org.dllearner.algorithm.tbsl.nlp.LingPipeNER;
 import org.dllearner.algorithm.tbsl.nlp.NER;
-import org.dllearner.algorithm.tbsl.sem.util.Pair;
 
 public class Preprocessor {
 
@@ -53,7 +52,7 @@ public class Preprocessor {
 		
 		Pattern compAdjPattern    = Pattern.compile("(\\w+/RBR.(\\w+)/JJ)");
 		Pattern superAdjPattern   = Pattern.compile("(\\w+/RBS.(\\w+)/JJ)");
-		Pattern howAdjPattern     = Pattern.compile("(\\w+/WRB.(\\w+)/JJ)"); 
+		Pattern howAdjPattern     = Pattern.compile("(\\w+/WRB.(\\w+)(?<!many)/JJ)"); 
 		Pattern nprepPattern      = Pattern.compile("\\s((\\w+)/NNS?.of/IN)");
 		Pattern didPattern        = Pattern.compile("(?i)(\\s((did)|(do)|(does))/VB.?)\\s"); 
 		Pattern prepfrontPattern  = Pattern.compile("(\\A\\w+/((TO)|(IN)).)\\w+/WDT"); // TODO (Nicht ganz sauber. Bei P-Stranding immer zwei Querys, hier nur eine.)
@@ -70,6 +69,8 @@ public class Preprocessor {
 		Pattern vprepPattern      = Pattern.compile("\\s((\\w+)/V[A-Z]+\\s\\w+/(IN|TO))");
 		Pattern whenPattern       = Pattern.compile("(?i)(when/WRB\\s(.+\\s)(\\w+)/((V[A-Z]+)|(PASS[A-Z]+)))");
 		Pattern wherePattern      = Pattern.compile("(?i)(where/WRB\\s(.+\\s)(\\w+)/((V[A-Z]+)|(PASS[A-Z]+)))");
+		Pattern adjnounPattern    = Pattern.compile("((\\w+)(?<!many)/JJ.(\\w+)/NN(S)?)");
+		Pattern adjnprepPattern   = Pattern.compile("((\\w+)(?<!many)/JJ.(\\w+)/NPREP)");
 		
 		m = compAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
@@ -146,6 +147,14 @@ public class Preprocessor {
 		m = wherePattern.matcher(condensedstring);
 		while (m.find()) {
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2) + m.group(3)+"/WHERE");
+		}
+		m = adjnounPattern.matcher(condensedstring); 
+		while (m.find()) {
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(4)+"/JJNN");
+		}
+		m = adjnprepPattern.matcher(condensedstring); 
+		while (m.find()) {
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(4)+"/JJNPREP");
 		}
 		
 		return condensedstring;

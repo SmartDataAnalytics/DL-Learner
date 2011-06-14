@@ -12,9 +12,9 @@ public class PatternMatchingTest {
 		// TODO Auto-generated method stub
 
 		String nep = "World";
-		String s = "Who/WP developed/VBD the/DT video/NN game/NN World/NN of/IN Warcraft/NNP";
+		String s = "how/WRB many/JJ and/CONJ how/WRB big/JJ";
 		
-		Pattern p = Pattern.compile("(\\s)?(" + nep + "/([A-Z]+))(\\s)?");
+		Pattern p = Pattern.compile("(\\w+/WRB.(\\w+)(?<!many)/JJ)");
 		Matcher m = p.matcher(s);
 		while (m.find()) {
 			System.out.println("Found! " + m.group(2));

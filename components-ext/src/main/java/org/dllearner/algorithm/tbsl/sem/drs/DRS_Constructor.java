@@ -16,6 +16,7 @@ public class DRS_Constructor {
 		try {
 			drs = parser.DRS();
 		} catch (ParseException e) {
+			System.err.println("DRS Parse Exception: " + string);
 			e.printStackTrace();
 		}
 	
