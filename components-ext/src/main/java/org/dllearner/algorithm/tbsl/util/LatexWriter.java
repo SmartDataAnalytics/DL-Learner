@@ -15,6 +15,8 @@ public class LatexWriter {
 	private StringBuilder sb;
 	private StringBuilder summary;
 	
+	private int cnt = 1;
+	
 	public LatexWriter() {
 		sb = new StringBuilder();
 		summary = new StringBuilder();
@@ -60,7 +62,7 @@ public class LatexWriter {
 	}
 	
 	public void beginSection(String title){
-		sb.append("\\section{").append(title).append("}\n");
+		sb.append("\\section{").append(title).append("}").append("\\label{" + cnt++ + "}\n");
 	}
 	
 	public void beginSubsection(String title){
@@ -100,6 +102,7 @@ public class LatexWriter {
 	}
 	
 	public void beginSummaryTable(){
+		summary.append("\\small\n");
 		summary.append("\\begin{tabular}{| c | l | c | c |}\\hline\n");
 		summary.append("id & question & P & R \\\\\\hline\\hline\n");
 	}
@@ -110,7 +113,7 @@ public class LatexWriter {
 	}
 	
 	public void addSummaryTableEntry(int id, String question, double precision, double recall){
-		summary.append(id).append(" & ").append(question).append(" & ").append(precision).append(" & ").append(recall).append("\\\\\\hline\n");
+		summary.append("\\ref{" + id + "}").append(" & ").append(question).append(" & ").append(precision).append(" & ").append(recall).append("\\\\\\hline\n");
 	}
 	
 	public void write(String file){
