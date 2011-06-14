@@ -28,7 +28,7 @@ public class LingPipeNER implements NER{
 	}
 	
 	public LingPipeNER(boolean caseSensitive) {
-		this(caseSensitive, true);
+		this(caseSensitive, false);
 	}
 	
 	public LingPipeNER(boolean caseSensitive, boolean allMatches) {
