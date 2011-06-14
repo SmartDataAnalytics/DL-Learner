@@ -14,19 +14,14 @@
 			<id>Simmetrics</id>
 			<url>http://maven.mse.jhu.edu/m2repository/</url>
 		</repository>
-		<!--
-		<repository>
-			<id>Harvard Med</id>
-			<url>http://repo.open.med.harvard.edu/nexus/content/repositories/public/</url>
-		</repository>-->
+		<!-- <repository> <id>Harvard Med</id> <url>http://repo.open.med.harvard.edu/nexus/content/repositories/public/</url> 
+			</repository> -->
 		<repository>
 			<id>Annolab</id>
 			<url>http://annolab.org/m2/releases/</url>
 		</repository>
-		<!-- <repository>
-			<id>Mirror for WSTX</id>
-			<url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
-		</repository> -->
+		<!-- <repository> <id>Mirror for WSTX</id> <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url> 
+			</repository> -->
 	</repositories>
 
 	<parent>
@@ -38,6 +33,16 @@
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.jamonapi</groupId>
@@ -49,6 +54,11 @@
 			<version>3.1.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.5.5</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.stanford</groupId>
@@ -95,14 +105,6 @@
 			<version>3.2.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.hp.hpl.jena</groupId>
-			<artifactId>jena</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.hp.hpl.jena</groupId>
-			<artifactId>arq</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
