@@ -529,11 +529,12 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private SolrSearch getIndexBySlotType(Slot slot){
 		SolrSearch index = null;
-		if(slot.getSlotType() == SlotType.CLASS){
+		SlotType type = slot.getSlotType();
+		if(type == SlotType.CLASS){
 			index = class_index;
-		} else if(slot.getSlotType() == SlotType.PROPERTY){
+		} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY){
 			index = property_index;
-		} else if(slot.getSlotType() == SlotType.RESOURCE){
+		} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
 			index = resource_index;
 		}
 		return index;
@@ -541,11 +542,12 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private Map<String, List<String>> getCacheBySlotType(Slot slot){
 		Map<String, List<String>> cache = null;
-		if(slot.getSlotType() == SlotType.CLASS){
+		SlotType type = slot.getSlotType();
+		if(type == SlotType.CLASS){
 			cache = classesURICache;
-		} else if(slot.getSlotType() == SlotType.PROPERTY){
+		} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY){
 			cache = propertiesURICache;
-		} else if(slot.getSlotType() == SlotType.RESOURCE){
+		} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
 			cache = resourcesURICache;
 		}
 		return cache;
@@ -641,7 +643,6 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	
 	private List<String> getResultFromRemoteEndpoint(String query){
-		System.out.println(query);
 		List<String> resources = new ArrayList<String>();
 		try {
 			ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query + " LIMIT 10"));
@@ -680,7 +681,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Who are the presidents of the United States?";
+		String question = "Give me all actors starring in Batman Begins.";
 //		String question = "Give me all films starring Brad Pitt";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"), 
