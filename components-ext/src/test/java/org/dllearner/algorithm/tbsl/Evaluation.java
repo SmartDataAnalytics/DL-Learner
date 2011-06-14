@@ -1,15 +1,14 @@
 package org.dllearner.algorithm.tbsl;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
@@ -29,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.dllearner.algorithm.tbsl.learning.NoTemplateFoundException;
 import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner;
+import org.dllearner.algorithm.tbsl.sparql.Query;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.util.LatexWriter;
 import org.w3c.dom.DOMException;
@@ -148,6 +148,9 @@ public class Evaluation{
 			answer = endpoint.executeAsk(query);
 		}  else {
 			answer = new HashSet<String>();
+			if(!query.contains("LIMIT")){
+				query = query + " LIMIT 200";
+			}
 			ResultSet rs = endpoint.executeSelect(query);
 			String variable;
 			if(rs.getResultVars().size() == 1){
@@ -182,7 +185,7 @@ public class Evaluation{
 	
 	
 	public void run(){
-		int topN2Print = 25;
+		int topN2Print = 10;
 		
 		
 		int questionId;
@@ -193,7 +196,7 @@ public class Evaluation{
 		latex.beginDocument();
 		int i = 0;
 		for(Entry<Integer, String> entry : id2Question.entrySet()){
-			if(i++ == 1)break;
+//			if(i++ == 1)break;
 			try {
 				questionId = entry.getKey();
 				question = entry.getValue();
@@ -226,10 +229,8 @@ public class Evaluation{
 				if(learnedQuery != null){
 					learnedAnswer = getAnswerForSPARQLQuery(learnedQuery, "y");
 				}
-				//get the generated SPARQL query candidates
-				List<String> queries = stbl.getGeneratedSPARQLQueries();
 				//get the used templates
-				Set<Template> templates = stbl.getTemplates();
+				List<Template> templates = new ArrayList<Template>(stbl.getTemplates());
 				
 				//start output
 				//write templates subsection
@@ -242,28 +243,32 @@ public class Evaluation{
 				}
 				latex.endEnumeration();
 				
+				//get the generated SPARQL query candidates
+				Map<Template, Collection<? extends Query>> template2Queries = stbl.getTemplates2SPARQLQueries();
+				
 				//write generated queries subsection
-				latex.beginSubsection("Top " + topN2Print + " generated queries (max. " + queries.size() + ")");
-				logger.info("LEARNED QUERIES(#" + queries.size() + "):\n");
-				int cnt = 1;
-				if(!queries.isEmpty()){
-					latex.beginEnumeration();
+				latex.beginSubsection("Top " + topN2Print + " generated queries per template");
+				int k = 1;
+				List<Query> queries;
+				for(Template t : templates){
+					latex.beginSubSubsection("Template " + k);
+					queries = new ArrayList<Query>(template2Queries.get(t));
+					if(!queries.isEmpty()){
+						latex.beginEnumeration();
+					}
+					//print top n queries to latex file
+					int max = Math.min(topN2Print, queries.size());
+					for(int j = 0; j < max; j++){
+						latex.beginEnumerationItem();
+						latex.addListing(queries.get(j).toString());
+						latex.endEnumerationItem();
+					}
+					if(!queries.isEmpty()){
+						latex.endEnumeration();
+					}
+					k++;
 				}
-				//print queries to log file
-				for(String q : queries){
-					logger.info("QUERY " + cnt++ + ":\n" + q + "\n");
-					logger.info("--------");
-				}
-				//print top n queries to latex file
-				int max = Math.min(topN2Print, queries.size());
-				for(int j = 0; j < max; j++){
-					latex.beginEnumerationItem();
-					latex.addListing(queries.get(j));
-					latex.endEnumerationItem();
-				}
-				if(!queries.isEmpty()){
-					latex.endEnumeration();
-				}
+				
 				
 				//write solution subsection if exists
 				if(learnedQuery != null){
@@ -299,7 +304,7 @@ public class Evaluation{
 		latex.beginDocument();
 		int i = 0;
 		for(Entry<Integer, String> entry : id2Question.entrySet()){
-			if(i++ == 1)break;
+//			if(i++ == 1)break;
 			try {
 				questionId = entry.getKey();
 				question = entry.getValue();
@@ -340,7 +345,7 @@ public class Evaluation{
 				latex.endEnumeration();
 				
 				//write generated queries subsection
-				latex.beginSubsection("Top " + topN2Print + " generated queries (max. " + queries.size() + ")");
+				latex.beginSubsection("Top " + topN2Print + " generated queries per template");
 				logger.info("LEARNED QUERIES(#" + queries.size() + "):\n");
 				int cnt = 1;
 				if(!queries.isEmpty()){
@@ -385,13 +390,14 @@ public class Evaluation{
 					if(target.contains(s)){
 						s = "\\textcolor{green}{" + s + "}";
 					}
-					sb.append(URLDecoder.decode(s, "UTF-8").replace("_", "\\_").replace("http://dbpedia.org/resource/", "")).append(", ");
+//					sb.append(URLDecoder.decode(s, "UTF-8").replace("_", "\\_").replace("http://dbpedia.org/resource/", "")).append(", ");
+					sb.append(s.replace("_", "\\_").replace("&", "\\&").replace("%", "\\%").replace("#", "\\#").replace("http://dbpedia.org/resource/", "")).append(", ");
 					if(i % 2 == 0){
 						sb.append("\n");
 					}
 					i++;
 				}
-			} catch (UnsupportedEncodingException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			return sb.toString();
@@ -407,13 +413,14 @@ public class Evaluation{
 			try {
 				int i = 1;
 				for(String s : (Collection<String>)learnedAnswer){
-					sb.append(URLDecoder.decode(s, "UTF-8").replace("_", "\\_").replace("http://dbpedia.org/resource/", "")).append(", ");
+//					sb.append(URLDecoder.decode(s, "UTF-8").replace("_", "\\_").replace("http://dbpedia.org/resource/", "")).append(", ");
+					sb.append(s.replace("_", "\\_").replace("&", "\\&").replace("%", "\\%").replace("#", "\\#").replace("http://dbpedia.org/resource/", "")).append(", ");
 					if(i % 2 == 0){
 						sb.append("\n");
 					}
 					i++;
 				}
-			} catch (UnsupportedEncodingException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			return sb.toString();

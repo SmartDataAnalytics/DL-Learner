@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,12 +58,13 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private Monitor mon = MonitorFactory.getTimeMonitor("stbl");
 	
 	private static final int TOP_K = 5;
-	private static final String SOLR_SERVER_URL = "http://139.18.2.173:8080/apache-solr-1.4.1";
+	private static final String SOLR_SERVER_URL = "http://139.18.2.173:8080/apache-solr-3.1.0";
 	private static final int RECURSION_DEPTH = 2;
 	
 	private Ranking ranking = Ranking.SIMILARITY;
 	private boolean useRemoteEndpointValidation = true;
 	private boolean stopIfQueryResultNotEmpty = true;
+	private int maxQueriesPerTemplate = 25;
 	
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
@@ -83,11 +85,14 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private Map<String, List<String>> learnedSPARQLQueries;
 	private Set<Template> templates;
-	private Collection<? extends Query> sparqlQueryCandidates;
+	private Collection<Query> sparqlQueryCandidates;
+	private Map<Template, Collection<? extends Query>> template2Queries;
 	
 	private Map<String, String> prefixMap;
 	
 	private Lemmatizer lemmatizer = new LingPipeLemmatizer();// StanfordLemmatizer();
+	
+	private int maxQueryExecutionTimeInSeconds = 10;
 	
 	
 	public SPARQLTemplateBasedLearner(){
@@ -113,6 +118,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
 		
 		templateGenerator = new Templator();
+		
+		cache.setMaxExecutionTimeInSeconds(maxQueryExecutionTimeInSeconds);
 	}
 	
 	public void setEndpoint(SparqlEndpoint endpoint){
@@ -131,6 +138,14 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		this.useRemoteEndpointValidation = useRemoteEndpointValidation;
 	}
 	
+	public int getMaxQueryExecutionTimeInSeconds() {
+		return maxQueryExecutionTimeInSeconds;
+	}
+
+	public void setMaxQueryExecutionTimeInSeconds(int maxQueryExecutionTimeInSeconds) {
+		this.maxQueryExecutionTimeInSeconds = maxQueryExecutionTimeInSeconds;
+	}
+
 	public void setRanking(Ranking ranking) {
 		this.ranking = ranking;
 	}
@@ -154,8 +169,9 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			logger.info(t);
 		}
 		
-		//generate SPARQL query candidates
-		sparqlQueryCandidates = getSPARQLQueryCandidates(templates, ranking);
+		//generate SPARQL query candidates, but select only a fixed number per template
+		template2Queries = getSPARQLQueryCandidates(templates, ranking);
+		sparqlQueryCandidates = getNBestQueryCandidatesForTemplates(template2Queries);
 		
 		//test candidates
 		if(useRemoteEndpointValidation){ //on remote endpoint
@@ -183,7 +199,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		//generate SPARQL query candidates
 		logger.info("Generating SPARQL query candidates...");
 		mon.start();
-		sparqlQueryCandidates = getSPARQLQueryCandidates(templates, ranking);
+		Map<Template, Collection<? extends Query>> template2Queries = getSPARQLQueryCandidates(templates, ranking);
+		sparqlQueryCandidates = getNBestQueryCandidatesForTemplates(template2Queries);
+		
+		
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
 		
@@ -208,6 +227,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return queries;
 	}
 	
+	public Map<Template, Collection<? extends Query>> getTemplates2SPARQLQueries(){
+		return template2Queries;
+	}
+	
 	private Model getWorkingModel(List<String> resources){
 		logger.info("Generating local model...");
 		mon.start();
@@ -223,7 +246,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return workingModel;
 	}
 	
-	private Collection<? extends Query> getSPARQLQueryCandidates(Set<Template> templates, Ranking ranking){
+	private Map<Template,Collection<? extends Query>> getSPARQLQueryCandidates(Set<Template> templates, Ranking ranking){
 		switch(ranking){
 			case LUCENE: return getSPARQLQueryCandidatesSortedByLucene(templates);
 			case SIMILARITY: return getSPARQLQueryCandidatesSortedBySimilarity(templates);
@@ -232,13 +255,15 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		}
 	}
 	
-	private Set<Query> getSPARQLQueryCandidates(Set<Template> templates){
+	private Map<Template, Collection<? extends Query>> getSPARQLQueryCandidates(Set<Template> templates){
 		logger.info("Generating candidate SPARQL queries...");
 		mon.start();
 		Set<Query> queries = new HashSet<Query>();
-		
+		Map<Template, Collection<? extends Query>> template2Queries = new HashMap<Template, Collection<? extends Query>>();
 		for(Template template : templates){
+			queries = new HashSet<Query>();
 			queries.add(template.getQuery());
+			template2Queries.put(template, queries);
 			for(Slot slot : template.getSlots()){
 				Set<Query> tmp = new HashSet<Query>();
 				String var = slot.getAnchor();
@@ -258,7 +283,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		}
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
-		return queries;
+		return template2Queries;
 	}
 	
 	private Map<String, Float> getCandidateRatedSPARQLQueries(Set<Template> templates){
@@ -290,15 +315,18 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return query2Score;
 	}
 	
-	private Set<RatedQuery> getSPARQLQueryCandidatesSortedByLucene(Set<Template> templates){
+	private Map<Template, Collection<? extends Query>> getSPARQLQueryCandidatesSortedByLucene(Set<Template> templates){
 		logger.info("Generating candidate SPARQL queries...");
 		mon.start();
 		SortedSet<RatedQuery> ratedQueries = new TreeSet<RatedQuery>();
+		Map<Template, Collection<? extends Query>> template2Queries = new HashMap<Template, Collection<? extends Query>>();
 		
 		Query query;
 		for(Template template : templates){
 			query = template.getQuery();
+			ratedQueries = new TreeSet<RatedQuery>();
 			ratedQueries.add(new RatedQuery(query, 0));
+			template2Queries.put(template, ratedQueries);
 			for(Slot slot : template.getSlots()){
 				Set<RatedQuery> tmp = new HashSet<RatedQuery>();
 				String var = slot.getAnchor();
@@ -319,16 +347,19 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		}
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
-		return ratedQueries;
+		return template2Queries;
 	}
 	
-	private List<Query> getSPARQLQueryCandidatesSortedBySimilarity(Set<Template> templates){
+	private Map<Template, Collection<? extends Query>> getSPARQLQueryCandidatesSortedBySimilarity(Set<Template> templates){
 		logger.info("Generating candidate SPARQL queries...");
 		mon.start();
 		List<Query> queries = new ArrayList<Query>();
+		Map<Template, Collection<? extends Query>> template2Queries = new HashMap<Template, Collection<? extends Query>>();
 		List<String> uriCandidates;
 		for(Template template : templates){
+			queries = new ArrayList<Query>();
 			queries.add(template.getQuery());
+			template2Queries.put(template, queries);
 			for(Slot slot : template.getSlots()){
 				List<Query> tmp = new ArrayList<Query>();
 				String var = slot.getAnchor();
@@ -364,7 +395,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		}
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
-		return queries;
+		return template2Queries;
 	}
 	
 	private Set<String> getCandidateURIs(Slot slot){
@@ -520,6 +551,22 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return uri2Score;
 	}
 	
+	private List<Query> getNBestQueryCandidatesForTemplates(Map<Template, Collection<? extends Query>> template2Queries){
+		List<Query> queries = new ArrayList<Query>();
+		for(Entry<Template, Collection<? extends Query>> entry : template2Queries.entrySet()){
+			int max = Math.min(maxQueriesPerTemplate, entry.getValue().size());
+			int i = 0;
+			for(Query q : entry.getValue()){
+				queries.add(q);
+				i++;
+				if(i == max){
+					break;
+				}
+			}
+		}
+		return queries;
+	}
+	
 	private void validateAgainstRemoteEndpoint(Collection<? extends Query> queries){
 		List<String> queryStrings = new ArrayList<String>();
 		for(Query query : queries){
@@ -609,7 +656,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Who are the presidents of the United States?";
+		String question = "Give me all school types.";
 //		String question = "Give me all films starring Brad Pitt";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"), 
