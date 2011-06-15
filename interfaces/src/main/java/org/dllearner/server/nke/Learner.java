@@ -2,18 +2,13 @@ package org.dllearner.server.nke;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
-
+import com.hp.hpl.jena.vocabulary.OWL;
 import org.aksw.commons.jena.Constants;
+import org.aksw.commons.jena.ModelUtils;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.*;
 import org.dllearner.core.owl.Description;
-import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -24,12 +19,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -43,10 +33,12 @@ import java.util.Set;
  */
 public class Learner {
 
-	private static Logger logger = Logger.getLogger(Learner.class);
-	
+    private static Logger logger = Logger.getLogger(Learner.class);
+
     public LearningResult learn(Set<String> pos, Set<String> neg, OntModel model, int maxTime) throws IOException, ComponentInitException, LearningProblemUnsupportedException {
 
+        model.createIndividual("http://nke.aksw.org/", model.createClass(OWL.Ontology.getURI()));
+        ModelUtils.write(model, new File("test.owl"));
         LearningResult lr = new LearningResult();
         PipedOutputStream out = new PipedOutputStream();
         model.write(out, Constants.RDFXML);
@@ -63,15 +55,21 @@ public class Learner {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         OWLOntology retOnt = null;
         try {
-                retOnt = manager.loadOntologyFromOntologyDocument(bs);
+            //retOnt = manager.createOntology(IRI.create("http://nke.aksw.org/tmp"));
+            // manager.
+            // manager.loadOntologyFromOntologyDocument()
+            retOnt = manager.loadOntologyFromOntologyDocument(bs);
         } catch (OWLOntologyCreationException e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
-        
+
+      //  System.out.println(retOnt.getAxiomCount());
+      //  System.exit(0);
+
         KnowledgeSource ks = new OWLAPIOntology(retOnt);
 //        KnowledgeSource ks = cm.knowledgeSource(null);
         ks.init();
-        
+
         // TODO: should the reasoner be initialised at every request or just once (?)
         // ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
         logger.debug("Initialising reasoner");
@@ -90,13 +88,12 @@ public class Learner {
         logger.debug("Running learning algorithm");
         la.start();
         EvaluatedDescriptionPosNeg ed = (EvaluatedDescriptionPosNeg) la.getCurrentlyBestEvaluatedDescription();
-            
+
         // remove all components to avoid side effects
-        cm.freeAllComponents(); 
-        
-        
+        cm.freeAllComponents();
+
         System.out.println(ed);
-        
+
         // TODO: do we really need a learning result class if we have EvaluatedDescription?
         return lr;
 

@@ -75,18 +75,24 @@ public class Geizhals2OWL {
         String[] features = productdesc.split(" • ");
         String cpu = features[0].trim();
 
+        /*
+        * RAM
+        * */
         String ram = features[1].trim();
         ram = ram.substring(0, ram.indexOf("MB") + 2);
         add(classes, ramMap, ram);
 
+        /*
+        * Hard drive
+        * */
         try {
             String hd = features[2].trim();
             if (hd.contains("Flash")) {
-                classes.add(prefix+"82_Flash");
+                classes.add(prefix + "82_Flash");
             } else if (hd.contains("SSD")) {
-                classes.add(prefix+"82_SSD");
+                classes.add(prefix + "82_SSD");
             } else {
-                classes.add(prefix+"82_HDD");
+                classes.add(prefix + "82_HDD");
             }
             hd = hd.substring(0, hd.indexOf("GB") + 2);
             add(classes, hdMap, hd);
@@ -99,11 +105,26 @@ public class Geizhals2OWL {
         //4 =Intel GMA X4500HD (IGP) max.384MB shared memory
         //5 =3x USB 2.0/FireWire/Modem/Gb LAN/WLAN 802.11agn/Bluetooth
 
+        /*
+        * this is skipping some optional values
+        * */
         int x = 6;
         while (!features[x].contains("\"")) {
             x++;
         }
 
+        /*
+        * DISPLAY
+        * */
+        // 13.3\" WXGA glare LED TFT (1366x768) " +
+        String[] display = features[x++].split(" ");
+        classes.add(prefix + "85_"+ display[0].replace("\"",""));
+        //display[display.length-1];
+
+        /*
+       * Operating System
+       * */
+        // Windows 7 Home Premium (64-bit)
         //String next = features[x];
         //System.out.println(next);
         //String next1 = features[x+1];
@@ -143,6 +164,7 @@ public class Geizhals2OWL {
     public Result handleJson(String json) {
 
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM, ModelFactory.createDefaultModel());
+
         Result r = new Result(model);
 
         JSONObject j = (JSONObject) JSONValue.parse(json);
@@ -172,7 +194,7 @@ public class Geizhals2OWL {
                 Model m = index.getHierarchyForClassURI(c);
                 if (m == null) {
                     log.warn("recieved null for " + c);
-                }else{
+                } else {
                     model.add(m);
                 }
             }
