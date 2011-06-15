@@ -86,6 +86,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private Set<Template> templates;
 	private Collection<Query> sparqlQueryCandidates;
 	private Map<Template, Collection<? extends Query>> template2Queries;
+	private Map<Slot, List<String>> slot2URI;
 	
 	private Map<String, String> prefixMap;
 	
@@ -113,6 +114,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		prefixMap.put("http://dbpedia.org/property/", "dbp");
 		prefixMap.put("http://dbpedia.org/resource/", "dbr");
 		prefixMap.put(FOAF.getURI(), "foaf");
+		prefixMap.put("http://dbpedia.org/class/yago/", "yago");
 		
 		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
 		
@@ -157,11 +159,17 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		this.ranking = ranking;
 	}
 	
-	public void learnSPARQLQueries() throws NoTemplateFoundException{
+	private void reset(){
 		learnedSPARQLQueries = new HashMap<String, List<String>>();
 		resourcesURICache = new HashMap<String, List<String>>();
 		classesURICache = new HashMap<String, List<String>>();
 		propertiesURICache = new HashMap<String, List<String>>();
+		template2Queries = new HashMap<Template, Collection<? extends Query>>();
+		slot2URI = new HashMap<Slot, List<String>>();
+	}
+	
+	public void learnSPARQLQueries() throws NoTemplateFoundException{
+		reset();
 		//generate SPARQL query templates
 		logger.info("Generating SPARQL query templates...");
 		mon.start();
@@ -236,6 +244,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	public Map<Template, Collection<? extends Query>> getTemplates2SPARQLQueries(){
 		return template2Queries;
+	}
+	
+	public Map<Slot, List<String>> getSlot2URIs(){
+		return slot2URI;
 	}
 	
 	private Model getWorkingModel(List<String> resources){
@@ -439,7 +451,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		SortedSet<String> tmp;
 		List<String> uris;
 		
-		//prune the word list with only when slot type is not RESOURCE
+		//prune the word list only when slot type is not RESOURCE
 		List<String> words;
 		if(slot.getSlotType() == SlotType.RESOURCE){
 			words = slot.getWords();
@@ -458,6 +470,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			sortedURIs.addAll(tmp);
 			tmp.clear();
 		}
+		slot2URI.put(slot, sortedURIs);
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
 		logger.info("URIs: " + sortedURIs);

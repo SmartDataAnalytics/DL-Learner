@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,6 +36,7 @@ import org.apache.log4j.PatternLayout;
 import org.dllearner.algorithm.tbsl.learning.NoTemplateFoundException;
 import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner;
 import org.dllearner.algorithm.tbsl.sparql.Query;
+import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.util.LatexWriter;
 import org.w3c.dom.DOMException;
@@ -41,9 +45,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import scala.actors.threadpool.Arrays;
+
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.sparql.sse.builders.BuilderExpr.Build;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Evaluation{
 	
@@ -59,6 +69,7 @@ public class Evaluation{
 	private SPARQLTemplateBasedLearner stbl;
 	
 	private int testID = -1;
+	private Map<String, String> prefixMap;
 	
 	public Evaluation(File ... evaluationFiles) throws FileNotFoundException, IOException{
 		for(File file : evaluationFiles){
@@ -67,6 +78,15 @@ public class Evaluation{
 		stbl = new SPARQLTemplateBasedLearner();
 		
 		init();
+		
+		prefixMap = new HashMap<String, String>();
+		prefixMap.put("rdf", RDF.getURI());
+		prefixMap.put("rdfs", RDFS.getURI());
+		prefixMap.put("onto", "http://dbpedia.org/ontology/");
+		prefixMap.put("prop", "http://dbpedia.org/property/");
+		prefixMap.put("res", "http://dbpedia.org/resource/");
+		prefixMap.put("foaf", FOAF.getURI());
+		prefixMap.put("yago", "http://dbpedia.org/class/yago/");
 	}
 	
 	public void init() throws FileNotFoundException, IOException{
@@ -319,6 +339,53 @@ public class Evaluation{
 					k++;
 				}
 				
+				//get the URIs for each template slot
+				latex.beginSubsection("Covered entities");
+				Map<Slot, List<String>> slot2URIsMap = stbl.getSlot2URIs();
+//				Map<List<String>, List<String>> tokens2URIs = new HashMap<List<String>, List<String>>();
+//				for(Entry<Slot, List<String>> slot2URI : slot2URIsMap.entrySet()){
+//					tokens2URIs.put(slot2URI.getKey().getWords(), value)
+//					if(slot2URI.getValue().contains(getFullEntity(entity))){
+//						covered = true;
+//						break;
+//					}
+//				}
+				List<String> targetEntities = extractEntities(targetQuery);
+				Map<String, Boolean> coveredEntitiesMap = new HashMap<String, Boolean>();
+				for(String entity : targetEntities){
+					boolean covered = false;
+					for(Entry<Slot, List<String>> slot2URI : slot2URIsMap.entrySet()){
+						if(slot2URI.getValue().contains(getFullURI(entity))){
+							covered = true;
+							break;
+						}
+					}
+					
+					coveredEntitiesMap.put(entity, covered);
+				}
+				latex.beginSubSubsection("Target entities");
+				StringBuilder sb = new StringBuilder();
+				sb.append("\\begin{tabular}{| l | c |}\\hline\n");
+				for(Entry<String, Boolean> e : coveredEntitiesMap.entrySet()){
+					sb.append(escapeString(e.getKey())).append(" & ").append(e.getValue()).append("\\\\\\hline\n");
+				}
+				sb.append("\\end{tabular}\n");
+				latex.addText(sb.toString());
+				latex.beginSubSubsection("Keyword -> URIs");
+				sb = new StringBuilder();
+				sb.append("\\begin{tabular}{| l | l |}\\hline\n");
+				for(Entry<Slot, List<String>> slot2URI : slot2URIsMap.entrySet()){
+					if(!slot2URI.getKey().getWords().isEmpty()){
+						StringBuilder uris = new StringBuilder();
+						for(String uri : slot2URI.getValue()){
+							uris.append(escapeString(getPrefixedURI(uri))).append(", ");
+						}
+						sb.append(slot2URI.getKey().getWords() + "[" + slot2URI.getKey().getSlotType() + "]").append(" & ").append(uris.toString()).append("\\\\\\hline\n");
+					}
+				}
+				sb.append("\\end{tabular}\n");
+				latex.addText(sb.toString());
+				
 				//write solution subsection if exists
 				if(learnedQuery != null){
 					latex.beginSubsection("Solution");
@@ -342,6 +409,73 @@ public class Evaluation{
 			}
 		}
 		latex.write("log/evaluation.tex");
+	}
+	
+	public static List<String> extractEntities(String query){
+		List<String> exclusions = Arrays.asList(new String[]{"rdf", "rdfs"});
+		List<String> entities = new ArrayList<String>();
+		//pattern to detect resources
+		Pattern pattern = Pattern.compile("(\\w+):(\\w+)");
+		Matcher matcher = pattern.matcher(query);
+		String group;
+		while(matcher.find()){
+			group = matcher.group();
+			boolean add = true;
+			for(String ex : exclusions){
+				if(group.contains(ex)){
+					add = false;
+					break;
+				}
+			}
+			if(add){
+				entities.add(group);
+			}
+		}
+		//pattern to detect string literals
+		pattern = Pattern.compile("'(\\w+)'@en");
+		matcher = pattern.matcher(query);
+		while(matcher.find()){
+			group = matcher.group();
+			entities.add(buildEntityFromLabel(group));
+		}
+		
+		return entities;
+	}
+	
+	private static String buildEntityFromLabel(String label){
+		String base = "res:";
+		String entity = label.substring(1).substring(0, label.lastIndexOf("'")-1).replace(" ", "_");
+		return base + entity;
+	}
+	
+	private String getFullURI(String prefixedURI){
+		String fullURI = prefixedURI;
+		String prefix;
+		String uri;
+		for(Entry<String, String> prefix2URI : prefixMap.entrySet()){
+			prefix = prefix2URI.getKey();
+			uri = prefix2URI.getValue();
+			if(prefixedURI.startsWith(prefix)){
+				fullURI = prefixedURI.replace(prefix + ":", uri);
+				break;
+			}
+		}
+		return fullURI;
+	}
+	
+	private String getPrefixedURI(String fullURI){
+		String prefixedURI = fullURI;
+		String prefix;
+		String uri;
+		for(Entry<String, String> prefix2URI : prefixMap.entrySet()){
+			prefix = prefix2URI.getKey();
+			uri = prefix2URI.getValue();
+			if(fullURI.startsWith(uri)){
+				prefixedURI = fullURI.replace(uri, prefix + ":" );
+				break;
+			}
+		}
+		return prefixedURI;
 	}
 	
 	private double computeRecall(Object targetAnswer, Object learnedAnswer){
@@ -503,6 +637,10 @@ public class Evaluation{
 		
 	}
 	
+	private String escapeString(String str){
+		return str.replace("_", "\\_").replace("&", "\\&").replace("%", "\\%").replace("#", "\\#");
+	}
+	
 	private String escapeAnswerString(Object learnedAnswer){
 		if(learnedAnswer instanceof Collection<?>){
 			StringBuilder sb = new StringBuilder();
@@ -545,6 +683,15 @@ public class Evaluation{
 		}
 		
 		File file = new File(Evaluation.class.getClassLoader().getResource(args[0]).getPath());
+		
+		System.out.println(Evaluation.extractEntities("SELECT DISTINCT ?uri ?string WHERE {" +
+				"?uri rdf:type onto:Person ." +
+				"?uri onto:birthPlace ?city ." +
+				"?city rdfs:label 'Heraklion'@en" +
+				"OPTIONAL {?uri rdfs:label ?string . " +
+				"FILTER (lang(?string) = 'en') }" +
+				"}}")
+		);
 		
 		Evaluation eval = new Evaluation(file);
 		eval.run();
