@@ -168,16 +168,23 @@ public class SlotBuilder {
 			/* VERBS */
 			else if (equalsOneOf(pos,verb)) {
 				
-				String slot    = "SLOT_" + token + "/PROPERTY/" + token; 
-				String symslot = "SLOT_" + token + "/SYMPROPERTY/" + token; 
-				List<String> preds = wordnet.getAttributes(token);
-				for (Iterator<String> i = preds.iterator(); i.hasNext();) {
-					slot += i.next();
-					symslot += i.next();
-					if (i.hasNext()) {
-						slot += "^";
-						symslot += "^";
-					}
+				String slot; String symslot;
+				if (token.equals("has") || token.equals("have") || token.equals("had")) {
+					slot    = "SLOT_" + token + "/PROPERTY/";
+					symslot = "SLOT_" + token + "/SYMPROPERTY/";
+				} 
+				else {
+					slot    = "SLOT_" + token + "/PROPERTY/" + token; 
+					symslot = "SLOT_" + token + "/SYMPROPERTY/" + token; 
+					List<String> preds = wordnet.getAttributes(token);
+					for (Iterator<String> i = preds.iterator(); i.hasNext();) {
+						slot += i.next();
+						symslot += i.next();
+						if (i.hasNext()) {
+							slot += "^";
+							symslot += "^";
+						}
+					} 
 				}
 				if (pos.equals("PASSIVE")) {
 					String[] passEntry1 = {token,

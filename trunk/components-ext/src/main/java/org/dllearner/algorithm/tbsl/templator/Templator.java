@@ -99,13 +99,13 @@ public class Templator {
                 	d2s.redundantEqualRenaming(drs);
                 	
                 	if (!containsModuloRenaming(drses,drs)) {
-                    	// DEBUG
-                		System.out.println(dude);
-                		System.out.println(drs);
-                		for (Slot sl : slots) {
-                			System.out.println(sl.toString());
-                		}
-                		//
+//                    	// DEBUG
+//                		System.out.println(dude);
+//                		System.out.println(drs);
+//                		for (Slot sl : slots) {
+//                			System.out.println(sl.toString());
+//                		}
+//                		//
                 		drses.add(drs);
                 		
                 		try {
