@@ -1,5 +1,7 @@
 package org.dllearner.test.junit;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dllearner.server.nke.Geizhals2OWL;
 import org.dllearner.server.nke.Learner;
 import org.junit.Test;
@@ -43,7 +45,7 @@ public class GeizhalsTest {
 
     @Test
     public void learn() throws Exception{
-
+    	Logger.getRootLogger().setLevel(Level.DEBUG);
         System.out.println(json);
         Geizhals2OWL g = Geizhals2OWL.getInstance();
         Geizhals2OWL.Result result = g.handleJson(json);

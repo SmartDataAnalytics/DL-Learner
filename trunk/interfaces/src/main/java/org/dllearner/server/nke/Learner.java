@@ -2,8 +2,25 @@ package org.dllearner.server.nke;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import org.aksw.commons.jena.Constants;
+import org.apache.log4j.Logger;
+import org.dllearner.algorithms.el.ELLearningAlgorithm;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
+import org.dllearner.kb.KBFile;
+import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,16 +39,56 @@ import java.util.Set;
  */
 public class Learner {
 
-    public LearningResult learn(Set<String> pos, Set<String> neg, OntModel model, int maxTime) throws IOException {
+	private static Logger logger = Logger.getLogger(Learner.class);
+	
+    public LearningResult learn(Set<String> pos, Set<String> neg, OntModel model, int maxTime) throws IOException, ComponentInitException, LearningProblemUnsupportedException {
 
         LearningResult lr = new LearningResult();
         PipedOutputStream out = new PipedOutputStream();
         model.write(out, Constants.RDFXML);
-        //TODO pipe this into the OWL API? Maybe there is a better way?
         PipedInputStream in = new PipedInputStream(out);
 
-        //TODO insert algortihm here
+        ComponentManager cm = ComponentManager.getInstance();
 
+        logger.debug("Loading ontology into OWL API");
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        OWLOntology retOnt = null;
+        try {
+                retOnt = manager.loadOntologyFromOntologyDocument(in);
+        } catch (OWLOntologyCreationException e) {
+                e.printStackTrace();
+        }
+
+        KnowledgeSource ks = new OWLAPIOntology(retOnt);
+//        KnowledgeSource ks = cm.knowledgeSource(null);
+        ks.init();
+        
+        // TODO: should the reasoner be initialised at every request or just once (?)
+        // ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
+        logger.debug("Initialising reasoner");
+        ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks); // try OWL API / Pellet, because ontology is not complex
+        rc.init();
+
+        PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
+        lp.setPositiveExamples(Helper.getIndividualSet(pos));
+        lp.setNegativeExamples(Helper.getIndividualSet(neg));
+        lp.getConfigurator().setAccuracyMethod("fmeasure");
+        lp.getConfigurator().setUseApproximations(false);
+        lp.init();
+
+        ELLearningAlgorithm la = cm.learningAlgorithm(ELLearningAlgorithm.class, lp, rc);
+        la.init();
+        logger.debug("Running learning algorithm");
+        la.start();
+        EvaluatedDescriptionPosNeg ed = (EvaluatedDescriptionPosNeg) la.getCurrentlyBestEvaluatedDescription();
+            
+        // remove all components to avoid side effects
+        cm.freeAllComponents(); 
+        
+        
+        System.out.println(ed);
+        
+        // TODO: do we really need a learning result class if we have EvaluatedDescription?
         return lr;
 
     }
