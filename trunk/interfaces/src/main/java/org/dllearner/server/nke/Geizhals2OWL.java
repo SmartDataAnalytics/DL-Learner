@@ -82,11 +82,11 @@ public class Geizhals2OWL {
         try {
             String hd = features[2].trim();
             if (hd.contains("Flash")) {
-                classes.add("82_Flash");
+                classes.add(prefix+"82_Flash");
             } else if (hd.contains("SSD")) {
-                classes.add("82_SSD");
+                classes.add(prefix+"82_SSD");
             } else {
-                classes.add("82_HDD");
+                classes.add(prefix+"82_HDD");
             }
             hd = hd.substring(0, hd.indexOf("GB") + 2);
             add(classes, hdMap, hd);
@@ -146,8 +146,6 @@ public class Geizhals2OWL {
         Result r = new Result(model);
 
         JSONObject j = (JSONObject) JSONValue.parse(json);
-        System.out.println(j);
-        //System.exit(0);
         JSONArray pos = (JSONArray) j.get("pos");
         JSONArray neg = (JSONArray) j.get("neg");
 
