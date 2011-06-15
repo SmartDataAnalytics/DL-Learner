@@ -1,6 +1,8 @@
 package org.dllearner.server.nke;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.RDFWriter;
+
 import org.aksw.commons.jena.Constants;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
@@ -22,6 +24,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
@@ -46,7 +50,12 @@ public class Learner {
         LearningResult lr = new LearningResult();
         PipedOutputStream out = new PipedOutputStream();
         model.write(out, Constants.RDFXML);
-        PipedInputStream in = new PipedInputStream(out);
+//        PipedInputStream in = new PipedInputStream(out);
+        RDFWriter writer = model.getWriter("RDF/XML");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        writer.write(model, baos, "");
+
+        ByteArrayInputStream bs = new ByteArrayInputStream(baos.toString().getBytes());
 
         ComponentManager cm = ComponentManager.getInstance();
 
@@ -54,11 +63,11 @@ public class Learner {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         OWLOntology retOnt = null;
         try {
-                retOnt = manager.loadOntologyFromOntologyDocument(in);
+                retOnt = manager.loadOntologyFromOntologyDocument(bs);
         } catch (OWLOntologyCreationException e) {
                 e.printStackTrace();
         }
-
+        
         KnowledgeSource ks = new OWLAPIOntology(retOnt);
 //        KnowledgeSource ks = cm.knowledgeSource(null);
         ks.init();
