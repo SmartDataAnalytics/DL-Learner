@@ -48,6 +48,10 @@ public class Learner {
         //change this if necessary,
         public List<Description> best5Results = new ArrayList<Description>();
 
+        @Override
+        public String toString() {
+            return "LearningResult{" + "falsePositives=" + falsePositives + ", falseNegatives=" + falseNegatives + ", best5Results=" + best5Results + '}';
+        }
     }
 
 }

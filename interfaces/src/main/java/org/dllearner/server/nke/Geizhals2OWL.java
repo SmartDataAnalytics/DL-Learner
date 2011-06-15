@@ -11,10 +11,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Sebastian Hellmann - http://bis.informatik.uni-leipzig.de/SebastianHellmann
@@ -129,14 +126,17 @@ public class Geizhals2OWL {
     }
 
     public class Result {
-        public List<String> pos = new ArrayList<String>();
-        public List<String> neg = new ArrayList<String>();
+        public Set<String> pos = new HashSet<String>();
+        public Set<String> neg = new HashSet<String>();
         private OntModel model;
 
         public Result(OntModel model) {
             this.model = model;
         }
 
+        public OntModel getModel() {
+            return model;
+        }
     }
 
 
@@ -157,7 +157,7 @@ public class Geizhals2OWL {
 
     }
 
-    private void fill(JSONArray arr, List<String> l, OntModel model) {
+    private void fill(JSONArray arr, Set<String> l, OntModel model) {
         for (Object o : arr) {
             JSONArray one = (JSONArray) o;
             String uri = one.get(0).toString();
