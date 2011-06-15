@@ -1,11 +1,11 @@
 package org.dllearner.algorithm.tbsl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -47,8 +48,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 public class Evaluation{
 	
 	private static Logger logger = Logger.getLogger(Evaluation.class);
-	
-	private File evaluationFile;
+	private static String PROPERTIES_PATH = "tbsl/evaluation/evaluation.properties";
 	
 	private SortedMap<Integer, String> id2Question = new TreeMap<Integer, String>();
 	private SortedMap<Integer, String> id2Query = new TreeMap<Integer, String>();
@@ -58,14 +58,41 @@ public class Evaluation{
 	
 	private SPARQLTemplateBasedLearner stbl;
 	
-	public Evaluation(File ... evaluationFiles){
+	private int testID = -1;
+	
+	public Evaluation(File ... evaluationFiles) throws FileNotFoundException, IOException{
 		for(File file : evaluationFiles){
 			readQueries(file);
 		}
 		stbl = new SPARQLTemplateBasedLearner();
+		
+		init();
 	}
 	
-	public void init(){
+	public void init() throws FileNotFoundException, IOException{
+		//load properties for evaluation
+		Properties props = new Properties();
+		props.load(new FileInputStream(this.getClass().getClassLoader().getResource(PROPERTIES_PATH).getPath()));
+		
+		String endpointURL = props.getProperty("endpointURL", "http://live.dbpedia.org/sparql");
+		String defaultGraphURI = props.getProperty("defaultGraphURI", "http://live.dbpedia.org");
+		this.endpoint = new CachingSparqlEndpoint(new HttpSparqlEndpoint(endpointURL, defaultGraphURI), "cache");
+		try {
+			stbl.setEndpoint(new org.dllearner.kb.sparql.SparqlEndpoint(
+					new URL(endpointURL), Collections.singletonList(defaultGraphURI), Collections.<String>emptyList()));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
+		boolean useRemoteEndpointValidation = Boolean.parseBoolean(props.getProperty("useRemoteEndpointValidation", "True"));
+		stbl.setUseRemoteEndpointValidation(useRemoteEndpointValidation);
+		
+		int maxTestedQueriesPerTemplate = Integer.parseInt(props.getProperty("maxTestedQueriesPerTemplate", "25"));
+		stbl.setMaxTestedQueriesPerTemplate(maxTestedQueriesPerTemplate);
+		
+		int maxQueryExecutionTimeInSeconds = Integer.parseInt(props.getProperty("maxQueryExecutionTimeInSeconds", "20"));
+		stbl.setMaxQueryExecutionTimeInSeconds(maxQueryExecutionTimeInSeconds);
+		
 		loadAnswers();
 	}
 	
@@ -119,7 +146,7 @@ public class Evaluation{
 		String question;
 		Object answer;
 		for(Entry<Integer, String> entry : id2Query.entrySet()){
-			if(entry.getKey() != 23)continue;
+			if(testID != -1 && entry.getKey() != testID)continue;
 			questionId = entry.getKey();
 			question = entry.getValue();
 			try {
@@ -153,7 +180,7 @@ public class Evaluation{
 		}  else {
 			answer = new HashSet<String>();
 			if(!query.contains("LIMIT")){
-				query = query + " LIMIT 200";
+				query = query + " LIMIT 500";
 			}System.out.println(query);
 			ResultSet rs = endpoint.executeSelect(query);
 			String variable;
@@ -168,12 +195,13 @@ public class Evaluation{
 			while(rs.hasNext()){
 				qs = rs.next();
 				node = qs.get(variable);
-				if(node.isURIResource()){
-					((HashSet)answer).add(node.asResource().getURI());
-				} else if(node.isLiteral()){
-					((HashSet)answer).add(node.asLiteral().getLexicalForm());
+				if(node != null){
+					if(node.isURIResource()){
+						((HashSet)answer).add(node.asResource().getURI());
+					} else if(node.isLiteral()){
+						((HashSet)answer).add(node.asLiteral().getLexicalForm());
+					}
 				}
-				
 			}
 		}
 		logger.debug("Answer: " + answer);
@@ -194,6 +222,14 @@ public class Evaluation{
 		stbl.setUseRemoteEndpointValidation(useRemoteValidation);
 	}
 	
+	public void setMaxQueryExecutionTimeInSeconds(int maxQueryExecutionTimeInSeconds){
+		stbl.setMaxQueryExecutionTimeInSeconds(maxQueryExecutionTimeInSeconds);
+	}
+	
+	public void setMaxTestedQueriesPerTemplate(int maxTestedQueriesPerTemplate) {
+		stbl.setMaxTestedQueriesPerTemplate(maxTestedQueriesPerTemplate);
+	}
+	
 	
 	public void run(){
 		int topN2Print = 10;
@@ -208,7 +244,7 @@ public class Evaluation{
 		LatexWriter latex = new LatexWriter();
 		int i = 0;
 		for(Entry<Integer, String> entry : id2Question.entrySet()){
-			if(entry.getKey() != 23)continue;
+			if(testID != -1 && entry.getKey() != testID)continue;
 			try {
 				questionId = entry.getKey();
 				question = entry.getValue();
@@ -308,19 +344,20 @@ public class Evaluation{
 		latex.write("log/evaluation.tex");
 	}
 	
-	private double computeRecall(Object targetAnswer, Object answer){
-		if(answer == null){
+	private double computeRecall(Object targetAnswer, Object learnedAnswer){
+		if(learnedAnswer == null){
 			return -1;
 		}
 		double recall = 0;
-		if(targetAnswer instanceof Collection<?> && answer instanceof Collection<?>){
+		if(targetAnswer instanceof Collection<?> && learnedAnswer instanceof Collection<?>){
 			Set<String> targetAnswerColl = new HashSet<String>((Collection<? extends String>) targetAnswer);
-			Set<String> answerColl = new HashSet<String>((Collection<? extends String>) answer);
+			Set<String> learnedAnswerColl = new HashSet<String>((Collection<? extends String>) learnedAnswer);
 			int targetSize = targetAnswerColl.size();
-			targetAnswerColl.retainAll(answerColl);
-			recall = targetAnswerColl.size() / targetSize;
+			targetAnswerColl.retainAll(learnedAnswerColl);
+			recall = (double)targetAnswerColl.size() / (double)targetSize;
+			recall = Math.round( recall * 100. ) / 100.;
 		} else {
-			if(targetAnswer.equals(answer)){
+			if(targetAnswer.equals(learnedAnswer)){
 				recall = 1;
 			} else {
 				recall = 0;
@@ -329,19 +366,20 @@ public class Evaluation{
 		return recall;
 	}
 	
-	private double computePrecision(Object targetAnswer, Object answer){
-		if(answer == null){
+	private double computePrecision(Object targetAnswer, Object learnedAnswer){
+		if(learnedAnswer == null){
 			return -1;
 		}
 		double precision = 0;
-		if(targetAnswer instanceof Collection<?> && answer instanceof Collection<?>){
+		if(targetAnswer instanceof Collection<?> && learnedAnswer instanceof Collection<?>){
 			Set<String> targetAnswerColl = new HashSet<String>((Collection<? extends String>) targetAnswer);
-			Set<String> answerColl = new HashSet<String>((Collection<? extends String>) answer);
-			int learnedSize = targetAnswerColl.size();
-			targetAnswerColl.retainAll(answerColl);
-			precision = targetAnswerColl.size() / learnedSize;
+			Set<String> learnedAnswerColl = new HashSet<String>((Collection<? extends String>) learnedAnswer);
+			int learnedSize = learnedAnswerColl.size();
+			targetAnswerColl.retainAll(learnedAnswerColl);
+			precision = (double)targetAnswerColl.size() / (double)learnedSize;
+			precision = Math.round( precision * 100. ) / 100.;
 		} else {
-			if(targetAnswer.equals(answer)){
+			if(targetAnswer.equals(learnedAnswer)){
 				precision = 1;
 			} else {
 				precision = 0;
@@ -362,7 +400,7 @@ public class Evaluation{
 		latex.beginDocument();
 		int i = 0;
 		for(Entry<Integer, String> entry : id2Question.entrySet()){
-			if(entry.getKey() != 23)continue;
+			if(entry.getKey() != testID)continue;
 			try {
 				questionId = entry.getKey();
 				question = entry.getValue();
@@ -501,13 +539,14 @@ public class Evaluation{
 		fileAppender.setThreshold(Level.INFO);
 		Logger.getRootLogger().addAppender(fileAppender);
 		
+		if(args.length == 0){
+			System.out.println("Usage: Evaluation <file>");
+			System.exit(0);
+		}
 		
-		File file = new File("src/main/resources/tbsl/evaluation/dbpedia-train.xml");
-		SparqlEndpoint endpoint = new CachingSparqlEndpoint(new HttpSparqlEndpoint("http://139.18.2.96:8910/sparql", "http://dbpedia.org"), "cache");System.out.println(endpoint.id());
+		File file = new File(Evaluation.class.getClassLoader().getResource(args[0]).getPath());
+		
 		Evaluation eval = new Evaluation(file);
-		eval.setEndpoint(endpoint);
-		eval.setUseRemoteValidation(true);
-		eval.init();
 		eval.run();
 
 	}

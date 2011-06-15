@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,10 +39,8 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -66,7 +63,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private Ranking ranking = Ranking.SIMILARITY;
 	private boolean useRemoteEndpointValidation = true;
 	private boolean stopIfQueryResultNotEmpty = true;
-	private int maxQueriesPerTemplate = 25;
+	private int maxTestedQueriesPerTemplate = 25;
 	
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
@@ -146,6 +143,14 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 
 	public void setMaxQueryExecutionTimeInSeconds(int maxQueryExecutionTimeInSeconds) {
 		this.maxQueryExecutionTimeInSeconds = maxQueryExecutionTimeInSeconds;
+	}
+
+	public int getMaxTestedQueriesPerTemplate() {
+		return maxTestedQueriesPerTemplate;
+	}
+
+	public void setMaxTestedQueriesPerTemplate(int maxTestedQueriesPerTemplate) {
+		this.maxTestedQueriesPerTemplate = maxTestedQueriesPerTemplate;
 	}
 
 	public void setRanking(Ranking ranking) {
@@ -579,7 +584,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private List<Query> getNBestQueryCandidatesForTemplates(Map<Template, Collection<? extends Query>> template2Queries){
 		List<Query> queries = new ArrayList<Query>();
 		for(Entry<Template, Collection<? extends Query>> entry : template2Queries.entrySet()){
-			int max = Math.min(maxQueriesPerTemplate, entry.getValue().size());
+			int max = Math.min(maxTestedQueriesPerTemplate, entry.getValue().size());
 			int i = 0;
 			for(Query q : entry.getValue()){
 				queries.add(q);
@@ -681,11 +686,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Give me all actors starring in Batman Begins.";
-//		String question = "Give me all films starring Brad Pitt";
+		String question = "Give me all school types.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
-		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"), 
-				Collections.<String>singletonList("http://live.dbpedia.org"), Collections.<String>emptyList());
+		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
+				Collections.<String>singletonList(""), Collections.<String>emptyList());
 		learner.setEndpoint(endpoint);
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();
