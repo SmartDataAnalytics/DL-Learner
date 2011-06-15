@@ -146,6 +146,8 @@ public class Geizhals2OWL {
         Result r = new Result(model);
 
         JSONObject j = (JSONObject) JSONValue.parse(json);
+        System.out.println(j);
+        //System.exit(0);
         JSONArray pos = (JSONArray) j.get("pos");
         JSONArray neg = (JSONArray) j.get("neg");
 
@@ -172,8 +174,9 @@ public class Geizhals2OWL {
                 Model m = index.getHierarchyForClassURI(c);
                 if (m == null) {
                     log.warn("recieved null for " + c);
+                }else{
+                    model.add(m);
                 }
-                model.add(m);
             }
         }
     }
