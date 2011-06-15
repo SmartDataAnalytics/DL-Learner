@@ -6,6 +6,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import org.aksw.commons.jena.Constants;
 import org.aksw.commons.jena.ModelUtils;
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.core.*;
 import org.dllearner.core.owl.Description;
@@ -76,19 +77,26 @@ public class Learner {
         ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks); // try OWL API / Pellet, because ontology is not complex
         rc.init();
 
+//        System.out.println(rc.getClassHierarchy());
+        
         PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
         lp.setPositiveExamples(Helper.getIndividualSet(pos));
         lp.setNegativeExamples(Helper.getIndividualSet(neg));
-        lp.getConfigurator().setAccuracyMethod("fmeasure");
-        lp.getConfigurator().setUseApproximations(false);
+//        lp.getConfigurator().setAccuracyMethod("fmeasure");
+//        lp.getConfigurator().setUseApproximations(false);
         lp.init();
 
         ELLearningAlgorithm la = cm.learningAlgorithm(ELLearningAlgorithm.class, lp, rc);
+        la.getConfigurator().setInstanceBasedDisjoints(false);
+//        CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
         la.init();
         logger.debug("Running learning algorithm");
         la.start();
         EvaluatedDescriptionPosNeg ed = (EvaluatedDescriptionPosNeg) la.getCurrentlyBestEvaluatedDescription();
 
+        // use this to get all solutions
+        // rc.getIndividuals(ed.getDescription());
+        
         // remove all components to avoid side effects
         cm.freeAllComponents();
 

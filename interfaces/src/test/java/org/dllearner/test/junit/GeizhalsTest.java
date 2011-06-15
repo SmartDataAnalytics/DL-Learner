@@ -45,7 +45,7 @@ public class GeizhalsTest {
 
     @Test
     public void learn() throws Exception{
-    	Logger.getRootLogger().setLevel(Level.DEBUG);
+//    	Logger.getRootLogger().setLevel(Level.TRACE);
         System.out.println(json);
         Geizhals2OWL g = Geizhals2OWL.getInstance();
         Geizhals2OWL.Result result = g.handleJson(json);

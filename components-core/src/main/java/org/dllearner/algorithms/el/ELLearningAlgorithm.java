@@ -92,7 +92,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	}
 	
 	@Override
-	public Configurator getConfigurator() {
+	public ELLearningAlgorithmConfigurator getConfigurator() {
 		return configurator;
 	}	
 	
@@ -133,6 +133,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			List<ELDescriptionTree> refinements = operator.refine(best.getDescriptionTree());
 			// add all refinements to search tree, candidates, best descriptions
 			for(ELDescriptionTree refinement : refinements) {
+//				System.out.println("refinement: " + refinement);
 				addDescriptionTree(refinement, best);
 			}
 			loop++;
