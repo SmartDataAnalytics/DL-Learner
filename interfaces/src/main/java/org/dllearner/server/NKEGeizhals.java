@@ -20,6 +20,9 @@ import java.security.InvalidParameterException;
 public class NKEGeizhals extends HttpServlet {
     private static Logger log = LoggerFactory.getLogger(NKEGeizhals.class);
 
+
+
+
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         handle(httpServletRequest, httpServletResponse);

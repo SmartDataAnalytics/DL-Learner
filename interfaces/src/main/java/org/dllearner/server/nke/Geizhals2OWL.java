@@ -140,7 +140,7 @@ public class Geizhals2OWL {
     }
 
 
-    public void handleJson(String json) {
+    public Result handleJson(String json) {
 
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM, ModelFactory.createDefaultModel());
         Result r = new Result(model);
@@ -151,13 +151,13 @@ public class Geizhals2OWL {
 
         System.out.println(j);
 
-
-       fill(pos, r.pos, model);
-       fill(neg, r.neg, model);
+        fill(pos, r.pos, model);
+        fill(neg, r.neg, model);
+        return r;
 
     }
 
-    private void fill(JSONArray arr, List<String> l, OntModel model){
+    private void fill(JSONArray arr, List<String> l, OntModel model) {
         for (Object o : arr) {
             JSONArray one = (JSONArray) o;
             String uri = one.get(0).toString();
