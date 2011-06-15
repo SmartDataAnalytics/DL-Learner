@@ -358,14 +358,12 @@ public class DRS2SPARQL_Converter {
         Set<Simple_DRS_Condition> equalEqualsConditions = new HashSet<Simple_DRS_Condition>();
         for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
         	if(c.getPredicate().equals("equal") && c.getArguments().get(0).getValue().equals(c.getArguments().get(1).getValue())) {
-        		System.out.println("Found " + c); // DEBUG
         		equalEqualsConditions.add(c);
         	}
         }
         for (Simple_DRS_Condition c : equalEqualsConditions) {
         	drs.removeCondition(c);
         }
-        System.out.println("DRS: " + drs);
     }
 
     private boolean isUri(String arg) {
