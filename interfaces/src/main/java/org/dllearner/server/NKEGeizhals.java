@@ -87,7 +87,9 @@ public class NKEGeizhals extends HttpServlet {
                 String json = "";
                 if (isSet(httpServletRequest, "data")) {
                     json = httpServletRequest.getParameter("data");
-
+                    JSONObject j = (JSONObject) JSONValue.parse(json);
+                    
+                    
                     //Object obj=JSONValue.parse(s);
                     // JSONArray array=(JSONArray)obj;
 
@@ -102,6 +104,8 @@ public class NKEGeizhals extends HttpServlet {
                     SortedSet<Individual> posExamples = null;
                     SortedSet<Individual> negExamples = null;
 
+                    
+                    
                     ComponentManager cm = ComponentManager.getInstance();
 
                     // TODO: get a knowledge source
