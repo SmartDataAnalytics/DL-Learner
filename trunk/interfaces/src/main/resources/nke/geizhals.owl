@@ -1804,13 +1804,25 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_12.5~85_-+13.4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_12.5~85_-+13.4">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_14~85_-+14.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+16.4"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_14~85_-+14.5">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_15~85_-+15.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_15~85_-+15.5">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_15.6~85_-+16.4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+16.4"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_15.6~85_-+16.4">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
@@ -1819,16 +1831,31 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_12.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+13.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_12.5">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_13">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+13.4"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_13">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_13.1">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+13.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_13.1">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_13.3">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+13.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_13.3">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_13.4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+13.4"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_13.4">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
@@ -1837,10 +1864,19 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_14">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_14~85_-+14.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_14">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_14.1">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_14~85_-+14.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_14.1">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_14.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_14~85_-+14.5"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_14.5">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
@@ -1849,10 +1885,19 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_15">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_15~85_-+15.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_15">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_15.4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_15~85_-+15.5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_15.4">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_15.5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_15~85_-+15.5"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_15.5">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
@@ -1861,10 +1906,19 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_15.6">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_15.6">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_16">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+16.4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_16">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_85_16.4">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_85_12.5~85_-+16.4"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_85_16.4">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
@@ -1873,34 +1927,67 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_AMD+A6-">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_AMD+A6-">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_AMD+C-">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_AMD+C-">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_AMD+E-">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_AMD+E-">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_AMD+V">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_AMD+V">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Athlon+64">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Athlon+64">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Athlon+II">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Athlon+II">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Athlon+X2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Athlon+X2">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Sempron">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Sempron">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Turion+64">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Turion+64">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Turion+II">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Turion+II">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Turion+X2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_AMD"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Turion+X2">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
@@ -1909,52 +1996,100 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_unbekannt">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_unbekannt"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_unbekannt">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_1482_unbekannt">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Celeron">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Celeron">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Celeron+Dual-Core">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Celeron+Dual-Core">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+2+Duo">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+2+Duo">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i3">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i3">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i3-2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i3-2">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i5">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i5">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i5-2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i5-2">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i7">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i7">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i7-2">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Core+i7-2">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Pentium+Dual-Core">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Pentium+Dual-Core">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Pentium+P">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Pentium+P">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Pentium+SU">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Pentium+SU">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Pentium+U">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Pentium+U">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Pentium-M">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Pentium-M">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nke.aksw.org/_29_Phenom+II">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nke.aksw.org/_1482_Intel"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/_29_Phenom+II">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>

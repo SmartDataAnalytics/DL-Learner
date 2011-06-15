@@ -253,6 +253,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					
 					if(source instanceof OWLAPIOntology) {
 						ontology = ((OWLAPIOntology)source).getOWLOntolgy();
+                        manager = ontology.getOWLOntologyManager();
 					} else if (source instanceof SparqlKnowledgeSource) { 
 						ontology = ((SparqlKnowledgeSource)source).getOWLAPIOntology();
 						manager = ontology.getOWLOntologyManager();
