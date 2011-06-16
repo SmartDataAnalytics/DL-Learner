@@ -386,6 +386,28 @@ public class Query
 			
 		}
 	}
+	
+	public List<SPARQL_Triple> getTriplesWithVar(String var){
+		List<SPARQL_Triple> triples = new ArrayList<SPARQL_Triple>();
+		
+		SPARQL_Term variable;
+		SPARQL_Property property;
+		SPARQL_Value value;
+		for(SPARQL_Triple triple : conditions){
+			variable = triple.getVariable();
+			property = triple.getProperty();
+			value = triple.getValue();
+			
+			if(variable.isVariable() && variable.getName().equals(var)){
+				triples.add(triple);
+			} else if(property.isVariable() && property.getName().equals(var)){
+				triples.add(triple);
+			} else if(value.isVariable() && value.getName().equals(var)){
+				triples.add(triple);
+			}
+		}
+		return triples;
+	}
 
 	@Override
 	public int hashCode() {

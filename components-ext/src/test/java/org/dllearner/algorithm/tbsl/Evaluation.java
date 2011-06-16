@@ -261,6 +261,7 @@ public class Evaluation{
 		Object targetAnswer;
 		double precision = -1;
 		double recall = -1;
+		String errorCode = "";
 		LatexWriter latex = new LatexWriter();
 		int i = 0;
 		for(Entry<Integer, String> entry : id2Question.entrySet()){
@@ -272,6 +273,7 @@ public class Evaluation{
 				targetAnswer = id2Answer.get(questionId);
 				precision = -1;
 				recall = -1;
+				errorCode = "";
 				logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 				logger.info("QUESTION: " + question + "\n");
 				logger.info("TARGET QUERY:\n" + targetQuery + "\n");
@@ -362,6 +364,9 @@ public class Evaluation{
 					}
 					
 					coveredEntitiesMap.put(entity, covered);
+					if(!covered){
+//						errorCode = "NE";
+					}
 				}
 				latex.beginSubSubsection("Target entities");
 				StringBuilder sb = new StringBuilder();
@@ -373,7 +378,7 @@ public class Evaluation{
 				latex.addText(sb.toString());
 				latex.beginSubSubsection("Keyword -> URIs");
 				sb = new StringBuilder();
-				sb.append("\\begin{tabular}{| l | l |}\\hline\n");
+				sb.append("\\begin{tabular}{| l | p{10cm} |}\\hline\n");
 				for(Entry<Slot, List<String>> slot2URI : slot2URIsMap.entrySet()){
 					if(!slot2URI.getKey().getWords().isEmpty()){
 						StringBuilder uris = new StringBuilder();
@@ -396,16 +401,17 @@ public class Evaluation{
 					precision = computePrecision(targetAnswer, learnedAnswer);
 					recall = computeRecall(targetAnswer, learnedAnswer);
 				}
-				latex.addSummaryTableEntry(questionId, question, precision, recall);
+				latex.addSummaryTableEntry(questionId, question, precision, recall, errorCode);
 				
 			} catch (NoTemplateFoundException e) {
 				e.printStackTrace();
 				logger.error("Template generation failed");
-				latex.addSummaryTableEntry(questionId, question, precision, recall);
+				errorCode = "NT";
+				latex.addSummaryTableEntry(questionId, question, precision, recall, errorCode);
 			} catch(Exception e){
 				e.printStackTrace();
 				logger.error("ERROR");
-				latex.addSummaryTableEntry(questionId, question, precision, recall);
+				latex.addSummaryTableEntry(questionId, question, precision, recall, errorCode);
 			}
 		}
 		latex.write("log/evaluation.tex");
