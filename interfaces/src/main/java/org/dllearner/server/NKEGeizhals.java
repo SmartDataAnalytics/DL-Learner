@@ -3,6 +3,7 @@ package org.dllearner.server;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
@@ -21,7 +22,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.security.InvalidParameterException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,6 +50,8 @@ public class NKEGeizhals extends HttpServlet {
      * @throws java.io.IOException
      */
     private void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+        ComponentManager cm = ComponentManager.getInstance();
+        cm.freeAllComponents();
         Monitor mon = MonitorFactory.getTimeMonitor("NIFParameters.getInstance").start();
         String result = "";
         try {
@@ -68,16 +70,23 @@ public class NKEGeizhals extends HttpServlet {
             if (action.equals("learn")) {
                 String json = "";
                 if (isSet(httpServletRequest, "data")) {
+
                     json = httpServletRequest.getParameter("data");
                     Geizhals2OWL.Result r = Geizhals2OWL.getInstance().handleJson(json);
                     EvaluatedDescriptionPosNeg ed = new Learner().learn(r.pos, r.neg, r.getModel(), 20);
                     JSONObject concept = jsonForEd(ed);
                     JSONObject j = new JSONObject();
                     j.put("learned", concept);
-                    j.put("up", JSONArray.toJSONString(Arrays.asList(new String[]{concept.toJSONString(), concept.toJSONString()})));
-                    j.put("down", JSONArray.toJSONString(Arrays.asList(new String[]{concept.toJSONString(), concept.toJSONString()})));
+                    JSONArray up = new JSONArray();
+                    up.add(concept);
+                    up.add(concept);
+                    j.put("up", up);
+                    j.put("down", up);
+                    String time = logMonitor(mon.stop());
+                    j.put("time", time);
+
                     PrintWriter pw = httpServletResponse.getWriter();
-                    log.debug("Request handled: " + logMonitor(mon.stop()));
+                    log.debug("Request handled: " + time);
                     pw.print(j.toJSONString());
                     pw.close();
                     return;

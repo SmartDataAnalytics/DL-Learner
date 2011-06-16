@@ -24,8 +24,8 @@ public class Geizhals2OWL {
     public static final Geizhals2OWL geizhals2OWL = new Geizhals2OWL();
 
     public static Map<String, String> ramMap = new HashMap<String, String>();
-    public static Map<String, String> hdMap = new HashMap<String, String>();
-    public static Map<String, String> discMap = new HashMap<String, String>();
+    public static Map<String, String> harddriveMap = new HashMap<String, String>();
+    public static Map<String, String> optischesLaufwerkMap = new HashMap<String, String>();
     public static final String prefix = "http://nke.aksw.org/geizhals/_";
     //public static final String prefix = "http://geizhals.at/?cat=nb15w&xf=";
 
@@ -43,25 +43,26 @@ public class Geizhals2OWL {
         ramMap.put("8192MB", "12_8192");
         ramMap.put("unbekannt", "12_unbekannt");
 
-        hdMap.put("32GB", "11_32");
-        hdMap.put("80GB", "11_80");
-        hdMap.put("120GB", "11_120");
-        hdMap.put("128GB", "11_128");
-        hdMap.put("160GB", "11_160");
-        hdMap.put("250GB", "11_250");
-        hdMap.put("256GB", "11_256");
-        hdMap.put("320GB", "11_320");
-        hdMap.put("500GB", "11_500");
-        hdMap.put("640GB", "11_640");
-        hdMap.put("1000GB", "11_1000");
-        hdMap.put("sonstige", "11_sonstige");
-        hdMap.put("unbekannt", "11_unbekannt");
+        harddriveMap.put("32GB", "11_32");
+        harddriveMap.put("80GB", "11_80");
+        harddriveMap.put("120GB", "11_120");
+        harddriveMap.put("128GB", "11_128");
+        harddriveMap.put("160GB", "11_160");
+        harddriveMap.put("250GB", "11_250");
+        harddriveMap.put("256GB", "11_256");
+        harddriveMap.put("320GB", "11_320");
+        harddriveMap.put("500GB", "11_500");
+        harddriveMap.put("640GB", "11_640");
+        harddriveMap.put("1000GB", "11_1000");
+        harddriveMap.put("sonstige", "11_sonstige");
+        harddriveMap.put("unbekannt", "11_unbekannt");
 
-        discMap.put("kein optisches Laufwerk", "84_ohne");
-        discMap.put("DVD/CD-RW Combo", "84_DVD%2FCD-RW+Combo");
-        discMap.put("DVD+/-RW DL", "84_DVD%2B%2F-RW");
-        discMap.put("DVD+/-RW", "84_DVD%2B%2F-RW");
-        discMap.put("Blu-ray (BD-ROM) und DVD+/-RW DL", "84_Blu-ray+(BD-ROM)");
+        optischesLaufwerkMap.put("kein optisches Laufwerk", "84_ohne");
+        optischesLaufwerkMap.put("DVD/CD-RW Combo", "84_DVD%2FCD-RW+Combo");
+        optischesLaufwerkMap.put("DVD+/-RW DL", "84_DVD%2B%2F-RW");
+        optischesLaufwerkMap.put("DVD /-RW DL", "84_DVD%2B%2F-RW");
+        optischesLaufwerkMap.put("DVD+/-RW", "84_DVD%2B%2F-RW");
+        optischesLaufwerkMap.put("Blu-ray (BD-ROM) und DVD+/-RW DL", "84_Blu-ray+(BD-ROM)");
 
         //$subs[] = array("84_Blu-ray+(BD-R%2FRE)","84_Blu-ray+(BD-R%2FRE%2FRW)","84_Blu-ray+(BD-ROM)","84_DVD%2B%2F-RW","84_DVD-ROM","84_DVD%2FCD-RW+Combo","84_ohne","84_unbekannt","");
     }
@@ -96,12 +97,12 @@ public class Geizhals2OWL {
                 classes.add(prefix + "82_HDD");
             }
             hd = hd.substring(0, hd.indexOf("GB") + 2);
-            add(classes, hdMap, hd);
+            add(classes, harddriveMap, hd);
         } catch (Exception e) {
             log.warn("Handling hd failed: " + features[2].trim());
         }
         String disc = features[3].trim();
-        add(classes, discMap, disc);
+        add(classes, optischesLaufwerkMap, disc);
 
         //4 =Intel GMA X4500HD (IGP) max.384MB shared memory
         //5 =3x USB 2.0/FireWire/Modem/Gb LAN/WLAN 802.11agn/Bluetooth
@@ -138,7 +139,7 @@ public class Geizhals2OWL {
     public static void add(List<String> classes, Map<String, String> map, String key) {
         String val = null;
         if ((val = map.get(key)) == null) {
-            log.warn("No value found for: " + key);
+            log.warn("No value found for: |" + key+"|");
             return;
         } else {
             //log.info("Adding " + val);

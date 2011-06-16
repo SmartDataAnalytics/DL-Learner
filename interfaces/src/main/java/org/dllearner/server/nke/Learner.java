@@ -33,6 +33,7 @@ public class Learner {
 
     public EvaluatedDescriptionPosNeg learn(Set<String> pos, Set<String> neg, OntModel model, int maxTime) throws IOException, ComponentInitException, LearningProblemUnsupportedException {
         ComponentManager cm = ComponentManager.getInstance();
+
         try {
             model.createIndividual("http://nke.aksw.org/", model.createClass(OWL.Ontology.getURI()));
             ModelUtils.write(model, new File("test.owl"));
@@ -80,6 +81,7 @@ public class Learner {
             lp.init();
 
             ELLearningAlgorithm la = cm.learningAlgorithm(ELLearningAlgorithm.class, lp, rc);
+
             la.getConfigurator().setInstanceBasedDisjoints(false);
 //        CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
             la.init();
