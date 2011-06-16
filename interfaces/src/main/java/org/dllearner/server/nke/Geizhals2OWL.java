@@ -19,19 +19,20 @@ import java.util.*;
  */
 public class Geizhals2OWL {
     private static Logger log = Logger.getLogger(Geizhals2OWL.class);
-    public static ClassIndexer index = new ClassIndexer();
-    public static Geizhals2OWL geizhals2OWL = new Geizhals2OWL();
+    public static final OntModel labels = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM, ModelFactory.createDefaultModel());
+    public static final ClassIndexer index = new ClassIndexer();
+    public static final Geizhals2OWL geizhals2OWL = new Geizhals2OWL();
 
     public static Map<String, String> ramMap = new HashMap<String, String>();
     public static Map<String, String> hdMap = new HashMap<String, String>();
     public static Map<String, String> discMap = new HashMap<String, String>();
-    public static String prefix = "http://nke.aksw.org/_";
+    public static final String prefix = "http://nke.aksw.org/geizhals/_";
+    //public static final String prefix = "http://geizhals.at/?cat=nb15w&xf=";
 
     static {
 
-        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM, ModelFactory.createDefaultModel());
-        model.read(Geizhals2OWL.class.getClassLoader().getResourceAsStream("nke/geizhals.owl"), "");
-        index.index(model);
+        labels.read(Geizhals2OWL.class.getClassLoader().getResourceAsStream("nke/geizhals.owl"), "");
+        index.index(labels);
 
         ramMap.put("512MB", "12_512");
         ramMap.put("1024MB", "12_1024");
@@ -193,7 +194,7 @@ public class Geizhals2OWL {
                 model.createIndividual(uri, model.createClass(c));
                 Model m = index.getHierarchyForClassURI(c);
                 if (m == null) {
-                    log.warn("recieved null for " + c);
+                    log.warn("received null for " + c);
                 } else {
                     model.add(m);
                 }

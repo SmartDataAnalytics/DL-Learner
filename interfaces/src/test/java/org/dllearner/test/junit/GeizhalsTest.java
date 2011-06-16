@@ -1,7 +1,7 @@
 package org.dllearner.test.junit;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.dllearner.server.NKEGeizhals;
 import org.dllearner.server.nke.Geizhals2OWL;
 import org.dllearner.server.nke.Learner;
 import org.junit.Test;
@@ -44,13 +44,13 @@ public class GeizhalsTest {
 
 
     @Test
-    public void learn() throws Exception{
+    public void learn() throws Exception {
 //    	Logger.getRootLogger().setLevel(Level.TRACE);
         System.out.println(json);
         Geizhals2OWL g = Geizhals2OWL.getInstance();
         Geizhals2OWL.Result result = g.handleJson(json);
         Learner l = new Learner();
-        Learner.LearningResult lr = l.learn(result.pos, result.neg, result.getModel(), 20);
-        System.out.println(lr);
+        EvaluatedDescriptionPosNeg ed =  l.learn(result.pos, result.neg, result.getModel(), 20);
+        System.out.println(NKEGeizhals.jsonForEd(ed).toJSONString());
     }
 }
