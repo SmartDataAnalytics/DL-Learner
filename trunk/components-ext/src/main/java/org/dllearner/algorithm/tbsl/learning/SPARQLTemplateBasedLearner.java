@@ -394,6 +394,19 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 						} 
 					}
 					for(Query query : queries){
+						if(slot.getSlotType() == SlotType.SYMPROPERTY){
+							Query reversedQuery = new Query(query);
+							reversedQuery.getTriplesWithVar(var).iterator().next().reverse();
+//							logger.info("NORMAL QUERY:\n" + query.toString());
+//							logger.info("REVERSED QUERY:\n" + reversedQuery.toString());
+							if(prefix != null){
+								reversedQuery.addPrefix(prefix);
+								reversedQuery.replaceVarWithPrefixedURI(var, uri);
+							} else {
+								reversedQuery.replaceVarWithURI(var, uri);
+							}
+							tmp.add(reversedQuery);
+						}
 						Query newQuery = new Query(query);
 						if(prefix != null){
 							newQuery.addPrefix(prefix);
@@ -401,7 +414,6 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 						} else {
 							newQuery.replaceVarWithURI(var, uri);
 						}
-						
 						tmp.add(newQuery);
 					}
 					prefix = null;
@@ -699,7 +711,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Give me all school types.";
+		String question = "Who developed the video game World of Warcraft?";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 				Collections.<String>singletonList(""), Collections.<String>emptyList());

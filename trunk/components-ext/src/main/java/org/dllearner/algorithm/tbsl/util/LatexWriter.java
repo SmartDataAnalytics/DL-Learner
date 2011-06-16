@@ -103,8 +103,8 @@ public class LatexWriter {
 	
 	public void beginSummaryTable(){
 		summary.append("\\small\n");
-		summary.append("\\begin{tabular}{| c | l | c | c |}\\hline\n");
-		summary.append("id & question & P & R \\\\\\hline\\hline\n");
+		summary.append("\\begin{tabular}{| c | p{10cm} | c | c | c |}\\hline\n");
+		summary.append("id & question & P & R & \\\\\\hline\\hline\n");
 	}
 	
 	public void endSummaryTable(){
@@ -112,8 +112,16 @@ public class LatexWriter {
 		summary.append("\\end{tabular}\n");
 	}
 	
-	public void addSummaryTableEntry(int id, String question, double precision, double recall){
-		summary.append("\\ref{" + id + "}").append(" & ").append(question).append(" & ").append(precision).append(" & ").append(recall).append("\\\\\\hline\n");
+	public void addSummaryTableEntry(int id, String question, double precision, double recall, String errorCode){
+		String precisionStr = "";
+		String recallStr = "";
+		if(precision != -1 && recall != -1){
+			precisionStr = Double.toString(precision);
+			recallStr = Double.toString(recall);
+		}
+		summary.append("\\ref{" + id + "}").append(" & ").append(question).
+		append(" & ").append(precisionStr).append(" & ").append(recallStr).append(" & ").append(errorCode).append("\\\\\\hline\n");
+		
 	}
 	
 	public void write(String file){
