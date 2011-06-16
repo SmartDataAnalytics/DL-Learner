@@ -12,13 +12,13 @@ public class PatternMatchingTest {
 		// TODO Auto-generated method stub
 
 		String nep = "World";
-		String s = "how/WRB many/JJ and/CONJ how/WRB big/JJ";
+		String s = "is/VBZ there/RB a/DT video/NN game/NN called/VBN Battle/NNP Chess/NNP";
 		
-		Pattern p = Pattern.compile("(\\w+/WRB.(\\w+)(?<!many)/JJ)");
+		Pattern p = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.((.+)\\s\\w+)/VB(N|D))(?<!is/VBZ there/RB.+/VB(N|D))");
 		Matcher m = p.matcher(s);
 		while (m.find()) {
-			System.out.println("Found! " + m.group(2));
-			s = s.replaceFirst(m.group(2),nep+"/NNP");
+			System.out.println("Found! " + m.group(1) + "  m.group(7): " + m.group(7));
+			s = s.replaceFirst(m.group(1),m.group(7)+"/NNP");
 		}
 		
 		System.out.println(s);

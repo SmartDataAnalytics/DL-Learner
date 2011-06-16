@@ -19239,7 +19239,7 @@ Theo Albrecht
 </answers>
 </question>
 <question id="15">
-<string>Which/WDT capitals/NNS in/IN Europe/NNP were/VBD host/NN cities/NNS of/IN the/DT summer/NN olympic/JJ games/NNS</string>
+<string>Which/WDT capitals/NNS in/IN Europe/NNP were/VBD host/NN cities/NNS of/IN the/DT Summer/NNP Olympic/NNP Games/NNPS</string>
 <query>
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;

@@ -46,6 +46,7 @@ public class Preprocessor {
 		/* condense: 
 		 * x/RBR adj/JJ > adj/JJR, x/RBS adj/JJ > adj/JJS, x/WRB adj/JJ > x/JJH
 		 * nn/RBR of/IN > nn/NPREP
+		 * usw. 
 		 * */ 
 		String condensedstring = taggedstring;
 		Matcher m;
@@ -60,8 +61,9 @@ public class Preprocessor {
 		Pattern passivePattern1b  = Pattern.compile("(\\s((has)|(have)|(had))/VB[A-Z]?(.+\\s)been/VBN\\s(\\w+)/VB(N|D))");
 		Pattern passivePattern2a  = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.(\\w+)/VBN.by/IN)");
 		Pattern pseudopassPattern = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.(\\w+)/VBN.\\w+/TO)");
-		Pattern pseudopwhPattern  = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.(.+)\\s(\\w+)/VBN.\\w+/TO)");
-		Pattern passivePattern2b  = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.(.+)(\\s\\w+)/VB(N|D))");
+		Pattern pseudopwhPattern  = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.(.+)\\s(\\w+)/VB(N|D).\\w+/TO)");
+		Pattern saveIsThere       = Pattern.compile("((is)|(are))/(VB[A-Z]?).there/(RB)");
+		Pattern passivePattern2b  = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.((.+)\\s\\w+)/VB(N|D))");
 		Pattern passpartPattern   = Pattern.compile("\\s((\\w+)/VBN.by/IN)");
 		Pattern vpassPattern      = Pattern.compile("\\s(\\w+/VBD.(\\w+)/VBN)");
 		Pattern vpassinPattern    = Pattern.compile("\\s((\\w+)/VPASS.\\w+/IN)");
@@ -74,87 +76,112 @@ public class Preprocessor {
 		
 		m = compAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/JJR");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJR");
 		}
 		m = superAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/JJS");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJS");
 		}
 		m = howAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/JJH");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJH");
 		}
 		m = nprepPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/NPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/NPREP");
 		}
 		m = didPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by \"\"");
 			condensedstring = condensedstring.replaceFirst(m.group(1),"");
 		}
 		m = prepfrontPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by \"\"");
 			condensedstring = condensedstring.replaceFirst(m.group(1),"");
 		}
 		m = passivePattern1a.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(6)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(6)+"/PASSIVE");
 		}
 		m = passivePattern1b.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(6)+m.group(7)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(6) + m.group(7)+"/PASSIVE");
 		}
 		m = passivePattern2a.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(7)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+"/PASSIVE");
 		}
 		m = pseudopassPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(7)+"/VPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+"/VPREP");
 		}
 		m = pseudopwhPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(7)+m.group(8)+"/VPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+" "+m.group(8)+"/VPREP");
+		}
+		m = saveIsThere.matcher(condensedstring);
+		while (m.find()) {
+			condensedstring = condensedstring.replaceFirst(m.group(4),"LEX").replaceFirst(m.group(5),"LEX"); // TODO what a dirty hack!
 		}
 		m = passivePattern2b.matcher(condensedstring);
 		while (m.find()) {
-			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7) + m.group(8)+"/PASSIVE");
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(7)+"/PASSIVE");
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+"/PASSIVE");
 		}
 		m = passpartPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/PASSPART");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/PASSPART");
 		}
 		m = vpassPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/VPASS");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/VPASS");
 		}
 		m = vpassinPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/VPASSIN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/VPASSIN");
 		}
 		m = gerundinPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/GERUNDIN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/GERUNDIN");
 		}
 		m = vprepPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/VPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/VPREP");
 		}
 		m = whenPattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHEN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2) + m.group(3)+"/WHEN");
 		}
 		m = wherePattern.matcher(condensedstring);
 		while (m.find()) {
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHERE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2) + m.group(3)+"/WHERE");
 		}
 		m = adjnounPattern.matcher(condensedstring); 
 		while (m.find()) {
-			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(4)+"/JJNN");
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNN");
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNN");
 		}
 		m = adjnprepPattern.matcher(condensedstring); 
 		while (m.find()) {
-			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(4)+"/JJNPREP");
+			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNPREP");
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNPREP");
 		}
 		
 		return condensedstring;
