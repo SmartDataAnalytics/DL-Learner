@@ -156,7 +156,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	// we need to use this method instead of the standard JSON array constructor,
 	// otherwise we'll get unexpected results (JSONArray does not take Individuals
 	// as arguments and does not use toString)
-	private static JSONArray getJSONArray(Set<Individual> individuals) {
+	public static JSONArray getJSONArray(Set<Individual> individuals) {
 		JSONArray j = new JSONArray();
 		for(Individual i : individuals) {
 			j.put(i.getName());

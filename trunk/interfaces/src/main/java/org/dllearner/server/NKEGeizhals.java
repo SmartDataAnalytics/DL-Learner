@@ -1,28 +1,15 @@
 package org.dllearner.server;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-
-import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.el.ELLearningAlgorithm;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.CELOEConfigurator;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.gui.Config;
-import org.dllearner.gui.ConfigSave;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.Datastructures;
-import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.server.nke.Geizhals2OWL;
+import org.dllearner.server.nke.Learner;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,22 +17,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.SortedSet;
+import java.util.Set;
 
 
 public class NKEGeizhals extends HttpServlet {
     private static Logger log = LoggerFactory.getLogger(NKEGeizhals.class);
-
-
 
 
     @Override
@@ -87,55 +69,19 @@ public class NKEGeizhals extends HttpServlet {
                 String json = "";
                 if (isSet(httpServletRequest, "data")) {
                     json = httpServletRequest.getParameter("data");
-                    JSONObject j = (JSONObject) JSONValue.parse(json);
-                    
-                    
-                    //Object obj=JSONValue.parse(s);
-                    // JSONArray array=(JSONArray)obj;
+                    Geizhals2OWL.Result r = Geizhals2OWL.getInstance().handleJson(json);
+                    EvaluatedDescriptionPosNeg ed = new Learner().learn(r.pos, r.neg, r.getModel(), 20);
+                    JSONObject concept = jsonForEd(ed);
+                    JSONObject j = new JSONObject();
+                    j.put("learned", concept);
+                    j.put("up", JSONArray.toJSONString(Arrays.asList(new String[]{concept.toJSONString(), concept.toJSONString()})));
+                    j.put("down", JSONArray.toJSONString(Arrays.asList(new String[]{concept.toJSONString(), concept.toJSONString()})));
+                    PrintWriter pw = httpServletResponse.getWriter();
+                    log.debug("Request handled: " + logMonitor(mon.stop()));
+                    pw.print(j.toJSONString());
+                    pw.close();
+                    return;
 
-                    /*Iterator i = obj.entrySet().iterator();
-                   while (i.hasNext()) {
-                      Map.Entry e = (Map.Entry)i.next();
-                      System.out.println("Key: " + e.getKey());
-                      System.out.println("Value: " + e.getValue());
-                   } */
-
-                    // TODO: get examples
-                    SortedSet<Individual> posExamples = null;
-                    SortedSet<Individual> negExamples = null;
-
-                    
-                    
-                    ComponentManager cm = ComponentManager.getInstance();
-
-                    // TODO: get a knowledge source
-                    KnowledgeSource ks = cm.knowledgeSource(null);
-                    ks.init();
-                    
-                    // TODO: should the reasoner be initialised at every request or just once (?)
-                    // ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
-                    ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks); // try OWL API / Pellet, because ontology is not complex
-                    rc.init();
-
-                    PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
-                    lp.setPositiveExamples(posExamples);
-                    lp.setNegativeExamples(negExamples);
-                    lp.getConfigurator().setAccuracyMethod("fmeasure");
-                    lp.getConfigurator().setUseApproximations(false);
-                    lp.init();
-
-                    ELLearningAlgorithm la = cm.learningAlgorithm(ELLearningAlgorithm.class, lp, rc);
-                    la.init();
-                    la.start();
-                    EvaluatedDescriptionPosNeg ed = (EvaluatedDescriptionPosNeg) la.getCurrentlyBestEvaluatedDescription();
-                    // return result in JSON format
-                    result = ed.asJSON();
-                    
-//                    rc.getIndividuals(ed.getDescription());
-                    
-                    // remove all components to avoid side effects
-                    cm.freeAllComponents();   	
-                    
                 } else {
                     throw new InvalidParameterException("No parameter 'data' found. " + getDocumentation(httpServletRequest.getRequestURL().toString()));
                 }
@@ -173,6 +119,57 @@ public class NKEGeizhals extends HttpServlet {
         }
 
     }
+
+
+    public static JSONObject jsonForEd(EvaluatedDescriptionPosNeg ed) {
+        Set<NamedClass> n = getNamedClasses(ed.getDescription(), new HashSet<NamedClass>());
+
+        //prepare retrieval string
+        StringBuilder sb = new StringBuilder();
+        int x = 0;
+        for (NamedClass nc : n) {
+            sb.append(nc.getName().replace(Geizhals2OWL.prefix, ""));
+            if (x < (n.size() - 1)) {
+                sb.append("~");
+            }
+            x++;
+        }
+        sb.insert(0, "http://geizhals.at/?cat=nb15w&xf=");
+
+        JSONObject j = new JSONObject();
+        j.put("link", sb.toString());
+
+        j.put("kbsyntax", ed.getDescription().toKBSyntaxString());
+        String mos = ed.getDescription().toManchesterSyntaxString(null, null);
+        for (NamedClass nc : n) {
+            String label = null;
+            OntClass c = null;
+            if ((c = Geizhals2OWL.labels.getOntClass(nc.getName())) != null && (label = c.getLabel(null)) != null) {
+                mos = mos.replace(nc.getName(), label);
+            } else {
+                mos = mos.replace(nc.getName(), nc.getName().replace(Geizhals2OWL.prefix, ""));
+            }
+        }
+        j.put("label", mos);
+        j.put("falsePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredPositives()));
+        j.put("falseNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredNegatives()));
+
+        log.info(sb.toString());
+        log.info(ed.toString());
+        return j;
+    }
+
+    public static Set<NamedClass> getNamedClasses(Description d, Set<NamedClass> ret) {
+        if (d instanceof NamedClass) {
+            ret.add((NamedClass) d);
+        }
+        for (Description ch : d.getChildren()) {
+            getNamedClasses(ch, ret);
+        }
+        return ret;
+
+    }
+
 
     /**
      * Examples are from NIF
