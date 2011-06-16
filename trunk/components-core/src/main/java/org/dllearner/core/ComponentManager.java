@@ -495,7 +495,7 @@ public final class ComponentManager {
 	 * Frees all references to components created by <code>ComponentManager</code>.
 	 * @see #freeComponent(Component)
 	 */
-	public void freeAllComponents() {
+	public synchronized void  freeAllComponents() {
 		pool.clearComponents();
 	}
 	
