@@ -39,7 +39,6 @@ public class Learner {
             ModelUtils.write(model, new File("test.owl"));
             PipedOutputStream out = new PipedOutputStream();
             model.write(out, Constants.RDFXML);
-//        PipedInputStream in = new PipedInputStream(out);
             RDFWriter writer = model.getWriter("RDF/XML");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             writer.write(model, baos, "");
@@ -50,19 +49,12 @@ public class Learner {
             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
             OWLOntology retOnt = null;
             try {
-                //retOnt = manager.createOntology(IRI.create("http://nke.aksw.org/tmp"));
-                // manager.
-                // manager.loadOntologyFromOntologyDocument()
                 retOnt = manager.loadOntologyFromOntologyDocument(bs);
             } catch (OWLOntologyCreationException e) {
                 e.printStackTrace();
             }
 
-            //  System.out.println(retOnt.getAxiomCount());
-            //  System.exit(0);
-
             KnowledgeSource ks = new OWLAPIOntology(retOnt);
-//        KnowledgeSource ks = cm.knowledgeSource(null);
             ks.init();
 
             // TODO: should the reasoner be initialised at every request or just once (?)

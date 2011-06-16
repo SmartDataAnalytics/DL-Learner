@@ -23,9 +23,9 @@ public class Geizhals2OWL {
     public static final ClassIndexer index = new ClassIndexer();
     public static final Geizhals2OWL geizhals2OWL = new Geizhals2OWL();
 
-    public static Map<String, String> ramMap = new HashMap<String, String>();
-    public static Map<String, String> harddriveMap = new HashMap<String, String>();
-    public static Map<String, String> optischesLaufwerkMap = new HashMap<String, String>();
+    public static final Map<String, String> ramMap = new HashMap<String, String>();
+    public static final Map<String, String> harddriveMap = new HashMap<String, String>();
+    public static final Map<String, String> optischesLaufwerkMap = new HashMap<String, String>();
     public static final String prefix = "http://nke.aksw.org/geizhals/_";
     //public static final String prefix = "http://geizhals.at/?cat=nb15w&xf=";
 

@@ -38,7 +38,7 @@
                     </requestLog>
                 </configuration>
                 <!--execution is used for testing-->
-                <executions>
+                <!--executions>
                     <execution>
                         <id>start-jetty</id>
                         <phase>pre-integration-test</phase>
@@ -59,7 +59,7 @@
                             <goal>stop</goal>
                         </goals>
                     </execution>
-                </executions>
+                </executions-->
             </plugin>
 
             <!--Surefire - for JUnits -->
