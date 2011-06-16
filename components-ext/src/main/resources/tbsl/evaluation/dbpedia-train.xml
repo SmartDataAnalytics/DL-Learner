@@ -19301,7 +19301,7 @@ Theo Albrecht
 </question>
 <question id="15">
 <string>
-Which capitals in Europe were host cities of the summer olympic games?
+Which capitals in Europe were host cities of the Summer Olympic Games?
 </string>
 <query>
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
