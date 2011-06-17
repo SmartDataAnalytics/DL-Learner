@@ -173,8 +173,6 @@ public class Geizhals2OWL {
         JSONArray pos = (JSONArray) j.get("pos");
         JSONArray neg = (JSONArray) j.get("neg");
 
-        System.out.println(j);
-
         fill(pos, r.pos, model);
         fill(neg, r.neg, model);
         return r;

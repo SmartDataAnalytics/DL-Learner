@@ -33,7 +33,7 @@
                         <filename>log/yyyy_mm_dd.request.log</filename>
                         <retainDays>90</retainDays>
                         <append>true</append>
-                        <extended>false</extended>
+                        <extended>true</extended>
                         <logTimeZone>GMT</logTimeZone>
                     </requestLog>
                 </configuration>
