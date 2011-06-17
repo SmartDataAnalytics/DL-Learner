@@ -199,7 +199,7 @@ public class NKEGeizhals extends HttpServlet {
     public static String getDocumentation(HttpServletRequest  request) {
         String doc = "";
         try {
-            doc = "Requesturl was: "+request.getRequestURL();
+            doc = "Request Url was: "+request.getRequestURL();
             doc += printParameterMap(request);
             //doc = "\nExample1: \n " + serviceUrl + "?input=" + URLEncoder.encode("That's a lot of nuts! That'll be four bucks, baby! You want fries with that? ", "UTF-8") + "&type=text";
             //doc += "\nExample2: \n " + serviceUrl + "?input=" + URLEncoder.encode("That's a lot of nuts! That's a lot of nuts! ", "UTF-8") + "&type=text";
@@ -229,7 +229,11 @@ public class NKEGeizhals extends HttpServlet {
     }
 
     public static String printParameterMap(HttpServletRequest httpServletRequest) {
-        StringBuffer buf = new StringBuffer();
+        if(httpServletRequest.getParameterMap().keySet().isEmpty()){
+            return "Empty parameters: there were not post or get parameters";
+        }
+
+        StringBuilder buf = new StringBuilder();
         for (Object key : httpServletRequest.getParameterMap().keySet()) {
             buf.append("\nParameter: " + key + " Values: ");
             for (String s : httpServletRequest.getParameterValues((String) key)) {
