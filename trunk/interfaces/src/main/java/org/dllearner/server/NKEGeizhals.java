@@ -3,6 +3,7 @@ package org.dllearner.server;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
@@ -11,8 +12,6 @@ import org.dllearner.server.nke.Geizhals2OWL;
 import org.dllearner.server.nke.Learner;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,12 +21,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.security.InvalidParameterException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 public class NKEGeizhals extends HttpServlet {
-    private static Logger log = LoggerFactory.getLogger(NKEGeizhals.class);
+    private static Logger log = Logger.getLogger(NKEGeizhals.class);
 
 
     @Override
@@ -52,6 +51,7 @@ public class NKEGeizhals extends HttpServlet {
     private void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         ComponentManager cm = ComponentManager.getInstance();
         cm.freeAllComponents();
+
         Monitor mon = MonitorFactory.getTimeMonitor("NIFParameters.getInstance").start();
         String result = "";
         try {
@@ -74,7 +74,7 @@ public class NKEGeizhals extends HttpServlet {
                     json = httpServletRequest.getParameter("data");
                     Geizhals2OWL.Result r = Geizhals2OWL.getInstance().handleJson(json);
                     EvaluatedDescriptionPosNeg ed = new Learner().learn(r.pos, r.neg, r.getModel(), 20);
-                    JSONObject concept = jsonForEd(ed);
+                    JSONObject concept = jsonForEd(ed, httpServletRequest.getRequestURL().toString());
                     JSONObject j = new JSONObject();
                     j.put("learned", concept);
                     JSONArray up = new JSONArray();
@@ -130,27 +130,43 @@ public class NKEGeizhals extends HttpServlet {
     }
 
 
-    public static JSONObject jsonForEd(EvaluatedDescriptionPosNeg ed) {
-        Set<NamedClass> n = getNamedClasses(ed.getDescription(), new HashSet<NamedClass>());
+    public static JSONObject jsonForEd(EvaluatedDescriptionPosNeg ed, String requestUrl) {
+        SortedSet<NamedClass> namedClasses = getNamedClasses(ed.getDescription(), new TreeSet<NamedClass>());
 
-        //prepare retrieval string
+        String xf = getID(ed.getDescription(), namedClasses);
+        String link = "http://geizhals.at/?cat=nb15w&xf="+xf;
+
+        JSONObject j = new JSONObject();
+        j.put("link", link);
+        j.put("label", getLabel(ed.getDescription(), namedClasses));
+        j.put("truePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredPositives()));
+        j.put("falsePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredPositives()));
+        j.put("trueNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredNegatives()));
+        j.put("falseNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredNegatives()));
+        j.put("kbsyntax", ed.getDescription().toKBSyntaxString());
+
+        log.info(link);
+        log.info(ed.toString());
+        return j;
+    }
+
+    public static String getID(Description d, SortedSet<NamedClass> namedClasses) {
+          //prepare retrieval string
         StringBuilder sb = new StringBuilder();
         int x = 0;
-        for (NamedClass nc : n) {
+        for (NamedClass nc : namedClasses) {
             sb.append(nc.getName().replace(Geizhals2OWL.prefix, ""));
-            if (x < (n.size() - 1)) {
+            if (x < (namedClasses.size() - 1)) {
                 sb.append("~");
             }
             x++;
         }
-        sb.insert(0, "http://geizhals.at/?cat=nb15w&xf=");
+        return sb.toString();
+    }
 
-        JSONObject j = new JSONObject();
-        j.put("link", sb.toString());
-
-        j.put("kbsyntax", ed.getDescription().toKBSyntaxString());
-        String mos = ed.getDescription().toManchesterSyntaxString(null, null);
-        for (NamedClass nc : n) {
+    public static String getLabel(Description d, SortedSet<NamedClass> namedClasses) {
+        String mos = d.toManchesterSyntaxString(null, null);
+        for (NamedClass nc : namedClasses) {
             String label = null;
             OntClass c = null;
             if ((c = Geizhals2OWL.labels.getOntClass(nc.getName())) != null && (label = c.getLabel(null)) != null) {
@@ -159,16 +175,11 @@ public class NKEGeizhals extends HttpServlet {
                 mos = mos.replace(nc.getName(), nc.getName().replace(Geizhals2OWL.prefix, ""));
             }
         }
-        j.put("label", mos);
-        j.put("falsePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredPositives()));
-        j.put("falseNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredNegatives()));
+        return mos;
 
-        log.info(sb.toString());
-        log.info(ed.toString());
-        return j;
     }
 
-    public static Set<NamedClass> getNamedClasses(Description d, Set<NamedClass> ret) {
+    public static SortedSet<NamedClass> getNamedClasses(Description d, SortedSet<NamedClass> ret) {
         if (d instanceof NamedClass) {
             ret.add((NamedClass) d);
         }
