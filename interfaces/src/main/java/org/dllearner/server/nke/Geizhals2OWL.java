@@ -11,6 +11,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
@@ -164,17 +165,20 @@ public class Geizhals2OWL {
 
 
     public Result handleJson(String json) {
-
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM, ModelFactory.createDefaultModel());
-
         Result r = new Result(model);
-
-        JSONObject j = (JSONObject) JSONValue.parse(json);
+        try{
+        JSONObject j = (JSONObject) JSONValue.parseWithException(json);
         JSONArray pos = (JSONArray) j.get("pos");
         JSONArray neg = (JSONArray) j.get("neg");
 
         fill(pos, r.pos, model);
         fill(neg, r.neg, model);
+        }catch (org.json.simple.parser.ParseException e){
+            String msg = "Parsing the JSON string failed\nJSON was:\n"+json;
+            log.error(msg, e);
+            throw new InvalidParameterException(msg);
+        }
         return r;
 
     }

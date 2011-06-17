@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URLEncoder;
 import java.security.InvalidParameterException;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -111,10 +110,11 @@ public class NKEGeizhals extends HttpServlet {
 
         } catch (IllegalArgumentException e) {
             String msg = e.getMessage() + printParameterMap(httpServletRequest);
-            log.error(msg);
+            log.error(msg, e);
             httpServletResponse.setContentType("text/plain");
             PrintWriter out = httpServletResponse.getWriter();
             out.println(msg);
+            e.printStackTrace(out);
             out.close();
 
         } catch (Exception e) {
@@ -123,6 +123,7 @@ public class NKEGeizhals extends HttpServlet {
             httpServletResponse.setContentType("text/plain");
             PrintWriter out = httpServletResponse.getWriter();
             out.println(msg);
+            e.printStackTrace(out);
             out.close();
 
         }
@@ -134,7 +135,7 @@ public class NKEGeizhals extends HttpServlet {
         SortedSet<NamedClass> namedClasses = getNamedClasses(ed.getDescription(), new TreeSet<NamedClass>());
 
         String xf = getID(ed.getDescription(), namedClasses);
-        String link = "http://geizhals.at/?cat=nb15w&xf="+xf;
+        String link = "http://geizhals.at/?cat=nb15w&xf=" + xf;
 
         JSONObject j = new JSONObject();
         j.put("link", link);
@@ -151,7 +152,7 @@ public class NKEGeizhals extends HttpServlet {
     }
 
     public static String getID(Description d, SortedSet<NamedClass> namedClasses) {
-          //prepare retrieval string
+        //prepare retrieval string
         StringBuilder sb = new StringBuilder();
         int x = 0;
         for (NamedClass nc : namedClasses) {
@@ -196,11 +197,10 @@ public class NKEGeizhals extends HttpServlet {
      *
      * @return
      */
-    public static String getDocumentation(HttpServletRequest  request) {
+    public static String getDocumentation(HttpServletRequest request) {
         String doc = "";
         try {
-            doc = "Request Url was: "+request.getRequestURL();
-            doc += printParameterMap(request);
+            doc = "Request Url was: " + request.getRequestURL() + "\n";
             //doc = "\nExample1: \n " + serviceUrl + "?input=" + URLEncoder.encode("That's a lot of nuts! That'll be four bucks, baby! You want fries with that? ", "UTF-8") + "&type=text";
             //doc += "\nExample2: \n " + serviceUrl + "?input=" + URLEncoder.encode("That's a lot of nuts! That's a lot of nuts! ", "UTF-8") + "&type=text";
         } catch (Exception e) {
@@ -229,11 +229,12 @@ public class NKEGeizhals extends HttpServlet {
     }
 
     public static String printParameterMap(HttpServletRequest httpServletRequest) {
-        if(httpServletRequest.getParameterMap().keySet().isEmpty()){
-            return "Empty parameters: there were not post or get parameters";
-        }
-
         StringBuilder buf = new StringBuilder();
+        if (httpServletRequest.getParameterMap().keySet().isEmpty()) {
+            return "Empty parameters: there were neither post nor get parameters";
+        } else {
+            buf.append("Received " + httpServletRequest.getParameterMap().size() + " parameters");
+        }
         for (Object key : httpServletRequest.getParameterMap().keySet()) {
             buf.append("\nParameter: " + key + " Values: ");
             for (String s : httpServletRequest.getParameterValues((String) key)) {
