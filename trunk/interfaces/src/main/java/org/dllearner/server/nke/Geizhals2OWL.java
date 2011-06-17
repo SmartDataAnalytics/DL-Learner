@@ -5,6 +5,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.vocabulary.OWL;
 import org.aksw.commons.jena.ClassIndexer;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -121,7 +122,7 @@ public class Geizhals2OWL {
         * */
         // 13.3\" WXGA glare LED TFT (1366x768) " +
         String[] display = features[x++].split(" ");
-        classes.add(prefix + "85_"+ display[0].replace("\"",""));
+        classes.add(prefix + "85_" + display[0].replace("\"", ""));
         //display[display.length-1];
 
         /*
@@ -140,7 +141,7 @@ public class Geizhals2OWL {
     public static void add(List<String> classes, Map<String, String> map, String key) {
         String val = null;
         if ((val = map.get(key)) == null) {
-            log.warn("No value found for: |" + key+"|");
+            log.warn("No value found for: |" + key + "|");
             return;
         } else {
             //log.info("Adding " + val);
@@ -167,15 +168,23 @@ public class Geizhals2OWL {
     public Result handleJson(String json) {
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM, ModelFactory.createDefaultModel());
         Result r = new Result(model);
-        try{
-        JSONObject j = (JSONObject) JSONValue.parseWithException(json);
-        JSONArray pos = (JSONArray) j.get("pos");
-        JSONArray neg = (JSONArray) j.get("neg");
+        try {
+            JSONObject j = (JSONObject) JSONValue.parseWithException(json);
+            JSONArray pos = (JSONArray) j.get("pos");
+            JSONArray neg = (JSONArray) j.get("neg");
 
-        fill(pos, r.pos, model);
-        fill(neg, r.neg, model);
-        }catch (org.json.simple.parser.ParseException e){
-            String msg = "Parsing the JSON string failed\nJSON was:\n"+json;
+            if (pos != null) {
+                fill(pos, r.pos, model);
+            }
+            if (neg != null) {
+                fill(neg, r.neg, model);
+            } else {
+                String negative = "http://negative.org/fake";
+                r.neg.add(negative);
+                model.createIndividual(negative, OWL.Thing);
+            }
+        } catch (org.json.simple.parser.ParseException e) {
+            String msg = "Parsing the JSON string failed\nJSON was:\n" + json;
             log.error(msg, e);
             throw new InvalidParameterException(msg);
         }
