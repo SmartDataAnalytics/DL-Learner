@@ -61,10 +61,10 @@ public class NKEGeizhals extends HttpServlet {
                 action = httpServletRequest.getParameter("action");
                 //use the function one of
                 if (!oneOf(action, "learn", "xml")) {
-                    throw new InvalidParameterException("Wrong parameter value for \"action\", must be one of ( learn, xml ) " + getDocumentation(httpServletRequest.getRequestURL().toString()));
+                    throw new InvalidParameterException("Wrong parameter value for \"action\", must be one of ( learn, xml ) " + getDocumentation(httpServletRequest));
                 }
             } else {
-                throw new InvalidParameterException("No parameter 'conf' found. " + getDocumentation(httpServletRequest.getRequestURL().toString()));
+                throw new InvalidParameterException("No parameter 'action' found. " + getDocumentation(httpServletRequest));
             }
 
             if (action.equals("learn")) {
@@ -92,7 +92,7 @@ public class NKEGeizhals extends HttpServlet {
                     return;
 
                 } else {
-                    throw new InvalidParameterException("No parameter 'data' found. " + getDocumentation(httpServletRequest.getRequestURL().toString()));
+                    throw new InvalidParameterException("No parameter 'data' found. " + getDocumentation(httpServletRequest));
                 }
             }
 
@@ -194,14 +194,15 @@ public class NKEGeizhals extends HttpServlet {
     /**
      * Examples are from NIF
      *
-     * @param serviceUrl
      * @return
      */
-    public static String getDocumentation(String serviceUrl) {
+    public static String getDocumentation(HttpServletRequest  request) {
         String doc = "";
         try {
-            doc = "\nExample1: \n " + serviceUrl + "?input=" + URLEncoder.encode("That's a lot of nuts! That'll be four bucks, baby! You want fries with that? ", "UTF-8") + "&type=text";
-            doc += "\nExample2: \n " + serviceUrl + "?input=" + URLEncoder.encode("That's a lot of nuts! That's a lot of nuts! ", "UTF-8") + "&type=text";
+            doc = "Requesturl was: "+request.getRequestURL();
+            doc += printParameterMap(request);
+            //doc = "\nExample1: \n " + serviceUrl + "?input=" + URLEncoder.encode("That's a lot of nuts! That'll be four bucks, baby! You want fries with that? ", "UTF-8") + "&type=text";
+            //doc += "\nExample2: \n " + serviceUrl + "?input=" + URLEncoder.encode("That's a lot of nuts! That's a lot of nuts! ", "UTF-8") + "&type=text";
         } catch (Exception e) {
             log.error("", e);
         }
