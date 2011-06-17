@@ -54,7 +54,7 @@ public class GeizhalsTest {
         long start = System.nanoTime();
         EvaluatedDescriptionPosNeg ed =  l.learn(result.pos, result.neg, result.getModel(), 20);
         long duration = System.nanoTime() - start;
-        System.out.println("total time for loading and learning: " + Helper.prettyPrintNanoSeconds(duration));
+        System.out.println("total time: " + Helper.prettyPrintNanoSeconds(duration));
         System.out.println(ed.asJSON());
 //        System.out.println(NKEGeizhals.jsonForEd(ed).toJSONString());
     }
