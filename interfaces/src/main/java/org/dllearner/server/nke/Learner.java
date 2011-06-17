@@ -11,6 +11,7 @@ import org.dllearner.core.*;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -58,9 +59,10 @@ public class Learner {
             ks.init();
 
             // TODO: should the reasoner be initialised at every request or just once (?)
-            // ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
+
             log.debug("Initialising reasoner");
-            ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks); // try OWL API / Pellet, because ontology is not complex
+          ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);            
+//            ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks); // try OWL API / Pellet, because ontology is not complex
             rc.init();
 
 //        System.out.println(rc.getClassHierarchy());
@@ -78,9 +80,12 @@ public class Learner {
 //        CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
             la.init();
             log.debug("Running learning algorithm");
+            
             la.start();
+            long start = System.nanoTime();
             EvaluatedDescriptionPosNeg ed = (EvaluatedDescriptionPosNeg) la.getCurrentlyBestEvaluatedDescription();
-
+            long duration = System.nanoTime() - start;
+            System.out.println("learning time: " + Helper.prettyPrintNanoSeconds(duration));
             // use this to get all solutions
             // rc.getIndividuals(ed.getDescription());
             log.debug(ed.toString());
