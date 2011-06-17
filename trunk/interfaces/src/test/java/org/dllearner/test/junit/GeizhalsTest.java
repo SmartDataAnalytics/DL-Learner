@@ -4,6 +4,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.server.NKEGeizhals;
 import org.dllearner.server.nke.Geizhals2OWL;
 import org.dllearner.server.nke.Learner;
+import org.dllearner.utilities.Helper;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -50,7 +51,11 @@ public class GeizhalsTest {
         Geizhals2OWL g = Geizhals2OWL.getInstance();
         Geizhals2OWL.Result result = g.handleJson(json);
         Learner l = new Learner();
+        long start = System.nanoTime();
         EvaluatedDescriptionPosNeg ed =  l.learn(result.pos, result.neg, result.getModel(), 20);
-        System.out.println(NKEGeizhals.jsonForEd(ed).toJSONString());
+        long duration = System.nanoTime() - start;
+        System.out.println("total time for loading and learning: " + Helper.prettyPrintNanoSeconds(duration));
+        System.out.println(ed.asJSON());
+//        System.out.println(NKEGeizhals.jsonForEd(ed).toJSONString());
     }
 }
