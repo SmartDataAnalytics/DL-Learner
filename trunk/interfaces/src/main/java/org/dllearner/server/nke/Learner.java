@@ -36,6 +36,7 @@ public class Learner {
         ComponentManager cm = ComponentManager.getInstance();
 
         try {
+        	long start = System.nanoTime();
             model.createIndividual("http://nke.aksw.org/", model.createClass(OWL.Ontology.getURI()));
             ModelUtils.write(model, new File("test.owl"));
             PipedOutputStream out = new PipedOutputStream();
@@ -54,17 +55,22 @@ public class Learner {
             } catch (OWLOntologyCreationException e) {
                 e.printStackTrace();
             }
-
+            long duration = System.nanoTime() - start;
+            System.out.println("OWL API conversion time: " + Helper.prettyPrintNanoSeconds(duration));
+            
             KnowledgeSource ks = new OWLAPIOntology(retOnt);
             ks.init();
 
             // TODO: should the reasoner be initialised at every request or just once (?)
 
             log.debug("Initialising reasoner");
+            start = System.nanoTime();
           ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);            
 //            ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks); // try OWL API / Pellet, because ontology is not complex
             rc.init();
-
+            duration = System.nanoTime() - start;
+            System.out.println("reasoner load time: " + Helper.prettyPrintNanoSeconds(duration));
+            
 //        System.out.println(rc.getClassHierarchy());
 
             PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
@@ -73,7 +79,7 @@ public class Learner {
 //        lp.getConfigurator().setAccuracyMethod("fmeasure");
 //        lp.getConfigurator().setUseApproximations(false);
             lp.init();
-
+            
             ELLearningAlgorithm la = cm.learningAlgorithm(ELLearningAlgorithm.class, lp, rc);
 
             la.getConfigurator().setInstanceBasedDisjoints(false);
@@ -81,10 +87,10 @@ public class Learner {
             la.init();
             log.debug("Running learning algorithm");
             
+            start = System.nanoTime();
             la.start();
-            long start = System.nanoTime();
             EvaluatedDescriptionPosNeg ed = (EvaluatedDescriptionPosNeg) la.getCurrentlyBestEvaluatedDescription();
-            long duration = System.nanoTime() - start;
+            duration = System.nanoTime() - start;
             System.out.println("learning time: " + Helper.prettyPrintNanoSeconds(duration));
             // use this to get all solutions
             // rc.getIndividuals(ed.getDescription());
