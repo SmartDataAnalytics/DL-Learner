@@ -52,44 +52,26 @@ public class NKEGeizhals extends HttpServlet {
         cm.freeAllComponents();
 
         Monitor mon = MonitorFactory.getTimeMonitor("NIFParameters.getInstance").start();
-        String result = "";
+
+        JSONObject result = new JSONObject();
+
         try {
 
             String action = "";
             if (isSet(httpServletRequest, "action")) {
                 action = httpServletRequest.getParameter("action");
                 //use the function one of
-                if (!oneOf(action, "learn", "xml")) {
-                    throw new InvalidParameterException("Wrong parameter value for \"action\", must be one of ( learn, xml ) " + getDocumentation(httpServletRequest));
+                if (!oneOf(action, "learn")) {
+                    throw new InvalidParameterException("Wrong parameter value for \"action\", must be one of ( learn ) " + getDocumentation(httpServletRequest));
                 }
             } else {
                 throw new InvalidParameterException("No parameter 'action' found. " + getDocumentation(httpServletRequest));
             }
 
             if (action.equals("learn")) {
-                String json = "";
                 if (isSet(httpServletRequest, "data")) {
-
-                    json = httpServletRequest.getParameter("data");
-                    Geizhals2OWL.Result r = Geizhals2OWL.getInstance().handleJson(json);
-                    EvaluatedDescriptionPosNeg ed = new Learner().learn(r.pos, r.neg, r.getModel(), 20);
-                    JSONObject concept = jsonForEd(ed, httpServletRequest.getRequestURL().toString());
-                    JSONObject j = new JSONObject();
-                    j.put("learned", concept);
-                    JSONArray up = new JSONArray();
-                    up.add(concept);
-                    up.add(concept);
-                    j.put("up", up);
-                    j.put("down", up);
-                    String time = logMonitor(mon.stop());
-                    j.put("time", time);
-
-                    PrintWriter pw = httpServletResponse.getWriter();
-                    log.debug("Request handled: " + time);
-                    pw.print(j.toJSONString());
-                    pw.close();
-                    return;
-
+                    String json = json = httpServletRequest.getParameter("data");
+                    actionLearn(json, result);
                 } else {
                     throw new InvalidParameterException("No parameter 'data' found. " + getDocumentation(httpServletRequest));
                 }
@@ -103,35 +85,48 @@ public class NKEGeizhals extends HttpServlet {
                 throw new InvalidParameterException("No parameter 'conf' found. " + getDocumentation(httpServletRequest.getRequestURL().toString()));
             }*/
 
-            PrintWriter pw = httpServletResponse.getWriter();
-            log.debug("Request handled: " + logMonitor(mon.stop()));
-            pw.print(result);
-            pw.close();
-
+            result.put("success", true);
         } catch (IllegalArgumentException e) {
             String msg = e.getMessage() + printParameterMap(httpServletRequest);
             log.error(msg, e);
-            httpServletResponse.setContentType("text/plain");
-            PrintWriter out = httpServletResponse.getWriter();
-            out.println(msg);
-            e.printStackTrace(out);
-            out.close();
+            result.put("success", false);
+            result.put("error", msg);
 
         } catch (Exception e) {
             String msg = "An error occured: " + e.getMessage() + printParameterMap(httpServletRequest);
             log.error(msg, e);
-            httpServletResponse.setContentType("text/plain");
-            PrintWriter out = httpServletResponse.getWriter();
-            out.println(msg);
-            e.printStackTrace(out);
-            out.close();
+            result.put("success", false);
+            result.put("error", msg);
 
         }
+
+        String time = logMonitor(mon.stop());
+        result.put("time", time);
+
+        PrintWriter pw = httpServletResponse.getWriter();
+        log.debug("Request handled: " + time);
+        pw.print(result.toJSONString());
+        pw.close();
 
     }
 
 
-    public static JSONObject jsonForEd(EvaluatedDescriptionPosNeg ed, String requestUrl) {
+    public void actionLearn(String json, JSONObject result) throws Exception {
+
+        Geizhals2OWL.Result r = Geizhals2OWL.getInstance().handleJson(json);
+        EvaluatedDescriptionPosNeg ed = new Learner().learn(r.pos, r.neg, r.getModel(), 20);
+        JSONObject concept = jsonForEd(ed);
+        result.put("learned", concept);
+        JSONArray up = new JSONArray();
+        up.add(concept);
+        up.add(concept);
+        result.put("up", up);
+        result.put("down", up);
+
+    }
+
+
+    public static JSONObject jsonForEd(EvaluatedDescriptionPosNeg ed) {
         SortedSet<NamedClass> namedClasses = getNamedClasses(ed.getDescription(), new TreeSet<NamedClass>());
 
         String link = "";
@@ -237,6 +232,7 @@ public class NKEGeizhals extends HttpServlet {
     protected static String logMonitor(Monitor m) {
         return "needed: " + m.getLastValue() + " ms. (" + m.getTotal() + " total)";
     }
+
 
     public static String printParameterMap(HttpServletRequest httpServletRequest) {
         StringBuilder buf = new StringBuilder();
