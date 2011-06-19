@@ -11,7 +11,9 @@ import org.dllearner.algorithm.qtl.cache.ModelCache;
 import org.dllearner.algorithm.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithm.qtl.datastructures.QueryTree;
 import org.dllearner.algorithm.qtl.datastructures.impl.QueryTreeImpl;
-import org.dllearner.algorithm.qtl.exception.QTLException;
+import org.dllearner.algorithm.qtl.exception.EmptyLGGException;
+import org.dllearner.algorithm.qtl.exception.NegativeTreeCoverageExecption;
+import org.dllearner.algorithm.qtl.exception.TimeOutException;
 import org.dllearner.algorithm.qtl.filters.QueryTreeFilter;
 import org.dllearner.algorithm.qtl.operations.NBR;
 import org.dllearner.algorithm.qtl.operations.lgg.LGGGenerator;
@@ -73,7 +75,7 @@ public class QTL {
 		negExampleTrees = new ArrayList<QueryTree<String>>();
 	}
 	
-	public String getQuestion(List<String> posExamples, List<String> negExamples) throws QTLException{
+	public String getQuestion(List<String> posExamples, List<String> negExamples) throws EmptyLGGException, NegativeTreeCoverageExecption, TimeOutException {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		
@@ -97,10 +99,15 @@ public class QTL {
 		if(logger.isInfoEnabled()){
 			logger.info("LGG: \n" + lgg.getStringRepresentation());
 		}
-		
-		if(coversNegativeQueryTree(lgg)){
-			throw new QTLException("Could not learn SPARQL query. Reason: LGG covers negative tree.");
+		if(lgg.isEmpty()){
+			throw new EmptyLGGException();
 		}
+		
+		int index = coversNegativeQueryTree(lgg);
+		if(index != -1){
+			throw new NegativeTreeCoverageExecption(negExamples.get(index));
+		}
+		
 		lggInstances = getResources(lgg);
 		nbr.setLGGInstances(lggInstances);
 		
@@ -162,13 +169,22 @@ public class QTL {
 		return ListUtils.union(posExamples, negExamples);
 	}
 	
-	private boolean coversNegativeQueryTree(QueryTree<String> tree){
-		for(QueryTree<String> negTree : negExampleTrees){
-			if(negTree.isSubsumedBy(tree)){
-				return true;
+//	private boolean coversNegativeQueryTree(QueryTree<String> tree){
+//		for(QueryTree<String> negTree : negExampleTrees){
+//			if(negTree.isSubsumedBy(tree)){
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
+	
+	private int coversNegativeQueryTree(QueryTree<String> tree){
+		for(int i = 0; i < negExampleTrees.size(); i++){
+			if(negExampleTrees.get(i).isSubsumedBy(tree)){
+				return i;
 			}
 		}
-		return false;
+		return -1;
 	}
 	
 	private SortedSet<String> getResources(QueryTree<String> tree){

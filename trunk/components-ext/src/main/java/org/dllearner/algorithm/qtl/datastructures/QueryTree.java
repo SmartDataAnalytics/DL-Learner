@@ -45,6 +45,8 @@ public interface QueryTree<N> {
     
     int getId();
     
+    boolean isEmpty();
+    
     QueryTree<N> getNodeById(int nodeId);
     
     boolean isLiteralNode();
