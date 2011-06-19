@@ -106,6 +106,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return id;
     }
     
+    @Override
+    public boolean isEmpty(){
+    	return this.children.isEmpty();
+    }
+    
     public QueryTree<N> getNodeById(int nodeId){
     	QueryTree<N> node = null;
     	if(this.id == nodeId){
