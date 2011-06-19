@@ -80,9 +80,6 @@ public class ExampleFinder {
 			List<String> negExamples) throws EmptyLGGException, NegativeTreeCoverageExecption, TimeOutException {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
-		logger.info("Searching similiar example");
-		logger.info("Positive examples: " + posExamples);
-		logger.info("Negative examples: " + negExamples);
 		
 		String resource = qtl.getQuestion(posExamples, negExamples);
 		

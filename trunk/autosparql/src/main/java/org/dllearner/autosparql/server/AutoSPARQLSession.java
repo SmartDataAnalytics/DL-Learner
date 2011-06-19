@@ -179,9 +179,6 @@ public class AutoSPARQLSession {
 	
 	public Example getSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws AutoSPARQLException{
-		logger.info("Retrieving similiar example");
-		logger.info("Pos examples: " + posExamples);
-		logger.info("Neg examples: " + negExamples);
 		if(negExamples.isEmpty()){
 //			negExamples = getIntermediateNegativeExamples(posExamples);
 		}
