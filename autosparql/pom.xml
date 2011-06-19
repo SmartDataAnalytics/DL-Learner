@@ -15,6 +15,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+        <this.usePermutations>false</this.usePermutations>
 	</properties>
 
 	<repositories>

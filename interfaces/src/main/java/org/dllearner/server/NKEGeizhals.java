@@ -134,12 +134,20 @@ public class NKEGeizhals extends HttpServlet {
     public static JSONObject jsonForEd(EvaluatedDescriptionPosNeg ed, String requestUrl) {
         SortedSet<NamedClass> namedClasses = getNamedClasses(ed.getDescription(), new TreeSet<NamedClass>());
 
-        String xf = getID(ed.getDescription(), namedClasses);
-        String link = "http://geizhals.at/?cat=nb15w&xf=" + xf;
+        String link = "";
+        String label = "";
+
+        if (ed.getDescription().toKBSyntaxString().equals("TOP")) {
+            label = "No suggestions for current selection (click to show all)";
+            link = "http://geizhals.at/?cat=nb15";
+        } else {
+            link = "http://geizhals.at/?cat=nb15w&xf=" + getID(ed.getDescription(), namedClasses);
+            label = getLabel(ed.getDescription(), namedClasses);
+        }
 
         JSONObject j = new JSONObject();
         j.put("link", link);
-        j.put("label", getLabel(ed.getDescription(), namedClasses));
+        j.put("label", label);
         j.put("truePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredPositives()));
         j.put("falsePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredPositives()));
         j.put("trueNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredNegatives()));
@@ -152,6 +160,7 @@ public class NKEGeizhals extends HttpServlet {
     }
 
     public static String getID(Description d, SortedSet<NamedClass> namedClasses) {
+
         //prepare retrieval string
         StringBuilder sb = new StringBuilder();
         int x = 0;
@@ -166,6 +175,7 @@ public class NKEGeizhals extends HttpServlet {
     }
 
     public static String getLabel(Description d, SortedSet<NamedClass> namedClasses) {
+
         String mos = d.toManchesterSyntaxString(null, null);
         for (NamedClass nc : namedClasses) {
             String label = null;
