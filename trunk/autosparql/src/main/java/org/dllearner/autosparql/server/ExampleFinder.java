@@ -10,7 +10,10 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.QTL;
+import org.dllearner.algorithm.qtl.exception.EmptyLGGException;
+import org.dllearner.algorithm.qtl.exception.NegativeTreeCoverageExecption;
 import org.dllearner.algorithm.qtl.exception.QTLException;
+import org.dllearner.algorithm.qtl.exception.TimeOutException;
 import org.dllearner.algorithm.qtl.filters.QueryTreeFilter;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedQueryTreeFilter;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedQueryTreeFilterAggressive;
@@ -74,19 +77,15 @@ public class ExampleFinder {
 	
 	
 	public Example findSimilarExample(List<String> posExamples,
-			List<String> negExamples) throws AutoSPARQLException{
+			List<String> negExamples) throws EmptyLGGException, NegativeTreeCoverageExecption, TimeOutException {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		logger.info("Searching similiar example");
 		logger.info("Positive examples: " + posExamples);
 		logger.info("Negative examples: " + negExamples);
 		
-		String resource = "";
-		try{
-			 resource = qtl.getQuestion(posExamples, negExamples);
-		} catch(QTLException e){
-			throw new AutoSPARQLException(e);
-		}
+		String resource = qtl.getQuestion(posExamples, negExamples);
+		
 		lastSuggestedExample = getExample(resource);
 		
 		return lastSuggestedExample;
@@ -97,6 +96,7 @@ public class ExampleFinder {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		qtl.setExamples(posExamples, negExamples);
+		qtl.getSPARQLQuery();
 	}
 	
 	public List<String> getPositiveExamples(){

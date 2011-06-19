@@ -175,8 +175,8 @@ public class QueryView extends View {
 						@Override
 						public void onSuccess(Void result) {
 							if(type == Example.Type.POSITIVE){
-//								resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
-//										examplesPanel.getNegativeExamplesUris());
+								resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
+										examplesPanel.getNegativeExamplesUris());
 								
 							}
 							showSimilarExample(type);
@@ -199,17 +199,32 @@ public class QueryView extends View {
 		SPARQLService.Util.getInstance().getSimilarExample(
 				examplesPanel.getPositiveExamplesURIs(),
 				examplesPanel.getNegativeExamplesUris(),
-				new AsyncCallbackEx<Example>() {
+				new AsyncCallback<Example>() {
 
 					@Override
 					public void onSuccess(Example result) {
 						interactivePanel.unmask();
 						interactivePanel.setExample(result);
-						if(type == Example.Type.POSITIVE){
-							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
-									examplesPanel.getNegativeExamplesUris());
-						}
+//						if(type == Example.Type.POSITIVE){
+//							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
+//									examplesPanel.getNegativeExamplesUris());
+//						}
 						
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						interactivePanel.unmask();
+//						ErrorDialog dialog = new ErrorDialog(caught);
+//						dialog.showDialog();
+						MessageBox.alert("An error occured", caught.getMessage(), new Listener<MessageBoxEvent>() {
+
+							@Override
+							public void handleEvent(MessageBoxEvent be) {
+								// TODO Auto-generated method stub
+								
+							}
+						});
 					}
 
 				});

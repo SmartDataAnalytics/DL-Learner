@@ -25,7 +25,7 @@ public interface SPARQLService extends RemoteService{
 	
 	Example getNextQueryResult(String query) throws AutoSPARQLException;
 	
-	Example getSimilarExample(List<String> posExamples, List<String> negExamples) throws SPARQLQueryException;
+	Example getSimilarExample(List<String> posExamples, List<String> negExamples) throws AutoSPARQLException;
 	
 	PagingLoadResult<Example> getCurrentQueryResult(PagingLoadConfig config) throws SPARQLQueryException;
 	

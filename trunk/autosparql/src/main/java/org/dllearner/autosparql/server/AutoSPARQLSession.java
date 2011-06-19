@@ -12,6 +12,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithm.qtl.exception.EmptyLGGException;
+import org.dllearner.algorithm.qtl.exception.NegativeTreeCoverageExecption;
+import org.dllearner.algorithm.qtl.exception.QTLException;
+import org.dllearner.algorithm.qtl.exception.TimeOutException;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
@@ -19,6 +23,7 @@ import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.cache.SPARQLQueryCache;
 import org.dllearner.autosparql.server.search.Search;
 import org.dllearner.autosparql.server.search.SolrSearch;
+import org.dllearner.autosparql.server.search.VirtuosoSearch;
 import org.dllearner.autosparql.server.store.Store;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -173,22 +178,35 @@ public class AutoSPARQLSession {
 	}
 	
 	public Example getSimilarExample(List<String> posExamples,
-			List<String> negExamples) throws SPARQLQueryException{
+			List<String> negExamples) throws AutoSPARQLException{
 		logger.info("Retrieving similiar example");
 		logger.info("Pos examples: " + posExamples);
 		logger.info("Neg examples: " + negExamples);
 		if(negExamples.isEmpty()){
 //			negExamples = getIntermediateNegativeExamples(posExamples);
 		}
+		
+		Example example;
 		try {
-			Example example = exampleFinder.findSimilarExample(posExamples, negExamples);
+			example = exampleFinder.findSimilarExample(posExamples, negExamples);
 			examplesCache.put(example.getURI(), example);
 			return example;
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (EmptyLGGException e) {
 			logger.error(e);
-			throw new SPARQLQueryException(exampleFinder.getCurrentQueryHTML());
+			throw new AutoSPARQLException("You selected some positive examples, which seem to have nothing in " +
+					"common with respect to the target concept.");
+		} catch (NegativeTreeCoverageExecption e) {
+			logger.error(e);
+			throw new AutoSPARQLException("The query of the currently selected positive examples covers the negative example \"" + 
+					e.getCoveredNegativeExample() + "\".");
+		} catch (TimeOutException e) {
+			logger.error(e);
+			throw new AutoSPARQLException("The computation of a new suggestion needs too much time. Please add manually more positive examples.");
+		} catch (Exception e){
+			logger.error(e);
+			throw new AutoSPARQLException("An error occured while generating a new suggestion.");
 		}
+		
 	}
 	
 	public Map<String, String> getProperties(String query) throws AutoSPARQLException{

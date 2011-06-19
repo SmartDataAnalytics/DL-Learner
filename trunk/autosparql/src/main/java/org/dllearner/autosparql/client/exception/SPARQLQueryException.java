@@ -2,7 +2,7 @@ package org.dllearner.autosparql.client.exception;
 
 import java.io.Serializable;
 
-public class SPARQLQueryException extends Exception implements Serializable {
+public class SPARQLQueryException extends AutoSPARQLException implements Serializable {
 
 	/**
 	 * 
