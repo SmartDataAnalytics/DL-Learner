@@ -64,6 +64,7 @@ public class ErrorDialog extends Dialog{
 	}
 	
 	public void showDialog(){
-		dialog.show();
+		show();
 	}
+	
 }

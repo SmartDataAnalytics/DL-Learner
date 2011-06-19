@@ -126,7 +126,7 @@ public class SolrSearch implements Search{
 			params.set("rows", hitsPerPage);
 			params.set("start", offset);
 //			params.set("sort", "score+desc,pagerank+desc");
-			response = server.query(params);System.out.println(response.getRequestUrl());
+			response = server.query(params);
 			SolrDocumentList docList = response.getResults();
 			lastTotalHits = (int) docList.getNumFound();
 			Example example;

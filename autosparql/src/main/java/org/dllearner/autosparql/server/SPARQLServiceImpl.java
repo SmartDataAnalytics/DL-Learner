@@ -2,6 +2,7 @@ package org.dllearner.autosparql.server;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,9 @@ import java.util.logging.Level;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+import javax.servlet.http.HttpSessionContext;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
@@ -140,7 +144,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	@Override
 	public Example getSimilarExample(List<String> posExamples,
-			List<String> negExamples) throws SPARQLQueryException{
+			List<String> negExamples) throws AutoSPARQLException{
 		return getAutoSPARQLSession().getSimilarExample(posExamples, negExamples);
 	}
 
@@ -199,6 +203,20 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir),
 				getServletContext().getRealPath(""), solrURL);
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
+		getSession().setAttribute("expiryListener", new HttpSessionBindingListener() {
+	         public void valueBound(HttpSessionBindingEvent e) {}
+
+	         // This method will be called when the user's session expires
+	         public void valueUnbound(HttpSessionBindingEvent e) {
+	             System.out.println("UNBOUND");
+	             
+	         }
+	     });
+		HttpSessionContext context = getSession().getSessionContext();
+
+		  for (Enumeration e = context.getIds(); e.hasMoreElements() ;) {
+			  System.out.println("Valid Session: " + (String)e.nextElement());
+		  }
 	}
 	
 	private AutoSPARQLSession getAutoSPARQLSession(){

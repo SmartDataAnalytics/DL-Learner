@@ -628,10 +628,7 @@ public class EvaluationWithNLQueriesScript {
 							totalTime, lggTime, nbrTime, queryTime);
 				}
 				
-			} catch (TimeOutException e) {
-				e.printStackTrace();
-			} 
-//			catch (SPARQLQueryException e) {
+			} //			catch (SPARQLQueryException e) {
 //				e.printStackTrace();
 //			} 
 			catch (Exception e) {

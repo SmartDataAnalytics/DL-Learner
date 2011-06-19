@@ -114,7 +114,7 @@ public class QuestionProcessor {
 		    	
 		    }
 		    if(!nounPhrase.isEmpty()){
-    			words.add(nounPhrase.trim()													);
+    			words.add(nounPhrase.trim());
     			nounPhrase = "";
     		}
 		}
@@ -129,7 +129,7 @@ public class QuestionProcessor {
 		List<String> stemmedWords = new ArrayList<String>();
         Morphology morpho = new Morphology();
         for (String w : words) {
-        	if(!(w.indexOf(" ") > 0)){
+        	if(!(w.indexOf(" ") > 0) && !Character.isUpperCase(w.charAt(0))){
         		stemmedWords.add(morpho.stem(w));
         	} else {
         		stemmedWords.add(w);

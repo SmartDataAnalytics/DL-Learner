@@ -69,11 +69,23 @@ public class VirtuosoSearch implements Search{
 		String comment;
 		QuerySolution qs;
 		while(rs.hasNext()){
+			uri = "";
+			label = "";
+			imageURL = "";
+			comment = "";
+			
 			qs = rs.next();
-			uri = qs.getResource("s").getURI();
-			label = qs.getLiteral("label").getLexicalForm();
-			imageURL = qs.getResource("image").getURI();
-			comment = qs.getLiteral("comment").getLexicalForm();
+			uri = qs.getResource("uri").getURI();
+			if(qs.getLiteral("label") != null){
+				label = qs.getLiteral("label").getLexicalForm();
+			}
+			if(qs.getResource("imageURL") != null){
+				imageURL = qs.getResource("imageURL").getURI();
+			}
+			if(qs.getLiteral("comment") != null){
+				comment = qs.getLiteral("comment").getLexicalForm();
+			}
+			
 			examples.add(new Example(uri, label, imageURL, comment));
 		}
 		return examples;
@@ -110,13 +122,13 @@ public class VirtuosoSearch implements Search{
 	
 	private String buildSearchQueryExtended(String queryString, int limit, int offset){
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT distinct(?s) WHERE {\n");
-		sb.append("?s a ?class.\n");
-		sb.append("?s ").append(getAngleBracketsString(RDFS.label.toString())).append(" ?label.\n");
+		sb.append("SELECT distinct(?uri) ?label ?imageURL ?comment WHERE {\n");
+		sb.append("?uri a ?class.\n");
+		sb.append("?uri ").append(getAngleBracketsString(RDFS.label.toString())).append(" ?label.\n");
 		sb.append("FILTER(LANGMATCHES(LANG(?label), \"en\"))\n");
 		sb.append("FILTER(bif:contains(?label, '" + queryString + "'))\n");
-		sb.append("OPTIONAL{?s <http://dbpedia.org/ontology/thumbnail> ?imageURL.}\n");
-		sb.append("OPTIONAL{?s <").append(RDFS.comment).append("> ?comment.\n");
+		sb.append("OPTIONAL{?uri <http://dbpedia.org/ontology/thumbnail> ?imageURL.}\n");
+		sb.append("OPTIONAL{?uri <").append(RDFS.comment).append("> ?comment.\n");
 		sb.append("FILTER(LANGMATCHES(LANG(?comment), \"en\"))}");
 		sb.append("}\n");
 		if(hitsPerPage > 0){
@@ -125,6 +137,7 @@ public class VirtuosoSearch implements Search{
 		if(offset > 0){
 			sb.append(" OFFSET ").append(offset);
 		}
+		System.out.println(sb.toString());
 		return sb.toString();
 	}
 	

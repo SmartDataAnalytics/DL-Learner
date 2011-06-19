@@ -15,4 +15,21 @@ public class AutoSPARQLException extends Exception {
 		super(e);
 	}
 
+	public AutoSPARQLException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	public AutoSPARQLException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
+
+	public AutoSPARQLException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+
 }
