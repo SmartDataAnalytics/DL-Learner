@@ -123,20 +123,20 @@ public class HomeView extends View {
 				@Override
 				public void onClick(Widget sender) {
 					Registry.register("QUERY_TITLE", queryField.getValue());
-					SPARQLService.Util.getInstance().setQuestion(queryField.getValue(), new AsyncCallback<Void>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-							
-						}
-
-						@Override
-						public void onSuccess(Void result) {
-							// TODO Auto-generated method stub
-							
-						}
-					});
+//					SPARQLService.Util.getInstance().setQuestion(queryField.getValue(), new AsyncCallback<Void>() {
+//
+//						@Override
+//						public void onFailure(Throwable caught) {
+//							// TODO Auto-generated method stub
+//							
+//						}
+//
+//						@Override
+//						public void onSuccess(Void result) {
+//							// TODO Auto-generated method stub
+//							
+//						}
+//					});
 					
 				}
                });

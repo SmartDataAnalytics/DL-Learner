@@ -123,14 +123,14 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 
 	@Override
 	public PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config) throws AutoSPARQLException{
-		logger.info("Searching for " + searchTerm + "(" + getSession().getId() + ")");
+		logger.info(getUserString() + ":Searching for \"" + searchTerm + "\"");
 		return getAutoSPARQLSession().getSearchResult(searchTerm, config);
 	}
 	
 	@Override
 	public PagingLoadResult<Example> getQueryResult(String query,
 			PagingLoadConfig config) throws AutoSPARQLException {
-		logger.info("Searching for " + query + "(" + getSession().getId() + ")");
+		logger.info(getUserString() + ":Searching for \"" + query + "\"");
 		getAutoSPARQLSession().setQuestion(query);
 		return getAutoSPARQLSession().getQueryResult(query, config);
 	}
@@ -145,6 +145,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	@Override
 	public Example getSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws AutoSPARQLException{
+		logger.info(getUserString() + ":Searching similiar example");
 		return getAutoSPARQLSession().getSimilarExample(posExamples, negExamples);
 	}
 
@@ -156,7 +157,9 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	public void setExamples(List<String> posExamples,
 			List<String> negExamples){
-		logger.info("Setting positive and negative examples(" + getSession().getId() + ")");
+		logger.info(getUserString() + ":Setting positive and negative examples");
+		logger.info("Positive examples: " + posExamples);
+		logger.info("Negative examples: " + negExamples);
 		try{
 			getAutoSPARQLSession().setExamples(posExamples, negExamples);
 		} catch (Exception e){
@@ -166,7 +169,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	@Override
 	public void setEndpoint(Endpoint endpoint) throws AutoSPARQLException{
-		logger.info("Set new endpoint " + endpoint.getLabel() + "(" + getSession().getId() + ")");
+		logger.info(getUserString() + ":Set endpoint " + endpoint.getLabel());
 		try {
 			createNewAutoSPARQLSession(endpointsMap.get(endpoint));
 		} catch (Exception e) {
@@ -178,7 +181,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	@Override
 	public void setQuestion(String question) throws AutoSPARQLException{
-		logger.info("Set question " + question + "(" + getSession().getId() + ")");
+		logger.info(getUserString() + ":Set question \"" + question + "\"");
 		this.question = question;
 	}
 
@@ -212,11 +215,6 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	             
 	         }
 	     });
-		HttpSessionContext context = getSession().getSessionContext();
-
-		  for (Enumeration e = context.getIds(); e.hasMoreElements() ;) {
-			  System.out.println("Valid Session: " + (String)e.nextElement());
-		  }
 	}
 	
 	private AutoSPARQLSession getAutoSPARQLSession(){
@@ -234,7 +232,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 
 	@Override
 	public void saveSPARQLQuery() throws AutoSPARQLException{
-		logger.info("Saving SPARQL query(" + getSession().getId() + ")");
+		logger.info(getUserString() + ":Saving SPARQL query");
 		getAutoSPARQLSession().saveSPARQLQuery(store);
 	}
 
@@ -284,6 +282,10 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	public Map<String, String> getProperties(String query) throws AutoSPARQLException {
 		logger.info("Loading properties (" + getSession().getId() + ")");
 		return getAutoSPARQLSession().getProperties(query);
+	}
+	
+	private String getUserString(){
+		return "USER " + getSession().getId();
 	}
 
 	

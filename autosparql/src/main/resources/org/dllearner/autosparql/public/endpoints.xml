@@ -6,6 +6,7 @@
 		<defaultGraphURI>http://dbpedia.org</defaultGraphURI>
 		<predicateFilters>
 			<predicate>http://dbpedia.org/ontology/wikiPageWikiLink</predicate>
+			<predicate>http://dbpedia.org/ontology/wikiPageExternalLink</predicate>
 			<predicate>http://dbpedia.org/property/wikiPageUsesTemplate</predicate>
 		</predicateFilters>
 	</endpoint>
@@ -16,6 +17,7 @@
 		<defaultGraphURI>http://dbpedia.org</defaultGraphURI>
 		<predicateFilters>
 			<predicate>http://dbpedia.org/property/wikilink</predicate>
+			<predicate>http://dbpedia.org/ontology/wikiPageExternalLink</predicate>
 			<predicate>http://dbpedia.org/property/wikiPageUsesTemplate</predicate>
 		</predicateFilters>
 	</endpoint>
