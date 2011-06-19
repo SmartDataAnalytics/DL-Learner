@@ -184,7 +184,11 @@ public class Geizhals2OWL {
                 model.createIndividual(negative, OWL.Thing);
             }
         } catch (org.json.simple.parser.ParseException e) {
-            String msg = "Parsing the JSON string failed\nJSON was:\n" + json;
+            int position = e.getPosition();
+            String msg = "Parsing the JSON string failed\n" + e.toString() + "\n";
+            String before = (position >= 30) ? json.substring(position - 30, position) : json.substring(0, position);
+            String after = (position + 30 < json.length()) ? json.substring(position, position + 29) : json.substring(position);
+            msg += "String before position " + position + ": " + before + "\n" + "String after position " + position + ": " + after + "\n" + "JSON was:\n" + json;
             log.error(msg, e);
             throw new InvalidParameterException(msg);
         }
