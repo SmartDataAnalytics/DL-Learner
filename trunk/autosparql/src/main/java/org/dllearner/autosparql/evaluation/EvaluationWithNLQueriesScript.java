@@ -459,7 +459,7 @@ public class EvaluationWithNLQueriesScript {
 				prefixes.put("foaf","http://xmlns.com/foaf/0.1/");
 				try {
 					exFinder = new ExampleFinder(new SPARQLEndpointEx(new URL("http://live.dbpedia.org/sparql"), 
-							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters), selectCache, constructCache);
+							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters), selectCache, constructCache, SOLR_SERVER_URL);
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
 				}

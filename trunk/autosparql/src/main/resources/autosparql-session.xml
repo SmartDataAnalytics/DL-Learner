@@ -28,7 +28,7 @@
 	</bean>
 	
 	<bean id="search" class="org.dllearner.autosparql.server.search.SolrSearch">
-		<constructor-arg value="http://139.18.2.173:8080/apache-solr-1.4.1/dbpedia_resources"/>
+		<constructor-arg value="http://139.18.2.173:8080/apache-solr-3.1.0/dbpedia_resources"/>
 	</bean>
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

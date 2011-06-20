@@ -11,20 +11,11 @@ import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 
 import com.extjs.gxt.ui.client.Registry;
 import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.data.BasePagingLoader;
-import com.extjs.gxt.ui.client.data.JsonReader;
-import com.extjs.gxt.ui.client.data.LoadEvent;
-import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.data.ModelType;
-import com.extjs.gxt.ui.client.data.PagingLoadConfig;
-import com.extjs.gxt.ui.client.data.PagingLoadResult;
-import com.extjs.gxt.ui.client.data.PagingLoader;
-import com.extjs.gxt.ui.client.data.ScriptTagProxy;
-import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Controller;
+import com.extjs.gxt.ui.client.mvc.Dispatcher;
 import com.extjs.gxt.ui.client.mvc.View;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.HtmlContainer;
@@ -34,8 +25,11 @@ import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -117,30 +111,42 @@ public class HomeView extends View {
 //                intro.add(createComboxBox(), "#demo-selector-query");
 //                intro.add(new AutoCompleteTextBox(), "#demo-selector-query");
                 intro.add(createEndpointSelector(), "#demo-selector-endpoints");
-                Hyperlink link = new Hyperlink("Query", HistoryTokens.QUERY);
-               link.addClickListener(new ClickListener() {
-				
-				@Override
-				public void onClick(Widget sender) {
-					Registry.register("QUERY_TITLE", queryField.getValue());
-//					SPARQLService.Util.getInstance().setQuestion(queryField.getValue(), new AsyncCallback<Void>() {
-//
-//						@Override
-//						public void onFailure(Throwable caught) {
-//							// TODO Auto-generated method stub
-//							
-//						}
-//
-//						@Override
-//						public void onSuccess(Void result) {
-//							// TODO Auto-generated method stub
-//							
-//						}
-//					});
+                
+                Anchor anchor = new Anchor("Query");
+                anchor.addClickHandler(new ClickHandler() {
 					
-				}
-               });
-                intro.add(link, "#demo-selector-button");
+					@Override
+					public void onClick(ClickEvent event) {
+						Registry.register("QUERY_TITLE", queryField.getValue());
+						History.newItem(HistoryTokens.QUERY);
+						
+					}
+				});
+                intro.add(anchor, "#demo-selector-button");
+//                Hyperlink link = new Hyperlink("Query", HistoryTokens.QUERY);
+//               link.addClickListener(new ClickListener() {
+//				
+//				@Override
+//				public void onClick(Widget sender) {
+//					Registry.register("QUERY_TITLE", queryField.getValue());
+////					SPARQLService.Util.getInstance().setQuestion(queryField.getValue(), new AsyncCallback<Void>() {
+////
+////						@Override
+////						public void onFailure(Throwable caught) {
+////							// TODO Auto-generated method stub
+////							
+////						}
+////
+////						@Override
+////						public void onSuccess(Void result) {
+////							// TODO Auto-generated method stub
+////							
+////						}
+////					});
+//					
+//				}
+//               });
+//                intro.add(link, "#demo-selector-button");
 
                 // maincontent
                 maincontent = new HtmlContainer(
