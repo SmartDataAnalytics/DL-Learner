@@ -176,7 +176,7 @@ public class Geizhals2OWL {
             if (pos != null) {
                 fill(pos, r.pos, model);
             }
-            if (neg != null) {
+            if (neg != null && !neg.isEmpty()) {
                 fill(neg, r.neg, model);
             } else {
                 String negative = "http://negative.org/fake";

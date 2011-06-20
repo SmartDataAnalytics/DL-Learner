@@ -3,6 +3,8 @@ package org.dllearner.server.nke;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.aksw.commons.jena.Constants;
 import org.aksw.commons.jena.ModelUtils;
 import org.apache.log4j.Logger;
@@ -30,13 +32,16 @@ import java.util.Set;
  */
 public class Learner {
 
+    public Class reasoner = OWLAPIReasoner.class;
+    //public Class reasoner = FastInstanceChecker.class;
+
     private static Logger log = Logger.getLogger(Learner.class);
 
     public EvaluatedDescriptionPosNeg learn(Set<String> pos, Set<String> neg, OntModel model, int maxTime) throws IOException, ComponentInitException, LearningProblemUnsupportedException {
         ComponentManager cm = ComponentManager.getInstance();
 
         try {
-        	long start = System.nanoTime();
+            Monitor owlapi = MonitorFactory.getTimeMonitor("Learner:owlapi").start();
             model.createIndividual("http://nke.aksw.org/", model.createClass(OWL.Ontology.getURI()));
             ModelUtils.write(model, new File("test.owl"));
             PipedOutputStream out = new PipedOutputStream();
@@ -55,22 +60,23 @@ public class Learner {
             } catch (OWLOntologyCreationException e) {
                 e.printStackTrace();
             }
-            long duration = System.nanoTime() - start;
-            System.out.println("OWL API conversion time: " + Helper.prettyPrintNanoSeconds(duration));
-            
+
             KnowledgeSource ks = new OWLAPIOntology(retOnt);
             ks.init();
 
+            owlapi.stop();
+            log.debug("OWL API conversion time: " + Helper.prettyPrintNanoSeconds((long) owlapi.getLastValue()));
+
             // TODO: should the reasoner be initialised at every request or just once (?)
 
-            log.debug("Initialising reasoner");
-            start = System.nanoTime();
-          ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);            
+            Monitor mon = MonitorFactory.getTimeMonitor("Learner:reasoner").start();
+            ReasonerComponent rc = cm.reasoner(reasoner, ks);
 //            ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks); // try OWL API / Pellet, because ontology is not complex
             rc.init();
-            duration = System.nanoTime() - start;
-            System.out.println("reasoner load time: " + Helper.prettyPrintNanoSeconds(duration));
-            
+
+            mon.stop();
+            log.debug("reasoner load time: " + Helper.prettyPrintNanoSeconds((long) mon.getLastValue()));
+
 //        System.out.println(rc.getClassHierarchy());
 
             PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
@@ -79,19 +85,19 @@ public class Learner {
 //        lp.getConfigurator().setAccuracyMethod("fmeasure");
 //        lp.getConfigurator().setUseApproximations(false);
             lp.init();
-            
+
             ELLearningAlgorithm la = cm.learningAlgorithm(ELLearningAlgorithm.class, lp, rc);
 
             la.getConfigurator().setInstanceBasedDisjoints(false);
 //        CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
             la.init();
             log.debug("Running learning algorithm");
-            
-            start = System.nanoTime();
+
+            Monitor learn = MonitorFactory.getTimeMonitor("Learner:learning").start();
             la.start();
             EvaluatedDescriptionPosNeg ed = (EvaluatedDescriptionPosNeg) la.getCurrentlyBestEvaluatedDescription();
-            duration = System.nanoTime() - start;
-            System.out.println("learning time: " + Helper.prettyPrintNanoSeconds(duration));
+            learn.stop();
+            log.debug("learning time: " + Helper.prettyPrintNanoSeconds((long) learn.getLastValue()));
             // use this to get all solutions
             // rc.getIndividuals(ed.getDescription());
             log.debug(ed.toString());

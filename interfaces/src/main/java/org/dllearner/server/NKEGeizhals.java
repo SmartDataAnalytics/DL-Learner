@@ -62,23 +62,48 @@ public class NKEGeizhals extends HttpServlet {
             if (isSet(httpServletRequest, "action")) {
                 action = httpServletRequest.getParameter("action");
                 //use the function one of
-                if (!oneOf(action, "learn")) {
-                    throw new InvalidParameterException("Wrong parameter value for \"action\", must be one of ( learn ) " + getDocumentation(httpServletRequest));
+                if (!oneOf(action, "learn", "feedback", "mostpopular")) {
+                    throw new InvalidParameterException("Wrong parameter value for \"action\", must be one of ( learn, feedback, mostpopular ) " + getDocumentation(httpServletRequest));
                 }
             } else {
                 throw new InvalidParameterException("No parameter 'action' found. " + getDocumentation(httpServletRequest));
             }
 
-            if (action.equals("learn")) {
+            if (action.equalsIgnoreCase("learn")) {
 
                 if (isSet(httpServletRequest, "debug")) {
-                    String debugResult = "{\"time\":\"needed: 2896.0 ms. (2896.0 total)\",\"learned\":{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]},\"down\":[{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]},{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]}],\"success\":true,\"up\":[{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]},{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]}]}";
+                    String debugResult = "{\"time\":\"needed: 2896.0 ms. (2896.0 total)\",\"learned\":{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]},\"related\":[{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]},{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]}],\"success\":true,\"up\":[{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]},{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]}]}";
                     result = (JSONObject) JSONValue.parseWithException(debugResult);
                 } else if (isSet(httpServletRequest, "data")) {
-                    String json = json = httpServletRequest.getParameter("data");
+                    String json = httpServletRequest.getParameter("data");
                     actionLearn(json, result);
                 } else {
                     throw new InvalidParameterException("No parameter 'data' found. " + getDocumentation(httpServletRequest));
+                }
+            }
+
+            if (action.equalsIgnoreCase("clicked")) {
+
+                if (isSet(httpServletRequest, "data")) {
+                    String where = httpServletRequest.getParameter("data");
+                    if (!oneOf(where, "up", "down", "learned")) {
+
+                    } else {
+                        throw new InvalidParameterException("Parameter 'where' must be one of [up, down, learned]. " + getDocumentation(httpServletRequest));
+                    }
+                } else {
+                    throw new InvalidParameterException("No parameter 'data' or 'where' found. " + getDocumentation(httpServletRequest));
+                }
+            }
+
+            if (action.equalsIgnoreCase("mostPopular")) {
+
+                if (isSet(httpServletRequest, "debug")) {
+                    String debugResult = "[" + " {\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"popularity\": 10,\"falsePositives\":[],\"falseNegatives\":[]} " + ", " + " {\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"popularity\": 10,\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]} " + ", " + " {\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"popularity\": 10,\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]} " + ", " + " {\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]} " + "] ";
+                    debugResult = "{\"list\":" + debugResult + " }";
+                    result = (JSONObject) JSONValue.parseWithException(debugResult);
+                } else {
+                    throw new InvalidParameterException("Not implemented yet, use debug");
                 }
             }
 
@@ -119,15 +144,16 @@ public class NKEGeizhals extends HttpServlet {
     public void actionLearn(String json, JSONObject result) throws Exception {
 
         Geizhals2OWL.Result r = Geizhals2OWL.getInstance().handleJson(json);
+        if(r.pos.isEmpty()){
+            throw new InvalidParameterException("No positive examples were chosen. Press a plus.");
+        }
         EvaluatedDescriptionPosNeg ed = new Learner().learn(r.pos, r.neg, r.getModel(), 20);
         JSONObject concept = jsonForEd(ed);
         result.put("learned", concept);
         JSONArray up = new JSONArray();
         up.add(concept);
         up.add(concept);
-        result.put("up", up);
-        result.put("down", up);
-
+        result.put("related", up);
     }
 
 
@@ -249,7 +275,8 @@ public class NKEGeizhals extends HttpServlet {
         for (Object key : httpServletRequest.getParameterMap().keySet()) {
             buf.append("\nParameter: " + key + " Values: ");
             for (String s : httpServletRequest.getParameterValues((String) key)) {
-                buf.append(((s.length() > 200) ? s.substring(0, 200) + "..." : s) + " ");
+                //buf.append(((s.length() > 200) ? s.substring(0, 200) + "..." : s) + " ");
+                buf.append(s);
             }
         }
         return buf.toString();
