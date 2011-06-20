@@ -149,9 +149,10 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
 	
-	// TODO remove this variable, just for testing purposes
-	private int counter = 0;
-	private PrintWriter out;
+	// TODO: remove this variable, just for testing purposes
+//	private int counter = 0;
+//	private PrintWriter out;
+//	private long start = 0;
 	
 	@Override
 	public FuzzyCELOEConfigurator getConfigurator() {
@@ -206,15 +207,15 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	@Override
 	public void init() throws ComponentInitException {
 		
-		// TODO remove, just for testing purposes
-		FileWriter fstream;
-		try {			
-			fstream = new FileWriter("../examples/fuzzydll/testOut_v2.0_noise30_10000.log");
-			out = new PrintWriter(fstream);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// TODO: remove, just for testing purposes
+//		FileWriter fstream;
+//		try {			
+//			fstream = new FileWriter("../examples/fuzzydll/kk.log");
+//			out = new PrintWriter(fstream);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
@@ -378,8 +379,8 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 		addNode(startClass, null);
 		
 		int loop = 0;
+				
 		while (!terminationCriteriaSatisfied()) {
-//			System.out.println("loop " + loop);
 			
 			if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
 				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
@@ -395,13 +396,13 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 			TreeSet<Description> refinements = refineNode(nextNode);
 			mon.stop();
 			
-			// TODO just for testing purposes
-			counter++;
-			out.println(counter + " next node: " + nextNode);
-			for(Description refinement : refinements) {
-				out.println("refinement: " + refinement);
-			}
-			out.println();
+			// TODO: just for testing purposes
+//			counter++;
+//			out.println(counter + " next node: " + nextNode);
+//			for(Description refinement : refinements) {
+//				out.println("refinement: " + refinement);
+//			}
+//			out.println();
 			
 			while(refinements.size() != 0) {
 				// pick element from set
@@ -414,7 +415,16 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 					
 //					System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
 					Monitor mon2 = MonitorFactory.start("addNode");
+					
+					// TODO: remove
+//					start = System.currentTimeMillis();
+					
 					addNode(refinement, nextNode);
+					
+					// TODO: remove, just testing purposes
+//					counter++;
+//					System.out.println(counter + " * " + (System.currentTimeMillis() - start));
+					
 					mon2.stop();
 					// adding nodes is potentially computationally expensive, so we have
 					// to check whether max time is exceeded	

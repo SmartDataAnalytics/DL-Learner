@@ -43,29 +43,30 @@ import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
  */
 public class FuzzyDLLTest_Trains {
 	
-	String[] posEx = {
-			"http://www.example.com/fuzzyTrains.owl#east1",
-			"http://www.example.com/fuzzyTrains.owl#east2",
-			"http://www.example.com/fuzzyTrains.owl#east3",
-			"http://www.example.com/fuzzyTrains.owl#east4",
-			"http://www.example.com/fuzzyTrains.owl#east5"
-	};
-	String[] negEx = {
-			"http://www.example.com/fuzzyTrains.owl#west6",
-			"http://www.example.com/fuzzyTrains.owl#west7",
-			"http://www.example.com/fuzzyTrains.owl#west8",
-			"http://www.example.com/fuzzyTrains.owl#west9",
-			"http://www.example.com/fuzzyTrains.owl#west0"
-	};
-	
 //	String[] posEx = {
 //			"http://www.example.com/fuzzyTrains.owl#east1",
-//			"http://www.example.com/fuzzyTrains.owl#east2"
+//			"http://www.example.com/fuzzyTrains.owl#east2",
+//			"http://www.example.com/fuzzyTrains.owl#east3",
+//			"http://www.example.com/fuzzyTrains.owl#east4",
+//			"http://www.example.com/fuzzyTrains.owl#east5"
 //	};
 //	String[] negEx = {
 //			"http://www.example.com/fuzzyTrains.owl#west6",
-//			"http://www.example.com/fuzzyTrains.owl#west7"
+//			"http://www.example.com/fuzzyTrains.owl#west7",
+//			"http://www.example.com/fuzzyTrains.owl#west8",
+//			"http://www.example.com/fuzzyTrains.owl#west9",
+//			"http://www.example.com/fuzzyTrains.owl#west0"
 //	};
+	
+	String[] posEx = {
+			"http://www.example.com/fuzzyTrains.owl#east1",
+			"http://www.example.com/fuzzyTrains.owl#east2"
+	};
+	String[] negEx = {
+			"http://www.example.com/fuzzyTrains.owl#west6",
+			"http://www.example.com/fuzzyTrains.owl#west7"
+	};
+	private static long start;
 	
 //	String[] posEx = {
 //			"http://www.example.com/fuzzyTrains.owl#carPositive"
@@ -98,18 +99,22 @@ public class FuzzyDLLTest_Trains {
 		for (int i=0; i<negEx.length; i++) {
 			fuzzyExamples.add(new FuzzyExample(negEx[i],0.0));
 		}
+//		fuzzyExamples.add(new FuzzyExample(posEx[0],1.0));
+//		fuzzyExamples.add(new FuzzyExample(posEx[1],0.9));
+//		fuzzyExamples.add(new FuzzyExample(negEx[0],0.1));
+//		fuzzyExamples.add(new FuzzyExample(negEx[1],0.0));
 		
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_v2.0.owl"));
+		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_v5.0.owl"));
 		ks.init();
 
 //		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 		FuzzyOWLAPIReasoner rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
 		rc.getConfigurator().setReasonerType("fuzzydl");
 		rc.init();
-		System.out.println(rc.getClassHierarchy());
+		// System.out.println(rc.getClassHierarchy());
 		
 		FuzzyPosNegLPStandard lp = cm.learningProblem(FuzzyPosNegLPStandard.class, rc);
 		//PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
@@ -127,20 +132,24 @@ public class FuzzyDLLTest_Trains {
 //		aaaaaaaaaa.add("Nothing");
 //		fc.getConfigurator().setIgnoredConcepts(aaaaaaaaaa);
 		fc.getConfigurator().setMaxClassDescriptionTests(10000);
+		// fc.getConfigurator().setMaxNrOfResults(50);
 		fc.getConfigurator().setMaxExecutionTimeInSeconds(0);
 		fc.getConfigurator().setUseDoubleDatatypes(false);
 		fc.getConfigurator().setUseCardinalityRestrictions(false);
-		fc.getConfigurator().setWriteSearchTree(true);
-		fc.getConfigurator().setSearchTreeFile("log/searchTreeFuzzy.txt");
-		fc.getConfigurator().setNoisePercentage(30);
+		// fc.getConfigurator().setWriteSearchTree(true);
+		// fc.getConfigurator().setSearchTreeFile("log/searchTreeFuzzy.txt");
+		fc.getConfigurator().setNoisePercentage(100);
 		fc.init();
-		fc.start();		
 		
+		start = System.currentTimeMillis();
+		
+		fc.start();		
+
+
 		return fc.getCurrentlyBestDescription();
 	}
 	
 	public static void main(String args[]) throws LearningProblemUnsupportedException, IOException, ComponentInitException {
-		long start = System.currentTimeMillis();
 
 		FuzzyDLLTest_Trains test = new FuzzyDLLTest_Trains();
 		test.learn();

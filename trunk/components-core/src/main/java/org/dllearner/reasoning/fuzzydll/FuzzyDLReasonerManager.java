@@ -3,6 +3,7 @@ package org.dllearner.reasoning.fuzzydll;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -84,9 +85,24 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 	private OWLDataFactory factory;
 	private String baseURI;
 	private NodeSet<OWLClass> newOwlInstances;
+	
+	// TODO: remove, just for testing purposes
 	// private FileOutputStream errorFile;
+//	private PrintStream out;
+//	private int counter = 1;
+//	private int counter2 = 1;
 
 	public FuzzyDLReasonerManager(String ontologyFile, OWLOntology ontology, OWLReasonerConfiguration conf, OWLDataFactory factory, String baseURI) throws Exception {
+		
+		// TODO: remove, just for testing purposes
+//		FileOutputStream fstream;
+//		try {			
+//			fstream = new FileOutputStream("../examples/fuzzydll/milpSolverLogs.log");
+//			out = new PrintStream(fstream);		
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		this.factory = factory;
 		
@@ -152,7 +168,16 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 
 			try {
 				KnowledgeBase clonedFuzzyKB = fuzzyKB.clone();
+				
+				// TODO: just for testing, remove
+//				long start = System.nanoTime();
+				
 				queryResult = q.solve(clonedFuzzyKB);
+				
+				// TODO: just for testing, remove
+//				out.println(counter + " * " + (System.nanoTime() - start));
+//				counter++;
+
 				if (!queryResult.isConsistentKB()){
 					System.err.println("Fuzzy KB is inconsistent.");
 					System.err.println("This may be a fuzzyDL reasoner bug. Press enter to continue.");
@@ -597,7 +622,16 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 			AxiomNotInProfileException, FreshEntitiesException,
 			InconsistentOntologyException {
 
-		 return crispReasoner.isEntailed(arg0);
+		// TODO: just for testing, remove
+//		long start = System.nanoTime();
+		
+		boolean outBoolean = crispReasoner.isEntailed(arg0);
+		
+		// TODO: just for testing, remove
+//		out.println(counter2 + " + " + (System.nanoTime() - start));
+//		counter2++;
+		
+		 return outBoolean;
 	}
 
 	@Override
