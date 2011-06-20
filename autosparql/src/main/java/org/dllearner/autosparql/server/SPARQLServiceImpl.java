@@ -63,7 +63,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	public SPARQLServiceImpl(){
 		super();
-		java.util.logging.Logger.getLogger("org.apache.solr").setLevel(Level.WARNING);
+//		java.util.logging.Logger.getLogger("org.apache.solr").setLevel(Level.WARNING);
 	}
 	
 	@Override

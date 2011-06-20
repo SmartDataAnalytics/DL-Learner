@@ -12,14 +12,10 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.QTL;
 import org.dllearner.algorithm.qtl.exception.EmptyLGGException;
 import org.dllearner.algorithm.qtl.exception.NegativeTreeCoverageExecption;
-import org.dllearner.algorithm.qtl.exception.QTLException;
 import org.dllearner.algorithm.qtl.exception.TimeOutException;
-import org.dllearner.algorithm.qtl.filters.QueryTreeFilter;
-import org.dllearner.algorithm.qtl.filters.QuestionBasedQueryTreeFilter;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedQueryTreeFilterAggressive;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedStatementFilter;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
-import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.search.QuestionProcessor;
 import org.dllearner.autosparql.server.search.SolrSearch;
@@ -51,13 +47,13 @@ public class ExampleFinder {
 	
 	boolean dirty = true;
 	
-	public ExampleFinder(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache){
+	public ExampleFinder(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache, String solrURL){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
 		
 		qtl = new QTL(endpoint, selectCache);
 		qtl.setMaxExecutionTimeInSeconds(1000);
-		resourceIndex = new SolrSearch("http://139.18.2.173:8080/apache-solr-1.4.1/dbpedia_resources");
+		resourceIndex = new SolrSearch(solrURL);
 		
 		examplesCache = new HashMap<String, Example>();
 	}

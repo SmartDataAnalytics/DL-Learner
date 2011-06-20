@@ -80,7 +80,7 @@ public class AutoSPARQLSession {
 		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
 		search = new SolrSearch(solrURL);
-		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
+		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache, solrURL);
 		
 		property2LabelMap = new TreeMap<String, String>();
 		property2DatatypeMap = new HashMap<String, Class>();
@@ -94,7 +94,7 @@ public class AutoSPARQLSession {
 		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
 		search = new SolrSearch(solrURL);
-		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
+		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache, solrURL);
 	}
 	
 	public void setEndpoint(SPARQLEndpointEx endpoint){

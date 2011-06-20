@@ -15,13 +15,14 @@ import org.junit.Test;
 public class ExampleFinderTest {
 	
 	private static final SPARQLEndpointEx endpoint = Endpoints.getDBPediaAKSWEndpoint();
+	private static final String SOLR_SERVER_URL = "http://139.18.2.173:8080/apache-solr-3.1.0/";
 	
 	@Test
 	public void test1(){
 		try {
 			Logger.getLogger(QTL.class).setLevel(Level.DEBUG);
 			Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
-			ExampleFinder f = new ExampleFinder(endpoint, new ExtractionDBCache("select-cache"), new ExtractionDBCache("construct-cache"));
+			ExampleFinder f = new ExampleFinder(endpoint, new ExtractionDBCache("select-cache"), new ExtractionDBCache("construct-cache"), SOLR_SERVER_URL);
 			
 //			f.setQuestion("soccer clubs in Premier League");
 //			
