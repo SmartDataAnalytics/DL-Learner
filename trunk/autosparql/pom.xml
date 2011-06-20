@@ -15,8 +15,52 @@
 
 	<properties>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <this.usePermutations>false</this.usePermutations>
+		<!-- By default we still want all five rendering engines when none of the 
+			following profiles is explicitly specified -->
+		<gwt.compile.user.agent>gecko1_8</gwt.compile.user.agent>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>prod</id>
+			<activation>
+				<property>
+					<name>prod</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>gwt-maven-plugin</artifactId>
+						<version>2.1.0</version>
+						<executions>
+							<execution>
+								<configuration>
+									<module>org.dllearner.autosparql.Application_production</module>
+								</configuration>
+								<goals>
+									<goal>compile</goal>
+									<!-- <goal>generateAsync</goal> -->
+									<!--<goal>test</goal> -->
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<hostedWebapp>war</hostedWebapp>
+							<runTarget>org.dllearner.autosparql.Application/index.html</runTarget>
+							<modules>
+								<module>org.dllearner.autosparql.Application_production</module>
+							</modules>
+							<localWorkers>6</localWorkers>
+						</configuration>
+
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
 
 	<repositories>
 		<repository>
@@ -89,7 +133,7 @@
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
 			<exclusions>
-				<exclusion> 
+				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
 				</exclusion>
@@ -202,7 +246,7 @@
 			<groupId>org.aksw.commons</groupId>
 			<artifactId>util</artifactId>
 			<exclusions>
-				<exclusion> 
+				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
 				</exclusion>
@@ -263,6 +307,7 @@
 	<build>
 		<outputDirectory>war/WEB-INF/classes</outputDirectory>
 		<plugins>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
@@ -311,9 +356,9 @@
 				<artifactId>tomcat-maven-plugin</artifactId>
 				<version>1.0-beta-1</version>
 				<configuration>
+
 					<server>local</server>
 					<url>http://127.0.0.1:8080/manager</url>
-
 				</configuration>
 			</plugin>
 
@@ -339,5 +384,6 @@
 			</plugin>
 		</plugins>
 	</build>
+
 
 </project>
