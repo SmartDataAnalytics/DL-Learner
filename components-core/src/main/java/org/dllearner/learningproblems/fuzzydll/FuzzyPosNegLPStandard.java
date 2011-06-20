@@ -622,7 +622,6 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		double invertedCoveredMembershipDegree = 0;
 		double lastMembershipDegree = 0;
 
-		// TODO to optimize
 		for (FuzzyIndividual ind: fuzzyExamples) {
 			lastMembershipDegree = (1 - Math.abs(ind.getTruthDegree() - reasoner.hasTypeFuzzyMembership(description, ind)));
 			coveredMembershipDegree += lastMembershipDegree * ind.getTruthDegree();
@@ -630,7 +629,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			invertedCoveredMembershipDegree += (1 - ind.getTruthDegree()) * (1 - lastMembershipDegree);
 		}
 		double fuzzyRecall = totalMembershipDegree == 0 ? 0 :coveredMembershipDegree/totalMembershipDegree;
-		// TODO this is like this??? not sure
+
 		if(fuzzyRecall < 1 - noise) {
 			return -1;
 		}
