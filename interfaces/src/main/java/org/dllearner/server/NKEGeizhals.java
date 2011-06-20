@@ -12,6 +12,7 @@ import org.dllearner.server.nke.Geizhals2OWL;
 import org.dllearner.server.nke.Learner;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -69,7 +70,11 @@ public class NKEGeizhals extends HttpServlet {
             }
 
             if (action.equals("learn")) {
-                if (isSet(httpServletRequest, "data")) {
+
+                if (isSet(httpServletRequest, "debug")) {
+                    String debugResult = "{\"time\":\"needed: 2896.0 ms. (2896.0 total)\",\"learned\":{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]},\"down\":[{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]},{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]}],\"success\":true,\"up\":[{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]},{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"link\":\"http:\\/\\/geizhals.at\\/?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"trueNegatives\":[\"http://test.de/n1\",\"http://test.de/n2\"],\"truePositives\":[\"http://test.de/p1\",\"http://test.de/p2\"],\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\",\"falsePositives\":[],\"falseNegatives\":[]}]}";
+                    result = (JSONObject) JSONValue.parseWithException(debugResult);
+                } else if (isSet(httpServletRequest, "data")) {
                     String json = json = httpServletRequest.getParameter("data");
                     actionLearn(json, result);
                 } else {
