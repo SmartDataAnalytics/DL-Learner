@@ -10,6 +10,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.server.nke.Geizhals2OWL;
 import org.dllearner.server.nke.Learner;
+import org.dllearner.server.nke.LogicalRelationStrategy;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -21,8 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.InvalidParameterException;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 
 public class NKEGeizhals extends HttpServlet {
@@ -82,17 +82,37 @@ public class NKEGeizhals extends HttpServlet {
                 }
             }
 
-            if (action.equalsIgnoreCase("clicked")) {
+            if (action.equalsIgnoreCase("feedback")) {
 
                 if (isSet(httpServletRequest, "data")) {
-                    String where = httpServletRequest.getParameter("data");
-                    if (!oneOf(where, "up", "down", "learned")) {
 
+                    String json = "";
+                    if (isSet(httpServletRequest, "debug")) {
+                        // json = "{\"link\":\"?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\"}";
+                        json = "{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_11_500\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_-+16.4\\\")\",\"link\":\"?cat=nb15w&xf=11_500~85_12.5~85_-+16.4\",\"label\":\"(ab 500GB and 12.5&quot; till 16.4&quot;)\"}";
                     } else {
-                        throw new InvalidParameterException("Parameter 'where' must be one of [up, down, learned]. " + getDocumentation(httpServletRequest));
+                        json = httpServletRequest.getParameter("data");
                     }
+
+                    try {
+                        JSONObject j = (JSONObject) JSONValue.parseWithException(json);
+
+                        //save the concept
+                        Geizhals2OWL.getLRS().increasePopularity(Geizhals2OWL.prefixSave + j.get("link"), (String) j.get("kbsyntax"), (String) j.get("link"), (String) j.get("label"));
+
+                    } catch (org.json.simple.parser.ParseException e) {
+                        //TODO this code was copy pasted and could be a function
+                        int position = e.getPosition();
+                        String msg = "Parsing the JSON string failed\n" + e.toString() + "\n";
+                        String before = (position >= 30) ? json.substring(position - 30, position) : json.substring(0, position);
+                        String after = (position + 30 < json.length()) ? json.substring(position, position + 29) : json.substring(position);
+                        msg += "String before position " + position + ": " + before + "\n" + "String after position " + position + ": " + after + "\n" + "JSON was:\n" + json;
+                        log.error(msg, e);
+                        throw new InvalidParameterException(msg);
+                    }
+
                 } else {
-                    throw new InvalidParameterException("No parameter 'data' or 'where' found. " + getDocumentation(httpServletRequest));
+                    throw new InvalidParameterException("No parameter 'data'  found. " + getDocumentation(httpServletRequest));
                 }
             }
 
@@ -103,7 +123,13 @@ public class NKEGeizhals extends HttpServlet {
                     debugResult = "{\"list\":" + debugResult + " }";
                     result = (JSONObject) JSONValue.parseWithException(debugResult);
                 } else {
-                    throw new InvalidParameterException("Not implemented yet, use debug");
+
+                    JSONArray ja = new JSONArray();
+                    for (LogicalRelationStrategy.Concept c : Geizhals2OWL.getLRS().getMostPopular(6)) {
+                       ja.add(c.getJSON());
+                    }
+
+                    result.put("popular",ja);
                 }
             }
 
@@ -144,20 +170,38 @@ public class NKEGeizhals extends HttpServlet {
     public void actionLearn(String json, JSONObject result) throws Exception {
 
         Geizhals2OWL.Result r = Geizhals2OWL.getInstance().handleJson(json);
-        if(r.pos.isEmpty()){
+        if (r.pos.isEmpty()) {
             throw new InvalidParameterException("No positive examples were chosen. Press a plus.");
         }
-        EvaluatedDescriptionPosNeg ed = new Learner().learn(r.pos, r.neg, r.getModel(), 20);
+
+        Set<String> tp = new HashSet<String>(r.pos);
+        Set<String> tn = new HashSet<String>(r.neg);
+        tp.retainAll(tn);
+        tn.retainAll(r.pos);
+
+        if (tp.size() > 0 || tn.size() > 0) {
+            throw new InvalidParameterException("The pos and neg examples are not disjoint. \npos: " + r.pos + "\nneg: " + r.neg);
+        }
+
+        List<EvaluatedDescriptionPosNeg> eds = new Learner().learn(r.pos, r.neg, r.getModel(), 20);
+
+        EvaluatedDescriptionPosNeg ed = selectDescription(eds);
+
+        List<LogicalRelationStrategy.Concept> related = Geizhals2OWL.getLRS().getRelatedConcepts(ed);
+
         JSONObject concept = jsonForEd(ed);
         result.put("learned", concept);
         JSONArray up = new JSONArray();
-        up.add(concept);
-        up.add(concept);
+        for (LogicalRelationStrategy.Concept c : related) {
+
+            up.add(c.getJSON());
+        }
         result.put("related", up);
     }
 
 
     public static JSONObject jsonForEd(EvaluatedDescriptionPosNeg ed) {
+
         SortedSet<NamedClass> namedClasses = getNamedClasses(ed.getDescription(), new TreeSet<NamedClass>());
 
         String link = "";
@@ -165,9 +209,9 @@ public class NKEGeizhals extends HttpServlet {
 
         if (ed.getDescription().toKBSyntaxString().equals("TOP")) {
             label = "No suggestions for current selection (click to show all)";
-            link = "http://geizhals.at/?cat=nb15";
+            link = "?cat=nb15w";
         } else {
-            link = "http://geizhals.at/?cat=nb15w&xf=" + getID(ed.getDescription(), namedClasses);
+            link = Geizhals2OWL.retrievalIdPrefix + getID(ed.getDescription(), namedClasses);
             label = getLabel(ed.getDescription(), namedClasses);
         }
 
@@ -184,6 +228,27 @@ public class NKEGeizhals extends HttpServlet {
         log.info(ed.toString());
         return j;
     }
+
+    public static EvaluatedDescriptionPosNeg selectDescription(List<EvaluatedDescriptionPosNeg> eds) {
+        EvaluatedDescriptionPosNeg ret = eds.get(0);
+        int maxNamedClasses = 0;
+        int current = 0;
+        for (EvaluatedDescriptionPosNeg ed : eds) {
+            if (ed.getAccuracy() < 1.0) {
+                break;
+            } else {
+                current = getNamedClasses(ed.getDescription(), new TreeSet<NamedClass>()).size();
+                if (current > maxNamedClasses) {
+                    maxNamedClasses = current;
+                    ret = ed;
+                }
+
+            }
+        }
+        return ret;
+
+    }
+
 
     public static String getID(Description d, SortedSet<NamedClass> namedClasses) {
 

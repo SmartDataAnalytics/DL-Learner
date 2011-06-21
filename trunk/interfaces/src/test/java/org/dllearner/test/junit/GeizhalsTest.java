@@ -81,10 +81,10 @@ public class GeizhalsTest {
             Geizhals2OWL.Result result = g.handleJson(json);
             Learner l = new Learner();
             l.reasoner = FastInstanceChecker.class;
-            EvaluatedDescriptionPosNeg ed = l.learn(result.pos, result.neg, result.getModel(), 20);
+            List<EvaluatedDescriptionPosNeg> eds = l.learn(result.pos, result.neg, result.getModel(), 20);
 
             System.out.println("total time: " + Helper.prettyPrintNanoSeconds((long) mon.stop().getLastValue()));
-            System.out.println(ed.asJSON());
+            System.out.println(eds.get(0).asJSON());
         }
 
         for (String json : learningProblem) {
@@ -92,9 +92,9 @@ public class GeizhalsTest {
             Geizhals2OWL.Result result = g.handleJson(json);
             Learner l = new Learner();
             l.reasoner = OWLAPIReasoner.class;
-            EvaluatedDescriptionPosNeg ed = l.learn(result.pos, result.neg, result.getModel(), 20);
+            List<EvaluatedDescriptionPosNeg> eds = l.learn(result.pos, result.neg, result.getModel(), 20);
             System.out.println("total time: " + Helper.prettyPrintNanoSeconds((long) mon.stop().getLastValue()));
-            System.out.println(ed.asJSON());
+            System.out.println(eds.get(0).asJSON());
         }
 
         Monitor mon = MonitorFactory.getTimeMonitor("fic");

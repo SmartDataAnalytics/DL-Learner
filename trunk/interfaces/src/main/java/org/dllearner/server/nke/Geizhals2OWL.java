@@ -12,6 +12,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.io.File;
 import java.security.InvalidParameterException;
 import java.util.*;
 
@@ -24,11 +25,18 @@ public class Geizhals2OWL {
     public static final OntModel labels = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM, ModelFactory.createDefaultModel());
     public static final ClassIndexer index = new ClassIndexer();
     public static final Geizhals2OWL geizhals2OWL = new Geizhals2OWL();
+    public static final LogicalRelationStrategy lrs = new LogicalRelationStrategy(new File("store.owl").toURI().toString());
+
+
 
     public static final Map<String, String> ramMap = new HashMap<String, String>();
     public static final Map<String, String> harddriveMap = new HashMap<String, String>();
     public static final Map<String, String> optischesLaufwerkMap = new HashMap<String, String>();
     public static final String prefix = "http://nke.aksw.org/geizhals/_";
+    public static final String prefixSave = "http://nke.aksw.org/geizhals/user_generated/";
+
+    public static final String retrievalIdPrefix =  "?cat=nb15w&xf=";
+
     //public static final String prefix = "http://geizhals.at/?cat=nb15w&xf=";
 
     static {
@@ -72,6 +80,10 @@ public class Geizhals2OWL {
 
     public static Geizhals2OWL getInstance() {
         return geizhals2OWL;
+    }
+
+    public static LogicalRelationStrategy getLRS() {
+        return lrs;
     }
 
     public List<String> convertFeatureString2Classes(String productdesc) {
