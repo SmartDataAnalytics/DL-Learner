@@ -88,8 +88,11 @@ public class NKEGeizhals extends HttpServlet {
 
                     String json = "";
                     if (isSet(httpServletRequest, "debug")) {
-                        // json = "{\"link\":\"?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\"}";
-                        json = "{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_11_500\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_-+16.4\\\")\",\"link\":\"?cat=nb15w&xf=11_500~85_12.5~85_-+16.4\",\"label\":\"(ab 500GB and 12.5&quot; till 16.4&quot;)\"}";
+                        if (new Random().nextBoolean()) {
+                            json = "{\"link\":\"?cat=nb15w&xf=84_DVD%2B%2F-RW~85_12.5~85_13~85_13.3~85_13.3~85_13.4\",\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_84_DVD%2B%2F-RW\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_13~85_13.3~85_13.3~85_13.4\\\")\",\"label\":\"(DVD+\\/-RW and 12.5&quot; till 13.4&quot;)\"}";
+                        } else {
+                            json = "{\"kbsyntax\":\"(\\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_11_500\\\" AND \\\"http:\\/\\/nke.aksw.org\\/geizhals\\/_85_12.5~85_-+16.4\\\")\",\"link\":\"?cat=nb15w&xf=11_500~85_12.5~85_-+16.4\",\"label\":\"(ab 500GB and 12.5&quot; till 16.4&quot;)\"}";
+                        }
                     } else {
                         json = httpServletRequest.getParameter("data");
                     }
@@ -102,7 +105,7 @@ public class NKEGeizhals extends HttpServlet {
                         if (kbsyntax.contains(" AND ") || kbsyntax.contains(" OR ")) {
                             //save the concept
                             Geizhals2OWL.getLRS().increasePopularity(Geizhals2OWL.prefixSave + j.get("link"), kbsyntax, (String) j.get("link"), (String) j.get("label"));
-                            log.info("saved: "+kbsyntax);
+                            log.info("saved: " + kbsyntax);
                         }
 
                     } catch (org.json.simple.parser.ParseException e) {
