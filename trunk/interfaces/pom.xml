@@ -72,8 +72,8 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <!--does not seem to work properly, please test more-->
-            <!--plugin>
+
+            <plugin>
                    <groupId>de.tarent.maven.plugins</groupId>
                    <artifactId>maven-pkg-plugin</artifactId>
                    <version>2.1.0</version>
@@ -123,7 +123,7 @@
                            </distroConfiguration>
                        </distroConfigurations>
                    </configuration>
-               </plugin-->
+               </plugin>
         </plugins>
     </build>
 
