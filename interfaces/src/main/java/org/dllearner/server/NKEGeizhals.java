@@ -102,6 +102,7 @@ public class NKEGeizhals extends HttpServlet {
                         if (kbsyntax.contains(" AND ") || kbsyntax.contains(" OR ")) {
                             //save the concept
                             Geizhals2OWL.getLRS().increasePopularity(Geizhals2OWL.prefixSave + j.get("link"), kbsyntax, (String) j.get("link"), (String) j.get("label"));
+                            log.info("saved: "+kbsyntax);
                         }
 
                     } catch (org.json.simple.parser.ParseException e) {
