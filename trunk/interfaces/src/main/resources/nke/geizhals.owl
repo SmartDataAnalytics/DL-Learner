@@ -172,7 +172,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_85_unbekannt">
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unbekannt</ns0:label>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">unknown Display</ns0:label>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_1200_4%3A3">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
@@ -772,7 +772,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_ohne">
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ohne</ns0:label>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">w/o Optical Drive</ns0:label>
   </rdf:Description>
   <rdf:Description rdf:about="http://nke.aksw.org/geizhals/_84_unbekannt">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
