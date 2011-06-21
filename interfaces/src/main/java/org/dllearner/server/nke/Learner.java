@@ -13,7 +13,6 @@ import org.dllearner.core.*;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -22,6 +21,8 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -37,7 +38,7 @@ public class Learner {
 
     private static Logger log = Logger.getLogger(Learner.class);
 
-    public EvaluatedDescriptionPosNeg learn(Set<String> pos, Set<String> neg, OntModel model, int maxTime) throws IOException, ComponentInitException, LearningProblemUnsupportedException {
+    public List<EvaluatedDescriptionPosNeg> learn(Set<String> pos, Set<String> neg, OntModel model, int maxTime) throws IOException, ComponentInitException, LearningProblemUnsupportedException {
         ComponentManager cm = ComponentManager.getInstance();
 
         try {
@@ -95,13 +96,24 @@ public class Learner {
 
             Monitor learn = MonitorFactory.getTimeMonitor("Learner:learning").start();
             la.start();
-            EvaluatedDescriptionPosNeg ed = (EvaluatedDescriptionPosNeg) la.getCurrentlyBestEvaluatedDescription();
+            List<EvaluatedDescriptionPosNeg> eds = new ArrayList<EvaluatedDescriptionPosNeg>();
+            int x = 0;
+            for (EvaluatedDescription ed : la.getCurrentlyBestEvaluatedDescriptions()) {
+
+                eds.add((EvaluatedDescriptionPosNeg) ed);
+                if (x > 5) {
+                    break;
+                }
+                x++;
+
+            }
+
             learn.stop();
             log.debug("learning time: " + Helper.prettyPrintNanoSeconds((long) learn.getLastValue()));
             // use this to get all solutions
             // rc.getIndividuals(ed.getDescription());
-            log.debug(ed.toString());
-            return ed;
+            log.debug(eds.get(0).toString());
+            return eds;
         } finally {
             // remove all components to avoid side effects
             cm.freeAllComponents();
