@@ -283,6 +283,7 @@ public class LogicalRelationStrategy {
 
         public JSONObject getJSON() {
             JSONObject j = new JSONObject();
+            j.put("uri", classIRI);
             j.put("link", retrievalLink);
             j.put("label", label);
             j.put("kbsyntax", kbSyntax);
