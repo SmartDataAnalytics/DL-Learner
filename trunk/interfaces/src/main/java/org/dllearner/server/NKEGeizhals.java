@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.InvalidParameterException;
@@ -27,6 +28,8 @@ import java.util.*;
 
 public class NKEGeizhals extends HttpServlet {
     private static Logger log = Logger.getLogger(NKEGeizhals.class);
+
+    int requestcount = 0;
 
 
     @Override
@@ -52,7 +55,7 @@ public class NKEGeizhals extends HttpServlet {
         ComponentManager cm = ComponentManager.getInstance();
         cm.freeAllComponents();
 
-        Monitor mon = MonitorFactory.getTimeMonitor("NIFParameters.getInstance").start();
+        Monitor mon = MonitorFactory.getTimeMonitor(this.getClass().getSimpleName()).start();
 
         JSONObject result = new JSONObject();
 
@@ -105,7 +108,7 @@ public class NKEGeizhals extends HttpServlet {
                         if (kbsyntax.contains(" AND ") || kbsyntax.contains(" OR ")) {
                             //save the concept
                             Geizhals2OWL.getLRS().increasePopularity(Geizhals2OWL.prefixSave + j.get("link"), kbsyntax, (String) j.get("link"), (String) j.get("label"));
-                            log.info("saved: " +Geizhals2OWL.prefixSave + j.get("link")+" | "+ kbsyntax+ " | "+(String) j.get("label"));
+                            log.info("saved: " + Geizhals2OWL.prefixSave + j.get("link") + " | " + kbsyntax + " | " + (String) j.get("label"));
                         }
 
                     } catch (org.json.simple.parser.ParseException e) {
@@ -171,6 +174,18 @@ public class NKEGeizhals extends HttpServlet {
         log.debug("Request handled: " + time);
         pw.print(result.toJSONString());
         pw.close();
+
+        //every 10 requests, write the jamonlog
+        if (requestcount++ > 10) {
+            requestcount = 0;
+            try {
+                FileWriter fw = new FileWriter("jamon.html");
+                fw.write(MonitorFactory.getReport());
+                fw.flush();
+            } catch (Exception e) {
+                log.error("", e);
+            }
+        }
 
     }
 
