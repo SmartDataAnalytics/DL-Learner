@@ -14,27 +14,22 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.exception.EmptyLGGException;
 import org.dllearner.algorithm.qtl.exception.NegativeTreeCoverageExecption;
-import org.dllearner.algorithm.qtl.exception.QTLException;
 import org.dllearner.algorithm.qtl.exception.TimeOutException;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.cache.SPARQLQueryCache;
+import org.dllearner.autosparql.server.search.QuestionProcessor;
 import org.dllearner.autosparql.server.search.Search;
 import org.dllearner.autosparql.server.search.SolrSearch;
-import org.dllearner.autosparql.server.search.VirtuosoSearch;
 import org.dllearner.autosparql.server.store.Store;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.semanticweb.owlapi.model.OWLDatatype;
 
-import com.clarkparsia.owlapiv3.XSD;
-import com.clarkparsia.pellet.datatypes.Datatype;
 import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -70,6 +65,8 @@ public class AutoSPARQLSession {
 	
 	private Map<String, Example> examplesCache;
 	
+	private QuestionProcessor questionPreprocessor;
+	
 	public AutoSPARQLSession(){
 	}
 	
@@ -77,15 +74,18 @@ public class AutoSPARQLSession {
 		this.endpoint = endpoint;
 		this.servletContextPath = servletContextPath;
 		
+		questionPreprocessor = new QuestionProcessor();
 		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
-		search = new SolrSearch(solrURL);
-		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache, solrURL);
+		search = new SolrSearch(solrURL, questionPreprocessor);
+		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache, search, questionPreprocessor);
 		
 		property2LabelMap = new TreeMap<String, String>();
 		property2DatatypeMap = new HashMap<String, Class>();
 		propertiesCache = new TreeMap<String, Map<String,Object>>();
 		examplesCache = new HashMap<String, Example>();
+		
+		
 	}
 	
 	public AutoSPARQLSession(String cacheDir, String servletContextPath, String solrURL){
@@ -94,7 +94,7 @@ public class AutoSPARQLSession {
 		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
 		search = new SolrSearch(solrURL);
-		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache, solrURL);
+		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache, search, questionPreprocessor);
 	}
 	
 	public void setEndpoint(SPARQLEndpointEx endpoint){

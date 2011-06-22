@@ -3,6 +3,7 @@ package org.dllearner.autosparql.client.view;
 import java.util.List;
 
 import org.dllearner.autosparql.client.AppEvents;
+import org.dllearner.autosparql.client.Application;
 import org.dllearner.autosparql.client.AsyncCallbackEx;
 import org.dllearner.autosparql.client.HistoryTokens;
 import org.dllearner.autosparql.client.SPARQLService;
@@ -54,6 +55,7 @@ public class HomeView extends View {
 	private HtmlContainer sidecontent;
 
 	private TextField<String> queryField;
+	private ComboBox<Endpoint> endpointBox;
 	
 	
 	public HomeView(Controller controller) {
@@ -110,43 +112,29 @@ public class HomeView extends View {
                 intro.add(queryField, "#demo-selector-query");
 //                intro.add(createComboxBox(), "#demo-selector-query");
 //                intro.add(new AutoCompleteTextBox(), "#demo-selector-query");
-                intro.add(createEndpointSelector(), "#demo-selector-endpoints");
+                endpointBox = createEndpointSelector();
+                intro.add(endpointBox, "#demo-selector-endpoints");
                 
                 Anchor anchor = new Anchor("Query");
                 anchor.addClickHandler(new ClickHandler() {
 					
 					@Override
 					public void onClick(ClickEvent event) {
-						Registry.register("QUERY_TITLE", queryField.getValue());
-						History.newItem(HistoryTokens.QUERY);
+						Registry.register(Application.QUERY_TITLE, queryField.getValue());
+						Registry.register(Application.ENDPOINT, endpointBox.getSelection().get(0));
+						SPARQLService.Util.getInstance().setEndpoint(endpointBox.getValue(), new AsyncCallback<Void>() {
+							@Override
+							public void onFailure(Throwable caught) {
+							}
+							@Override
+							public void onSuccess(Void result) {
+								History.newItem(HistoryTokens.QUERY);
+							}
+						});
 						
 					}
 				});
                 intro.add(anchor, "#demo-selector-button");
-//                Hyperlink link = new Hyperlink("Query", HistoryTokens.QUERY);
-//               link.addClickListener(new ClickListener() {
-//				
-//				@Override
-//				public void onClick(Widget sender) {
-//					Registry.register("QUERY_TITLE", queryField.getValue());
-////					SPARQLService.Util.getInstance().setQuestion(queryField.getValue(), new AsyncCallback<Void>() {
-////
-////						@Override
-////						public void onFailure(Throwable caught) {
-////							// TODO Auto-generated method stub
-////							
-////						}
-////
-////						@Override
-////						public void onSuccess(Void result) {
-////							// TODO Auto-generated method stub
-////							
-////						}
-////					});
-//					
-//				}
-//               });
-//                intro.add(link, "#demo-selector-button");
 
                 // maincontent
                 maincontent = new HtmlContainer(
@@ -275,7 +263,6 @@ public class HomeView extends View {
 			@Override
 			public void onSuccess(List<Endpoint> result) {
 				endpoints.add(result);
-				combo.select(0);
 			}
 			
 		});
@@ -287,21 +274,6 @@ public class HomeView extends View {
 	    combo.setStore(endpoints);  
 	    combo.setTypeAhead(true);
 	    combo.setTriggerAction(TriggerAction.ALL);
-	    combo.addSelectionChangedListener(new SelectionChangedListener<Endpoint>() {
-	    	
-			@Override
-			public void selectionChanged(SelectionChangedEvent<Endpoint> se) {
-				Registry.register("ENDPOINT", se.getSelectedItem().getLabel());
-				SPARQLService.Util.getInstance().setEndpoint(se.getSelectedItem(), new AsyncCallback<Void>() {
-					@Override
-					public void onFailure(Throwable caught) {
-					}
-					@Override
-					public void onSuccess(Void result) {
-					}
-				});
-			}
-		});
 	    
 	   return combo;
 	}

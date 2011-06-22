@@ -18,6 +18,7 @@ import org.dllearner.algorithm.qtl.filters.QuestionBasedStatementFilter;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.search.QuestionProcessor;
+import org.dllearner.autosparql.server.search.Search;
 import org.dllearner.autosparql.server.search.SolrSearch;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -34,7 +35,8 @@ public class ExampleFinder {
 	private SPARQLEndpointEx endpoint;
 	private ExtractionDBCache selectCache;
 	private QTL qtl;
-	private SolrSearch resourceIndex;
+	private Search search;
+	private QuestionProcessor questionPreprocessor;
 	
 	private List<String> posExamples = new ArrayList<String>();
 	private List<String> negExamples = new ArrayList<String>();
@@ -47,13 +49,14 @@ public class ExampleFinder {
 	
 	boolean dirty = true;
 	
-	public ExampleFinder(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache, String solrURL){
+	public ExampleFinder(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache, Search search, QuestionProcessor questionPreprocessor){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
+		this.search = search;
+		this.questionPreprocessor = questionPreprocessor;
 		
 		qtl = new QTL(endpoint, selectCache);
 		qtl.setMaxExecutionTimeInSeconds(1000);
-		resourceIndex = new SolrSearch(solrURL);
 		
 		examplesCache = new HashMap<String, Example>();
 	}
@@ -61,8 +64,7 @@ public class ExampleFinder {
 	
 	public void setQuestion(String question){
 		this.question = question;
-		QuestionProcessor qp = new QuestionProcessor();
-		List<String> relevantWords = qp.getRelevantWords(question);
+		List<String> relevantWords = questionPreprocessor.getRelevantWords(question);
 		QuestionBasedStatementFilter stmtFilter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
 		stmtFilter.setThreshold(0.6);
 //		QueryTreeFilter treeFilter = new QuestionBasedQueryTreeFilter(new HashSet<String>(relevantWords));
@@ -141,7 +143,7 @@ public class ExampleFinder {
 	}
 	
 	private Example getExample(String uri){
-		List<Example> examples = resourceIndex.getExamples("uri:\"" + uri + "\"");
+		List<Example> examples = search.getExamples("uri:\"" + uri + "\"");
 		Example example;
 		if(examples.isEmpty()){
 			example = getExampleFromSPARQLEndpoint(uri);

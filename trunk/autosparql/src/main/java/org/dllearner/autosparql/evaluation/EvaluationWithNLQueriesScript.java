@@ -38,12 +38,7 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.params.ModifiableSolrParams;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedQueryTreeFilter;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedStatementFilter;
 import org.dllearner.algorithm.qtl.operations.Generalisation;
@@ -56,6 +51,8 @@ import org.dllearner.autosparql.server.exception.TimeOutException;
 import org.dllearner.autosparql.server.search.DBpediaSchemaIndex;
 import org.dllearner.autosparql.server.search.LuceneSearch;
 import org.dllearner.autosparql.server.search.QuestionProcessor;
+import org.dllearner.autosparql.server.search.Search;
+import org.dllearner.autosparql.server.search.SolrSearch;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -103,7 +100,7 @@ public class EvaluationWithNLQueriesScript {
 	private Map<String, String> question2query = new Hashtable<String, String>();
 	private SortedMap<String, Set<String>> question2Answers = new TreeMap<String, Set<String>>();
 	
-	private SolrServer server;
+	private Search search;
 	
 	private ExtractionDBCache selectCache = new ExtractionDBCache("select-cache");
 	private ExtractionDBCache constructCache = new ExtractionDBCache("construct-cache");
@@ -122,8 +119,7 @@ public class EvaluationWithNLQueriesScript {
 	
 	
 	public EvaluationWithNLQueriesScript(){
-		try {
-			server = new CommonsHttpSolrServer(SOLR_SERVER_URL);
+			search = new SolrSearch(SOLR_SERVER_URL, qProcessor);
 			
 			//predicate filters used when sending sparql query for model creation
 			List<String> predicateFilters = new ArrayList<String>();
@@ -155,9 +151,6 @@ public class EvaluationWithNLQueriesScript {
 			}
 			
 			
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 		
 		readQueries();
 	}
@@ -261,22 +254,10 @@ public class EvaluationWithNLQueriesScript {
 	
 	private Set<String> getResourcesByNLQuery(String question){
 		logger.info("Getting Top " + TOP_K + " resources related to question with Solr...");
-		Set<String> resources = new HashSet<String>();
-		QueryResponse response;
-		try {
-			ModifiableSolrParams params = new ModifiableSolrParams();
-			params.set("q", question);
-			params.set("rows", TOP_K);
-			response = server.query(params);
-			for(SolrDocument d : response.getResults()){
-				resources.add((String) d.get("id"));
-			}
-			logger.info("Got " + resources.size() + " resources in " + response.getElapsedTime() + "ms.");
-			logger.info(resources);
-		} catch (SolrServerException e) {
-			e.printStackTrace();
-		}
-		return resources;
+		List<String> resources = search.getResources(question);
+		logger.info("Got " + resources.size() + " resources.");
+		logger.info(resources);
+		return new HashSet<String>(resources);
 	}
 	
 	private List<String> getResourcesByNLQueryWithLucene(String question){
@@ -459,7 +440,7 @@ public class EvaluationWithNLQueriesScript {
 				prefixes.put("foaf","http://xmlns.com/foaf/0.1/");
 				try {
 					exFinder = new ExampleFinder(new SPARQLEndpointEx(new URL("http://live.dbpedia.org/sparql"), 
-							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters), selectCache, constructCache, SOLR_SERVER_URL);
+							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters), selectCache, constructCache, search, qProcessor);
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
 				}
