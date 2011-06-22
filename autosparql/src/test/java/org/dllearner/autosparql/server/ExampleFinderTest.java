@@ -8,6 +8,9 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.QTL;
 import org.dllearner.algorithm.qtl.operations.NBR;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
+import org.dllearner.autosparql.server.search.QuestionProcessor;
+import org.dllearner.autosparql.server.search.Search;
+import org.dllearner.autosparql.server.search.SolrSearch;
 import org.dllearner.autosparql.server.util.Endpoints;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.junit.Test;
@@ -22,7 +25,9 @@ public class ExampleFinderTest {
 		try {
 			Logger.getLogger(QTL.class).setLevel(Level.DEBUG);
 			Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
-			ExampleFinder f = new ExampleFinder(endpoint, new ExtractionDBCache("select-cache"), new ExtractionDBCache("construct-cache"), SOLR_SERVER_URL);
+			QuestionProcessor qp = new QuestionProcessor();
+			Search search = new SolrSearch(SOLR_SERVER_URL, qp);
+			ExampleFinder f = new ExampleFinder(endpoint, new ExtractionDBCache("select-cache"), new ExtractionDBCache("construct-cache"), search, qp);
 			
 //			f.setQuestion("soccer clubs in Premier League");
 //			

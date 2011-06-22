@@ -34,6 +34,16 @@ public class SolrSearch implements Search{
 		}
 		preprocessor = new QuestionProcessor();
 	}
+	
+	public SolrSearch(String solrServerURL, QuestionProcessor preprocessor){
+		try {
+			server = new CommonsHttpSolrServer(solrServerURL);
+			server.setRequestWriter(new BinaryRequestWriter());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		this.preprocessor = preprocessor;
+	}
 
 	@Override
 	public List<String> getResources(String queryString) {

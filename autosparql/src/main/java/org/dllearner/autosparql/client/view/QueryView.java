@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client.view;
 
 import org.dllearner.autosparql.client.AppEvents;
+import org.dllearner.autosparql.client.Application;
 import org.dllearner.autosparql.client.AsyncCallbackEx;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Example;
@@ -109,7 +110,7 @@ public class QueryView extends View {
 		      wrapper.layout();
 		      RootPanel.get().addStyleName("query_view");
 		      RootPanel.get().removeStyleName("home_view");
-		      onShowNextResourceRelatedToQuery();
+		      onShowRelatedResources();
 		      return;
 		} else if (event.getType() == AppEvents.EditQuery) {
 			showInteractivePanel();
@@ -231,8 +232,8 @@ public class QueryView extends View {
 		}
 	}
 	
-	private void onShowNextResourceRelatedToQuery(){
-		relatedResourcesPanel.search((String)Registry.get("QUERY_TITLE"));
+	private void onShowRelatedResources(){
+		relatedResourcesPanel.search((String)Registry.get(Application.QUERY_TITLE));
 	}
 	
 	private void onRemoveExample(Example example, Example.Type type){
