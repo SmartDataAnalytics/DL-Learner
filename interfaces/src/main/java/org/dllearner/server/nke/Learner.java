@@ -40,6 +40,8 @@ public class Learner {
 
     public List<EvaluatedDescriptionPosNeg> learn(Set<String> pos, Set<String> neg, OntModel model, int maxTime) throws IOException, ComponentInitException, LearningProblemUnsupportedException {
         ComponentManager cm = ComponentManager.getInstance();
+         Monitor total = MonitorFactory.getTimeMonitor("Learner:total").start();
+         Monitor totalPerEx = MonitorFactory.getTimeMonitor("Learner:totalPerEx"+(pos.size()+neg.size())).start();
 
         try {
             Monitor owlapi = MonitorFactory.getTimeMonitor("Learner:owlapi").start();
@@ -117,6 +119,9 @@ public class Learner {
         } finally {
             // remove all components to avoid side effects
             cm.freeAllComponents();
+            total.stop();
+            totalPerEx.stop();
+
         }
     }
 
