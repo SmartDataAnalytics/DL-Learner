@@ -49,7 +49,7 @@ public class LogicalRelationStrategy {
             logger.error("Could not load or create ontology, using geizhals ontology", e);
             InputStream is = this.getClass().getClassLoader().getResourceAsStream("nke/geizhals.owl");
             try {
-                ontology =  our manager.loadOntologyFromOntologyDocument(is);
+                ontology = manager.loadOntologyFromOntologyDocument(is);
             } catch (OWLOntologyCreationException e2) {
                 logger.error("Could not load geizhals ontology", e2);
             }
