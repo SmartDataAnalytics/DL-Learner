@@ -16,6 +16,7 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
 import org.semanticweb.owlapi.model.*;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -45,7 +46,14 @@ public class LogicalRelationStrategy {
         try {
             ontology = manager.loadOntology(IRI.create(ontologyIRI));
         } catch (OWLOntologyCreationException e) {
-            logger.error("Could not load or create ontology", e);
+            logger.error("Could not load or create ontology, using geizhals ontology", e);
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("nke/geizhals.owl");
+            try {
+                ontology =  our manager.loadOntologyFromOntologyDocument(is);
+            } catch (OWLOntologyCreationException e2) {
+                logger.error("Could not load geizhals ontology", e2);
+            }
+
         }
 
         popularityAnnotationProperty = factory.getOWLAnnotationProperty(IRI.create(Geizhals2OWL.prefixSave + "popularity"));
