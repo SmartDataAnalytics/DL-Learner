@@ -201,6 +201,7 @@ public class AutoSPARQLSession {
 			throw new AutoSPARQLException("The computation of a new suggestion needs too much time. Please add manually more positive examples.");
 		} catch (Exception e){
 			logger.error(e);
+			e.printStackTrace();
 			throw new AutoSPARQLException("An error occured while generating a new suggestion.");
 		}
 		

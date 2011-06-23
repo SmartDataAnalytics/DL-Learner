@@ -164,9 +164,18 @@ public class ExampleFinder {
 		System.out.println(query);
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, query));
 		QuerySolution qs = rs.next();
-		String label = qs.getLiteral("label").getLexicalForm();
-		String comment = qs.getLiteral("comment").getLexicalForm();
-		String imageURL = qs.getResource("imageURL").getURI();
+		String label = "";
+		String comment = "";
+		String imageURL  = "";
+		if(qs.getLiteral("label") != null){
+			label = qs.getLiteral("label").getLexicalForm();
+		}
+		if(qs.getLiteral("comment") != null){
+			comment = qs.getLiteral("comment").getLexicalForm();
+		}
+		if(qs.getResource("imageURL") != null){
+			imageURL = qs.getResource("imageURL").getURI();
+		}
 		
 		return new Example(uri, label, imageURL, comment);
 		
