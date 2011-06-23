@@ -148,6 +148,10 @@ public class TrainAndTestSet {
 		return set;
 	}
 	
+	private String[] pdbEntry(int linenr, ArrayList<String> lines){
+		String line =(String) lines.get(linenr);
+		return  line.split("\t"); 
+	}
 	
 	private String getPdbID (int lineNumber, ArrayList<String> lines ) {
 		// Initialize a LineNumberReader

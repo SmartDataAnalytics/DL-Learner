@@ -3,6 +3,7 @@ package org.dllearner.examples.pdb;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
@@ -75,6 +76,7 @@ public class HelixRDFCreator {
 	private static Resource trp = ResourceFactory.createResource("http://bio2rdf.org/pdb:Tryptophan");
 	private static Resource tyr = ResourceFactory.createResource("http://bio2rdf.org/pdb:Tyrosine");
 	private static Resource sel = ResourceFactory.createResource("http://bio2rdf.org/pdb:Selenomethionine");
+	private static Resource hyt = ResourceFactory.createResource("http://bio2rdf.org/pdb:2-hydroxy-tryptophan");
 	
 	private static ArrayList<Resource> positives;
 	private static ArrayList<Resource> negatives;
@@ -104,16 +106,26 @@ public class HelixRDFCreator {
 	 * TODO: remove beginsAt, endsAt from model
 	 */
 	public static void main(String[] args) {
-		Boolean test = false;
+		/*
+		 * test = true -> use test data
+		 * test = false -> use data set 1, 2, 3 or 4
+		 */
+		Boolean test = true;
+		/*
+		 * rdfConf = true -> write out the .rdf and .conf-Files 
+		 * rdfConf = false -> does not generate those files
+		 */
 		Boolean rdfConf = true;
+		/*
+		 * arff = true -> write out .arff-Files
+		 * arff = false -> does not generate those files
+		 */
 		Boolean arff = false;
 		/*
-		 * save: saves the whole trainset into the memory file
-		 * load: loads the whole memory file into the trainset
+		 * load = true -> load alle .rdf, .conf and .arff Files that can be found within the directory dataDir
+		 * load = false -> don't load anything
 		 */
-		Boolean save = true;
-		Boolean load = false;
-		String savePdbInfos = ".info";
+		Boolean load = true;
 		Boolean dlLearn = false;
 		Boolean wekaLearn = false;
 		
@@ -137,57 +149,65 @@ public class HelixRDFCreator {
 		/*
 		 * data for test purpose
 		 */
-		String pdbID = "3LQH";
+		String pdbID = "1XFF";
 		String chainID = "A";
+		File dir = new File(dataDir);
 		
 		/*
 		 * generate trainset and fill trainmodel
 		 */
 		PdbRdfModel trainmodel = new PdbRdfModel();
 		TrainAndTestSet trainSet = new TrainAndTestSet();
-		String pdbIdInfo = "";
-		String bt426Info = "";
-		String plp273Info = "";
-		String plp364Info = "";
-		String plp399Info = "";
-
-		if (test && !load )
-		{
-			trainSet = new TrainAndTestSet(pdbID, chainID);
-			pdbIdInfo = dataDir + pdbID + savePdbInfos;
-		}
 		
-		if ( !test && !load )
+		if ( !test )
 		{
 			 switch (dataSet) {
 	            case 1:	
 	            	trainSet = new TrainAndTestSet(bt426List);
-	            	bt426Info = dataDir + bt426 + savePdbInfos;
 	            	break;
 	            case 2:
 	            	trainSet = new TrainAndTestSet(plp273List);
-	            	plp273Info = dataDir + plp273 + savePdbInfos;
 	            	break;
 	            case 3:
 	            	trainSet = new TrainAndTestSet(plp364List);
-	            	plp364Info = dataDir + plp364 + savePdbInfos;
 	            	break;
 	            case 4:
 	            	trainSet = new TrainAndTestSet(plp399List);
-	            	plp399Info = dataDir + plp399 + savePdbInfos;
 	            	break;
 	            }
 		}
-		File memory = new File(savePdbInfos);
-		File bt426InfoFile = new File(bt426Info);
-		File plp273InfoFile = new File(plp273Info);
-		File plp364InfoFile = new File(plp364Info);
-		File plp399InfoFile = new File(plp399Info);
-		
-		if(load && memory.canRead())
+		else
 		{
-			System.out.println("Hier!");
-			trainSet = new TrainAndTestSet(memory);
+			trainSet = new TrainAndTestSet(pdbID, chainID);
+		}
+
+		HashMap<String,File> rdfFiles = new HashMap<String,File>();
+		HashMap<String,File> arffFiles = new HashMap<String,File>();
+		
+		if (load)
+		{
+			System.out.println("Starting to load files in " + dataDir );
+			File[] pdbDir = dir.listFiles(new DirectoryFileFilter());
+			for (File actDir : pdbDir) {
+				File[] rdfFilesInActDir = actDir.listFiles(new RdfFileFilter());
+				try {
+					System.out.println("Looking for Files in " + actDir.getCanonicalPath() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				for (File rdfFile : rdfFilesInActDir) {
+					rdfFiles.put(rdfFile.getName().substring(0, 3), rdfFile);
+					System.out.println("Found RDF File for PDB ID " + rdfFile.getName().substring(0, 3) );
+					System.out.println("Found RDF File " + rdfFile.getName() );
+				}
+				File[] arffFilesInActDir = actDir.listFiles(new ArffFileFilter());
+				for (File arffFile : arffFilesInActDir) {
+					arffFiles.put(arffFile.getName().substring(0, 3), arffFile);
+					System.out.println("Found RDF File for PDB ID " + arffFile.getName().substring(0, 3) );
+					System.out.println("Found ARFF File " + arffFile.getName() );
+				}
+			}
 		}
 			
 		
@@ -197,17 +217,19 @@ public class HelixRDFCreator {
 		 */
 		
 		
+		 
+		
 		for (int i = 0; i < trainSet.getTrainset().length; i++)
 		{
-			String[] pdbIDs = {trainSet.getTrainset()[i].getPdbID()};
 			System.out.println("pdbId: " + trainSet.getTrainset()[i].getPdbID());
 			System.out.println("chainID: " + trainSet.getTrainset()[i].getChainID());
 			trainmodel.removeAll();
 			trainmodel.add(getRdfModelForIds(trainSet.getTrainset()[i].getPdbID(), trainSet.getTrainset()[i].getChainID()));
 			
-			
+			/*
+			 * extract the species the protein originates from
+			 */
 			trainSet.getTrainset()[i].setSpecies(getSpecies(trainmodel, trainSet.getTrainset()[i].getPdbID()));
-						
 			
 			/* 
 			 * as we have sometimes to handle several amino acid chains we need the first
@@ -215,9 +237,8 @@ public class HelixRDFCreator {
 			 */
 			ResIterator niter = getFirstAA(trainmodel);
 			
-		
 			/*
-			 * we add some distance Information to our model
+			 * we add the information of which amino acid is the fourth predecessor of which other amino acid 
 			 */
 			trainmodel = addDistanceInfo(trainmodel);
 			
@@ -240,11 +261,11 @@ public class HelixRDFCreator {
 				arffFile = trainSet.getTrainset()[i].getPdbID().toUpperCase() + "." 
 				+ trainSet.getTrainset()[i].getChainID().toUpperCase() + ".arff";
 			}
-			String dir = dataDir +  trainSet.getTrainset()[i].getPdbID() + "/";
-			File directory = new File(dir);
+			String pdbDir = dataDir +  trainSet.getTrainset()[i].getPdbID() + "/";
+			File directory = new File(pdbDir);
 			directory.mkdir();
-			String rdfFilePath = dir + rdfFile;
-			String arffFilePath = dir + arffFile;
+			String rdfFilePath = pdbDir + rdfFile;
+			String arffFilePath = pdbDir + arffFile;
 			
 			/*
 			 * if arff = true create pdbID.arff files
@@ -254,18 +275,6 @@ public class HelixRDFCreator {
 				niter = getFirstAA(trainmodel);
 				createArffFile(arffFilePath, trainmodel, trainSet, niter);
 			}
-			
-			/*
-			 * remove all triples that contain information about begin and end of helices
-			 */
-			
-			Property ba = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "beginsAt");
-			trainmodel = removeStatementsWithPoperty(trainmodel, ba);
-			Property ea = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "endsAt");
-			trainmodel = removeStatementsWithPoperty(trainmodel, ea);
-			Resource residue = ResourceFactory.createResource("http://bio2rdf.org/pdb:Residue");
-			trainmodel = removeStatementsWithObject(trainmodel, residue);
-			
 			
 			/*
 			 * if rdfConf = true create pdbID.rdf and *.conf files
@@ -279,7 +288,7 @@ public class HelixRDFCreator {
 					 * writes the conf-Files and saves there File-objects in:
 					 * confFileForAll and confFilePerResidue
 					 */
-					createConfFile(dir, rdfFile, trainmodel);
+					createConfFile(pdbDir, rdfFile, trainmodel);
 					PrintStream out = new PrintStream (new File(rdfFilePath));
 					
 					// Output results
@@ -293,77 +302,86 @@ public class HelixRDFCreator {
 		    		System.err.println("OutputStream konnte nicht geschlossen werden!");
 		    	}
 			}
+			/*
+			 * remove all triples that contain information about begin and end of helices
+			 */
 			
-			if(dlLearn)
-			{
-				File filename = confFileForAll;
-				
-				/*
-		    	 * load RDF file and perform learn algorithm for every .conf-file
-		    	 */
-				/*ComponentManager cm = ComponentManager.getInstance();
-				KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
-				cm.applyConfigEntry(ks, "url","file://" + filename );
-				ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class);
-				try {
-					rc.init();
-				} catch (ComponentInitException e1) {
-					e1.printStackTrace();
-				}
-			   	Start start = null;
-		    	Iterator<Resource> aa = confFilePerResidue.keySet().iterator(); 
-				while ( aa.hasNext() ){
-					Resource nextRes = aa.next();
-					System.out.println(confFilePerResidue.get(nextRes).getAbsolutePath());
-		    		try{
-		        		start = new Start(confFilePerResidue.get(nextRes));
-		    		} catch (ComponentInitException e) {
-						e.printStackTrace();
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (org.dllearner.confparser.ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		            start.start(false);
-		            Description d = start.getLearningAlgorithm().getCurrentlyBestDescription(); 	
-		            System.out.println(d.toKBSyntaxString());
-				}
-				*/
+			Property beginsAt = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "beginsAt");
+			trainmodel = removeStatementsWithPoperty(trainmodel, beginsAt);
+			Property endsAt = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "endsAt");
+			trainmodel = removeStatementsWithPoperty(trainmodel, endsAt);
+			Resource residue = ResourceFactory.createResource("http://bio2rdf.org/pdb:Residue");
+			trainmodel = removeStatementsWithObject(trainmodel, residue);
+		}
+		
+		/*
+		 * write out the files that contain information about which proteins originate from which species
+		 */
+		HashMap<String, File> proteinsOfSpecies = new HashMap<String, File>();
+		for (int i = 0; i < trainSet.getTrainset().length; i++){
+			if (proteinsOfSpecies.get(trainSet.getTrainset()[i].getSpecies()) == null){
+				File speciesProteins = new File(dataDir + trainSet.getTrainset()[i].getSpecies() + ".pos");
+				proteinsOfSpecies.put(trainSet.getTrainset()[i].getSpecies(), speciesProteins);
 			}
-			
-			if(wekaLearn)
-			{
+			if (proteinsOfSpecies.get(trainSet.getTrainset()[i].getSpecies()).canWrite()) {
+				try {
+					FileWriter out = new FileWriter(proteinsOfSpecies.get(trainSet.getTrainset()[i].getSpecies()), true);
+					String line =  trainSet.getTrainset()[i].getPdbID() + "." 
+						+ trainSet.getTrainset()[i].getChainID()  + ".\n";
+					out.write(line);
+					out.close();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 			}
 		}
 		
-		if(save)
+		if(dlLearn)
 		{
-			String infos = "";
-			for(int i=0; i < trainSet.getTrainset().length; i++)
-			{
-				infos = trainSet.getTrainset()[i].getPdbID() + "." + 
-				trainSet.getTrainset()[i].getChainID() + "." +
-				trainSet.getTrainset()[i].getSpecies();
-				if(i != trainSet.getTrainset().length - 1)
-				{
-					infos += "\n";
+
+			
+			/*
+	    	 * load RDF file and perform learn algorithm for every .conf-file
+	    	 */
+			/*ComponentManager cm = ComponentManager.getInstance();
+			KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+			cm.applyConfigEntry(ks, "url","file://" + filename );
+			ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class);
+			try {
+				rc.init();
+			} catch (ComponentInitException e1) {
+				e1.printStackTrace();
+			}
+		   	Start start = null;
+	    	Iterator<Resource> aa = confFilePerResidue.keySet().iterator(); 
+			while ( aa.hasNext() ){
+				Resource nextRes = aa.next();
+				System.out.println(confFilePerResidue.get(nextRes).getAbsolutePath());
+	    		try{
+	        		start = new Start(confFilePerResidue.get(nextRes));
+	    		} catch (ComponentInitException e) {
+					e.printStackTrace();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (org.dllearner.confparser.ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+	            start.start(false);
+	            Description d = start.getLearningAlgorithm().getCurrentlyBestDescription(); 	
+	            System.out.println(d.toKBSyntaxString());
 			}
+			*/
+		}
 			
-			try
-			{
-				PrintStream out = new PrintStream (memory);
-				out.println(infos);
-				out.close();
-			}
-			catch(FileNotFoundException e)
-			{
-				e.printStackTrace();
-			}
-			
+		if(wekaLearn)
+		{
 		}
 	}
 
@@ -700,6 +718,7 @@ public class HelixRDFCreator {
 			resConfFiles.put(trp, new File(dir + trp.getLocalName() + ".conf"));
 			resConfFiles.put(tyr, new File(dir + tyr.getLocalName() + ".conf"));
 			resConfFiles.put(sel, new File(dir + sel.getLocalName() + ".conf"));
+			resConfFiles.put(hyt, new File(dir + hyt.getLocalName() + ".conf"));
 			confFilePerResidue = resConfFiles;
 			
 			
