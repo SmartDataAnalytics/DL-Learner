@@ -69,18 +69,18 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		nodeId = 0;
 		List<QueryTree<N>> treeList = new ArrayList<QueryTree<N>>(trees);
 		
-		if(logger.isInfoEnabled()){
-			logger.info("Computing LGG for");
+		if(logger.isDebugEnabled()){
+			logger.debug("Computing LGG for");
 		}
 		
 		for(int i = 0; i < treeList.size(); i++){
-			if(logger.isInfoEnabled()){
-				logger.info(treeList.get(i).getStringRepresentation());
+			if(logger.isDebugEnabled()){
+				logger.debug(treeList.get(i).getStringRepresentation());
 			}
 			
 			if(i != treeList.size() - 1){
-				if(logger.isInfoEnabled()){
-					logger.info("and");
+				if(logger.isDebugEnabled()){
+					logger.debug("and");
 				}
 			}
 		}
@@ -91,20 +91,20 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
 		mon.start();
 		QueryTree<N> lgg = computeLGG(treeList.get(0), treeList.get(1), learnFilters);
-		if(logger.isInfoEnabled()){
-			logger.info("LGG for 1 and 2:\n" + lgg.getStringRepresentation());
+		if(logger.isDebugEnabled()){
+			logger.debug("LGG for 1 and 2:\n" + lgg.getStringRepresentation());
 		}
 		
 		for(int i = 2; i < treeList.size(); i++){
 			lgg = computeLGG(lgg, treeList.get(i), learnFilters);
-			if(logger.isInfoEnabled()){
-				logger.info("LGG for 1-" + (i+1) + ":\n" + lgg.getStringRepresentation());
+			if(logger.isDebugEnabled()){
+				logger.debug("LGG for 1-" + (i+1) + ":\n" + lgg.getStringRepresentation());
 			}
 		}
 		
-		if(logger.isInfoEnabled()){
-			logger.info("LGG = ");
-			logger.info(lgg.getStringRepresentation());
+		if(logger.isDebugEnabled()){
+			logger.debug("LGG = ");
+			logger.debug(lgg.getStringRepresentation());
 		}
 		mon.stop();
 		addNumbering(lgg);
@@ -148,8 +148,8 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		Set<QueryTreeImpl<N>> addedChildren;
 		QueryTreeImpl<N> lggChild;
 		for(Object edge : new TreeSet<Object>(tree1.getEdges())){
-			if(logger.isDebugEnabled()){
-				logger.debug("Regarding egde: " + edge);
+			if(logger.isTraceEnabled()){
+				logger.trace("Regarding egde: " + edge);
 			}
 			addedChildren = new HashSet<QueryTreeImpl<N>>();
 			for(QueryTree<N> child1 : tree1.getChildren(edge)){
@@ -157,26 +157,26 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 					lggChild = (QueryTreeImpl<N>) computeLGG(child1, child2, learnFilters);
 					boolean add = true;
 					for(QueryTreeImpl<N> addedChild : addedChildren){
-						if(logger.isDebugEnabled()){
-							logger.debug("Subsumption test");
+						if(logger.isTraceEnabled()){
+							logger.trace("Subsumption test");
 						}
 						if(addedChild.isSubsumedBy(lggChild)){
-							if(logger.isDebugEnabled()){
-								logger.debug("Previously added child");
-								logger.debug(addedChild.getStringRepresentation());
-								logger.debug("is subsumed by");
-								logger.debug(lggChild.getStringRepresentation());
-								logger.debug("so we can skip adding the LGG");
+							if(logger.isTraceEnabled()){
+								logger.trace("Previously added child");
+								logger.trace(addedChild.getStringRepresentation());
+								logger.trace("is subsumed by");
+								logger.trace(lggChild.getStringRepresentation());
+								logger.trace("so we can skip adding the LGG");
 							}
 							add = false;
 							break;
 						} else if(lggChild.isSubsumedBy(addedChild)){
-							if(logger.isDebugEnabled()){
-								logger.debug("Computed LGG");
-								logger.debug(lggChild.getStringRepresentation());
-								logger.debug("is subsumed by previously added child");
-								logger.debug(addedChild.getStringRepresentation());
-								logger.debug("so we can remove it");
+							if(logger.isTraceEnabled()){
+								logger.trace("Computed LGG");
+								logger.trace(lggChild.getStringRepresentation());
+								logger.trace("is subsumed by previously added child");
+								logger.trace(addedChild.getStringRepresentation());
+								logger.trace("so we can remove it");
 							}
 							lgg.removeChild(addedChild);
 						} 
@@ -184,17 +184,17 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 					if(add){
 						lgg.addChild(lggChild, edge);
 						addedChildren.add(lggChild);
-						if(logger.isDebugEnabled()){
-							logger.debug("Adding child");
-							logger.debug(lggChild.getStringRepresentation());
+						if(logger.isTraceEnabled()){
+							logger.trace("Adding child");
+							logger.trace(lggChild.getStringRepresentation());
 						}
 					} 
 				}
 			}
 		}
-		if(logger.isDebugEnabled()){
-			logger.debug("Computed LGG:");
-			logger.debug(lgg.getStringRepresentation());
+		if(logger.isTraceEnabled()){
+			logger.trace("Computed LGG:");
+			logger.trace(lgg.getStringRepresentation());
 		}
 		return lgg;
 	}

@@ -21,6 +21,7 @@ package org.dllearner.algorithm.qtl.datastructures.impl;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,10 +31,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import org.dllearner.algorithm.qtl.datastructures.NodeRenderer;
 import org.dllearner.algorithm.qtl.datastructures.QueryTree;
 import org.dllearner.algorithm.qtl.filters.Filters;
+
+import com.hp.hpl.jena.datatypes.BaseDatatype;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 
 /**
  * 
@@ -719,6 +729,72 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         		}
         	}
     	} 
+    }
+    
+    public Query toQuery(){
+    	Query query = QueryFactory.make();
+    	query.setQuerySelectType();
+    	query.addResultVar(Node.createVariable("x0"));
+    	query.setDistinct(true);
+    	query.setPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+    	query.setPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+    	query.setPrefix("yago", "http://dbpedia.org/class/yago/");
+    	query.setPrefix("cyc", "http://sw.opencyc.org/2008/06/10/concept/");
+    	query.setPrefix("owl", "http://www.w3.org/2002/07/owl#");
+    	query.setPrefix("dbp", "http://dbpedia.org/property/");
+    	query.setPrefix("dbo", "http://dbpedia.org/ontology/");
+    	query.setPrefix("dbr", "http://dbpedia.org/resource/");
+    	query.setPrefix("dc", "http://purl.org/dc/terms/");
+    	ElementGroup whereClause = new ElementGroup();
+    	ElementTriplesBlock triples = new ElementTriplesBlock();
+    	for(Triple t : buildTriples(this)){
+    		triples.addTriple(t);
+    	}
+    	whereClause.addElement(triples);
+    	
+    	query.setQueryPattern(whereClause);
+    	return query;
+    }
+    
+    private List<Triple> buildTriples(QueryTree<N> tree){
+    	List<Triple> triples = new ArrayList<Triple>();
+    	Pattern pattern = Pattern.compile("^^", Pattern.LITERAL);
+    	
+    	Node subject = tree.getUserObject().equals("?") ? Node.createVariable("x" + tree.getId()) : Node.createURI((String) tree.getUserObject());
+    	Node predicate = null;
+    	Node object = null;
+    	
+    	String objectLabel = null;
+    	for(QueryTree<N> child : tree.getChildren()){
+    		predicate = Node.createURI((String) tree.getEdge(child));
+    		objectLabel = (String) child.getUserObject();
+    		if(objectLabel.equals("?")){
+    			object = Node.createVariable("x" + child.getId());
+    		} else if(objectLabel.startsWith("http:")){
+    			object = Node.createURI(objectLabel);
+    		} else {
+    			System.out.println(objectLabel);
+    			String[] split = objectLabel.split("@");
+    			System.out.println(Arrays.toString(split));
+    			if(split.length == 2){
+    				object = Node.createLiteral(split[0], split[1], null);
+    			} else {
+
+    				split = pattern.split(objectLabel);
+    				if(split.length == 2){
+    					object = Node.createLiteral(split[0], null, new BaseDatatype(split[1]));
+    				} else {
+    					object = Node.createLiteral(objectLabel);
+    				}
+    			}
+    			
+    		}
+    		triples.add(new Triple(subject, predicate, object));
+    		if(!child.isLeaf() && child.isVarNode()){
+    			triples.addAll(buildTriples(child));
+    		}
+    	}
+    	return triples;
     }
     
 

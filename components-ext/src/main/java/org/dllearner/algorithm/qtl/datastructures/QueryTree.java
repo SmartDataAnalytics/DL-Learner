@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.dllearner.algorithm.qtl.datastructures.impl.QueryTreeImpl;
 
+import com.hp.hpl.jena.query.Query;
+
 /**
  * 
  * @author Lorenz Bühmann
@@ -128,5 +130,7 @@ public interface QueryTree<N> {
     String toSPARQLQueryString(boolean filtered);
     
     int getTriplePatternCount();
+    
+    Query toQuery();
     
 }

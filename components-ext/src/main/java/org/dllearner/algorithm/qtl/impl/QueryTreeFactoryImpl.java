@@ -234,6 +234,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 						sb.append("@").append(lit.getLanguage());
 					}
 					subTree = new QueryTreeImpl<String>(sb.toString());
+//					subTree = new QueryTreeImpl<String>(lit.toString());
 					subTree.setId(nodeId++);
 					subTree.setLiteralNode(true);
 					tree.addChild(subTree, st.getPredicate().toString());
