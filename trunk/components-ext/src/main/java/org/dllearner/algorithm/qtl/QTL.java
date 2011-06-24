@@ -79,11 +79,8 @@ public class QTL {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		
-		posExampleTrees.clear();
-		negExampleTrees.clear();
-		
-		posExampleTrees.addAll(getQueryTrees(posExamples));
-		negExampleTrees.addAll(getQueryTrees(negExamples));
+		generatePositiveExampleTrees();
+		generateNegativeExampleTrees();
 		
 		if(negExamples.isEmpty()){
 			QueryTree<String> dummyNegTree = new QueryTreeImpl<String>("?");
@@ -96,8 +93,8 @@ public class QTL {
 		if(queryTreeFilter != null){
 			lgg = queryTreeFilter.getFilteredQueryTree(lgg);
 		}
-		if(logger.isInfoEnabled()){
-			logger.info("LGG: \n" + lgg.getStringRepresentation());
+		if(logger.isDebugEnabled()){
+			logger.debug("LGG: \n" + lgg.getStringRepresentation());
 		}
 		if(lgg.isEmpty()){
 			throw new EmptyLGGException();
@@ -143,8 +140,17 @@ public class QTL {
 		if(lgg == null){
 			lgg = lggGenerator.getLGG(getQueryTrees(posExamples));
 		}
-//		return nbr.getQuery();
 		return lgg.toSPARQLQueryString();
+	}
+	
+	private void generatePositiveExampleTrees(){
+		posExampleTrees.clear();
+		posExampleTrees.addAll(getQueryTrees(posExamples));
+	}
+	
+	private void generateNegativeExampleTrees(){
+		negExampleTrees.clear();
+		negExampleTrees.addAll(getQueryTrees(negExamples));
 	}
 	
 	private List<QueryTree<String>> getQueryTrees(List<String> resources){
@@ -152,13 +158,13 @@ public class QTL {
 		Model model;
 		QueryTree<String> tree;
 		for(String resource : resources){
-			if(logger.isInfoEnabled()){
-				logger.info("Tree for resource " + resource);
+			if(logger.isDebugEnabled()){
+				logger.debug("Tree for resource " + resource);
 			}
 			model = modelCache.getModel(resource);
 			tree = treeCache.getQueryTree(resource, model);
-			if(logger.isInfoEnabled()){
-				logger.info(tree.getStringRepresentation());
+			if(logger.isDebugEnabled()){
+				logger.debug(tree.getStringRepresentation());
 			}
 			trees.add(tree);
 		}

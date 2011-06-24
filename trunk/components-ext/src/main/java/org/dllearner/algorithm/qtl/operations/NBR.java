@@ -30,8 +30,25 @@ import org.dllearner.algorithm.qtl.util.TreeHelper;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
 
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.sparql.algebra.Algebra;
+import com.hp.hpl.jena.sparql.algebra.Op;
+import com.hp.hpl.jena.sparql.algebra.OpAsQuery;
+import com.hp.hpl.jena.sparql.expr.E_Bound;
+import com.hp.hpl.jena.sparql.expr.E_Equals;
+import com.hp.hpl.jena.sparql.expr.E_LogicalNot;
+import com.hp.hpl.jena.sparql.expr.ExprVar;
+import com.hp.hpl.jena.sparql.expr.nodevalue.NodeValueNode;
+import com.hp.hpl.jena.sparql.syntax.Element;
+import com.hp.hpl.jena.sparql.syntax.ElementFilter;
+import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.syntax.ElementOptional;
+import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -251,7 +268,7 @@ public class NBR<N> {
 		}
 		negExamplesCount = negTrees.size();
 		determiningNodeIds = getDeterminingNodeIds(lgg, negTrees);
-		logger.info("Computing next question...");
+		logger.debug("Computing next question...");
 		postLGG = getFilteredTree(lgg);
 		PostLGG<N> postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
 		postGen.simplifyTree(postLGG, negTrees);
@@ -945,15 +962,17 @@ public class NBR<N> {
     }
     
     private String fSparql(QueryTree<N> tree, List<QueryTreeChange> changes){
-    	logger.debug("fSparql uses:" + changes);
+    	logger.debug("fSparql uses:" + changes);//getSPARQLQueries(tree, changes);
     	QueryTree<N> copy = new QueryTreeImpl<N>(tree);
     	StringBuilder query = new StringBuilder();
     	StringBuilder triples = new StringBuilder();
     	List<String> optionals = new ArrayList<String>();
-    	List<String> filters = new ArrayList<String>();
+//    	List<String> filters = new ArrayList<String>();
+    	Map<String, String> filters = new HashMap<String, String>();
+    	List<String> bounds = new ArrayList<String>();
     	query.append("SELECT DISTINCT ?x0 WHERE{\n");
 //    	buildSPARQLQueryString(copy, triples);
-    	buildSPARQLQueryString(copy, changes, triples, optionals, filters);
+    	buildSPARQLQueryString(copy, changes, triples, optionals, filters, bounds);
     	if(triples.toString().isEmpty()){
     		triples.append("?x0 ?p ?o.\n");
     	}
@@ -961,13 +980,59 @@ public class NBR<N> {
     	for(String optional : optionals){
     		query.append("OPTIONAL{").append(optional + "}\n");
     	}
-    	if(filters.size() > 0){
-    		query.append("FILTER(");
-    		for(int i = 0; i < filters.size()-1; i++){
-    			query.append("(").append(filters.get(i)).append(") || ");
+//    	if(filters.size() > 0){
+//    		query.append("FILTER(");
+//    		for(int i = 0; i < filters.size()-1; i++){
+//    			query.append("(").append(filters.get(i)).append(") || ");
+//    		}
+//    		query.append("(").append(filters.get(filters.size()-1)).append(")");
+//    		query.append(")\n");
+//    	}
+    	List<String> filterParts = new ArrayList<String>();
+    	filterParts.addAll(filters.keySet());
+    	filterParts.addAll(bounds);
+    	if(filterParts.size() > 0){
+    		query.append("FILTER(\n");
+    		String currentPart = null;
+    		for(int i = 0; i < filterParts.size(); i++){
+    			int cnt = 1;
+    			query.append("(");
+    			currentPart = filterParts.get(i);
+    			if(filters.get(currentPart) != null){
+    				currentPart = currentPart + "!=" + filters.get(currentPart);
+    				cnt++;
+    				query.append(currentPart);
+    				if(filters.keySet().size() > 1){
+    					query.append(" && ");
+    				}
+    			} else if(bounds.contains(currentPart)){
+    				currentPart = "!BOUND(" + currentPart + ")";
+    				query.append(currentPart);
+    				if(!filters.keySet().isEmpty()){
+    					query.append(" && ");
+    				}
+    			}
+    			for(String f : filters.keySet()){
+    				if(filterParts.get(i) != f){
+    					query.append(f + "=" + filters.get(f));
+    					if(cnt < filters.keySet().size()){
+    						query.append(" && ");
+    					}
+    					cnt++;
+    				} else {
+//    					cnt++;
+    				}
+    				
+    				
+        		}
+    			query.append(")");
+    			if(i < filterParts.size()-1){
+    				query.append("\n||\n");
+				}
+    			
+    			
     		}
-    		query.append("(").append(filters.get(filters.size()-1)).append(")");
-    		query.append(")\n");
+    		query.append("\n)\n");
     	}
     	query.append("}");
     	if(logger.isDebugEnabled()){
@@ -1004,7 +1069,7 @@ public class NBR<N> {
     	}
     }
     
-    private void buildSPARQLQueryString(QueryTree<N> tree, List<QueryTreeChange> changes, StringBuilder triples, List<String> optionals, List<String> filters){
+    private void buildSPARQLQueryString(QueryTree<N> tree, List<QueryTreeChange> changes, StringBuilder triples, List<String> optionals, Map<String, String> filters, List<String> bounds){
     	Object subject = null;
     	if(tree.getUserObject().equals("?")){
     		subject = "?x" + tree.getId();
@@ -1026,9 +1091,11 @@ public class NBR<N> {
     				if(c.getType() == ChangeType.REPLACE_LABEL){
     					uri = (String) object;
     					if(((String)child.getUserObject()).contains("^^") || ((String)child.getUserObject()).contains("@")){
-    						filters.add("?x" + child.getId() + "!=" + uri);
+//    						filters.add("?x" + child.getId() + "!=" + uri);
+    						filters.put("?x" + child.getId(), uri);
     					} else {
-    						filters.add("?x" + child.getId() + "!=<" + uri + ">");
+//    						filters.add("?x" + child.getId() + "!=<" + uri + ">");
+    						filters.put("?x" + child.getId(), "<" + uri + ">");
     					}
     					
         				child.setUserObject((N)"?");
@@ -1038,7 +1105,8 @@ public class NBR<N> {
 	    					optionals.add(subject + " <" + predicate + "> ?x" + child.getId());
 	//    					triples.append("OPTIONAL{").append(subject).
 	//    					append(" <").append(predicate).append("> ").append("?x").append(child.getId()).append("}\n");
-	    					filters.add("!BOUND(?x" + child.getId() + ")");
+//	    					filters.add("!BOUND(?x" + child.getId() + ")");
+	    					bounds.add("?x" + child.getId());
     					}
     					child.getParent().removeChild((QueryTreeImpl<N>) child);
     				}
@@ -1055,11 +1123,101 @@ public class NBR<N> {
         			triples.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
         		}
         		if(!objectIsResource){
-        			buildSPARQLQueryString(child, changes, triples, optionals, filters);
+        			buildSPARQLQueryString(child, changes, triples, optionals, filters, bounds);
         		}
         	}
     	}
     }
+    
+    private List<String> getSPARQLQueries(QueryTree<N> tree, List<QueryTreeChange> changes){
+    	List<String> queries = new ArrayList<String>();
+    	
+    	String originalQuery = tree.toSPARQLQueryString();
+    	
+    	for(QueryTree<N> leaf : tree.getLeafs()){
+    		QueryTreeChange c = getChange(changes, leaf.getId());
+    		if(c != null){
+    			if(c.getType() == ChangeType.REPLACE_LABEL){
+    				System.out.println("JENA:\n " + getSPARQLQuery(originalQuery, nodeId, (String) leaf.getUserObject()));
+    			} else if(c.getType() == ChangeType.REMOVE_NODE){
+    				System.out.println("JENA:\n " + getSPARQLQuery2(tree.toQuery(), nodeId));
+    			}
+    		}
+    	}
+    	
+    	
+    	
+    	return queries;
+    }
+    
+    private String getSPARQLQuery2(Query originalQuery, int nodeId){
+		Query query = QueryFactory.create(originalQuery);
+		Element elt = query.getQueryPattern();
+		if ( elt instanceof ElementGroup ){
+			Node node = null;
+			Triple optional = null;
+			for (Element el : ((ElementGroup) elt).getElements()) {
+				if (el instanceof ElementTriplesBlock) {
+					Triple current;
+					int position = 1;
+					for (Iterator<Triple> iter = ((ElementTriplesBlock) el).getPattern().iterator(); iter.hasNext();) {
+						current = iter.next();
+						if (current.getObject().isVariable() && current.getObject().getName().equals("x" + nodeId)) {
+							node = current.getObject();
+							position = ((ElementTriplesBlock) el).getPattern().getList().indexOf(current);
+							optional = current;
+							iter.remove();
+						}
+					}
+				}
+			}
+			
+			if(optional != null){
+				ElementTriplesBlock optionalTriplesBlock = new ElementTriplesBlock();
+				optionalTriplesBlock.addTriple(optional);
+				((ElementGroup) elt).addElement(new ElementOptional(optionalTriplesBlock));
+				
+				
+				ElementFilter filter = new ElementFilter(new E_LogicalNot(new ExprVar(optional.getObject().getName())));
+            	((ElementGroup)elt).addElementFilter(filter);
+			}
+		}
+		return query.toString();
+	}
+    
+    private String getSPARQLQuery(String queryString, int nodeId, String label){
+		Query query = QueryFactory.create(queryString);
+		Element elt = query.getQueryPattern();
+		if ( elt instanceof ElementGroup ){
+			Node node = null;
+			boolean addFilter = false;
+			for(Element el : ((ElementGroup)elt).getElements()){
+				if ( el instanceof ElementTriplesBlock )
+	            {	Triple add = null;
+	            Triple current;
+	            int position = 1;
+	                for(Iterator<Triple> iter = ((ElementTriplesBlock) el).getPattern().iterator() ; iter.hasNext() ; ){
+	                	current = iter.next();
+	                	if(current.getObject().toString().equals(label)){
+	                		node = current.getObject();
+	                		position = ((ElementTriplesBlock) el).getPattern().getList().indexOf(current);
+	                		add = Triple.create(current.getSubject(), current.getPredicate(), Node.createVariable("x" + nodeId));
+	                		iter.remove();
+	                	}
+	                }
+	                if(add != null){
+	                	((ElementTriplesBlock) el).addTriple(position, add);
+	                	addFilter = true;
+	                }
+	            }
+			}
+			if(addFilter){
+				ElementFilter filter = new ElementFilter(new E_Equals(new ExprVar(Integer.toString(nodeId)), new NodeValueNode(node)));
+            	((ElementGroup)elt).addElementFilter(filter);
+			}
+		}
+		return query.toString();
+	}
     
 //    private void buildSPARQLQueryString(QueryTree<N> tree, List<QueryTreeChange> changes, StringBuilder triples, List<String> filters){
 //    	Object subject = null;
