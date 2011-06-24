@@ -82,7 +82,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private void loadConfig(String path){
-		logger.info("Loading config file");
+		logger.debug("Loading config file");
 		try {
 			InputStream is = getServletContext().getResourceAsStream(path);
 			Ini ini = new Ini(is);
@@ -95,7 +95,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private void loadEndpoints(){
-		logger.info("Loading endpoints from file: " + getServletContext().getRealPath("app/endpoints.xml"));
+		logger.debug("Loading endpoints from file: " + getServletContext().getRealPath("app/endpoints.xml"));
 		try {
 			List<SPARQLEndpointEx> endpoints = new Endpoints(getServletContext().getRealPath("app/endpoints.xml")).getEndpoints();
 			
@@ -146,7 +146,9 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	public Example getSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws AutoSPARQLException{
 		logger.info(getUserString() + ":Searching similiar example");
-		return getAutoSPARQLSession().getSimilarExample(posExamples, negExamples);
+		Example example = getAutoSPARQLSession().getSimilarExample(posExamples, negExamples);
+		logger.info("Suggestion: " + example.getLabel());
+		return example;
 	}
 
 	@Override
@@ -157,9 +159,8 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	public void setExamples(List<String> posExamples,
 			List<String> negExamples){
-		logger.info(getUserString() + ":Setting positive and negative examples");
-		logger.info("Positive examples: " + posExamples);
-		logger.info("Negative examples: " + negExamples);
+		logger.info(getUserString() + ":Setting positive examples = " + posExamples);
+		logger.info(getUserString() + ":Setting negative examples = " + negExamples);
 		try{
 			getAutoSPARQLSession().setExamples(posExamples, negExamples);
 		} catch (Exception e){
@@ -169,9 +170,9 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	@Override
 	public void setEndpoint(Endpoint endpoint) throws AutoSPARQLException{
-		logger.info(getUserString() + ":Set endpoint " + endpoint.getLabel());
 		try {
 			createNewAutoSPARQLSession(endpointsMap.get(endpoint));
+			logger.info(getUserString() + ":Set endpoint " + endpoint.getLabel());
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -202,19 +203,10 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
-		logger.info("Creating new AutoSPARQL user session object(" + getSession().getId() + ")");
+		logger.info(getUserString() + ": Start new AutoSPARQL session");
 		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir),
 				getServletContext().getRealPath(""), solrURL);
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
-		getSession().setAttribute("expiryListener", new HttpSessionBindingListener() {
-	         public void valueBound(HttpSessionBindingEvent e) {}
-
-	         // This method will be called when the user's session expires
-	         public void valueUnbound(HttpSessionBindingEvent e) {
-	             System.out.println("UNBOUND");
-	             
-	         }
-	     });
 	}
 	
 	private AutoSPARQLSession getAutoSPARQLSession(){
@@ -249,13 +241,14 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 
 	@Override
 	public void loadSPARQLQuery(StoredSPARQLQuery storedQuery) {
-		logger.info("Loading stored query \"" + storedQuery.getQuestion() + "\"");
-		store.incrementHitCount(storedQuery);
 		createNewAutoSPARQLSession(endpointsMap.get(new Endpoint(storedQuery.getEndpoint())));
+		logger.info(getUserString() + ":Loading stored query \"" + storedQuery.getQuestion() + "\"");
+		store.incrementHitCount(storedQuery);
+		
 	}
 	
 	private void loadSPARQLQueriesFromFile(){
-		logger.info("Loading stored SPARQL queries");
+		logger.debug("Loading stored SPARQL queries");
 		try {
 			store = new SimpleFileStore(getServletContext().getRealPath(SPARQL_QUERIES_FILE));
 			storedSPARQLQueries = store.getStoredSPARQLQueries();
@@ -267,20 +260,20 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	@Override
 	public PagingLoadResult<Example> getSPARQLQueryResult(String query,
 			PagingLoadConfig config) throws AutoSPARQLException {
-		logger.info("Retrieving results for SPARQL query(" + getSession().getId() + ")");
+		logger.debug("Retrieving results for SPARQL query(" + getSession().getId() + ")");
 		return getAutoSPARQLSession().getSPARQLQueryResult(query, config);
 	}
 	
 	@Override
 	public PagingLoadResult<Example> getSPARQLQueryResultWithProperties(String query, List<String> properties,
 			PagingLoadConfig config) throws AutoSPARQLException {
-		logger.info("Retrieving results for SPARQL query with properties(" + getSession().getId() + ")");
+		logger.debug("Retrieving results for SPARQL query with properties(" + getSession().getId() + ")");
 		return getAutoSPARQLSession().getSPARQLQueryResultWithProperties(query, properties, config);
 	}
 
 	@Override
 	public Map<String, String> getProperties(String query) throws AutoSPARQLException {
-		logger.info("Loading properties (" + getSession().getId() + ")");
+		logger.debug("Loading properties (" + getSession().getId() + ")");
 		return getAutoSPARQLSession().getProperties(query);
 	}
 	
@@ -288,108 +281,5 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		return "USER " + getSession().getId();
 	}
 
-	
-//	protected SerializationPolicy doGetSerializationPolicy(
-//			HttpServletRequest request, String moduleBaseURL, String strongName) {
-//		// The request can tell you the path of the web app relative to the
-//		// container root.
-//
-//		SerializationPolicy serializationPolicy = null;
-//		String serializationPolicyFilePath = "";
-//		InputStream is = null;
-//
-//		String contextPath = request.getContextPath();
-//
-//		String modulePath = null;
-//		if (moduleBaseURL != null) {
-//			try {
-//				modulePath = new URL(moduleBaseURL).getPath();
-//			} catch (MalformedURLException ex) {
-//				// log the information, we will default
-//				getServletContext().log(
-//						"Malformed moduleBaseURL: " + moduleBaseURL, ex);
-//			}
-//		} else { // Just quit, if we do not know the module base. (07/11/08 -
-//					// Danny)
-//			return serializationPolicy;
-//		}
-//
-//		// Disregard same web source. (07/11/08 - Danny)
-//
-//		if (modulePath == null) {
-//			String message = "ERROR: The module path requested, "
-//					+ modulePath
-//					+ ", is null, "
-//					+ contextPath
-//					+ ".  Your module may not be properly configured or your client and server code maybe out of date.";
-//			getServletContext().log(message);
-//		} else {
-//			// Set up input stream for serialization policy file, based on
-//			// /servlet call. (07/11/08 - Danny)
-//			if (contextPath.equals("/servlet")) {
-//				try {
-//					URL baseURL = new URL(moduleBaseURL + strongName
-//							+ ".gwt.rpc");
-//					URLConnection baseURLConnection = baseURL.openConnection();
-//					is = baseURLConnection.getInputStream();
-//				} catch (Exception ex) {
-//					String message = "ERROR: Could not open policy file, "
-//							+ modulePath
-//							+ ", is null, "
-//							+ contextPath
-//							+ ".  Your module may not be properly configured or your client and server code maybe out of date."
-//							+ " Exception=" + ex.toString();
-//					getServletContext().log(message);
-//					return serializationPolicy;
-//				}
-//			} else {
-//				// Strip off the context path from the module base URL. It
-//				// should be a
-//				// strict prefix.
-//				String contextRelativePath = modulePath.substring(contextPath
-//						.length());
-//
-//				serializationPolicyFilePath = SerializationPolicyLoader
-//						.getSerializationPolicyFileName(contextRelativePath
-//								+ strongName);
-//
-//				// Open the RPC resource file read its contents.
-//				is = getServletContext().getResourceAsStream(
-//						serializationPolicyFilePath);
-//			}
-//			try {
-//				if (is != null) {
-//					try {
-//						serializationPolicy = SerializationPolicyLoader
-//								.loadFromStream(is, null);
-//					} catch (ParseException e) {
-//						getServletContext().log(
-//								"ERROR: Failed to parse the policy file '"
-//										+ serializationPolicyFilePath + "'", e);
-//					} catch (IOException e) {
-//						getServletContext().log(
-//								"ERROR: Could not read the policy file '"
-//										+ serializationPolicyFilePath + "'", e);
-//					}
-//				} else {
-//					String message = "ERROR: The serialization policy file '"
-//							+ serializationPolicyFilePath
-//							+ "' was not found; did you forget to include it in this deployment?";
-//					getServletContext().log(message);
-//				}
-//			} finally {
-//				if (is != null) {
-//					try {
-//						is.close();
-//					} catch (IOException e) {
-//						// Ignore this error
-//					}
-//				}
-//			}
-//		}
-//
-//		return serializationPolicy;
-//	}
-	
 
 }

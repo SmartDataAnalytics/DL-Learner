@@ -38,17 +38,17 @@ public class QuestionProcessor {
 	}
 	
 	public List<String> getRelevantWords(String question){
-		logger.info("Processing question \"" + question + "\"...");
+		logger.debug("Processing question \"" + question + "\"...");
 		//tokenize question
 		List<String> words = getWords(question);
-		logger.info("Extracted words: " + words);
+		logger.debug("Extracted words: " + words);
 		//remove stop words
 		removeStopWords(words);
-		logger.info("After removed stop words: " + words);
+		logger.debug("After removed stop words: " + words);
 		//stem words
 		words = getStemmedWords(words);
 		removeStopWords(words);
-		logger.info("After stemming: " + words);
+		logger.debug("After stemming: " + words);
 		
 		
 		return words;
