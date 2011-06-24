@@ -240,8 +240,6 @@ public class AutoSPARQLSession {
 			PagingLoadConfig config) throws AutoSPARQLException{
 		List<Example> queryResult = new ArrayList<Example>();
 		
-		logger.info("SPARQL query:\n");
-		logger.info(query);
 		int limit = config.getLimit();
 		int offset = config.getOffset();
 		int totalLength = 10;
@@ -282,8 +280,6 @@ public class AutoSPARQLSession {
 			PagingLoadConfig config) throws AutoSPARQLException {
 		List<Example> queryResult = new ArrayList<Example>();
 //		properties.remove("label");
-		logger.info("SPARQL query:\n");
-		logger.info(query);
 		int limit = config.getLimit();
 		int offset = config.getOffset();
 		int totalLength = 10;
@@ -342,7 +338,7 @@ public class AutoSPARQLSession {
 				newQuery.append("}");
 			}
 			
-			logger.info("Query with properties:\n" + newQuery.toString());
+			logger.debug("Query with properties:\n" + newQuery.toString());
 			try {
 				ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, modifyQuery(newQuery + " LIMIT 1000")));
 				
@@ -475,12 +471,12 @@ public class AutoSPARQLSession {
 
 	public PagingLoadResult<Example> getCurrentQueryResult(
 			PagingLoadConfig config) throws SPARQLQueryException {
-		logger.info("Retrieving results for current query.");
+		logger.debug("Retrieving results for current query.");
 		List<Example> queryResult = new ArrayList<Example>();
 		
 		String currentQuery = exampleFinder.getCurrentQuery();
-		logger.info("Current query:\n");
-		logger.info(currentQuery);
+		logger.debug("Current query:\n");
+		logger.debug(currentQuery);
 		int limit = config.getLimit();
 		int offset = config.getOffset();
 		int totalLength = 10;
