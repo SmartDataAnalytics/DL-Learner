@@ -24,6 +24,7 @@ public class Application
 	public static final String SERVICE = "sparqlservice";
 	public static final String QUERY_TITLE = "query title";
 	public static final String ENDPOINT = "endpoint";
+	public static final String ENDPOINT_LABEL = "endpoint label";
 	public static final String LOADED_QUERY = "loaded query";
 
   /**
