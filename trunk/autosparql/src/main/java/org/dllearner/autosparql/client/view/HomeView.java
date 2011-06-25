@@ -9,6 +9,7 @@ import org.dllearner.autosparql.client.HistoryTokens;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
+import org.dllearner.autosparql.client.widget.StoredSPARQLQueriesPanel;
 
 import com.extjs.gxt.ui.client.Registry;
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -178,43 +179,9 @@ public class HomeView extends View {
                 SPARQLService.Util.getInstance().getSavedSPARQLQueries(new AsyncCallbackEx<List<StoredSPARQLQuery>>() {
 					@Override
 					public void onSuccess(List<StoredSPARQLQuery> result) {
-						LayoutContainer linkContainer = new LayoutContainer();
-						linkContainer.setStylePrimaryName("cloudWrap"); 
-						
-						setFrequencies(result);
-						
-						for(final StoredSPARQLQuery query : result){
-//							Anchor a = new Anchor(query.getQuestion());
-//							a.addClickHandler(new ClickHandler() {
-//								
-//								@Override
-//								public void onClick(ClickEvent event) {
-//									Registry.register("query", query);
-//									Registry.register("QUERY_TITLE", query.getQuestion());
-//									Registry.register("ENDPOINT", query.getEndpoint());
-//									History.newItem(HistoryTokens.LOADQUERY);
-//									
-//								}
-//							});
-							Hyperlink link = new Hyperlink(query.getQuestion() + " (" + query.getHitCount() + ")", HistoryTokens.LOADQUERY);
-							link.addClickListener(new ClickListener() {
-								
-								@Override
-								public void onClick(Widget sender) {
-									Registry.register("query", query);
-									Registry.register("QUERY_TITLE", query.getQuestion());
-									Registry.register("ENDPOINT", query.getEndpoint());
-									
-								}
-							});
-							link.setStylePrimaryName("cloudTags");
-							linkContainer.add(link);
-							
-							Style linkStyle = link.getElement().getStyle();  
-			                linkStyle.setProperty("fontSize",getLabelSize(query.getHitCount()));  
-							
-						}
-						sidecontent.add(linkContainer, "#storedqueries");
+						StoredSPARQLQueriesPanel panel = new StoredSPARQLQueriesPanel();
+						panel.showStoredSPARLQQueries(result);
+						sidecontent.add(panel, "#storedqueries");
 					}
 				});
                 
