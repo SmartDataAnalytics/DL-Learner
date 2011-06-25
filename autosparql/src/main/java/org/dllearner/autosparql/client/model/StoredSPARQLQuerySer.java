@@ -2,6 +2,7 @@ package org.dllearner.autosparql.client.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class StoredSPARQLQuerySer implements Serializable{
@@ -15,13 +16,15 @@ public class StoredSPARQLQuerySer implements Serializable{
 	private List<ExampleSer> posExamples;
 	private List<ExampleSer> negExamples;
 	private ExampleSer lastSuggestedExample;
+	private Date date;
 	
 	private int hitCount = 0;
 	
 	public StoredSPARQLQuerySer(){
 	}
 	
-	public StoredSPARQLQuerySer(String question, String query, String queryHTML, String endpoint, List<ExampleSer> posExamples, List<ExampleSer> negExamples, ExampleSer lastSuggestedExample, int hitCount){
+	public StoredSPARQLQuerySer(String question, String query, String queryHTML, String endpoint, 
+			List<ExampleSer> posExamples, List<ExampleSer> negExamples, ExampleSer lastSuggestedExample, Date date, int hitCount){
 		this.question = question;
 		this.query = query;
 		this.endpoint = endpoint;
@@ -29,6 +32,7 @@ public class StoredSPARQLQuerySer implements Serializable{
 		this.negExamples = negExamples;
 		this.lastSuggestedExample = lastSuggestedExample;
 		this.hitCount = hitCount;
+		this.date = date;
 	}
 	
 	public String getQuestion() {
@@ -101,8 +105,7 @@ public class StoredSPARQLQuerySer implements Serializable{
 		if(this.lastSuggestedExample != null){
 			lastSuggestedExample = this.lastSuggestedExample.toExample();
 		}
-		StoredSPARQLQuery q = new StoredSPARQLQuery(question, query, queryHTML, endpoint, posExamples, negExamples, lastSuggestedExample);
-		q.setHitCount(this.hitCount);
+		StoredSPARQLQuery q = new StoredSPARQLQuery(question, query, queryHTML, endpoint, posExamples, negExamples, lastSuggestedExample, date, hitCount);
 		return q;
 	}
 

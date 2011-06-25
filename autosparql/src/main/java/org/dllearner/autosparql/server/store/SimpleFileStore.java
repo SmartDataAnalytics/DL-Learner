@@ -2,6 +2,7 @@ package org.dllearner.autosparql.server.store;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ import org.dllearner.utilities.Files;
 
 /**
  * 
- * Stores the objects as serialized java object to a file, as given in filename
+ * Stores the queries as serialized java object to a file, as given in filename
  * 
  */
 public class SimpleFileStore implements Store {
@@ -44,12 +45,12 @@ public class SimpleFileStore implements Store {
 			try {
 				question2QueryMap = (Map<String, StoredSPARQLQuerySer>) Files.readObjectfromFile(f);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				logger.error("Error while deserializing stored queries", e);
 				e.printStackTrace();
 			}
 			logger.debug("Loaded " + question2QueryMap.size() + " concepts from " + filename);
 		} else {
-			logger.warn("No saved concepts found in " + filename);
+			logger.warn("Found no file " + filename);
 		}
 	}
 
@@ -77,7 +78,7 @@ public class SimpleFileStore implements Store {
 
 	private void put(String question, String query, String endpoint, List<Example> posExamples, List<Example> negExamples, Example lastSuggestedExample) {
 		try {
-			StoredSPARQLQuery storedQuery = new StoredSPARQLQuery(question, query, HTMLUtils.encodeHTML(query), endpoint, posExamples, negExamples, lastSuggestedExample);
+			StoredSPARQLQuery storedQuery = new StoredSPARQLQuery(question, query, HTMLUtils.encodeHTML(query), endpoint, posExamples, negExamples, lastSuggestedExample, new Date(), 0);
 			question2QueryMap.put(question, storedQuery.toStoredSPARQLQuerySer());
 			saveMap();
 		} catch (Exception e) {
@@ -87,9 +88,14 @@ public class SimpleFileStore implements Store {
 	}
 	
 	private void saveMap(){
-		File f = new File(filename);
-		Files.writeObjectToFile(question2QueryMap, f);
-		logger.debug("Saved " + question2QueryMap.size() + " queries to " + filename);
+		try {
+			File f = new File(filename);
+			Files.writeObjectToFile(question2QueryMap, f);
+			logger.debug("Saved " + question2QueryMap.size() + " queries to " + filename);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
