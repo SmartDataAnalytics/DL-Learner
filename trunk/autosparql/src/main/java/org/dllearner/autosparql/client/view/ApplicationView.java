@@ -121,7 +121,7 @@ public class ApplicationView extends View {
 		sb.append("<span id=demo-header-logo></span><div id=demo-header-title>AutoSPARQL</div>");
 		sb.append("<div id=demo-header-title>looks for</div>");
 		sb.append("<div id=demo-header-query>\"").append(Registry.get(Application.QUERY_TITLE)).append("\"</div>");
-		sb.append("<div id=demo-header-endpoint>@ ").append(((Endpoint)Registry.get(Application.ENDPOINT)).getLabel()).append("</div>");
+		sb.append("<div id=demo-header-endpoint>@ ").append(Registry.get(Application.ENDPOINT_LABEL)).append("</div>");
 		headerPanel.setHtml(sb.toString());
 	}
 

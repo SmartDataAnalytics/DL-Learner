@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.dllearner.autosparql.client.AppEvents;
+import org.dllearner.autosparql.client.Application;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.SPARQLServiceAsync;
 import org.dllearner.autosparql.client.model.Example;
@@ -115,7 +116,7 @@ public class LoadedQueryView  extends View {
 	      wrapper.layout();
 	      RootPanel.get().addStyleName("query_view");
 	      RootPanel.get().removeStyleName("home_view");
-	      storedQuery = ((StoredSPARQLQuery)Registry.get("query"));
+	      storedQuery = ((StoredSPARQLQuery)Registry.get(Application.LOADED_QUERY));
 	      onLoadSPARQLQuery(storedQuery);
 		}
 		

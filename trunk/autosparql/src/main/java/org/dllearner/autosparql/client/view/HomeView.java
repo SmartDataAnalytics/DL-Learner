@@ -122,7 +122,7 @@ public class HomeView extends View {
 					@Override
 					public void onClick(ClickEvent event) {
 						Registry.register(Application.QUERY_TITLE, queryField.getValue());
-						Registry.register(Application.ENDPOINT, endpointBox.getSelection().get(0));
+						Registry.register(Application.ENDPOINT_LABEL, endpointBox.getValue().getLabel());
 						SPARQLService.Util.getInstance().setEndpoint(endpointBox.getValue(), new AsyncCallback<Void>() {
 							@Override
 							public void onFailure(Throwable caught) {
