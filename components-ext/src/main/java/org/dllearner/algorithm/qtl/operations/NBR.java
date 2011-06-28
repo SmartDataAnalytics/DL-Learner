@@ -59,7 +59,7 @@ public class NBR<N> {
 	
 	private volatile boolean stop = false;
 	private boolean isRunning;
-	private int maxExecutionTimeInSeconds = 10000000;
+	private int maxExecutionTimeInSeconds = 100;
 	private long startTime;
 	
 	private ExtractionDBCache selectCache;
@@ -697,7 +697,7 @@ public class NBR<N> {
 		SortedSet<String> resources = new TreeSet<String>();
 		this.query = query;
 		if(logger.isDebugEnabled()){
-			logger.debug("Testing query\n" + getLimitedQuery(query, limit, offset));
+			logger.debug("Testing query\n" + getLimitedQuery(query, limit, offset) + "\n");
 		}
 		
 		String result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(query, limit, offset));
@@ -962,17 +962,14 @@ public class NBR<N> {
     }
     
     private String fSparql(QueryTree<N> tree, List<QueryTreeChange> changes){
-    	logger.debug("fSparql uses:" + changes);//getSPARQLQueries(tree, changes);
+    	logger.debug("fSparql uses:" + changes);
     	QueryTree<N> copy = new QueryTreeImpl<N>(tree);
     	StringBuilder query = new StringBuilder();
     	StringBuilder triples = new StringBuilder();
     	List<String> optionals = new ArrayList<String>();
-//    	List<String> filters = new ArrayList<String>();
-    	Map<String, String> filters = new HashMap<String, String>();
-    	List<String> bounds = new ArrayList<String>();
+    	List<String> filters = new ArrayList<String>();
     	query.append("SELECT DISTINCT ?x0 WHERE{\n");
-//    	buildSPARQLQueryString(copy, triples);
-    	buildSPARQLQueryString(copy, changes, triples, optionals, filters, bounds);
+    	buildSPARQLQueryString(copy, changes, triples, optionals, filters);
     	if(triples.toString().isEmpty()){
     		triples.append("?x0 ?p ?o.\n");
     	}
@@ -980,14 +977,39 @@ public class NBR<N> {
     	for(String optional : optionals){
     		query.append("OPTIONAL{").append(optional + "}\n");
     	}
-//    	if(filters.size() > 0){
-//    		query.append("FILTER(");
-//    		for(int i = 0; i < filters.size()-1; i++){
-//    			query.append("(").append(filters.get(i)).append(") || ");
-//    		}
-//    		query.append("(").append(filters.get(filters.size()-1)).append(")");
-//    		query.append(")\n");
+    	if(filters.size() > 0){
+    		query.append("FILTER(");
+    		for(int i = 0; i < filters.size()-1; i++){
+    			query.append("(").append(filters.get(i)).append(") || ");
+    		}
+    		query.append("(").append(filters.get(filters.size()-1)).append(")");
+    		query.append(")\n");
+    	}
+    	query.append("}");
+//    	if(logger.isDebugEnabled()){
+//    		logger.debug("fsparql: generated query: \n" + query.toString());
 //    	}
+    	return query.toString();
+    	
+    }
+    
+    private String fSparql2(QueryTree<N> tree, List<QueryTreeChange> changes){
+    	logger.debug("fSparql uses:" + changes);//getSPARQLQueries(tree, changes);
+    	QueryTree<N> copy = new QueryTreeImpl<N>(tree);
+    	StringBuilder query = new StringBuilder();
+    	StringBuilder triples = new StringBuilder();
+    	List<String> optionals = new ArrayList<String>();
+    	Map<String, String> filters = new HashMap<String, String>();
+    	List<String> bounds = new ArrayList<String>();
+    	query.append("SELECT DISTINCT ?x0 WHERE{\n");
+    	buildSPARQLQueryString2(copy, changes, triples, optionals, filters, bounds);
+    	if(triples.toString().isEmpty()){
+    		triples.append("?x0 ?p ?o.\n");
+    	}
+    	query.append(triples.toString());
+    	for(String optional : optionals){
+    		query.append("OPTIONAL{").append(optional + "}\n");
+    	}
     	List<String> filterParts = new ArrayList<String>();
     	filterParts.addAll(filters.keySet());
     	filterParts.addAll(bounds);
@@ -1042,7 +1064,8 @@ public class NBR<N> {
     	
     }
     
-    private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder triples){
+    
+    private void buildSPARQLQueryString(QueryTree<N> tree, List<QueryTreeChange> changes, StringBuilder triples, List<String> optionals, List<String> filters){
     	Object subject = null;
     	if(tree.getUserObject().equals("?")){
     		subject = "?x" + tree.getId();
@@ -1055,21 +1078,51 @@ public class NBR<N> {
     		for(QueryTree<N> child : tree.getChildren()){
         		predicate = tree.getEdge(child);
         		object = child.getUserObject();
-        		boolean objectIsResource = !object.equals("?");
+        		
+        		boolean addFilter = false;
+        		boolean removed = false;
+        		String uri = null;
+        		QueryTreeChange c = getChange(changes, child.getId());
+    			if(c != null){
+    				if(c.getType() == ChangeType.REPLACE_LABEL){
+    					uri = (String) object;
+    					if(((String)child.getUserObject()).contains("^^") || ((String)child.getUserObject()).contains("@")){
+    						filters.add("?x" + child.getId() + "!=" + uri);
+    					} else {
+    						filters.add("?x" + child.getId() + "!=<" + uri + ">");
+    					}
+    					
+        				child.setUserObject((N)"?");
+    				} else {
+    					removed = true;
+    					if(!predicate.equals(RDF.type.toString())){
+	    					optionals.add(subject + " <" + predicate + "> ?x" + child.getId());
+//	    					triples.append("OPTIONAL{").append(subject).
+//	    					append(" <").append(predicate).append("> ").append("?x").append(child.getId()).append("}\n");
+	    					filters.add("!BOUND(?x" + child.getId() + ")");
+    					}
+    					child.getParent().removeChild((QueryTreeImpl<N>) child);
+    				}
+    				
+    			}
+    			object = child.getUserObject();
+    			boolean objectIsResource = !object.equals("?");
         		if(!objectIsResource){
         			object = "?x" + child.getId();
         		} else if(((String)object).startsWith("http://")){
         			object = "<" + object + ">";
         		}
-        		triples.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
+        		if(!removed){
+        			triples.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
+        		}
         		if(!objectIsResource){
-        			buildSPARQLQueryString(child, triples);
+        			buildSPARQLQueryString(child, changes, triples, optionals, filters);
         		}
         	}
     	}
     }
     
-    private void buildSPARQLQueryString(QueryTree<N> tree, List<QueryTreeChange> changes, StringBuilder triples, List<String> optionals, Map<String, String> filters, List<String> bounds){
+    private void buildSPARQLQueryString2(QueryTree<N> tree, List<QueryTreeChange> changes, StringBuilder triples, List<String> optionals, Map<String, String> filters, List<String> bounds){
     	Object subject = null;
     	if(tree.getUserObject().equals("?")){
     		subject = "?x" + tree.getId();
@@ -1123,7 +1176,7 @@ public class NBR<N> {
         			triples.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
         		}
         		if(!objectIsResource){
-        			buildSPARQLQueryString(child, changes, triples, optionals, filters, bounds);
+        			buildSPARQLQueryString2(child, changes, triples, optionals, filters, bounds);
         		}
         	}
     	}
