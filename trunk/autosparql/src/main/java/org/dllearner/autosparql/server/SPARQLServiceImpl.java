@@ -87,7 +87,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		try {
 			InputStream is = getServletContext().getResourceAsStream(path);
 			Ini ini = new Ini(is);
-			storeDir = ini.get("store").get("path");
+			storeDir = ini.get("storeDir").get("path");
 			cacheDir = ini.get("cacheDir").get("path");
 			solrURL = ini.get("solrURL").get("url");
 		} catch (Exception e){
