@@ -52,7 +52,7 @@ public class QTL {
 	
 	private QueryTreeFilter queryTreeFilter;
 	
-	private int maxExecutionTimeInSeconds = 10;
+	private int maxExecutionTimeInSeconds = 60;
 	private int maxQueryTreeDepth = 2;
 	
 	private QueryTree<String> lgg;

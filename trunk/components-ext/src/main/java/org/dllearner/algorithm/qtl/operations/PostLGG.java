@@ -70,13 +70,17 @@ public class PostLGG<N> {
 //				logger.info("Exists: " + pathExists);
 //			}
 			if(pathExists){
+				String pathString = "[" + leaf.getParent().getUserObject() + "--" + leaf.getParent().getEdge(leaf) + "--" + leaf.getUserObject() + "]";
 				leaf.getParent().removeChild((QueryTreeImpl<N>) leaf);
+				if(logger.isDebugEnabled()){
+					logger.debug("Removing edge " + pathString + " from LGG because this occurs also in all negative trees.");
+				}
 			}
 		}
 //		checkSameEdgeOccurences(tree, negTrees);
-		if(logger.isDebugEnabled()){
-			logger.debug("Pruned tree:\n" + TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
-		}
+//		if(logger.isDebugEnabled()){
+//			logger.debug("Pruned tree:\n" + TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
+//		}
 		
 	}
 	
