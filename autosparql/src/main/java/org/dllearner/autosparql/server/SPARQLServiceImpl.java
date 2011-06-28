@@ -46,8 +46,6 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private static final String AUTOSPARQL_SESSION = "autosparql_session";
 	
-	private static final String SPARQL_QUERIES_FILE = "stored_queries.txt";
-	
 	private List<StoredSPARQLQuery> storedSPARQLQueries;
 	
 	private Map<Endpoint, SPARQLEndpointEx> endpointsMap;
@@ -257,7 +255,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	private void loadSPARQLQueriesFromFile(){
 		logger.debug("Loading stored SPARQL queries");
 		try {
-			store = new SimpleFileStore(storeDir + File.separator + SPARQL_QUERIES_FILE);
+			store = new SimpleFileStore(storeDir);
 			storedSPARQLQueries = store.getStoredSPARQLQueries();
 		} catch (Exception e) {
 			logger.error("Error while loading stored SPARQL queries.", e);
