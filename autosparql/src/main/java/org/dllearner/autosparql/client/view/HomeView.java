@@ -139,25 +139,7 @@ public class HomeView extends View {
 
                 // maincontent
                 maincontent = new HtmlContainer(
-                    "<h2>How to use?</h2>"+
-                    "<ol>"+
-                        "<li>search for a query result, e.g. if you want to query &quot;soccer clubs in Premier League&quot;, you could search for &quot;Liverpool F.C.&quot; and &quot;Chelsea F.C.&quot;</li>"+
-                        "<li>once you have found &quot;Liverpool F.C.&quot; and &quot;Chelsea F.C.&quot; and marked them with &quot;+&quot;</li>"+
-                        "<li>an interactive guide will ask you further questions</li>"+
-                        "<li>which lead you to your desired query</li>"+
-                    "</ol>"+
-                    "<h2>Authors</h2>"+
-                    "<p><a href=\"http://jens-lehmann.org\">Jens Lehmann</a> and " +
-                        "<a href=\"http://bis.informatik.uni-leipzig.de/LorenzBuehmann\">Lorenz Bühmann</a> for "+
-                        "<a href=\"http://aksw.org/Groups/MOLE\">MOLE</a>  @ <a href=\"http://aksw.org\">AKSW</a>, <a href=\"http://www.zv.uni-leipzig.de/en/\">University of Leipzig</a>"+
-                    "</p>"
-                        );
-                
-                // sidecontent
-                sidecontent = new HtmlContainer(
-                		
-//                		  "<h2>Warning! The AutoSPARQL service is currently under construction. We are working on it and will hopfully reactivate it soon.</h2>"+
-                    "<p><span id=storedqueries></span></p><br/><h2>Watch the Screencast</h2>"+
+                		"<h2>Watch the Screencast</h2>"+
                 		"<object id=\"scPlayer\"  width=\"800\" height=\"450\" type=\"application/x-shockwave-flash\" " +
                 		"data=\"http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/mp4h264player.swf\" >" +
                 		"<param name=\"movie\" value=\"http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/mp4h264player.swf\" />" +
@@ -170,7 +152,41 @@ public class HomeView extends View {
                 		"<param name=\"base\" value=\"http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/\" />" +
                 		"<iframe type=\"text/html\" frameborder=\"0\" scrolling=\"no\" style=\"overflow:hidden;\" src=\"http://www.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/embed\" height=\"450\" width=\"800\" >" +
                 		"</iframe></object>"+
-
+                    "<h2>How to use?</h2>"+
+                    "<ol>"+
+                        "<li>enter an appropriate concept name for the query you want to create, e.g. you could aks for &quot;soccer clubs in Premier League&quot;</li>" +
+                        "<li>and select the endpoint on which you want to work before you have to click on &quot;Query&quot;</li>"+
+                        "<li>on the new page you have to give some examples which should belong to the query</li>"+
+                        "<li>once you have found e.g. &quot;Liverpool F.C.&quot; and &quot;Chelsea F.C.&quot; and marked them with &quot;+&quot;</li>"+
+                        "<li>an interactive guide will ask you further questions</li>"+
+                        "<li>which lead you to your desired query</li>"+
+                    "</ol>"
+                        );
+                
+                // sidecontent
+                sidecontent = new HtmlContainer(
+                		
+//                		  "<h2>Warning! The AutoSPARQL service is currently under construction. We are working on it and will hopfully reactivate it soon.</h2>"+
+//                    "<p><span id=storedqueries></span></p><br/><h2>Watch the Screencast</h2>"+
+//                		"<object id=\"scPlayer\"  width=\"800\" height=\"450\" type=\"application/x-shockwave-flash\" " +
+//                		"data=\"http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/mp4h264player.swf\" >" +
+//                		"<param name=\"movie\" value=\"http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/mp4h264player.swf\" />" +
+//                		"<param name=\"quality\" value=\"high\" />" +
+//                		"<param name=\"bgcolor\" value=\"#FFFFFF\" />" +
+//                		"<param name=\"flashVars\" value=\"thumb=http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/FirstFrame.png&containerwidth=800&containerheight=450&showstartscreen=true&showendscreen=true&loop=false&autostart=false&color=1A1A1A,1A1A1A&thumb=FirstFrame.png&thumbscale=45&content=http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/autosparql.mp4&blurover=false\" />" +
+//                		"<param name=\"allowFullScreen\" value=\"true\" />" +
+//                		"<param name=\"scale\" value=\"showall\" />" +
+//                		"<param name=\"allowScriptAccess\" value=\"always\" />" +
+//                		"<param name=\"base\" value=\"http://content.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/\" />" +
+//                		"<iframe type=\"text/html\" frameborder=\"0\" scrolling=\"no\" style=\"overflow:hidden;\" src=\"http://www.screencast.com/users/LorenzB/folders/Default/media/453ea71d-2a00-459f-b154-6ef2583a63f6/embed\" height=\"450\" width=\"800\" >" +
+//                		"</iframe></object>"+
+                		"<p><span id=storedqueries></span></p>" +
+                		"<br/>" +
+                		"<h2>Authors</h2>"+
+                        "<p><a href=\"http://jens-lehmann.org\">Jens Lehmann</a> and " +
+                            "<a href=\"http://bis.informatik.uni-leipzig.de/LorenzBuehmann\">Lorenz Bühmann</a> for "+
+                            "<a href=\"http://aksw.org/Groups/MOLE\">MOLE</a>  @ <a href=\"http://aksw.org\">AKSW</a>, <a href=\"http://www.zv.uni-leipzig.de/en/\">University of Leipzig</a>"+
+                        "</p>"+
                     "<p>powered by<br/><a href=\"http://dl-learner.org\"><span class=hideme>DL-Learner</span><span id=dllearnerlogo></span></a></p>"
                         );
 
