@@ -55,7 +55,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private static final Logger logger = Logger.getLogger(SPARQLServiceImpl.class);
 	
-	private String baseDir;
+	private String storeDir;
 	private String cacheDir;
 	private String solrURL;
 	
@@ -86,12 +86,18 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		try {
 			InputStream is = getServletContext().getResourceAsStream(path);
 			Ini ini = new Ini(is);
-			baseDir = ini.get("baseDir").get("path");
+			storeDir = ini.get("store").get("path");
 			cacheDir = ini.get("cacheDir").get("path");
 			solrURL = ini.get("solrURL").get("url");
 		} catch (Exception e){
 			e.printStackTrace();
-		} 
+		}
+		if(storeDir != null && !storeDir.startsWith("/")){
+			storeDir = getServletContext().getRealPath(storeDir);
+		}
+		if(cacheDir != null && !cacheDir.startsWith("/")){
+			cacheDir = getServletContext().getRealPath(cacheDir);
+		}
 	}
 	
 	private void loadEndpoints(){
