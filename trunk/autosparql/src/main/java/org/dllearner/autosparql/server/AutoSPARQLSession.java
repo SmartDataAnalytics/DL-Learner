@@ -135,7 +135,7 @@ public class AutoSPARQLSession {
 			
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while searching for term \"" + searchTerm + "\".", e);
 			throw new AutoSPARQLException(e);
 		}
 	}
@@ -164,7 +164,7 @@ public class AutoSPARQLSession {
 			
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while searching for \"" + query + "\".", e);
 			throw new AutoSPARQLException(e);
 		}
 	}
@@ -200,8 +200,7 @@ public class AutoSPARQLSession {
 			logger.error(e);
 			throw new AutoSPARQLException("The computation of a new suggestion needs too much time. Please add manually more positive examples.");
 		} catch (Exception e){
-			logger.error(e);
-			e.printStackTrace();
+			logger.error("Error while computing similar example.", e);
 			throw new AutoSPARQLException("An error occured while generating a new suggestion.");
 		}
 		
@@ -266,7 +265,7 @@ public class AutoSPARQLSession {
 				queryResult.add(new Example(uri, label, imageURL, comment));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting result for query \n" + query, e);
 		}
 		
 		PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(queryResult);
@@ -402,7 +401,7 @@ public class AutoSPARQLSession {
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error while getting result for query \n" + query, e);
 			}
 		}
 		
@@ -503,7 +502,7 @@ public class AutoSPARQLSession {
 				queryResult.add(new Example(uri, label, imageURL, comment));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting result for query \n" + currentQuery, e);
 		}
 		
 		PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(queryResult);
@@ -518,7 +517,7 @@ public class AutoSPARQLSession {
 //			return exampleFinder.getCurrentQueryHTML();
 			return exampleFinder.getCurrentQuery();
 		} catch (Exception e){
-			logger.error(e);
+			logger.error("Error while getting current query.", e);
 			throw new AutoSPARQLException(e);
 		}
 	}
@@ -528,7 +527,7 @@ public class AutoSPARQLSession {
 		try {
 			exampleFinder.setExamples(posExamples, negExamples);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while setting positive and negative examples.", e);
 		}
 	}
 	
