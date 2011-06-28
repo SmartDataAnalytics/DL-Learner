@@ -1,5 +1,6 @@
 package org.dllearner.autosparql.server;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -210,7 +211,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
 		logger.info(getUserString() + ": Start new AutoSPARQL session");
-		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir),
+		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, cacheDir,
 				getServletContext().getRealPath(""), solrURL);
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
 	}
@@ -256,7 +257,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	private void loadSPARQLQueriesFromFile(){
 		logger.debug("Loading stored SPARQL queries");
 		try {
-			store = new SimpleFileStore(getServletContext().getRealPath(SPARQL_QUERIES_FILE));
+			store = new SimpleFileStore(storeDir + File.separator + SPARQL_QUERIES_FILE);
 			storedSPARQLQueries = store.getStoredSPARQLQueries();
 		} catch (Exception e) {
 			logger.error("Error while loading stored SPARQL queries.", e);
