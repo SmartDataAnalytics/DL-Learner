@@ -21,25 +21,29 @@ import org.dllearner.utilities.Files;
  * 
  */
 public class SimpleFileStore implements Store {
+	private static final String FILENAME = "stored_queries.txt";
+	
 	private static final Logger logger = Logger.getLogger(SimpleFileStore.class);
 	private Map<String, StoredSPARQLQuerySer> question2QueryMap = null;
-	private String filename;
+	private String path;
 	
 	public SimpleFileStore(){
 	}
 	
-	public SimpleFileStore(String filename){
-		this.filename = filename;
+	public SimpleFileStore(String directory){
+		new File(directory).mkdirs();
+		path = directory + File.separator + FILENAME;
 		init();
 	}
 
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public void setFilename(String directory) {
+		new File(directory).mkdirs();
 	}
+	
 
 	protected void init() {
 //		this.filename = getComponentConfig().getPathModifier() + this.filename;
-		File f = new File(filename);
+		File f = new File(path);
 		question2QueryMap = new HashMap<String, StoredSPARQLQuerySer>();
 		if (f.exists()) {
 			try {
@@ -48,9 +52,9 @@ public class SimpleFileStore implements Store {
 				logger.error("Error while deserializing stored queries", e);
 				e.printStackTrace();
 			}
-			logger.debug("Loaded " + question2QueryMap.size() + " concepts from " + filename);
+			logger.debug("Loaded " + question2QueryMap.size() + " concepts from " + path);
 		} else {
-			logger.warn("Found no file " + filename);
+			logger.warn("Found no file " + path);
 		}
 	}
 
@@ -89,9 +93,9 @@ public class SimpleFileStore implements Store {
 	
 	private void saveMap(){
 		try {
-			File f = new File(filename);
+			File f = new File(path);
 			Files.writeObjectToFile(question2QueryMap, f);
-			logger.debug("Saved " + question2QueryMap.size() + " queries to " + filename);
+			logger.debug("Saved " + question2QueryMap.size() + " queries to " + path);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
