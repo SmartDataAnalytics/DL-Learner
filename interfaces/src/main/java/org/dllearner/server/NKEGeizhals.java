@@ -23,6 +23,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.InvalidParameterException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -179,7 +181,7 @@ public class NKEGeizhals extends HttpServlet {
         if (requestcount++ > 10) {
             requestcount = 0;
             try {
-                FileWriter fw = new FileWriter("jamon.html");
+                FileWriter fw = new FileWriter("log/jamon"+getDateTime()+".html");
                 fw.write(MonitorFactory.getReport());
                 fw.flush();
             } catch (Exception e) {
@@ -187,6 +189,12 @@ public class NKEGeizhals extends HttpServlet {
             }
         }
 
+    }
+
+     private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 
 
