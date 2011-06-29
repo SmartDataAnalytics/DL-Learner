@@ -24,6 +24,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * This object encapsulates the Learning process,
@@ -99,15 +100,12 @@ public class Learner {
             Monitor learn = MonitorFactory.getTimeMonitor("Learner:learning").start();
             la.start();
             List<EvaluatedDescriptionPosNeg> eds = new ArrayList<EvaluatedDescriptionPosNeg>();
-            int x = 0;
-            for (EvaluatedDescription ed : la.getCurrentlyBestEvaluatedDescriptions()) {
+            for (EvaluatedDescription ed : ((TreeSet<EvaluatedDescriptionPosNeg>)la.getCurrentlyBestEvaluatedDescriptions()).descendingSet()) {
 
                 eds.add((EvaluatedDescriptionPosNeg) ed);
-                if (x > 5) {
+                if (ed.getAccuracy() < 1.0 ) {
                     break;
                 }
-                x++;
-
             }
 
             learn.stop();
