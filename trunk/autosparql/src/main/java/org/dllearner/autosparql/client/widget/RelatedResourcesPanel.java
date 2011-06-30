@@ -154,7 +154,7 @@ public class RelatedResourcesPanel extends ContentPanel {
 		
 		add(grid, new RowData(1, 1));
 		
-		add(toolbar, new RowData(1, -1));
+		setBottomComponent(toolbar);
 	}
 	
 	public void search(String searchString){
