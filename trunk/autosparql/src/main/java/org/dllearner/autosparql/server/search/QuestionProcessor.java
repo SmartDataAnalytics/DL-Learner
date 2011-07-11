@@ -1,13 +1,13 @@
 package org.dllearner.autosparql.server.search;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dllearner.autosparql.server.util.SynchronizedPOSTagger;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -18,7 +18,7 @@ public class QuestionProcessor {
 	
 	private final Logger logger = Logger.getLogger(QuestionProcessor.class);
 	
-	private MaxentTagger tagger;
+	private SynchronizedPOSTagger tagger;
 	private final List<String> stopWords = Arrays.asList(
 		      "a", "all", "an", "and", "are", "as", "at", "be", "but", "by", "do",
 		      "for", "has", "have", "he",  "if", "in", "into", "is", "it", "me",
@@ -28,13 +28,7 @@ public class QuestionProcessor {
 		    );
 	
 	public QuestionProcessor(){
-		try {
-			tagger = new MaxentTagger(this.getClass().getClassLoader().getResource("de/simba/ner/models/left3words-wsj-0-18.tagger").getPath());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} 
+		tagger = new SynchronizedPOSTagger();
 	}
 	
 	public List<String> getRelevantWords(String question){

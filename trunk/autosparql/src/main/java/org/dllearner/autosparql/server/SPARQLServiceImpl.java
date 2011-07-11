@@ -24,6 +24,7 @@ import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
+import org.dllearner.autosparql.server.search.QuestionProcessor;
 import org.dllearner.autosparql.server.store.SimpleFileStore;
 import org.dllearner.autosparql.server.store.Store;
 import org.dllearner.autosparql.server.util.Endpoints;
@@ -60,9 +61,12 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private String question;
 	
+	private QuestionProcessor questionProcessor;
+	
 	public SPARQLServiceImpl(){
 		super();
 //		java.util.logging.Logger.getLogger("org.apache.solr").setLevel(Level.WARNING);
+		questionProcessor = new QuestionProcessor();
 	}
 	
 	@Override
@@ -210,7 +214,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
 		logger.info(getUserString() + ": Start new AutoSPARQL session");
 		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, cacheDir,
-				getServletContext().getRealPath(""), solrURL);
+				getServletContext().getRealPath(""), solrURL, questionProcessor);
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
 	}
 	
