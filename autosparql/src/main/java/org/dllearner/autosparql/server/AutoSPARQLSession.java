@@ -70,11 +70,11 @@ public class AutoSPARQLSession {
 	public AutoSPARQLSession(){
 	}
 	
-	public AutoSPARQLSession(SPARQLEndpointEx endpoint, String cacheDir, String servletContextPath, String solrURL){
+	public AutoSPARQLSession(SPARQLEndpointEx endpoint, String cacheDir, String servletContextPath, String solrURL, QuestionProcessor questionPreprocessor){
 		this.endpoint = endpoint;
 		this.servletContextPath = servletContextPath;
+		this.questionPreprocessor = questionPreprocessor;
 		
-		questionPreprocessor = new QuestionProcessor();
 		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
 		search = new SolrSearch(solrURL, questionPreprocessor);
@@ -401,7 +401,7 @@ public class AutoSPARQLSession {
 					}
 				}
 			} catch (Exception e) {
-				logger.error("Error while getting result for query \n" + query, e);
+				logger.error("Error while getting result for query \n" + newQuery, e);
 			}
 		}
 		
