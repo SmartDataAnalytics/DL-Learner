@@ -208,6 +208,7 @@ public class DBpediaPropertiesSolrIndexCreator {
 			Set<OWLEntity> properties = new HashSet<OWLEntity>();
 			properties.addAll(ont.getObjectPropertiesInSignature());
 			properties.addAll(ont.getDataPropertiesInSignature());
+			int cnt = 1;
 			for(OWLEntity prop : properties){
 				uri = prop.toStringID();
 				label = "";
@@ -250,11 +251,21 @@ public class DBpediaPropertiesSolrIndexCreator {
 						range = ranges.iterator().next().asOWLDatatype().toStringID();
 					}
 				}
-				
+				if(cnt % 100 == 0){
+					write2Index();
+				}
 				addDocument(uri, label, comment, domain, range);
+				cnt++;
 			}
+			write2Index();
+			solr.commit();
+			solr.optimize();
 			
 		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		} catch (SolrServerException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
