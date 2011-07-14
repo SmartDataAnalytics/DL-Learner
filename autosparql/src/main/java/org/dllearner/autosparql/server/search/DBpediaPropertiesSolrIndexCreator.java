@@ -66,42 +66,49 @@ public class DBpediaPropertiesSolrIndexCreator {
 	private SolrServer solr;
 	private CoreContainer coreContainer;
 	
+	private Set<SolrInputDocument> docs;
+	
 	private static final String CORE_NAME = "dbpedia_properties";
 	
 	public DBpediaPropertiesSolrIndexCreator(){
+		solr = getRemoteSolrServer();
+        initDocument();
+        
+        docs = new HashSet<SolrInputDocument>();
+
+	}
+	
+	private SolrServer getRemoteSolrServer(){
+		CommonsHttpSolrServer solr = null;
 		try {
-			solr = getEmbeddedSolrServer();
-		} catch (CorruptIndexException e) {
+			solr = new CommonsHttpSolrServer("http://localhost:8983/solr/dbpedia");
+			solr.setRequestWriter(new BinaryRequestWriter());
+		} catch (MalformedURLException e) {
 			e.printStackTrace();
-		} catch (LockObtainFailedException e) {
+		}
+		return solr;
+	}
+	
+	private SolrServer getEmbeddedSolrServer(){
+		EmbeddedSolrServer solr = null;
+		try {
+			File root = new File("/opt/solr");
+			coreContainer = new CoreContainer();
+			SolrConfig config = new SolrConfig(root + File.separator + CORE_NAME,
+					"solrconfig.xml", null);
+			CoreDescriptor coreName = new CoreDescriptor(coreContainer,
+					CORE_NAME, root + "/solr");
+			SolrCore core = new SolrCore(CORE_NAME, root
+					+ File.separator + CORE_NAME + "/data", config, null, coreName);
+			coreContainer.register(core, false);
+			solr = new EmbeddedSolrServer(coreContainer, CORE_NAME);
+		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
 		}
-		initDocument();
-	}
-	
-	private SolrServer getRemoteSolrServer() throws MalformedURLException, SolrServerException{
-		CommonsHttpSolrServer solr = new CommonsHttpSolrServer("http://localhost:8983/solr/dbpedia");
-		solr.setRequestWriter(new BinaryRequestWriter());
-		return solr;
-	}
-	
-	private SolrServer getEmbeddedSolrServer() throws ParserConfigurationException, IOException, SAXException{
-		File root = new File("/opt/solr3");
-		coreContainer = new CoreContainer();
-		SolrConfig config = new SolrConfig(root + File.separator + CORE_NAME,
-				"solrconfig.xml", null);
-		CoreDescriptor coreName = new CoreDescriptor(coreContainer,
-				CORE_NAME, root + "/solr");
-		SolrCore core = new SolrCore(CORE_NAME, root
-				+ File.separator + CORE_NAME + "/data", config, null, coreName);
-		coreContainer.register(core, false);
-		EmbeddedSolrServer solr = new EmbeddedSolrServer(coreContainer, CORE_NAME);
 		return solr;
 	}
 	
@@ -139,20 +146,16 @@ public class DBpediaPropertiesSolrIndexCreator {
 				newURI = stmt.getSubject().stringValue();
 				
 				if(!newURI.equals(uri)){
-					write2Index(uri, label, comment);
+					addDocument(uri, label, comment, "", "");
 					uri = newURI;
 					label = "";
 					comment = "";
 					cnt++;
-					if(cnt % 100000 == 0){
-						try {
-							solr.commit();
-							System.out.println(cnt);
-						}  catch (IOException e) {
-							e.printStackTrace();
-						} catch (SolrServerException e) {
-							e.printStackTrace();
-						}
+					if(cnt % 100 == 0){
+						write2Index();
+					}
+					if(cnt % 10000000 == 0){
+						System.out.println(cnt);
 					}
 					
 				}
@@ -175,6 +178,7 @@ public class DBpediaPropertiesSolrIndexCreator {
 		});
 		try {
 			parser.parse(new BufferedInputStream(new FileInputStream(dataFile)), "http://dbpedia.org");
+			write2Index();
 			solr.commit();
 			solr.optimize();
 		} catch (RDFParseException e) {
@@ -247,26 +251,10 @@ public class DBpediaPropertiesSolrIndexCreator {
 					}
 				}
 				
-				write2Index(uri, label, comment, domain, range);
+				addDocument(uri, label, comment, domain, range);
 			}
 			
 		} catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void printTestSearch(){
-		System.out.println("Searching");
-		try {
-			ModifiableSolrParams params = new ModifiableSolrParams();
-			params.set("q", "January");
-			params.set("rows", 10);
-			params.set("start", 0);
-			QueryResponse response = solr.query(params);
-			for(SolrDocument d : response.getResults()){
-				System.out.println(d.get("uri"));
-			}
-		} catch (SolrServerException e) {
 			e.printStackTrace();
 		}
 	}
@@ -280,34 +268,37 @@ public class DBpediaPropertiesSolrIndexCreator {
 		doc.put("range", rangeField);
 	}
 	
-	private void write2Index(String uri, String label, String comment, String domain, String range){
+	private void write2Index(){
+		try {
+			solr.add(docs);
+			docs.clear();
+		}  catch (SolrServerException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void addDocument(String uri, String label, String comment, String domain, String range){
+		doc = new SolrInputDocument();
+		uriField = new SolrInputField("uri");
+		labelField = new SolrInputField("label");
+		commentField = new SolrInputField("comment");
+		domainField = new SolrInputField("domain");
+		rangeField = new SolrInputField("range");
+		doc.put("uri", uriField);
+		doc.put("label", labelField);
+		doc.put("comment", commentField);
+		doc.put("domain", domainField);
+		doc.put("range", rangeField);
 		uriField.setValue(uri, 1.0f);
 		labelField.setValue(label, 1.0f);
 		commentField.setValue(comment, 1.0f);
 		domainField.setValue(domain, 1.0f);
 		rangeField.setValue(range, 1.0f);
-		try {
-			solr.add(doc);
-		}  catch (SolrServerException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
+		docs.add(doc);
 	}
-	
-	private void write2Index(String uri, String label, String comment){
-		uriField.setValue(uri, 1.0f);
-		labelField.setValue(label, 1.0f);
-		commentField.setValue(comment, 1.0f);
-		try {
-			solr.add(doc);
-		}  catch (SolrServerException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	
 
 	/**
