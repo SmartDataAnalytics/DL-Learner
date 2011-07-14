@@ -59,43 +59,47 @@ public class DBpediaClassesSolrIndexCreator {
 	private Set<SolrInputDocument> docs;
 	
 	private static final String CORE_NAME = "dbpedia_classes";
+	private static final String SOLR_ROOT = "/opt/solr";
 	
 	public DBpediaClassesSolrIndexCreator(){
+		solr = getRemoteSolrServer();
+        initDocument();
+        
+        docs = new HashSet<SolrInputDocument>();
+
+	}
+	
+	private SolrServer getRemoteSolrServer(){
+		CommonsHttpSolrServer solr = null;
 		try {
-			solr = getEmbeddedSolrServer();
-		} catch (CorruptIndexException e) {
+			solr = new CommonsHttpSolrServer("http://localhost:8983/solr/dbpedia");
+			solr.setRequestWriter(new BinaryRequestWriter());
+		} catch (MalformedURLException e) {
 			e.printStackTrace();
-		} catch (LockObtainFailedException e) {
+		}
+		return solr;
+	}
+	
+	private SolrServer getEmbeddedSolrServer(){
+		EmbeddedSolrServer solr = null;
+		try {
+			File root = new File("/opt/solr");
+			coreContainer = new CoreContainer();
+			SolrConfig config = new SolrConfig(root + File.separator + CORE_NAME,
+					"solrconfig.xml", null);
+			CoreDescriptor coreName = new CoreDescriptor(coreContainer,
+					CORE_NAME, root + "/solr");
+			SolrCore core = new SolrCore(CORE_NAME, root
+					+ File.separator + CORE_NAME + "/data", config, null, coreName);
+			coreContainer.register(core, false);
+			solr = new EmbeddedSolrServer(coreContainer, CORE_NAME);
+		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
 		}
-		initDocument();
-		
-		docs = new HashSet<SolrInputDocument>();
-	}
-	
-	private SolrServer getRemoteSolrServer() throws MalformedURLException, SolrServerException{
-		CommonsHttpSolrServer solr = new CommonsHttpSolrServer("http://localhost:8983/solr/dbpedia");
-		solr.setRequestWriter(new BinaryRequestWriter());
-		return solr;
-	}
-	
-	private SolrServer getEmbeddedSolrServer() throws ParserConfigurationException, IOException, SAXException{
-		File root = new File("/opt/solr");
-		coreContainer = new CoreContainer();
-		SolrConfig config = new SolrConfig(root + File.separator + CORE_NAME,
-				"solrconfig.xml", null);
-		CoreDescriptor coreName = new CoreDescriptor(coreContainer,
-				CORE_NAME, root + "/solr");
-		SolrCore core = new SolrCore(CORE_NAME, root
-				+ File.separator + CORE_NAME + "/data", config, null, coreName);
-		coreContainer.register(core, false);
-		EmbeddedSolrServer solr = new EmbeddedSolrServer(coreContainer, CORE_NAME);
 		return solr;
 	}
 	
