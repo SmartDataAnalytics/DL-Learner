@@ -123,6 +123,7 @@ public class DBpediaClassesSolrIndexCreator {
 			String uri = "";
 			String label = "";
 			String comment = "";
+			int cnt = 1;
 			for(OWLClass cls : ont.getClassesInSignature()){
 				uri = cls.toStringID();
 				label = "";
@@ -145,8 +146,11 @@ public class DBpediaClassesSolrIndexCreator {
 					}
 				}
 				addDocument(uri, label, comment);
-				write2Index();
+				if(cnt % 100 == 0){
+					write2Index();
+				}
 			}
+			write2Index();
 			solr.commit();
 			solr.optimize();
 		} catch (OWLOntologyCreationException e) {
