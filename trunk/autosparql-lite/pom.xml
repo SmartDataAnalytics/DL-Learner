@@ -48,6 +48,10 @@
 			<artifactId>gxt</artifactId>
 			<version>2.2.3</version>
 		</dependency>
+		<dependency>
+			<groupId>org.dllearner</groupId>
+			<artifactId>components-ext</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
