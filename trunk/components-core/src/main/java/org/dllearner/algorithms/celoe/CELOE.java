@@ -231,7 +231,9 @@ public class CELOE extends AbstractCELA {
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
 		if(configurator.getWriteSearchTree()) {
-			Files.clearFile(new File(configurator.getSearchTreeFile()));
+			File f = new File(configurator.getSearchTreeFile());
+//			System.out.println(f.getAbsolutePath());
+			Files.clearFile(f);
 		}
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(configurator.getMaxNrOfResults());
