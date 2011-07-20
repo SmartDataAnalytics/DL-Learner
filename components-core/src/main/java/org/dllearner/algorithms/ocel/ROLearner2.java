@@ -464,7 +464,7 @@ public class ROLearner2 {
 			// Anzahl Schleifendurchläufe
 			loop++;
 		}// end while
-
+		
 		if (solutions.size()>0) {
 		//if (solutionFound) {
 			int solutionLimit = 20;
@@ -488,6 +488,8 @@ public class ROLearner2 {
 			}
 			logger.debug(manchester);
 			logger.debug(kbSyntax);
+		} else {
+			logger.info("no appropriate solutions found (try increasing the noisePercentage parameter to what was reported as most accurate expression found above)");
 		}
 
 		logger.debug("size of candidate set: " + candidates.size());
@@ -1320,10 +1322,11 @@ public class ROLearner2 {
 			return true;
 		}
 		
-		
+		// we stop if sufficiently many solutions (concepts fitting the noise parameter) have been 
+		// reached - unless this termination criterion is switched off using terminateOnNoiseReached = false
 		if (guaranteeXgoodAlreadyReached){
 			result = true;
-		} else if(solutions.size() >= guaranteeXgoodDescriptions) {
+		} else if(solutions.size() >= guaranteeXgoodDescriptions && configurator.getTerminateOnNoiseReached()) {
 				if(guaranteeXgoodDescriptions != 1) {
 				logger.info("Minimum number (" + guaranteeXgoodDescriptions
 						+ ") of good descriptions reached.");
