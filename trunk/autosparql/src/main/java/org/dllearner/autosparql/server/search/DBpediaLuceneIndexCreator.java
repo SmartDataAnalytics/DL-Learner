@@ -4,13 +4,13 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -25,7 +25,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Version;
-import org.ini4j.IniFile;
+import org.ini4j.IniPreferences;
+import org.ini4j.InvalidFileFormatException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
@@ -190,7 +191,7 @@ public class DBpediaLuceneIndexCreator {
 	private void connect2Database(){
 		try {
 			String iniFile = "settings.ini";
-			Preferences prefs = new IniFile(new File(iniFile));
+			Preferences prefs = new IniPreferences(new FileReader(iniFile));
 			String dbServer = prefs.node("database").get("server", null);
 			String dbName = "pagerank";//prefs.node("database").get("name", null);
 			String dbUser = prefs.node("database").get("user", null);
@@ -201,11 +202,18 @@ public class DBpediaLuceneIndexCreator {
 	            "jdbc:mysql://"+dbServer+"/"+dbName;
 			Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
 			ps = conn.prepareStatement("SELECT rank from pagerank WHERE uri = ?");
-		} catch (BackingStoreException e) {
-			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InvalidFileFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
