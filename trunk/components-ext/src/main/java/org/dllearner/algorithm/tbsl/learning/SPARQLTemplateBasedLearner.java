@@ -1,5 +1,9 @@
 package org.dllearner.algorithm.tbsl.learning;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,12 +32,15 @@ import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.templator.Templator;
+import org.dllearner.algorithm.tbsl.util.Prefixes;
 import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.core.Oracle;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.ini4j.InvalidFileFormatException;
+import org.ini4j.Options;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -53,17 +60,18 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		LUCENE, SIMILARITY, NONE
 	}
 	
-	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner.class);
-	private Monitor mon = MonitorFactory.getTimeMonitor("stbl");
+	private static final String OPTIONS_FILE = "tbsl/tbsl.properties";
 	
-	private static final int TOP_K = 5;
-	private static final String SOLR_SERVER_URL = "http://139.18.2.173:8080/apache-solr-3.1.0";
+	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner.class);
+	private Monitor mon = MonitorFactory.getTimeMonitor("tbsl");
+	
 	private static final int RECURSION_DEPTH = 2;
 	
-	private Ranking ranking = Ranking.SIMILARITY;
-	private boolean useRemoteEndpointValidation = true;
-	private boolean stopIfQueryResultNotEmpty = true;
-	private int maxTestedQueriesPerTemplate = 25;
+	private Ranking ranking;
+	private boolean useRemoteEndpointValidation;
+	private boolean stopIfQueryResultNotEmpty;
+	private int maxTestedQueriesPerTemplate;
+	private int maxQueryExecutionTimeInSeconds;
 	
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
@@ -92,35 +100,59 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private Lemmatizer lemmatizer = new LingPipeLemmatizer();// StanfordLemmatizer();
 	
-	private int maxQueryExecutionTimeInSeconds = 20;
-	
-	
 	public SPARQLTemplateBasedLearner(){
-		resource_index = new SolrSearch(SOLR_SERVER_URL + "/dbpedia_resources");
-		resource_index.setHitsPerPage(TOP_K);
-		class_index = new SolrSearch(SOLR_SERVER_URL + "/dbpedia_classes");
-		class_index.setHitsPerPage(TOP_K);
-		property_index = new SolrSearch(SOLR_SERVER_URL + "/dbpedia_properties");
-		property_index.setHitsPerPage(TOP_K);
+		try {
+			init(new Options(this.getClass().getClassLoader().getResourceAsStream(OPTIONS_FILE)));
+		} catch (InvalidFileFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		Set<String> predicateFilters = new HashSet<String>();
 		predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 		predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 		
-		prefixMap = new HashMap<String, String>();
-		prefixMap.put(RDF.getURI(), "rdf");
-		prefixMap.put(RDFS.getURI(), "rdfs");
-		prefixMap.put("http://dbpedia.org/ontology/", "dbo");
-		prefixMap.put("http://dbpedia.org/property/", "dbp");
-		prefixMap.put("http://dbpedia.org/resource/", "dbr");
-		prefixMap.put(FOAF.getURI(), "foaf");
-		prefixMap.put("http://dbpedia.org/class/yago/", "yago");
+		prefixMap = Prefixes.getPrefixes();
 		
 		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
 		
 		templateGenerator = new Templator();
+	}
+	
+	public SPARQLTemplateBasedLearner(String optionsFile){
+		try {
+			init(new Options(new FileReader(new File(optionsFile))));
+		} catch (InvalidFileFormatException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public SPARQLTemplateBasedLearner(Options options){
+		init(options);
+	}
+	
+	private void init(Options options){
+		String resourcesIndexUrl = options.fetch("solr.resources.url");
+		resource_index = new SolrSearch(resourcesIndexUrl);
 		
+		String classesIndexUrl = options.fetch("solr.classes.url");
+		class_index = new SolrSearch(classesIndexUrl);
+		
+		String propertiesIndexUrl = options.fetch("solr.properties.url");
+		property_index = new SolrSearch(propertiesIndexUrl);
+		
+		maxQueryExecutionTimeInSeconds = Integer.parseInt(options.get("sparql.query.maxExecutionTimeInSeconds", "20"));
 		cache.setMaxExecutionTimeInSeconds(maxQueryExecutionTimeInSeconds);
+		
+		ranking = Ranking.valueOf(options.get("learning.ranking", "similarity").toUpperCase());
+		useRemoteEndpointValidation = options.get("learning.validationType", "remote").equals("remote") ? true : false;
+		stopIfQueryResultNotEmpty = Boolean.parseBoolean(options.get("learning.stopAfterFirstNonEmptyQueryResult", "true"));
+		maxTestedQueriesPerTemplate = Integer.parseInt(options.get("learning.maxTestedQueriesPerTemplate", "20"));
 	}
 	
 	public void setEndpoint(SparqlEndpoint endpoint){
@@ -475,7 +507,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			tmp = new TreeSet<String>(new StringSimilarityComparator(word));
 			uris = uriCache.get(word);
 			if(uris == null){
-				uris = index.getResources("label:\"" + word + "\"~0.7");
+//				uris = index.getResources("label:\"" + word + "\"~0.7");
+				uris = index.getResources("label:" + word + "~0.5");
 				uriCache.put(word, uris);
 			}
 			tmp.addAll(uris);
@@ -711,7 +744,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Who developed the video game World of Warcraft?";
+		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 				Collections.<String>singletonList(""), Collections.<String>emptyList());

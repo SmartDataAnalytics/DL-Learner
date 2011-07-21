@@ -73,7 +73,9 @@ public class LGGTest {
 			tree.dump();
 			System.out.println("-----------------------------");
 			cnt++;
+			System.out.println(((QueryTreeImpl<String>)tree).toQuery());
 		}
+		
 		
 		LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
 		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
