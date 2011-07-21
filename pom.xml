@@ -101,7 +101,7 @@
 			<dependency>
 				<groupId>net.sourceforge.owlapi</groupId>
 				<artifactId>owlapi</artifactId>
-				<version>3.2.2</version>
+				<version>3.1.0</version>
 			</dependency>
 
 			<dependency>
@@ -178,7 +178,7 @@
 			<dependency>
 				<groupId>org.ini4j</groupId>
 				<artifactId>ini4j</artifactId>
-				<version>0.3.2</version>
+				<version>0.5.2</version>
 				<!--This version is the one released with DL-Learner 2048 -->
 			</dependency>
 
