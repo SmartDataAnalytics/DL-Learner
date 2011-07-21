@@ -20,6 +20,9 @@
 package org.dllearner.examples;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -43,7 +46,8 @@ import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
-import org.ini4j.IniFile;
+import org.ini4j.IniPreferences;
+import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.model.IRI;
 
 /**
@@ -105,7 +109,7 @@ public class MonogenicDiseases {
 	private static boolean learnMutation = true; 
 	// private static boolean onlyFragment = true;
 	
-	public static void main(String[] args) throws ClassNotFoundException, BackingStoreException, SQLException {
+	public static void main(String[] args) throws ClassNotFoundException, BackingStoreException, SQLException, InvalidFileFormatException, FileNotFoundException, IOException {
 
 		if (algorithmus == 1) {							// LearnAlgo-Check					
 			generatePosExampleClass = false;
@@ -118,7 +122,7 @@ public class MonogenicDiseases {
 		
 		// reading values for db connection from ini file
 		String iniFile = "src/dl-learner/org/dllearner/examples/mutation.ini";
-		Preferences prefs = new IniFile(new File(iniFile));
+		Preferences prefs = new IniPreferences(new FileReader(new File(iniFile)));
 		String dbServer = prefs.node("database").get("server", null);
 		String dbName = prefs.node("database").get("db", null);
 		String dbPort = prefs.node("database").get("port", null);
