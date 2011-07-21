@@ -5,6 +5,8 @@ import info.bliki.api.XMLPagesParser;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -25,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -56,7 +57,8 @@ import org.dllearner.autosparql.server.search.SolrSearch;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.ini4j.IniFile;
+import org.ini4j.IniPreferences;
+import org.ini4j.InvalidFileFormatException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -158,7 +160,7 @@ public class EvaluationWithNLQueriesScript {
 	private void initDBConnection(){
 		try {
 			String iniFile = "settings.ini";
-			Preferences prefs = new IniFile(new File(iniFile));
+			Preferences prefs = new IniPreferences(new FileReader(iniFile));
 			String dbServer = prefs.node("database").get("server", null);
 			String dbName = "autosparql";
 			String dbUser = prefs.node("database").get("user", null);
@@ -173,11 +175,15 @@ public class EvaluationWithNLQueriesScript {
 					"start_examples_from_search, examples_needed_total, examples_needed_pos, examples_needed_neg, " + 
 					"time_total, time_lgg, time_nbr, time_queries) " +
 					"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
-		} catch (BackingStoreException e) {
-			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (InvalidFileFormatException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
