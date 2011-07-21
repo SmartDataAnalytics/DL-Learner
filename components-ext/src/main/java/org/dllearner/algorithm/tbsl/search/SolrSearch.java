@@ -46,6 +46,7 @@ public class SolrSearch implements Search{
 			params.set("rows", hitsPerPage);
 			params.set("start", offset);
 			response = server.query(params);
+			
 			SolrDocumentList docList = response.getResults();
 			lastTotalHits = (int) docList.getNumFound();
 			for(SolrDocument d : docList){
