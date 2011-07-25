@@ -18,7 +18,8 @@ public class StanfordPartOfSpeechTagger implements PartOfSpeechTagger{
 	
 	public StanfordPartOfSpeechTagger(){
 		try {
-			String modelPath = this.getClass().getClassLoader().getResource(MODEL).getPath();
+//			String modelPath = this.getClass().getClassLoader().getResource(MODEL).getPath();
+			String modelPath = Thread.currentThread().getContextClassLoader().getResource(MODEL).getPath();
 			tagger = new MaxentTagger(modelPath);
 		} catch (IOException e) {
 			e.printStackTrace();

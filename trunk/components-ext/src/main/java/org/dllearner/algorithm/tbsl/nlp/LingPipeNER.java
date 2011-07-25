@@ -1,7 +1,10 @@
 package org.dllearner.algorithm.tbsl.nlp;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +38,17 @@ public class LingPipeNER implements NER{
 		try {
 			long startTime = System.currentTimeMillis();
 			logger.info("Initializing LingPipe NER...");
-			String path = this.getClass().getClassLoader().getResource(DICTIONARY_PATH).getPath();
-			Dictionary<String> dictionary = (Dictionary<String>) AbstractExternalizable.readObject(new File(path));
+			InputStream is = this.getClass().getClassLoader().getResourceAsStream(DICTIONARY_PATH);
+			File f = File.createTempFile("dbpedia_lingpipe", ".dictionary");
+			f.deleteOnExit();
+			OutputStream out=new FileOutputStream(f);
+			  byte buf[]=new byte[1024];
+			  int len;
+			  while((len=is.read(buf))>0)
+			  out.write(buf,0,len);
+			  out.close();
+			  is.close();
+			Dictionary<String> dictionary = (Dictionary<String>) AbstractExternalizable.readObject(f);
 			ner = new ExactDictionaryChunker(dictionary, IndoEuropeanTokenizerFactory.INSTANCE, allMatches, caseSensitive);
 			logger.info("Done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		} catch (IOException e) {

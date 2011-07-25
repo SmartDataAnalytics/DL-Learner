@@ -19,7 +19,6 @@ public class SlotBuilder {
 	public SlotBuilder() {
 		
 		wordnet = new WordNet();
-		wordnet.init();
 	}
 	
 	/**

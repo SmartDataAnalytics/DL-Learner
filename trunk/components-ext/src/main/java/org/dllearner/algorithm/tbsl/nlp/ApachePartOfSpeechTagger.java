@@ -1,6 +1,5 @@
 package org.dllearner.algorithm.tbsl.nlp;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -13,16 +12,15 @@ import opennlp.tools.util.Sequence;
 public class ApachePartOfSpeechTagger implements PartOfSpeechTagger{
 	
 	private POSTaggerME tagger;
-	private static final String MODEL_PATH = "src/main/resources/tbsl/models/en-pos-maxent.bin";
+	private static final String MODEL_PATH = "tbsl/models/en-pos-maxent.bin";
 	
 	private Tokenizer tokenizer;
 	
 	public ApachePartOfSpeechTagger() {
 		
-		InputStream modelIn = null;
+		InputStream modelIn = this.getClass().getClassLoader().getResourceAsStream(MODEL_PATH);
 		POSModel model = null;
 		try {
-		  modelIn = new FileInputStream(MODEL_PATH);
 		  model = new POSModel(modelIn);
 		}
 		catch (IOException e) {
