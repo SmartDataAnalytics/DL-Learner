@@ -25,12 +25,14 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 
 /**
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class FuzzyCELOEConfigurator extends RefinementOperatorConfigurator implements Configurator {
+@SuppressWarnings("all")
+public  class FuzzyCELOEConfigurator  extends RefinementOperatorConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 private FuzzyCELOE fuzzyCELOE;

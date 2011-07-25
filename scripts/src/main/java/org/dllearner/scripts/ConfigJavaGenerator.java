@@ -39,6 +39,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
+import org.dllearner.core.configurators.FuzzyCELOEConfigurator;
 import org.dllearner.core.configurators.ISLEConfigurator;
 import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.ROLearnerConfigurator;
@@ -71,6 +72,7 @@ public final class ConfigJavaGenerator {
 				ROLearnerConfigurator.class.getSimpleName(),
 				OCELConfigurator.class.getSimpleName(),
 				CELOEConfigurator.class.getSimpleName(),
+				FuzzyCELOEConfigurator.class.getSimpleName(),
 				ISLEConfigurator.class.getSimpleName()
 				}));
 	
