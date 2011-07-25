@@ -1,7 +1,10 @@
 package org.autosparql.client.widget;
 
+import java.util.List;
+
 import org.autosparql.client.AutoSPARQLService;
 import org.autosparql.shared.Endpoint;
+import org.autosparql.shared.Example;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -75,7 +78,20 @@ public class InputPanel extends LayoutContainer {
 	}
 	
 	private void onQuery(){
-		
+		AutoSPARQLService.Util.getInstance().getExamples(queryField.getValue(), new AsyncCallback<List<Example>>() {
+
+			@Override
+			public void onFailure(Throwable arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(List<Example> arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 
 }

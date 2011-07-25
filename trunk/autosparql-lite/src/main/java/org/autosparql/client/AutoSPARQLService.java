@@ -3,6 +3,7 @@ package org.autosparql.client;
 import java.util.List;
 
 import org.autosparql.shared.Endpoint;
+import org.autosparql.shared.Example;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -24,4 +25,6 @@ public interface AutoSPARQLService extends RemoteService {
 	}
 	
 	List<Endpoint> getEndpoints();
+	
+	List<Example> getExamples(String query);
 }
