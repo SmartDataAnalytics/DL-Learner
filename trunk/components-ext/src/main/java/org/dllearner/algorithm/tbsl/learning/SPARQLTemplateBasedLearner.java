@@ -60,7 +60,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		LUCENE, SIMILARITY, NONE
 	}
 	
-	private static final String OPTIONS_FILE = "tbsl/tbsl.properties";
+	private static final String OPTIONS_FILE = SPARQLTemplateBasedLearner.class.getClassLoader().getResource("tbsl/tbsl.properties").getPath();
 	
 	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner.class);
 	private Monitor mon = MonitorFactory.getTimeMonitor("tbsl");
@@ -100,14 +100,16 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private Lemmatizer lemmatizer = new LingPipeLemmatizer();// StanfordLemmatizer();
 	
-	public SPARQLTemplateBasedLearner(){
-		try {
-			init(new Options(this.getClass().getClassLoader().getResourceAsStream(OPTIONS_FILE)));
-		} catch (InvalidFileFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public SPARQLTemplateBasedLearner() throws InvalidFileFormatException, FileNotFoundException, IOException{
+		this(OPTIONS_FILE);
+	}
+	
+	public SPARQLTemplateBasedLearner(String optionsFile) throws InvalidFileFormatException, FileNotFoundException, IOException{
+		this(new Options(new FileReader(new File(optionsFile))));
+	}
+	
+	public SPARQLTemplateBasedLearner(Options options){
+		init(options);
 		
 		Set<String> predicateFilters = new HashSet<String>();
 		predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
@@ -118,22 +120,6 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
 		
 		templateGenerator = new Templator();
-	}
-	
-	public SPARQLTemplateBasedLearner(String optionsFile){
-		try {
-			init(new Options(new FileReader(new File(optionsFile))));
-		} catch (InvalidFileFormatException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public SPARQLTemplateBasedLearner(Options options){
-		init(options);
 	}
 	
 	private void init(Options options){
@@ -153,6 +139,9 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		useRemoteEndpointValidation = options.get("learning.validationType", "remote").equals("remote") ? true : false;
 		stopIfQueryResultNotEmpty = Boolean.parseBoolean(options.get("learning.stopAfterFirstNonEmptyQueryResult", "true"));
 		maxTestedQueriesPerTemplate = Integer.parseInt(options.get("learning.maxTestedQueriesPerTemplate", "20"));
+		
+		String wordnetPath = options.get("wordnet.dictionary", "tbsl/dict");
+		System.setProperty("wordnet.database.dir", wordnetPath);
 	}
 	
 	public void setEndpoint(SparqlEndpoint endpoint){
@@ -737,10 +726,12 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 
 	/**
 	 * @param args
-	 * @throws MalformedURLException 
 	 * @throws NoTemplateFoundException 
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 * @throws InvalidFileFormatException 
 	 */
-	public static void main(String[] args) throws MalformedURLException, NoTemplateFoundException {
+	public static void main(String[] args) throws NoTemplateFoundException, InvalidFileFormatException, FileNotFoundException, IOException {
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
