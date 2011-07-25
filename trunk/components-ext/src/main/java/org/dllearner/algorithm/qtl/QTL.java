@@ -1,6 +1,27 @@
+/**
+ * Copyright (C) 2007-2011, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.algorithm.qtl;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -20,6 +41,12 @@ import org.dllearner.algorithm.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithm.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.core.SparqlQueryLearningAlgorithm;
+import org.dllearner.core.options.CommonConfigOptions;
+import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.IntegerConfigOption;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -30,7 +57,16 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.Filter;
 
-public class QTL {
+/**
+ * 
+ * Learning algorithm for SPARQL queries based on so called query trees.
+ * 
+ * @author Lorenz Bühmann
+ * @author Jens Lehmann
+ *
+ *
+ */
+public class QTL implements SparqlQueryLearningAlgorithm {
 	
 	private static final Logger logger = Logger.getLogger(QTL.class);
 	
@@ -58,7 +94,19 @@ public class QTL {
 	private QueryTree<String> lgg;
 	private SortedSet<String> lggInstances;
 
-	public QTL(SPARQLEndpointEx endpoint, ExtractionDBCache cache){
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
+		options.add(new IntegerConfigOption("maxQueryTreeDepth", "recursion depth of query tree extraction", 2));
+		return options;
+	}
+	
+	public QTL(LearningProblem learningProblem, SparqlEndpointKS endpointKS) {
+		// TODO add code such that QTL can be used like other components;
+		// including implementing the start() method below
+	}
+	
+	public QTL(SPARQLEndpointEx endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
 		this.cache = cache;
 		
@@ -212,5 +260,26 @@ public class QTL {
 		String query = tree.toSPARQLQueryString();
 		query = "SELECT DISTINCT " + query.substring(7);
 		return query;
+	}
+
+	@Override
+	public void start() {
+				
+	}
+
+	@Override
+	public List<String> getCurrentlyBestSPARQLQueries(int nrOfSPARQLQueries) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getBestSPARQLQuery() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void init() {
+		// TODO Auto-generated method stub
 	}
 }

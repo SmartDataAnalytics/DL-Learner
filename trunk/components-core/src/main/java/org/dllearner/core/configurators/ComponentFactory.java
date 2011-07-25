@@ -39,6 +39,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -81,6 +82,13 @@ return OWLAPIOntologyConfigurator.getOWLAPIOntology();
 **/
 public static OWLFile getOWLFile(URL url)  {
 return OWLFileConfigurator.getOWLFile(url);
+}
+
+/**
+* @return a component ready for initialization SparqlEndpointKS
+**/
+public static SparqlEndpointKS getSparqlEndpointKS()  {
+return SparqlEndpointKSConfigurator.getSparqlEndpointKS();
 }
 
 /**

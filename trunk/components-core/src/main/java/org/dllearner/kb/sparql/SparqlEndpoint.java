@@ -177,7 +177,8 @@ public class SparqlEndpoint {
 	public static SparqlEndpoint getEndpointDBpediaLiveAKSW() {
 		URL u = null;
 		try { 
-			u = new URL("http://dbpedia.aksw.org:8899/sparql");
+//			u = new URL("http://dbpedia.aksw.org:8899/sparql");
+			u = new URL("http://live.dbpedia.org/sparql");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -198,7 +199,7 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
 	
-	public static SparqlEndpoint getEndpointDBpediaLive() {
+	public static SparqlEndpoint getEndpointDBpediaLiveOpenLink() {
 		URL u = null;
 		try { 
 			u = new URL("http://dbpedia-live.openlinksw.com/sparql");
