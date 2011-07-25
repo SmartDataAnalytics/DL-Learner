@@ -19,7 +19,7 @@
 		<!-- Convenience property to set the GWT version -->
 		<gwtVersion>2.3.0</gwtVersion>
 		<!-- GWT needs at least java 1.5 -->
-		<webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
+		<webappDirectory>${project.build.directory}/test</webappDirectory>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -57,7 +57,12 @@
 	<build>
 		<!-- Generate compiled stuff in the folder used for developing mode -->
 		<outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
-		
+		<resources>
+         <resource>
+          <directory>src/main/resources</directory>
+          <filtering>true</filtering>
+         </resource>
+        </resources>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -108,7 +113,8 @@
 				<configuration>
 					<runTarget>Application.html</runTarget>
 					<hostedWebapp>${webappDirectory}</hostedWebapp>
-
+					<extraJvmArgs>-Xmx1024m</extraJvmArgs>
+					<localWorkers>4</localWorkers>
 				</configuration>
 			</plugin>
 
@@ -116,7 +122,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1.1</version>
+				<version>2.0</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
