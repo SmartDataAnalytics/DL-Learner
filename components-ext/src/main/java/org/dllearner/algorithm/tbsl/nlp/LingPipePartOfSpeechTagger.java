@@ -1,8 +1,8 @@
 package org.dllearner.algorithm.tbsl.nlp;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ import com.aliasi.util.Streams;
 
 public class LingPipePartOfSpeechTagger implements PartOfSpeechTagger{
 	
-	private static final String MODEL_PATH = "src/main/resources/tbsl/models/lingpipe/pos-en-general-brown.HiddenMarkovModel";
+	private static final String MODEL_PATH = "tbsl/models/lingpipe/pos-en-general-brown.HiddenMarkovModel";
 	
 	private static final int TOP_K = 5;
 	
@@ -26,7 +26,7 @@ public class LingPipePartOfSpeechTagger implements PartOfSpeechTagger{
 
 	public LingPipePartOfSpeechTagger() {
 		try {
-			FileInputStream fileIn = new FileInputStream(MODEL_PATH);
+			InputStream fileIn = this.getClass().getClassLoader().getResourceAsStream(MODEL_PATH);
 			ObjectInputStream objIn = new ObjectInputStream(fileIn);
 			HiddenMarkovModel hmm = (HiddenMarkovModel) objIn.readObject();
 			Streams.closeQuietly(objIn);

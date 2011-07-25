@@ -8,27 +8,12 @@ import edu.smu.tspell.wordnet.*;
 
 public class WordNet {
 
-	public String path = "tbsl/dict/";
-	public WordNetDatabase database;
+	private WordNetDatabase database;
 	
-	public WordNet(String s) {
-		path = s;
-		
-	}
 	public WordNet() {
-		path = this.getClass().getClassLoader().getResource(path).getPath();
-	}
-	
-	public void setWordNetPath(String s) {
-		path = s;
-	}	
-	
-	public void init() {	
-		System.setProperty("wordnet.database.dir",path);
 		database = WordNetDatabase.getFileInstance();
 	}
 	
-
 	public List<String> getBestSynonyms(String s) {
 		
 		List<String> synonyms = new ArrayList<String>();

@@ -1,7 +1,6 @@
 package org.dllearner.algorithm.tbsl.templator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,8 +11,8 @@ import org.dllearner.algorithm.tbsl.ltag.parser.LTAGLexicon;
 import org.dllearner.algorithm.tbsl.ltag.parser.LTAG_Lexicon_Constructor;
 import org.dllearner.algorithm.tbsl.ltag.parser.Parser;
 import org.dllearner.algorithm.tbsl.ltag.parser.Preprocessor;
+import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
-import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.sem.drs.DRS;
 import org.dllearner.algorithm.tbsl.sem.drs.UDRS;
 import org.dllearner.algorithm.tbsl.sem.dudes.data.Dude;
@@ -23,7 +22,7 @@ import org.dllearner.algorithm.tbsl.sparql.Template;
 
 public class Templator {
 	
-	String[] GRAMMAR_FILES = {"src/main/resources/tbsl/lexicon/english.lex"};
+	String[] GRAMMAR_FILES = {"tbsl/lexicon/english.lex"};
 	
 	PartOfSpeechTagger tagger;
 	LTAGLexicon g;
@@ -34,10 +33,15 @@ public class Templator {
 	boolean UNTAGGED_INPUT = true;
 	
 	public Templator() {
+		List<String> grammarFiles = new ArrayList<String>();
+		for(int i = 0; i < GRAMMAR_FILES.length; i++){
+			grammarFiles.add(this.getClass().getClassLoader().getResource(GRAMMAR_FILES[i]).getPath());
+		}
 		
-        g = LTAG_Constructor.construct(Arrays.asList(GRAMMAR_FILES));
+        g = LTAG_Constructor.construct(grammarFiles);
 
-        tagger = new StanfordPartOfSpeechTagger();
+//        tagger = new StanfordPartOfSpeechTagger();
+        tagger = new ApachePartOfSpeechTagger();
 		
 	    p = new Parser();
 	    p.SHOW_GRAMMAR = true;
