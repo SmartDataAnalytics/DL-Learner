@@ -71,5 +71,9 @@ public class SparqlEndpointKS extends KnowledgeSource {
 	@Override
 	public void init() throws ComponentInitException {
 	}
+	
+	public SparqlEndpoint getEndpoint() {
+		return endpoint;
+	}
 
 }

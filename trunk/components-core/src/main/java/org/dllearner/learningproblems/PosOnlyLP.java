@@ -65,6 +65,7 @@ public class PosOnlyLP extends LearningProblem {
 	
 	public PosOnlyLP() {
 		super(null);
+		configurator = new PosOnlyLPConfigurator(this);
 	}
 	
 	public PosOnlyLP(ReasonerComponent reasoningService) {
