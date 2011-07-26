@@ -21,8 +21,11 @@ package org.dllearner.algorithm.qtl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -41,15 +44,22 @@ import org.dllearner.algorithm.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithm.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
+import org.dllearner.core.Component;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
+import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -66,9 +76,13 @@ import com.hp.hpl.jena.util.iterator.Filter;
  *
  *
  */
-public class QTL implements SparqlQueryLearningAlgorithm {
+public class QTL extends Component implements SparqlQueryLearningAlgorithm {
 	
 	private static final Logger logger = Logger.getLogger(QTL.class);
+	
+	private LearningProblem lp;
+	private SparqlEndpointKS endpointKS;
+//	private QTLConfigurator configurator;
 	
 	private SparqlEndpoint endpoint;
 	private ExtractionDBCache cache;
@@ -101,9 +115,19 @@ public class QTL implements SparqlQueryLearningAlgorithm {
 		return options;
 	}
 	
-	public QTL(LearningProblem learningProblem, SparqlEndpointKS endpointKS) {
-		// TODO add code such that QTL can be used like other components;
-		// including implementing the start() method below
+	@Override
+	public Configurator getConfigurator() {
+		return null;
+	}
+	
+	public QTL(LearningProblem learningProblem, SparqlEndpointKS endpointKS) throws LearningProblemUnsupportedException{
+		if(!(learningProblem instanceof PosOnlyLP || learningProblem instanceof PosNegLP)){
+			throw new LearningProblemUnsupportedException(learningProblem.getClass(), getClass());
+		}
+		this.lp = learningProblem;
+		this.endpointKS = endpointKS;
+		
+//		this.configurator = new QTLConfigurator(this);
 	}
 	
 	public QTL(SPARQLEndpointEx endpoint, ExtractionDBCache cache) {
@@ -263,23 +287,77 @@ public class QTL implements SparqlQueryLearningAlgorithm {
 	}
 
 	@Override
-	public void start() {
-				
+	public void start(){
+		generatePositiveExampleTrees();
+		
+		lgg = lggGenerator.getLGG(posExampleTrees);
+		
+		if(queryTreeFilter != null){
+			lgg = queryTreeFilter.getFilteredQueryTree(lgg);
+		}
+		if(logger.isDebugEnabled()){
+			logger.debug("LGG: \n" + lgg.getStringRepresentation());
+		}
+		
 	}
 
 	@Override
 	public List<String> getCurrentlyBestSPARQLQueries(int nrOfSPARQLQueries) {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.singletonList(getBestSPARQLQuery());
 	}
 
 	@Override
 	public String getBestSPARQLQuery() {
-		// TODO Auto-generated method stub
-		return null;
+		return lgg.toSPARQLQueryString();
 	}
 
 	public void init() {
-		// TODO Auto-generated method stub
+		if(lp instanceof PosOnlyLP){
+			this.posExamples = convert(((PosOnlyLP)lp).getPositiveExamples());
+		} else if(lp instanceof PosNegLP){
+			this.posExamples = convert(((PosNegLP)lp).getPositiveExamples());
+			this.negExamples = convert(((PosNegLP)lp).getNegativeExamples());
+		}
+		endpoint = endpointKS.getEndpoint();
+		
+		treeCache = new QueryTreeCache();
+		modelGen = new ModelGenerator(endpoint);
+		modelCache = new ModelCache(modelGen);
+		modelCache.setRecursionDepth(maxQueryTreeDepth);
+		
+		lggGenerator = new LGGGeneratorImpl<String>();
+		nbr = new NBR<String>(endpoint);
+		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+		
+		posExampleTrees = new ArrayList<QueryTree<String>>();
+		negExampleTrees = new ArrayList<QueryTree<String>>();
 	}
+	
+	private List<String> convert(SortedSet<Individual> individuals){
+		List<String> list = new ArrayList<String>();
+		for(Individual ind : individuals){
+			list.add(ind.toString());
+		}
+		return list;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		Set<String> positiveExamples = new HashSet<String>();
+		positiveExamples.add("http://dbpedia.org/resource/Liverpool_F.C.");
+		positiveExamples.add("http://dbpedia.org/resource/Chelsea_F.C.");
+		
+		ComponentManager cm = ComponentManager.getInstance();
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		ks.init();
+		PosOnlyLP lp = new PosOnlyLP();	
+		cm.getPool().registerComponent(lp);
+		lp.getConfigurator().setPositiveExamples(positiveExamples);
+		QTL qtl = new QTL(lp, ks);
+		qtl.init();
+		qtl.start();
+		String query = qtl.getBestSPARQLQuery();
+		System.out.println(query);
+	}
+
+	
 }

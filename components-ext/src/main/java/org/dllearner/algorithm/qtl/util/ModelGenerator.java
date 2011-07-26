@@ -17,6 +17,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -40,11 +41,11 @@ public class ModelGenerator {
 	}
 	
 	public ModelGenerator(SparqlEndpoint endpoint){
-		this(endpoint, Collections.<String>emptySet());
+		this(endpoint, Collections.<String>emptySet(), null);
 	}
 	
 	public ModelGenerator(SparqlEndpoint endpoint, Set<String> predicateFilters){
-		this(endpoint, predicateFilters, new ExtractionDBCache("cache"));
+		this(endpoint, predicateFilters, null);
 	}
 	
 	public ModelGenerator(SparqlEndpoint endpoint, Set<String> predicateFilters, ExtractionDBCache cache){
@@ -160,7 +161,12 @@ public class ModelGenerator {
 		queryMonitor.start();
 		Model all = ModelFactory.createDefaultModel();
 		try {
-			Model model = cache.executeConstructQuery(endpoint, query);
+			Model model;
+			if(cache == null){
+				model = getModel(query);
+			} else {
+				model = cache.executeConstructQuery(endpoint, query);
+			}
 //			logger.debug("Got " + model.size() + " new triple in " + queryMonitor.getLastValue() + "ms.");
 			all.add(model);
 			queryMonitor.stop();
@@ -170,7 +176,11 @@ public class ModelGenerator {
 //				logger.debug("Sending SPARQL query ...");
 //				logger.debug("Query:\n" + query.toString());
 				queryMonitor.start();
-				model = cache.executeConstructQuery(endpoint, query);
+				if(cache == null){
+					model = getModel(query);
+				} else {
+					model = cache.executeConstructQuery(endpoint, query);
+				}
 				queryMonitor.stop();
 //				logger.debug("Got " + model.size() + " new triple in " + queryMonitor.getLastValue() + "ms.");
 				all.add(model);
@@ -192,7 +202,11 @@ public class ModelGenerator {
 		queryMonitor.start();
 		Model model = null;
 		try {
-			model = cache.executeConstructQuery(endpoint, query);
+			if(cache == null){
+				model = getModel(query);
+			} else {
+				model = cache.executeConstructQuery(endpoint, query);
+			}
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e);
 		} catch (SQLException e) {
@@ -215,6 +229,18 @@ public class ModelGenerator {
 			model.add(tmp);
 		}
 		
+		return model;
+	}
+	
+	private Model getModel(String query){
+		QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+		for (String dgu : endpoint.getDefaultGraphURIs()) {
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : endpoint.getNamedGraphURIs()) {
+			queryExecution.addNamedGraph(ngu);
+		}			
+		Model model = queryExecution.execConstruct();
 		return model;
 	}
 	
