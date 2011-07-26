@@ -18,6 +18,7 @@ import java.util.TreeSet;
 
 import javax.xml.ws.http.HTTPException;
 
+import org.aksw.commons.jena.ExtendedQueryEngineHTTP;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.datastructures.QueryTree;
 import org.dllearner.algorithm.qtl.datastructures.impl.GeneralisedQueryTree;
@@ -28,6 +29,7 @@ import org.dllearner.algorithm.qtl.exception.TimeOutException;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.algorithm.qtl.util.TreeHelper;
 import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 
 import com.hp.hpl.jena.graph.Node;
@@ -35,11 +37,7 @@ import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.sparql.algebra.Algebra;
-import com.hp.hpl.jena.sparql.algebra.Op;
-import com.hp.hpl.jena.sparql.algebra.OpAsQuery;
-import com.hp.hpl.jena.sparql.expr.E_Bound;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_LogicalNot;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
@@ -63,7 +61,7 @@ public class NBR<N> {
 	private long startTime;
 	
 	private ExtractionDBCache selectCache;
-	private SPARQLEndpointEx endpoint;
+	private SparqlEndpoint endpoint;
 	
 	private String query;
 	private int limit;
@@ -85,7 +83,11 @@ public class NBR<N> {
 	
 	private static final Logger logger = Logger.getLogger(NBR.class);
 	
-	public NBR(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache){
+	public NBR(SparqlEndpoint endpoint){
+		this(endpoint, null);
+	}
+	
+	public NBR(SparqlEndpoint endpoint, ExtractionDBCache selectCache){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
 		
@@ -273,8 +275,14 @@ public class NBR<N> {
 		PostLGG<N> postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
 		postGen.simplifyTree(postLGG, negTrees);
 		if(logger.isDebugEnabled()){
-			logger.debug("Post LGG(Tree): \n" + TreeHelper.getAbbreviatedTreeRepresentation(
-					postLGG, endpoint.getBaseURI(), endpoint.getPrefixes()));
+			String treeString;
+			if(endpoint instanceof SPARQLEndpointEx){
+				treeString = TreeHelper.getAbbreviatedTreeRepresentation(
+						postLGG, ((SPARQLEndpointEx)endpoint).getBaseURI(), ((SPARQLEndpointEx)endpoint).getPrefixes());
+			} else {
+				treeString = postLGG.getStringRepresentation();
+			}
+			logger.debug("Post LGG(Tree): \n" + treeString);
 			logger.debug("Post LGG(Query):\n" + postLGG.toSPARQLQueryString());
 			logger.debug("Post LGG(#Instances):\n" + getAllResources(postLGG.toSPARQLQueryString()).size());
 		}
@@ -401,8 +409,15 @@ public class NBR<N> {
 	private SortedSet<String> getAllResources(String query){
 		SortedSet<String> resources = new TreeSet<String>();
 		query = "SELECT DISTINCT " + query.substring(7) + " LIMIT 1000";
-		String result = selectCache.executeSelectQuery(endpoint, query);
-		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
+		
+		ResultSet rs;
+		if(selectCache == null){
+			rs = executeSelectQuery(query);
+		} else {
+			String result = selectCache.executeSelectQuery(endpoint, query);
+			rs = SparqlQuery.convertJSONtoResultSet(result);
+		}
+		
 		String uri;
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -481,7 +496,17 @@ public class NBR<N> {
 			logger.debug(entry.getKey().getId() + ": " + entry.getValue());
 		}
 		List<GeneralisedQueryTree<N>> gens = new ArrayList<GeneralisedQueryTree<N>>();
-		logger.debug(TreeHelper.getAbbreviatedTreeRepresentation(negTrees.get(0), endpoint.getBaseURI(), endpoint.getPrefixes()));
+		if(logger.isDebugEnabled()){
+			String treeString;
+			if(endpoint instanceof SPARQLEndpointEx){
+				treeString = TreeHelper.getAbbreviatedTreeRepresentation(
+						negTrees.get(0), ((SPARQLEndpointEx)endpoint).getBaseURI(), ((SPARQLEndpointEx)endpoint).getPrefixes());
+			} else {
+				treeString = negTrees.get(0).getStringRepresentation();
+			}
+			logger.debug(treeString);
+		}
+		
 		
 		Map<GeneralisedQueryTree<N>, Integer> genTree2Sum = new HashMap<GeneralisedQueryTree<N>, Integer>();
 		
@@ -700,8 +725,14 @@ public class NBR<N> {
 			logger.debug("Testing query\n" + getLimitedQuery(query, limit, offset) + "\n");
 		}
 		
-		String result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(query, limit, offset));
-		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
+		ResultSet rs;
+		if(selectCache == null){
+			rs = executeSelectQuery(getLimitedQuery(query, limit, offset));
+		} else {
+			String result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(query, limit, offset));
+			rs = SparqlQuery.convertJSONtoResultSet(result);
+		}
+		
 		String uri;
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -1351,6 +1382,19 @@ public class NBR<N> {
     		}
     	}
     	return change;
+    }
+    
+    private ResultSet executeSelectQuery(String query){
+    	ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(), query);
+		queryExecution.setTimeOut(maxExecutionTimeInSeconds * 1000);
+		for (String dgu : endpoint.getDefaultGraphURIs()) {
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : endpoint.getNamedGraphURIs()) {
+			queryExecution.addNamedGraph(ngu);
+		}			
+		ResultSet resultset = queryExecution.execSelect();
+		return resultset;
     }
 
 }
