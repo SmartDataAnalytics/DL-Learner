@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.dllearner.algorithm.qtl.QTL;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosOnlyLP;
@@ -38,7 +39,7 @@ import org.dllearner.learningproblems.PosOnlyLP;
  */
 public class GeneralMatcher {
 
-	public GeneralMatcher(SparqlEndpoint sparqlEndpoint1, SparqlEndpoint sparqlEndpoint2) throws ComponentInitException {
+	public GeneralMatcher(SparqlEndpoint sparqlEndpoint1, SparqlEndpoint sparqlEndpoint2) throws ComponentInitException, LearningProblemUnsupportedException {
 		
 		// phase 1: collect owl:sameAs links and group them by class
 		// option 1: read links from file
@@ -63,7 +64,7 @@ public class GeneralMatcher {
 	}
 	
 	
-	public static void main(String args[]) throws MalformedURLException, ComponentInitException {
+	public static void main(String args[]) throws MalformedURLException, ComponentInitException, LearningProblemUnsupportedException {
 //		SparqlEndpoint endpoint1 = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 		
 		// test endpoint at http://lgd.aksw.org:5678/sparql with the following graphs
