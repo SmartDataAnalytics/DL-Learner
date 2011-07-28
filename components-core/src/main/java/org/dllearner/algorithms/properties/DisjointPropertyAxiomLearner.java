@@ -11,7 +11,6 @@ import org.dllearner.kb.SparqlEndpointKS;
 
 public class DisjointPropertyAxiomLearner extends Component implements AxiomLearningAlgorithm {
 	
-	@org.dllearner.ConfigOption(name="propertyToDescribe", description="property of which a axiom should be learned")
 	private String propertyToDescribe;
 	
 	public String getPropertyToDescribe() {
