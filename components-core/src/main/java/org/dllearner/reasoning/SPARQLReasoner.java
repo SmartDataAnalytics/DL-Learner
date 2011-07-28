@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -387,20 +386,46 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 
 	@Override
 	public boolean isSuperClassOf(Description superClass, Description subClass) {
-		// TODO Auto-generated method stub
-		return false;
+		if(!(superClass instanceof NamedClass) && !(subClass instanceof NamedClass)){
+			throw new IllegalArgumentException("Only named classes are supported.");
+		}
+		String query = String.format("ASK {%s %s %s.}", 
+				inAngleBrackets(((NamedClass)subClass).getURI().toString()),
+						inAngleBrackets(RDFS.subClassOf.getURI()),
+						inAngleBrackets(((NamedClass)superClass).getURI().toString()));
+		boolean superClassOf = executeAskQuery(query);
+		return superClassOf;
 	}
 
 	@Override
 	public boolean isEquivalentClass(Description class1, Description class2) {
-		// TODO Auto-generated method stub
-		return false;
+		if(!(class1 instanceof NamedClass) && !(class2 instanceof NamedClass)){
+			throw new IllegalArgumentException("Only named classes are supported.");
+		}
+		String query = String.format("ASK {%s %s %s.}", 
+				inAngleBrackets(((NamedClass)class1).getURI().toString()),
+						inAngleBrackets(OWL.equivalentClass.getURI()),
+						inAngleBrackets(((NamedClass)class2).getURI().toString()));
+		boolean equivalentClass = executeAskQuery(query);
+		return equivalentClass;
 	}
 
 	@Override
 	public Set<Description> getAssertedDefinitions(NamedClass namedClass) {
-		// TODO Auto-generated method stub
-		return null;
+		Set<Description> definitions = new HashSet<Description>();
+		String query = String.format("SELECT ?class {%s %s ?class. FILTER(isIRI(?class))} UNION {?class. %s %s. FILTER(isIRI(?class))}", 
+				inAngleBrackets(namedClass.getURI().toString()),
+				inAngleBrackets(OWL.equivalentClass.getURI()),
+				inAngleBrackets(OWL.equivalentClass.getURI()),
+				inAngleBrackets(namedClass.getURI().toString())	
+		);
+		ResultSet rs = executeQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			definitions.add(new NamedClass(qs.getResource("class").getURI()));
+		}
+		return definitions;
 	}
 
 	@Override
@@ -417,14 +442,41 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 
 	@Override
 	public SortedSet<Description> getSuperClasses(Description description) {
-		// TODO Auto-generated method stub
-		return null;
+		if(!(description instanceof NamedClass)){
+			throw new IllegalArgumentException("Only named classes are supported.");
+		}
+		SortedSet<Description> superClasses = new TreeSet<Description>();
+		String query = String.format("SELECT ?sup {%s %s ?sup. FILTER(isIRI(?sup))}", 
+				inAngleBrackets(((NamedClass)description).getURI().toString()),
+				inAngleBrackets(RDFS.subClassOf.getURI())
+		);
+		ResultSet rs = executeQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			superClasses.add(new NamedClass(qs.getResource("sup").getURI()));
+		}
+		return superClasses;
 	}
 
 	@Override
 	public SortedSet<Description> getSubClasses(Description description) {
-		// TODO Auto-generated method stub
-		return null;
+		if(!(description instanceof NamedClass)){
+			throw new IllegalArgumentException("Only named classes are supported.");
+		}
+		SortedSet<Description> subClasses = new TreeSet<Description>();
+		String query = String.format("SELECT ?sub {?sub %s %s. FILTER(isIRI(?sub))}", 
+				inAngleBrackets(RDFS.subClassOf.getURI()),
+				inAngleBrackets(((NamedClass)description).getURI().toString())
+				
+		);
+		ResultSet rs = executeQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			subClasses.add(new NamedClass(qs.getResource("sub").getURI()));
+		}
+		return subClasses;
 	}
 
 	@Override
@@ -435,14 +487,35 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 
 	@Override
 	public SortedSet<ObjectProperty> getSuperProperties(ObjectProperty objectProperty) {
-		// TODO Auto-generated method stub
-		return null;
+		SortedSet<ObjectProperty> superProperties = new TreeSet<ObjectProperty>();
+		String query = String.format("SELECT ?sup {%s %s ?sup. FILTER(isIRI(?sup))}", 
+				inAngleBrackets(objectProperty.getURI().toString()),
+				inAngleBrackets(RDFS.subPropertyOf.getURI())
+		);
+		ResultSet rs = executeQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			superProperties.add(new ObjectProperty(qs.getResource("sup").getURI()));
+		}
+		return superProperties;
 	}
 
 	@Override
 	public SortedSet<ObjectProperty> getSubProperties(ObjectProperty objectProperty) {
-		// TODO Auto-generated method stub
-		return null;
+		SortedSet<ObjectProperty> subProperties = new TreeSet<ObjectProperty>();
+		String query = String.format("SELECT ?sub {?sub %s %s. FILTER(isIRI(?sub))}", 
+				inAngleBrackets(RDFS.subPropertyOf.getURI()),
+				inAngleBrackets(objectProperty.getURI().toString())
+				
+		);
+		ResultSet rs = executeQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			subProperties.add(new ObjectProperty(qs.getResource("sub").getURI()));
+		}
+		return subProperties;
 	}
 
 	@Override
