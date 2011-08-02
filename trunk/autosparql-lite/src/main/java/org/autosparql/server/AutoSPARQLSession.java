@@ -1,17 +1,18 @@
 package org.autosparql.server;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.autosparql.server.search.Search;
 import org.autosparql.server.search.SolrSearch;
 import org.autosparql.server.search.TBSLSearch;
+import org.autosparql.shared.Example;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
 public class AutoSPARQLSession {
 	
 	
-	private Search primarySearch;
-	private Search secondarySearch;
+	private TBSLSearch primarySearch;
+	private SolrSearch secondarySearch;
 	
 	public AutoSPARQLSession(SparqlEndpoint endpoint, String solrServerURL) {
 		primarySearch = new TBSLSearch(endpoint);
@@ -19,13 +20,41 @@ public class AutoSPARQLSession {
 	}
 	
 	public List<String> getResources(String query){
+		List<String> resources = new ArrayList<String>();
 		
-		List<String> resources = primarySearch.getResources(query);
+		resources = primarySearch.getResources(query);
 		if(resources.isEmpty()){
-			resources = secondarySearch.getResources(query);
+			List<String> answerType = primarySearch.getLexicalAnswerType();
+			List<String> types = secondarySearch.getTypes(answerType.get(0));
+			
+			for(String type : types){
+				resources = secondarySearch.getResources(query, type);
+				if(!resources.isEmpty()){
+					return resources;
+				}
+			}
 		}
 		
 		return resources;
+	}
+	
+	public List<Example> getExamples(String query){
+		List<Example> examples = new ArrayList<Example>();
+		
+		examples = primarySearch.getExamples(query);
+		if(examples.isEmpty()){
+			List<String> answerType = primarySearch.getLexicalAnswerType();
+			List<String> types = secondarySearch.getTypes(answerType.get(0));
+			
+			for(String type : types){
+				examples = secondarySearch.getExamples(query, type);
+				if(!examples.isEmpty()){
+					return examples;
+				}
+			}
+		}
+		
+		return examples;
 	}
 
 }

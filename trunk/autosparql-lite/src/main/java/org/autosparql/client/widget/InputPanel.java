@@ -67,6 +67,26 @@ public class InputPanel extends LayoutContainer {
 			}
 		});
 		add(queryButton, new RowData(-1, -1));
+		
+		loadEndpoints();
+		
+	}
+	
+	private void loadEndpoints(){
+		AutoSPARQLService.Util.getInstance().getEndpoints(new AsyncCallback<List<Endpoint>>() {
+
+			@Override
+			public void onFailure(Throwable arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(List<Endpoint> endpoints) {
+				endpointsBox.getStore().add(endpoints);
+				
+			}
+		});
 	}
 	
 	public String getQuery(){
@@ -87,8 +107,10 @@ public class InputPanel extends LayoutContainer {
 			}
 
 			@Override
-			public void onSuccess(List<Example> arg0) {
-				// TODO Auto-generated method stub
+			public void onSuccess(List<Example> examples) {
+				for(Example ex : examples){
+					System.out.println(ex.getURI());
+				}
 				
 			}
 		});
