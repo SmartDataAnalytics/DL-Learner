@@ -38,4 +38,14 @@ public class Template {
 		return slots;
 	}
 	
+	public List<String> getLexicalAnswerType(){
+		String variable = query.getAnswerTypeVariable();
+		for(Slot slot : slots){
+			if(slot.getAnchor().equals(variable)){
+				return slot.getWords();
+			}
+		}
+		return null;
+	}
+	
 }

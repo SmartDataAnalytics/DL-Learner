@@ -1,8 +1,9 @@
 package org.dllearner.algorithm.tbsl.ltag.parser;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,13 +28,13 @@ import org.dllearner.algorithm.tbsl.sem.util.Pair;
  */
 public class LTAG_Lexicon_Constructor {
 
-	public LTAGLexicon construct(List<String> fileNames) {
+	public LTAGLexicon construct(List<InputStream> fileStreams) {
 
 		LTAGLexicon G = new TAG();
 
-		for (String fileName : fileNames) {
+		for (InputStream fileStream : fileStreams) {
 
-			addFileToGrammar(fileName, G);
+			addFileToGrammar(fileStream, G);
 
 		}
 
@@ -41,7 +42,7 @@ public class LTAG_Lexicon_Constructor {
 
 	}
 
-	public void addFileToGrammar(String fileName, LTAGLexicon g) {
+	public void addFileToGrammar(InputStream fileStream, LTAGLexicon g) {
 
 		ArrayList<Pair<String, TreeNode>> trees = new ArrayList<Pair<String, TreeNode>>();
 		ArrayList<List<String>> semantics = new ArrayList<List<String>>();
@@ -50,7 +51,7 @@ public class LTAG_Lexicon_Constructor {
 
 		try {
 
-			BufferedReader in = new BufferedReader(new FileReader(fileName));
+			BufferedReader in = new BufferedReader(new InputStreamReader(fileStream));
 
 			String zeile = null;
 			int lineNo = 0;
@@ -99,7 +100,7 @@ public class LTAG_Lexicon_Constructor {
 				} catch (ParseException e) {
 
 					System.err.println("ParseException in '"
-							+ fileName.substring(fileName.lastIndexOf("/") + 1)
+							+ fileStream
 							+ "' at Line " + lineNo + ": '" + items[1].trim()
 							+ "'.");
 					continue;
@@ -113,11 +114,7 @@ public class LTAG_Lexicon_Constructor {
 			in.close();
 
 		} catch (IOException e) {
-
-			System.err.println("IOException: File '" + fileName
-					+ "' not found!");
-			return;
-
+			e.printStackTrace();
 		}
 
 		g.addTrees(trees, semantics);
