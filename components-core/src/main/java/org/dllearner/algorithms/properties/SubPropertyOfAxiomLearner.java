@@ -3,8 +3,10 @@ package org.dllearner.algorithms.properties;
 import java.beans.PropertyEditor;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.Component;
@@ -17,7 +19,11 @@ import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.dllearner.reasoning.SPARQLReasoner;
+
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 public class SubPropertyOfAxiomLearner extends Component implements AxiomLearningAlgorithm {
 	
@@ -26,7 +32,7 @@ public class SubPropertyOfAxiomLearner extends Component implements AxiomLearnin
 	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
 	private int maxExecutionTimeInSeconds;
 	
-	
+	private SPARQLReasoner reasoner;
 	private SparqlEndpointKS ks;
 	
 	public SubPropertyOfAxiomLearner(SparqlEndpointKS ks){
@@ -35,8 +41,17 @@ public class SubPropertyOfAxiomLearner extends Component implements AxiomLearnin
 	
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-
+		//get
+		Set<ObjectProperty> properties = new HashSet<ObjectProperty>();
+		String query = String.format("SELECT ?p ?p1 WHERE {?s %s ?o. ?s ?p ?o1. ?s1 ?p1 ?o.}", inAngleBrackets(propertyToDescribe.getURI().toString()));
+		ResultSet rs = executeQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			properties.add(new ObjectProperty(qs.getResource("p").getURI()));
+			properties.add(new ObjectProperty(qs.getResource("p1").getURI()));
+		}
+		System.out.println(properties);
 	}
 
 	@Override
@@ -53,8 +68,7 @@ public class SubPropertyOfAxiomLearner extends Component implements AxiomLearnin
 
 	@Override
 	public void init() throws ComponentInitException {
-		// TODO Auto-generated method stub
-		
+		reasoner = new SPARQLReasoner(ks);
 	}
 	
 	public int getMaxExecutionTimeInSeconds() {
@@ -73,9 +87,26 @@ public class SubPropertyOfAxiomLearner extends Component implements AxiomLearnin
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
+	private String inAngleBrackets(String s){
+		return "<" + s + ">";
+	}
+	
+	private ResultSet executeQuery(String query){
+		System.out.println(query);
+		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
+			queryExecution.addNamedGraph(ngu);
+		}			
+		ResultSet resultset = queryExecution.execSelect();
+		return resultset;
+	}
+	
 	public static void main(String[] args) throws Exception{
 		Map<String, String> propertiesMap = new HashMap<String, String>();
-        propertiesMap.put("propertyToDescribe", "http://dbpedia.org/ontology/locatedIn");
+        propertiesMap.put("propertyToDescribe", "http://dbpedia.org/ontology/league");
         propertiesMap.put("maxExecutionTimeInSeconds", "20");
         
         SubPropertyOfAxiomLearner l = new SubPropertyOfAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
@@ -91,8 +122,9 @@ public class SubPropertyOfAxiomLearner extends Component implements AxiomLearnin
         	}
         }
         
-        System.out.println(l.getPropertyToDescribe());
-        System.out.println(l.getMaxExecutionTimeInSeconds());
+        l.init();
+        l.start();
+        
 	}
 	
 }
