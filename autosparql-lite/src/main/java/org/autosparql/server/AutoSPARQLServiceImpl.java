@@ -1,15 +1,19 @@
 package org.autosparql.server;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import org.autosparql.client.AutoSPARQLService;
+import org.autosparql.server.util.Endpoints;
 import org.autosparql.shared.Endpoint;
 import org.autosparql.shared.Example;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
@@ -26,6 +30,8 @@ public class AutoSPARQLServiceImpl extends RemoteServiceServlet implements AutoS
 		AUTOSPARQL_SESSION
 	}
 	
+	private Map<Endpoint, SPARQLEndpointEx> endpointsMap;
+	
 	public AutoSPARQLServiceImpl() {
 		
 	}
@@ -37,36 +43,39 @@ public class AutoSPARQLServiceImpl extends RemoteServiceServlet implements AutoS
 	}
 	
 	
-	private void loadEndpoints(){
-		System.out.println(getServletContext());
-		System.out.println(getServletContext().getResourceAsStream("endpoints.xml"));
-		System.out.println(getServletContext().getResourceAsStream("/endpoints.xml"));
-		System.out.println(getServletContext().getResourceAsStream("Application/endpoints.xml"));
-		System.out.println(getServletContext().getResourceAsStream("/Application/endpoints.xml"));
-		System.out.println(getServletContext().getResourceAsStream("test/endpoints.xml"));
-		System.out.println(getServletContext().getResourceAsStream("/test/endpoints.xml"));
-		System.out.println(getServletContext().getResourceAsStream("/WEB-INF/classes/endpoints.xml"));
-		String path = getServletContext().getRealPath("/endpoints.xml");
-		System.out.println(new File(path).exists());
+	private void loadEndpoints() {
+		try {
+			List<SPARQLEndpointEx> endpoints = Endpoints.loadEndpoints(getServletContext().getResource(
+					"/WEB-INF/classes/endpoints.xml").getPath());
+			endpointsMap = new HashMap<Endpoint, SPARQLEndpointEx>();
+
+			for (SPARQLEndpointEx endpoint : endpoints) {
+				endpointsMap.put(new Endpoint(endpoint.getURL().toString(), endpoint.getLabel()), endpoint);
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public List<Endpoint> getEndpoints() {
-		
-		return null;
+		return new ArrayList<Endpoint>(endpointsMap.keySet());
 	}
 	
 	@Override
 	public List<Example> getExamples(String query) {
+		List<Example> examples = new ArrayList<Example>();
 		try {
 			AutoSPARQLSession session = getAutoSPARQLSession();
-			System.out.println("Compute examples");
-			session.getResources(query);
+			for(String resource : session.getResources(query)){
+				examples.add(new Example(resource, "", "", ""));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return examples;
 	}
 	
 	private HttpSession getHttpSession(){
@@ -74,8 +83,6 @@ public class AutoSPARQLServiceImpl extends RemoteServiceServlet implements AutoS
 	}
 	
 	private AutoSPARQLSession createAutoSPARQLSession(SPARQLEndpointEx endpoint){
-		System.out.println("Create session");
-		System.out.println(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		AutoSPARQLSession session = new AutoSPARQLSession(SparqlEndpoint.getEndpointDBpediaLiveAKSW(), "http://139.18.2.173:8080/apache-solr-3.3.0/dbpedia_resources");
 		getHttpSession().setAttribute(SessionAttributes.AUTOSPARQL_SESSION.toString(), session);
 		return session;
@@ -90,7 +97,7 @@ public class AutoSPARQLServiceImpl extends RemoteServiceServlet implements AutoS
 	}
 	
 	public static void main(String[] args) throws InvalidFileFormatException, FileNotFoundException, IOException, NoTemplateFoundException {
-		SPARQLTemplateBasedLearner l = new SPARQLTemplateBasedLearner();
+		SPARQLTemplateBasedLearner l = new SPARQLTemplateBasedLearner(AutoSPARQLServiceImpl.class.getClassLoader().getResource("org/autosparql/server/tbsl.properties").getPath());
 		l.setQuestion("Give me all cities in Canada");
 		l.learnSPARQLQueries();
 	}
