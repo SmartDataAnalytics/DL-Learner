@@ -1,5 +1,6 @@
 package org.dllearner.algorithm.tbsl.templator;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,9 +34,9 @@ public class Templator {
 	boolean UNTAGGED_INPUT = true;
 	
 	public Templator() {
-		List<String> grammarFiles = new ArrayList<String>();
+		List<InputStream> grammarFiles = new ArrayList<InputStream>();
 		for(int i = 0; i < GRAMMAR_FILES.length; i++){
-			grammarFiles.add(this.getClass().getClassLoader().getResource(GRAMMAR_FILES[i]).getPath());
+			grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
 		}
 		
         g = LTAG_Constructor.construct(grammarFiles);

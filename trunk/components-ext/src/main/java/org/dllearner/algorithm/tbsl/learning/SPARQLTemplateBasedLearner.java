@@ -1,6 +1,7 @@
 package org.dllearner.algorithm.tbsl.learning;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -105,7 +106,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	
 	public SPARQLTemplateBasedLearner(String optionsFile) throws InvalidFileFormatException, FileNotFoundException, IOException{
-		this(new Options(new FileReader(new File(optionsFile))));
+		this(new Options(new FileInputStream(optionsFile)));
 	}
 	
 	public SPARQLTemplateBasedLearner(Options options){
@@ -141,6 +142,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		maxTestedQueriesPerTemplate = Integer.parseInt(options.get("learning.maxTestedQueriesPerTemplate", "20"));
 		
 		String wordnetPath = options.get("wordnet.dictionary", "tbsl/dict");
+		wordnetPath = this.getClass().getClassLoader().getResource(wordnetPath).getPath();
 		System.setProperty("wordnet.database.dir", wordnetPath);
 	}
 	
@@ -735,7 +737,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
+//		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
+		String question = "Give me all cities in Canada.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 				Collections.<String>singletonList(""), Collections.<String>emptyList());
@@ -743,6 +746,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();
 		System.out.println(learner.getBestSPARQLQuery());
+		System.out.println(learner.getTemplates().iterator().next().getLexicalAnswerType());
 
 	}
 

@@ -473,6 +473,19 @@ public class Query
 		return true;
 	}
 	
-	
+	/**
+	 * Returns the variable in the SPARQL query, which determines the type of the answer
+	 * by an rdf:type property.
+	 * @return
+	 */
+	public String getAnswerTypeVariable(){
+		SPARQL_Term selection = selTerms.iterator().next();
+		for(SPARQL_Triple t : conditions){
+			if(t.getVariable().equals(selection) && t.getProperty().getName().equals("type")){
+				return t.getValue().getName();
+			}
+		}
+		return null;
+	}
 
 }

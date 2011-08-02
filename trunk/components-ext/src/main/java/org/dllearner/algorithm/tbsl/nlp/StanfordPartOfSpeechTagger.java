@@ -2,6 +2,7 @@ package org.dllearner.algorithm.tbsl.nlp;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +20,8 @@ public class StanfordPartOfSpeechTagger implements PartOfSpeechTagger{
 	public StanfordPartOfSpeechTagger(){
 		try {
 //			String modelPath = this.getClass().getClassLoader().getResource(MODEL).getPath();
-			String modelPath = Thread.currentThread().getContextClassLoader().getResource(MODEL).getPath();
+			String modelPath = getClass().getResource("/tbsl/models/bidirectional-distsim-wsj-0-18.tagger").getPath(); 
+//			String modelPath = Thread.currentThread().getContextClassLoader().getResource(MODEL).getFile();
 			tagger = new MaxentTagger(modelPath);
 		} catch (IOException e) {
 			e.printStackTrace();
