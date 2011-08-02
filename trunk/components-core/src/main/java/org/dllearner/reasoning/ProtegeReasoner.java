@@ -748,7 +748,9 @@ public class ProtegeReasoner extends ReasonerComponent {
 		Set<OWLNamedIndividual> individuals = reasoner.getInstances(d, false).getFlattened();
 		SortedSet<Individual> inds = new TreeSet<Individual>();
 		for(OWLNamedIndividual ind : individuals)
-			inds.add(new Individual(ind.toStringID()));
+			if(ind != null){
+				inds.add(new Individual(ind.toStringID()));
+			}
 		return inds;
 	}
 	
@@ -1280,8 +1282,16 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 			}
 			// take one element from the set and ignore the rest
 			// (TODO: we need to make sure we always ignore the same concepts)
-			OWLObjectPropertyExpression property = node.getRepresentativeElement();
-			roles.add(new ObjectProperty(property.asOWLObjectProperty().toStringID()));
+			
+			for(OWLObjectPropertyExpression property : node.getEntities()){
+				if(!property.isAnonymous()){
+					roles.add(new ObjectProperty(property.asOWLObjectProperty().toStringID()));
+					break;
+				}
+			}
+			//TODO: We get a problem when the returned representative element is anonymous, so we now use the code above
+//			OWLObjectPropertyExpression property = node.getRepresentativeElement();
+//			roles.add(new ObjectProperty(property.asOWLObjectProperty().toStringID()));
 		}
 		roles.remove(new ObjectProperty(factory.getOWLTopObjectProperty().toStringID()));
 		roles.remove(new ObjectProperty(factory.getOWLBottomObjectProperty().toStringID()));
