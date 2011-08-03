@@ -88,7 +88,7 @@ public class ReflexivePropertyAxiomLearner extends Component implements AxiomLea
 		}
 		
 		//get fraction of instances s with <s p o> also exists <o p s> 
-		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?reflexiv WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?s. ?o <%s> ?o1}}";
+		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?reflexiv WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?o1.FILTER(?s=?o)}}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
