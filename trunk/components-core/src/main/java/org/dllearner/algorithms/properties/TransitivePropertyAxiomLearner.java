@@ -27,7 +27,7 @@ public class TransitivePropertyAxiomLearner extends Component implements AxiomLe
 	
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
+	//select COUNT(?o),COUNT(?o2) WHERE {?s dbpedia-owl:influencedBy ?o. ?o dbpedia-owl:influencedBy ?o1. OPTIONAL{?s dbpedia-owl:influencedBy ?o1. ?s dbpedia-owl:influencedBy ?o2}} 
 
 	}
 

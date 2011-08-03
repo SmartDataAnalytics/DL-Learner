@@ -54,8 +54,7 @@ public class ObjectPropertyDomainAxiom extends PropertyDomainAxiom {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return "Domain(" + getProperty() + ", " + getDomain() +  ")";
 	}
 	
 	
