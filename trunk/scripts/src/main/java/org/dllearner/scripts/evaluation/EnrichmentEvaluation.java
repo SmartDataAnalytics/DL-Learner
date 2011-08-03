@@ -25,7 +25,9 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.properties.SubPropertyOfAxiomLearner;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -66,7 +68,6 @@ public class EnrichmentEvaluation {
 		SparqlEndpoint se = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 		
 		Set<ObjectProperty> properties = getAllObjectProperties(se);
-		System.out.println(properties);
 		
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
 		
@@ -75,6 +76,7 @@ public class EnrichmentEvaluation {
 			SubPropertyOfAxiomLearner learner = new SubPropertyOfAxiomLearner(ks);
 			learner.setPropertyToDescribe(property);
 			learner.setMaxExecutionTimeInSeconds(10);
+			System.out.println("Applying " + ComponentManager.getName(learner) + " on " + property + " ... ");
 			learner.start();
 			List<EvaluatedAxiom> learnedAxioms = learner.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 			for(EvaluatedAxiom learnedAxiom : learnedAxioms) {
@@ -102,7 +104,6 @@ public class EnrichmentEvaluation {
 		ResultSet q = sq.send();
         while(q.hasNext()) {
             QuerySolution qs = q.next();
-            System.out.println(qs);
             properties.add(new ObjectProperty(qs.getResource("p").getURI()));
         }
 		return properties;		

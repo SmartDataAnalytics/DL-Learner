@@ -1,6 +1,7 @@
 package org.dllearner.core.config;
 
 import java.beans.PropertyEditor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ public class ConfigHelper {
 	 * @param configName the name of the config option
 	 * @param configValue the value of the config option
 	 */
-	public static void configurate(Component component, String configName, String configValue){
+	public static void configure(Component component, String configName, String configValue){
 		Field[] fields = component.getClass().getDeclaredFields();
         for(Field f : fields){
         	ConfigOption option = f.getAnnotation(ConfigOption.class);
