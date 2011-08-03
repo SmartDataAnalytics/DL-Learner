@@ -2,12 +2,17 @@ package org.dllearner.algorithms.properties;
 
 import java.beans.PropertyEditor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.Component;
@@ -21,6 +26,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -38,10 +44,16 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
 	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
-	private int maxExecutionTimeInSeconds;
+	private int maxExecutionTimeInSeconds = 10;
+	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
+	private int maxFetchedRows = 0;
 	
 	private SPARQLReasoner reasoner;
 	private SparqlEndpointKS ks;
+	
+	private List<Axiom> currentlyBestAxioms;
+	private long startTime;
+	private int fetchedRows;
 	
 	public PropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -63,25 +75,44 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
+	public int getMaxFetchedRows() {
+		return maxFetchedRows;
+	}
+
+	public void setMaxFetchedRows(int maxFetchedRows) {
+		this.maxFetchedRows = maxFetchedRows;
+	}
+
 	@Override
 	public void start() {
+		logger.info("Start learning...");
+		startTime = System.currentTimeMillis();
+		fetchedRows = 0;
+		currentlyBestAxioms = new ArrayList<Axiom>();
 		//get existing domains
 		Description existingDomain = reasoner.getDomain(propertyToDescribe);
 		logger.debug("Existing domain: " + existingDomain);
 		
 		//get subjects with types
-		Map<Individual, Set<NamedClass>> individual2Types = getSubjectsWithTypes();
-		
-		//get subjects of property
-		Map<Individual, SortedSet<Individual>> members = reasoner.getPropertyMembers(propertyToDescribe);
-		
-
+		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
+		while(!terminationCriteriaSatisfied()){
+			individual2Types.putAll(getSubjectsWithTypes(fetchedRows));
+			currentlyBestAxioms = buildBestAxioms(individual2Types);
+			fetchedRows += 1000;
+		}
+		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 
 	@Override
 	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Axiom> bestAxioms = new ArrayList<Axiom>();
+		
+		Iterator<Axiom> it = currentlyBestAxioms.iterator();
+		while(bestAxioms.size() < nrOfAxioms && it.hasNext()){
+			bestAxioms.add(it.next());
+		}
+		
+		return bestAxioms;
 	}
 
 	@Override
@@ -96,31 +127,68 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 		
 	}
 	
-	private Map<Individual, Set<NamedClass>> getSubjectsWithTypes(){
-		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
-		int limit = 1000;
-		int offset = 135000;
-		boolean executeAgain = true;
-		
-		while(executeAgain){
-			String query = String.format("SELECT ?ind ?type WHERE {?ind %s ?o. ?ind a ?type.} LIMIT %d OFFSET %d", inAngleBrackets(propertyToDescribe.getURI().toString()), limit, offset);
-			ResultSet rs = executeQuery(query);
-			QuerySolution qs;
-			Individual ind;
-			Set<NamedClass> types;
-			executeAgain = rs.hasNext();
-			while(executeAgain && rs.hasNext()){
-				qs = rs.next();
-				ind = new Individual(qs.getResource("ind").getURI());
-				types = individual2Types.get(ind);
-				if(types == null){
-					types = new HashSet<NamedClass>();
+	private boolean terminationCriteriaSatisfied(){
+		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
+		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
+		return  timeLimitExceeded || resultLimitExceeded; 
+	}
+	
+	private List<Axiom> buildBestAxioms(Map<Individual, Set<NamedClass>> individual2Types){
+		List<Axiom> axioms = new ArrayList<Axiom>();
+		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
+		for(Entry<Individual, Set<NamedClass>> entry : individual2Types.entrySet()){
+			for(NamedClass nc : entry.getValue()){
+				Integer cnt = result.get(nc);
+				if(cnt == null){
+					cnt = Integer.valueOf(1);
 				}
-				types.add(new NamedClass(qs.getResource("type").getURI()));
+				result.put(nc, Integer.valueOf(cnt + 1));
 			}
-			offset += 1000;
 		}
 		
+		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
+			axioms.add(new ObjectPropertyDomainAxiom(propertyToDescribe, entry.getKey()));
+		}
+		
+		return axioms;
+	}
+	
+	private SortedSet<Entry<NamedClass, Integer>> sortByValues(Map<NamedClass, Integer> map){
+		SortedSet<Entry<NamedClass, Integer>> sortedSet = new TreeSet<Map.Entry<NamedClass,Integer>>(new Comparator<Entry<NamedClass, Integer>>() {
+
+			@Override
+			public int compare(Entry<NamedClass, Integer> value1, Entry<NamedClass, Integer> value2) {
+				if(value1.getValue() < value2.getValue()){
+					return 1;
+				} else if(value2.getValue() < value1.getValue()){
+					return -1;
+				} else {
+					return value1.getKey().compareTo(value2.getKey());
+				}
+			}
+		});
+		sortedSet.addAll(map.entrySet());
+		return sortedSet;
+	}
+	
+	private Map<Individual, Set<NamedClass>> getSubjectsWithTypes(int offset){
+		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
+		int limit = 1000;
+		String query = String.format("SELECT ?ind ?type WHERE {?ind %s ?o. ?ind a ?type.} LIMIT %d OFFSET %d", inAngleBrackets(propertyToDescribe.getURI().toString()), limit, offset);
+		ResultSet rs = executeQuery(query);
+		QuerySolution qs;
+		Individual ind;
+		Set<NamedClass> types;
+		while(rs.hasNext()){
+			qs = rs.next();
+			ind = new Individual(qs.getResource("ind").getURI());
+			types = individual2Types.get(ind);
+			if(types == null){
+				types = new HashSet<NamedClass>();
+				individual2Types.put(ind, types);
+			}
+			types.add(new NamedClass(qs.getResource("type").getURI()));
+		}
 		return individual2Types;
 	}
 	
@@ -146,6 +214,7 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 		Map<String, String> propertiesMap = new HashMap<String, String>();
         propertiesMap.put("propertyToDescribe", "http://dbpedia.org/ontology/league");
         propertiesMap.put("maxExecutionTimeInSeconds", "20");
+        propertiesMap.put("maxFetchedRows", "5000");
         
         PropertyDomainAxiomLearner l = new PropertyDomainAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
         
@@ -162,6 +231,7 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
         
         l.init();
         l.start();
+        System.out.println(l.getCurrentlyBestAxioms(3));
 	}
 
 }
