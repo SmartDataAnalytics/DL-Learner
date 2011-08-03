@@ -11,6 +11,7 @@ import java.util.Set;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
@@ -125,6 +126,12 @@ public class SubPropertyOfAxiomLearner extends Component implements AxiomLearnin
         l.init();
         l.start();
         
+	}
+
+	@Override
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

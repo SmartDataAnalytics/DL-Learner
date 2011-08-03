@@ -17,6 +17,8 @@ import java.util.TreeSet;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
@@ -29,6 +31,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +54,7 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 	private SPARQLReasoner reasoner;
 	private SparqlEndpointKS ks;
 	
-	private List<Axiom> currentlyBestAxioms;
+	private List<EvaluatedAxiom> currentlyBestAxioms;
 	private long startTime;
 	private int fetchedRows;
 	
@@ -88,7 +91,7 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 		logger.info("Start learning...");
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<Axiom>();
+		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		//get existing domains
 		Description existingDomain = reasoner.getDomain(propertyToDescribe);
 		logger.debug("Existing domain: " + existingDomain);
@@ -107,10 +110,19 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
 		List<Axiom> bestAxioms = new ArrayList<Axiom>();
 		
-		Iterator<Axiom> it = currentlyBestAxioms.iterator();
+		Iterator<EvaluatedAxiom> it = currentlyBestAxioms.iterator();
 		while(bestAxioms.size() < nrOfAxioms && it.hasNext()){
-			bestAxioms.add(it.next());
+			bestAxioms.add(it.next().getAxiom());
 		}
+		
+		return bestAxioms;
+	}
+	
+	@Override
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
+		int max = Math.min(currentlyBestAxioms.size(), nrOfAxioms);
+		
+		List<EvaluatedAxiom> bestAxioms = currentlyBestAxioms.subList(0, max-1);
 		
 		return bestAxioms;
 	}
@@ -133,8 +145,8 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
-	private List<Axiom> buildBestAxioms(Map<Individual, Set<NamedClass>> individual2Types){
-		List<Axiom> axioms = new ArrayList<Axiom>();
+	private List<EvaluatedAxiom> buildBestAxioms(Map<Individual, Set<NamedClass>> individual2Types){
+		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
 		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
 		for(Entry<Individual, Set<NamedClass>> entry : individual2Types.entrySet()){
 			for(NamedClass nc : entry.getValue()){
@@ -146,13 +158,19 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 			}
 		}
 		
+		EvaluatedAxiom evalAxiom;
 		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
-			axioms.add(new ObjectPropertyDomainAxiom(propertyToDescribe, entry.getKey()));
+			evalAxiom = new EvaluatedAxiom(new ObjectPropertyDomainAxiom(propertyToDescribe, entry.getKey()),
+					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
+			axioms.add(evalAxiom);
 		}
 		
 		return axioms;
 	}
 	
+	/*
+	 * Returns the entries of the map sorted by value.
+	 */
 	private SortedSet<Entry<NamedClass, Integer>> sortByValues(Map<NamedClass, Integer> map){
 		SortedSet<Entry<NamedClass, Integer>> sortedSet = new TreeSet<Map.Entry<NamedClass,Integer>>(new Comparator<Entry<NamedClass, Integer>>() {
 
@@ -174,7 +192,7 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 	private Map<Individual, Set<NamedClass>> getSubjectsWithTypes(int offset){
 		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
 		int limit = 1000;
-		String query = String.format("SELECT ?ind ?type WHERE {?ind %s ?o. ?ind a ?type.} LIMIT %d OFFSET %d", inAngleBrackets(propertyToDescribe.getURI().toString()), limit, offset);
+		String query = String.format("SELECT ?ind ?type WHERE {?ind <%s> ?o. ?ind a ?type.} LIMIT %d OFFSET %d", propertyToDescribe.getURI().toString(), limit, offset);
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
 		Individual ind;
@@ -192,10 +210,9 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 		return individual2Types;
 	}
 	
-	private String inAngleBrackets(String s){
-		return "<" + s + ">";
-	}
-	
+	/*
+	 * Executes a SELECT query and returns the result.
+	 */
 	private ResultSet executeQuery(String query){
 		logger.info("Sending query \n {}", query);
 		
@@ -218,6 +235,7 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
         
         PropertyDomainAxiomLearner l = new PropertyDomainAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
         
+        
         Field[] fields = l.getClass().getDeclaredFields();
         for(Field f : fields){
         	ConfigOption option = f.getAnnotation(ConfigOption.class);
@@ -228,10 +246,10 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
         		f.set(l, editor.getValue());
         	}
         }
-        
+        ConfigHelper.configurate(l, "propertyToDescribe", "test");
         l.init();
         l.start();
-        System.out.println(l.getCurrentlyBestAxioms(3));
+        System.out.println(l.getCurrentlyBestEvaluatedAxioms(3));
 	}
 
 }
