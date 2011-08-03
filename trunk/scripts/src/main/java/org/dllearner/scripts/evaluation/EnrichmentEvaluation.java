@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2011, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,18 +19,20 @@
  */
 package org.dllearner.scripts.evaluation;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.aksw.commons.sparql.sparqler.SelectPaginated;
-import org.aksw.commons.sparql.sparqler.Sparqler;
-import org.aksw.commons.sparql.sparqler.SparqlerHttp;
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.properties.SubPropertyOfAxiomLearner;
+import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * Evaluation of enrichment algorithms on DBpedia (Live).
@@ -40,8 +42,19 @@ import com.hp.hpl.jena.query.QuerySolution;
  */
 public class EnrichmentEvaluation {
 
+	private static Logger logger = Logger.getLogger(EnrichmentEvaluation.class);
+	
 	// max. execution time for each learner for each entity
 	private int maxExecutionTimeInSeconds = 10;
+	
+	// number of axioms which will be learned/considered (only applies to
+	// some learners)
+	private int nrOfAxiomsToLearn = 10;
+	
+	// can be used to only evaluate a part of DBpedia
+	private int maxObjectProperties = 3;
+	private int maxDataProperties = 3;
+	private int maxClasses = 3;
 	
 	public EnrichmentEvaluation() {
 
@@ -57,21 +70,36 @@ public class EnrichmentEvaluation {
 		
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
 		
-		SubPropertyOfAxiomLearner learner = new SubPropertyOfAxiomLearner(ks);
-		learner.setMaxExecutionTimeInSeconds(10);
+		int objectProperties = 0;
+		for(ObjectProperty property : properties) {
+			SubPropertyOfAxiomLearner learner = new SubPropertyOfAxiomLearner(ks);
+			learner.setPropertyToDescribe(property);
+			learner.setMaxExecutionTimeInSeconds(10);
+			learner.start();
+			List<EvaluatedAxiom> learnedAxioms = learner.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+			for(EvaluatedAxiom learnedAxiom : learnedAxioms) {
+				// TODO: put this in some data structure
+				System.out.println(learnedAxiom);
+			}
+			objectProperties++;
+			if(objectProperties > maxObjectProperties) {
+				break;
+			}
+		}
 		
 	}
 	
 	private void getAllClasses() {
-
-
-		
 	}
 	
 	private Set<ObjectProperty> getAllObjectProperties(SparqlEndpoint se) {
 		Set<ObjectProperty> properties = new TreeSet<ObjectProperty>();
-        Sparqler x = new SparqlerHttp(se.getURL().toString());
-        SelectPaginated q = new SelectPaginated(x, "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:ObjectProperty}", 1000);
+		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:ObjectProperty}";
+		SparqlQuery sq = new SparqlQuery(query, se);
+		// Claus' API
+//        Sparqler x = new SparqlerHttp(se.getURL().toString());
+//        SelectPaginated q = new SelectPaginated(x, , 1000);
+		ResultSet q = sq.send();
         while(q.hasNext()) {
             QuerySolution qs = q.next();
             System.out.println(qs);
