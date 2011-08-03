@@ -246,7 +246,7 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
         		f.set(l, editor.getValue());
         	}
         }
-        ConfigHelper.configurate(l, "propertyToDescribe", "test");
+        ConfigHelper.configure(l, "propertyToDescribe", "test");
         l.init();
         l.start();
         System.out.println(l.getCurrentlyBestEvaluatedAxioms(3));

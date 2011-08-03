@@ -220,7 +220,7 @@ public class SparqlQuery {
 	private static void writeToSparqlLog(String s) {
 		File f = new File(sparqlLog);
 		if(!f.canWrite() ){
-			logger.info("could not write SPARQL log to : "+sparqlLog);
+			logger.info("could not write SPARQL log to : " + f.getAbsolutePath());
 			return ;
 		}	
 		

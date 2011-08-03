@@ -24,6 +24,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -731,7 +732,14 @@ public final class ComponentManager {
 		return list;
 	}
 
-
-
+	/**
+	 * Returns the name of a DL-Learner component.
+	 * @param component
+	 * @return Name of the component.
+	 */
+	public static String getName(Component component){
+		ComponentAnn ann = component.getClass().getAnnotation(ComponentAnn.class);
+		return ann.name();
+	}
 
 }

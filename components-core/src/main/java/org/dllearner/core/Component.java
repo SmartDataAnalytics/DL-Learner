@@ -53,8 +53,12 @@ public abstract class Component {
 	 * component" is returned, but all implementations of components
 	 * are strongly encouraged to provide a static method returning 
 	 * the name.
+	 * 
+	 * Use the DLComponent annotation instead of setting a name through this method.
+	 * 
 	 * @return The name of this component.
 	 */
+	@Deprecated
 	public static String getName() {
 		return "unnamed component";
 	}
