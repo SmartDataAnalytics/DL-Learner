@@ -44,6 +44,7 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
+import org.dllearner.core.owl.ReflexiveObjectPropertyAxiom;
 import org.dllearner.core.owl.StringDatatypePropertyAssertion;
 import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
@@ -235,6 +236,14 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		OWLAxiom axiomOWLAPI = factory.getOWLTransitiveObjectPropertyAxiom(role);
 		addAxiom(axiomOWLAPI);
 	}
+	
+	@Override
+	public void visit(ReflexiveObjectPropertyAxiom axiom) {
+		OWLObjectProperty role = factory.getOWLObjectProperty(
+				IRI.create(axiom.getRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLFunctionalObjectPropertyAxiom(role);
+		addAxiom(axiomOWLAPI);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.SubObjectPropertyAxiom)
@@ -357,5 +366,7 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(dp, i, valueConstant);
 		addAxiom(axiomOWLAPI);
 	}
+
+	
 
 }
