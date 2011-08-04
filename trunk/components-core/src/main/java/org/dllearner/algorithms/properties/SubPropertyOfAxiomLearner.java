@@ -3,17 +3,15 @@ package org.dllearner.algorithms.properties;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
@@ -22,11 +20,8 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
+import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -119,6 +114,7 @@ private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiom
 				result.put(prop, oldCnt);
 				qs.getLiteral("count").getInt();
 			}
+			currentlyBestAxioms = buildAxioms(result);
 			offset += 1000;
 		}
 		
@@ -164,23 +160,13 @@ private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiom
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
-	private List<EvaluatedAxiom> buildBestAxioms(Map<Individual, Set<NamedClass>> individual2Types){
+	private List<EvaluatedAxiom> buildAxioms(Map<ObjectProperty, Integer> property2Count){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
-		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
-		for(Entry<Individual, Set<NamedClass>> entry : individual2Types.entrySet()){
-			for(NamedClass nc : entry.getValue()){
-				Integer cnt = result.get(nc);
-				if(cnt == null){
-					cnt = Integer.valueOf(1);
-				}
-				result.put(nc, Integer.valueOf(cnt + 1));
-			}
-		}
 		
 		EvaluatedAxiom evalAxiom;
-		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
-			evalAxiom = new EvaluatedAxiom(new ObjectPropertyDomainAxiom(propertyToDescribe, entry.getKey()),
-					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
+		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
+			evalAxiom = new EvaluatedAxiom(new SubObjectPropertyAxiom(propertyToDescribe, entry.getKey()),
+					new AxiomScore(0));
 			axioms.add(evalAxiom);
 		}
 		
@@ -190,11 +176,11 @@ private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiom
 	/*
 	 * Returns the entries of the map sorted by value.
 	 */
-	private SortedSet<Entry<NamedClass, Integer>> sortByValues(Map<NamedClass, Integer> map){
-		SortedSet<Entry<NamedClass, Integer>> sortedSet = new TreeSet<Map.Entry<NamedClass,Integer>>(new Comparator<Entry<NamedClass, Integer>>() {
+	private SortedSet<Entry<ObjectProperty, Integer>> sortByValues(Map<ObjectProperty, Integer> map){
+		SortedSet<Entry<ObjectProperty, Integer>> sortedSet = new TreeSet<Map.Entry<ObjectProperty,Integer>>(new Comparator<Entry<ObjectProperty, Integer>>() {
 
 			@Override
-			public int compare(Entry<NamedClass, Integer> value1, Entry<NamedClass, Integer> value2) {
+			public int compare(Entry<ObjectProperty, Integer> value1, Entry<ObjectProperty, Integer> value2) {
 				if(value1.getValue() < value2.getValue()){
 					return 1;
 				} else if(value2.getValue() < value1.getValue()){
