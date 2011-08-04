@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2011, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,46 +19,12 @@
  */
 package org.dllearner.core;
 
-import java.io.File;
-import java.net.URI;
-
-import org.dllearner.core.owl.KB;
-
 /**
- * Represents a knowledge source component, e.g. OWL files, SPARQL Endpoints,
- * Linked Data.
+ * Basic interface for all DL-Learner knowledge sources.
  * 
  * @author Jens Lehmann
  *
  */
-public abstract class KnowledgeSource extends Component {
-	
-	/**
-	 * Transforms this knowledge source into an internal knowledge base.
-	 * @return An internal Knowledge base or null if this knowledge source
-	 * does not support a conversion to an internal knowledge base.
-	 */
-	public abstract KB toKB();
-	
-	/**
-	 * Transforms this knowledge source to DIG 1.1 code according to
-	 * <a href="http://dl.kr.org/dig/">the specification</a>. DIG is used
-	 * for communicating with reasoners.
-	 * 
-	 * @param kbURI The URI which is assigned to the knowledge base. The URI 
-	 * is used to refer to the knowledge base in queries (DIG supports using
-	 * several knowledge bases).
-	 * @return The DIG XML code.
-	 */
-	public abstract String toDIG(URI kbURI);
+public interface KnowledgeSource extends Component {
 
-	/**
-	 * Export the knowledge source to the specified file in the specified format.
-	 * @param file File to store the knowledge base.
-	 * @param format Format of the knowledge base, e.g. N-Triples.
-	 * @throws OntologyFormatUnsupportedException Thrown if the conversion
-	 * to the specified format is not supported by this knowledge source.
-	 */
-	public abstract void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException;
-	
 }

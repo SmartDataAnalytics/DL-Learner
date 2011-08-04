@@ -19,7 +19,7 @@
  */
 package org.dllearner.core.options;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentManager;
 
 /**
@@ -30,11 +30,11 @@ public class UnknownConfigOptionException extends Exception {
 
 	private static final long serialVersionUID = -7808637210577591687L;
 
-	public UnknownConfigOptionException(Class<? extends Component> componentClass, String optionName) {
+	public UnknownConfigOptionException(Class<? extends AbstractComponent> componentClass, String optionName) {
 		super("Option " + optionName + " unknown in component " + ComponentManager.getInstance().getComponentName(componentClass) + "(" + componentClass.getName() + ")");
 	}
 	
-	public UnknownConfigOptionException(Class<? extends Component> componentClass, ConfigOption<?> option) {
+	public UnknownConfigOptionException(Class<? extends AbstractComponent> componentClass, ConfigOption<?> option) {
 		super("Option " + option.getName() + " unknown in component " + ComponentManager.getInstance().getComponentName(componentClass) + "(" + componentClass.getName() + ")");
 	}
 	

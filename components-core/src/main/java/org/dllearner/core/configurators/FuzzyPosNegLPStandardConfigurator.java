@@ -22,7 +22,7 @@ package org.dllearner.core.configurators;
 
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard;
 
 /**
@@ -48,7 +48,7 @@ this.fuzzyPosNegLPStandard = fuzzyPosNegLPStandard;
 * @param negativeExamples negative examples
 * @return FuzzyPosNegLPStandard
 **/
-public static FuzzyPosNegLPStandard getFuzzyPosNegLPStandard(ReasonerComponent reasoningService, Set<Object> fuzzyExamples, Set<String> positiveExamples, Set<String> negativeExamples) {
+public static FuzzyPosNegLPStandard getFuzzyPosNegLPStandard(AbstractReasonerComponent reasoningService, Set<Object> fuzzyExamples, Set<String> positiveExamples, Set<String> negativeExamples) {
 FuzzyPosNegLPStandard component = ComponentManager.getInstance().learningProblem(FuzzyPosNegLPStandard.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "fuzzyExamples", fuzzyExamples);
 ComponentManager.getInstance().applyConfigEntry(component, "positiveExamples", positiveExamples);

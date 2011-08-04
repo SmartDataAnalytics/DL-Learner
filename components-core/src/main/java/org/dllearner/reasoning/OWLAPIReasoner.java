@@ -23,8 +23,8 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.OWLAPIReasonerConfigurator;
 import org.dllearner.core.options.*;
 import org.dllearner.core.owl.*;
@@ -58,7 +58,7 @@ import java.util.Map.Entry;
  *
  * @author Jens Lehmann
  */
-public class OWLAPIReasoner extends ReasonerComponent {
+public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 //	private static Logger logger = Logger
 //	.getLogger(OWLAPIReasoner.class);	
@@ -104,7 +104,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
     // references to OWL API ontologies
     private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
 
-    public OWLAPIReasoner(Set<KnowledgeSource> sources) {
+    public OWLAPIReasoner(Set<AbstractKnowledgeSource> sources) {
         super(sources);
         this.configurator = new OWLAPIReasonerConfigurator(this);
     }
@@ -172,7 +172,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
         Set<OWLOntology> allImports = new HashSet<OWLOntology>();
         prefixes = new TreeMap<String, String>();
 
-        for (KnowledgeSource source : sources) {
+        for (AbstractKnowledgeSource source : sources) {
 
             if (source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof OWLAPIOntology) {
                 URL url = null;

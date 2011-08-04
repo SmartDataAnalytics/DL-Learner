@@ -35,11 +35,11 @@ import org.dllearner.algorithms.fuzzydll.FuzzyCELOE;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.core.Component;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
@@ -68,16 +68,16 @@ import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
 public class ConfMapper {
 
 	// mappings between component classes and their names in conf files
-	private static Map<String,Class<? extends KnowledgeSource>> knowledgeSourceMapping = new TreeMap<String,Class<? extends KnowledgeSource>>();
-	private static Map<String,Class<? extends ReasonerComponent>> reasonerMapping = new TreeMap<String,Class<? extends ReasonerComponent>>();
-	private static Map<String,Class<? extends LearningProblem>> learningProblemMapping = new TreeMap<String,Class<? extends LearningProblem>>();
+	private static Map<String,Class<? extends AbstractKnowledgeSource>> knowledgeSourceMapping = new TreeMap<String,Class<? extends AbstractKnowledgeSource>>();
+	private static Map<String,Class<? extends AbstractReasonerComponent>> reasonerMapping = new TreeMap<String,Class<? extends AbstractReasonerComponent>>();
+	private static Map<String,Class<? extends AbstractLearningProblem>> learningProblemMapping = new TreeMap<String,Class<? extends AbstractLearningProblem>>();
 	private static Map<String,Class<? extends AbstractCELA>> learningAlgorithmMapping = new TreeMap<String,Class<? extends AbstractCELA>>();
-	private static TreeMap<String,Class<? extends Component>> componentMapping = new TreeMap<String,Class<? extends Component>>();		
-	private static HashMap<Class<? extends Component>, String> inverseMapping = new HashMap<Class<? extends Component>, String>();		
+	private static TreeMap<String,Class<? extends AbstractComponent>> componentMapping = new TreeMap<String,Class<? extends AbstractComponent>>();		
+	private static HashMap<Class<? extends AbstractComponent>, String> inverseMapping = new HashMap<Class<? extends AbstractComponent>, String>();		
 	
 	// component types
-	private static Map<String,Class<? extends Component>> componentTypeMapping = new TreeMap<String,Class<? extends Component>>();
-	private static Map<Class<? extends Component>, String> inverseTypeMapping = new HashMap<Class<? extends Component>,String>();	
+	private static Map<String,Class<? extends AbstractComponent>> componentTypeMapping = new TreeMap<String,Class<? extends AbstractComponent>>();
+	private static Map<Class<? extends AbstractComponent>, String> inverseTypeMapping = new HashMap<Class<? extends AbstractComponent>,String>();	
 	
 	// set of available components
 	private static Set<String> components = new TreeSet<String>();
@@ -121,7 +121,7 @@ public class ConfMapper {
 		componentMapping.putAll(learningAlgorithmMapping);
 		
 		// build inverse mapping
-		for(Entry<String, Class<? extends Component>> entry : componentMapping.entrySet()) {
+		for(Entry<String, Class<? extends AbstractComponent>> entry : componentMapping.entrySet()) {
 			inverseMapping.put(entry.getValue(), entry.getKey());
 		}		
 		
@@ -130,27 +130,27 @@ public class ConfMapper {
 	
 	private static void buildKeys() {
 		// edit this part manually
-		componentTypeMapping.put("import", KnowledgeSource.class);
-		componentTypeMapping.put("reasoner", ReasonerComponent.class);
-		componentTypeMapping.put("problem", LearningProblem.class);
+		componentTypeMapping.put("import", AbstractKnowledgeSource.class);
+		componentTypeMapping.put("reasoner", AbstractReasonerComponent.class);
+		componentTypeMapping.put("problem", AbstractLearningProblem.class);
 		componentTypeMapping.put("algorithm", AbstractCELA.class);
 		
 		// you do not need to edit anything below
 		// build inverse mapping
-		for(Entry<String, Class<? extends Component>> entry : componentTypeMapping.entrySet()) {
+		for(Entry<String, Class<? extends AbstractComponent>> entry : componentTypeMapping.entrySet()) {
 			inverseTypeMapping.put(entry.getValue(), entry.getKey());
 		}
 	}
 	
-	public Class<? extends KnowledgeSource> getKnowledgeSourceClass(String confString) {
+	public Class<? extends AbstractKnowledgeSource> getKnowledgeSourceClass(String confString) {
 		return knowledgeSourceMapping.get(confString);
 	}	
 	
-	public Class<? extends ReasonerComponent> getReasonerComponentClass(String confString) {
+	public Class<? extends AbstractReasonerComponent> getReasonerComponentClass(String confString) {
 		return reasonerMapping.get(confString);
 	}
 	
-	public Class<? extends LearningProblem> getLearningProblemClass(String confString) {
+	public Class<? extends AbstractLearningProblem> getLearningProblemClass(String confString) {
 		return learningProblemMapping.get(confString);
 	}
 	
@@ -158,19 +158,19 @@ public class ConfMapper {
 		return learningAlgorithmMapping.get(confString);
 	}
 	
-	public Class<? extends Component> getComponentClass(String confString) {
+	public Class<? extends AbstractComponent> getComponentClass(String confString) {
 		return componentMapping.get(confString);
 	}
 	
-	public String getComponentString(Class<? extends Component> clazz) {
+	public String getComponentString(Class<? extends AbstractComponent> clazz) {
 		return inverseMapping.get(clazz);
 	}
 	
-	public Class<? extends Component> getComponentTypeClass(String typeString) {
+	public Class<? extends AbstractComponent> getComponentTypeClass(String typeString) {
 		return componentTypeMapping.get(typeString);
 	}	
 	
-	public String getComponentTypeString(Class<? extends Component> typeClass) {
+	public String getComponentTypeString(Class<? extends AbstractComponent> typeClass) {
 		return inverseTypeMapping.get(typeClass);
 	}
 	

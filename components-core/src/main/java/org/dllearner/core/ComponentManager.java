@@ -69,10 +69,10 @@ public final class ComponentManager {
 	private ComponentPool pool = new ComponentPool();
 	
 	// these variables are valid for the complete lifetime of a DL-Learner session
-	private static Collection<Class<? extends Component>> components;
-	private static Collection<Class<? extends KnowledgeSource>> knowledgeSources;
-	private static Collection<Class<? extends ReasonerComponent>> reasonerComponents;
-	private static Collection<Class<? extends LearningProblem>> learningProblems;
+	private static Collection<Class<? extends AbstractComponent>> components;
+	private static Collection<Class<? extends AbstractKnowledgeSource>> knowledgeSources;
+	private static Collection<Class<? extends AbstractReasonerComponent>> reasonerComponents;
+	private static Collection<Class<? extends AbstractLearningProblem>> learningProblems;
 	private static Collection<Class<? extends AbstractCELA>> learningAlgorithms;
 	// you can either use the components.ini file or directly specify the classes to use
 	@Deprecated
@@ -114,11 +114,11 @@ public final class ComponentManager {
 	private static ComponentManager cm = null;	
 
 	// list of all configuration options of all components
-	private static Map<Class<? extends Component>, String> componentNames;
-	private static Map<Class<? extends Component>, List<ConfigOption<?>>> componentOptions;
-	private static Map<Class<? extends Component>, Map<String, ConfigOption<?>>> componentOptionsByName;
-	private static Map<Class<? extends AbstractCELA>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
-	private static Map<Class<? extends LearningProblem>, Collection<Class<? extends AbstractCELA>>> problemAlgorithmsMapping;
+	private static Map<Class<? extends AbstractComponent>, String> componentNames;
+	private static Map<Class<? extends AbstractComponent>, List<ConfigOption<?>>> componentOptions;
+	private static Map<Class<? extends AbstractComponent>, Map<String, ConfigOption<?>>> componentOptionsByName;
+	private static Map<Class<? extends AbstractCELA>, Collection<Class<? extends AbstractLearningProblem>>> algorithmProblemsMapping;
+	private static Map<Class<? extends AbstractLearningProblem>, Collection<Class<? extends AbstractCELA>>> problemAlgorithmsMapping;
 	
 	// list of default values of config options
 //	private static Map<ConfigOption<?>,Object> configOptionDefaults;
@@ -145,31 +145,31 @@ public final class ComponentManager {
        //List<String> componentsString2 = Arrays.asList(componentClasses);
 
 		// component list
-		components = new TreeSet<Class<? extends Component>>(classComparator);
-		knowledgeSources = new TreeSet<Class<? extends KnowledgeSource>>(classComparator);
-		reasonerComponents = new TreeSet<Class<? extends ReasonerComponent>>(classComparator);
-		learningProblems = new TreeSet<Class<? extends LearningProblem>>(classComparator);
+		components = new TreeSet<Class<? extends AbstractComponent>>(classComparator);
+		knowledgeSources = new TreeSet<Class<? extends AbstractKnowledgeSource>>(classComparator);
+		reasonerComponents = new TreeSet<Class<? extends AbstractReasonerComponent>>(classComparator);
+		learningProblems = new TreeSet<Class<? extends AbstractLearningProblem>>(classComparator);
 		learningAlgorithms = new TreeSet<Class<? extends AbstractCELA>>(classComparator);
-		algorithmProblemsMapping = new TreeMap<Class<? extends AbstractCELA>, Collection<Class<? extends LearningProblem>>>(
+		algorithmProblemsMapping = new TreeMap<Class<? extends AbstractCELA>, Collection<Class<? extends AbstractLearningProblem>>>(
 				classComparator);		
 
 		// create classes from strings
 		for (String componentString : componentClasses) {
 			try {
-				Class<? extends Component> component = Class.forName(componentString).asSubclass(
-						Component.class);
+				Class<? extends AbstractComponent> component = Class.forName(componentString).asSubclass(
+						AbstractComponent.class);
 				components.add(component);
 
-				if (KnowledgeSource.class.isAssignableFrom(component)) {
-					knowledgeSources.add((Class<? extends KnowledgeSource>) component);
-				} else if (ReasonerComponent.class.isAssignableFrom(component)) {
-					reasonerComponents.add((Class<? extends ReasonerComponent>) component);
-				} else if (LearningProblem.class.isAssignableFrom(component)) {
-					learningProblems.add((Class<? extends LearningProblem>) component);
+				if (AbstractKnowledgeSource.class.isAssignableFrom(component)) {
+					knowledgeSources.add((Class<? extends AbstractKnowledgeSource>) component);
+				} else if (AbstractReasonerComponent.class.isAssignableFrom(component)) {
+					reasonerComponents.add((Class<? extends AbstractReasonerComponent>) component);
+				} else if (AbstractLearningProblem.class.isAssignableFrom(component)) {
+					learningProblems.add((Class<? extends AbstractLearningProblem>) component);
 				} else if (AbstractCELA.class.isAssignableFrom(component)) {
 					Class<? extends AbstractCELA> learningAlgorithmClass = (Class<? extends AbstractCELA>) component;
 					learningAlgorithms.add(learningAlgorithmClass);
-					Collection<Class<? extends LearningProblem>> problems = (Collection<Class<? extends LearningProblem>>) invokeStaticMethod(
+					Collection<Class<? extends AbstractLearningProblem>> problems = (Collection<Class<? extends AbstractLearningProblem>>) invokeStaticMethod(
 							learningAlgorithmClass, "supportedLearningProblems");
 					algorithmProblemsMapping.put(learningAlgorithmClass, problems);
 				}
@@ -180,13 +180,13 @@ public final class ComponentManager {
 		}
 		problemAlgorithmsMapping = Maps.revertCollectionMap(algorithmProblemsMapping);
 
-		componentNames = new HashMap<Class<? extends Component>, String>();
+		componentNames = new HashMap<Class<? extends AbstractComponent>, String>();
 		// read in all configuration options
-		componentOptions = new HashMap<Class<? extends Component>, List<ConfigOption<?>>>();
-		componentOptionsByName = new HashMap<Class<? extends Component>, Map<String, ConfigOption<?>>>();
+		componentOptions = new HashMap<Class<? extends AbstractComponent>, List<ConfigOption<?>>>();
+		componentOptionsByName = new HashMap<Class<? extends AbstractComponent>, Map<String, ConfigOption<?>>>();
 //		configOptionDefaults = new HashMap<ConfigOption<?>,Object>();
 				
-		for (Class<? extends Component> component : components) {
+		for (Class<? extends AbstractComponent> component : components) {
 
 			String name = (String) invokeStaticMethod(component, "getName");
 			componentNames.put(component, name);
@@ -269,7 +269,7 @@ public final class ComponentManager {
 	 * @param value The value of the config option.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> void applyConfigEntry(Component component, String optionName, T value) {
+	public <T> void applyConfigEntry(AbstractComponent component, String optionName, T value) {
 		logger.trace(component);
 		logger.trace(optionName);
 		logger.trace(value);
@@ -323,7 +323,7 @@ public final class ComponentManager {
 	 * @param entry The configuration entry to set.
 	 * @return True of the config entry could be applied succesfully, otherwise false.
 	 */
-	public <T> boolean applyConfigEntry(Component component, ConfigEntry<T> entry) {
+	public <T> boolean applyConfigEntry(AbstractComponent component, ConfigEntry<T> entry) {
 		try {
 			component.applyConfigEntry(entry);
 			pool.addConfigEntry(component, entry, true);
@@ -342,7 +342,7 @@ public final class ComponentManager {
 	 * @param source A registered knowledge source component.
 	 * @return An instance of the given knowledge source class.
 	 */
-	public <T extends KnowledgeSource> T knowledgeSource(Class<T> source) {
+	public <T extends AbstractKnowledgeSource> T knowledgeSource(Class<T> source) {
 		if (!knowledgeSources.contains(source)) {
 			logger.warn("Warning: knowledge source " + source
 					+ " is not a registered knowledge source component.");
@@ -364,9 +364,9 @@ public final class ComponentManager {
 	 * @param source A knowledge source.
 	 * @return A reasoner component.
 	 */
-	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
-			KnowledgeSource source) {
-		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
+	public <T extends AbstractReasonerComponent> T reasoner(Class<T> reasoner,
+			AbstractKnowledgeSource source) {
+		Set<AbstractKnowledgeSource> sources = new HashSet<AbstractKnowledgeSource>();
 		sources.add(source);
 		return reasoner(reasoner, sources);
 	}
@@ -374,14 +374,14 @@ public final class ComponentManager {
 	/**
 	 * Factory method for creating a reasoner component from a set of
 	 * knowledge sources.
-	 * @see #reasoner(Class, KnowledgeSource)
+	 * @see #reasoner(Class, AbstractKnowledgeSource)
 	 * @param <T> The type of this method is a subclass of reasoner component.
 	 * @param reasoner A class object, where the class is subclass of ReasonerComponent.
 	 * @param sources A set of knowledge sources.
 	 * @return A reasoner component.
 	 */
-	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
-			Set<KnowledgeSource> sources) {
+	public <T extends AbstractReasonerComponent> T reasoner(Class<T> reasoner,
+			Set<AbstractKnowledgeSource> sources) {
 		if (!reasonerComponents.contains(reasoner)) {
 			System.err.println("Warning: reasoner component " + reasoner
 					+ " is not a registered reasoner component.");
@@ -396,16 +396,16 @@ public final class ComponentManager {
 	/**
 	 * Factory method for creating a reasoner component from a set of
 	 * knowledge sources.
-	 * @see #reasoner(Class, KnowledgeSource)
+	 * @see #reasoner(Class, AbstractKnowledgeSource)
 	 * @param <T> The type of this method is a subclass of reasoner component.
 	 * @param reasoner A class object, where the class is subclass of ReasonerComponent.
 	 * @param sources A set of knowledge sources.
 	 * @return A reasoner component.
 	 */
-	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
-			KnowledgeSource ... sources) {
-		Set<KnowledgeSource> s = new HashSet<KnowledgeSource>();
-		for(KnowledgeSource source : sources) {
+	public <T extends AbstractReasonerComponent> T reasoner(Class<T> reasoner,
+			AbstractKnowledgeSource ... sources) {
+		Set<AbstractKnowledgeSource> s = new HashSet<AbstractKnowledgeSource>();
+		for(AbstractKnowledgeSource source : sources) {
 			s.add(source);
 		}
 		return reasoner(reasoner, s);
@@ -434,13 +434,13 @@ public final class ComponentManager {
 	 * @param reasoner A reasoning service object.
 	 * @return A learning problem component.
 	 */
-	public <T extends LearningProblem> T learningProblem(Class<T> lpClass, ReasonerComponent reasoner) {
+	public <T extends AbstractLearningProblem> T learningProblem(Class<T> lpClass, AbstractReasonerComponent reasoner) {
 		if (!learningProblems.contains(lpClass)) {
 			System.err.println("Warning: learning problem " + lpClass
 					+ " is not a registered learning problem component.");
 		}
 
-		T lp = invokeConstructor(lpClass, new Class[] { ReasonerComponent.class },
+		T lp = invokeConstructor(lpClass, new Class[] { AbstractReasonerComponent.class },
 				new Object[] { reasoner });
 		pool.registerComponent(lp);
 		return lp;
@@ -457,7 +457,7 @@ public final class ComponentManager {
 	 * @throws LearningProblemUnsupportedException Thrown when the learning problem and
 	 * the learning algorithm are not compatible.
 	 */
-	public <T extends AbstractCELA> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasonerComponent rs) throws LearningProblemUnsupportedException {
+	public <T extends AbstractCELA> T learningAlgorithm(Class<T> laClass, AbstractLearningProblem lp, AbstractReasonerComponent rs) throws LearningProblemUnsupportedException {
 		if (!learningAlgorithms.contains(laClass)) {
 			System.err.println("Warning: learning algorithm " + laClass
 					+ " is not a registered learning algorithm component.");
@@ -465,8 +465,8 @@ public final class ComponentManager {
 
 		// find the right constructor: use the one that is registered and
 		// has the class of the learning problem as a subclass
-		Class<? extends LearningProblem> constructorArgument = null;
-		for (Class<? extends LearningProblem> problemClass : algorithmProblemsMapping.get(laClass)) {
+		Class<? extends AbstractLearningProblem> constructorArgument = null;
+		for (Class<? extends AbstractLearningProblem> problemClass : algorithmProblemsMapping.get(laClass)) {
 			if (problemClass.isAssignableFrom(lp.getClass())) {
 				constructorArgument = problemClass;
 			}
@@ -481,11 +481,16 @@ public final class ComponentManager {
 //			return null;
 		}
 
-		T la = invokeConstructor(laClass, new Class[] { constructorArgument, ReasonerComponent.class }, new Object[] { lp, rs });
+		T la = invokeConstructor(laClass, new Class[] { constructorArgument, AbstractReasonerComponent.class }, new Object[] { lp, rs });
 		pool.registerComponent(la);
 		return la;
 	}
 
+	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, AbstractKnowledgeSource ks) throws LearningProblemUnsupportedException {
+		T la = invokeConstructor(laClass, new Class[] { AbstractKnowledgeSource.class }, new Object[] { ks });
+		return la;
+	}	
+	
 	/**
 	 * The <code>ComponentManager</code> factory methods produce component
 	 * instances, which can be freed using this method. Calling the factory
@@ -494,13 +499,13 @@ public final class ComponentManager {
 	 * 
 	 * @param component The component to free. 
 	 */
-	public void freeComponent(Component component) {
+	public void freeComponent(AbstractComponent component) {
 		pool.unregisterComponent(component);
 	}
 	
 	/**
 	 * Frees all references to components created by <code>ComponentManager</code>.
-	 * @see #freeComponent(Component)
+	 * @see #freeComponent(AbstractComponent)
 	 */
 	public synchronized void  freeAllComponents() {
 		pool.clearComponents();
@@ -509,7 +514,7 @@ public final class ComponentManager {
 	/**
 	 * Gets the value of a config option of the specified component.
 	 * This is done by first checking, which value the given option
-	 * was set to using {@link #applyConfigEntry(Component, ConfigEntry)}.
+	 * was set to using {@link #applyConfigEntry(AbstractComponent, ConfigEntry)}.
 	 * If the value has not been changed, the default value for this
 	 * option is returned. Note, that this method will not work properly
 	 * if the component options are changed internally surpassing the
@@ -520,7 +525,7 @@ public final class ComponentManager {
 	 * @param option The option for which we want to know its value.
 	 * @return The value of the specified option in the specified component.
 	 */
-	public <T> T getConfigOptionValue(Component component, ConfigOption<T> option) {
+	public <T> T getConfigOptionValue(AbstractComponent component, ConfigOption<T> option) {
 		T object = pool.getLastValidConfigValue(component, option);
 		if(object==null) {
 			return option.getDefaultValue();
@@ -530,15 +535,15 @@ public final class ComponentManager {
 	}
 	
 	/**
-	 * Works as {@link #getConfigOptionValue(Component, ConfigOption)},
+	 * Works as {@link #getConfigOptionValue(AbstractComponent, ConfigOption)},
 	 * but using the name of the option instead of a <code>ConfigOption</code>
 	 * object.
-	 * @see #getConfigOptionValue(Component, ConfigOption)
+	 * @see #getConfigOptionValue(AbstractComponent, ConfigOption)
 	 * @param component A component.
 	 * @param optionName A valid option name for this component.
 	 * @return The value of the specified option in the specified component.
 	 */
-	public Object getConfigOptionValue(Component component, String optionName) {
+	public Object getConfigOptionValue(AbstractComponent component, String optionName) {
 		ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(
 				component.getClass()).get(optionName);
 		return getConfigOptionValue(component, option);
@@ -547,7 +552,7 @@ public final class ComponentManager {
 	// convenience method for invoking a static method;
 	// used as a central point for exception handling for Java reflection
 	// static method calls	
-	private Object invokeStaticMethod(Class<?> clazz, String methodName, Object... args) {
+	private static Object invokeStaticMethod(Class<?> clazz, String methodName, Object... args) {
 		// unfortunately Java does not seem to offer a way to call
 		// a static method given a class object directly, so we have
 		// to use reflection
@@ -598,7 +603,7 @@ public final class ComponentManager {
 	 * @param componentClass The class object of a component.
 	 * @return A list of available configuration options of the specified component.
 	 */
-	public static List<ConfigOption<?>> getConfigOptions(Class<? extends Component> componentClass) {
+	public static List<ConfigOption<?>> getConfigOptions(Class<? extends AbstractComponent> componentClass) {
 		if (!components.contains(componentClass)) {
 			System.err.println("Warning: component " + componentClass
 					+ " is not a registered component. [ComponentManager.getConfigOptions]");
@@ -613,7 +618,7 @@ public final class ComponentManager {
 	 * @param name A valid configuration option name for the component.
 	 * @return A <code>ConfigOption</code> object for the specified component class and option name.
 	 */
-	public ConfigOption<?> getConfigOption(Class<? extends Component> component, String name) {
+	public ConfigOption<?> getConfigOption(Class<? extends AbstractComponent> component, String name) {
 		return componentOptionsByName.get(component).get(name);
 	}
 	
@@ -622,7 +627,7 @@ public final class ComponentManager {
 	 * @param component A component class object.
 	 * @return The name of the component.
 	 */
-	public String getComponentName(Class<? extends Component> component) {
+	public String getComponentName(Class<? extends AbstractComponent> component) {
 		return componentNames.get(component);
 	}
 
@@ -632,8 +637,8 @@ public final class ComponentManager {
 	 * @return the components A list of component classes available in this
 	 * instance of <code>ComponentManager</code>.
 	 */
-	public List<Class<? extends Component>> getComponents() {
-		return new LinkedList<Class<? extends Component>>(components);
+	public List<Class<? extends AbstractComponent>> getComponents() {
+		return new LinkedList<Class<? extends AbstractComponent>>(components);
 	}
 
 	/**
@@ -642,8 +647,8 @@ public final class ComponentManager {
 	 * @return the components A list of knowledge source component classes available in this
 	 * instance of <code>ComponentManager</code>.
 	 */
-	public List<Class<? extends KnowledgeSource>> getKnowledgeSources() {
-		return new LinkedList<Class<? extends KnowledgeSource>>(knowledgeSources);
+	public List<Class<? extends AbstractKnowledgeSource>> getKnowledgeSources() {
+		return new LinkedList<Class<? extends AbstractKnowledgeSource>>(knowledgeSources);
 	}
 
 	/**
@@ -652,8 +657,8 @@ public final class ComponentManager {
 	 * @return the components A list of reasoner component classes available in this
 	 * instance of <code>ComponentManager</code>.
 	 */	
-	public List<Class<? extends ReasonerComponent>> getReasonerComponents() {
-		return new LinkedList<Class<? extends ReasonerComponent>>(reasonerComponents);
+	public List<Class<? extends AbstractReasonerComponent>> getReasonerComponents() {
+		return new LinkedList<Class<? extends AbstractReasonerComponent>>(reasonerComponents);
 	}
 
 	/**
@@ -662,8 +667,8 @@ public final class ComponentManager {
 	 * @return the components A list of learning problem classes available in this
 	 * instance of <code>ComponentManager</code>.
 	 */		
-	public List<Class<? extends LearningProblem>> getLearningProblems() {
-		return new LinkedList<Class<? extends LearningProblem>>(learningProblems);
+	public List<Class<? extends AbstractLearningProblem>> getLearningProblems() {
+		return new LinkedList<Class<? extends AbstractLearningProblem>>(learningProblems);
 	}
 
 	/**
@@ -671,10 +676,10 @@ public final class ComponentManager {
 	 * @param learningProblem A learning problem type.
 	 * @return The set of learning algorithms applicable for this learning problem.
 	 */
-	public List<Class<? extends AbstractCELA>> getApplicableLearningAlgorithms(Class<? extends LearningProblem> learningProblem) {
+	public List<Class<? extends AbstractCELA>> getApplicableLearningAlgorithms(Class<? extends AbstractLearningProblem> learningProblem) {
 		List<Class<? extends AbstractCELA>> algorithms = new LinkedList<Class<? extends AbstractCELA>>();
-		for(Entry<Class<? extends LearningProblem>,Collection<Class<? extends AbstractCELA>>> entry : problemAlgorithmsMapping.entrySet()) {
-			Class<? extends LearningProblem> prob = entry.getKey();
+		for(Entry<Class<? extends AbstractLearningProblem>,Collection<Class<? extends AbstractCELA>>> entry : problemAlgorithmsMapping.entrySet()) {
+			Class<? extends AbstractLearningProblem> prob = entry.getKey();
 			if(prob.isAssignableFrom(learningProblem)) {
 				algorithms.addAll(entry.getValue());
 			}
@@ -698,7 +703,7 @@ public final class ComponentManager {
 	 * Retuns a list of all instanciated and registered Components 
 	 * @return Currently active components.
 	 */
-	public List<Component> getLiveComponents(){
+	public List<AbstractComponent> getLiveComponents(){
 		return pool.getComponents();
 	}
 	
@@ -708,7 +713,7 @@ public final class ComponentManager {
 	 */
 	public List<AbstractCELA> getLiveLearningAlgorithms(){
 		List<AbstractCELA> list = new ArrayList<AbstractCELA>();
-		for (Component component : cm.getLiveComponents()) {
+		for (AbstractComponent component : cm.getLiveComponents()) {
 			if(component instanceof AbstractCELA){
 				list.add((AbstractCELA) component);
 			}
@@ -721,11 +726,11 @@ public final class ComponentManager {
 	 *  Retuns a list of all instanciated and registered KnowledgeSource 
 	 * @return Currently active knowledge sources.
 	 */
-	public List<KnowledgeSource> getLiveKnowledgeSources(){
-		List<KnowledgeSource> list = new ArrayList<KnowledgeSource>();
-		for (Component component : cm.getLiveComponents()) {
-			if(component instanceof KnowledgeSource){
-				list.add((KnowledgeSource) component);
+	public List<AbstractKnowledgeSource> getLiveKnowledgeSources(){
+		List<AbstractKnowledgeSource> list = new ArrayList<AbstractKnowledgeSource>();
+		for (AbstractComponent component : cm.getLiveComponents()) {
+			if(component instanceof AbstractKnowledgeSource){
+				list.add((AbstractKnowledgeSource) component);
 			}
 			
 		}
@@ -737,7 +742,7 @@ public final class ComponentManager {
 	 * @param component
 	 * @return Name of the component.
 	 */
-	public static String getName(Component component){
+	public static String getName(AbstractComponent component){
 		ComponentAnn ann = component.getClass().getAnnotation(ComponentAnn.class);
 		return ann.name();
 	}

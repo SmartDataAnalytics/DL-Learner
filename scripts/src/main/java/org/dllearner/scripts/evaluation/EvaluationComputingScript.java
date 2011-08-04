@@ -23,7 +23,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
@@ -40,7 +40,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 
 public class EvaluationComputingScript {
 	
-	private ReasonerComponent reasoner;
+	private AbstractReasonerComponent reasoner;
 	private OWLFile ks;
 	
 	private String baseURI;

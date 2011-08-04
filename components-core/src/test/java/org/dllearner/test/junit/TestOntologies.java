@@ -24,8 +24,8 @@ import java.net.MalformedURLException;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
@@ -43,7 +43,7 @@ public final class TestOntologies {
 
 	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER, FATHER_OE, CARCINOGENESIS, EPC_OE, KRK_ZERO_ONE, DBPEDIA_OWL, TRAINS_OWL, RHO1, SWORE, MDM };
 	
-	public static ReasonerComponent getTestOntology(TestOntology ont) {
+	public static AbstractReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
 		String owlFile = "";
 		
@@ -140,7 +140,7 @@ public final class TestOntologies {
 		
 		try {	
 			ComponentManager cm = ComponentManager.getInstance();
-			KnowledgeSource source;
+			AbstractKnowledgeSource source;
 			
 			// parse KB string if one has been specified
 			if(!kbString.isEmpty() || ont.equals(TestOntology.EMPTY)) {
@@ -156,7 +156,7 @@ public final class TestOntologies {
 				}			
 			}
 			
-			ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, source);
+			AbstractReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, source);
 //			ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, source);
 			source.init();
 			rc.init();

@@ -36,7 +36,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
@@ -305,7 +305,7 @@ public class WikipediaCategoryCleaner {
 			
 			
 			
-			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 			tmp.add(ks);
 			// reasoner
 			FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
@@ -432,7 +432,7 @@ public class WikipediaCategoryCleaner {
 		logger.setLevel(Level.DEBUG);
 		Logger.getLogger(Manager.class).setLevel(Level.INFO);
 		Level lwarn = Level.WARN;
-		Logger.getLogger(KnowledgeSource.class).setLevel(lwarn);
+		Logger.getLogger(AbstractKnowledgeSource.class).setLevel(lwarn);
 		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(lwarn);
 		
 		Logger.getLogger(ExtractionAlgorithm.class).setLevel(lwarn);

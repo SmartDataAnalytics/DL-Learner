@@ -22,10 +22,10 @@ import org.dllearner.algorithms.ocel.ROLearner2;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ComponentPool;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
@@ -444,8 +444,8 @@ public class TestIterativeLearning {
 
 	}
 
-	private static Set<KnowledgeSource> _getOWL(Examples ex) throws Exception {
-		Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+	private static Set<AbstractKnowledgeSource> _getOWL(Examples ex) throws Exception {
+		Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 		List<URL> urls = new ArrayList<URL>();
 		urls.add(new File(backgroundXML).toURI().toURL());
 		urls.addAll(ExampleDataCollector.convert(sentenceXMLFolder, ex.getPosTrain()));
@@ -499,11 +499,11 @@ public class TestIterativeLearning {
 	// }
 
 	public static FastInstanceChecker _getFastInstanceChecker(Examples ex) throws Exception {
-		Set<KnowledgeSource> tmp = _getOWL(ex);
+		Set<AbstractKnowledgeSource> tmp = _getOWL(ex);
 		// Set<KnowledgeSource> tmp = _getSPARQL(ex);
 
 		FastInstanceChecker rc = ComponentFactory.getFastInstanceChecker(tmp);
-		for (KnowledgeSource ks : tmp) {
+		for (AbstractKnowledgeSource ks : tmp) {
 			ks.init();
 		}
 		rc.init();
@@ -625,7 +625,7 @@ public class TestIterativeLearning {
 		}
 	}
 
-	private static AbstractCELA _getROLLearner(LearningProblem lp, ReasonerComponent rc,
+	private static AbstractCELA _getROLLearner(AbstractLearningProblem lp, AbstractReasonerComponent rc,
 			IteratedConfig config, Examples ex, int iteration) throws Exception {
 
 		int maxExecutionTime = config.maxExecutionTime;

@@ -46,19 +46,19 @@ import org.dllearner.utilities.owl.ConceptTransformation;
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractCELA extends Component implements ClassExpressionLearningAlgorithm, StoppableLearningAlgorithm {
+public abstract class AbstractCELA extends AbstractComponent implements ClassExpressionLearningAlgorithm, StoppableLearningAlgorithm {
 
 	/**
 	 * The learning problem variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
-	protected LearningProblem learningProblem;
+	protected AbstractLearningProblem learningProblem;
 	
 	/**
 	 * The reasoning service variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
-	protected ReasonerComponent reasoner;
+	protected AbstractReasonerComponent reasoner;
 
 	/**
 	 * Each learning algorithm gets a learning problem and
@@ -67,7 +67,7 @@ public abstract class AbstractCELA extends Component implements ClassExpressionL
 	 * @param reasoningService The reasoner connecting to the
 	 * underlying knowledge base.
 	 */
-	public AbstractCELA(LearningProblem learningProblem, ReasonerComponent reasoningService) {
+	public AbstractCELA(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoner = reasoningService;
 	}
@@ -81,7 +81,7 @@ public abstract class AbstractCELA extends Component implements ClassExpressionL
 	 * indeed changes the learning problem.
 	 * @param learningProblem The new learning problem.
 	 */
-	public void changeLearningProblem(LearningProblem learningProblem) {
+	public void changeLearningProblem(AbstractLearningProblem learningProblem) {
 		this.learningProblem = learningProblem;
 	}
 
@@ -94,7 +94,7 @@ public abstract class AbstractCELA extends Component implements ClassExpressionL
 	 * indeed changes the reasoning service.
 	 * @param reasoningService The new reasoning service.
 	 */
-	public void changeReasonerComponent(ReasonerComponent reasoningService) {
+	public void changeReasonerComponent(AbstractReasonerComponent reasoningService) {
 		this.reasoner = reasoningService;
 	}
 	
@@ -267,8 +267,8 @@ public abstract class AbstractCELA extends Component implements ClassExpressionL
 	 * an algorithm is only suitable for positive only learning. 
 	 * @return All classes implementing learning problems, which are supported by this learning algorithm.
 	 */
-	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
-		return new LinkedList<Class<? extends LearningProblem>>();
+	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
+		return new LinkedList<Class<? extends AbstractLearningProblem>>();
 	}
 	
 }

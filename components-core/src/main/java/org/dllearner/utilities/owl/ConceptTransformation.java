@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
@@ -476,7 +476,7 @@ public class ConceptTransformation {
 	// replaces EXISTS hasChild.TOP with EXISTS hasChild.Person, 
 	// i.e. TOP is replaced by the range of the property; 
 	// this is semantically equivalent, but easier to read for some people
-	public static void replaceRange(Description description, ReasonerComponent rs) {
+	public static void replaceRange(Description description, AbstractReasonerComponent rs) {
 		if(description instanceof ObjectSomeRestriction && description.getChild(0) instanceof Thing) {
 			ObjectPropertyExpression p = ((ObjectSomeRestriction)description).getRole();
 			if(p instanceof ObjectProperty) {

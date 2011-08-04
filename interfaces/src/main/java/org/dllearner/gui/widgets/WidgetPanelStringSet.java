@@ -37,7 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.options.StringSetConfigOption;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -81,7 +81,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 	 * @param component The component of this option.
 	 * @param configOption The option to configure.
 	 */
-	public WidgetPanelStringSet(Config config, Component component, StringSetConfigOption configOption) {
+	public WidgetPanelStringSet(Config config, AbstractComponent component, StringSetConfigOption configOption) {
 		super(config, component, configOption);
 	}
 

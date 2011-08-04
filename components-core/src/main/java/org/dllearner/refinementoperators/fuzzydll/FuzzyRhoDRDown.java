@@ -34,7 +34,7 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -94,7 +94,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 	private static Logger logger = Logger
 	.getLogger(FuzzyRhoDRDown.class);	
 	
-	private ReasonerComponent rs;
+	private AbstractReasonerComponent rs;
 	
 	// hierarchies
 	private ClassHierarchy subHierarchy;
@@ -196,14 +196,14 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABDisjoint = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 	
-	public FuzzyRhoDRDown(ReasonerComponent reasoningService) {
+	public FuzzyRhoDRDown(AbstractReasonerComponent reasoningService) {
 //		this(reasoningService, reasoningService.getClassHierarchy(), null, true, true, true, true, true, 3, true, true, true, true, null);
 		this.rs = reasoningService;
 		this.subHierarchy = rs.getClassHierarchy();
 		init();
 	}
 	
-	public FuzzyRhoDRDown(ReasonerComponent reasoner, ClassHierarchy subHierarchy, Description startClass, RefinementOperatorConfigurator configurator) {
+	public FuzzyRhoDRDown(AbstractReasonerComponent reasoner, ClassHierarchy subHierarchy, Description startClass, RefinementOperatorConfigurator configurator) {
 		this.rs = reasoner;
 		this.subHierarchy = subHierarchy;
 		this.startClass = startClass;
@@ -225,7 +225,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 	// this should be an interface implemented e.g. by ExampleBasedROLComponentConfigurator;
 	// the goal is to use the configurator system while still being flexible enough to
 	// use one refinement operator in several learning algorithms
-	public FuzzyRhoDRDown(ReasonerComponent reasoningService, ClassHierarchy subHierarchy, OCELConfigurator configurator, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
+	public FuzzyRhoDRDown(AbstractReasonerComponent reasoningService, ClassHierarchy subHierarchy, OCELConfigurator configurator, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
 			boolean useExistsConstructor, boolean useHasValueConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
 		this.rs = reasoningService;
 		this.subHierarchy = subHierarchy;

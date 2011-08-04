@@ -43,19 +43,19 @@ public final class ComponentPool {
 	
 	// stores all components, which are live (components which are
 	// no longer used have to be deregistered)
-	private List<Component> components = new LinkedList<Component>();
+	private List<AbstractComponent> components = new LinkedList<AbstractComponent>();
 
 	// stores the last value which was set for a particular
 	// config option
-	private Map<Component, Map<ConfigOption<?>, Object>> lastValidConfigValue = new HashMap<Component, Map<ConfigOption<?>, Object>>();
+	private Map<AbstractComponent, Map<ConfigOption<?>, Object>> lastValidConfigValue = new HashMap<AbstractComponent, Map<ConfigOption<?>, Object>>();
 	// complete history of all made config entries for a component
-	private Map<Component, List<ConfigEntry<?>>> configEntryHistory = new HashMap<Component, List<ConfigEntry<?>>>();
+	private Map<AbstractComponent, List<ConfigEntry<?>>> configEntryHistory = new HashMap<AbstractComponent, List<ConfigEntry<?>>>();
 
 	/**
 	 * Registers a component instance in the pool. 
 	 * @param component The component to add to the pool.
 	 */
-	public void registerComponent(Component component) {
+	public void registerComponent(AbstractComponent component) {
 		components.add(component);
 		Map<ConfigOption<?>, Object> emptyMap = new HashMap<ConfigOption<?>, Object>();
 		lastValidConfigValue.put(component, emptyMap);
@@ -69,7 +69,7 @@ public final class ComponentPool {
 	 * storing the component and its configuration options.  
 	 * @param component The component to remove from the pool.
 	 */
-	public void unregisterComponent(Component component) {
+	public void unregisterComponent(AbstractComponent component) {
 		configEntryHistory.remove(component);
 		lastValidConfigValue.remove(component);
 		components.remove(component);
@@ -87,7 +87,7 @@ public final class ComponentPool {
 	 * component architecture, which is not recommended).
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T> T getLastValidConfigValue(Component component, ConfigOption<T> option) {
+	protected <T> T getLastValidConfigValue(AbstractComponent component, ConfigOption<T> option) {
 		return (T) lastValidConfigValue.get(component).get(option);
 	}
 
@@ -97,7 +97,7 @@ public final class ComponentPool {
 	 * @param entry The set config entry.
 	 * @param valid A boolean value indicating whether the value was valid or not.
 	 */
-	protected void addConfigEntry(Component component, ConfigEntry<?> entry, boolean valid) {
+	protected void addConfigEntry(AbstractComponent component, ConfigEntry<?> entry, boolean valid) {
 		configEntryHistory.get(component).add(entry);
 		if (valid) {
 			lastValidConfigValue.get(component).put(entry.getOption(), entry.getValue());
@@ -109,15 +109,15 @@ public final class ComponentPool {
 	 * Unregisters all components.
 	 */
 	protected void clearComponents() {
-		components = new LinkedList<Component>();
-		lastValidConfigValue = new HashMap<Component, Map<ConfigOption<?>, Object>>();
-		configEntryHistory = new HashMap<Component, List<ConfigEntry<?>>>();
+		components = new LinkedList<AbstractComponent>();
+		lastValidConfigValue = new HashMap<AbstractComponent, Map<ConfigOption<?>, Object>>();
+		configEntryHistory = new HashMap<AbstractComponent, List<ConfigEntry<?>>>();
 	}
 	
 	/**
 	 * @return The components in this pool.
 	 */
-	public List<Component> getComponents(){
+	public List<AbstractComponent> getComponents(){
 		return components;
 	}
 

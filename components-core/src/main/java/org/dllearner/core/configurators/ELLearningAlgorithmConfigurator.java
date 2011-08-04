@@ -22,9 +22,9 @@ package org.dllearner.core.configurators;
 
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 
 /**
 * automatically generated, do not edit manually.
@@ -48,7 +48,7 @@ this.eLLearningAlgorithm = eLLearningAlgorithm;
 * @throws LearningProblemUnsupportedException see 
 * @return ELLearningAlgorithm
 **/
-public static ELLearningAlgorithm getELLearningAlgorithm(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static ELLearningAlgorithm getELLearningAlgorithm(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 ELLearningAlgorithm component = ComponentManager.getInstance().learningAlgorithm(ELLearningAlgorithm.class, learningProblem, reasoningService);
 return component;
 }

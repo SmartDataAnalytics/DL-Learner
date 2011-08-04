@@ -27,7 +27,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
@@ -74,7 +74,7 @@ public class UsedEntitiesDetection {
 	
 	private Map<Set<ObjectProperty>,Set<ObjectProperty>> usedObjectProperties;
 	
-	private ReasonerComponent reasoner;
+	private AbstractReasonerComponent reasoner;
 	private int maxDepth;
 	
 	/**
@@ -85,7 +85,7 @@ public class UsedEntitiesDetection {
 	 * @param individuals A set of individuals to start from.
 	 * @param depth The maximum depth for the search.
 	 */
-	public UsedEntitiesDetection(ReasonerComponent reasoner, Set<Individual> individuals, int maxDepth) {
+	public UsedEntitiesDetection(AbstractReasonerComponent reasoner, Set<Individual> individuals, int maxDepth) {
 		this.reasoner = reasoner;
 		this.maxDepth = maxDepth;
 		usedClasses = new TreeMap<Set<ObjectProperty>,Set<NamedClass>>(keyComp);

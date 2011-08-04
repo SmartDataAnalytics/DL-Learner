@@ -33,8 +33,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -53,7 +53,7 @@ public class DumbLPFinder {
 
 	private static Logger logger = Logger.getRootLogger();
 
-	private static ReasonerComponent reasoningService;
+	private static AbstractReasonerComponent reasoningService;
 
 	private static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
 
@@ -228,7 +228,7 @@ public class DumbLPFinder {
 			ks.getConfigurator().setPredefinedEndpoint("LOCALJOSEKIBIBLE");
 			ks.getConfigurator().setUseLits(true);
 
-			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 			tmp.add(ks);
 			// reasoner
 			OWLAPIReasoner f = ComponentFactory

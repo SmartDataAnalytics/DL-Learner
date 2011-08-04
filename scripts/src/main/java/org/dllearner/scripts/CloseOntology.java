@@ -22,7 +22,7 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.owl.OntologyCloserOWLAPI;
@@ -60,7 +60,7 @@ public class CloseOntology {
 			// initializing reasoner
 			OWLFile owlFile = new OWLFile();
 			owlFile.setURL(inputURI.toURL());
-			Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
+			Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
 			ks.add(owlFile);
 			OWLAPIReasoner owlapireasoner = new OWLAPIReasoner(ks);
 			owlapireasoner.init();

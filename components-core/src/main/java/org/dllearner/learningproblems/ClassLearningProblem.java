@@ -31,8 +31,8 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.ClassLearningProblemConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -57,7 +57,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class ClassLearningProblem extends LearningProblem {
+public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	private static Logger logger = Logger.getLogger(ClassLearningProblem.class);
     private long nanoStartTime;
@@ -90,7 +90,7 @@ public class ClassLearningProblem extends LearningProblem {
 		return configurator;
 	}	
 	
-	public ClassLearningProblem(ReasonerComponent reasoner) {
+	public ClassLearningProblem(AbstractReasonerComponent reasoner) {
 		super(reasoner);
 		configurator = new ClassLearningProblemConfigurator(this);
 	}

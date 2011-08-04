@@ -23,7 +23,7 @@ package org.dllearner.core.configurators;
 import java.net.URL;
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
 
 /**
@@ -46,7 +46,7 @@ this.fuzzyOWLAPIReasoner = fuzzyOWLAPIReasoner;
 * @param knowledgeSource see knowledgeSource
 * @return FuzzyOWLAPIReasoner
 **/
-public static FuzzyOWLAPIReasoner getFuzzyOWLAPIReasoner(Set<KnowledgeSource> knowledgeSource) {
+public static FuzzyOWLAPIReasoner getFuzzyOWLAPIReasoner(Set<AbstractKnowledgeSource> knowledgeSource) {
 FuzzyOWLAPIReasoner component = ComponentManager.getInstance().reasoner(FuzzyOWLAPIReasoner.class, knowledgeSource);
 return component;
 }

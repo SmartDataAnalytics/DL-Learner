@@ -26,7 +26,7 @@ package org.dllearner.core;
  * @author Jens Lehmann
  *
  */
-public interface LearningAlgorithm {
+public interface LearningAlgorithm extends Component {
 
 	/**
 	 * Starts the algorithm. It runs until paused, stopped, or

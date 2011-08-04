@@ -7,8 +7,8 @@ import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
@@ -54,7 +54,7 @@ public class GPUtilities {
 	
     private static Random rand = new Random();
     
-    private static ScorePosNeg calculateFitness(LearningProblem learningProblem, Description hypothesis) {
+    private static ScorePosNeg calculateFitness(AbstractLearningProblem learningProblem, Description hypothesis) {
     	return calculateFitness(learningProblem, hypothesis, null);
     }
     
@@ -63,7 +63,7 @@ public class GPUtilities {
     // (macht aber nicht so viel Sinn, da man das bei richtigen Reasoning-Algorithmen
     // ohnehin mit einer Erweiterung der Wissensbasis um die Inklusion Target SUBSETOF ReturnType
     // erschlagen kann)
-	private static ScorePosNeg calculateFitness(LearningProblem learningProblem, Description hypothesis, Description adc) {
+	private static ScorePosNeg calculateFitness(AbstractLearningProblem learningProblem, Description hypothesis, Description adc) {
 		Description extendedHypothesis;
 		
 		// return type temporarily disabled 
@@ -123,11 +123,11 @@ public class GPUtilities {
 		return score;
 	}    
     
-	public static Program createProgram(LearningProblem learningProblem, Description mainTree) {
+	public static Program createProgram(AbstractLearningProblem learningProblem, Description mainTree) {
 		return new Program(calculateFitness(learningProblem, mainTree), mainTree);
 	}
 	
-	private static Program createProgram(LearningProblem learningProblem, Description mainTree, Description adc) {
+	private static Program createProgram(AbstractLearningProblem learningProblem, Description mainTree, Description adc) {
 		return new Program(calculateFitness(learningProblem, mainTree,adc), mainTree, adc);
 	}
 	
@@ -135,7 +135,7 @@ public class GPUtilities {
      * Perform a point mutation on the given program.
      * @param p The program to be mutated.
      */
-    public static Program mutation(LearningProblem learningProblem, ReasonerComponent rs, Program p) {
+    public static Program mutation(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, Program p) {
     	mutation++;
     	if(p.getAdc() != null) {
     		// TODO: hier kann man noch mehr Feinabstimmung machen, d.h.
@@ -159,7 +159,7 @@ public class GPUtilities {
     	}
     }
 
-    private static Description mutation(LearningProblem learningProblem, ReasonerComponent rs, Description tree, boolean useADC) {
+    private static Description mutation(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, Description tree, boolean useADC) {
     	// auch bei Mutation muss darauf geachtet werden, dass 
     	// Baum nicht modifiziert wird (sonst w�rde man automatisch auch
     	// andere "selected individuals" modifizieren)
@@ -228,7 +228,7 @@ public class GPUtilities {
      * @param p2 Second parent.
      * @return A two-element array containing the offpsring.
      */
-    public static Program[] crossover(LearningProblem learningProblem, Program p1, Program p2) {
+    public static Program[] crossover(AbstractLearningProblem learningProblem, Program p1, Program p2) {
     	crossover++;
     	if(p1.getAdc() != null) {
     		Description[] pt;
@@ -304,7 +304,7 @@ public class GPUtilities {
 
     // m�sste auch mit ADC funktionieren, da nur am Hauptbaum etwas 
     // ver�ndert wird
-    public static Program hillClimbing(LearningProblem learningProblem, ReasonerComponent rs, Program p) {
+    public static Program hillClimbing(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, Program p) {
     	hillClimbing++;
     	// checken, ob Bedingungen f�r hill-climbing erf�llt sind
     	if(!rs.getReasonerType().equals(ReasonerType.FAST_RETRIEVAL)
@@ -327,7 +327,7 @@ public class GPUtilities {
     // Alternativen zu speichern und dann ein Element zuf�llig auszuw�hlen,
     // aber w�rde man das nicht machen, dann w�re das ein starker Bias
     // zu z.B. Disjunktion (weil die als erstes getestet wird)
-    private static Description hillClimbing(LearningProblem learningProblem, ReasonerComponent rs, Description node, ScoreThreeValued score) {
+    private static Description hillClimbing(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, Description node, ScoreThreeValued score) {
     	SortedSetTuple<Individual> tuple = new SortedSetTuple<Individual>(score.getPosClassified(),score.getNegClassified());
     	SortedSetTuple<String> stringTuple = Helper.getStringTuple(tuple);
     	// FlatABox abox = FlatABox.getInstance();
@@ -452,7 +452,7 @@ public class GPUtilities {
     	}
     }
     
-    private static ScoreThreeValued getScore(int conceptLength, LearningProblem learningProblem, ReasonerComponent rs, SortedSet<Individual> posClassified, SortedSet<Individual> negClassified) {
+    private static ScoreThreeValued getScore(int conceptLength, AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, SortedSet<Individual> posClassified, SortedSet<Individual> negClassified) {
     	// es muss hier die Helper-Methode verwendet werden, sonst werden
     	// Individuals gel�scht !!
     	SortedSet<Individual> neutClassified = Helper.intersection(rs.getIndividuals(),posClassified); 
@@ -489,7 +489,7 @@ public class GPUtilities {
     	return returnMap;
     }
     
-    private static Description pickTerminalSymbol(LearningProblem learningProblem, ReasonerComponent rs, boolean useADC) {
+    private static Description pickTerminalSymbol(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
         int nr;
         int nrOfConcepts = rs.getNamedClasses().size();
@@ -619,7 +619,7 @@ public class GPUtilities {
      * @param depth Depth of the tree.
      * @return The created program.
      */
-    public static Program createFullRandomProgram(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean adc) {
+    public static Program createFullRandomProgram(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, int depth, boolean adc) {
     	if(adc) {
     		// erster Baum Hauptbaum, zweiter Baum ADC
     		return createProgram(learningProblem, createFullRandomTree(learningProblem, rs, depth, true),
@@ -629,7 +629,7 @@ public class GPUtilities {
     		return createProgram(learningProblem, createFullRandomTree(learningProblem, rs, depth, false));
     }
 
-    private static Description createFullRandomTree(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean useADC) {
+    private static Description createFullRandomTree(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, int depth, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
         int numberOfRoles = rs.getObjectProperties().size(); //  abox.roles.size();
         
@@ -680,7 +680,7 @@ public class GPUtilities {
      * @param depth The maximum depth of the program tree.
      * @return The created program.
      */
-    public static Program createGrowRandomProgram(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean adc) {
+    public static Program createGrowRandomProgram(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, int depth, boolean adc) {
     	if(adc) {
     		// erster Baum Hauptbaum, zweiter Baum ADC
     		return createProgram(learningProblem, createGrowRandomTree(learningProblem,rs,depth,true),
@@ -690,7 +690,7 @@ public class GPUtilities {
     		return createProgram(learningProblem, createGrowRandomTree(learningProblem, rs, depth,false));    	
     }
 
-    public static Description createGrowRandomTree(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean useADC) {
+    public static Description createGrowRandomTree(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, int depth, boolean useADC) {
     	/*
         private static Concept pickAlphabetSymbol(boolean useADC) {
             FlatABox abox = FlatABox.getInstance();

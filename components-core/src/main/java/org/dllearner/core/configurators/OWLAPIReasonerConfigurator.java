@@ -23,7 +23,7 @@ package org.dllearner.core.configurators;
 import java.net.URL;
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
@@ -46,7 +46,7 @@ this.oWLAPIReasoner = oWLAPIReasoner;
 * @param knowledgeSource see knowledgeSource
 * @return OWLAPIReasoner
 **/
-public static OWLAPIReasoner getOWLAPIReasoner(Set<KnowledgeSource> knowledgeSource) {
+public static OWLAPIReasoner getOWLAPIReasoner(Set<AbstractKnowledgeSource> knowledgeSource) {
 OWLAPIReasoner component = ComponentManager.getInstance().reasoner(OWLAPIReasoner.class, knowledgeSource);
 return component;
 }

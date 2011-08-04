@@ -22,9 +22,9 @@ package org.dllearner.core.configurators;
 
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 
 /**
 * automatically generated, do not edit manually.
@@ -48,7 +48,7 @@ this.bruteForceLearner = bruteForceLearner;
 * @throws LearningProblemUnsupportedException see 
 * @return BruteForceLearner
 **/
-public static BruteForceLearner getBruteForceLearner(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static BruteForceLearner getBruteForceLearner(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 BruteForceLearner component = ComponentManager.getInstance().learningAlgorithm(BruteForceLearner.class, learningProblem, reasoningService);
 return component;
 }

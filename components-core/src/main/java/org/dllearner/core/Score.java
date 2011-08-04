@@ -43,7 +43,7 @@ public abstract class Score implements Serializable{
 	 * This method returns a value, which indicates how accurate a
 	 * class description solves a learning problem. 
 	 * 
-	 * @see LearningProblem#getAccuracy(Description)
+	 * @see AbstractLearningProblem#getAccuracy(Description)
 	 * @return A value between 0 and 1 indicating the quality (of a class description).
 	 */	
 	public abstract double getAccuracy();

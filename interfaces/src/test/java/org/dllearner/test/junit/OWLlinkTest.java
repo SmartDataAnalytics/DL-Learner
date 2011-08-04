@@ -13,7 +13,7 @@ import java.util.Random;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.cli.QuickStart;
 import org.dllearner.cli.Start;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -50,7 +50,7 @@ public class OWLlinkTest {
 			
 			int cnt = 0;
 			Start start;
-			ReasonerComponent rc;
+			AbstractReasonerComponent rc;
 			for(String conf : examples) {
 				if(cnt == EXAMPLE_COUNT){
 					break;

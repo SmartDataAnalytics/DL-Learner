@@ -27,11 +27,11 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -55,17 +55,17 @@ public class SworeTest {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		// create knowledge source
-		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		String example = "examples/swore/swore.rdf";
 		cm.applyConfigEntry(source, "url", new File(example).toURI().toURL());
 		source.init();
 		
 		// create OWL API reasoning service with standard settings
-		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
 		reasoner.init();
 		
 		// create a learning problem and set positive and negative examples
-		LearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
+		AbstractLearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
 		Set<String> positiveExamples = new TreeSet<String>();
 		positiveExamples.add("http://ns.softwiki.de/req/important");
 		positiveExamples.add("http://ns.softwiki.de/req/very_important");

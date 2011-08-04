@@ -23,7 +23,7 @@ package org.dllearner.core.configurators;
 import java.net.URL;
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
@@ -46,7 +46,7 @@ this.fastInstanceChecker = fastInstanceChecker;
 * @param knowledgeSource see knowledgeSource
 * @return FastInstanceChecker
 **/
-public static FastInstanceChecker getFastInstanceChecker(Set<KnowledgeSource> knowledgeSource) {
+public static FastInstanceChecker getFastInstanceChecker(Set<AbstractKnowledgeSource> knowledgeSource) {
 FastInstanceChecker component = ComponentManager.getInstance().reasoner(FastInstanceChecker.class, knowledgeSource);
 return component;
 }

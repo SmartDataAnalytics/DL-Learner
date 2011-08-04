@@ -26,7 +26,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.configurators.OWLFileConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
@@ -120,7 +120,7 @@ public class OWLAPIReasonerIncremental {
 		String url = "http://morpheus.cs.umbc.edu/aks1/ontosem.owl";
 		// create reasoner
 		ComponentManager cm = ComponentManager.getInstance();
-		KnowledgeSource ks = OWLFileConfigurator.getOWLFile(new URL(url));
+		AbstractKnowledgeSource ks = OWLFileConfigurator.getOWLFile(new URL(url));
 		OWLAPIReasoner reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 		ks.init();
 		reasoner.init();

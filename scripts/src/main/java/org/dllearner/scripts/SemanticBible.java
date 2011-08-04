@@ -29,8 +29,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
@@ -52,7 +52,7 @@ import org.dllearner.utilities.statistics.SimpleClock;
 
 public class SemanticBible {
 
-	private static ReasonerComponent reasoningService;
+	private static AbstractReasonerComponent reasoningService;
 
 	private static Logger logger = Logger.getRootLogger();
 
@@ -259,7 +259,7 @@ public class SemanticBible {
 		logger.setLevel(Level.DEBUG);
 		Logger.getLogger(Manager.class).setLevel(Level.INFO);
 		Level lwarn = Level.DEBUG;
-		Logger.getLogger(KnowledgeSource.class).setLevel(lwarn);
+		Logger.getLogger(AbstractKnowledgeSource.class).setLevel(lwarn);
 		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(lwarn);
 
 		Logger.getLogger(ExtractionAlgorithm.class).setLevel(lwarn);

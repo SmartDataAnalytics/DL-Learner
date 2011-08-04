@@ -22,7 +22,7 @@ package org.dllearner.test.junit;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.learn.UsedEntitiesDetection;
@@ -38,7 +38,7 @@ public class UtilitiesTests {
 
 	@Test
 	public void entityDetection() {
-		ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.DATA1);
+		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.DATA1);
 		int maxDepth = 2;
 		Set<Individual> individuals = new TreeSet<Individual>();
 		individuals.add(new Individual("http://localhost/foo#tim"));

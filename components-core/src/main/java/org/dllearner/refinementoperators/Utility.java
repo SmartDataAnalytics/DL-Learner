@@ -25,7 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -49,7 +49,7 @@ import com.jamonapi.MonitorFactory;
  */
 public final class Utility {
 		
-	private ReasonerComponent reasoner;
+	private AbstractReasonerComponent reasoner;
 	ClassHierarchy sh; 
 	private Map<ObjectProperty,Description> opDomains;
 	
@@ -66,11 +66,11 @@ public final class Utility {
 	// cache for applicaple object properties
 	private Map<Description, SortedSet<ObjectProperty>> appOPCache = new TreeMap<Description, SortedSet<ObjectProperty>>(conceptComparator);
 	
-	public Utility(ReasonerComponent rs) {
+	public Utility(AbstractReasonerComponent rs) {
 		throw new Error("not implemented yet");
 	}
 	
-	public Utility(ReasonerComponent rs, Map<ObjectProperty,Description> opDomains, boolean instanceBasedDisjoints) {
+	public Utility(AbstractReasonerComponent rs, Map<ObjectProperty,Description> opDomains, boolean instanceBasedDisjoints) {
 		this.reasoner = rs;
 		sh = rs.getClassHierarchy();
 		// we cache object property domains

@@ -33,8 +33,8 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -67,7 +67,7 @@ public class ROLearner2 {
 	private OCELConfigurator configurator;
 
 	// basic setup: learning problem and reasoning service
-	private ReasonerComponent rs;
+	private AbstractReasonerComponent rs;
 	// often the learning problems needn't be accessed directly; instead
 	// use the example sets below and the posonly variable
 	private PosNegLP learningProblem;
@@ -213,8 +213,8 @@ public class ROLearner2 {
 
 	public ROLearner2(
 			OCELConfigurator configurator,
-			LearningProblem learningProblem,
-			ReasonerComponent rs,
+			AbstractLearningProblem learningProblem,
+			AbstractReasonerComponent rs,
 			RefinementOperator operator,
 			ExampleBasedHeuristic heuristic,
 			Description startDescription,

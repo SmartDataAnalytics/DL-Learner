@@ -18,8 +18,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.configurators.ProtegeReasonerConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
@@ -95,7 +95,7 @@ import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 
-public class ProtegeReasoner extends ReasonerComponent {
+public class ProtegeReasoner extends AbstractReasonerComponent {
 	
 	private OWLOntologyManager manager;
 	private OWLOntology ontology;
@@ -147,12 +147,12 @@ public class ProtegeReasoner extends ReasonerComponent {
 	// references to OWL API ontologies
 	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
 
-	public ProtegeReasoner(Set<KnowledgeSource> sources) {
+	public ProtegeReasoner(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
 		this.configurator = new ProtegeReasonerConfigurator(this);
 	}
 	
-	public ProtegeReasoner(Set<KnowledgeSource> sources, OWLReasoner reasoner) {
+	public ProtegeReasoner(Set<AbstractKnowledgeSource> sources, OWLReasoner reasoner) {
 		this(sources);
 		this.reasoner = reasoner;
 	}
@@ -237,7 +237,7 @@ public class ProtegeReasoner extends ReasonerComponent {
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		prefixes = new TreeMap<String, String>();
 
-		for (KnowledgeSource source : sources) {
+		for (AbstractKnowledgeSource source : sources) {
 
 			if (source instanceof OWLFile
 					|| source instanceof SparqlKnowledgeSource

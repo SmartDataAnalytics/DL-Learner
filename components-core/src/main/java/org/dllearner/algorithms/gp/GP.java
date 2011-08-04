@@ -31,8 +31,8 @@ import java.util.Map.Entry;
 
 import org.dllearner.algorithms.hybridgp.Psi;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.GPConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigEntry;
@@ -140,7 +140,7 @@ public class GP extends AbstractCELA {
      * 1.0 and a probability of mutation of 0.01.
      * 
      */
-    public GP(PosNegLP learningProblem, ReasonerComponent rs) {
+    public GP(PosNegLP learningProblem, AbstractReasonerComponent rs) {
        	super(learningProblem, rs);
     	this.configurator = new GPConfigurator(this);
     }
@@ -149,8 +149,8 @@ public class GP extends AbstractCELA {
 		return "genetic programming learning algorithm";
 	} 	    
     
-	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
+	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
 		problems.add(PosNegLP.class);
 		return problems;
 	}	

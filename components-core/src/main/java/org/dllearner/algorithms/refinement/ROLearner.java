@@ -15,8 +15,8 @@ import java.util.TreeSet;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.ROLearnerConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
@@ -191,7 +191,7 @@ public class ROLearner extends AbstractCELA {
 	// prefixes
 	private String baseURI;
 
-	public ROLearner(PosNegLP learningProblem, ReasonerComponent reasoningService) {
+	public ROLearner(PosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
 		this.learningProblem = learningProblem;
 		this.configurator =  new ROLearnerConfigurator(this);
@@ -199,8 +199,8 @@ public class ROLearner extends AbstractCELA {
 		
 	}
 	
-	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
+	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
 		problems.add(PosNegLP.class);
 		return problems;
 	}

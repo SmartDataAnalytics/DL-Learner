@@ -22,7 +22,7 @@ package org.dllearner.core.configurators;
 
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.reasoning.PelletReasoner;
 
 /**
@@ -45,7 +45,7 @@ this.pelletReasoner = pelletReasoner;
 * @param knowledgeSource see knowledgeSource
 * @return PelletReasoner
 **/
-public static PelletReasoner getPelletReasoner(Set<KnowledgeSource> knowledgeSource) {
+public static PelletReasoner getPelletReasoner(Set<AbstractKnowledgeSource> knowledgeSource) {
 PelletReasoner component = ComponentManager.getInstance().reasoner(PelletReasoner.class, knowledgeSource);
 return component;
 }

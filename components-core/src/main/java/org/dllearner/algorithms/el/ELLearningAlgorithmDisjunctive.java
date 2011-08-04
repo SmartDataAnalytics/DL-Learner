@@ -31,8 +31,8 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.configurators.ELLearningAlgorithmDisjunctiveConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -121,7 +121,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	// minimum score a tree must have to be part of the solution
 	private double minimumTreeScore = -1; 
 	
-	public ELLearningAlgorithmDisjunctive(PosNegLP problem, ReasonerComponent reasoner) {
+	public ELLearningAlgorithmDisjunctive(PosNegLP problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 		configurator = new ELLearningAlgorithmDisjunctiveConfigurator(this);
 	}
@@ -130,8 +130,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		return "disjunctive EL learning algorithm";
 	}	
 	
-	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
+	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
 		problems.add(PosNegLP.class);
 		return problems;
 	}

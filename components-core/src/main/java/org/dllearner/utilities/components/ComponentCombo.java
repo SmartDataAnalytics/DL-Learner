@@ -26,11 +26,11 @@ import java.util.Set;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -47,9 +47,9 @@ import org.dllearner.reasoning.FastInstanceChecker;
  */
 public class ComponentCombo {
 
-	private Set<KnowledgeSource> sources;
-	private ReasonerComponent reasoner;
-	private LearningProblem problem;
+	private Set<AbstractKnowledgeSource> sources;
+	private AbstractReasonerComponent reasoner;
+	private AbstractLearningProblem problem;
 	private AbstractCELA algorithm;
 	
 	/**
@@ -59,7 +59,7 @@ public class ComponentCombo {
 	 * @param problem A learning problem.
 	 * @param algorithm A learning algorithm.
 	 */
-	public ComponentCombo(KnowledgeSource source, ReasonerComponent reasoner, LearningProblem problem, AbstractCELA algorithm) {
+	public ComponentCombo(AbstractKnowledgeSource source, AbstractReasonerComponent reasoner, AbstractLearningProblem problem, AbstractCELA algorithm) {
 		this(getSourceSet(source), reasoner, problem, algorithm);
 	}	
 	
@@ -70,15 +70,15 @@ public class ComponentCombo {
 	 * @param problem A learning problem.
 	 * @param algorithm A learning algorithm.
 	 */	
-	public ComponentCombo(Set<KnowledgeSource> sources, ReasonerComponent reasoner, LearningProblem problem, AbstractCELA algorithm) {
+	public ComponentCombo(Set<AbstractKnowledgeSource> sources, AbstractReasonerComponent reasoner, AbstractLearningProblem problem, AbstractCELA algorithm) {
 		this.sources = sources;
 		this.reasoner = reasoner;
 		this.problem = problem;
 		this.algorithm = algorithm;
 	}		
 	
-	private static Set<KnowledgeSource> getSourceSet(KnowledgeSource source) {
-		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
+	private static Set<AbstractKnowledgeSource> getSourceSet(AbstractKnowledgeSource source) {
+		Set<AbstractKnowledgeSource> sources = new HashSet<AbstractKnowledgeSource>();
 		sources.add(source);
 		return sources;
 	}
@@ -94,7 +94,7 @@ public class ComponentCombo {
 	 */
 	public ComponentCombo(URL owlFile, Set<String> posExamples, Set<String> negExamples) {
 		ComponentManager cm = ComponentManager.getInstance();
-		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		sources = getSourceSet(source);
 		reasoner = cm.reasoner(FastInstanceChecker.class, source);
 		problem = cm.learningProblem(PosNegLPStandard.class, reasoner);
@@ -112,7 +112,7 @@ public class ComponentCombo {
 	 * @throws ComponentInitException Thrown if a component could not be initialised properly.
 	 */
 	public void initAll() throws ComponentInitException {
-		for(KnowledgeSource source : sources) {
+		for(AbstractKnowledgeSource source : sources) {
 			source.init();
 		}
 		reasoner.init();
@@ -123,21 +123,21 @@ public class ComponentCombo {
 	/**
 	 * @return the sources
 	 */
-	public Set<KnowledgeSource> getSources() {
+	public Set<AbstractKnowledgeSource> getSources() {
 		return sources;
 	}
 
 	/**
 	 * @return the reasoner
 	 */
-	public ReasonerComponent getReasoner() {
+	public AbstractReasonerComponent getReasoner() {
 		return reasoner;
 	}
 
 	/**
 	 * @return the problem
 	 */
-	public LearningProblem getProblem() {
+	public AbstractLearningProblem getProblem() {
 		return problem;
 	}
 

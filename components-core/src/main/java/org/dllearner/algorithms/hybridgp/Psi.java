@@ -6,7 +6,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.dllearner.algorithms.gp.Program;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
@@ -49,7 +49,7 @@ public class Psi implements GeneticRefinementOperator {
 	private long someTimeStart = 0;
 	public long someTime = 0;
 	
-	public Psi(PosNegLP learningProblem, ReasonerComponent reasoningService) { //, PsiUp pu, PsiDown pd) {
+	public Psi(PosNegLP learningProblem, AbstractReasonerComponent reasoningService) { //, PsiUp pu, PsiDown pd) {
 		// this.pu = pu;
 		// this.pd = pd;
 		this.learningProblem = learningProblem;

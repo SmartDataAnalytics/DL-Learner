@@ -29,8 +29,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.ScorePosNeg;
@@ -64,8 +64,8 @@ public class TestValidation {
 		logger.setLevel(Level.WARN);
 		
 		Start startTest = new Start(new File(filenameTest));
-		ReasonerComponent rs = startTest.getReasonerComponent();
-		LearningProblem lp = startTest.getLearningProblem();
+		AbstractReasonerComponent rs = startTest.getReasonerComponent();
+		AbstractLearningProblem lp = startTest.getLearningProblem();
 		
 		Set<Individual> result = rs.getIndividuals(solution);
 		System.out.println("retrieval result: " + result);

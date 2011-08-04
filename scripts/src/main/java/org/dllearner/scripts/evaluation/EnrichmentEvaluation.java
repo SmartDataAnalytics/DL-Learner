@@ -19,6 +19,7 @@
  */
 package org.dllearner.scripts.evaluation;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.properties.SubPropertyOfAxiomLearner;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -57,12 +59,18 @@ public class EnrichmentEvaluation {
 	private int maxObjectProperties = 3;
 	private int maxDataProperties = 3;
 	private int maxClasses = 3;
+	private List<Class<? extends LearningAlgorithm>> algorithmsToTest;
+	
 	
 	public EnrichmentEvaluation() {
-
+		algorithmsToTest = new LinkedList<Class<? extends LearningAlgorithm>>();
+		algorithmsToTest.add(SubPropertyOfAxiomLearner.class);
+		
 	}
 	
 	public void start() {
+		
+		ComponentManager cm = ComponentManager.getInstance();
 		
 		// create DBpedia Live knowledge source
 		SparqlEndpoint se = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
@@ -71,23 +79,30 @@ public class EnrichmentEvaluation {
 		
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
 		
-		int objectProperties = 0;
-		for(ObjectProperty property : properties) {
-			SubPropertyOfAxiomLearner learner = new SubPropertyOfAxiomLearner(ks);
-			learner.setPropertyToDescribe(property);
-			learner.setMaxExecutionTimeInSeconds(10);
-			System.out.println("Applying " + ComponentManager.getName(learner) + " on " + property + " ... ");
-			learner.start();
-			List<EvaluatedAxiom> learnedAxioms = learner.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-			for(EvaluatedAxiom learnedAxiom : learnedAxioms) {
-				// TODO: put this in some data structure
-				System.out.println(learnedAxiom);
+		/*
+		for(Class<? extends LearningAlgorithm> algorithmClass : algorithmsToTest) {
+			int objectProperties = 0;
+			for(ObjectProperty property : properties) {
+//				SubPropertyOfAxiomLearner learner = new SubPropertyOfAxiomLearner(ks);
+				LearningAlgorithm learner = cm.learningAlgorithm(algorithmClass, ks);
+				ConfigHelper.configure(learner, "propertyToDescribe", property);
+				
+				
+//				learner.setPropertyToDescribe(property);
+//				learner.setMaxExecutionTimeInSeconds(10);
+				System.out.println("Applying " + ComponentManager.getName(learner) + " on " + property + " ... ");
+				learner.start();
+				List<EvaluatedAxiom> learnedAxioms = learner.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+				for(EvaluatedAxiom learnedAxiom : learnedAxioms) {
+					// TODO: put this in some data structure
+					System.out.println(learnedAxiom);
+				}
+				objectProperties++;
+				if(objectProperties > maxObjectProperties) {
+					break;
+				}
 			}
-			objectProperties++;
-			if(objectProperties > maxObjectProperties) {
-				break;
-			}
-		}
+		} */
 		
 	}
 	

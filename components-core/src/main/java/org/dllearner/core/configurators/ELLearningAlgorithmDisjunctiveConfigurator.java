@@ -22,9 +22,9 @@ package org.dllearner.core.configurators;
 
 import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 
 /**
 * automatically generated, do not edit manually.
@@ -48,7 +48,7 @@ this.eLLearningAlgorithmDisjunctive = eLLearningAlgorithmDisjunctive;
 * @throws LearningProblemUnsupportedException see 
 * @return ELLearningAlgorithmDisjunctive
 **/
-public static ELLearningAlgorithmDisjunctive getELLearningAlgorithmDisjunctive(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static ELLearningAlgorithmDisjunctive getELLearningAlgorithmDisjunctive(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 ELLearningAlgorithmDisjunctive component = ComponentManager.getInstance().learningAlgorithm(ELLearningAlgorithmDisjunctive.class, learningProblem, reasoningService);
 return component;
 }

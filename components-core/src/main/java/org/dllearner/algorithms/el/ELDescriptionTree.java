@@ -31,7 +31,7 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
@@ -76,11 +76,11 @@ public class ELDescriptionTree implements Cloneable {
 	// the background knowledge (we need to have it explicitly here, 
 	// since we store simulation information in the tree and simulation
 	// updates depend on background knowledge)
-	protected ReasonerComponent rs;
+	protected AbstractReasonerComponent rs;
 	protected ClassHierarchy subsumptionHierarchy;
 	protected ObjectPropertyHierarchy roleHierarchy;
 	
-	public ELDescriptionTree(ReasonerComponent rs) {
+	public ELDescriptionTree(AbstractReasonerComponent rs) {
 		this.rs = rs;
 		subsumptionHierarchy = rs.getClassHierarchy();
 		roleHierarchy = rs.getObjectPropertyHierarchy();
@@ -92,7 +92,7 @@ public class ELDescriptionTree implements Cloneable {
 	 * @param description
 	 *            A description
 	 */
-	public ELDescriptionTree(ReasonerComponent rs, Description description) {
+	public ELDescriptionTree(AbstractReasonerComponent rs, Description description) {
 		this(rs);
 		// construct root node and recursively build the tree
 		rootNode = new ELDescriptionNode(this);

@@ -32,10 +32,10 @@ import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.isle.ISLE;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
@@ -104,7 +104,7 @@ return SparqlKnowledgeSourceConfigurator.getSparqlKnowledgeSource(url, instances
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization DIGReasoner
 **/
-public static DIGReasoner getDIGReasoner(Set<KnowledgeSource> knowledgeSource)  {
+public static DIGReasoner getDIGReasoner(Set<AbstractKnowledgeSource> knowledgeSource)  {
 return DIGReasonerConfigurator.getDIGReasoner(knowledgeSource);
 }
 
@@ -112,7 +112,7 @@ return DIGReasonerConfigurator.getDIGReasoner(knowledgeSource);
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization FastInstanceChecker
 **/
-public static FastInstanceChecker getFastInstanceChecker(Set<KnowledgeSource> knowledgeSource)  {
+public static FastInstanceChecker getFastInstanceChecker(Set<AbstractKnowledgeSource> knowledgeSource)  {
 return FastInstanceCheckerConfigurator.getFastInstanceChecker(knowledgeSource);
 }
 
@@ -120,7 +120,7 @@ return FastInstanceCheckerConfigurator.getFastInstanceChecker(knowledgeSource);
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization FastRetrievalReasoner
 **/
-public static FastRetrievalReasoner getFastRetrievalReasoner(Set<KnowledgeSource> knowledgeSource)  {
+public static FastRetrievalReasoner getFastRetrievalReasoner(Set<AbstractKnowledgeSource> knowledgeSource)  {
 return FastRetrievalReasonerConfigurator.getFastRetrievalReasoner(knowledgeSource);
 }
 
@@ -128,7 +128,7 @@ return FastRetrievalReasonerConfigurator.getFastRetrievalReasoner(knowledgeSourc
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization OWLAPIReasoner
 **/
-public static OWLAPIReasoner getOWLAPIReasoner(Set<KnowledgeSource> knowledgeSource)  {
+public static OWLAPIReasoner getOWLAPIReasoner(Set<AbstractKnowledgeSource> knowledgeSource)  {
 return OWLAPIReasonerConfigurator.getOWLAPIReasoner(knowledgeSource);
 }
 
@@ -136,7 +136,7 @@ return OWLAPIReasonerConfigurator.getOWLAPIReasoner(knowledgeSource);
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization PelletReasoner
 **/
-public static PelletReasoner getPelletReasoner(Set<KnowledgeSource> knowledgeSource)  {
+public static PelletReasoner getPelletReasoner(Set<AbstractKnowledgeSource> knowledgeSource)  {
 return PelletReasonerConfigurator.getPelletReasoner(knowledgeSource);
 }
 
@@ -144,7 +144,7 @@ return PelletReasonerConfigurator.getPelletReasoner(knowledgeSource);
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization ProtegeReasoner
 **/
-public static ProtegeReasoner getProtegeReasoner(Set<KnowledgeSource> knowledgeSource)  {
+public static ProtegeReasoner getProtegeReasoner(Set<AbstractKnowledgeSource> knowledgeSource)  {
 return ProtegeReasonerConfigurator.getProtegeReasoner(knowledgeSource);
 }
 
@@ -152,7 +152,7 @@ return ProtegeReasonerConfigurator.getProtegeReasoner(knowledgeSource);
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization FuzzyOWLAPIReasoner
 **/
-public static FuzzyOWLAPIReasoner getFuzzyOWLAPIReasoner(Set<KnowledgeSource> knowledgeSource)  {
+public static FuzzyOWLAPIReasoner getFuzzyOWLAPIReasoner(Set<AbstractKnowledgeSource> knowledgeSource)  {
 return FuzzyOWLAPIReasonerConfigurator.getFuzzyOWLAPIReasoner(knowledgeSource);
 }
 
@@ -161,7 +161,7 @@ return FuzzyOWLAPIReasonerConfigurator.getFuzzyOWLAPIReasoner(knowledgeSource);
 * @param reasoningService see ReasoningService
 * @return a component ready for initialization ClassLearningProblem
 **/
-public static ClassLearningProblem getClassLearningProblem(ReasonerComponent reasoningService, URL classToDescribe)  {
+public static ClassLearningProblem getClassLearningProblem(AbstractReasonerComponent reasoningService, URL classToDescribe)  {
 return ClassLearningProblemConfigurator.getClassLearningProblem(reasoningService, classToDescribe);
 }
 
@@ -171,7 +171,7 @@ return ClassLearningProblemConfigurator.getClassLearningProblem(reasoningService
 * @param reasoningService see ReasoningService
 * @return a component ready for initialization PosNegLPStandard
 **/
-public static PosNegLPStandard getPosNegLPStandard(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
+public static PosNegLPStandard getPosNegLPStandard(AbstractReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
 return PosNegLPStandardConfigurator.getPosNegLPStandard(reasoningService, positiveExamples, negativeExamples);
 }
 
@@ -181,7 +181,7 @@ return PosNegLPStandardConfigurator.getPosNegLPStandard(reasoningService, positi
 * @param reasoningService see ReasoningService
 * @return a component ready for initialization PosNegLPStrict
 **/
-public static PosNegLPStrict getPosNegLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
+public static PosNegLPStrict getPosNegLPStrict(AbstractReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
 return PosNegLPStrictConfigurator.getPosNegLPStrict(reasoningService, positiveExamples, negativeExamples);
 }
 
@@ -190,7 +190,7 @@ return PosNegLPStrictConfigurator.getPosNegLPStrict(reasoningService, positiveEx
 * @param reasoningService see ReasoningService
 * @return a component ready for initialization PosOnlyLP
 **/
-public static PosOnlyLP getPosOnlyLP(ReasonerComponent reasoningService, Set<String> positiveExamples)  {
+public static PosOnlyLP getPosOnlyLP(AbstractReasonerComponent reasoningService, Set<String> positiveExamples)  {
 return PosOnlyLPConfigurator.getPosOnlyLP(reasoningService, positiveExamples);
 }
 
@@ -201,7 +201,7 @@ return PosOnlyLPConfigurator.getPosOnlyLP(reasoningService, positiveExamples);
 * @param reasoningService see ReasoningService
 * @return a component ready for initialization FuzzyPosNegLPStandard
 **/
-public static FuzzyPosNegLPStandard getFuzzyPosNegLPStandard(ReasonerComponent reasoningService, Set<Object> fuzzyExamples, Set<String> positiveExamples, Set<String> negativeExamples)  {
+public static FuzzyPosNegLPStandard getFuzzyPosNegLPStandard(AbstractReasonerComponent reasoningService, Set<Object> fuzzyExamples, Set<String> positiveExamples, Set<String> negativeExamples)  {
 return FuzzyPosNegLPStandardConfigurator.getFuzzyPosNegLPStandard(reasoningService, fuzzyExamples, positiveExamples, negativeExamples);
 }
 
@@ -211,7 +211,7 @@ return FuzzyPosNegLPStandardConfigurator.getFuzzyPosNegLPStandard(reasoningServi
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization BruteForceLearner
 **/
-public static BruteForceLearner getBruteForceLearner(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static BruteForceLearner getBruteForceLearner(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return BruteForceLearnerConfigurator.getBruteForceLearner(learningProblem, reasoningService);
 }
 
@@ -221,7 +221,7 @@ return BruteForceLearnerConfigurator.getBruteForceLearner(learningProblem, reaso
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization RandomGuesser
 **/
-public static RandomGuesser getRandomGuesser(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static RandomGuesser getRandomGuesser(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return RandomGuesserConfigurator.getRandomGuesser(learningProblem, reasoningService);
 }
 
@@ -231,7 +231,7 @@ return RandomGuesserConfigurator.getRandomGuesser(learningProblem, reasoningServ
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization CELOE
 **/
-public static CELOE getCELOE(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static CELOE getCELOE(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return CELOEConfigurator.getCELOE(learningProblem, reasoningService);
 }
 
@@ -241,7 +241,7 @@ return CELOEConfigurator.getCELOE(learningProblem, reasoningService);
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization ELLearningAlgorithm
 **/
-public static ELLearningAlgorithm getELLearningAlgorithm(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static ELLearningAlgorithm getELLearningAlgorithm(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return ELLearningAlgorithmConfigurator.getELLearningAlgorithm(learningProblem, reasoningService);
 }
 
@@ -251,7 +251,7 @@ return ELLearningAlgorithmConfigurator.getELLearningAlgorithm(learningProblem, r
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization ELLearningAlgorithmDisjunctive
 **/
-public static ELLearningAlgorithmDisjunctive getELLearningAlgorithmDisjunctive(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static ELLearningAlgorithmDisjunctive getELLearningAlgorithmDisjunctive(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return ELLearningAlgorithmDisjunctiveConfigurator.getELLearningAlgorithmDisjunctive(learningProblem, reasoningService);
 }
 
@@ -261,7 +261,7 @@ return ELLearningAlgorithmDisjunctiveConfigurator.getELLearningAlgorithmDisjunct
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization FuzzyCELOE
 **/
-public static FuzzyCELOE getFuzzyCELOE(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static FuzzyCELOE getFuzzyCELOE(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return FuzzyCELOEConfigurator.getFuzzyCELOE(learningProblem, reasoningService);
 }
 
@@ -271,7 +271,7 @@ return FuzzyCELOEConfigurator.getFuzzyCELOE(learningProblem, reasoningService);
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization GP
 **/
-public static GP getGP(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static GP getGP(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return GPConfigurator.getGP(learningProblem, reasoningService);
 }
 
@@ -281,7 +281,7 @@ return GPConfigurator.getGP(learningProblem, reasoningService);
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization ISLE
 **/
-public static ISLE getISLE(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static ISLE getISLE(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return ISLEConfigurator.getISLE(learningProblem, reasoningService);
 }
 
@@ -291,7 +291,7 @@ return ISLEConfigurator.getISLE(learningProblem, reasoningService);
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization OCEL
 **/
-public static OCEL getOCEL(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static OCEL getOCEL(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return OCELConfigurator.getOCEL(learningProblem, reasoningService);
 }
 
@@ -301,7 +301,7 @@ return OCELConfigurator.getOCEL(learningProblem, reasoningService);
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization ROLearner
 **/
-public static ROLearner getROLearner(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static ROLearner getROLearner(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return ROLearnerConfigurator.getROLearner(learningProblem, reasoningService);
 }
 

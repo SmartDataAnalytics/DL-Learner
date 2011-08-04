@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.BruteForceLearnerConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigEntry;
@@ -66,8 +66,8 @@ public class BruteForceLearner extends AbstractCELA {
 	}
 	
     
-	private LearningProblem learningProblem;
-	private ReasonerComponent rs;
+	private AbstractLearningProblem learningProblem;
+	private AbstractReasonerComponent rs;
 	
     private Description bestDefinition;
     private ScorePosNeg bestScore;
@@ -82,7 +82,7 @@ public class BruteForceLearner extends AbstractCELA {
     // list of all generated concepts sorted by length
     private Map<Integer,List<Description>> generatedDefinitions = new HashMap<Integer,List<Description>>();
     
-    public BruteForceLearner(LearningProblem learningProblem, ReasonerComponent rs) {
+    public BruteForceLearner(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs) {
     	super(learningProblem, rs);
     	this.learningProblem = learningProblem;
     	this.rs = rs;
@@ -93,9 +93,9 @@ public class BruteForceLearner extends AbstractCELA {
 		return "brute force learning algorithm";
 	}    
     
-	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
-		problems.add(LearningProblem.class);
+	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
+		problems.add(AbstractLearningProblem.class);
 		return problems;
 	}
 	

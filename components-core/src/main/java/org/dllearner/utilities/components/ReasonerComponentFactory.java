@@ -25,7 +25,7 @@ import java.net.URL;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -46,9 +46,9 @@ public class ReasonerComponentFactory {
 	 * @param type Reasoner type.
 	 * @return A reasoner component.
 	 */
-	public static ReasonerComponent getReasonerComponent(String ontologyFile, ReasonerType type) {
+	public static AbstractReasonerComponent getReasonerComponent(String ontologyFile, ReasonerType type) {
 		ComponentManager cm = ComponentManager.getInstance();
-		ReasonerComponent rc = null;
+		AbstractReasonerComponent rc = null;
 
 		try {
 			// knowledge source

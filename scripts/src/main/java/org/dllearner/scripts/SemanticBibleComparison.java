@@ -41,11 +41,11 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
@@ -79,7 +79,7 @@ public class SemanticBibleComparison {
 	private static int nrOfFilesInExperiment = 200;
 	
 	
-	private static ReasonerComponent reasoningService;
+	private static AbstractReasonerComponent reasoningService;
 
 	private static Logger logger = Logger.getRootLogger();
 	private static boolean flawInExperiment = false;
@@ -313,7 +313,7 @@ public class SemanticBibleComparison {
 				double n = (double) (5-onOnto.getCoveredNegatives().size());
 				accNegExOnOnto.addNumber(n/5.0);
 				SparqlKnowledgeSource s=null;
-				for(KnowledgeSource ks : cm.getLiveKnowledgeSources()){
+				for(AbstractKnowledgeSource ks : cm.getLiveKnowledgeSources()){
 					if (ks instanceof SparqlKnowledgeSource) {
 						s = (SparqlKnowledgeSource) ks;
 					}
@@ -466,7 +466,7 @@ public class SemanticBibleComparison {
 				c.setRecursionDepth(3);
 			}
 			
-			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 			tmp.add(ks);
 			// reasoner
 			OWLAPIReasoner f = ComponentFactory
@@ -508,10 +508,10 @@ public class SemanticBibleComparison {
 			}
 			OWLFile ks = ComponentFactory.getOWLFile( fileURL);
 					
-			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 			tmp.add(ks);
 			
-			ReasonerComponent f = null;
+			AbstractReasonerComponent f = null;
 			
 			// reasoner
 			if(fic){
@@ -546,10 +546,10 @@ public class SemanticBibleComparison {
 	public static void initAllComponents(){
 		ComponentManager cm = ComponentManager.getInstance();
 		
-		List<Component> l = new ArrayList<Component>();
+		List<AbstractComponent> l = new ArrayList<AbstractComponent>();
 		l.addAll(cm.getLiveComponents());
 		
-		for(Component c : l){
+		for(AbstractComponent c : l){
 			
 			try{
 			SimpleClock time = new SimpleClock();
@@ -677,8 +677,8 @@ public class SemanticBibleComparison {
 	public static AbstractCELA getLearningAlgorithm(){
 		ComponentManager cm =ComponentManager.getInstance();
 		
-		List<Component> comp = cm.getLiveComponents();
-		for (Component component : comp) {
+		List<AbstractComponent> comp = cm.getLiveComponents();
+		for (AbstractComponent component : comp) {
 			if(component instanceof AbstractCELA){
 				return (AbstractCELA) component;
 			}

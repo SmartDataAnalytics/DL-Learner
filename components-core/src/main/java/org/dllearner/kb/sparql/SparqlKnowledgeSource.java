@@ -31,7 +31,7 @@ import java.util.TreeSet;
 import javax.swing.ProgressMonitor;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
@@ -72,7 +72,7 @@ import com.jamonapi.MonitorFactory;
  * @author Sebastian Knappe
  * @author Sebastian Hellmann
  */
-public class SparqlKnowledgeSource extends KnowledgeSource {
+public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 
 	private ProgressMonitor mon;
 	
@@ -130,7 +130,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	/**
 	 * Specifies the configuration options for this knowledge source.
 	 * 
-	 * @see org.dllearner.core.Component#createConfigOptions()
+	 * @see org.dllearner.core.AbstractComponent#createConfigOptions()
 	 * @return Options of this component.
 	 */
 	public static Collection<ConfigOption<?>> createConfigOptions() {

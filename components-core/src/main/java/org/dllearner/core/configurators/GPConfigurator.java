@@ -22,9 +22,9 @@ package org.dllearner.core.configurators;
 
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 
 /**
 * automatically generated, do not edit manually.
@@ -48,7 +48,7 @@ this.gP = gP;
 * @throws LearningProblemUnsupportedException see 
 * @return GP
 **/
-public static GP getGP(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static GP getGP(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 GP component = ComponentManager.getInstance().learningAlgorithm(GP.class, learningProblem, reasoningService);
 return component;
 }

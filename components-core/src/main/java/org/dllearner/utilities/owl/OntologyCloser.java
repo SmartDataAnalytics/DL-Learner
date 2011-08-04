@@ -9,8 +9,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
@@ -36,7 +36,7 @@ public class OntologyCloser {
 	boolean isKB = true;
 
 	// Set<KnowledgeSource> ks;
-	ReasonerComponent rs;
+	AbstractReasonerComponent rs;
 	HashMap<Individual, Set<ObjectExactCardinalityRestriction>> indToRestr;
 	HashMap<Individual, Set<Description>> indToNamedClass;
 	HashSet<Description> classes;
@@ -45,7 +45,7 @@ public class OntologyCloser {
 		super();
 		this.kb = kb;
 		this.kbFile = new KBFile(this.kb);
-		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
+		Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
 		ks.add(this.kbFile);
 		OWLAPIReasoner owlapi = new OWLAPIReasoner(ks);
 		try {
@@ -65,7 +65,7 @@ public class OntologyCloser {
 		SimpleClock sc = new SimpleClock();
 		sc.printAndSet();
 		this.kbFile = new KBFile(this.kb);
-		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
+		Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
 		ks.add(this.kbFile);
 		
 		sc.printAndSet("updating reasoner");

@@ -22,9 +22,9 @@ package org.dllearner.core.configurators;
 
 import org.dllearner.algorithms.fuzzydll.FuzzyCELOE;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 
 /**
@@ -50,7 +50,7 @@ this.fuzzyCELOE = fuzzyCELOE;
 * @throws LearningProblemUnsupportedException see 
 * @return FuzzyCELOE
 **/
-public static FuzzyCELOE getFuzzyCELOE(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static FuzzyCELOE getFuzzyCELOE(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 FuzzyCELOE component = ComponentManager.getInstance().learningAlgorithm(FuzzyCELOE.class, learningProblem, reasoningService);
 return component;
 }
