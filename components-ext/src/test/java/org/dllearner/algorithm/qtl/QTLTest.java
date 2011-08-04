@@ -1,5 +1,6 @@
 package org.dllearner.algorithm.qtl;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -16,7 +17,6 @@ import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
-import scala.actors.threadpool.Arrays;
 
 public class QTLTest {
 	
