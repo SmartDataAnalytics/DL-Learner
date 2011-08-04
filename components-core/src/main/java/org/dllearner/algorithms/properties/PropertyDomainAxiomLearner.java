@@ -18,7 +18,6 @@ import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
@@ -122,7 +121,7 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
 		int max = Math.min(currentlyBestAxioms.size(), nrOfAxioms);
 		
-		List<EvaluatedAxiom> bestAxioms = currentlyBestAxioms.subList(0, max-1);
+		List<EvaluatedAxiom> bestAxioms = currentlyBestAxioms.subList(0, max);
 		
 		return bestAxioms;
 	}
@@ -229,9 +228,9 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
 	
 	public static void main(String[] args) throws Exception{
 		Map<String, String> propertiesMap = new HashMap<String, String>();
-        propertiesMap.put("propertyToDescribe", "http://dbpedia.org/ontology/league");
-        propertiesMap.put("maxExecutionTimeInSeconds", "20");
-        propertiesMap.put("maxFetchedRows", "5000");
+        propertiesMap.put("propertyToDescribe", "http://dbpedia.org/ontology/writer");
+        propertiesMap.put("maxExecutionTimeInSeconds", "10");
+        propertiesMap.put("maxFetchedRows", "15000");
         
         PropertyDomainAxiomLearner l = new PropertyDomainAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
         
@@ -246,7 +245,6 @@ public class PropertyDomainAxiomLearner extends Component implements AxiomLearni
         		f.set(l, editor.getValue());
         	}
         }
-        ConfigHelper.configure(l, "propertyToDescribe", "test");
         l.init();
         l.start();
         System.out.println(l.getCurrentlyBestEvaluatedAxioms(3));

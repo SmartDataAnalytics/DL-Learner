@@ -28,7 +28,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
 
 public class FunctionalPropertyAxiomLearner extends Component implements AxiomLearningAlgorithm {
 	
-private static final Logger logger = LoggerFactory.getLogger(TransitivePropertyAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(FunctionalPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
@@ -87,19 +87,26 @@ private static final Logger logger = LoggerFactory.getLogger(TransitivePropertyA
 			logger.info("Property is already declared as functional in knowledge base.");
 		}
 		
-		//get fraction of instances s with <s p o> also exists <o p s> 
-		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?functional WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?s. ?o <%s> ?o1}}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
+		//get number of instances of s with <s p o> 
+		query = String.format("SELECT (COUNT(DISTINCT ?s)) AS ?all WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
+		int all = 1;
 		while(rs.hasNext()){
 			qs = rs.next();
-			int all = qs.getLiteral("all").getInt();
-			int symmetric = qs.getLiteral("functional").getInt();
-			double frac = symmetric / (double)all;
-			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			all = qs.getLiteral("all").getInt();
 		}
-		
+		//get number of instances of s with <s p o> <s p o1> where o != o1
+		query = "SELECT (COUNT(DISTINCT ?s)) AS ?notfunctional WHERE {?s <%s> ?o. ?s <%s> ?o1. FILTER(?o != ?o1) }";
+		query = query.replace("%s", propertyToDescribe.getURI().toString());
+		rs = executeQuery(query);
+		int notFunctional = 1;
+		while(rs.hasNext()){
+			qs = rs.next();
+			notFunctional = qs.getLiteral("notfunctional").getInt();
+		}
+		double frac = (all - notFunctional) / (double)all;
+		currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 

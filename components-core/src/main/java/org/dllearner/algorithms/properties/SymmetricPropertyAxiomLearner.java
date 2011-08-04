@@ -14,7 +14,6 @@ import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ReflexiveObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
@@ -29,7 +28,7 @@ import com.hp.hpl.jena.vocabulary.OWL2;
 
 public class SymmetricPropertyAxiomLearner extends Component implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(TransitivePropertyAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(SymmetricPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;

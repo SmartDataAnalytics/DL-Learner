@@ -28,7 +28,7 @@ import com.hp.hpl.jena.vocabulary.OWL2;
 
 public class ReflexivePropertyAxiomLearner extends Component implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(TransitivePropertyAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReflexivePropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
