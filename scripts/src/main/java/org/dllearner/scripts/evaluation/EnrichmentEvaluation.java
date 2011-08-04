@@ -19,6 +19,7 @@
  */
 package org.dllearner.scripts.evaluation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class EnrichmentEvaluation {
 		
 	}
 	
-	public void start() {
+	public void start() throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		
 		ComponentManager cm = ComponentManager.getInstance();
 		
@@ -83,12 +84,11 @@ public class EnrichmentEvaluation {
 		for(Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
 			int objectProperties = 0;
 			for(ObjectProperty property : properties) {
-//				SubPropertyOfAxiomLearner learner = new SubPropertyOfAxiomLearner(ks);
-				AxiomLearningAlgorithm learner = cm.learningAlgorithm(algorithmClass, ks);
+
+				// dynamically invoke constructor with SPARQL knowledge source
+				AxiomLearningAlgorithm learner = algorithmClass.getConstructor(SparqlEndpointKS.class).newInstance(ks);
 				ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
-				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
-				
-				
+				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);				
 //				learner.setPropertyToDescribe(property);
 //				learner.setMaxExecutionTimeInSeconds(10);
 				System.out.println("Applying " + ComponentManager.getName(learner) + " on " + property + " ... ");
@@ -133,7 +133,7 @@ public class EnrichmentEvaluation {
 		
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		EnrichmentEvaluation ee = new EnrichmentEvaluation();
 		ee.start();
 		ee.printResultsPlain();
