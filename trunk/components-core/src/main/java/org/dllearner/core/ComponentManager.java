@@ -486,7 +486,7 @@ public final class ComponentManager {
 		return la;
 	}
 
-	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, AbstractKnowledgeSource ks) throws LearningProblemUnsupportedException {
+	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, AbstractKnowledgeSource ks) {
 		T la = invokeConstructor(laClass, new Class[] { AbstractKnowledgeSource.class }, new Object[] { ks });
 		return la;
 	}	
@@ -742,7 +742,7 @@ public final class ComponentManager {
 	 * @param component
 	 * @return Name of the component.
 	 */
-	public static String getName(AbstractComponent component){
+	public static String getName(Component component){
 		ComponentAnn ann = component.getClass().getAnnotation(ComponentAnn.class);
 		return ann.name();
 	}

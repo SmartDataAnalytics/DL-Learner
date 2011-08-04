@@ -26,6 +26,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.properties.SubPropertyOfAxiomLearner;
+import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.LearningAlgorithm;
@@ -59,12 +60,12 @@ public class EnrichmentEvaluation {
 	private int maxObjectProperties = 3;
 	private int maxDataProperties = 3;
 	private int maxClasses = 3;
-	private List<Class<? extends LearningAlgorithm>> algorithmsToTest;
+	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	
 	
 	public EnrichmentEvaluation() {
-		algorithmsToTest = new LinkedList<Class<? extends LearningAlgorithm>>();
-		algorithmsToTest.add(SubPropertyOfAxiomLearner.class);
+		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
+		objectPropertyAlgorithms.add(SubPropertyOfAxiomLearner.class);
 		
 	}
 	
@@ -79,13 +80,13 @@ public class EnrichmentEvaluation {
 		
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
 		
-		/*
-		for(Class<? extends LearningAlgorithm> algorithmClass : algorithmsToTest) {
+		for(Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
 			int objectProperties = 0;
 			for(ObjectProperty property : properties) {
 //				SubPropertyOfAxiomLearner learner = new SubPropertyOfAxiomLearner(ks);
-				LearningAlgorithm learner = cm.learningAlgorithm(algorithmClass, ks);
-				ConfigHelper.configure(learner, "propertyToDescribe", property);
+				AxiomLearningAlgorithm learner = cm.learningAlgorithm(algorithmClass, ks);
+				ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
+//				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
 				
 				
 //				learner.setPropertyToDescribe(property);
@@ -102,7 +103,7 @@ public class EnrichmentEvaluation {
 					break;
 				}
 			}
-		} */
+		} 
 		
 	}
 	
