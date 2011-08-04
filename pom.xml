@@ -16,7 +16,7 @@
 		<gwt.version>2.3.0</gwt.version>
 
 		<!--Define the AKSW dependency version -->
-		<aksw.version>1.0-SNAPSHOT</aksw.version>
+		<aksw.version>0.2-SNAPSHOT</aksw.version>
 	</properties>
 
 	<modules>
@@ -27,7 +27,7 @@
 		<module>protege</module>
 		<module>evalplugin</module>
 		<module>autosparql</module>
-    <module>autosparql-lite</module>
+    	<module>autosparql-lite</module>
   </modules>
 
 
@@ -139,7 +139,7 @@
 			<dependency>
 				<groupId>com.hp.hpl.jena</groupId>
 				<artifactId>jena</artifactId>
-				<version>2.6.3</version>
+				<version>2.6.4</version>
 			</dependency>
 			<!--SwingX is in central -->
 			<dependency>
@@ -277,6 +277,11 @@
 			<dependency>
 				<groupId>org.aksw.commons</groupId>
 				<artifactId>sparql</artifactId>
+				<version>${aksw.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aksw.commons</groupId>
+				<artifactId>sparql-scala</artifactId>
 				<version>${aksw.version}</version>
 			</dependency>
 			<dependency>
