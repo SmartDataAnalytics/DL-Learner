@@ -19,15 +19,31 @@
  */
 package org.dllearner.scripts.evaluation;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.properties.DisjointPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.EquivalentPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.FunctionalPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.PropertyDomainAxiomLearner;
+import org.dllearner.algorithms.properties.PropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.SubPropertyOfAxiomLearner;
+import org.dllearner.algorithms.properties.SymmetricPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.TransitivePropertyAxiomLearner;
 import org.dllearner.core.AxiomLearningAlgorithm;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.LearningAlgorithm;
@@ -36,6 +52,8 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.ini4j.IniPreferences;
+import org.ini4j.InvalidFileFormatException;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -62,15 +80,78 @@ public class EnrichmentEvaluation {
 	private int maxDataProperties = 3;
 	private int maxClasses = 3;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
+	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	
+	private PreparedStatement ps;
 	
 	public EnrichmentEvaluation() {
+		initDBConnection();
+		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
+//		objectPropertyAlgorithms.add(DisjointPropertyAxiomLearner.class);
+//		objectPropertyAlgorithms.add(EquivalentPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(FunctionalPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(PropertyDomainAxiomLearner.class);
+		objectPropertyAlgorithms.add(PropertyRangeAxiomLearner.class);
 		objectPropertyAlgorithms.add(SubPropertyOfAxiomLearner.class);
+		objectPropertyAlgorithms.add(SymmetricPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(TransitivePropertyAxiomLearner.class);
+		
+		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
+//		dataPropertyAlgorithms.add(DisjointPropertyAxiomLearner.class);
+//		dataPropertyAlgorithms.add(EquivalentPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(FunctionalPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(PropertyDomainAxiomLearner.class);
+		dataPropertyAlgorithms.add(PropertyRangeAxiomLearner.class); // ?
+		dataPropertyAlgorithms.add(SubPropertyOfAxiomLearner.class);	
+	}
+	
+	private void initDBConnection(){
+		try {
+			String iniFile = "db_settings.ini";
+			Preferences prefs = new IniPreferences(new FileReader(iniFile));
+			String dbServer = prefs.node("database").get("server", null);
+			String dbName = "enrichment";
+			String dbUser = prefs.node("database").get("user", null);
+			String dbPass = prefs.node("database").get("pass", null);
+			
+			Class.forName("com.mysql.jdbc.Driver");
+			String url =
+			    "jdbc:mysql://"+dbServer+"/"+dbName;
+			Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
+			ps = conn.prepareStatement("INSERT INTO evaluation (" +
+					"entity, algorithm, axiom, score ) " +
+					"VALUES(?,?,?,?)");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (InvalidFileFormatException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void writeToDB(
+			String entity, String algorithm, String axiom, double score){
+		try {
+			ps.setString(1, entity);
+			ps.setString(2, algorithm);
+			ps.setString(3, axiom);
+			ps.setDouble(4, score);
+			
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			logger.error("Error while writing to DB.",e);
+			e.printStackTrace();
+		}
 		
 	}
 	
-	public void start() throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public void start() throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException {
 		
 		ComponentManager cm = ComponentManager.getInstance();
 		
@@ -80,6 +161,7 @@ public class EnrichmentEvaluation {
 		Set<ObjectProperty> properties = getAllObjectProperties(se);
 		
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
+		ks.init();
 		
 		for(Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
 			int objectProperties = 0;
@@ -88,15 +170,20 @@ public class EnrichmentEvaluation {
 				// dynamically invoke constructor with SPARQL knowledge source
 				AxiomLearningAlgorithm learner = algorithmClass.getConstructor(SparqlEndpointKS.class).newInstance(ks);
 				ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
-				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);				
+				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
+				learner.init();
 //				learner.setPropertyToDescribe(property);
 //				learner.setMaxExecutionTimeInSeconds(10);
-				System.out.println("Applying " + ComponentManager.getName(learner) + " on " + property + " ... ");
+				String algName = ComponentManager.getName(learner);
+				System.out.println("Applying " + algName  + " on " + property + " ... ");
 				learner.start();
 				List<EvaluatedAxiom> learnedAxioms = learner.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-				for(EvaluatedAxiom learnedAxiom : learnedAxioms) {
-					// TODO: put this in some data structure
-					System.out.println(learnedAxiom);
+				if(learnedAxioms == null) {
+					writeToDB(property.toString(), algName, "NULL", 0);
+				} else {
+					for(EvaluatedAxiom learnedAxiom : learnedAxioms) {
+						writeToDB(property.toString(), algName, learnedAxiom.getAxiom().toString(), learnedAxiom.getScore().getAccuracy());
+					}
 				}
 				objectProperties++;
 				if(objectProperties > maxObjectProperties) {
@@ -133,7 +220,7 @@ public class EnrichmentEvaluation {
 		
 	}
 	
-	public static void main(String[] args) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public static void main(String[] args) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException {
 		EnrichmentEvaluation ee = new EnrichmentEvaluation();
 		ee.start();
 		ee.printResultsPlain();
