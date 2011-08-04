@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.kb.SparqlEndpointKS;
 
+@ComponentAnn(name="disjoint property axiom learner")
 public class DisjointPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
 	private String propertyToDescribe;

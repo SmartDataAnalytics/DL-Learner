@@ -16,6 +16,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
@@ -39,6 +40,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
+@ComponentAnn(name="property domain axiom learner")
 public class PropertyDomainAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiomLearner.class);
