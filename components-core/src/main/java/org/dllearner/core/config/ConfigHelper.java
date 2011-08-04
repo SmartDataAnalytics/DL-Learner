@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.dllearner.algorithms.properties.PropertyDomainAxiomLearner;
-import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.Component;
 
 public class ConfigHelper {
 	
@@ -33,7 +33,7 @@ public class ConfigHelper {
 	 * @param configName the name of the config option
 	 * @param configValue the value of the config option
 	 */
-	public static void configure(AbstractComponent component, String configName, String configValue){
+	public static void configure(Component component, String configName, String configValue){
 		Field[] fields = component.getClass().getDeclaredFields();
         for(Field f : fields){
         	ConfigOption option = f.getAnnotation(ConfigOption.class);
@@ -68,7 +68,7 @@ public class ConfigHelper {
 	 * @param component
 	 * @return
 	 */
-	public static List<ConfigOption> getConfigOptions(AbstractComponent component){
+	public static List<ConfigOption> getConfigOptions(Component component){
 		List<ConfigOption> options = new ArrayList<ConfigOption>();
 		
 		Field[] fields = component.getClass().getDeclaredFields();
