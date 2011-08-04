@@ -4,6 +4,7 @@ import org.dllearner.algorithms.properties.FunctionalPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.ReflexivePropertyAxiomLearner;
+import org.dllearner.algorithms.properties.SubPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricPropertyAxiomLearner;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -22,12 +23,22 @@ public class PropertyLearningTest extends TestCase{
 	private ObjectProperty symmetric = new ObjectProperty("http://dbpedia.org/ontology/influencedBy");
 	private ObjectProperty domain = new ObjectProperty("http://dbpedia.org/ontology/writer");
 	private ObjectProperty range = new ObjectProperty("http://dbpedia.org/ontology/writer");
+	private ObjectProperty subProperty = new ObjectProperty("http://dbpedia.org/ontology/author");
 	
 	
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
+	}
+	
+	public void testSubPropertyOfAxiomLearning() throws Exception {
+		SubPropertyOfAxiomLearner l = new SubPropertyOfAxiomLearner(ks);
+		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+		l.setPropertyToDescribe(subProperty);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
 	}
 	
 	public void testPropertyDomainAxiomLearning() throws Exception {
