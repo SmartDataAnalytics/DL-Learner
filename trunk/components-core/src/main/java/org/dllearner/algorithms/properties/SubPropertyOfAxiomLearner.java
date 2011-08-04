@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.aksw.commons.sparql.api.core.QueryExecutionFactory;
+import org.aksw.commons.sparql.api.http.QueryExecutionFactoryHttp;
+import org.aksw.commons.sparql.api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -28,8 +31,11 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 @ComponentAnn(name="subPropertyOf learner")
@@ -99,10 +105,13 @@ private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiom
 		Map<ObjectProperty, Integer> result = new HashMap<ObjectProperty, Integer>();
 		ObjectProperty prop;
 		Integer oldCnt;
-		while(!terminationCriteriaSatisfied()){
+		boolean repeat = true;
+		
+		while(!terminationCriteriaSatisfied() && repeat){
 			query = String.format(queryTemplate, propertyToDescribe, limit, offset);
 			ResultSet rs = executeQuery(query);
 			QuerySolution qs;
+			repeat = false;
 			while(rs.hasNext()){
 				qs = rs.next();
 				prop = new ObjectProperty(qs.getResource("p").getURI());
@@ -113,6 +122,7 @@ private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiom
 				}
 				result.put(prop, oldCnt);
 				qs.getLiteral("count").getInt();
+				repeat = true;
 			}
 			currentlyBestAxioms = buildAxioms(result);
 			offset += 1000;

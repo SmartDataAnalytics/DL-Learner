@@ -98,7 +98,7 @@ public class TransitivePropertyAxiomLearner extends AbstractComponent implements
 		while(rs.hasNext()){
 			qs = rs.next();
 			int all = qs.getLiteral("all").getInt();
-			int transitive = qs.getLiteral("trans").getInt();
+			int transitive = qs.getLiteral("transitive").getInt();
 			double frac = transitive / (double)all;
 			currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
 		}
