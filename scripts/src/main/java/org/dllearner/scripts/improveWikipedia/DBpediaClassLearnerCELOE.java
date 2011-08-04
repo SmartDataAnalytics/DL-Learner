@@ -19,6 +19,17 @@
  */
 package org.dllearner.scripts.improveWikipedia;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.aksw.commons.sparql.core.ResultSetRenderer;
 import org.aksw.commons.sparql.core.SparqlEndpoint;
 import org.aksw.commons.sparql.core.SparqlTemplate;
@@ -26,12 +37,17 @@ import org.aksw.commons.sparql.core.decorator.CachingSparqlEndpoint;
 import org.aksw.commons.sparql.core.impl.HttpSparqlEndpoint;
 import org.apache.velocity.VelocityContext;
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
-import org.dllearner.core.owl.*;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.KB;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.gui.Config;
 import org.dllearner.gui.ConfigSave;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -41,11 +57,6 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
 
 /**
  * A script, which learns definitions / super classes of classes in the DBpedia ontology.
