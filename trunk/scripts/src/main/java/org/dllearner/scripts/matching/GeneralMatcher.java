@@ -24,17 +24,12 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.aksw.commons.sparql.sparqler.SelectPaginated;
-import org.aksw.commons.sparql.sparqler.Sparqler;
-import org.aksw.commons.sparql.sparqler.SparqlerHttp;
 import org.dllearner.algorithm.qtl.QTL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosOnlyLP;
-
-import com.hp.hpl.jena.query.QuerySolution;
 
 /**
  * 
@@ -51,11 +46,11 @@ public class GeneralMatcher {
 		// option 2: use SPARQL to get links
 		
 		// use AKSW commons SPARQL API
-        Sparqler x = new SparqlerHttp(sparqlEndpoint1.getURL().toString());
-        SelectPaginated q = new SelectPaginated(x, "query", 1000);
-        while(q.hasNext()) {
-            QuerySolution qs = q.next();
-        }
+//        Sparqler x = new SparqlerHttp(sparqlEndpoint1.getURL().toString());
+//        SelectPaginated q = new SelectPaginated(x, "query", 1000);
+//        while(q.hasNext()) {
+//            QuerySolution qs = q.next();
+//        }
 		
 		// phase 2: create learning problems
 		
