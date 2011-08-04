@@ -32,6 +32,7 @@
 					<excludes>
 						<exclude>org/dllearner/test/*</exclude>
 						<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
+						<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>
 						<!--This line excludes inner classes-->
 						<exclude>**/*$*</exclude>
 					</excludes>
@@ -116,6 +117,12 @@
 		<dependency>
 			<groupId>org.aksw.commons</groupId>
 			<artifactId>sparql</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- THIS IS FROM THE UNIBAS REPO-->
@@ -154,6 +161,12 @@
 		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>jena</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!--SwingX is in central-->
@@ -217,6 +230,12 @@
 		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>arq</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -251,6 +270,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <version>3.0.5.RELEASE</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.slf4j</groupId>
+        	<artifactId>slf4j-api</artifactId>
+        	<version>1.5.8</version>
         </dependency>
 	</dependencies>
 </project>
