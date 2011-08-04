@@ -40,7 +40,7 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 @ComponentAnn(name="property range learner")
 public class PropertyRangeAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-private static final Logger logger = LoggerFactory.getLogger(PropertyRangeAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(PropertyRangeAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
@@ -96,10 +96,14 @@ private static final Logger logger = LoggerFactory.getLogger(PropertyRangeAxiomL
 		
 		//get objects with types
 		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
-		while(!terminationCriteriaSatisfied()){
-			individual2Types.putAll(getObjectsWithTypes(fetchedRows));
+		Map<Individual, Set<NamedClass>> newIndividual2Types;
+		boolean repeat = true;
+		while(!terminationCriteriaSatisfied() && repeat){
+			newIndividual2Types = getObjectsWithTypes(fetchedRows);
+			individual2Types.putAll(newIndividual2Types);
 			currentlyBestAxioms = buildBestAxioms(individual2Types);
 			fetchedRows += 1000;
+			repeat = !newIndividual2Types.isEmpty();
 		}
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}

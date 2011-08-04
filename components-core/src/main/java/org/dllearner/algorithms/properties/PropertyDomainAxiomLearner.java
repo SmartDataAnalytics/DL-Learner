@@ -99,10 +99,14 @@ public class PropertyDomainAxiomLearner extends AbstractComponent implements Axi
 		
 		//get subjects with types
 		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
-		while(!terminationCriteriaSatisfied()){
-			individual2Types.putAll(getSubjectsWithTypes(fetchedRows));
+		Map<Individual, Set<NamedClass>> newIndividual2Types;
+		boolean repeat = true;
+		while(!terminationCriteriaSatisfied() && repeat){
+			newIndividual2Types = getSubjectsWithTypes(fetchedRows);
+			individual2Types.putAll(newIndividual2Types);
 			currentlyBestAxioms = buildBestAxioms(individual2Types);
 			fetchedRows += 1000;
+			repeat = !newIndividual2Types.isEmpty();
 		}
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
