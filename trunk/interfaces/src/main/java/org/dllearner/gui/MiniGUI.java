@@ -41,11 +41,11 @@ import javax.swing.JTextField;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
@@ -63,7 +63,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -4247224068574471307L;
 
 	private static ComponentManager cm = ComponentManager.getInstance();
-	private ReasonerComponent rs;
+	private AbstractReasonerComponent rs;
 	private File selectedFile;
 	
 	private JButton openButton;
@@ -132,7 +132,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 				
 				// we blindly assume an OWL file was selected
 				// (everything else will cause an exception)
-				KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+				AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 				cm.applyConfigEntry(source, "url", selectedFile.toURI().toString());				
 				try {
 					source.init();
@@ -143,7 +143,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 				
 				// use a reasoner to find out which instances exist
 				// in the background knowledge
-				ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, source);
+				AbstractReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, source);
 				try {
 					reasoner.init();
 				} catch (ComponentInitException e1) {
@@ -168,7 +168,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 				exampleSet.add(individuals.get(i).toString());
 			
 			// create a positive only learning problem
-			LearningProblem lp = cm.learningProblem(PosOnlyLP.class, rs);
+			AbstractLearningProblem lp = cm.learningProblem(PosOnlyLP.class, rs);
 			cm.applyConfigEntry(lp, "positiveExamples", exampleSet);
 			try {
 				lp.init();

@@ -28,7 +28,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.FuzzyPosNegLPStandardConfigurator;
 import org.dllearner.core.fuzzydll.FuzzyUnsupportedCodeException;
 import org.dllearner.core.options.BooleanConfigOption;
@@ -81,12 +81,12 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		return configurator;
 	}
 
-	public FuzzyPosNegLPStandard(ReasonerComponent reasoningService) {
+	public FuzzyPosNegLPStandard(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
 		this.configurator = new FuzzyPosNegLPStandardConfigurator(this);
 	}
 
-	public FuzzyPosNegLPStandard(ReasonerComponent reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
+	public FuzzyPosNegLPStandard(AbstractReasonerComponent reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
 		super(reasoningService);
 		this.positiveExamples = positiveExamples;
 		this.negativeExamples = negativeExamples;

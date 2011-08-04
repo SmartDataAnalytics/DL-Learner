@@ -4,7 +4,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 
@@ -15,11 +15,11 @@ public class AutomaticPositiveExampleFinderOWL {
 		.getLogger(AutomaticPositiveExampleFinderOWL.class);
 
 	
-	private ReasonerComponent reasoningService;
+	private AbstractReasonerComponent reasoningService;
 	
 	private SortedSet<Individual> posExamples;
 	
-	public AutomaticPositiveExampleFinderOWL(ReasonerComponent reasoningService) {
+	public AutomaticPositiveExampleFinderOWL(AbstractReasonerComponent reasoningService) {
 	
 		this.posExamples = new TreeSet<Individual>();
 		this.reasoningService = reasoningService;

@@ -21,7 +21,7 @@ package org.dllearner.test.junit;
 
 import java.util.List;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentManager;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -41,10 +41,10 @@ public class ComponentTests {
 	 */
 	@Test
 	public void nameTest() {
-		String defaultName = Component.getName();
+		String defaultName = AbstractComponent.getName();
 		ComponentManager cm = ComponentManager.getInstance();
-		List<Class<? extends Component>> components = cm.getComponents();
-		for (Class<? extends Component> component : components) {
+		List<Class<? extends AbstractComponent>> components = cm.getComponents();
+		for (Class<? extends AbstractComponent> component : components) {
 			String componentName = cm.getComponentName(component);
 			assertFalse(component + " does not overwrite getName().", componentName
 					.equals(defaultName));

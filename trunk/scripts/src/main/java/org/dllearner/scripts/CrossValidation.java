@@ -37,8 +37,8 @@ import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.Heuristics;
@@ -133,7 +133,7 @@ public class CrossValidation {
 			e.printStackTrace();
 		}
 		
-		LearningProblem lp = start.getLearningProblem();
+		AbstractLearningProblem lp = start.getLearningProblem();
 //		ReasonerComponent rs = start.getReasonerComponent();
 //		start.getReasonerComponent().releaseKB();
 
@@ -249,7 +249,7 @@ public class CrossValidation {
 			
 			Description concept = la.getCurrentlyBestDescription();
 			
-			ReasonerComponent rs = start.getReasonerComponent();
+			AbstractReasonerComponent rs = start.getReasonerComponent();
 			Set<Individual> tmp = rs.hasType(concept, testSetsPos.get(currFold));
 			Set<Individual> tmp2 = Helper.difference(testSetsPos.get(currFold), tmp);
 			Set<Individual> tmp3 = rs.hasType(concept, testSetsNeg.get(currFold));
@@ -310,11 +310,11 @@ public class CrossValidation {
 			
 	}
 	
-	private int getCorrectPosClassified(ReasonerComponent rs, Description concept, Set<Individual> testSetPos) {
+	private int getCorrectPosClassified(AbstractReasonerComponent rs, Description concept, Set<Individual> testSetPos) {
 		return rs.hasType(concept, testSetPos).size();
 	}
 	
-	private int getCorrectNegClassified(ReasonerComponent rs, Description concept, Set<Individual> testSetNeg) {
+	private int getCorrectNegClassified(AbstractReasonerComponent rs, Description concept, Set<Individual> testSetNeg) {
 		return testSetNeg.size() - rs.hasType(concept, testSetNeg).size();
 	}
 	

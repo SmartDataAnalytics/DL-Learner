@@ -22,7 +22,7 @@ package org.dllearner.core.configurators;
 
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.reasoning.ProtegeReasoner;
 
 /**
@@ -45,7 +45,7 @@ this.protegeReasoner = protegeReasoner;
 * @param knowledgeSource see knowledgeSource
 * @return ProtegeReasoner
 **/
-public static ProtegeReasoner getProtegeReasoner(Set<KnowledgeSource> knowledgeSource) {
+public static ProtegeReasoner getProtegeReasoner(Set<AbstractKnowledgeSource> knowledgeSource) {
 ProtegeReasoner component = ComponentManager.getInstance().reasoner(ProtegeReasoner.class, knowledgeSource);
 return component;
 }

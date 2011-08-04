@@ -37,7 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.options.StringTupleListConfigOption;
 import org.dllearner.gui.Config;
 import org.dllearner.utilities.datastructures.StringTuple;
@@ -76,7 +76,7 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 	 * @param component The component of this option.
 	 * @param configOption The option to configure.
 	 */
-	public WidgetPanelStringTupleList(Config config, Component component,
+	public WidgetPanelStringTupleList(Config config, AbstractComponent component,
 			StringTupleListConfigOption configOption) {
 		super(config, component, configOption);
 	}

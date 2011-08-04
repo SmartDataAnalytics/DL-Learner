@@ -44,9 +44,9 @@ import org.dllearner.algorithm.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithm.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
 import org.dllearner.core.configurators.Configurator;
@@ -76,11 +76,11 @@ import com.hp.hpl.jena.util.iterator.Filter;
  *
  *
  */
-public class QTL extends Component implements SparqlQueryLearningAlgorithm {
+public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorithm {
 	
 	private static final Logger logger = Logger.getLogger(QTL.class);
 	
-	private LearningProblem lp;
+	private AbstractLearningProblem lp;
 	private SparqlEndpointKS endpointKS;
 //	private QTLConfigurator configurator;
 	
@@ -120,7 +120,7 @@ public class QTL extends Component implements SparqlQueryLearningAlgorithm {
 		return null;
 	}
 	
-	public QTL(LearningProblem learningProblem, SparqlEndpointKS endpointKS) throws LearningProblemUnsupportedException{
+	public QTL(AbstractLearningProblem learningProblem, SparqlEndpointKS endpointKS) throws LearningProblemUnsupportedException{
 		if(!(learningProblem instanceof PosOnlyLP || learningProblem instanceof PosNegLP)){
 			throw new LearningProblemUnsupportedException(learningProblem.getClass(), getClass());
 		}

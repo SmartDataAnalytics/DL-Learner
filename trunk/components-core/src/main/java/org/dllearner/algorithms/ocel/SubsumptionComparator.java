@@ -2,16 +2,16 @@ package org.dllearner.algorithms.ocel;
 
 import java.util.Comparator;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.utilities.owl.ConceptComparator;
 
 public class SubsumptionComparator implements Comparator<Description> {
 
-	private ReasonerComponent rs;
+	private AbstractReasonerComponent rs;
 	private ConceptComparator cc = new ConceptComparator();
 	
-	public SubsumptionComparator(ReasonerComponent rs) {
+	public SubsumptionComparator(AbstractReasonerComponent rs) {
 		this.rs = rs;
 	}
 	

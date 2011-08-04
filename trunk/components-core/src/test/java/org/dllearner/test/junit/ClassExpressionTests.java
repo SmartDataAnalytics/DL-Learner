@@ -21,7 +21,7 @@ package org.dllearner.test.junit;
 
 import static org.junit.Assert.*;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -48,7 +48,7 @@ public class ClassExpressionTests {
 
 	@Test
 	public void minimizeTest1() throws ParseException {
-		ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER_OE);
+		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER_OE);
 		DescriptionMinimizer minimizer = new DescriptionMinimizer(reasoner);
 		Description d = KBParser.parseConcept("(\"http://example.com/father#male\" AND (\"http://example.com/father#male\" OR EXISTS \"http://example.com/father#hasChild\".TOP))");		
 		Description minD = minimizer.minimize(d);
@@ -59,7 +59,7 @@ public class ClassExpressionTests {
 	public void minimizeTest2() throws ParseException {
 		// this tests for a bug, when in A AND A AND SOMETHING, both A were removed because they subsume 
 		// each other, while in fact only one A should be removed
-		ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.MDM);
+		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.MDM);
 		DescriptionMinimizer minimizer = new DescriptionMinimizer(reasoner);
 		NamedClass nc = new NamedClass("http://acl/BMV#MedicalThings");
 		ObjectProperty op = new ObjectProperty("http://acl/BMV#refersSubstance");

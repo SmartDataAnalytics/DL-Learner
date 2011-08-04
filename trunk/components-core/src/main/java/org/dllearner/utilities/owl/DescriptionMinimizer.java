@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.Negation;
@@ -47,13 +47,13 @@ import org.dllearner.core.owl.Union;
  */
 public class DescriptionMinimizer {
 
-	private ReasonerComponent reasoner;
+	private AbstractReasonerComponent reasoner;
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	private Map<Description,Map<Description,Boolean>> cachedSubclassOf = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);	
 
 	private boolean beautify = true;
 	
-	public DescriptionMinimizer(ReasonerComponent reasoner) {
+	public DescriptionMinimizer(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 	}
 

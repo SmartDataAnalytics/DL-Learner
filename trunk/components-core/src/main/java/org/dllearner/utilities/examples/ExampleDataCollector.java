@@ -33,7 +33,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -72,7 +72,7 @@ public class ExampleDataCollector {
 		urls.addAll (convert(baseDir, pos));
 		urls.addAll (convert(baseDir, neg));
 		
-		Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+		Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 		try {
 			URL add = new File(baseDir+"tiger.rdf").toURI().toURL();
 //			 add = new File(baseDir+"new.rdf").toURI().toURL();
@@ -90,7 +90,7 @@ public class ExampleDataCollector {
 //			la.getConfigurator().setUseAllConstructor(false);
 //			la.getConfigurator().setUseExistsConstructor(false);
 			la.getConfigurator().setUseDataHasValueConstructor(true);
-			for(KnowledgeSource ks: tmp){
+			for(AbstractKnowledgeSource ks: tmp){
 				ks.init();
 			}
 			rc.init();

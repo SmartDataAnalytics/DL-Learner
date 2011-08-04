@@ -34,8 +34,8 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
@@ -147,14 +147,14 @@ public class CELOE extends AbstractCELA {
 		return configurator;
 	}
 	
-	public CELOE(LearningProblem problem, ReasonerComponent reasoner) {
+	public CELOE(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 		configurator = new CELOEConfigurator(this);
 	}
 
-	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
-		problems.add(LearningProblem.class);
+	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
+		problems.add(AbstractLearningProblem.class);
 		return problems;
 	}	
 	

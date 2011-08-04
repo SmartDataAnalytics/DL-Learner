@@ -43,8 +43,8 @@ import java.util.TreeSet;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.FuzzyOWLAPIReasonerConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -131,7 +131,7 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
  * @author Jens Lehmann
  *
  */
-public class FuzzyOWLAPIReasoner extends ReasonerComponent {
+public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 
 //	private static Logger logger = Logger
 //	.getLogger(OWLAPIReasoner.class);	
@@ -179,7 +179,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 	private int reasonersComparationCounter = 0;
 	private int reasonersComparationDisparityCounter = 0;
 	
-	public FuzzyOWLAPIReasoner(Set<KnowledgeSource> sources) {
+	public FuzzyOWLAPIReasoner(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
 		this.configurator = new FuzzyOWLAPIReasonerConfigurator(this);
 	}
@@ -247,7 +247,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		prefixes = new TreeMap<String,String>();
 		
-		for(KnowledgeSource source : sources) {
+		for(AbstractKnowledgeSource source : sources) {
 			
 			if(source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof OWLAPIOntology) {
 				URL url=null;

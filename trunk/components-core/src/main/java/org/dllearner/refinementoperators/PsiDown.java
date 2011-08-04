@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
@@ -39,11 +39,11 @@ public class PsiDown extends RefinementOperatorAdapter {
 	ConceptComparator conceptComparator = new ConceptComparator();
 	
 	PosNegLP learningProblem;
-	ReasonerComponent reasoningService;
+	AbstractReasonerComponent reasoningService;
 	
 	private TreeSet<Description> topSet;
 	
-	public PsiDown(PosNegLP learningProblem, ReasonerComponent reasoningService) {
+	public PsiDown(PosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoningService = reasoningService;
 		

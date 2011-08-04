@@ -26,11 +26,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.dllearner.core.Component;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -46,15 +46,15 @@ public class ClientState {
 	// stores the mapping between component IDs and component
 	// (note that this allows us to keep all references to components even
 	// if they are not used anymore e.g. a deleted knowledge source)
-	private Map<Integer,Component> componentIDs = new HashMap<Integer,Component>(); 
+	private Map<Integer,AbstractComponent> componentIDs = new HashMap<Integer,AbstractComponent>(); 
 	
-	private Set<KnowledgeSource> knowledgeSources = new HashSet<KnowledgeSource>();
+	private Set<AbstractKnowledgeSource> knowledgeSources = new HashSet<AbstractKnowledgeSource>();
 	
 	private Map<Integer, SparqlQuery> queryIDs = new HashMap<Integer, SparqlQuery>();
 	
-	private LearningProblem learningProblem;
+	private AbstractLearningProblem learningProblem;
 	
-	private ReasonerComponent reasonerComponent;
+	private AbstractReasonerComponent reasonerComponent;
 	
 	private AbstractCELA learningAlgorithm;
 
@@ -62,7 +62,7 @@ public class ClientState {
 	
 	private boolean isAlgorithmRunning = false;
 	
-	private int generateComponentID(Component component) {
+	private int generateComponentID(AbstractComponent component) {
 		int id;
 		do {
 			id = rand.nextInt();
@@ -130,9 +130,9 @@ public class ClientState {
 	 * @return True if a knowledge source was deleted, false otherwise.
 	 */
 	public boolean removeKnowledgeSource(String url) {
-		Iterator<KnowledgeSource> it = knowledgeSources.iterator(); 
+		Iterator<AbstractKnowledgeSource> it = knowledgeSources.iterator(); 
 		while(it.hasNext()) {
-			KnowledgeSource source = it.next();
+			AbstractKnowledgeSource source = it.next();
 			if((source instanceof OWLFile && ((OWLFile)source).getURL().toString().equals(url))
 				|| (source instanceof SparqlKnowledgeSource && ((SparqlKnowledgeSource)source).getURL().toString().equals(url)) ) {
 				it.remove();
@@ -145,14 +145,14 @@ public class ClientState {
 	/**
 	 * @return the learningProblem
 	 */
-	public LearningProblem getLearningProblem() {
+	public AbstractLearningProblem getLearningProblem() {
 		return learningProblem;
 	}
 
 	/**
 	 * @param learningProblem the learningProblem to set
 	 */
-	public int setLearningProblem(LearningProblem learningProblem) {
+	public int setLearningProblem(AbstractLearningProblem learningProblem) {
 		this.learningProblem = learningProblem;
 		return generateComponentID(learningProblem);
 	}
@@ -160,7 +160,7 @@ public class ClientState {
 	/**
 	 * @return the reasonerComponent
 	 */
-	public ReasonerComponent getReasonerComponent() {
+	public AbstractReasonerComponent getReasonerComponent() {
 		return reasonerComponent;
 	}
 
@@ -170,7 +170,7 @@ public class ClientState {
 	 * 
 	 * @param reasonerComponent the reasonerComponent to set
 	 */
-	public int setReasonerComponent(ReasonerComponent reasonerComponent) {
+	public int setReasonerComponent(AbstractReasonerComponent reasonerComponent) {
 		this.reasonerComponent = reasonerComponent;
 //		reasoningService = new ReasonerComponent(reasonerComponent);
 		return generateComponentID(reasonerComponent);
@@ -196,7 +196,7 @@ public class ClientState {
 	 * @return The component associated with this ID.
 	 * @see java.util.Map#get(java.lang.Object)
 	 */
-	public Component getComponent(int id) {
+	public AbstractComponent getComponent(int id) {
 		return componentIDs.get(id);
 	}
 
@@ -206,7 +206,7 @@ public class ClientState {
 	 * @param ks The knowledge source to add.
 	 * @return The component ID for the newly added knowledge source.
 	 */
-	public int addKnowledgeSource(KnowledgeSource ks) {
+	public int addKnowledgeSource(AbstractKnowledgeSource ks) {
 		knowledgeSources.add(ks);
 		return generateComponentID(ks);
 		
@@ -219,7 +219,7 @@ public class ClientState {
 	/**
 	 * @return the knowledgeSources
 	 */
-	public Set<KnowledgeSource> getKnowledgeSources() {
+	public Set<AbstractKnowledgeSource> getKnowledgeSources() {
 		return knowledgeSources;
 	}
 }

@@ -22,8 +22,8 @@ import java.util.TreeSet;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.configurators.PelletReasonerConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
@@ -107,7 +107,7 @@ import com.clarkparsia.modularity.IncrementalClassifier;
 import com.clarkparsia.modularity.PelletIncremantalReasonerFactory;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
-public class PelletReasoner extends ReasonerComponent {
+public class PelletReasoner extends AbstractReasonerComponent {
 	
 	private com.clarkparsia.pellet.owlapiv3.PelletReasoner reasoner;
 	private OWLOntologyManager manager;
@@ -159,7 +159,7 @@ public class PelletReasoner extends ReasonerComponent {
 	// references to OWL API ontologies
 	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
 
-	public PelletReasoner(Set<KnowledgeSource> sources) {
+	public PelletReasoner(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
 		this.configurator = new PelletReasonerConfigurator(this);
 	}
@@ -181,7 +181,7 @@ public class PelletReasoner extends ReasonerComponent {
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		prefixes = new TreeMap<String, String>();
 
-		for (KnowledgeSource source : sources) {
+		for (AbstractKnowledgeSource source : sources) {
 
 			if (source instanceof OWLFile
 					|| source instanceof SparqlKnowledgeSource
@@ -460,7 +460,7 @@ public class PelletReasoner extends ReasonerComponent {
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		prefixes = new TreeMap<String, String>();
 
-		for (KnowledgeSource source : sources) {
+		for (AbstractKnowledgeSource source : sources) {
 
 			if (source instanceof OWLFile
 					|| source instanceof SparqlKnowledgeSource

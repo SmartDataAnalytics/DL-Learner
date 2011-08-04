@@ -30,8 +30,8 @@ import java.util.Random;
 import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -178,11 +178,11 @@ public class ELOperatorBenchmark {
 		System.out.print("Reading in " + ont + " ... ");
 		ComponentManager cm = ComponentManager.getInstance();
 		// reading ontology into a reasoner
-		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		File ontFile = new File(ont);
 		cm.applyConfigEntry(source, "url", ontFile.toURI().toURL());
 		source.init();
-		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
 		reasoner.init();
 		System.out.println("done.");
 		System.out.println();

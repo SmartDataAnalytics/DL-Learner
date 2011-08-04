@@ -23,9 +23,9 @@ package org.dllearner.core.configurators;
 import java.util.Set;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 
 /**
@@ -51,7 +51,7 @@ this.oCEL = oCEL;
 * @throws LearningProblemUnsupportedException see 
 * @return OCEL
 **/
-public static OCEL getOCEL(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static OCEL getOCEL(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 OCEL component = ComponentManager.getInstance().learningAlgorithm(OCEL.class, learningProblem, reasoningService);
 return component;
 }

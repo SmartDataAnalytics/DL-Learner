@@ -22,7 +22,7 @@ package org.dllearner.core.configurators;
 
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.reasoning.DIGReasoner;
 
 /**
@@ -45,7 +45,7 @@ this.dIGReasoner = dIGReasoner;
 * @param knowledgeSource see knowledgeSource
 * @return DIGReasoner
 **/
-public static DIGReasoner getDIGReasoner(Set<KnowledgeSource> knowledgeSource) {
+public static DIGReasoner getDIGReasoner(Set<AbstractKnowledgeSource> knowledgeSource) {
 DIGReasoner component = ComponentManager.getInstance().reasoner(DIGReasoner.class, knowledgeSource);
 return component;
 }

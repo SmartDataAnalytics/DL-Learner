@@ -27,7 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.options.IntegerConfigOption;
 import org.dllearner.gui.Config;
 
@@ -55,7 +55,7 @@ public class WidgetPanelInteger extends AbstractWidgetPanel<Integer> implements 
 	 * @param component The component of this option.
 	 * @param configOption The option to configure.
 	 */
-	public WidgetPanelInteger(Config config, Component component, IntegerConfigOption configOption) {
+	public WidgetPanelInteger(Config config, AbstractComponent component, IntegerConfigOption configOption) {
 		super(config, component, configOption);
 	}
 

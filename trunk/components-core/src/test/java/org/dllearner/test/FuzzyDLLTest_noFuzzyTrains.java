@@ -30,7 +30,7 @@ import org.dllearner.algorithms.fuzzydll.FuzzyCELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.options.fuzzydll.FuzzyExample;
 import org.dllearner.core.owl.Description;
 import org.dllearner.kb.OWLFile;
@@ -94,7 +94,7 @@ public class FuzzyDLLTest_noFuzzyTrains {
 		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/noFuzzyTrains_v1.5.owl"));
 		ks.init();
 
-		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
+		AbstractReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 		//ReasonerComponent rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
 		rc.init();
 		System.out.println(rc.getClassHierarchy());

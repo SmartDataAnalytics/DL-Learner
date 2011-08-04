@@ -29,7 +29,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 
@@ -238,13 +238,13 @@ public class DescriptionSubsumptionTree {
 	 * */
 	
 	private Node rootNode;
-	private final ReasonerComponent rc;
+	private final AbstractReasonerComponent rc;
 
 	/**
 	 * 
 	 * @param rc An initialized reasoner component
 	 */
-	public DescriptionSubsumptionTree(ReasonerComponent rc) {
+	public DescriptionSubsumptionTree(AbstractReasonerComponent rc) {
 		logger.trace("Output for DescriptionSubsumptionTree deactivated (in class)");
 		logger.setLevel((debug) ? Level.WARN : Level.OFF);
 		this.rc = rc;

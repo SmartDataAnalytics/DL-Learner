@@ -3,10 +3,10 @@ package org.dllearner.utilities.learn;
 import java.io.File;
 
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 
 public class LearnOWLFileConfiguration extends LearnConfiguration {
 
@@ -22,7 +22,7 @@ public class LearnOWLFileConfiguration extends LearnConfiguration {
 	}
 	
 	@Override
-	public void applyConfigEntries(ComponentManager cm, KnowledgeSource ks, LearningProblem lp, ReasonerComponent rs, AbstractCELA la) {
+	public void applyConfigEntries(ComponentManager cm, AbstractKnowledgeSource ks, AbstractLearningProblem lp, AbstractReasonerComponent rs, AbstractCELA la) {
 		try {
 			super.applyConfigEntries(cm, ks, lp, rs, la);
 			// KNOWLEDGESOURCE

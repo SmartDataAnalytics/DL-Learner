@@ -27,7 +27,7 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.configurators.OWLFileConfigurator;
@@ -42,7 +42,7 @@ import org.dllearner.reasoning.OWLAPIDIGConverter;
  * @author Jens Lehmann
  * 
  */
-public class OWLFile extends KnowledgeSource {
+public class OWLFile extends AbstractKnowledgeSource {
 
 	private static Logger logger = Logger
 	.getLogger(OWLFile.class);

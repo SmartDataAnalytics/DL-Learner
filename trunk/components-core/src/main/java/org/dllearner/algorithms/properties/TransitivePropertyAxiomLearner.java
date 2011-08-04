@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.dllearner.core.AxiomLearningAlgorithm;
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
@@ -27,7 +27,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-public class TransitivePropertyAxiomLearner extends Component implements AxiomLearningAlgorithm {
+public class TransitivePropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(TransitivePropertyAxiomLearner.class);
 	

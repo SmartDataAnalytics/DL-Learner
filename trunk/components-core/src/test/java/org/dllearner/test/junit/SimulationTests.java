@@ -29,7 +29,7 @@ import java.util.Map.Entry;
 
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.parser.KBParser;
@@ -52,7 +52,7 @@ public class SimulationTests {
 	@Test
 	public void test1() {
 		// perform test with empty background knowledge and TOP concept
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		ELDescriptionNode root = new ELDescriptionNode(tree);
 		
@@ -74,7 +74,7 @@ public class SimulationTests {
 	@Test
 	public void test2() {
 		// perform test with empty background knowledge and A1 AND EXISTS r1.TOP AND EXISTS r2.TOP
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		NamedClass a1 = new NamedClass(uri("a1"));
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
@@ -106,7 +106,7 @@ public class SimulationTests {
 	@Test
 	public void test3() {	
 		// background knowledge, concepts, roles
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.R1SUBR2);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.R1SUBR2);
 		ObjectProperty r1 = new ObjectProperty(uri("r1"));
 		NamedClass a1 = new NamedClass(uri("a1"));
 		NamedClass a2 = new NamedClass(uri("a2"));
@@ -180,7 +180,7 @@ public class SimulationTests {
 	 */
 	@Test
 	public void test4() {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE2);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE2);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
 		
@@ -281,7 +281,7 @@ public class SimulationTests {
 	 */
 	@Test
 	public void test5() {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE3);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE3);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
 				
@@ -441,7 +441,7 @@ public class SimulationTests {
 	 */
 	@Test
 	public void test6() {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.FIVE_ROLES);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.FIVE_ROLES);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
 		
@@ -664,7 +664,7 @@ public class SimulationTests {
 	
 	@Test
 	public void test7() {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		
 		ObjectProperty has = new ObjectProperty(uri("has"));

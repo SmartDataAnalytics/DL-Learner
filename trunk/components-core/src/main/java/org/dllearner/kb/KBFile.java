@@ -28,7 +28,7 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.configurators.KBFileConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -47,7 +47,7 @@ import org.dllearner.reasoning.DIGConverter;
  * @author Jens Lehmann
  *
  */
-public class KBFile extends KnowledgeSource {
+public class KBFile extends AbstractKnowledgeSource {
 
 	private static Logger logger = Logger.getLogger(KBFile.class);
 	

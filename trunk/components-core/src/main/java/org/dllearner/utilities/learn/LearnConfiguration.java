@@ -4,10 +4,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 
 public class LearnConfiguration {
 
@@ -28,7 +28,7 @@ public class LearnConfiguration {
 	public boolean replaceSearchTree = true;
 	
 	
-	public void applyConfigEntries(ComponentManager cm, KnowledgeSource ks, LearningProblem lp, ReasonerComponent rs, AbstractCELA la) {
+	public void applyConfigEntries(ComponentManager cm, AbstractKnowledgeSource ks, AbstractLearningProblem lp, AbstractReasonerComponent rs, AbstractCELA la) {
 		try {
 			
 			// LEARNINGALGORITHM

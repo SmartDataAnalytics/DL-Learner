@@ -28,14 +28,14 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.dllearner.cli.Start;
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.kb.KBFile;
@@ -60,10 +60,10 @@ public class Config {
 	private static Logger logger = Logger.getLogger(Config.class);
 
 	// the components currently active
-	private KnowledgeSource source;
-	private ReasonerComponent reasoner;
+	private AbstractKnowledgeSource source;
+	private AbstractReasonerComponent reasoner;
 //	private ReasonerComponent rs;
-	private LearningProblem lp;
+	private AbstractLearningProblem lp;
 	private AbstractCELA la;
 
 	// stores which components need to be initialised (either
@@ -92,7 +92,7 @@ public class Config {
 	 * @param lp
 	 * @param la
 	 */
-	public Config(ComponentManager cm, KnowledgeSource source, ReasonerComponent reasoner, LearningProblem lp, AbstractCELA la) {
+	public Config(ComponentManager cm, AbstractKnowledgeSource source, AbstractReasonerComponent reasoner, AbstractLearningProblem lp, AbstractCELA la) {
 		super();
 		this.cm = cm;
 		this.source = source;
@@ -142,7 +142,7 @@ public class Config {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			Set<KnowledgeSource> sources = start.getSources();
+			Set<AbstractKnowledgeSource> sources = start.getSources();
 			if (sources.size() != 1) {
 				gui.getStatusPanel().setExceptionMessage(
 						"Warning: GUI supports only one knowledge source.");
@@ -187,7 +187,7 @@ public class Config {
 	 * 
 	 * @return KnowledgeSource
 	 */
-	public KnowledgeSource getKnowledgeSource() {
+	public AbstractKnowledgeSource getKnowledgeSource() {
 		return source;
 	}
 
@@ -198,7 +198,7 @@ public class Config {
 	 *            knowledge source class
 	 * @return knowledge source instance
 	 */
-	public KnowledgeSource newKnowledgeSource(Class<? extends KnowledgeSource> clazz) {
+	public AbstractKnowledgeSource newKnowledgeSource(Class<? extends AbstractKnowledgeSource> clazz) {
 		source = cm.knowledgeSource(clazz);
 		// logger.debug("new knowledge source " + clazz + " created");
 		return source;
@@ -213,9 +213,9 @@ public class Config {
 	 *            knowledge source class
 	 * @return knowledge source instance
 	 */
-	public KnowledgeSource changeKnowledgeSource(Class<? extends KnowledgeSource> clazz) {
+	public AbstractKnowledgeSource changeKnowledgeSource(Class<? extends AbstractKnowledgeSource> clazz) {
 		source = cm.knowledgeSource(clazz);
-		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
+		Set<AbstractKnowledgeSource> sources = new HashSet<AbstractKnowledgeSource>();
 		sources.add(source);
 		reasoner.changeSources(sources);
 		// logger.debug("knowledge source " + clazz + " changed");
@@ -250,7 +250,7 @@ public class Config {
 	 * 
 	 * @return reasoner
 	 */
-	public ReasonerComponent getReasoner() {
+	public AbstractReasonerComponent getReasoner() {
 		return this.reasoner;
 	}
 
@@ -259,7 +259,7 @@ public class Config {
 	 * @param clazz The class of the reasoner.
 	 * @return A reasoner instance.
 	 */
-	public ReasonerComponent newReasoner(Class<? extends ReasonerComponent> clazz) {
+	public AbstractReasonerComponent newReasoner(Class<? extends AbstractReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
 //		rs = cm.reasoningService(reasoner);
 		return reasoner;
@@ -271,7 +271,7 @@ public class Config {
 	 * @param clazz The reasoner class.
 	 * @return A reasoner instance.
 	 */
-	public ReasonerComponent changeReasoner(Class<? extends ReasonerComponent> clazz) {
+	public AbstractReasonerComponent changeReasoner(Class<? extends AbstractReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
 //		rs = cm.reasoningService(reasoner);
 		lp.changeReasonerComponent(reasoner);
@@ -287,7 +287,7 @@ public class Config {
 	 * 
 	 * @return learningProblem
 	 */
-	public LearningProblem getLearningProblem() {
+	public AbstractLearningProblem getLearningProblem() {
 		return this.lp;
 	}
 
@@ -296,7 +296,7 @@ public class Config {
 	 * @param clazz The class of the learning problem.
 	 * @return A learning problem instance.
 	 */	
-	public LearningProblem newLearningProblem(Class<? extends LearningProblem> clazz) {
+	public AbstractLearningProblem newLearningProblem(Class<? extends AbstractLearningProblem> clazz) {
 		lp = cm.learningProblem(clazz, reasoner);
 		return lp;
 	}
@@ -307,7 +307,7 @@ public class Config {
 	 * @param clazz The learning problem class.
 	 * @return A learning problem instance.
 	 */	
-	public LearningProblem changeLearningProblem(Class<? extends LearningProblem> clazz) {
+	public AbstractLearningProblem changeLearningProblem(Class<? extends AbstractLearningProblem> clazz) {
 		lp = cm.learningProblem(clazz, reasoner);
 		la.changeLearningProblem(lp);
 		needsInit[2] = true;
@@ -417,7 +417,7 @@ public class Config {
 	 * @param tabIndex A list of components (0 = knowledge source, 1 = reasoner, ...).
 	 */ 
 	public void init(List<Integer> tabIndex) {
-		List<Component> components = new LinkedList<Component>();
+		List<AbstractComponent> components = new LinkedList<AbstractComponent>();
 		for (int i : tabIndex) {
 			switch (i) {
 			case 0:
@@ -454,19 +454,19 @@ public class Config {
 	/**
 	 * Applies a configuration option and cares for all consequences
 	 * the GUI needs to take.
-	 * @see ComponentManager#applyConfigEntry(Component, ConfigEntry)
+	 * @see ComponentManager#applyConfigEntry(AbstractComponent, ConfigEntry)
 	 * @param <T> The type of config entry.
 	 * @param component The component to apply the entry to.
 	 * @param entry The config entry to apply.
 	 */
-	public <T> void applyConfigEntry(Component component, ConfigEntry<T> entry) {
+	public <T> void applyConfigEntry(AbstractComponent component, ConfigEntry<T> entry) {
 		System.out.println("Applying " + entry + " to " + component.getClass().getName() + ".");
 
 		cm.applyConfigEntry(component, entry);
 		// enable tabs if setting the value completed mandatory settings
 		enableComponentsIfPossible();
 		// invalidate components
-		if (component instanceof KnowledgeSource) {
+		if (component instanceof AbstractKnowledgeSource) {
 			needsInit[0] = true;
 			needsInit[1] = true;
 			needsInit[2] = true;
@@ -475,7 +475,7 @@ public class Config {
 				gui
 						.setStatusMessage("All mandatory options filled in. You can continue to the reasoner tab.");
 			}
-		} else if (component instanceof ReasonerComponent) {
+		} else if (component instanceof AbstractReasonerComponent) {
 			needsInit[1] = true;
 			needsInit[2] = true;
 			needsInit[3] = true;
@@ -483,7 +483,7 @@ public class Config {
 				gui
 						.setStatusMessage("All mandatory options filled in. You can continue to the learning problem tab.");
 			}
-		} else if (component instanceof LearningProblem) {
+		} else if (component instanceof AbstractLearningProblem) {
 			needsInit[2] = true;
 			needsInit[3] = true;
 			if (isEnabled[2]) {
@@ -531,7 +531,7 @@ public class Config {
 	 * @return True if all mandatory options are set and false otherwise.
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean mandatoryOptionsSpecified(Component component) {
+	public boolean mandatoryOptionsSpecified(AbstractComponent component) {
 		// System.out.println("check mandatory options for " +
 		// component.getClass().getName());
 		if (component instanceof OWLFile) {
@@ -573,13 +573,13 @@ public class Config {
 
 	/**
 	 * Delegate method for getting config option values.
-	 * @see ComponentManager#getConfigOptionValue(Component, ConfigOption)
+	 * @see ComponentManager#getConfigOptionValue(AbstractComponent, ConfigOption)
 	 * @param <T> Type of option.
 	 * @param component Component, which has the option.
 	 * @param option The option for which we want to know the value.
 	 * @return The value of the specified option.
 	 */
-	public <T> T getConfigOptionValue(Component component, ConfigOption<T> option) {
+	public <T> T getConfigOptionValue(AbstractComponent component, ConfigOption<T> option) {
 		return cm.getConfigOptionValue(component, option);
 	}
 

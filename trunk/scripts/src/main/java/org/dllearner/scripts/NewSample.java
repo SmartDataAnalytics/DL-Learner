@@ -36,7 +36,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
@@ -122,7 +122,7 @@ public class NewSample {
 		}
 		OWLFile ks = ComponentFactory.getOWLFile( fileURL);
 				
-		Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+		Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 		tmp.add(ks);
 		// reasoner
 		FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);

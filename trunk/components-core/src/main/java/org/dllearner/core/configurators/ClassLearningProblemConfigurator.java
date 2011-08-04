@@ -22,7 +22,7 @@ package org.dllearner.core.configurators;
 
 import java.net.URL;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.ClassLearningProblem;
 
 /**
@@ -46,7 +46,7 @@ this.classLearningProblem = classLearningProblem;
 * @param classToDescribe class of which a description should be learned
 * @return ClassLearningProblem
 **/
-public static ClassLearningProblem getClassLearningProblem(ReasonerComponent reasoningService, URL classToDescribe) {
+public static ClassLearningProblem getClassLearningProblem(AbstractReasonerComponent reasoningService, URL classToDescribe) {
 ClassLearningProblem component = ComponentManager.getInstance().learningProblem(ClassLearningProblem.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "classToDescribe", classToDescribe);
 return component;

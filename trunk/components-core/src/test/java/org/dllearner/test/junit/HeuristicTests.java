@@ -29,8 +29,8 @@ import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -97,8 +97,8 @@ public class HeuristicTests {
 		}
 		
 		ComponentManager cm = ComponentManager.getInstance();
-		KnowledgeSource ks = new KBFile(kb);
-		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
+		AbstractKnowledgeSource ks = new KBFile(kb);
+		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 		ClassLearningProblem problem = cm.learningProblem(ClassLearningProblem.class, reasoner);
 		ks.init();
 		reasoner.init();
@@ -194,8 +194,8 @@ public class HeuristicTests {
 		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[5]));
 		
 		ComponentManager cm = ComponentManager.getInstance();
-		KnowledgeSource ks = new KBFile(kb);
-		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
+		AbstractKnowledgeSource ks = new KBFile(kb);
+		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 		PosNegLPStandard problem = cm.learningProblem(PosNegLPStandard.class, reasoner);
 		ks.init();
 		reasoner.init();		

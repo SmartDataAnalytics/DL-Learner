@@ -24,7 +24,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.gui.Config;
 
@@ -48,7 +48,7 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel<Boolean> implements 
 	 * @param component The component of this option.
 	 * @param configOption The option to configure.
 	 */	
-	public WidgetPanelBoolean(Config config, Component component, BooleanConfigOption configOption) {
+	public WidgetPanelBoolean(Config config, AbstractComponent component, BooleanConfigOption configOption) {
 		super(config, component, configOption);
 	}
 

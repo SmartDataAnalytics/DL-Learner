@@ -24,8 +24,8 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -42,7 +42,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public abstract class PosNegLP extends LearningProblem {
+public abstract class PosNegLP extends AbstractLearningProblem {
 	
 	protected SortedSet<Individual> positiveExamples;
 	protected SortedSet<Individual> negativeExamples;
@@ -78,7 +78,7 @@ public abstract class PosNegLP extends LearningProblem {
 		ONECHECK
 	};
 	
-	public PosNegLP(ReasonerComponent reasoningService) {
+	public PosNegLP(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
 	}
 	

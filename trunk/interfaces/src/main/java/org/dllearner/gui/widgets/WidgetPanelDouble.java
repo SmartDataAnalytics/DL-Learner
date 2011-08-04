@@ -27,7 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.gui.Config;
 
@@ -56,7 +56,7 @@ public class WidgetPanelDouble extends AbstractWidgetPanel<Double> implements Ac
 	 * @param component The component of this option.
 	 * @param configOption The option to configure.
 	 */
-	public WidgetPanelDouble(Config config, Component component, DoubleConfigOption configOption) {
+	public WidgetPanelDouble(Config config, AbstractComponent component, DoubleConfigOption configOption) {
 		super(config, component, configOption);
 	}
 

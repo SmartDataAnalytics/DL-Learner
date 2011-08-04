@@ -23,7 +23,7 @@ import java.io.File;
 import java.net.URI;
 
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.configurators.SparqlEndpointKSConfigurator;
@@ -38,7 +38,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
  * @author Jens Lehmann
  *
  */
-public class SparqlEndpointKS extends KnowledgeSource {
+public class SparqlEndpointKS extends AbstractKnowledgeSource {
 
 	private SparqlEndpoint endpoint;
 	

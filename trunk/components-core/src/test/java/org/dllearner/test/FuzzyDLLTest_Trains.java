@@ -28,7 +28,7 @@ import org.dllearner.algorithms.fuzzydll.FuzzyCELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.options.fuzzydll.FuzzyExample;
 import org.dllearner.core.owl.Description;
 import org.dllearner.kb.OWLFile;

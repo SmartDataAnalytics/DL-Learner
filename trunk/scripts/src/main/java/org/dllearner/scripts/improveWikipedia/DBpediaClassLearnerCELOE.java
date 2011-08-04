@@ -29,7 +29,7 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.*;
 import org.dllearner.gui.Config;
@@ -135,7 +135,7 @@ public class DBpediaClassLearnerCELOE {
 
         ks.init();
 
-        ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
+        AbstractReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
         rc.init();
 
         PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);

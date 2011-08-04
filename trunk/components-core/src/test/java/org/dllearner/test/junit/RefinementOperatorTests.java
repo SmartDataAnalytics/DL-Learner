@@ -31,10 +31,10 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
@@ -71,7 +71,7 @@ public class RefinementOperatorTests {
 		try {
 			String file = "examples/carcinogenesis/carcinogenesis.owl";
 			ComponentManager cm = ComponentManager.getInstance();
-			KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+			AbstractKnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
 			try {
 				cm.applyConfigEntry(ks, "url", new File(file).toURI().toURL());
 			} catch (MalformedURLException e) {
@@ -79,7 +79,7 @@ public class RefinementOperatorTests {
 				e.printStackTrace();
 			}
 			ks.init();
-			ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
+			AbstractReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 			rc.init();
 			baseURI = rc.getBaseURI();
 //			ReasonerComponent rs = cm.reasoningService(rc);
@@ -110,7 +110,7 @@ public class RefinementOperatorTests {
 	
 	@Test
 	public void rhoDRDownTest2() throws ParseException {
-		ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.EPC_OE);
+		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.EPC_OE);
 		baseURI = reasoner.getBaseURI();
 		
 		RhoDRDown op = new RhoDRDown(reasoner);
@@ -130,13 +130,13 @@ public class RefinementOperatorTests {
 	
 	@Test
 	public void rhoDRDownTest3() throws ParseException, LearningProblemUnsupportedException {
-		ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.KRK_ZERO_ONE);
+		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.KRK_ZERO_ONE);
 		baseURI = reasoner.getBaseURI();
 		
 		// create learning algorithm in order to test under similar conditions than 
 		// within a learning algorithm
 		ComponentManager cm = ComponentManager.getInstance();
-		LearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
+		AbstractLearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
 		OCEL la = cm.learningAlgorithm(OCEL.class, lp, reasoner);
 		
 		Set<NamedClass> ignoredConcepts = new TreeSet<NamedClass>();
@@ -192,7 +192,7 @@ public class RefinementOperatorTests {
 			
 	@Test
 	public void rhoDRDownTest4() throws ParseException, LearningProblemUnsupportedException {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
 		RefinementOperator operator = new RhoDRDown(rs);
 		Description concept = KBParser.parseConcept("(car AND EXISTS hasOwner.person)");
 //		Description concept = Thing.instance;
@@ -204,7 +204,7 @@ public class RefinementOperatorTests {
 		
 	@Test
 	public void rhoDRDownTest5() throws ParseException, LearningProblemUnsupportedException {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SWORE);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SWORE);
 		RefinementOperator operator = new RhoDRDown(rs);
 //		Description concept = KBParser.parseConcept("((NOT \"http://ns.softwiki.de/req/Requirement\") OR (ALL \"http://ns.softwiki.de/req/isCreatedBy\".(NOT \"http://ns.softwiki.de/req/Creditor\")))");
 		Description concept = KBParser.parseConcept("(NOT \"http://ns.softwiki.de/req/Requirement\" OR ALL \"http://ns.softwiki.de/req/isCreatedBy\".NOT \"http://ns.softwiki.de/req/Creditor\")");
@@ -217,7 +217,7 @@ public class RefinementOperatorTests {
 	
 	@Test
 	public void invertedOperatorTest() throws ParseException {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
 		RhoDRDown rho = new RhoDRDown(rs);
 		rho.setDropDisjuncts(true);
 		RefinementOperator operator = new OperatorInverter(rho);
@@ -234,7 +234,7 @@ public class RefinementOperatorTests {
 	@Test
 	public void rhoDownTestPellet() {
 		Logger.getRootLogger().setLevel(Level.TRACE);
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.FATHER);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.FATHER);
 		RhoDRDown rho = new RhoDRDown(rs);
 		NamedClass nc = new NamedClass("http://example.com/father#male");
 		Set<Description> refinements = rho.refine(nc, 5);

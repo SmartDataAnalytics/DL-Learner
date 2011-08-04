@@ -23,9 +23,9 @@ package org.dllearner.core.configurators;
 import java.util.Set;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 
 /**
@@ -51,7 +51,7 @@ this.rOLearner = rOLearner;
 * @throws LearningProblemUnsupportedException see 
 * @return ROLearner
 **/
-public static ROLearner getROLearner(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static ROLearner getROLearner(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 ROLearner component = ComponentManager.getInstance().learningAlgorithm(ROLearner.class, learningProblem, reasoningService);
 return component;
 }

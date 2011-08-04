@@ -22,7 +22,7 @@ package org.dllearner.core.configurators;
 
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.PosNegLPStandard;
 
 /**
@@ -47,7 +47,7 @@ this.posNegLPStandard = posNegLPStandard;
 * @param negativeExamples negative examples
 * @return PosNegLPStandard
 **/
-public static PosNegLPStandard getPosNegLPStandard(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
+public static PosNegLPStandard getPosNegLPStandard(AbstractReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
 PosNegLPStandard component = ComponentManager.getInstance().learningProblem(PosNegLPStandard.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "positiveExamples", positiveExamples);
 ComponentManager.getInstance().applyConfigEntry(component, "negativeExamples", negativeExamples);

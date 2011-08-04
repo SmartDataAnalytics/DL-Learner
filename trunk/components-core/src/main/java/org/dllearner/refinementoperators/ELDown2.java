@@ -41,7 +41,7 @@ import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
 import org.dllearner.algorithms.el.TreeAndRoleSet;
 import org.dllearner.algorithms.el.TreeAndRoleSetComparator;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -78,7 +78,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 
 	private static Logger logger = Logger.getLogger(ELDown2.class);	
 	
-	private ReasonerComponent rs;
+	private AbstractReasonerComponent rs;
 	
 	// hierarchies
 	private ClassHierarchy subsumptionHierarchy;
@@ -102,11 +102,11 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	private ELDescriptionEdgeComparator edgeComp = new ELDescriptionEdgeComparator();
 	private TreeAndRoleSetComparator mComp = new TreeAndRoleSetComparator();
 	
-	public ELDown2(ReasonerComponent rs) {
+	public ELDown2(AbstractReasonerComponent rs) {
 		this(rs, true);
 	}
 	
-	public ELDown2(ReasonerComponent rs, boolean instanceBasedDisjoints) {
+	public ELDown2(AbstractReasonerComponent rs, boolean instanceBasedDisjoints) {
 		this.rs = rs;
 		subsumptionHierarchy = rs.getClassHierarchy();
 		opHierarchy = rs.getObjectPropertyHierarchy();

@@ -22,9 +22,9 @@ package org.dllearner.core.configurators;
 
 import org.dllearner.algorithms.isle.ISLE;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 
 /**
@@ -50,7 +50,7 @@ this.iSLE = iSLE;
 * @throws LearningProblemUnsupportedException see 
 * @return ISLE
 **/
-public static ISLE getISLE(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static ISLE getISLE(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 ISLE component = ComponentManager.getInstance().learningAlgorithm(ISLE.class, learningProblem, reasoningService);
 return component;
 }

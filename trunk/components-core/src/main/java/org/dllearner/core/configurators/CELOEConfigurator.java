@@ -23,9 +23,9 @@ package org.dllearner.core.configurators;
 import java.util.Set;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 
 /**
@@ -51,7 +51,7 @@ this.cELOE = cELOE;
 * @throws LearningProblemUnsupportedException see 
 * @return CELOE
 **/
-public static CELOE getCELOE(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static CELOE getCELOE(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 CELOE component = ComponentManager.getInstance().learningAlgorithm(CELOE.class, learningProblem, reasoningService);
 return component;
 }

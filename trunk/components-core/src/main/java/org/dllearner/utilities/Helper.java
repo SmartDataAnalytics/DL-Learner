@@ -32,7 +32,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.AssertionalAxiom;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
@@ -507,7 +507,7 @@ public class Helper {
 	}
 	
 	// concepts case 1: no ignore or allowed list
-	public static Set<NamedClass> computeConcepts(ReasonerComponent rs) {
+	public static Set<NamedClass> computeConcepts(AbstractReasonerComponent rs) {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
 		Set<NamedClass> concepts = rs.getNamedClasses();
@@ -516,7 +516,7 @@ public class Helper {
 	}
 	
 	// concepts case 2: ignore list
-	public static Set<NamedClass> computeConceptsUsingIgnoreList(ReasonerComponent rs, Set<NamedClass> ignoredConcepts) {
+	public static Set<NamedClass> computeConceptsUsingIgnoreList(AbstractReasonerComponent rs, Set<NamedClass> ignoredConcepts) {
 		Set<NamedClass> concepts = new TreeSet<NamedClass>(rs.getNamedClasses());
 //		Helper.removeUninterestingConcepts(concepts);
 		for (NamedClass ac : ignoredConcepts) {
@@ -550,7 +550,7 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static ObjectProperty checkRoles(ReasonerComponent rs, Set<ObjectProperty> roles) {
+	public static ObjectProperty checkRoles(AbstractReasonerComponent rs, Set<ObjectProperty> roles) {
 		Set<ObjectProperty> existingRoles = rs.getObjectProperties();
 		for (ObjectProperty ar : roles) {
 			if(!existingRoles.contains(ar)) 
@@ -566,7 +566,7 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static NamedClass checkConcepts(ReasonerComponent rs, Set<NamedClass> concepts) {
+	public static NamedClass checkConcepts(AbstractReasonerComponent rs, Set<NamedClass> concepts) {
 		Set<NamedClass> existingConcepts = rs.getNamedClasses();
 		for (NamedClass ar : concepts) {
 			if(!existingConcepts.contains(ar)) 
@@ -576,7 +576,7 @@ public class Helper {
 	}
 
 	// creates a flat ABox by querying a reasoner
-	public static FlatABox createFlatABox(ReasonerComponent rs)
+	public static FlatABox createFlatABox(AbstractReasonerComponent rs)
 			throws ReasoningMethodUnsupportedException {
 		long dematStartTime = System.currentTimeMillis();
 

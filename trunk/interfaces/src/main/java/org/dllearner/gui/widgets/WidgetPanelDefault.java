@@ -23,7 +23,7 @@ import java.awt.Color;
 
 import javax.swing.JLabel;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.gui.Config;
 
@@ -43,7 +43,7 @@ public class WidgetPanelDefault extends AbstractWidgetPanel<Object> {
 	 * @param component The component of this option.
 	 * @param configOption The option to configure.
 	 */
-	public WidgetPanelDefault(Config config, Component component, ConfigOption<Object> configOption) {
+	public WidgetPanelDefault(Config config, AbstractComponent component, ConfigOption<Object> configOption) {
 		super(config, component, configOption);
 	}
 

@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.PosNegLPStrictConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigEntry;
@@ -58,7 +58,7 @@ public class PosNegLPStrict extends PosNegLP {
 		return configurator;
 	}
 	
-	public PosNegLPStrict(ReasonerComponent reasoningService) {
+	public PosNegLPStrict(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
 		this.configurator = new PosNegLPStrictConfigurator(this);
 	}

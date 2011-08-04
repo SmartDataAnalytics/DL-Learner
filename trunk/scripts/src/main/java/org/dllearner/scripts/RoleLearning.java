@@ -23,7 +23,7 @@ import java.net.URI;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.datastructures.StringTuple;
 
@@ -44,11 +44,11 @@ public class RoleLearning {
 	Set<Individual> positiveExamples;
 	Set<Individual> negativeExamples;
 	
-	public RoleLearning(ReasonerComponent reasoningService) {
+	public RoleLearning(AbstractReasonerComponent reasoningService) {
 //		super(reasoningService);
 	}
 
-	public RoleLearning(ReasonerComponent reasoningService,
+	public RoleLearning(AbstractReasonerComponent reasoningService,
 			SortedSet<Individual> positiveExamples,
 			SortedSet<Individual> negativeExamples) {
 //		super(reasoningService);

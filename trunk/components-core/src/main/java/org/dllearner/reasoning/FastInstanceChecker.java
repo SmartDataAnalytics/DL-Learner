@@ -35,8 +35,8 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.FastInstanceCheckerConfigurator;
@@ -96,7 +96,7 @@ import org.dllearner.utilities.owl.ConceptTransformation;
  * @author Jens Lehmann
  * 
  */
-public class FastInstanceChecker extends ReasonerComponent {
+public class FastInstanceChecker extends AbstractReasonerComponent {
 
 	private static Logger logger = Logger.getLogger(FastInstanceChecker.class);
 
@@ -143,7 +143,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 * Creates an instance of the fast instance checker.
 	 * @param sources The knowledge sources used as input.
 	 */
-	public FastInstanceChecker(Set<KnowledgeSource> sources) {
+	public FastInstanceChecker(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
 		this.configurator = new FastInstanceCheckerConfigurator(this);
 	}
@@ -932,7 +932,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		String owlFile = new File("examples/family/father.owl").toURI().toString();
 		cm.applyConfigEntry(owl, "url", owlFile);
 		owl.init();
-		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, owl);
+		AbstractReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, owl);
 //		cm.reasoningService(reasoner);
 		reasoner.init();
 

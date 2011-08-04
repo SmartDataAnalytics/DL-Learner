@@ -31,13 +31,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.configurators.FuzzyCELOEConfigurator;
 import org.dllearner.core.configurators.ISLEConfigurator;
@@ -113,7 +113,7 @@ public final class ConfigJavaGenerator {
 
 	private static final List<String> COMPONENT_FACTORY_METHODS = new ArrayList<String>();
 
-	private Class<? extends Component> component;
+	private Class<? extends AbstractComponent> component;
 
 	private String className;
 
@@ -168,15 +168,15 @@ public final class ConfigJavaGenerator {
 		//Files.deleteDir(TARGET_DIR);
 
 		ComponentManager cm = ComponentManager.getInstance();
-		COMPONENT_FACTORY_IMPORTS.add(KnowledgeSource.class.getCanonicalName());
+		COMPONENT_FACTORY_IMPORTS.add(AbstractKnowledgeSource.class.getCanonicalName());
 		COMPONENT_FACTORY_IMPORTS
-				.add(ReasonerComponent.class.getCanonicalName());
-		COMPONENT_FACTORY_IMPORTS.add(LearningProblem.class.getCanonicalName());
+				.add(AbstractReasonerComponent.class.getCanonicalName());
+		COMPONENT_FACTORY_IMPORTS.add(AbstractLearningProblem.class.getCanonicalName());
 		COMPONENT_FACTORY_IMPORTS.add(LearningProblemUnsupportedException.class
 				.getCanonicalName());
 		COMPONENT_FACTORY_METHODS.add("private "+COMPONENT_FACTORY+"(){}\n");
 
-		for (Class<? extends KnowledgeSource> component : cm
+		for (Class<? extends AbstractKnowledgeSource> component : cm
 				.getKnowledgeSources()) {
 			String componentType = "knowledgeSource";
 
@@ -187,7 +187,7 @@ public final class ConfigJavaGenerator {
 			c.makeConfigurator();
 
 		}
-		for (Class<? extends ReasonerComponent> component : cm
+		for (Class<? extends AbstractReasonerComponent> component : cm
 				.getReasonerComponents()) {
 
 			COMPONENT_FACTORY_IMPORTS.add(component.getCanonicalName());
@@ -202,7 +202,7 @@ public final class ConfigJavaGenerator {
 			c.makeConfigurator();
 
 		}
-		for (Class<? extends LearningProblem> component : cm
+		for (Class<? extends AbstractLearningProblem> component : cm
 				.getLearningProblems()) {
 
 			COMPONENT_FACTORY_IMPORTS.add(component.getCanonicalName());
@@ -250,7 +250,7 @@ public final class ConfigJavaGenerator {
 	
 	
 
-	private ConfigJavaGenerator(Class<? extends Component> component,
+	private ConfigJavaGenerator(Class<? extends AbstractComponent> component,
 			String componentType) {
 		this.className = component.getSimpleName();
 		this.component = component;

@@ -40,7 +40,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -109,7 +109,7 @@ public class OntologyEngineering {
 			ks.getConfigurator().setUrl(owlFile.toURI().toURL());
 		}
 		ks.init();
-		ReasonerComponent reasoner = null;
+		AbstractReasonerComponent reasoner = null;
 		if(useFastInstanceChecker) {
 			reasoner = cm.reasoner(FastInstanceChecker.class, ks);
 		} else {
@@ -137,7 +137,7 @@ public class OntologyEngineering {
 	}
 		
 	@SuppressWarnings("unchecked")
-	public static void run(ReasonerComponent reasoner) throws ComponentInitException, IOException, LearningProblemUnsupportedException {
+	public static void run(AbstractReasonerComponent reasoner) throws ComponentInitException, IOException, LearningProblemUnsupportedException {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		String baseURI = reasoner.getBaseURI();

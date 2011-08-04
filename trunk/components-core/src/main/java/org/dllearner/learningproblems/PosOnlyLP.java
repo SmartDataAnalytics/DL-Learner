@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.PosOnlyLPConfigurator;
 import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.ConfigEntry;
@@ -45,7 +45,7 @@ import org.dllearner.core.owl.Individual;
  * @author Jens Lehmann
  *
  */
-public class PosOnlyLP extends LearningProblem {
+public class PosOnlyLP extends AbstractLearningProblem {
 
 	protected SortedSet<Individual> positiveExamples;
 	private List<Individual> positiveExamplesShuffled;
@@ -68,7 +68,7 @@ public class PosOnlyLP extends LearningProblem {
 		configurator = new PosOnlyLPConfigurator(this);
 	}
 	
-	public PosOnlyLP(ReasonerComponent reasoningService) {
+	public PosOnlyLP(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
 		configurator = new PosOnlyLPConfigurator(this);
 	}

@@ -29,9 +29,9 @@ import java.util.Map;
 
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.DIGReasoner;
@@ -281,8 +281,8 @@ public class PaperStatistics {
 					// Reasoner neu erstellen um Speicherprobleme zu vermeiden
 					// reasoner = new DIGReasoner(kb, Config.digReasonerURL, importedFiles);
 					// TODO: set up knowledge source
-					KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
-					ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, ks);
+					AbstractKnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+					AbstractReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, ks);
 					// reasoner.prepareSubsumptionHierarchy();
 					// rs = new ReasonerComponent(reasoner);
 //					ReasonerComponent rs = cm.reasoningService(reasoner);

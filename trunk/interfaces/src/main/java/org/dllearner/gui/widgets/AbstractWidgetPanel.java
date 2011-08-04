@@ -22,7 +22,7 @@ package org.dllearner.gui.widgets;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
@@ -56,7 +56,7 @@ public abstract class AbstractWidgetPanel<T> extends JPanel {
 	/**
 	 * The component of the configured option.
 	 */
-	protected Component component;
+	protected AbstractComponent component;
 	
 	/**
 	 * Constructs a widget.
@@ -64,7 +64,7 @@ public abstract class AbstractWidgetPanel<T> extends JPanel {
 	 * @param component The component potentially changed by this widget.
 	 * @param optionOption The config option of the specified component, which is potentially changed by this widget.
 	 */
-	public AbstractWidgetPanel(Config config, Component component, ConfigOption<T> optionOption) {
+	public AbstractWidgetPanel(Config config, AbstractComponent component, ConfigOption<T> optionOption) {
 		this.config = config;
 		this.component = component;
 		this.configOption = optionOption;

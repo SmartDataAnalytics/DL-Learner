@@ -17,10 +17,10 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
@@ -84,12 +84,12 @@ public class KRKModular {
 	static HashMap<String, SortedSet<Individual>> classToInd = new HashMap<String, SortedSet<Individual>>();
 	static HashMap<Individual, String> indToClass = new HashMap<Individual, String>();
 	
-	static Set<ReasonerComponent> allReasoners =  new HashSet<ReasonerComponent>();
+	static Set<AbstractReasonerComponent> allReasoners =  new HashSet<AbstractReasonerComponent>();
 	static int negativeExamplesAdded = 200;
 	
 	// static LinkedList<String> words;
 	public KB kb;
-	public ReasonerComponent reasoner;
+	public AbstractReasonerComponent reasoner;
 	
 	
 	//public FastInstanceChecker fic;
@@ -251,14 +251,14 @@ public class KRKModular {
 		ComponentManager cm = ComponentManager.getInstance();
 		AbstractCELA la = null;
 		try {
-		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
+		Set<AbstractKnowledgeSource> sources = new HashSet<AbstractKnowledgeSource>();
 		sources.add(new KBFile(kb));
-		ReasonerComponent r = new FastInstanceChecker(sources);
+		AbstractReasonerComponent r = new FastInstanceChecker(sources);
 		r.init();
 //		ReasonerComponent rs = new ReasonerComponent(r); 
 		
 		//cm.learningProblem(lpClass, reasoner)
-		LearningProblem lp = new PosNegLPStandard(r);
+		AbstractLearningProblem lp = new PosNegLPStandard(r);
 		//cm.getConfigOptionValue(lp, "");
 		cm.applyConfigEntry(lp, "positiveExamples",pos);
 		cm.applyConfigEntry(lp, "negativeExamples",neg);
@@ -469,7 +469,7 @@ public class KRKModular {
 		SortedSet<Individual> ret = new TreeSet<Individual>(); 
 		try{
 			
-			for (ReasonerComponent onereasoner : allReasoners) {
+			for (AbstractReasonerComponent onereasoner : allReasoners) {
 				ret.addAll(onereasoner.getIndividuals(d));
 			}
 			
@@ -483,7 +483,7 @@ public class KRKModular {
 	
 	public void initReasonerFact(){
 		KBFile kbFile = new KBFile(this.kb);
-		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
+		Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
 		ks.add(kbFile);
 		
 		reasoner = ComponentFactory.getOWLAPIReasoner(ks);
@@ -498,7 +498,7 @@ public class KRKModular {
 	
 	public void initFIC(){
 		KBFile kbFile = new KBFile(this.kb);
-		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
+		Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
 		ks.add(kbFile);
 		//System.out.println("blabla");
 		reasoner = new FastInstanceChecker(ks);

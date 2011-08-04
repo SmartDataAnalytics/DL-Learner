@@ -8,9 +8,9 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -53,10 +53,10 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	private boolean reinitNecessary = true;
 	
 	private ComponentManager cm;
-	private LearningProblem lp;
+	private AbstractLearningProblem lp;
 	private AbstractCELA la;
 	private ProtegeReasoner reasoner;
-	private KnowledgeSource ks;
+	private AbstractKnowledgeSource ks;
 	
 	private LearningType learningType;
 	private int maxExecutionTimeInSeconds;

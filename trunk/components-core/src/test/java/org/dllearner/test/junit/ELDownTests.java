@@ -36,8 +36,8 @@ import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
@@ -82,7 +82,7 @@ public class ELDownTests {
 	@Test
 	public void test1() throws ParseException, ComponentInitException, IOException {
 		System.out.println("TEST 1");		
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
 		
 //		ELDescriptionTree t = new ELDescriptionTree(rs);
 //		ObjectProperty p1 = new ObjectProperty("p1");
@@ -182,7 +182,7 @@ public class ELDownTests {
 	public void test2() throws ParseException, IOException {
 		System.out.println("TEST 2");			
 		
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DR);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DR);
 		
 		// input description
 		Description input = KBParser.parseConcept("(human AND EXISTS hasPet.bird)");
@@ -238,7 +238,7 @@ public class ELDownTests {
 	public void test3() throws ParseException, IOException {
 		System.out.println("TEST 3");
 		
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DISJOINT);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DISJOINT);
 		
 		// input description
 		Description input = KBParser.parseConcept("(human AND (EXISTS hasChild.human AND EXISTS has.animal))");
@@ -297,11 +297,11 @@ public class ELDownTests {
 		logger.addAppender(app);	
 		
 		ComponentManager cm = ComponentManager.getInstance();
-		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		String ont = "test/galen2.owl";
 		cm.applyConfigEntry(source, "url", new File(ont).toURI().toURL());
 		source.init();
-		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
 		reasoner.init();
 		System.out.println("Galen loaded.");
 		
@@ -316,7 +316,7 @@ public class ELDownTests {
 
 	@Test
 	public void test5() {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.TRAINS_OWL);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.TRAINS_OWL);
 		RefinementOperator operator = new ELDown2(rs);
 		Set<Description> refinements = operator.refine(Thing.instance);
 		for(Description refinement : refinements) {
@@ -334,11 +334,11 @@ public class ELDownTests {
 	public void asTest() throws ComponentInitException, MalformedURLException {
 		
 		ComponentManager cm = ComponentManager.getInstance();
-		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		String ont = "test/galen2.owl";
 		cm.applyConfigEntry(source, "url", new File(ont).toURI().toURL());
 		source.init();
-		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
 		reasoner.init();
 		System.out.println("Galen loaded.");
 		

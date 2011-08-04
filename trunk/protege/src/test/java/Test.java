@@ -5,8 +5,8 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
@@ -50,7 +50,7 @@ public class Test {
 		ComponentManager.setComponentClasses(components);
 		ComponentManager cm = ComponentManager.getInstance();
 		
-		KnowledgeSource ks = new OWLAPIOntology(ont);
+		AbstractKnowledgeSource ks = new OWLAPIOntology(ont);
 		ks.init();
 		
 		ProtegeReasoner reasoner = cm.reasoner(ProtegeReasoner.class, ks);
@@ -58,7 +58,7 @@ public class Test {
 		reasoner.setOWLReasoner(r);
 		reasoner.init();
 		
-		LearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+		AbstractLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 		cm.applyConfigEntry(lp, "classToDescribe", new URL("http://ns.softwiki.de/req/CustomerRequirement"));
 			cm.applyConfigEntry(lp, "type", "equivalence");
 		lp.init();

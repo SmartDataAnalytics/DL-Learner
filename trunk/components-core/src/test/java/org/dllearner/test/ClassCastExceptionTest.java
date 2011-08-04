@@ -7,11 +7,11 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
@@ -30,18 +30,18 @@ public class ClassCastExceptionTest {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		// create knowledge source
-		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		String example = "examples/swore/swore.rdf";
 		cm.applyConfigEntry(source, "url", new File(example).toURI().toURL());
 		source.init();
 		
 		// create OWL API reasoning service with standard settings
-		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, source);
+		AbstractReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, source);
 		reasoner.init();
 		
 		// create a learning problem and set positive and negative examples
 
-		LearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+		AbstractLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 		cm.applyConfigEntry(lp, "classToDescribe", "http://ns.softwiki.de/req/PerformanceRequirement");
 		cm.applyConfigEntry(lp, "type", "equivalence");
 		lp.init();

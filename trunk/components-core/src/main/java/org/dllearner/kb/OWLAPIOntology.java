@@ -5,7 +5,7 @@ import java.net.URI;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.configurators.OWLAPIOntologyConfigurator;
 import org.dllearner.core.options.ConfigEntry;
@@ -17,7 +17,7 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-public class OWLAPIOntology extends KnowledgeSource {
+public class OWLAPIOntology extends AbstractKnowledgeSource {
 
 	private OWLAPIOntologyConfigurator configurator;
 	@Override

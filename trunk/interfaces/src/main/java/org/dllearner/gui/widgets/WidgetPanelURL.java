@@ -33,8 +33,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import org.dllearner.core.Component;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.gui.Config;
@@ -70,7 +70,7 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 	 * @param configOption
 	 *            The option to configure.
 	 */
-	public WidgetPanelURL(Config config, Component component, URLConfigOption configOption) {
+	public WidgetPanelURL(Config config, AbstractComponent component, URLConfigOption configOption) {
 		super(config, component, configOption);
 	}
 
@@ -130,7 +130,7 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 		// if the option value is an OWL class, we offer a dropdown box
 		if(((URLConfigOption) configOption).refersToOWLClass()) {
 			comboBox = new JComboBox();
-			ReasonerComponent reasoner = config.getReasoner();
+			AbstractReasonerComponent reasoner = config.getReasoner();
 			String baseURI = reasoner.getBaseURI();
 			Map<String,String> prefixes = reasoner.getPrefixes();
 			classes = new LinkedList<NamedClass>(reasoner.getNamedClasses());

@@ -28,9 +28,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 
@@ -44,24 +44,24 @@ import org.dllearner.kb.OWLFile;
  */
 public class InitWorker extends SwingWorker<Boolean, Boolean> {
 	
-	private List<Component> components;
+	private List<AbstractComponent> components;
 	private StartGUI gui;
 	private boolean timeIntensive;
 	
-	public InitWorker(List<Component> components, StartGUI gui) {
+	public InitWorker(List<AbstractComponent> components, StartGUI gui) {
 		this.components = components;
 		this.gui = gui;
 		
 		// create a list of components, which do need virtually
 		// no time to initialise (and where displaying a please
 		// wait message is an unnecessary overhead)
-		List<Class<? extends Component>> nonTimeIntensiveComponents = new LinkedList<Class<? extends Component>>();
+		List<Class<? extends AbstractComponent>> nonTimeIntensiveComponents = new LinkedList<Class<? extends AbstractComponent>>();
 		nonTimeIntensiveComponents.add(OWLFile.class);
 		nonTimeIntensiveComponents.add(KBFile.class);
 		
 		// we check if any of the components is time-intensive
 		timeIntensive = false;
-		for(Component component : components) {
+		for(AbstractComponent component : components) {
 			if(!nonTimeIntensiveComponents.contains(component.getClass())) {
 				timeIntensive = true;
 			}		
@@ -96,13 +96,13 @@ public class InitWorker extends SwingWorker<Boolean, Boolean> {
 		}
     	
     	try {
-    		for(Component component : components) {
+    		for(AbstractComponent component : components) {
     			component.init();
     			
     			// when the reasoner has been initialised, we need to update
     			// the option panel (such that the user can see the existing
     			// examples, classes etc.)
-    			if(component instanceof ReasonerComponent) {
+    			if(component instanceof AbstractReasonerComponent) {
     				gui.panels[2].updateOptionPanel();
     				gui.panels[3].updateOptionPanel();
     			}		

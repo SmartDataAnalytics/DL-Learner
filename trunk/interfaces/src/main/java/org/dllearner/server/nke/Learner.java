@@ -65,7 +65,7 @@ public class Learner {
                 e.printStackTrace();
             }
 
-            KnowledgeSource ks = new OWLAPIOntology(retOnt);
+            AbstractKnowledgeSource ks = new OWLAPIOntology(retOnt);
             ks.init();
 
             owlapi.stop();
@@ -74,7 +74,7 @@ public class Learner {
             // TODO: should the reasoner be initialised at every request or just once (?)
 
             Monitor mon = MonitorFactory.getTimeMonitor("Learner:reasoner").start();
-            ReasonerComponent rc = cm.reasoner(reasoner, ks);
+            AbstractReasonerComponent rc = cm.reasoner(reasoner, ks);
 //            ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks); // try OWL API / Pellet, because ontology is not complex
             rc.init();
 

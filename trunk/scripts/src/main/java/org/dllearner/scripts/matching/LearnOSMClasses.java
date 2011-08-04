@@ -32,7 +32,7 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.StringToResource;
 import org.dllearner.kb.manipulator.Rule.Months;
@@ -106,7 +106,7 @@ public class LearnOSMClasses {
 		ks.setManipulator(m);
 		ks.init();
 		
-		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		AbstractReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
 		reasoner.init();
 		
 		PosOnlyLP lp = cm.learningProblem(PosOnlyLP.class, reasoner);

@@ -29,7 +29,7 @@ import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
 import org.dllearner.algorithms.el.Simulation;
 import org.dllearner.algorithms.el.TreeTuple;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
@@ -51,7 +51,7 @@ public final class ELDescriptionTreeTests {
 
 	@Test
 	public void simulationTest() {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		Simulation s = new Simulation();
 		ELDescriptionTree tree1 = new ELDescriptionTree(rs);
 		ELDescriptionTree tree2 = new ELDescriptionTree(rs);
@@ -70,7 +70,7 @@ public final class ELDescriptionTreeTests {
 	
 	@Test
 	public void minimalityTest() throws ParseException, ComponentInitException {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
 		// the following should be recognized as non-minimal
 		Description d = KBParser.parseConcept("(human AND (EXISTS has.animal AND EXISTS has.TOP))");
 		ConceptTransformation.cleanConcept(d);
@@ -80,7 +80,7 @@ public final class ELDescriptionTreeTests {
 	
 	@Test
 	public void cloneTest() throws ParseException {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
+		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		Description d = KBParser.parseConcept("(male AND (human AND EXISTS hasChild.(female AND EXISTS hasChild.male)))");
 		ConceptTransformation.cleanConcept(d);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, d);

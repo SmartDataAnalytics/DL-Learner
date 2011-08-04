@@ -29,7 +29,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.options.*;
 import org.dllearner.gui.widgets.WidgetPanelBoolean;
@@ -56,7 +56,7 @@ public class OptionPanel extends JPanel {
 	private Config config;
 //	private Class<? extends Component> componentClass;
 	private JPanel centerPanel = new JPanel();
-	private Component component;
+	private AbstractComponent component;
 	private GridBagLayout gridBagLayout = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
 
@@ -67,7 +67,7 @@ public class OptionPanel extends JPanel {
 	 * retrieve option values).
 	 * @param component The active component (i.e. the one 
 	 */
-	public OptionPanel(Config config, Component component) {
+	public OptionPanel(Config config, AbstractComponent component) {
 		super(new BorderLayout());
 		
 		this.config = config;
@@ -91,7 +91,7 @@ public class OptionPanel extends JPanel {
 	 * content.
 	 * @param newComponent The new active component. 
 	 */
-	public void rebuild(Component newComponent) {
+	public void rebuild(AbstractComponent newComponent) {
 		this.component = newComponent;
 		showWidgets();
 	}

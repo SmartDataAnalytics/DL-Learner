@@ -21,13 +21,13 @@ package org.dllearner.cli;
 
 import java.io.File;
 
-import org.dllearner.core.Component;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.cli.ConfMapper;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Files;
@@ -66,36 +66,36 @@ public class DocumentationGenerator {
 		doc += "*********************\n\n";
 		doc += "BEGIN MANUAL PART\n";
 		doc += "END MANUAL PART\n\n";
-		for(Class<? extends Component> component : cm.getKnowledgeSources()) {
+		for(Class<? extends AbstractComponent> component : cm.getKnowledgeSources()) {
 			if(component != SparqlKnowledgeSource.class){continue;}
-			doc += getComponentConfigString(component, KnowledgeSource.class);
+			doc += getComponentConfigString(component, AbstractKnowledgeSource.class);
 		}
 		
 		doc += "*************\n";
 		doc += "* Reasoners *\n";
 		doc += "*************\n\n";
-		for(Class<? extends Component> component : cm.getReasonerComponents()) {
-			doc += getComponentConfigString(component, ReasonerComponent.class);
+		for(Class<? extends AbstractComponent> component : cm.getReasonerComponents()) {
+			doc += getComponentConfigString(component, AbstractReasonerComponent.class);
 		}
 		
 		doc += "*********************\n";
 		doc += "* Learning Problems *\n";
 		doc += "*********************\n\n";
-		for(Class<? extends Component> component : cm.getLearningProblems()) {
-			doc += getComponentConfigString(component, LearningProblem.class);
+		for(Class<? extends AbstractComponent> component : cm.getLearningProblems()) {
+			doc += getComponentConfigString(component, AbstractLearningProblem.class);
 		}
 		
 		doc += "***********************\n";
 		doc += "* Learning Algorithms *\n";
 		doc += "***********************\n\n";
-		for(Class<? extends Component> component : cm.getLearningAlgorithms()) {
+		for(Class<? extends AbstractComponent> component : cm.getLearningAlgorithms()) {
 			doc += getComponentConfigString(component, AbstractCELA.class);
 		}
 		
 		Files.createFile(file, doc);
 	}	
 	
-	private String getComponentConfigString(Class<? extends Component> component, Class<? extends Component> componentType) {
+	private String getComponentConfigString(Class<? extends AbstractComponent> component, Class<? extends AbstractComponent> componentType) {
 //		String componentDescription =  "component: " + invokeStaticMethod(component, "getName") + " (" + component.getName() + ")";
 		String componentDescription =  "component: " + cm.getComponentName(component);
 		String str = componentDescription + "\n";
@@ -106,7 +106,7 @@ public class DocumentationGenerator {
 			str += "=";
 		}
 		str += "\n\n";
-		if (componentType.equals(KnowledgeSource.class)){
+		if (componentType.equals(AbstractKnowledgeSource.class)){
 			str += "conf file usage: "+cli+" (\"$url\",  \""+usage.toUpperCase()+"\");\n\n";
 		}else{
 			str += "conf file usage: "+cli+" = "+usage+";\n\n";

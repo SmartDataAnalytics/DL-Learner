@@ -26,8 +26,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.FastRetrievalReasonerConfigurator;
@@ -48,7 +48,7 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  * @author Jens Lehmann
  *
  */
-public class FastRetrievalReasoner extends ReasonerComponent {
+public class FastRetrievalReasoner extends AbstractReasonerComponent {
 
 	private FastRetrievalReasonerConfigurator configurator;
 	@Override
@@ -62,9 +62,9 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	Set<ObjectProperty> atomicRoles;
 	SortedSet<Individual> individuals;
 	
-	ReasonerComponent rc;
+	AbstractReasonerComponent rc;
 	
-	public FastRetrievalReasoner(Set<KnowledgeSource> sources) {
+	public FastRetrievalReasoner(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
 		this.configurator = new FastRetrievalReasonerConfigurator(this);
 		
