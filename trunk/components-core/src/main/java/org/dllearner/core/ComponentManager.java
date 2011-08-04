@@ -485,11 +485,11 @@ public final class ComponentManager {
 		pool.registerComponent(la);
 		return la;
 	}
-
-	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, AbstractKnowledgeSource ks) {
-		T la = invokeConstructor(laClass, new Class[] { AbstractKnowledgeSource.class }, new Object[] { ks });
-		return la;
-	}	
+//
+//	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, KnowledgeSource ks) {
+//		T la = invokeConstructor(laClass, new Class[] { KnowledgeSource.class }, new Object[] { ks });
+//		return la;
+//	}	
 	
 	/**
 	 * The <code>ComponentManager</code> factory methods produce component
