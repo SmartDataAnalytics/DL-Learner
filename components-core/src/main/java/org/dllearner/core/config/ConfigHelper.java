@@ -33,7 +33,7 @@ public class ConfigHelper {
 	 * @param configName the name of the config option
 	 * @param configValue the value of the config option
 	 */
-	public static void configure(Component component, String configName, String configValue){
+	public static <T> void configure(Component component, String configName, T configValue){
 		Field[] fields = component.getClass().getDeclaredFields();
         for(Field f : fields){
         	ConfigOption option = f.getAnnotation(ConfigOption.class);
@@ -41,7 +41,7 @@ public class ConfigHelper {
         		if(option.name().equals(configName)){
         			try {
 						PropertyEditor editor = (PropertyEditor) option.propertyEditorClass().newInstance();
-						editor.setAsText(configValue);
+						editor.setAsText(configValue.toString());
 						Method method = component.getClass().getMethod("set" + Character.toUpperCase(f.getName().charAt(0)) + f.getName().substring(1), getClassForObject(editor.getValue()));
 						method.invoke(component, editor.getValue());
 					} catch (IllegalArgumentException e) {

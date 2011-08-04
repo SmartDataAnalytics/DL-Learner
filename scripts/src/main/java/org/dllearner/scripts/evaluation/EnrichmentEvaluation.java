@@ -86,7 +86,7 @@ public class EnrichmentEvaluation {
 //				SubPropertyOfAxiomLearner learner = new SubPropertyOfAxiomLearner(ks);
 				AxiomLearningAlgorithm learner = cm.learningAlgorithm(algorithmClass, ks);
 				ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
-//				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
+				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
 				
 				
 //				learner.setPropertyToDescribe(property);
