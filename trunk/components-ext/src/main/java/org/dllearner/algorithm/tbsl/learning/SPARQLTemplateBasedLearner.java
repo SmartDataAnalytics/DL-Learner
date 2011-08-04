@@ -35,6 +35,7 @@ import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Prefixes;
 import org.dllearner.algorithm.tbsl.util.Similarity;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.Oracle;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
 import org.dllearner.kb.sparql.ExtractionDBCache;
@@ -766,6 +767,12 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public void init() throws ComponentInitException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	
