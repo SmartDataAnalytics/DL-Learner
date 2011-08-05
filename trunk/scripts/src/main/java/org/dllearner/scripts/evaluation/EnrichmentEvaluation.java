@@ -30,8 +30,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
@@ -83,12 +85,19 @@ public class EnrichmentEvaluation {
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 
+	private String baseURI = "http://dbpedia.org/resource/";
+	private Map<String,String> prefixes;
+	
 	private Connection conn;
 	private PreparedStatement ps;
 
 	public EnrichmentEvaluation() {
 		initDBConnection();
 
+		prefixes = new HashMap<String,String>();
+		prefixes.put("dbp","http://dbpedia.org/property/");
+		prefixes.put("dbo","http://dbpedia.org/ontology/");
+		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
 		// objectPropertyAlgorithms.add(DisjointPropertyAxiomLearner.class);
 		// objectPropertyAlgorithms.add(EquivalentPropertyAxiomLearner.class);
@@ -193,14 +202,14 @@ public class EnrichmentEvaluation {
 				List<EvaluatedAxiom> learnedAxioms = learner
 						.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 				if (learnedAxioms == null) {
-					writeToDB(property.toString(), algName, "NULL", 0, runTime);
+					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime);
 				} else {
 					for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
 						double score = learnedAxiom.getScore().getAccuracy();
 						if (Double.isNaN(score)) {
 							score = -1;
 						}
-						writeToDB(property.toString(), algName, learnedAxiom.getAxiom().toString(),
+						writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
 								score, runTime);
 					}
 				}
