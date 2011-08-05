@@ -205,7 +205,7 @@ public class EnrichmentEvaluation {
 					}
 				}
 				objectProperties++;
-				if (objectProperties > maxObjectProperties) {
+				if (maxObjectProperties != 0 && objectProperties > maxObjectProperties) {
 					break;
 				}
 			}
