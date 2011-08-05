@@ -98,7 +98,7 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 		//get subjects with types
 		int limit = 1000;
 		int offset = 0;
-		String queryTemplate = "SELECT ?p (COUNT(?s)) AS ?count WHERE {?s ?p ?o." +
+		String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?s ?p ?o." +
 		"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
 		"}";
 		String query;

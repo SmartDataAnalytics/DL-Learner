@@ -23,6 +23,7 @@ import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.EquivalentObjectPropertiesAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
@@ -92,7 +93,7 @@ public class EquivalentPropertyAxiomLearner extends AbstractComponent implements
 		//get subjects with types
 		int limit = 1000;
 		int offset = 0;
-		String queryTemplate = "SELECT ?p (COUNT(?s)) AS ?count WHERE {?s ?p ?o." +
+		String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?s ?p ?o." +
 		"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
 		"}";
 		String query;

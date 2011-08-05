@@ -1,5 +1,6 @@
 package org.dllearner.test.junit;
 
+import org.dllearner.algorithms.properties.EquivalentPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyRangeAxiomLearner;
@@ -15,7 +16,7 @@ import junit.framework.TestCase;
 public class PropertyLearningTest extends TestCase{
 	
 	private SparqlEndpointKS ks;
-	private int maxExecutionTimeInSeconds = 5;
+	private int maxExecutionTimeInSeconds = 3;
 	private int nrOfAxioms = 3;
 	
 	private ObjectProperty functional = new ObjectProperty("http://dbpedia.org/ontology/league");
@@ -24,6 +25,7 @@ public class PropertyLearningTest extends TestCase{
 	private ObjectProperty domain = new ObjectProperty("http://dbpedia.org/ontology/writer");
 	private ObjectProperty range = new ObjectProperty("http://dbpedia.org/ontology/writer");
 	private ObjectProperty subProperty = new ObjectProperty("http://dbpedia.org/ontology/author");
+	private ObjectProperty equivProperty = new ObjectProperty("http://dbpedia.org/ontology/academyAward");
 	
 	
 	@Override
@@ -36,6 +38,15 @@ public class PropertyLearningTest extends TestCase{
 		SubPropertyOfAxiomLearner l = new SubPropertyOfAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		l.setPropertyToDescribe(subProperty);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
+	}
+	
+	public void testEquivalentPropertyOfAxiomLearning() throws Exception {
+		EquivalentPropertyAxiomLearner l = new EquivalentPropertyAxiomLearner(ks);
+		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+		l.setPropertyToDescribe(equivProperty);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
