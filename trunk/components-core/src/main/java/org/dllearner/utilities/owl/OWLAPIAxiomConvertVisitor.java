@@ -37,6 +37,8 @@ import org.dllearner.core.owl.DifferentIndividualsAxiom;
 import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
+import org.dllearner.core.owl.EquivalentDatatypePropertiesAxiom;
+import org.dllearner.core.owl.EquivalentObjectPropertiesAxiom;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.InverseObjectPropertyAxiom;
@@ -257,6 +259,28 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		addAxiom(axiomOWLAPI);	
 	}	
 	
+	@Override
+	public void visit(EquivalentObjectPropertiesAxiom axiom) {
+		OWLObjectProperty role = factory.getOWLObjectProperty(
+				IRI.create(axiom.getRole().getName()));
+		OWLObjectProperty equivRole = factory.getOWLObjectProperty(
+				IRI.create(axiom.getEquivalentRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLEquivalentObjectPropertiesAxiom(equivRole, role);
+		addAxiom(axiomOWLAPI);	
+		
+	}
+
+	@Override
+	public void visit(EquivalentDatatypePropertiesAxiom axiom) {
+		OWLDataProperty role = factory.getOWLDataProperty(
+				IRI.create(axiom.getRole().getName()));
+		OWLDataProperty equivRole = factory.getOWLDataProperty(
+				IRI.create(axiom.getEquivalentRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLEquivalentDataPropertiesAxiom(equivRole, role);
+		addAxiom(axiomOWLAPI);
+		
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -366,6 +390,8 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(dp, i, valueConstant);
 		addAxiom(axiomOWLAPI);
 	}
+
+	
 
 	
 
