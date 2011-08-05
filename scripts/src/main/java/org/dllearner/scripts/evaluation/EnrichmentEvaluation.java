@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -34,8 +35,6 @@ import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.properties.DisjointPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.EquivalentPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyRangeAxiomLearner;
@@ -46,7 +45,6 @@ import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -119,6 +117,14 @@ public class EnrichmentEvaluation {
 			String url =
 			    "jdbc:mysql://"+dbServer+"/"+dbName;
 			Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
+			
+			Statement s = conn.createStatement ();
+			s.executeUpdate ("DROP TABLE IF EXISTS evaluation");
+			s.executeUpdate (
+			               "CREATE TABLE evaluation ("
+			               + "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+			               + "entity VARCHAR(200), algorithm VARCHAR(100), axiom VARCHAR(500), score DOUBLE)");
+			s.close();
 			ps = conn.prepareStatement("INSERT INTO evaluation (" +
 					"entity, algorithm, axiom, score ) " +
 					"VALUES(?,?,?,?)");
