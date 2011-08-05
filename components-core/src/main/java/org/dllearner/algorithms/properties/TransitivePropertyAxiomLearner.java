@@ -99,8 +99,11 @@ public class TransitivePropertyAxiomLearner extends AbstractComponent implements
 			qs = rs.next();
 			int all = qs.getLiteral("all").getInt();
 			int transitive = qs.getLiteral("transitive").getInt();
-			double frac = transitive / (double)all;
-			currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			if(all > 0){
+				double frac = transitive / (double)all;
+				currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			}
+			
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -108,12 +111,12 @@ public class TransitivePropertyAxiomLearner extends AbstractComponent implements
 
 	@Override
 	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		return Collections.singletonList(currentlyBestAxioms.get(0).getAxiom());
+		return currentlyBestAxioms.isEmpty() ? Collections.<Axiom>emptyList() : Collections.singletonList(currentlyBestAxioms.get(0).getAxiom());
 	}
 	
 	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		return Collections.singletonList(currentlyBestAxioms.get(0));
+		return currentlyBestAxioms;
 	}
 
 	@Override
