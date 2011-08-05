@@ -98,8 +98,11 @@ public class ReflexivePropertyAxiomLearner extends AbstractComponent implements 
 			qs = rs.next();
 			int all = qs.getLiteral("all").getInt();
 			int reflexive = qs.getLiteral("reflexiv").getInt();
-			double frac = reflexive / (double)all;
-			currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			if(all > 0){
+				double frac = reflexive / (double)all;
+				currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			}
+			
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -107,12 +110,12 @@ public class ReflexivePropertyAxiomLearner extends AbstractComponent implements 
 
 	@Override
 	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		return Collections.singletonList(currentlyBestAxioms.get(0).getAxiom());
+		return currentlyBestAxioms.isEmpty() ? Collections.<Axiom>emptyList() : Collections.singletonList(currentlyBestAxioms.get(0).getAxiom());
 	}
 	
 	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		return Collections.singletonList(currentlyBestAxioms.get(0));
+		return currentlyBestAxioms;
 	}
 
 	@Override

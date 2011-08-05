@@ -124,8 +124,10 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 				qs.getLiteral("count").getInt();
 				repeat = true;
 			}
-			currentlyBestAxioms = buildAxioms(result);
-			offset += 1000;
+			if(!result.isEmpty()){
+				currentlyBestAxioms = buildAxioms(result);
+				offset += 1000;
+			}
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -172,14 +174,17 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 	
 	private List<EvaluatedAxiom> buildAxioms(Map<ObjectProperty, Integer> property2Count){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
+		Integer all = property2Count.get(propertyToDescribe);
+		property2Count.remove(propertyToDescribe);
 		
 		EvaluatedAxiom evalAxiom;
 		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
 			evalAxiom = new EvaluatedAxiom(new SubObjectPropertyAxiom(propertyToDescribe, entry.getKey()),
-					new AxiomScore(0));
+					new AxiomScore(entry.getValue() / (double)all));
 			axioms.add(evalAxiom);
 		}
 		
+		property2Count.put(propertyToDescribe, all);
 		return axioms;
 	}
 	

@@ -107,19 +107,22 @@ public class FunctionalPropertyAxiomLearner extends AbstractComponent implements
 			qs = rs.next();
 			notFunctional = qs.getLiteral("notfunctional").getInt();
 		}
-		double frac = (all - notFunctional) / (double)all;
-		currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+		if(all > 0){
+			double frac = (all - notFunctional) / (double)all;
+			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+		}
+		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 
 	@Override
 	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		return Collections.singletonList(currentlyBestAxioms.get(0).getAxiom());
+		return currentlyBestAxioms.isEmpty() ? Collections.<Axiom>emptyList() : Collections.singletonList(currentlyBestAxioms.get(0).getAxiom());
 	}
 	
 	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		return Collections.singletonList(currentlyBestAxioms.get(0));
+		return currentlyBestAxioms;
 	}
 
 	@Override
