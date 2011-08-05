@@ -41,7 +41,7 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 @ComponentAnn(name="subPropertyOf learner")
 public class SubPropertyOfAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;

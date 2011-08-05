@@ -39,6 +39,10 @@ public interface PropertyAxiomVisitor {
 	
 	public void visit(SubObjectPropertyAxiom axiom);
 	
+	public void visit(EquivalentObjectPropertiesAxiom axiom);
+	
+	public void visit(EquivalentDatatypePropertiesAxiom axiom);
+	
 	void visit(DatatypePropertyDomainAxiom axiom);
 
 	void visit(ObjectPropertyDomainAxiom axiom);
