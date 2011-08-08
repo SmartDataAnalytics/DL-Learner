@@ -12,21 +12,21 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.config.IntegerEditor;
-import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.DataRange;
+import org.dllearner.core.owl.Datatype;
+import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
@@ -36,15 +36,14 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 @ComponentAnn(name="property range learner")
 public class DataPropertyRangeAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(DataPropertyRangeAxiomLearner.class);
 	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
+	private DatatypeProperty propertyToDescribe;
 	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
 	private int maxExecutionTimeInSeconds = 10;
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
@@ -69,11 +68,11 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
-	public ObjectProperty getPropertyToDescribe() {
+	public DatatypeProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
+	public void setPropertyToDescribe(DatatypeProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
@@ -92,15 +91,15 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		//get existing range
-		Description existingRange = reasoner.getRange(propertyToDescribe);
+		DataRange existingRange = reasoner.getRange(propertyToDescribe);
 		logger.debug("Existing range: " + existingRange);
 		
 		//get objects with types
-		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
-		Map<Individual, Set<NamedClass>> newIndividual2Types;
+		Map<Individual, Set<Datatype>> individual2Types = new HashMap<Individual, Set<Datatype>>();
+		Map<Individual, Set<Datatype>> newIndividual2Types;
 		boolean repeat = true;
 		while(!terminationCriteriaSatisfied() && repeat){
-			newIndividual2Types = getObjectsWithTypes(fetchedRows);
+			newIndividual2Types = getObjectsWithDatatypes(fetchedRows);
 			individual2Types.putAll(newIndividual2Types);
 			currentlyBestAxioms = buildBestAxioms(individual2Types);
 			fetchedRows += 1000;
@@ -148,11 +147,11 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
-	private List<EvaluatedAxiom> buildBestAxioms(Map<Individual, Set<NamedClass>> individual2Types){
+	private List<EvaluatedAxiom> buildBestAxioms(Map<Individual, Set<Datatype>> individual2Types){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
-		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
-		for(Entry<Individual, Set<NamedClass>> entry : individual2Types.entrySet()){
-			for(NamedClass nc : entry.getValue()){
+		Map<Datatype, Integer> result = new HashMap<Datatype, Integer>();
+		for(Entry<Individual, Set<Datatype>> entry : individual2Types.entrySet()){
+			for(Datatype nc : entry.getValue()){
 				Integer cnt = result.get(nc);
 				if(cnt == null){
 					cnt = Integer.valueOf(1);
@@ -162,8 +161,8 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 		}
 		
 		EvaluatedAxiom evalAxiom;
-		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
-			evalAxiom = new EvaluatedAxiom(new ObjectPropertyRangeAxiom(propertyToDescribe, entry.getKey()),
+		for(Entry<Datatype, Integer> entry : sortByValues(result)){
+			evalAxiom = new EvaluatedAxiom(new DatatypePropertyRangeAxiom(propertyToDescribe, entry.getKey()),
 					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
 			axioms.add(evalAxiom);
 		}
@@ -174,11 +173,11 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 	/*
 	 * Returns the entries of the map sorted by value.
 	 */
-	private SortedSet<Entry<NamedClass, Integer>> sortByValues(Map<NamedClass, Integer> map){
-		SortedSet<Entry<NamedClass, Integer>> sortedSet = new TreeSet<Map.Entry<NamedClass,Integer>>(new Comparator<Entry<NamedClass, Integer>>() {
+	private SortedSet<Entry<Datatype, Integer>> sortByValues(Map<Datatype, Integer> map){
+		SortedSet<Entry<Datatype, Integer>> sortedSet = new TreeSet<Map.Entry<Datatype,Integer>>(new Comparator<Entry<Datatype, Integer>>() {
 
 			@Override
-			public int compare(Entry<NamedClass, Integer> value1, Entry<NamedClass, Integer> value2) {
+			public int compare(Entry<Datatype, Integer> value1, Entry<Datatype, Integer> value2) {
 				if(value1.getValue() < value2.getValue()){
 					return 1;
 				} else if(value2.getValue() < value1.getValue()){
@@ -192,25 +191,43 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 		return sortedSet;
 	}
 	
-	private Map<Individual, Set<NamedClass>> getObjectsWithTypes(int offset){
-		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
+	private Map<Individual, Set<Datatype>> getObjectsWithDatatypes(int offset){
+		Map<Individual, Set<Datatype>> individual2Datatypes = new HashMap<Individual, Set<Datatype>>();
 		int limit = 1000;
-		String query = String.format("SELECT ?ind ?type WHERE {?s <%s> ?ind. ?ind a ?type.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
+		String query = String.format("SELECT ?ind, DATATYPE(?lit) AS ?datatype WHERE {?s <%s> ?ind.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
 		Individual ind;
-		Set<NamedClass> types;
+		Set<Datatype> types;
 		while(rs.hasNext()){
 			qs = rs.next();
 			ind = new Individual(qs.getResource("ind").getURI());
-			types = individual2Types.get(ind);
+			types = individual2Datatypes.get(ind);
 			if(types == null){
-				types = new HashSet<NamedClass>();
-				individual2Types.put(ind, types);
+				types = new HashSet<Datatype>();
+				individual2Datatypes.put(ind, types);
 			}
-			types.add(new NamedClass(qs.getResource("type").getURI()));
+			types.add(getDatatypeForURI(qs.getResource("datatype").getURI()));
 		}
-		return individual2Types;
+		return individual2Datatypes;
+	}
+	
+	private Datatype getDatatypeForURI(String uri){
+		if(uri.equals(Datatype.BOOLEAN.getURI()))
+			return Datatype.BOOLEAN;
+		else if(uri.equals(Datatype.DOUBLE.getURI()))
+			return Datatype.DOUBLE;
+		else if(uri.equals(Datatype.INT.getURI()))
+			return Datatype.INT;			
+		else if(uri.equals(Datatype.INTEGER.getURI()))
+			return Datatype.INTEGER;			
+		else if(uri.equals(Datatype.STRING.getURI()))
+			return Datatype.STRING;			
+		else if(uri.equals(Datatype.DATE.getURI()))
+			return Datatype.DATE;
+		else if(uri.equals(Datatype.DATETIME.getURI()))
+			return Datatype.DATETIME;
+		throw new Error("Unsupported datatype " + uri + ". Please inform a DL-Learner developer to add it.");
 	}
 	
 	/*
