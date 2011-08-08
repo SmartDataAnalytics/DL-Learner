@@ -29,6 +29,8 @@ public interface PropertyAxiomVisitor {
 
 	public void visit(FunctionalObjectPropertyAxiom axiom);
 	
+	public void visit(FunctionalDatatypePropertyAxiom axiom);
+	
 	public void visit(InverseObjectPropertyAxiom axiom);
 	
 	public void visit(SymmetricObjectPropertyAxiom axiom);
@@ -39,9 +41,15 @@ public interface PropertyAxiomVisitor {
 	
 	public void visit(SubObjectPropertyAxiom axiom);
 	
+	public void visit(SubDatatypePropertyAxiom axiom);
+	
 	public void visit(EquivalentObjectPropertiesAxiom axiom);
 	
 	public void visit(EquivalentDatatypePropertiesAxiom axiom);
+	
+	public void visit(DisjointObjectPropertyAxiom axiom);
+	
+	public void visit(DisjointDatatypePropertyAxiom axiom);
 	
 	void visit(DatatypePropertyDomainAxiom axiom);
 
