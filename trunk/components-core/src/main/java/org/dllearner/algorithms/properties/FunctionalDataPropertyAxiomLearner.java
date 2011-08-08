@@ -1,7 +1,7 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 import org.dllearner.core.AbstractComponent;
@@ -10,26 +10,31 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.config.IntegerEditor;
-import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.FunctionalDatatypePropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
+import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.vocabulary.OWL;
 
-@ComponentAnn(name="disjoint property axiom learner")
-public class DisjointPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+@ComponentAnn(name="functional property axiom learner")
+public class FunctionalDataPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(FunctionalDataPropertyAxiomLearner.class);
 	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
+	private DatatypeProperty propertyToDescribe;
 	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
 	private int maxExecutionTimeInSeconds = 10;
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
@@ -42,7 +47,8 @@ public class DisjointPropertyAxiomLearner extends AbstractComponent implements A
 	private long startTime;
 	private int fetchedRows;
 	
-	public DisjointPropertyAxiomLearner(SparqlEndpointKS ks){
+
+	public FunctionalDataPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	
@@ -54,11 +60,11 @@ public class DisjointPropertyAxiomLearner extends AbstractComponent implements A
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
-	public ObjectProperty getPropertyToDescribe() {
+	public DatatypeProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
+	public void setPropertyToDescribe(DatatypeProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
@@ -69,7 +75,7 @@ public class DisjointPropertyAxiomLearner extends AbstractComponent implements A
 	public void setMaxFetchedRows(int maxFetchedRows) {
 		this.maxFetchedRows = maxFetchedRows;
 	}
-
+	
 	@Override
 	public void start() {
 		logger.info("Start learning...");
@@ -77,30 +83,47 @@ public class DisjointPropertyAxiomLearner extends AbstractComponent implements A
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
-		//TODO
+		//check if property is already declared as symmetric in knowledge base
+		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.FunctionalProperty.getURI());
+		boolean declaredAsFunctional = executeAskQuery(query);
+		if(declaredAsFunctional) {
+			logger.info("Property is already declared as functional in knowledge base.");
+		}
+		
+		//get number of instances of s with <s p o> 
+		query = String.format("SELECT (COUNT(DISTINCT ?s)) AS ?all WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
+		ResultSet rs = executeQuery(query);
+		QuerySolution qs;
+		int all = 1;
+		while(rs.hasNext()){
+			qs = rs.next();
+			all = qs.getLiteral("all").getInt();
+		}
+		//get number of instances of s with <s p o> <s p o1> where o != o1
+		query = "SELECT (COUNT(DISTINCT ?s)) AS ?notfunctional WHERE {?s <%s> ?o. ?s <%s> ?o1. FILTER(?o != ?o1) }";
+		query = query.replace("%s", propertyToDescribe.getURI().toString());
+		rs = executeQuery(query);
+		int notFunctional = 1;
+		while(rs.hasNext()){
+			qs = rs.next();
+			notFunctional = qs.getLiteral("notfunctional").getInt();
+		}
+		if(all > 0){
+			double frac = (all - notFunctional) / (double)all;
+			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalDatatypePropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 
 	@Override
 	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		List<Axiom> bestAxioms = new ArrayList<Axiom>();
-		
-		Iterator<EvaluatedAxiom> it = currentlyBestAxioms.iterator();
-		while(bestAxioms.size() < nrOfAxioms && it.hasNext()){
-			bestAxioms.add(it.next().getAxiom());
-		}
-		
-		return bestAxioms;
+		return currentlyBestAxioms.isEmpty() ? Collections.<Axiom>emptyList() : Collections.singletonList(currentlyBestAxioms.get(0).getAxiom());
 	}
 	
 	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		int max = Math.min(currentlyBestAxioms.size(), nrOfAxioms);
-		
-		List<EvaluatedAxiom> bestAxioms = currentlyBestAxioms.subList(0, max);
-		
-		return bestAxioms;
+		return currentlyBestAxioms;
 	}
 
 	@Override
@@ -112,15 +135,21 @@ public class DisjointPropertyAxiomLearner extends AbstractComponent implements A
 	@Override
 	public void init() throws ComponentInitException {
 		reasoner = new SPARQLReasoner(ks);
+	}
+	
+	private boolean executeAskQuery(String query){
+		logger.info("Sending query \n {}", query);
 		
+		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
+			queryExecution.addNamedGraph(ngu);
+		}			
+		boolean result = queryExecution.execAsk();
+		return result;
 	}
-	
-	private boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
-	}
-	
 	
 	/*
 	 * Executes a SELECT query and returns the result.
@@ -139,5 +168,4 @@ public class DisjointPropertyAxiomLearner extends AbstractComponent implements A
 		ResultSet resultSet = queryExecution.execSelect();
 		return resultSet;
 	}
-
 }

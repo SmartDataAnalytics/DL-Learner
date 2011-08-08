@@ -16,12 +16,12 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.config.IntegerEditor;
-import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.SubObjectPropertyAxiom;
+import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.EquivalentDatatypePropertiesAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
@@ -29,20 +29,16 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.Syntax;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
-@ComponentAnn(name="subPropertyOf learner")
-public class SubPropertyOfAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+@ComponentAnn(name="equivalent property axiom learner")
+public class EquivalentDataPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(EquivalentDataPropertyAxiomLearner.class);
 	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
+	private DatatypeProperty propertyToDescribe;
 	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
 	private int maxExecutionTimeInSeconds = 10;
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
@@ -55,8 +51,7 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 	private long startTime;
 	private int fetchedRows;
 	
-	
-	public SubPropertyOfAxiomLearner(SparqlEndpointKS ks){
+	public EquivalentDataPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	
@@ -68,11 +63,11 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
-	public ObjectProperty getPropertyToDescribe() {
+	public DatatypeProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
+	public void setPropertyToDescribe(DatatypeProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
@@ -91,7 +86,7 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		//get existing super properties
-		SortedSet<ObjectProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
+		SortedSet<DatatypeProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
 		logger.debug("Existing super properties: " + existingSuperProperties);
 		
 		//get subjects with types
@@ -101,8 +96,8 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 		"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
 		"}";
 		String query;
-		Map<ObjectProperty, Integer> result = new HashMap<ObjectProperty, Integer>();
-		ObjectProperty prop;
+		Map<DatatypeProperty, Integer> result = new HashMap<DatatypeProperty, Integer>();
+		DatatypeProperty prop;
 		Integer oldCnt;
 		boolean repeat = true;
 		
@@ -113,7 +108,7 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 			repeat = false;
 			while(rs.hasNext()){
 				qs = rs.next();
-				prop = new ObjectProperty(qs.getResource("p").getURI());
+				prop = new DatatypeProperty(qs.getResource("p").getURI());
 				int newCnt = qs.getLiteral("count").getInt();
 				oldCnt = result.get(prop);
 				if(oldCnt == null){
@@ -127,6 +122,7 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 				currentlyBestAxioms = buildAxioms(result);
 				offset += 1000;
 			}
+			
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -171,14 +167,14 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
-	private List<EvaluatedAxiom> buildAxioms(Map<ObjectProperty, Integer> property2Count){
+	private List<EvaluatedAxiom> buildAxioms(Map<DatatypeProperty, Integer> property2Count){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
 		Integer all = property2Count.get(propertyToDescribe);
 		property2Count.remove(propertyToDescribe);
 		
 		EvaluatedAxiom evalAxiom;
-		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
-			evalAxiom = new EvaluatedAxiom(new SubObjectPropertyAxiom(propertyToDescribe, entry.getKey()),
+		for(Entry<DatatypeProperty, Integer> entry : sortByValues(property2Count)){
+			evalAxiom = new EvaluatedAxiom(new EquivalentDatatypePropertiesAxiom(propertyToDescribe, entry.getKey()),
 					new AxiomScore(entry.getValue() / (double)all));
 			axioms.add(evalAxiom);
 		}
@@ -190,11 +186,11 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 	/*
 	 * Returns the entries of the map sorted by value.
 	 */
-	private SortedSet<Entry<ObjectProperty, Integer>> sortByValues(Map<ObjectProperty, Integer> map){
-		SortedSet<Entry<ObjectProperty, Integer>> sortedSet = new TreeSet<Map.Entry<ObjectProperty,Integer>>(new Comparator<Entry<ObjectProperty, Integer>>() {
+	private SortedSet<Entry<DatatypeProperty, Integer>> sortByValues(Map<DatatypeProperty, Integer> map){
+		SortedSet<Entry<DatatypeProperty, Integer>> sortedSet = new TreeSet<Map.Entry<DatatypeProperty,Integer>>(new Comparator<Entry<DatatypeProperty, Integer>>() {
 
 			@Override
-			public int compare(Entry<ObjectProperty, Integer> value1, Entry<ObjectProperty, Integer> value2) {
+			public int compare(Entry<DatatypeProperty, Integer> value1, Entry<DatatypeProperty, Integer> value2) {
 				if(value1.getValue() < value2.getValue()){
 					return 1;
 				} else if(value2.getValue() < value1.getValue()){
@@ -208,10 +204,6 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 		return sortedSet;
 	}
 	
-	private long getRemainingMaxExecutionTime(){
-		return (maxExecutionTimeInSeconds == 0) ? 0 : Math.max(1, (maxExecutionTimeInSeconds * 1000)-(System.currentTimeMillis()-startTime));
-	}
-	
 	/*
 	 * Executes a SELECT query and returns the result.
 	 */
@@ -219,7 +211,7 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 		logger.info("Sending query \n {}", query);
 		
 		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
-		queryExecution.setTimeout(getRemainingMaxExecutionTime());
+		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
 		}
@@ -229,5 +221,5 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 		ResultSet resultSet = queryExecution.execSelect();
 		return resultSet;
 	}
-	
+
 }

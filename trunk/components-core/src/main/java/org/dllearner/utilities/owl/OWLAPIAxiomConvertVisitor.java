@@ -35,10 +35,13 @@ import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DifferentIndividualsAxiom;
 import org.dllearner.core.owl.DisjointClassesAxiom;
+import org.dllearner.core.owl.DisjointDatatypePropertyAxiom;
+import org.dllearner.core.owl.DisjointObjectPropertyAxiom;
 import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.EquivalentDatatypePropertiesAxiom;
 import org.dllearner.core.owl.EquivalentObjectPropertiesAxiom;
+import org.dllearner.core.owl.FunctionalDatatypePropertyAxiom;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.InverseObjectPropertyAxiom;
@@ -49,6 +52,7 @@ import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
 import org.dllearner.core.owl.ReflexiveObjectPropertyAxiom;
 import org.dllearner.core.owl.StringDatatypePropertyAssertion;
 import org.dllearner.core.owl.SubClassAxiom;
+import org.dllearner.core.owl.SubDatatypePropertyAxiom;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
@@ -389,6 +393,48 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		OWLLiteral valueConstant = factory.getOWLLiteral(value);
 		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(dp, i, valueConstant);
 		addAxiom(axiomOWLAPI);
+	}
+
+	@Override
+	public void visit(FunctionalDatatypePropertyAxiom axiom) {
+		OWLDataProperty role = factory.getOWLDataProperty(
+				IRI.create(axiom.getRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLFunctionalDataPropertyAxiom(role);
+		addAxiom(axiomOWLAPI);
+		
+	}
+
+	@Override
+	public void visit(SubDatatypePropertyAxiom axiom) {
+		OWLDataProperty role = factory.getOWLDataProperty(
+				IRI.create(axiom.getRole().getName()));
+		OWLDataProperty subRole = factory.getOWLDataProperty(
+				IRI.create(axiom.getSubRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLSubDataPropertyOfAxiom(subRole, role);
+		addAxiom(axiomOWLAPI);
+		
+	}
+
+	@Override
+	public void visit(DisjointObjectPropertyAxiom axiom) {
+		OWLObjectProperty role = factory.getOWLObjectProperty(
+				IRI.create(axiom.getRole().getName()));
+		OWLObjectProperty disjointRole = factory.getOWLObjectProperty(
+				IRI.create(axiom.getDisjointRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLDisjointObjectPropertiesAxiom(role, disjointRole);
+		addAxiom(axiomOWLAPI);
+		
+	}
+
+	@Override
+	public void visit(DisjointDatatypePropertyAxiom axiom) {
+		OWLDataProperty role = factory.getOWLDataProperty(
+				IRI.create(axiom.getRole().getName()));
+		OWLDataProperty disjointRole = factory.getOWLDataProperty(
+				IRI.create(axiom.getDisjointRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLDisjointDataPropertiesAxiom(role, disjointRole);
+		addAxiom(axiomOWLAPI);
+		
 	}
 
 	

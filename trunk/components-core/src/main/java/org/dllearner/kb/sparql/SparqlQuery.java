@@ -22,6 +22,7 @@ package org.dllearner.kb.sparql;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
@@ -218,11 +219,16 @@ public class SparqlQuery {
 	 *            the String to log
 	 */
 	private static void writeToSparqlLog(String s) {
+		new File("log").mkdirs();
 		File f = new File(sparqlLog);
-		f.mkdirs();
 		if(!f.canWrite() ){
-			logger.info("could not write SPARQL log to : " + f.getAbsolutePath());
-			return ;
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+//			logger.info("could not write SPARQL log to : " + f.getAbsolutePath());
+//			return ;
 		}	
 		
 		if (!logDeletedOnStart) {

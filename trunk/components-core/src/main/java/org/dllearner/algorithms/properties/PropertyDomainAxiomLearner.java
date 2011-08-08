@@ -96,7 +96,7 @@ public class PropertyDomainAxiomLearner extends AbstractComponent implements Axi
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		//get existing domains
 		Description existingDomain = reasoner.getDomain(propertyToDescribe);
-		logger.debug("Existing domain: " + existingDomain);
+		logger.info("Existing domain: " + existingDomain);
 		
 		//get subjects with types
 		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
