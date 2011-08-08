@@ -30,6 +30,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -221,7 +222,8 @@ public class PropertyDomainAxiomLearner extends AbstractComponent implements Axi
 	private ResultSet executeQuery(String query){
 		logger.info("Sending query \n {}", query);
 		
-		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
 		}
@@ -232,28 +234,5 @@ public class PropertyDomainAxiomLearner extends AbstractComponent implements Axi
 		return resultSet;
 	}
 	
-	public static void main(String[] args) throws Exception{
-		Map<String, String> propertiesMap = new HashMap<String, String>();
-        propertiesMap.put("propertyToDescribe", "http://dbpedia.org/ontology/writer");
-        propertiesMap.put("maxExecutionTimeInSeconds", "10");
-        propertiesMap.put("maxFetchedRows", "15000");
-        
-        PropertyDomainAxiomLearner l = new PropertyDomainAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-        
-        
-        Field[] fields = l.getClass().getDeclaredFields();
-        for(Field f : fields){
-        	ConfigOption option = f.getAnnotation(ConfigOption.class);
-        	if(option != null){
-        		String configValue = propertiesMap.get(option.name());
-        		PropertyEditor editor = (PropertyEditor) option.propertyEditorClass().newInstance();
-        		editor.setAsText(configValue);
-        		f.set(l, editor.getValue());
-        	}
-        }
-        l.init();
-        l.start();
-        System.out.println(l.getCurrentlyBestEvaluatedAxioms(3));
-	}
 
 }

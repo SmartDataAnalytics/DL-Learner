@@ -17,6 +17,7 @@ import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -144,10 +145,14 @@ public class TransitivePropertyAxiomLearner extends AbstractComponent implements
 		return result;
 	}
 	
+	/*
+	 * Executes a SELECT query and returns the result.
+	 */
 	private ResultSet executeQuery(String query){
 		logger.info("Sending query \n {}", query);
 		
-		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
 		}

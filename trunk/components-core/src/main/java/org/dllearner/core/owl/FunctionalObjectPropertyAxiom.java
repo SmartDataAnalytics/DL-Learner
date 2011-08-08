@@ -50,6 +50,6 @@ public class FunctionalObjectPropertyAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "FUNCTIONALOBJECTPROPERTYAXIOM NOT IMPLEMENTED";
+		return "Functional(" + role.toManchesterSyntaxString(baseURI, prefixes) + ")";
 	}	
 }

@@ -44,6 +44,6 @@ public class ReflexiveObjectPropertyAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "Transitive(" + role.toString(baseURI, prefixes) + ")";
+		return "Reflexive(" + role.toManchesterSyntaxString(baseURI, prefixes) + ")";
 	}	
 }

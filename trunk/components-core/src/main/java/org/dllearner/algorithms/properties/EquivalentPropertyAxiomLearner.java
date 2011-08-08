@@ -23,6 +23,7 @@ import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.EquivalentObjectPropertiesAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -211,7 +212,8 @@ public class EquivalentPropertyAxiomLearner extends AbstractComponent implements
 	private ResultSet executeQuery(String query){
 		logger.info("Sending query \n {}", query);
 		
-		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
 		}

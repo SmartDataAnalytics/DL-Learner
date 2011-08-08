@@ -48,7 +48,7 @@ public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return "Domain(" + getProperty() + ", " + getRange() +  ")";
+		return "Range(" + getProperty() + ", " + getRange() +  ")";
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
@@ -80,7 +80,7 @@ public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "OBJECTPROPERTYRANGE NOT IMPLEMENTED";
+		return "Range(" + getProperty().toManchesterSyntaxString(baseURI, prefixes) + ", " + getRange().toManchesterSyntaxString(baseURI, prefixes) +  ")";
 	}
 
 	
