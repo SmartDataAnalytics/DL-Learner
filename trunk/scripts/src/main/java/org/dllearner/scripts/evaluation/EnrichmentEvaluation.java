@@ -24,6 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -39,6 +41,7 @@ import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.properties.EquivalentPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyRangeAxiomLearner;
@@ -79,7 +82,7 @@ public class EnrichmentEvaluation {
 	private int nrOfAxiomsToLearn = 10;
 
 	// can be used to only evaluate a part of DBpedia
-	private int maxObjectProperties = 3;
+	private int maxObjectProperties = 0;
 	private int maxDataProperties = 3;
 	private int maxClasses = 3;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
@@ -100,7 +103,7 @@ public class EnrichmentEvaluation {
 		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
 		// objectPropertyAlgorithms.add(DisjointPropertyAxiomLearner.class);
-		// objectPropertyAlgorithms.add(EquivalentPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(EquivalentPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(FunctionalPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(PropertyDomainAxiomLearner.class);
 		objectPropertyAlgorithms.add(PropertyRangeAxiomLearner.class);
@@ -122,7 +125,7 @@ public class EnrichmentEvaluation {
 			String iniFile = "db_settings.ini";
 			Preferences prefs = new IniPreferences(new FileReader(iniFile));
 			String dbServer = prefs.node("database").get("server", null);
-			String dbName = "enrichment";
+			String dbName = prefs.node("database").get("name", null);
 			String dbUser = prefs.node("database").get("user", null);
 			String dbPass = prefs.node("database").get("pass", null);
 
@@ -170,7 +173,7 @@ public class EnrichmentEvaluation {
 	public void start() throws IllegalArgumentException, SecurityException, InstantiationException,
 			IllegalAccessException, InvocationTargetException, NoSuchMethodException,
 			ComponentInitException {
-
+		long overallStartTime = System.currentTimeMillis();
 		ComponentManager cm = ComponentManager.getInstance();
 
 		// create DBpedia Live knowledge source
@@ -197,11 +200,20 @@ public class EnrichmentEvaluation {
 				String algName = ComponentManager.getName(learner);
 				System.out.println("Applying " + algName + " on " + property + " ... ");
 				long startTime = System.currentTimeMillis();
-				learner.start();
+				boolean timeout = false;
+				try {
+					learner.start();
+				} catch (Exception e) {
+					if(e.getCause() instanceof SocketTimeoutException){
+						timeout = true;
+					}
+				}
 				long runTime = System.currentTimeMillis() - startTime;
 				List<EvaluatedAxiom> learnedAxioms = learner
 						.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-				if (learnedAxioms == null) {
+				if(timeout){
+					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime);
+				} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
 					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime);
 				} else {
 					for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
@@ -219,6 +231,7 @@ public class EnrichmentEvaluation {
 				}
 			}
 		}
+		System.out.println("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
 
 	}
 
