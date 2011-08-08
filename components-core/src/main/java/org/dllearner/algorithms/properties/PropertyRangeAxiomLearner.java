@@ -28,6 +28,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
@@ -218,7 +219,8 @@ public class PropertyRangeAxiomLearner extends AbstractComponent implements Axio
 	private ResultSet executeQuery(String query){
 		logger.info("Sending query \n {}", query);
 		
-		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
 		}

@@ -50,6 +50,6 @@ public class SubObjectPropertyAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "Subrole(" + subRole.toString(baseURI, prefixes) + "," + role.toString(baseURI, prefixes) + ")";
+		return subRole.toString(baseURI, prefixes) + " SubPropertyOf: " + role.toString(baseURI, prefixes);
 	}	
 }

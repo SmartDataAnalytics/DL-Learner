@@ -50,6 +50,6 @@ public class EquivalentObjectPropertiesAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "EquivalentObjectProperties(" + equivRole.toString(baseURI, prefixes) + "," + role.toString(baseURI, prefixes) + ")";
+		return equivRole.toString(baseURI, prefixes) + " EquivalentTo: " + role.toString(baseURI, prefixes);
 	}	
 }
