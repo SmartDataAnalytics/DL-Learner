@@ -41,6 +41,9 @@ import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.DisjointClassesLearner;
+import org.dllearner.algorithms.SimpleSubclassLearner;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.EquivalentPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyDomainAxiomLearner;
@@ -52,6 +55,7 @@ import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -87,6 +91,7 @@ public class EnrichmentEvaluation {
 	private int maxClasses = 3;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
+	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
 
 	private String baseURI = "http://dbpedia.org/resource/";
 	private Map<String,String> prefixes;
@@ -118,6 +123,11 @@ public class EnrichmentEvaluation {
 		dataPropertyAlgorithms.add(PropertyDomainAxiomLearner.class);
 		dataPropertyAlgorithms.add(PropertyRangeAxiomLearner.class); // ?
 		dataPropertyAlgorithms.add(SubPropertyOfAxiomLearner.class);
+		
+		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
+		classAlgorithms.add(DisjointClassesLearner.class);
+		classAlgorithms.add(SimpleSubclassLearner.class);
+		classAlgorithms.add(CELOE.class);
 	}
 
 	private void initDBConnection() {
