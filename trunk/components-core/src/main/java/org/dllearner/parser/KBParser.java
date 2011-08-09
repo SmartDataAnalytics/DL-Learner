@@ -393,15 +393,15 @@ public class KBParser implements KBParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 44:
       jj_consume_token(44);
-                     range = Datatype.DOUBLE;
+                     range = OWL2Datatype.DOUBLE.getDatatype();
       break;
     case 45:
       jj_consume_token(45);
-                      range = Datatype.BOOLEAN;
+                      range = OWL2Datatype.BOOLEAN.getDatatype();
       break;
     case 46:
       jj_consume_token(46);
-                      range = Datatype.INT;
+                      range = OWL2Datatype.INT.getDatatype();
       break;
     default:
       jj_la1[8] = jj_gen;

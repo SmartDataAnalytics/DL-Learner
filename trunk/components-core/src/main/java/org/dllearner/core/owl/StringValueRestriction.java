@@ -34,7 +34,7 @@ public class StringValueRestriction extends DatatypeValueRestriction {
 	
 	public StringValueRestriction(DatatypeProperty restrictedPropertyExpression, String value) {
 		// TODO: we pass it as typed property, although it could be untyped
-		super(restrictedPropertyExpression, new TypedConstant(value.toString(), Datatype.STRING));
+		super(restrictedPropertyExpression, new TypedConstant(value.toString(), OWL2Datatype.STRING.getDatatype()));
 		stringValue = value.toString();
 	}
 

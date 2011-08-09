@@ -33,6 +33,7 @@ import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.OWL2Datatype;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
@@ -177,20 +178,20 @@ public final class OWLAPIConverter {
 	
 	public static Datatype convertDatatype(OWLDatatype dataType) {
 		URI uri = dataType.getIRI().toURI();
-		if(uri.equals(Datatype.BOOLEAN.getURI()))
-			return Datatype.BOOLEAN;
-		else if(uri.equals(Datatype.DOUBLE.getURI()))
-			return Datatype.DOUBLE;
-		else if(uri.equals(Datatype.INT.getURI()))
-			return Datatype.INT;			
-		else if(uri.equals(Datatype.INTEGER.getURI()))
-			return Datatype.INTEGER;			
-		else if(uri.equals(Datatype.STRING.getURI()))
-			return Datatype.STRING;			
-		else if(uri.equals(Datatype.DATE.getURI()))
-			return Datatype.DATE;
-		else if(uri.equals(Datatype.DATETIME.getURI()))
-			return Datatype.DATETIME;
+		if(uri.equals(OWL2Datatype.BOOLEAN.getURI()))
+			return OWL2Datatype.BOOLEAN.getDatatype();
+		else if(uri.equals(OWL2Datatype.DOUBLE.getURI()))
+			return OWL2Datatype.DOUBLE.getDatatype();
+		else if(uri.equals(OWL2Datatype.INT.getURI()))
+			return OWL2Datatype.INT.getDatatype();			
+		else if(uri.equals(OWL2Datatype.INTEGER.getURI()))
+			return OWL2Datatype.INTEGER.getDatatype();			
+		else if(uri.equals(OWL2Datatype.STRING.getURI()))
+			return OWL2Datatype.STRING.getDatatype();			
+		else if(uri.equals(OWL2Datatype.DATE.getURI()))
+			return OWL2Datatype.DATE.getDatatype();
+		else if(uri.equals(OWL2Datatype.DATETIME.getURI()))
+			return OWL2Datatype.DATETIME.getDatatype();
 		throw new Error("Unsupported datatype " + dataType + ". Please inform a DL-Learner developer to add it.");
 	}
 

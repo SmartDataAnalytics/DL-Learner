@@ -343,10 +343,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                 OWLDataRange range = it.next();
                 if (range.isDatatype()) {
                     URI uri = ((OWLDatatype) range).getIRI().toURI();
-                    if (uri.equals(Datatype.BOOLEAN.getURI())) booleanDatatypeProperties.add(dtp);
-                    else if (uri.equals(Datatype.DOUBLE.getURI())) doubleDatatypeProperties.add(dtp);
-                    else if (uri.equals(Datatype.INT.getURI())) intDatatypeProperties.add(dtp);
-                    else if (uri.equals(Datatype.STRING.getURI())) stringDatatypeProperties.add(dtp);
+                    if (uri.equals(OWL2Datatype.BOOLEAN.getURI())) booleanDatatypeProperties.add(dtp);
+                    else if (uri.equals(OWL2Datatype.DOUBLE.getURI())) doubleDatatypeProperties.add(dtp);
+                    else if (uri.equals(OWL2Datatype.INT.getURI())) intDatatypeProperties.add(dtp);
+                    else if (uri.equals(OWL2Datatype.STRING.getURI())) stringDatatypeProperties.add(dtp);
                 }
             } else {
                 stringDatatypeProperties.add(dtp);

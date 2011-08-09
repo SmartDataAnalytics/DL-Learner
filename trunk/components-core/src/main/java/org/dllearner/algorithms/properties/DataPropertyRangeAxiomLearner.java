@@ -27,6 +27,7 @@ import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.OWL2Datatype;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
@@ -183,7 +184,7 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 				} else if(value2.getValue() < value1.getValue()){
 					return -1;
 				} else {
-					return value1.getKey().compareTo(value2.getKey());
+					return value1.getKey().getURI().compareTo(value2.getKey().getURI());
 				}
 			}
 		});
@@ -213,21 +214,22 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 	}
 	
 	private Datatype getDatatypeForURI(String uri){
-		if(uri.equals(Datatype.BOOLEAN.getURI()))
-			return Datatype.BOOLEAN;
-		else if(uri.equals(Datatype.DOUBLE.getURI()))
-			return Datatype.DOUBLE;
-		else if(uri.equals(Datatype.INT.getURI()))
-			return Datatype.INT;			
-		else if(uri.equals(Datatype.INTEGER.getURI()))
-			return Datatype.INTEGER;			
-		else if(uri.equals(Datatype.STRING.getURI()))
-			return Datatype.STRING;			
-		else if(uri.equals(Datatype.DATE.getURI()))
-			return Datatype.DATE;
-		else if(uri.equals(Datatype.DATETIME.getURI()))
-			return Datatype.DATETIME;
-		throw new Error("Unsupported datatype " + uri + ". Please inform a DL-Learner developer to add it.");
+		return new Datatype(uri);
+//		if(uri.equals(OWL2Datatype.BOOLEAN.getURI()))
+//			return OWL2Datatype.BOOLEAN.getDatatype();
+//		else if(uri.equals(OWL2Datatype.DOUBLE.getURI()))
+//			return OWL2Datatype.DOUBLE.getDatatype();
+//		else if(uri.equals(OWL2Datatype.INT.getURI()))
+//			return OWL2Datatype.INT.getDatatype();			
+//		else if(uri.equals(OWL2Datatype.INTEGER.getURI()))
+//			return OWL2Datatype.INTEGER.getDatatype();			
+//		else if(uri.equals(OWL2Datatype.STRING.getURI()))
+//			return OWL2Datatype.STRING.getDatatype();			
+//		else if(uri.equals(OWL2Datatype.DATE.getURI()))
+//			return OWL2Datatype.DATE.getDatatype();
+//		else if(uri.equals(OWL2Datatype.DATETIME.getURI()))
+//			return OWL2Datatype.DATETIME.getDatatype();
+//		throw new Error("Unsupported datatype " + uri + ". Please inform a DL-Learner developer to add it.");
 	}
 	
 	/*
