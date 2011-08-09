@@ -39,6 +39,8 @@ public class Individual implements Entity, NamedKBElement, Comparable<Individual
 	private static final long serialVersionUID = 1831526393296388784L;
 	private String name;
 
+	
+
 	public String getName() {
 		return name;
 	}
@@ -56,16 +58,7 @@ public class Individual implements Entity, NamedKBElement, Comparable<Individual
 	}
 
 	public int compareTo(Individual o) {
-//		System.out.println(o);
 		return name.compareTo(o.name);
-	}
-    
-	@Override
-	public boolean equals(Object o) {
-		if(o==null) {
-			return false;
-		}
-		return (compareTo((Individual)o)==0);
 	}
 	
     @Override
@@ -88,5 +81,30 @@ public class Individual implements Entity, NamedKBElement, Comparable<Individual
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
 	}    
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Individual other = (Individual) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
 
 }

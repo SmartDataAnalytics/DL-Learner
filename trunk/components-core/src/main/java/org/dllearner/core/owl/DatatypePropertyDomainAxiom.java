@@ -57,7 +57,7 @@ public class DatatypePropertyDomainAxiom extends PropertyDomainAxiom {
 	
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "OPDOMAIN(" + property.toKBSyntaxString(baseURI, prefixes) + ") = " + domain.toKBSyntaxString(baseURI, prefixes); 
+		return "DPDOMAIN(" + property.toKBSyntaxString(baseURI, prefixes) + ") = " + domain.toKBSyntaxString(baseURI, prefixes); 
 	}
 
 	@Override
