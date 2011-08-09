@@ -156,8 +156,10 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 				Integer cnt = result.get(nc);
 				if(cnt == null){
 					cnt = Integer.valueOf(1);
+				} else {
+					cnt = Integer.valueOf(cnt + 1);
 				}
-				result.put(nc, Integer.valueOf(cnt + 1));
+				result.put(nc, cnt);
 			}
 		}
 		
@@ -208,28 +210,9 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 				types = new HashSet<Datatype>();
 				individual2Datatypes.put(ind, types);
 			}
-			types.add(getDatatypeForURI(qs.getResource("datatype").getURI()));
+			types.add(new Datatype(qs.getResource("datatype").getURI()));
 		}
 		return individual2Datatypes;
-	}
-	
-	private Datatype getDatatypeForURI(String uri){
-		return new Datatype(uri);
-//		if(uri.equals(OWL2Datatype.BOOLEAN.getURI()))
-//			return OWL2Datatype.BOOLEAN.getDatatype();
-//		else if(uri.equals(OWL2Datatype.DOUBLE.getURI()))
-//			return OWL2Datatype.DOUBLE.getDatatype();
-//		else if(uri.equals(OWL2Datatype.INT.getURI()))
-//			return OWL2Datatype.INT.getDatatype();			
-//		else if(uri.equals(OWL2Datatype.INTEGER.getURI()))
-//			return OWL2Datatype.INTEGER.getDatatype();			
-//		else if(uri.equals(OWL2Datatype.STRING.getURI()))
-//			return OWL2Datatype.STRING.getDatatype();			
-//		else if(uri.equals(OWL2Datatype.DATE.getURI()))
-//			return OWL2Datatype.DATE.getDatatype();
-//		else if(uri.equals(OWL2Datatype.DATETIME.getURI()))
-//			return OWL2Datatype.DATETIME.getDatatype();
-//		throw new Error("Unsupported datatype " + uri + ". Please inform a DL-Learner developer to add it.");
 	}
 	
 	/*

@@ -19,6 +19,7 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.config.IntegerEditor;
+import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DisjointObjectPropertyAxiom;
@@ -39,7 +40,7 @@ public class DisjointPropertyAxiomLearner extends AbstractComponent implements A
 	
 private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiomLearner.class);
 	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
+	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
 	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
 	private int maxExecutionTimeInSeconds = 10;
