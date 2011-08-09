@@ -90,7 +90,7 @@ public class SubDataPropertyOfAxiomLearner extends AbstractComponent implements 
 		SortedSet<DatatypeProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
 		logger.debug("Existing super properties: " + existingSuperProperties);
 		
-		//get subjects with types
+		//get properties and how often they occur
 		int limit = 1000;
 		int offset = 0;
 		String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?s ?p ?o." +

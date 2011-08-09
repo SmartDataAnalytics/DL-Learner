@@ -194,7 +194,7 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 	private Map<Individual, Set<Datatype>> getObjectsWithDatatypes(int offset){
 		Map<Individual, Set<Datatype>> individual2Datatypes = new HashMap<Individual, Set<Datatype>>();
 		int limit = 1000;
-		String query = String.format("SELECT ?ind, DATATYPE(?lit) AS ?datatype WHERE {?s <%s> ?ind.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
+		String query = String.format("SELECT ?ind, (DATATYPE(?val) AS ?datatype) WHERE {?ind <%s> ?val.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
 		Individual ind;
