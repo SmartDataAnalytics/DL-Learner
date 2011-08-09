@@ -45,6 +45,7 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.OWL2Datatype;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
@@ -245,13 +246,13 @@ public class PelletReasoner extends AbstractReasonerComponent {
 							OWLDataRange range = it.next();
 							if(range.isDatatype()) {
 								URI uri = ((OWLDatatype)range).getIRI().toURI();
-								if(uri.equals(Datatype.BOOLEAN.getURI()))
+								if(uri.equals(OWL2Datatype.BOOLEAN.getURI()))
 									booleanDatatypeProperties.add(dtp);
-								else if(uri.equals(Datatype.DOUBLE.getURI()))
+								else if(uri.equals(OWL2Datatype.DOUBLE.getURI()))
 									doubleDatatypeProperties.add(dtp);
-								else if(uri.equals(Datatype.INT.getURI()))
+								else if(uri.equals(OWL2Datatype.INT.getURI()))
 									intDatatypeProperties.add(dtp);
-								else if(uri.equals(Datatype.STRING.getURI()))
+								else if(uri.equals(OWL2Datatype.STRING.getURI()))
 									stringDatatypeProperties.add(dtp);
 							}
 						}

@@ -58,6 +58,7 @@ import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.OWL2Datatype;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
@@ -416,13 +417,13 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 				OWLDataRange range = it.next();
 				if(range.isDatatype()) {
 					URI uri = ((OWLDatatype)range).getIRI().toURI();
-					if(uri.equals(Datatype.BOOLEAN.getURI()))
+					if(uri.equals(OWL2Datatype.BOOLEAN.getURI()))
 						booleanDatatypeProperties.add(dtp);
-					else if(uri.equals(Datatype.DOUBLE.getURI()))
+					else if(uri.equals(OWL2Datatype.DOUBLE.getURI()))
 						doubleDatatypeProperties.add(dtp);
-					else if(uri.equals(Datatype.INT.getURI()))
+					else if(uri.equals(OWL2Datatype.INT.getURI()))
 						intDatatypeProperties.add(dtp);		
-					else if(uri.equals(Datatype.STRING.getURI()))
+					else if(uri.equals(OWL2Datatype.STRING.getURI()))
 						stringDatatypeProperties.add(dtp);	
 				}
 			} else {

@@ -14,6 +14,7 @@ import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.OWL2Datatype;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
@@ -253,103 +254,103 @@ public class Flags {
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasName, Language));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasName, Color));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasName, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasName, Datatype.STRING));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasName, OWL2Datatype.STRING.getDatatype()));
 		
 //		DatatypeProperty hasArea = new DatatypeProperty(getIRI("hasArea"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasArea, Country));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasArea, Landmass));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasArea, Hemisphere));		
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasArea, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasArea, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty hasPopulation = new DatatypeProperty(getIRI("hasPopulation"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasPopulation, Country));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasPopulation, Landmass));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasPopulation, Hemisphere));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasPopulation, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasPopulation, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty numberOfVericalBars = new DatatypeProperty(getIRI("numberOfVericalBars"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(numberOfVericalBars, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfVericalBars, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfVericalBars, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty numberOfHorizontalStripes = new DatatypeProperty(getIRI("numberOfHorizontalStripes"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(numberOfHorizontalStripes, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfHorizontalStripes, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfHorizontalStripes, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty numberOfDifferentColors = new DatatypeProperty(getIRI("numberOfVericalBars"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(numberOfDifferentColors, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfDifferentColors, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfDifferentColors, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty hasColorRed = new DatatypeProperty(getIRI("hasColorRed"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasColorRed, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorRed, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorRed, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty hasColorGreen = new DatatypeProperty(getIRI("hasColorGreen"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasColorGreen, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorGreen, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorGreen, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty hasColorBlue = new DatatypeProperty(getIRI("hasColorBlue"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasColorBlue, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorBlue, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorBlue, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty hasColorGold = new DatatypeProperty(getIRI("hasColorGold"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasColorGold, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorGold, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorGold, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty hasColorWhite = new DatatypeProperty(getIRI("hasColorWhite"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasColorWhite, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorWhite, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorWhite, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty hasColorBlack = new DatatypeProperty(getIRI("hasColorBlack"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasColorBlack, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorBlack, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorBlack, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty hasColorOrange = new DatatypeProperty(getIRI("hasColorOrange"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasColorOrange, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorOrange, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasColorOrange, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty numberOfCircles = new DatatypeProperty(getIRI("numberOfCircles"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(numberOfCircles, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfCircles, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfCircles, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty numberOfUprightCrosses = new DatatypeProperty(getIRI("numberOfUprightCrosses"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(numberOfUprightCrosses, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfUprightCrosses, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfUprightCrosses, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty numberOfDiagonalCrosses = new DatatypeProperty(getIRI("numberOfDiagonalCrosses"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(numberOfDiagonalCrosses, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfDiagonalCrosses, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfDiagonalCrosses, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty numberOfQuarterSections = new DatatypeProperty(getIRI("numberOfQuarterSections"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(numberOfQuarterSections, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfQuarterSections, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfQuarterSections, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty numberOfQuarteredSections = new DatatypeProperty(getIRI("numberOfQuarteredSections"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(numberOfQuarteredSections, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfQuarteredSections, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfQuarteredSections, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty numberOfSunOrStarSymbols = new DatatypeProperty(getIRI("numberOfSunOrStarSymbols"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(numberOfSunOrStarSymbols, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfSunOrStarSymbols, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(numberOfSunOrStarSymbols, OWL2Datatype.DOUBLE.getDatatype()));
 		
 //		DatatypeProperty hasCrescentMoonSymbol = new DatatypeProperty(getIRI("hasCrescentMoonSymbol"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasCrescentMoonSymbol, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasCrescentMoonSymbol, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasCrescentMoonSymbol, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty hasTriangle = new DatatypeProperty(getIRI("hasTriangle"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasTriangle, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasTriangle, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasTriangle, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty hasImageInanimate = new DatatypeProperty(getIRI("hasImageInanimate"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasImageInanimate, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasImageInanimate, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasImageInanimate, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty hasImageAnimate = new DatatypeProperty(getIRI("hasImageAnimate"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasImageAnimate, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasImageAnimate, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasImageAnimate, OWL2Datatype.BOOLEAN.getDatatype()));
 		
 //		DatatypeProperty hasText = new DatatypeProperty(getIRI("hasText"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(hasText, Flag));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(hasText, Datatype.BOOLEAN));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(hasText, OWL2Datatype.BOOLEAN.getDatatype()));
 
 
 		

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2011, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -26,19 +26,11 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public enum Datatype implements DataRange {
+public class Datatype implements DataRange {
 	
-    DOUBLE ("http://www.w3.org/2001/XMLSchema#double"),
-    INT ("http://www.w3.org/2001/XMLSchema#int"),
-    INTEGER ("http://www.w3.org/2001/XMLSchema#integer"),
-    BOOLEAN   ("http://www.w3.org/2001/XMLSchema#boolean"),
-    STRING ("http://www.w3.org/2001/XMLSchema#string"),
-    DATE ("http://www.w3.org/2001/XMLSchema#date"),
-    DATETIME ("http://www.w3.org/2001/XMLSchema#dateTime");
-    
     private URI uri;
 
-    private Datatype(String uriString) {
+    public Datatype(String uriString) {
     	uri = URI.create(uriString);
     }
 

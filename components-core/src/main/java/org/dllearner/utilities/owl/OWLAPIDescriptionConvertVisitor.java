@@ -39,6 +39,7 @@ import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.OWL2Datatype;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
@@ -332,11 +333,11 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	}
 
 	public OWLDatatype convertDatatype(Datatype datatype) {
-		if(datatype.equals(Datatype.BOOLEAN))
+		if(datatype.equals(OWL2Datatype.BOOLEAN.getDatatype()))
 			return factory.getBooleanOWLDatatype();
-		else if(datatype.equals(Datatype.INT))
+		else if(datatype.equals(OWL2Datatype.INT.getDatatype()))
 			return factory.getIntegerOWLDatatype();
-		else if(datatype.equals(Datatype.DOUBLE))
+		else if(datatype.equals(OWL2Datatype.DOUBLE.getDatatype()))
 			return factory.getDoubleOWLDatatype();		
 //		else if(datatype.equals(Datatype.STRING))
 //			return factory.getOWLDataType(Datatype.STRING.getURI());		

@@ -42,6 +42,7 @@ import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.OWL2Datatype;
 import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
@@ -188,7 +189,7 @@ public class MonogenicDiseases {
 		// score
 		DatatypeProperty scoreProp = new DatatypeProperty(getURI("modifScore"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(scoreProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(scoreProp, Datatype.DOUBLE));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(scoreProp, OWL2Datatype.DOUBLE.getDatatype()));
 		
 		// g_p
 		NamedClass gpIncClass = new NamedClass(getURI("GPIncreasingMutation"));
@@ -201,22 +202,22 @@ public class MonogenicDiseases {
 		// conservation_wt
 		DatatypeProperty conservationWTProp = new DatatypeProperty(getURI("convservationWT"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(conservationWTProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(conservationWTProp, Datatype.DOUBLE));		
+		kb.addAxiom(new DatatypePropertyRangeAxiom(conservationWTProp, OWL2Datatype.DOUBLE.getDatatype()));		
 		
 		// conservation_mut
 		DatatypeProperty conservationMutProp = new DatatypeProperty(getURI("convservationMut"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(conservationMutProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(conservationMutProp, Datatype.DOUBLE));		
+		kb.addAxiom(new DatatypePropertyRangeAxiom(conservationMutProp, OWL2Datatype.DOUBLE.getDatatype()));		
 		
 		// freq_at_pos
 		DatatypeProperty freqAtPosProp = new DatatypeProperty(getURI("freqAtPos"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(freqAtPosProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(freqAtPosProp, Datatype.DOUBLE));			
+		kb.addAxiom(new DatatypePropertyRangeAxiom(freqAtPosProp, OWL2Datatype.DOUBLE.getDatatype()));			
 		
 		// cluster_5res_size
 		DatatypeProperty cluster5ResSizeProp = new DatatypeProperty(getURI("cluster5resSize"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(cluster5ResSizeProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster5ResSizeProp, Datatype.DOUBLE));		
+		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster5ResSizeProp, OWL2Datatype.DOUBLE.getDatatype()));		
 		
 		// secondary_struc
 		NamedClass scHelixClass = new NamedClass(getURI("SCHelixMutation"));
@@ -229,64 +230,64 @@ public class MonogenicDiseases {
 		// gain_contact
 		DatatypeProperty gainContactProp = new DatatypeProperty(getURI("gainContact"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(gainContactProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(gainContactProp, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(gainContactProp, OWL2Datatype.DOUBLE.getDatatype()));				
 		
 		// lost_contact
 		DatatypeProperty lostContactProp = new DatatypeProperty(getURI("lostContact"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(lostContactProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(lostContactProp, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(lostContactProp, OWL2Datatype.DOUBLE.getDatatype()));				
 			
 		// identical_contact
 		DatatypeProperty identicalContactProp = new DatatypeProperty(getURI("identicalContact"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(identicalContactProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(identicalContactProp, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(identicalContactProp, OWL2Datatype.DOUBLE.getDatatype()));				
 			
 		// gain_n1_contact
 		DatatypeProperty gainN1ContactProp = new DatatypeProperty(getURI("gainN1Contact"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(gainN1ContactProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(gainN1ContactProp, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(gainN1ContactProp, OWL2Datatype.DOUBLE.getDatatype()));				
 		
 		// lost_n1_contact
 		DatatypeProperty lostN1ContactProp = new DatatypeProperty(getURI("lostN1Contact"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(lostN1ContactProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(lostN1ContactProp, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(lostN1ContactProp, OWL2Datatype.DOUBLE.getDatatype()));				
 			
 		// identical_n1_contact
 		DatatypeProperty identicalN1ContactProp = new DatatypeProperty(getURI("identicalN1Contact"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(identicalN1ContactProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(identicalN1ContactProp, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(identicalN1ContactProp, OWL2Datatype.DOUBLE.getDatatype()));				
 			
 		// wt_accessibility
 		DatatypeProperty wtAccessibilityProp = new DatatypeProperty(getURI("wtAccessibility"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(wtAccessibilityProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(wtAccessibilityProp, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(wtAccessibilityProp, OWL2Datatype.DOUBLE.getDatatype()));				
 					
 		// mut_accessibility
 		DatatypeProperty mutAccessibilityProp = new DatatypeProperty(getURI("mutAccessibility"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(mutAccessibilityProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(mutAccessibilityProp, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(mutAccessibilityProp, OWL2Datatype.DOUBLE.getDatatype()));				
 					
 		// cluster3d_10
 		DatatypeProperty cluster3D10Prop = new DatatypeProperty(getURI("cluster3d10"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(cluster3D10Prop, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster3D10Prop, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster3D10Prop, OWL2Datatype.DOUBLE.getDatatype()));				
 				
 		// cluster3d_20
 		DatatypeProperty cluster3D20Prop = new DatatypeProperty(getURI("cluster3d20"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(cluster3D20Prop, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster3D20Prop, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster3D20Prop, OWL2Datatype.DOUBLE.getDatatype()));				
 		
 		// cluster3d_30
 		DatatypeProperty cluster3D30Prop = new DatatypeProperty(getURI("cluster3d30"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(cluster3D30Prop, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster3D30Prop, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster3D30Prop, OWL2Datatype.DOUBLE.getDatatype()));				
 				
 		// TODO: stability missing
 		
 		// reliability_deltag
 		DatatypeProperty reliabilityDeltagProp = new DatatypeProperty(getURI("reliabilityDeltag"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(reliabilityDeltagProp, mutationClass));
-		kb.addAxiom(new DatatypePropertyRangeAxiom(reliabilityDeltagProp, Datatype.DOUBLE));				
+		kb.addAxiom(new DatatypePropertyRangeAxiom(reliabilityDeltagProp, OWL2Datatype.DOUBLE.getDatatype()));				
 			
 		if(generatePosExampleClass) {
 			kb.addAxiom(new SubClassAxiom(deleteriousMutationClass, mutationClass));

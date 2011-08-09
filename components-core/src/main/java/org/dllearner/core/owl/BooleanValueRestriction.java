@@ -50,7 +50,7 @@ public class BooleanValueRestriction extends DatatypeValueRestriction {
 	 * @param value
 	 */
 	public BooleanValueRestriction(DatatypeProperty restrictedPropertyExpression, Boolean value) {
-		super(restrictedPropertyExpression, new TypedConstant(value.toString(), Datatype.BOOLEAN));
+		super(restrictedPropertyExpression, new TypedConstant(value.toString(), OWL2Datatype.BOOLEAN.getDatatype()));
 		booleanValue = value;
 	}
 

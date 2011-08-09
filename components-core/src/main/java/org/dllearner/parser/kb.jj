@@ -240,9 +240,9 @@ ObjectPropertyRangeAxiom ObjectPropertyRangeAxiom() : {ObjectProperty op; Descri
 DatatypePropertyRangeAxiom DatatypePropertyRangeAxiom() : {DatatypeProperty op; DataRange range; }
 {
 	( "DPRANGE" | "DATATYPEPROPERTYRANGE") "(" op=DatatypeProperty() ")" "=" 
-	( "DOUBLE" { range = Datatype.DOUBLE; }
-	| "BOOLEAN" { range = Datatype.BOOLEAN; }
-	| "INTEGER" { range = Datatype.INT; } )
+	( "DOUBLE" { range = OWL2Datatype.DOUBLE.getDatatype(); }
+	| "BOOLEAN" { range = OWL2Datatype.BOOLEAN.getDatatype(); }
+	| "INTEGER" { range = OWL2Datatype.INT.getDatatype(); } )
 	<COMMAND_END>
 	{ return new DatatypePropertyRangeAxiom(op, range); }
 }
