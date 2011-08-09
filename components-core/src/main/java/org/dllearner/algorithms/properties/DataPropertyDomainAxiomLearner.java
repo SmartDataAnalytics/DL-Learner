@@ -18,6 +18,7 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
@@ -41,7 +42,7 @@ public class DataPropertyDomainAxiomLearner extends AbstractComponent implements
 	
 	private static final Logger logger = LoggerFactory.getLogger(DataPropertyDomainAxiomLearner.class);
 	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DatatypeProperty.class)
+	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
 	private DatatypeProperty propertyToDescribe;
 	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
 	private int maxExecutionTimeInSeconds = 10;
