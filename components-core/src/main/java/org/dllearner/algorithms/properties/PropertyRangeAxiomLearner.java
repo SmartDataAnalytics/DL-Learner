@@ -12,8 +12,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
@@ -22,6 +22,7 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -29,6 +30,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
@@ -36,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 @ComponentAnn(name="property range learner")
 public class PropertyRangeAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
@@ -156,13 +157,15 @@ public class PropertyRangeAxiomLearner extends AbstractComponent implements Axio
 				Integer cnt = result.get(nc);
 				if(cnt == null){
 					cnt = Integer.valueOf(1);
+				} else {
+					cnt = Integer.valueOf(cnt + 1);
 				}
-				result.put(nc, Integer.valueOf(cnt + 1));
+				result.put(nc, cnt);
 			}
 		}
 		
 		EvaluatedAxiom evalAxiom;
-		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
+		for(Entry<NamedClass, Integer> entry : sortByValues(result)){System.out.println(entry.getKey());System.out.println(entry.getValue());
 			evalAxiom = new EvaluatedAxiom(new ObjectPropertyRangeAxiom(propertyToDescribe, entry.getKey()),
 					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
 			axioms.add(evalAxiom);
@@ -195,7 +198,7 @@ public class PropertyRangeAxiomLearner extends AbstractComponent implements Axio
 	private Map<Individual, Set<NamedClass>> getObjectsWithTypes(int offset){
 		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
 		int limit = 1000;
-		String query = String.format("SELECT ?ind ?type WHERE {?s <%s> ?ind. ?ind a ?type.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
+		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?s <%s> ?ind. ?ind a ?type.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
 		Individual ind;
@@ -229,6 +232,15 @@ public class PropertyRangeAxiomLearner extends AbstractComponent implements Axio
 		}			
 		ResultSet resultSet = queryExecution.execSelect();
 		return resultSet;
+	}
+	
+	public static void main(String[] args) throws Exception{
+		PropertyRangeAxiomLearner l = new PropertyRangeAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/aircraftElectronic"));
+		l.setMaxExecutionTimeInSeconds(0);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
 
 }

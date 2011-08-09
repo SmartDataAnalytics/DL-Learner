@@ -29,6 +29,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
@@ -155,8 +156,10 @@ public class DataPropertyDomainAxiomLearner extends AbstractComponent implements
 				Integer cnt = result.get(nc);
 				if(cnt == null){
 					cnt = Integer.valueOf(1);
+				} else {
+					cnt = Integer.valueOf(cnt + 1);
 				}
-				result.put(nc, Integer.valueOf(cnt + 1));
+				result.put(nc, cnt);
 			}
 		}
 		
@@ -228,6 +231,15 @@ public class DataPropertyDomainAxiomLearner extends AbstractComponent implements
 		}			
 		ResultSet resultSet = queryExecution.execSelect();
 		return resultSet;
+	}
+	
+	public static void main(String[] args) throws Exception{
+		DataPropertyDomainAxiomLearner l = new DataPropertyDomainAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/AutomobileEngine/height"));
+		l.setMaxExecutionTimeInSeconds(0);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
 	
 

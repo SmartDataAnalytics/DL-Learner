@@ -1,7 +1,5 @@
 package org.dllearner.algorithms.properties;
 
-import java.beans.PropertyEditor;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,8 +12,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
@@ -24,6 +22,7 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -39,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 @ComponentAnn(name="property domain axiom learner")
 public class PropertyDomainAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
@@ -159,8 +157,10 @@ public class PropertyDomainAxiomLearner extends AbstractComponent implements Axi
 				Integer cnt = result.get(nc);
 				if(cnt == null){
 					cnt = Integer.valueOf(1);
+				} else {
+					cnt = Integer.valueOf(cnt + 1);
 				}
-				result.put(nc, Integer.valueOf(cnt + 1));
+				result.put(nc, cnt);
 			}
 		}
 		
