@@ -164,7 +164,7 @@
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
 				<artifactId>jopt-simple</artifactId>
-				<version>3.1</version>
+				<version>3.3</version>
 				<!--This version is the one released with DL-Learner 2048 -->
 			</dependency>
 
