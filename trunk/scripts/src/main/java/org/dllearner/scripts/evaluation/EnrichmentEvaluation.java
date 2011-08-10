@@ -24,7 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -41,13 +40,20 @@ import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
+import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
+import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.DisjointPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner;
 import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.EquivalentPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyRangeAxiomLearner;
+import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SubPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitivePropertyAxiomLearner;
@@ -57,6 +63,8 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.config.ConfigHelper;
+import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -86,9 +94,9 @@ public class EnrichmentEvaluation {
 	private int nrOfAxiomsToLearn = 10;
 
 	// can be used to only evaluate a part of DBpedia
-	private int maxObjectProperties = 0;
-	private int maxDataProperties = 3;
-	private int maxClasses = 3;
+	private int maxObjectProperties = 10;
+	private int maxDataProperties = 10;
+	private int maxClasses = 10;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
@@ -107,7 +115,7 @@ public class EnrichmentEvaluation {
 		prefixes.put("dbo","http://dbpedia.org/ontology/");
 		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		// objectPropertyAlgorithms.add(DisjointPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(DisjointPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(EquivalentPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(FunctionalPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(PropertyDomainAxiomLearner.class);
@@ -117,12 +125,12 @@ public class EnrichmentEvaluation {
 		objectPropertyAlgorithms.add(TransitivePropertyAxiomLearner.class);
 
 		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		// dataPropertyAlgorithms.add(DisjointPropertyAxiomLearner.class);
-		// dataPropertyAlgorithms.add(EquivalentPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(FunctionalPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(PropertyDomainAxiomLearner.class);
-		dataPropertyAlgorithms.add(PropertyRangeAxiomLearner.class); // ?
-		dataPropertyAlgorithms.add(SubPropertyOfAxiomLearner.class);
+		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
+		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class); 
+		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
 		classAlgorithms.add(DisjointClassesLearner.class);
@@ -189,10 +197,19 @@ public class EnrichmentEvaluation {
 		// create DBpedia Live knowledge source
 		SparqlEndpoint se = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 
-		Set<ObjectProperty> properties = getAllObjectProperties(se);
-
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
 		ks.init();
+		
+		evaluateObjectProperties(ks);
+		
+		evaluateDataProperties(ks);
+		
+		System.out.println("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
+
+	}
+	
+	private void evaluateObjectProperties(SparqlEndpointKS ks)throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException{
+		Set<ObjectProperty> properties = getAllObjectProperties(ks.getEndpoint());
 
 		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
 			int objectProperties = 0;
@@ -241,11 +258,58 @@ public class EnrichmentEvaluation {
 				}
 			}
 		}
-		System.out.println("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
-
 	}
+	
+	private void evaluateDataProperties(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException{
+		Set<DatatypeProperty> properties = getAllDataProperties(ks.getEndpoint());
 
-	private void getAllClasses() {
+		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
+			int dataProperties = 0;
+			for (DatatypeProperty property : properties) {
+
+				// dynamically invoke constructor with SPARQL knowledge source
+				AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
+						SparqlEndpointKS.class).newInstance(ks);
+				ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
+				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
+						maxExecutionTimeInSeconds);
+				learner.init();
+				// learner.setPropertyToDescribe(property);
+				// learner.setMaxExecutionTimeInSeconds(10);
+				String algName = ComponentManager.getName(learner);
+				System.out.println("Applying " + algName + " on " + property + " ... ");
+				long startTime = System.currentTimeMillis();
+				boolean timeout = false;
+				try {
+					learner.start();
+				} catch (Exception e) {
+					if(e.getCause() instanceof SocketTimeoutException){
+						timeout = true;
+					}
+				}
+				long runTime = System.currentTimeMillis() - startTime;
+				List<EvaluatedAxiom> learnedAxioms = learner
+						.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+				if(timeout){
+					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime);
+				} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
+					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime);
+				} else {
+					for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+						double score = learnedAxiom.getScore().getAccuracy();
+						if (Double.isNaN(score)) {
+							score = -1;
+						}
+						writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
+								score, runTime);
+					}
+				}
+				dataProperties++;
+				if (maxDataProperties != 0 && dataProperties > maxDataProperties) {
+					break;
+				}
+			}
+		}
 	}
 
 	private Set<ObjectProperty> getAllObjectProperties(SparqlEndpoint se) {
@@ -261,6 +325,36 @@ public class EnrichmentEvaluation {
 			properties.add(new ObjectProperty(qs.getResource("p").getURI()));
 		}
 		return properties;
+	}
+	
+	private Set<DatatypeProperty> getAllDataProperties(SparqlEndpoint se) {
+		Set<DatatypeProperty> properties = new TreeSet<DatatypeProperty>();
+		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:DatatypeProperty}";
+		SparqlQuery sq = new SparqlQuery(query, se);
+		// Claus' API
+		// Sparqler x = new SparqlerHttp(se.getURL().toString());
+		// SelectPaginated q = new SelectPaginated(x, , 1000);
+		ResultSet q = sq.send();
+		while (q.hasNext()) {
+			QuerySolution qs = q.next();
+			properties.add(new DatatypeProperty(qs.getResource("p").getURI()));
+		}
+		return properties;
+	}
+	
+	private Set<NamedClass> getAllClasses(SparqlEndpoint se) {
+		Set<NamedClass> classes = new TreeSet<NamedClass>();
+		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?c WHERE {?c a owl:Class}";
+		SparqlQuery sq = new SparqlQuery(query, se);
+		// Claus' API
+		// Sparqler x = new SparqlerHttp(se.getURL().toString());
+		// SelectPaginated q = new SelectPaginated(x, , 1000);
+		ResultSet q = sq.send();
+		while (q.hasNext()) {
+			QuerySolution qs = q.next();
+			classes.add(new NamedClass(qs.getResource("c").getURI()));
+		}
+		return classes;
 	}
 
 	public void printResultsPlain() {
