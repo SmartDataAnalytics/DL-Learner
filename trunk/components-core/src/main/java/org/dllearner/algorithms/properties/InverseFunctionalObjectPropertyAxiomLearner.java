@@ -14,11 +14,10 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
@@ -29,10 +28,10 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-@ComponentAnn(name="transitive property learner")
-public class TransitivePropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+@ComponentAnn(name="inversefunctional objectproperty axiom learner")
+public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(TransitivePropertyAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(InverseFunctionalObjectPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
@@ -49,7 +48,7 @@ public class TransitivePropertyAxiomLearner extends AbstractComponent implements
 	private int fetchedRows;
 	
 
-	public TransitivePropertyAxiomLearner(SparqlEndpointKS ks){
+	public InverseFunctionalObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	
@@ -84,27 +83,34 @@ public class TransitivePropertyAxiomLearner extends AbstractComponent implements
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
-		//check if property is already declared as transitive in knowledge base
-		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.TransitiveProperty.getURI());
-		boolean declaredAsTransitive = executeAskQuery(query);
-		if(declaredAsTransitive) {
-			logger.info("Property is already declared as transitive in knowledge base.");
+		//check if property is already declared as symmetric in knowledge base
+		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.FunctionalProperty.getURI());
+		boolean declaredAsFunctional = executeAskQuery(query);
+		if(declaredAsFunctional) {
+			logger.info("Property is already declared as functional in knowledge base.");
 		}
 		
-		//get fraction of instances s where for a chain <s p o> <o p o1> exists also <s p o1> 
-		query = "SELECT (COUNT(?o)) AS ?all ,(COUNT(?o2)) AS ?transitive WHERE {?s <%s> ?o. ?o <%s> ?o1. OPTIONAL{?s <%s> ?o1. ?s <%s> ?o2}}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
+		//get number of instances of s with <s p o> 
+		query = String.format("SELECT (COUNT(DISTINCT ?o) AS ?all) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
+		int all = 1;
 		while(rs.hasNext()){
 			qs = rs.next();
-			int all = qs.getLiteral("all").getInt();
-			int transitive = qs.getLiteral("transitive").getInt();
-			if(all > 0){
-				double frac = transitive / (double)all;
-				currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
-			}
-			
+			all = qs.getLiteral("all").getInt();
+		}
+		//get number of instances of s with <s p o> <s p o1> where o != o1
+		query = "SELECT (COUNT(DISTINCT ?s) AS ?noninversefunctional) WHERE {?s1 <%s> ?o. ?s2 <%s> ?o. FILTER(?s1 != ?s2) }";
+		query = query.replace("%s", propertyToDescribe.getURI().toString());
+		rs = executeQuery(query);
+		int notFunctional = 1;
+		while(rs.hasNext()){
+			qs = rs.next();
+			notFunctional = qs.getLiteral("noninversefunctional").getInt();
+		}
+		if(all > 0){
+			double frac = (all - notFunctional) / (double)all;
+			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -162,15 +168,4 @@ public class TransitivePropertyAxiomLearner extends AbstractComponent implements
 		ResultSet resultSet = queryExecution.execSelect();
 		return resultSet;
 	}
-	
-	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
-		TransitivePropertyAxiomLearner l = new TransitivePropertyAxiomLearner(ks);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/influencedBy"));
-		l.init();
-		l.start();
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(1));
-	}
-
-
 }

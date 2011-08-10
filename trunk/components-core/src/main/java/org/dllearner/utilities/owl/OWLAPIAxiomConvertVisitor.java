@@ -44,6 +44,7 @@ import org.dllearner.core.owl.EquivalentObjectPropertiesAxiom;
 import org.dllearner.core.owl.FunctionalDatatypePropertyAxiom;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.InverseFunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.InverseObjectPropertyAxiom;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
@@ -433,6 +434,15 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		OWLDataProperty disjointRole = factory.getOWLDataProperty(
 				IRI.create(axiom.getDisjointRole().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLDisjointDataPropertiesAxiom(role, disjointRole);
+		addAxiom(axiomOWLAPI);
+		
+	}
+
+	@Override
+	public void visit(InverseFunctionalObjectPropertyAxiom axiom) {
+		OWLObjectProperty role = factory.getOWLObjectProperty(
+				IRI.create(axiom.getRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLInverseFunctionalObjectPropertyAxiom(role);
 		addAxiom(axiomOWLAPI);
 		
 	}

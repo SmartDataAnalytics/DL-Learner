@@ -36,10 +36,10 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
-@ComponentAnn(name="subPropertyOf learner")
-public class SubPropertyOfAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+@ComponentAnn(name="object subPropertyOf axiom learner")
+public class SubObjectPropertyOfAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
@@ -56,7 +56,7 @@ public class SubPropertyOfAxiomLearner extends AbstractComponent implements Axio
 	private int fetchedRows;
 	
 	
-	public SubPropertyOfAxiomLearner(SparqlEndpointKS ks){
+	public SubObjectPropertyOfAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	

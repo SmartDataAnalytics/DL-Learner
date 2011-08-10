@@ -35,10 +35,10 @@ import org.slf4j.LoggerFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
-@ComponentAnn(name="disjoint property axiom learner")
+@ComponentAnn(name="disjoint dataproperty axiom learner")
 public class DisjointDataPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(PropertyDomainAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
 	private DatatypeProperty propertyToDescribe;

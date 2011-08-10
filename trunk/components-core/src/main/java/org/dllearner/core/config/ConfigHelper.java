@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.dllearner.algorithms.properties.PropertyDomainAxiomLearner;
+import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.core.Component;
 
 public class ConfigHelper {
@@ -91,7 +91,7 @@ public class ConfigHelper {
 	}
 	
 	public static void main(String[] args) {
-		PropertyDomainAxiomLearner l = new PropertyDomainAxiomLearner(null);
+		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(null);
 		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", "11");
 		System.out.println(l.getMaxExecutionTimeInSeconds());
 	}
