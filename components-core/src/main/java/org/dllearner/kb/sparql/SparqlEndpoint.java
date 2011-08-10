@@ -49,7 +49,6 @@ public class SparqlEndpoint {
 		this.namedGraphURIs=namedGraphURIs;
 	}
 	
-
 	public URL getURL() {
 		return this.url;
 	}
