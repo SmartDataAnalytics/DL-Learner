@@ -14,8 +14,8 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
@@ -26,12 +26,12 @@ import org.slf4j.LoggerFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.OWL2;
 
-@ComponentAnn(name="functional property axiom learner")
-public class FunctionalPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+@ComponentAnn(name="symmetric objectproperty axiom learner")
+public class SymmetricObjectPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(FunctionalPropertyAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(SymmetricObjectPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
@@ -48,7 +48,7 @@ public class FunctionalPropertyAxiomLearner extends AbstractComponent implements
 	private int fetchedRows;
 	
 
-	public FunctionalPropertyAxiomLearner(SparqlEndpointKS ks){
+	public SymmetricObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	
@@ -84,33 +84,26 @@ public class FunctionalPropertyAxiomLearner extends AbstractComponent implements
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
 		//check if property is already declared as symmetric in knowledge base
-		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.FunctionalProperty.getURI());
-		boolean declaredAsFunctional = executeAskQuery(query);
-		if(declaredAsFunctional) {
-			logger.info("Property is already declared as functional in knowledge base.");
+		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.SymmetricProperty.getURI());
+		boolean declaredAsSymmetric = executeAskQuery(query);
+		if(declaredAsSymmetric) {
+			logger.info("Property is already declared as symmetric in knowledge base.");
 		}
 		
-		//get number of instances of s with <s p o> 
-		query = String.format("SELECT (COUNT(DISTINCT ?s)) AS ?all WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
+		//get fraction of instances s with <s p o> also exists <o p s> 
+		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?symmetric WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?s. ?o <%s> ?o1}}";
+		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
-		int all = 1;
 		while(rs.hasNext()){
 			qs = rs.next();
-			all = qs.getLiteral("all").getInt();
-		}
-		//get number of instances of s with <s p o> <s p o1> where o != o1
-		query = "SELECT (COUNT(DISTINCT ?s)) AS ?notfunctional WHERE {?s <%s> ?o. ?s <%s> ?o1. FILTER(?o != ?o1) }";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		rs = executeQuery(query);
-		int notFunctional = 1;
-		while(rs.hasNext()){
-			qs = rs.next();
-			notFunctional = qs.getLiteral("notfunctional").getInt();
-		}
-		if(all > 0){
-			double frac = (all - notFunctional) / (double)all;
-			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			int all = qs.getLiteral("all").getInt();
+			int symmetric = qs.getLiteral("symmetric").getInt();
+			if(all > 0){
+				double frac = symmetric / (double)all;
+				currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			}
+			
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -168,4 +161,5 @@ public class FunctionalPropertyAxiomLearner extends AbstractComponent implements
 		ResultSet resultSet = queryExecution.execSelect();
 		return resultSet;
 	}
+
 }

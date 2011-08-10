@@ -31,6 +31,8 @@ public interface PropertyAxiomVisitor {
 	
 	public void visit(FunctionalDatatypePropertyAxiom axiom);
 	
+	public void visit(InverseFunctionalObjectPropertyAxiom axiom);
+	
 	public void visit(InverseObjectPropertyAxiom axiom);
 	
 	public void visit(SymmetricObjectPropertyAxiom axiom);

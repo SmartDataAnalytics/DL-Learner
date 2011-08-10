@@ -15,9 +15,10 @@ import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ReflexiveObjectPropertyAxiom;
+import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
@@ -26,12 +27,12 @@ import org.slf4j.LoggerFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.vocabulary.OWL2;
+import com.hp.hpl.jena.vocabulary.OWL;
 
-@ComponentAnn(name="reflexive property learner")
-public class ReflexivePropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+@ComponentAnn(name="transitive objectproperty axiom learner")
+public class TransitiveObjectPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ReflexivePropertyAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(TransitiveObjectPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
@@ -48,7 +49,7 @@ public class ReflexivePropertyAxiomLearner extends AbstractComponent implements 
 	private int fetchedRows;
 	
 
-	public ReflexivePropertyAxiomLearner(SparqlEndpointKS ks){
+	public TransitiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	
@@ -83,25 +84,25 @@ public class ReflexivePropertyAxiomLearner extends AbstractComponent implements 
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
-		//check if property is already declared as reflexive in knowledge base
-		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.ReflexiveProperty.getURI());
-		boolean declaredAsReflexive = executeAskQuery(query);
-		if(declaredAsReflexive) {
-			logger.info("Property is already declared as reflexive in knowledge base.");
+		//check if property is already declared as transitive in knowledge base
+		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.TransitiveProperty.getURI());
+		boolean declaredAsTransitive = executeAskQuery(query);
+		if(declaredAsTransitive) {
+			logger.info("Property is already declared as transitive in knowledge base.");
 		}
 		
-		//get fraction of instances s with <s p o> also exists <o p s> 
-		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?reflexiv WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?o1.FILTER(?s=?o)}}";
+		//get fraction of instances s where for a chain <s p o> <o p o1> exists also <s p o1> 
+		query = "SELECT (COUNT(?o)) AS ?all ,(COUNT(?o2)) AS ?transitive WHERE {?s <%s> ?o. ?o <%s> ?o1. OPTIONAL{?s <%s> ?o1. ?s <%s> ?o2}}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
 			int all = qs.getLiteral("all").getInt();
-			int reflexive = qs.getLiteral("reflexiv").getInt();
+			int transitive = qs.getLiteral("transitive").getInt();
 			if(all > 0){
-				double frac = reflexive / (double)all;
-				currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+				double frac = transitive / (double)all;
+				currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
 			}
 			
 		}
@@ -161,5 +162,15 @@ public class ReflexivePropertyAxiomLearner extends AbstractComponent implements 
 		ResultSet resultSet = queryExecution.execSelect();
 		return resultSet;
 	}
+	
+	public static void main(String[] args) throws Exception{
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
+		TransitiveObjectPropertyAxiomLearner l = new TransitiveObjectPropertyAxiomLearner(ks);
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/influencedBy"));
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(1));
+	}
+
 
 }

@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AxiomLearningAlgorithm;
+import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.config.IntegerEditor;
+import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.FunctionalDatatypePropertyAxiom;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ReflexiveObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
@@ -26,15 +26,15 @@ import org.slf4j.LoggerFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.OWL2;
 
-@ComponentAnn(name="functional dataproperty axiom learner")
-public class FunctionalDataPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+@ComponentAnn(name="reflexive property axiom learner")
+public class ReflexiveObjectPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(FunctionalDataPropertyAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReflexiveObjectPropertyAxiomLearner.class);
 	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
-	private DatatypeProperty propertyToDescribe;
+	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
+	private ObjectProperty propertyToDescribe;
 	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
 	private int maxExecutionTimeInSeconds = 10;
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
@@ -48,7 +48,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractComponent implem
 	private int fetchedRows;
 	
 
-	public FunctionalDataPropertyAxiomLearner(SparqlEndpointKS ks){
+	public ReflexiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	
@@ -60,11 +60,11 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractComponent implem
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
-	public DatatypeProperty getPropertyToDescribe() {
+	public ObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(DatatypeProperty propertyToDescribe) {
+	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
@@ -83,34 +83,27 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractComponent implem
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
-		//check if property is already declared as symmetric in knowledge base
-		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.FunctionalProperty.getURI());
-		boolean declaredAsFunctional = executeAskQuery(query);
-		if(declaredAsFunctional) {
-			logger.info("Property is already declared as functional in knowledge base.");
+		//check if property is already declared as reflexive in knowledge base
+		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.ReflexiveProperty.getURI());
+		boolean declaredAsReflexive = executeAskQuery(query);
+		if(declaredAsReflexive) {
+			logger.info("Property is already declared as reflexive in knowledge base.");
 		}
 		
-		//get number of instances of s with <s p o> 
-		query = String.format("SELECT (COUNT(DISTINCT ?s)) AS ?all WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
+		//get fraction of instances s with <s p o> also exists <o p s> 
+		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?reflexiv WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?o1.FILTER(?s=?o)}}";
+		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
-		int all = 1;
 		while(rs.hasNext()){
 			qs = rs.next();
-			all = qs.getLiteral("all").getInt();
-		}
-		//get number of instances of s with <s p o> <s p o1> where o != o1
-		query = "SELECT (COUNT(DISTINCT ?s)) AS ?notfunctional WHERE {?s <%s> ?o. ?s <%s> ?o1. FILTER(?o != ?o1) }";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		rs = executeQuery(query);
-		int notFunctional = 1;
-		while(rs.hasNext()){
-			qs = rs.next();
-			notFunctional = qs.getLiteral("notfunctional").getInt();
-		}
-		if(all > 0){
-			double frac = (all - notFunctional) / (double)all;
-			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalDatatypePropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			int all = qs.getLiteral("all").getInt();
+			int reflexive = qs.getLiteral("reflexiv").getInt();
+			if(all > 0){
+				double frac = reflexive / (double)all;
+				currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			}
+			
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -168,4 +161,5 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractComponent implem
 		ResultSet resultSet = queryExecution.execSelect();
 		return resultSet;
 	}
+
 }
