@@ -36,7 +36,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
 @ComponentAnn(name="disjoint objectproperty axiom learner")
-public class DisjointPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+public class DisjointObjectPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
 private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner.class);
 	
@@ -54,7 +54,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	private long startTime;
 	private int fetchedRows;
 	
-	public DisjointPropertyAxiomLearner(SparqlEndpointKS ks){
+	public DisjointObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	
@@ -255,7 +255,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	}
 	
 	public static void main(String[] args) throws Exception{
-		DisjointPropertyAxiomLearner l = new DisjointPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
+		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
 		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/writer"));
 		l.init();
 		l.start();
