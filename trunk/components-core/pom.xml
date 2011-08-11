@@ -225,6 +225,11 @@
 			<groupId>com.jamonapi</groupId>
 			<artifactId>jamon</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-digester3</artifactId>
+		</dependency>
 
 		<!--JENA ARQ is in central - we use the latest-->
 		<dependency>
@@ -275,6 +280,11 @@
         	<groupId>org.slf4j</groupId>
         	<artifactId>slf4j-api</artifactId>
         	<version>1.5.8</version>
+        </dependency>
+        <dependency>
+        	<groupId>commons-codec</groupId>
+        	<artifactId>commons-codec</artifactId>
+        	<version>20041127.091804</version>
         </dependency>
 	</dependencies>
 </project>
