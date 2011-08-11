@@ -20,10 +20,15 @@
 package org.dllearner.kb.sparql;
 
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.Entity;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
@@ -597,6 +602,56 @@ public class SPARQLTasks {
 		return new SPARQLTasks( Cache.getDefaultCache(), SparqlEndpoint.getEndpointByName(endpointName) );
 	}
 
+	// tries to detect the type of the resource
+	public Entity guessResourceType(String resource) {
+		SortedSet<String> types = retrieveObjectsForSubjectAndRole(resource, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", 10000);
+		if(types.contains("http://www.w3.org/2002/07/owl#ObjectProperty")) {
+			return new ObjectProperty(resource);
+		} else if(types.contains("http://www.w3.org/2002/07/owl#DatatypeProperty")) {
+			return new DatatypeProperty(resource);
+		} else if(types.contains("http://www.w3.org/2002/07/owl#Class")) {
+			return new NamedClass(resource);
+		} else {
+			return null;
+		}
+	}
+	
+	public Set<ObjectProperty> getAllObjectProperties() {
+		Set<ObjectProperty> properties = new TreeSet<ObjectProperty>();
+		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:ObjectProperty}";
+		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
+		ResultSet q = sq.send();
+		while (q.hasNext()) {
+			QuerySolution qs = q.next();
+			properties.add(new ObjectProperty(qs.getResource("p").getURI()));
+		}
+		return properties;
+	}
+	
+	public Set<DatatypeProperty> getAllDataProperties() {
+		Set<DatatypeProperty> properties = new TreeSet<DatatypeProperty>();
+		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:DatatypeProperty}";
+		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
+		ResultSet q = sq.send();
+		while (q.hasNext()) {
+			QuerySolution qs = q.next();
+			properties.add(new DatatypeProperty(qs.getResource("p").getURI()));
+		}
+		return properties;
+	}
+	
+	public Set<NamedClass> getAllClasses() {
+		Set<NamedClass> classes = new TreeSet<NamedClass>();
+		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?c WHERE {?c a owl:Class}";
+		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
+		ResultSet q = sq.send();
+		while (q.hasNext()) {
+			QuerySolution qs = q.next();
+			classes.add(new NamedClass(qs.getResource("c").getURI()));
+		}
+		return classes;
+	}	
+	
 }
 
 /*
