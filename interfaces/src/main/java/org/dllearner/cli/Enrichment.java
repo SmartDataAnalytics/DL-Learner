@@ -156,53 +156,11 @@ public class Enrichment {
 		} else {
 			if(resource instanceof ObjectProperty) {
 				for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
-					AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
-							SparqlEndpointKS.class).newInstance(ks);
-					ConfigHelper.configure(learner, "propertyToDescribe", resource);
-					ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
-							maxExecutionTimeInSeconds);
-					learner.init();
-					String algName = ComponentManager.getName(learner);
-					System.out.print("Applying " + algName + " on " + resource + " ... ");
-					long startTime = System.currentTimeMillis();
-					try {
-						learner.start();
-					} catch (Exception e) {
-						e.printStackTrace();
-						if(e.getCause() instanceof SocketTimeoutException){
-							System.out.println("Query timed out (endpoint possibly too slow).");
-						}						
-					}
-					long runtime = System.currentTimeMillis() - startTime;
-					System.out.println("done in " + runtime + "ms");
-					List<EvaluatedAxiom> learnedAxioms = learner
-							.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-					System.out.println(prettyPrint(learnedAxioms));
+					applyLearningAlgorithm(algorithmClass, ks);
 				}
 			} else if(resource instanceof DatatypeProperty) {
 				for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
-					AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
-							SparqlEndpointKS.class).newInstance(ks);
-					ConfigHelper.configure(learner, "propertyToDescribe", resource);
-					ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
-							maxExecutionTimeInSeconds);
-					learner.init();
-					String algName = ComponentManager.getName(learner);
-					System.out.print("Applying " + algName + " on " + resource + " ... ");
-					long startTime = System.currentTimeMillis();
-					try {
-						learner.start();
-					} catch (Exception e) {
-						e.printStackTrace();
-						if(e.getCause() instanceof SocketTimeoutException){
-							System.out.println("Query timed out (endpoint possibly too slow).");
-						}						
-					}
-					long runtime = System.currentTimeMillis() - startTime;
-					System.out.println("done in " + runtime + "ms");
-					List<EvaluatedAxiom> learnedAxioms = learner
-							.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-					System.out.println(prettyPrint(learnedAxioms));
+					applyLearningAlgorithm(algorithmClass, ks);
 				}
 			} else if(resource instanceof NamedClass) {
 				throw new Error("not implemented");
@@ -212,10 +170,36 @@ public class Enrichment {
 		}
 	}
 	
+	private List<EvaluatedAxiom> applyLearningAlgorithm(Class<? extends AxiomLearningAlgorithm> algorithmClass, SparqlEndpointKS ks) throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
+				SparqlEndpointKS.class).newInstance(ks);
+		ConfigHelper.configure(learner, "propertyToDescribe", resource);
+		ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
+				maxExecutionTimeInSeconds);
+		learner.init();
+		String algName = ComponentManager.getName(learner);
+		System.out.print("Applying " + algName + " on " + resource + " ... ");
+		long startTime = System.currentTimeMillis();
+		try {
+			learner.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(e.getCause() instanceof SocketTimeoutException){
+				System.out.println("Query timed out (endpoint possibly too slow).");
+			}						
+		}
+		long runtime = System.currentTimeMillis() - startTime;
+		System.out.println("done in " + runtime + "ms");
+		List<EvaluatedAxiom> learnedAxioms = learner
+				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+		System.out.println(prettyPrint(learnedAxioms));	
+		return learnedAxioms;
+	}
+	
 	private String prettyPrint(List<EvaluatedAxiom> learnedAxioms) {
 		String str = "suggested axioms and their score in percent:\n";
 		if(learnedAxioms.isEmpty()) {
-			return "no axiom suggested";
+			return "  no axiom suggested";
 		} else {
 			for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
 				str += " " + prettyPrint(learnedAxiom) + "\n";
