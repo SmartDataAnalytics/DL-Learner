@@ -21,14 +21,20 @@ package org.dllearner.cli;
 
 import static java.util.Arrays.asList;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -55,21 +61,39 @@ import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.config.ConfigHelper;
+import org.dllearner.core.configurators.CELOEConfigurator;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Entity;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.gui.Config;
+import org.dllearner.gui.ConfigSave;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.CommonPrefixMap;
+import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -133,7 +157,8 @@ public class Enrichment {
 		classAlgorithms.add(CELOE.class);		
 	}
 	
-	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	@SuppressWarnings("unchecked")
+	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException {
 		
 		// sanity check that endpoint/graph returns at least one triple
 		String query = "SELECT * WHERE {?s ?p ?o} LIMIT 1";
@@ -147,9 +172,11 @@ public class Enrichment {
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
 		ks.init();
 		
+		// common helper objects
+		SPARQLTasks st = new SPARQLTasks(se);
+		
 		if(resource == null) {
 			// TODO: automatically run over all resources if no specific resource was specified
-			SPARQLTasks st = new SPARQLTasks(se);
 			st.getAllClasses();
 			st.getAllDataProperties();
 			st.getAllObjectProperties();
@@ -163,17 +190,88 @@ public class Enrichment {
 					applyLearningAlgorithm(algorithmClass, ks);
 				}
 			} else if(resource instanceof NamedClass) {
-				throw new Error("not implemented");
+				for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
+					if(algorithmClass == CELOE.class) {
+						applyCELOE(ks, false);
+						applyCELOE(ks, true);
+					} else {
+						applyLearningAlgorithm((Class<AxiomLearningAlgorithm>)algorithmClass, ks);
+					}
+				}				
 			} else {
 				throw new Error("The type " + resource.getClass() + " of resource " + resource + " cannot be handled by this enrichment tool.");
 			}
 		}
 	}
 	
+	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, boolean equivalence) throws ComponentInitException, LearningProblemUnsupportedException {
+		SPARQLTasks st = new SPARQLTasks(se);
+		
+		// get instances of class as positive examples
+		SPARQLReasoner sr = new SPARQLReasoner(ks);
+		SortedSet<Individual> posExamples = sr.getIndividuals((NamedClass)resource);
+		SortedSet<String> posExStr = Helper.getStringSet(posExamples);
+		
+		// get negative examples via various strategies
+		AutomaticNegativeExampleFinderSPARQL finder = new AutomaticNegativeExampleFinderSPARQL(posExStr, st, null);
+		SortedSet<String> negExStr = finder.getNegativeExamples(50, false);
+		SortedSet<Individual> negExamples = Helper.getIndividualSet(negExStr);
+		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
+		
+        ComponentManager cm = ComponentManager.getInstance();
+
+        SparqlKnowledgeSource ks2 = cm.knowledgeSource(SparqlKnowledgeSource.class);
+        ks2.getConfigurator().setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
+        ks2.getConfigurator().setUrl(ks.getEndpoint().getURL());
+        ks2.getConfigurator().setUseLits(false);
+        ks2.getConfigurator().setUseCacheDatabase(true);
+        ks2.getConfigurator().setRecursionDepth(1);
+        ks2.getConfigurator().setCloseAfterRecursion(true);
+//        ks2.getConfigurator().setSaveExtractedFragment(true);
+
+
+        ks.init();
+
+        AbstractReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
+        rc.init();
+
+        // TODO: super class learning
+        ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, rc);
+//        lp.setPositiveExamples(posExamples);
+//        lp.setNegativeExamples(negExamples);
+        lp.getConfigurator().setType("equivalence");
+        lp.getConfigurator().setAccuracyMethod("fmeasure");
+        lp.getConfigurator().setUseApproximations(false);
+        lp.init();
+
+
+        CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
+        CELOEConfigurator cc = la.getConfigurator();
+        cc.setMaxExecutionTimeInSeconds(100);
+        cc.setNoisePercentage(20);
+        la.init();
+        la.start();
+
+        // convert the result to axioms (to make it compatible with the other algorithms)
+        TreeSet<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions();
+        for(EvaluatedDescription learnedDescription : learnedDescriptions) {
+        	Axiom axiom = new EquivalentClassesAxiom((NamedClass) resource, learnedDescription.getDescription());
+        }
+        
+        // TODO: further axiom conversion
+        
+        cm.freeAllComponents();		
+		return null;
+	}
+	
 	private List<EvaluatedAxiom> applyLearningAlgorithm(Class<? extends AxiomLearningAlgorithm> algorithmClass, SparqlEndpointKS ks) throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
 				SparqlEndpointKS.class).newInstance(ks);
-		ConfigHelper.configure(learner, "propertyToDescribe", resource);
+		if(classAlgorithms.contains(algorithmClass)) {
+			ConfigHelper.configure(learner, "classToDescribe", resource);
+		} else {
+			ConfigHelper.configure(learner, "propertyToDescribe", resource);
+		}
 		ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 				maxExecutionTimeInSeconds);
 		learner.init();
@@ -217,7 +315,7 @@ public class Enrichment {
 		return str;
 	}
 	
-	public static void main(String[] args) throws IOException, ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public static void main(String[] args) throws IOException, ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException {
 		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
