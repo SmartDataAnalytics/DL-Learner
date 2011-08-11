@@ -1,12 +1,12 @@
 package org.dllearner.test.junit;
 
-import org.dllearner.algorithms.properties.EquivalentPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.FunctionalPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.PropertyDomainAxiomLearner;
+import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.PropertyRangeAxiomLearner;
-import org.dllearner.algorithms.properties.ReflexivePropertyAxiomLearner;
-import org.dllearner.algorithms.properties.SubPropertyOfAxiomLearner;
-import org.dllearner.algorithms.properties.SymmetricPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
+import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -35,7 +35,7 @@ public class PropertyLearningTest extends TestCase{
 	}
 	
 	public void testSubPropertyOfAxiomLearning() throws Exception {
-		SubPropertyOfAxiomLearner l = new SubPropertyOfAxiomLearner(ks);
+		SubObjectPropertyOfAxiomLearner l = new SubObjectPropertyOfAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		l.setPropertyToDescribe(subProperty);
 		l.init();
@@ -44,7 +44,7 @@ public class PropertyLearningTest extends TestCase{
 	}
 	
 	public void testEquivalentPropertyOfAxiomLearning() throws Exception {
-		EquivalentPropertyAxiomLearner l = new EquivalentPropertyAxiomLearner(ks);
+		EquivalentObjectPropertyAxiomLearner l = new EquivalentObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		l.setPropertyToDescribe(equivProperty);
 		l.init();
@@ -53,7 +53,7 @@ public class PropertyLearningTest extends TestCase{
 	}
 	
 	public void testPropertyDomainAxiomLearning() throws Exception {
-		PropertyDomainAxiomLearner l = new PropertyDomainAxiomLearner(ks);
+		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		l.setPropertyToDescribe(domain);
 		l.init();
@@ -71,7 +71,7 @@ public class PropertyLearningTest extends TestCase{
 	}
 	
 	public void testReflexivePropertyAxiomLearning() throws Exception {
-		ReflexivePropertyAxiomLearner l = new ReflexivePropertyAxiomLearner(ks);
+		ReflexiveObjectPropertyAxiomLearner l = new ReflexiveObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		l.setPropertyToDescribe(reflexive);
 		l.init();
@@ -80,7 +80,7 @@ public class PropertyLearningTest extends TestCase{
 	}
 	
 	public void testFunctionalPropertyAxiomLearnining() throws Exception {
-		FunctionalPropertyAxiomLearner l = new FunctionalPropertyAxiomLearner(ks);
+		FunctionalObjectPropertyAxiomLearner l = new FunctionalObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		l.setPropertyToDescribe(functional);
 		l.init();
@@ -89,7 +89,7 @@ public class PropertyLearningTest extends TestCase{
 	}
 	
 	public void testSymmetricPropertyAxiomLearning() throws Exception {
-		SymmetricPropertyAxiomLearner l = new SymmetricPropertyAxiomLearner(ks);
+		SymmetricObjectPropertyAxiomLearner l = new SymmetricObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		l.setPropertyToDescribe(symmetric);
 		l.init();
