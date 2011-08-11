@@ -137,6 +137,8 @@ public class EnrichmentEvaluation {
 		classAlgorithms.add(DisjointClassesLearner.class);
 		classAlgorithms.add(SimpleSubclassLearner.class);
 		classAlgorithms.add(CELOE.class);
+		
+		initDBConnection();
 	}
 
 	private void initDBConnection() {
