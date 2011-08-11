@@ -40,9 +40,9 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
 @ComponentAnn(name="objectproperty range learner")
-public class PropertyRangeAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+public class ObjectPropertyRangeAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(PropertyRangeAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyRangeAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
@@ -58,7 +58,7 @@ public class PropertyRangeAxiomLearner extends AbstractComponent implements Axio
 	private long startTime;
 	private int fetchedRows;
 	
-	public PropertyRangeAxiomLearner(SparqlEndpointKS ks){
+	public ObjectPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	
@@ -165,7 +165,7 @@ public class PropertyRangeAxiomLearner extends AbstractComponent implements Axio
 		}
 		
 		EvaluatedAxiom evalAxiom;
-		for(Entry<NamedClass, Integer> entry : sortByValues(result)){System.out.println(entry.getKey());System.out.println(entry.getValue());
+		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
 			evalAxiom = new EvaluatedAxiom(new ObjectPropertyRangeAxiom(propertyToDescribe, entry.getKey()),
 					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
 			axioms.add(evalAxiom);
@@ -235,7 +235,7 @@ public class PropertyRangeAxiomLearner extends AbstractComponent implements Axio
 	}
 	
 	public static void main(String[] args) throws Exception{
-		PropertyRangeAxiomLearner l = new PropertyRangeAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
 		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/aircraftElectronic"));
 		l.setMaxExecutionTimeInSeconds(0);
 		l.init();

@@ -52,8 +52,9 @@ import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
-import org.dllearner.algorithms.properties.PropertyRangeAxiomLearner;
+import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
@@ -121,10 +122,11 @@ public class EnrichmentEvaluation {
 		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(ObjectPropertyDomainAxiomLearner.class);
-		objectPropertyAlgorithms.add(PropertyRangeAxiomLearner.class);
+		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
 		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
 		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
 
 		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
 		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
@@ -204,7 +206,7 @@ public class EnrichmentEvaluation {
 		
 		evaluateObjectProperties(ks);
 		
-		evaluateDataProperties(ks);
+//		evaluateDataProperties(ks);
 		
 		System.out.println("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
 

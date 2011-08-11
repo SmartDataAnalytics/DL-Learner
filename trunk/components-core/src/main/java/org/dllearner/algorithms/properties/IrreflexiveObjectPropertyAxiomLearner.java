@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
@@ -14,8 +14,8 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.IrreflexiveObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ReflexiveObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
@@ -28,10 +28,10 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL2;
 
-@ComponentAnn(name="reflexive objectproperty axiom learner")
-public class ReflexiveObjectPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+@ComponentAnn(name="irreflexive objectproperty axiom learner")
+public class IrreflexiveObjectPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ReflexiveObjectPropertyAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(IrreflexiveObjectPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
@@ -48,7 +48,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractComponent imple
 	private int fetchedRows;
 	
 
-	public ReflexiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
+	public IrreflexiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	
@@ -84,26 +84,36 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractComponent imple
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
 		//check if property is already declared as reflexive in knowledge base
-		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.ReflexiveProperty.getURI());
+		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.IrreflexiveProperty.getURI());
 		boolean declaredAsReflexive = executeAskQuery(query);
 		if(declaredAsReflexive) {
-			logger.info("Property is already declared as reflexive in knowledge base.");
+			logger.info("Property is already declared as irreflexive in knowledge base.");
 		}
-		
-		//get fraction of instances s with <s p o> also exists <o p s> 
-		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?reflexiv WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?o1.FILTER(?s=?o)}}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
+
+		//get all instance s with <s p o>
+		query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}", propertyToDescribe);
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
+		int all = 0;
 		while(rs.hasNext()){
 			qs = rs.next();
-			int all = qs.getLiteral("all").getInt();
-			int reflexive = qs.getLiteral("reflexiv").getInt();
-			if(all > 0){
-				double frac = reflexive / (double)all;
-				currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
-			}
+			all = qs.getLiteral("all").getInt();
 			
+		}
+		
+		//get number of instances s where not exists  <s p s> 
+		query = "SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. OPTIONAL{?s <%s> ?o1.FILTER(?s = ?o1)} FILTER(!BOUND(?o1))}";
+		query = query.replace("%s", propertyToDescribe.getURI().toString());
+		rs = executeQuery(query);
+		int irreflexive = 0;
+		while(rs.hasNext()){
+			qs = rs.next();
+			irreflexive = qs.getLiteral("irreflexive").getInt();
+		}
+		
+		if(all > 0){
+			double frac = irreflexive / (double)all;
+			currentlyBestAxioms.add(new EvaluatedAxiom(new IrreflexiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));

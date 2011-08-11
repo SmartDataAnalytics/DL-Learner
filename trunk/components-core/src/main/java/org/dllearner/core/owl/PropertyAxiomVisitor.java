@@ -37,9 +37,13 @@ public interface PropertyAxiomVisitor {
 	
 	public void visit(SymmetricObjectPropertyAxiom axiom);
 	
+	public void visit(AsymmetricObjectPropertyAxiom axiom);
+	
 	public void visit(TransitiveObjectPropertyAxiom axiom);
 	
 	public void visit(ReflexiveObjectPropertyAxiom axiom);
+	
+	public void visit(IrreflexiveObjectPropertyAxiom axiom);
 	
 	public void visit(SubObjectPropertyAxiom axiom);
 	

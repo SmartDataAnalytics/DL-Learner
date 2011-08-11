@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
@@ -14,7 +14,7 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
+import org.dllearner.core.owl.InverseFunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
@@ -84,7 +84,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractCompone
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
 		//check if property is already declared as symmetric in knowledge base
-		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.FunctionalProperty.getURI());
+		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.InverseFunctionalProperty.getURI());
 		boolean declaredAsFunctional = executeAskQuery(query);
 		if(declaredAsFunctional) {
 			logger.info("Property is already declared as functional in knowledge base.");
@@ -110,7 +110,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractCompone
 		}
 		if(all > 0){
 			double frac = (all - notFunctional) / (double)all;
-			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			currentlyBestAxioms.add(new EvaluatedAxiom(new InverseFunctionalObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
