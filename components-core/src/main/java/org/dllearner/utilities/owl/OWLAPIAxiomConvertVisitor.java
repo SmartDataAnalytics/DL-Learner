@@ -24,6 +24,7 @@ import static org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor.getOWL
 import java.util.HashSet;
 import java.util.Set;
 
+import org.dllearner.core.owl.AsymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.AxiomVisitor;
 import org.dllearner.core.owl.BooleanDatatypePropertyAssertion;
@@ -46,6 +47,7 @@ import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.InverseFunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.InverseObjectPropertyAxiom;
+import org.dllearner.core.owl.IrreflexiveObjectPropertyAxiom;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
@@ -443,6 +445,24 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		OWLObjectProperty role = factory.getOWLObjectProperty(
 				IRI.create(axiom.getRole().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLInverseFunctionalObjectPropertyAxiom(role);
+		addAxiom(axiomOWLAPI);
+		
+	}
+
+	@Override
+	public void visit(AsymmetricObjectPropertyAxiom axiom) {
+		OWLObjectProperty role = factory.getOWLObjectProperty(
+				IRI.create(axiom.getRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLAsymmetricObjectPropertyAxiom(role);
+		addAxiom(axiomOWLAPI);
+		
+	}
+
+	@Override
+	public void visit(IrreflexiveObjectPropertyAxiom axiom) {
+		OWLObjectProperty role = factory.getOWLObjectProperty(
+				IRI.create(axiom.getRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLIrreflexiveObjectPropertyAxiom(role);
 		addAxiom(axiomOWLAPI);
 		
 	}

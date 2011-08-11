@@ -3,7 +3,7 @@ package org.dllearner.test.junit;
 import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
-import org.dllearner.algorithms.properties.PropertyRangeAxiomLearner;
+import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
@@ -62,7 +62,7 @@ public class PropertyLearningTest extends TestCase{
 	}
 	
 	public void testPropertyRangeAxiomLearning() throws Exception {
-		PropertyRangeAxiomLearner l = new PropertyRangeAxiomLearner(ks);
+		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		l.setPropertyToDescribe(range);
 		l.init();

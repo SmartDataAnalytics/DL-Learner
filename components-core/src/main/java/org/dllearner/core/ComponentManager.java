@@ -108,8 +108,7 @@ public final class ComponentManager {
             "org.dllearner.algorithms.celoe.CELOE",
             "org.dllearner.algorithms.fuzzydll.FuzzyCELOE", //added by Josue
             "org.dllearner.algorithms.isle.ISLE",
-            "org.dllearner.algorithm.qtl.QTL",
-            "org.dllearner.algorithms.properties.SubPropertyOfAxiomLearner"
+            "org.dllearner.algorithm.qtl.QTL"
      } ));
 	private static ComponentManager cm = null;	
 
