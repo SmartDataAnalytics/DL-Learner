@@ -226,10 +226,6 @@
 			<artifactId>jamon</artifactId>
 		</dependency>
 		
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-digester3</artifactId>
-		</dependency>
 
 		<!--JENA ARQ is in central - we use the latest-->
 		<dependency>
