@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -81,6 +82,7 @@ import com.hp.hpl.jena.query.ResultSet;
 public class Enrichment {
 
 	private static Logger logger = Logger.getLogger(Enrichment.class);
+	private DecimalFormat df = new DecimalFormat("##0.0");
 	
 	// enrichment parameters
 	private SparqlEndpoint se;
@@ -161,7 +163,7 @@ public class Enrichment {
 							maxExecutionTimeInSeconds);
 					learner.init();
 					String algName = ComponentManager.getName(learner);
-					System.out.println("Applying " + algName + " on " + resource + " ... ");
+					System.out.print("Applying " + algName + " on " + resource + " ... ");
 					long startTime = System.currentTimeMillis();
 					try {
 						learner.start();
@@ -172,12 +174,10 @@ public class Enrichment {
 						}						
 					}
 					long runtime = System.currentTimeMillis() - startTime;
-					System.out.println("runtime: " + runtime + "ms");
+					System.out.println("done in " + runtime + "ms");
 					List<EvaluatedAxiom> learnedAxioms = learner
 							.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-					for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
-						System.out.println("suggested axiom: " + learnedAxiom);
-					}
+					System.out.println(prettyPrint(learnedAxioms));
 				}
 			} else if(resource instanceof DatatypeProperty) {
 				for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
@@ -188,7 +188,7 @@ public class Enrichment {
 							maxExecutionTimeInSeconds);
 					learner.init();
 					String algName = ComponentManager.getName(learner);
-					System.out.println("Applying " + algName + " on " + resource + " ... ");
+					System.out.print("Applying " + algName + " on " + resource + " ... ");
 					long startTime = System.currentTimeMillis();
 					try {
 						learner.start();
@@ -199,12 +199,10 @@ public class Enrichment {
 						}						
 					}
 					long runtime = System.currentTimeMillis() - startTime;
-					System.out.println("runtime: " + runtime + "ms");
+					System.out.println("done in " + runtime + "ms");
 					List<EvaluatedAxiom> learnedAxioms = learner
 							.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-					for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
-						System.out.println("suggested axiom: " + learnedAxiom);
-					}
+					System.out.println(prettyPrint(learnedAxioms));
 				}
 			} else if(resource instanceof NamedClass) {
 				throw new Error("not implemented");
@@ -214,13 +212,34 @@ public class Enrichment {
 		}
 	}
 	
+	private String prettyPrint(List<EvaluatedAxiom> learnedAxioms) {
+		String str = "suggested axioms and their score in percent:\n";
+		if(learnedAxioms.isEmpty()) {
+			return "no axiom suggested";
+		} else {
+			for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+				str += " " + prettyPrint(learnedAxiom) + "\n";
+			}		
+		}
+		return str;
+	}
+	
+	private String prettyPrint(EvaluatedAxiom axiom) {
+		double acc = axiom.getScore().getAccuracy() * 100;
+		String accs = df.format(acc);
+		if(acc<10d) { accs = " " + accs; }
+		if(acc<100d) { accs = " " + accs; }
+		String str =  accs + "%\t" + axiom.getAxiom().toManchesterSyntaxString(null, prefixes);
+		return str;
+	}
+	
 	public static void main(String[] args) throws IOException, ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		logger.removeAllAppenders();
-		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.WARN);		
+		Logger.getRootLogger().removeAllAppenders();
+		Logger.getRootLogger().addAppender(consoleAppender);
+		Logger.getRootLogger().setLevel(Level.WARN);		
 		
 		OptionParser parser = new OptionParser();
 		parser.acceptsAll(asList("h", "?", "help"), "Show help.");
@@ -275,6 +294,10 @@ public class Enrichment {
 				if(resource == null) {
 					throw new IllegalArgumentException("Could not determine the type (class, object property or data property) of input resource " + options.valueOf("resource"));
 				}
+			}
+			
+			if(!options.hasArgument("endpoint")) {
+				System.out.println("Please specify a SPARQL endpoint (using the -e option).");
 			}
 			
 			boolean verbose = (Boolean) options.valueOf("v");
