@@ -25,7 +25,7 @@ public class EnrichmentVocabulary {
 	//the object properties
 	public static final OWLObjectProperty creation = factory.getOWLObjectProperty(IRI.create(NS + "creation"));
 	
-	public static final OWLObjectProperty hasAxiom = factory.getOWLObjectProperty(IRI.create(NS + "hasAxiom"));
+//	public static final OWLObjectProperty hasAxiom = factory.getOWLObjectProperty(IRI.create(NS + "hasAxiom"));
 	
 	public static final OWLObjectProperty hasChange = factory.getOWLObjectProperty(IRI.create(NS + "hasChange"));
 	
@@ -48,5 +48,7 @@ public class EnrichmentVocabulary {
 	public static final OWLDataProperty timestamp = factory.getOWLDataProperty(IRI.create(NS + "timestamp"));
 	
 	public static final OWLDataProperty version = factory.getOWLDataProperty(IRI.create(NS + "version"));
+	
+	public static final OWLDataProperty hasAxiom = factory.getOWLDataProperty(IRI.create(NS + "hasAxiom"));
 	
 }
