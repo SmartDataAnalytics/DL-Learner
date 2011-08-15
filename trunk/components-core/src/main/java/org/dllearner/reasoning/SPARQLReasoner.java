@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.core.IndividualReasoner;
 import org.dllearner.core.SchemaReasoner;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -39,7 +38,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	
-	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner.class);
+	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
 	
 	private SparqlEndpointKS ks;
 	

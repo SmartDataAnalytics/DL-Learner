@@ -24,6 +24,7 @@ import static java.util.Arrays.asList;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -172,7 +173,7 @@ public class Enrichment {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException {
+	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
 		
 		// sanity check that endpoint/graph returns at least one triple
 		String query = "SELECT * WHERE {?s ?p ?o} LIMIT 1";
@@ -219,17 +220,21 @@ public class Enrichment {
 		}
 	}
 	
-	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, boolean equivalence) throws ComponentInitException, LearningProblemUnsupportedException {
+	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, boolean equivalence) throws ComponentInitException, LearningProblemUnsupportedException, MalformedURLException {
 		SPARQLTasks st = new SPARQLTasks(se);
 		
 		// get instances of class as positive examples
 		SPARQLReasoner sr = new SPARQLReasoner(ks);
-		SortedSet<Individual> posExamples = sr.getIndividuals((NamedClass)resource, 1000);
+		SortedSet<Individual> posExamples = sr.getIndividuals((NamedClass)resource, 50);
 		SortedSet<String> posExStr = Helper.getStringSet(posExamples);
-		System.out.println(posExStr.size());
 		
 		// get negative examples via various strategies
 		AutomaticNegativeExampleFinderSPARQL finder = new AutomaticNegativeExampleFinderSPARQL(posExStr, st, null);
+		finder.makeNegativeExamplesFromNearbyClasses(posExStr, 50);
+		finder.makeNegativeExamplesFromParallelClasses(posExStr, 50);
+		finder.makeNegativeExamplesFromRelatedInstances(posExStr, "http://dbpedia.org/resource/");
+		finder.makeNegativeExamplesFromSuperClasses(resource.getName(), 50);
+//		finder.makeNegativeExamplesFromRandomInstances();
 		SortedSet<String> negExStr = finder.getNegativeExamples(50, false);
 		SortedSet<Individual> negExamples = Helper.getIndividualSet(negExStr);
 		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
@@ -239,14 +244,13 @@ public class Enrichment {
         SparqlKnowledgeSource ks2 = cm.knowledgeSource(SparqlKnowledgeSource.class);
         ks2.getConfigurator().setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
         ks2.getConfigurator().setUrl(ks.getEndpoint().getURL());
+        ks2.getConfigurator().setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
         ks2.getConfigurator().setUseLits(false);
         ks2.getConfigurator().setUseCacheDatabase(true);
         ks2.getConfigurator().setRecursionDepth(1);
         ks2.getConfigurator().setCloseAfterRecursion(true);
 //        ks2.getConfigurator().setSaveExtractedFragment(true);
-
-
-        ks.init();
+        ks2.init();
 
         AbstractReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks2);
         rc.init();
@@ -255,6 +259,7 @@ public class Enrichment {
         ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, rc);
 //        lp.setPositiveExamples(posExamples);
 //        lp.setNegativeExamples(negExamples);
+        lp.getConfigurator().setClassToDescribe(resource.getURI().toURL());
         lp.getConfigurator().setType("equivalence");
         lp.getConfigurator().setAccuracyMethod("fmeasure");
         lp.getConfigurator().setUseApproximations(false);
@@ -425,9 +430,10 @@ public class Enrichment {
 		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		Logger.getRootLogger().setLevel(Level.WARN);
+		Logger.getLogger("org.dllearner").setLevel(Level.WARN); // seems to be needed for some reason (?)
 		Logger.getRootLogger().removeAllAppenders();
 		Logger.getRootLogger().addAppender(consoleAppender);
-		Logger.getRootLogger().setLevel(Level.WARN);		
 		
 		OptionParser parser = new OptionParser();
 		parser.acceptsAll(asList("h", "?", "help"), "Show help.");
