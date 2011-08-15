@@ -19,12 +19,36 @@
  */
 package org.dllearner.algorithms;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.IntegerEditor;
+import org.dllearner.core.config.NamedClassEditor;
+import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.learningproblems.ClassScore;
+import org.dllearner.reasoning.SPARQLReasoner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * Learns sub classes using SPARQL queries.
@@ -34,6 +58,26 @@ import org.dllearner.core.owl.Description;
  *
  */
 public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SimpleSubclassLearner.class);
+	
+	@ConfigOption(name="classToDescribe", description="", propertyEditorClass=NamedClassEditor.class)
+	private NamedClass classToDescribe;
+	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
+	private int maxExecutionTimeInSeconds = 10;
+	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
+	private int maxFetchedRows = 0;
+	
+	private SPARQLReasoner reasoner;
+	private SparqlEndpointKS ks;
+	
+	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
+	private long startTime;
+	private int fetchedRows;
+	
+	public SimpleSubclassLearner(SparqlEndpointKS ks) {
+		this.ks = ks;
+	}
 
 	@Override
 	public List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions) {
@@ -50,14 +94,97 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
+		logger.info("Start learning...");
+		startTime = System.currentTimeMillis();
+		fetchedRows = 0;
+		currentlyBestEvaluatedDescriptions = new ArrayList<EvaluatedDescription>();
+		
+		Map<Individual, SortedSet<NamedClass>> ind2Types = new HashMap<Individual, SortedSet<NamedClass>>();
+		int limit = 1000;
+		int offset = 0;
+		while(!terminationCriteriaSatisfied()){
+			addIndividualsWithTypes(ind2Types, limit, offset);
+		}
 
+		
+		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 
 	@Override
 	public void init() throws ComponentInitException {
-		// TODO Auto-generated method stub
+		reasoner = new SPARQLReasoner(ks);
+	}
+	
+	public int getMaxExecutionTimeInSeconds() {
+		return maxExecutionTimeInSeconds;
+	}
 
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	}
+
+	public NamedClass getPropertyToDescribe() {
+		return classToDescribe;
+	}
+
+	public void setPropertyToDescribe(NamedClass classToDescribe) {
+		this.classToDescribe = classToDescribe;
+	}
+	
+	public int getMaxFetchedRows() {
+		return maxFetchedRows;
+	}
+
+	public void setMaxFetchedRows(int maxFetchedRows) {
+		this.maxFetchedRows = maxFetchedRows;
+	}
+	
+	private void addIndividualsWithTypes(Map<Individual, SortedSet<NamedClass>> ind2Types, int limit, int offset){
+		String query = String.format("SELECT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
+		
+		ResultSet rs = new SparqlQuery(query, ks.getEndpoint()).send();
+		Individual ind;
+		NamedClass newType;
+		QuerySolution qs;
+		SortedSet<NamedClass> types;
+		while(rs.hasNext()){
+			qs = rs.next();
+			ind = new Individual(qs.getResource("ind").getURI());
+			newType = new NamedClass(qs.getResource("type").getURI());
+			types = ind2Types.get(ind);
+			if(types == null){
+				types = new TreeSet<NamedClass>();
+				ind2Types.put(ind, types);
+			}
+			types.add(newType);
+		}
+	}
+	
+	private void createEvaluatedDescriptions(Map<Individual, SortedSet<NamedClass>> ind2Types){
+		
+	}
+	
+	private double computeScore(){
+		return 0;
+	}
+	
+	private boolean terminationCriteriaSatisfied(){
+		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
+		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
+		return  timeLimitExceeded || resultLimitExceeded; 
+	}
+	
+	public static void main(String[] args) {
+		Map<String, SortedSet<String>> map = new HashMap<String, SortedSet<String>>();
+		SortedSet<String> set = new TreeSet<String>();
+		set.add("2");set.add("3");
+		map.put("1", set);
+		
+		set = new TreeSet<String>();
+		set.add("2");set.add("4");
+		map.put("1", set);
+		
+		System.out.println(map);
 	}
 
 }
