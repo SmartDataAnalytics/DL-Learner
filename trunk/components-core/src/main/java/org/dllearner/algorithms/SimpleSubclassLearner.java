@@ -20,11 +20,14 @@
 package org.dllearner.algorithms;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
@@ -40,8 +43,11 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
@@ -88,8 +94,8 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 	@Override
 	public List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(
 			int nrOfDescriptions) {
-		// TODO Auto-generated method stub
-		return null;
+		int max = Math.min(currentlyBestEvaluatedDescriptions.size(), nrOfDescriptions);
+		return currentlyBestEvaluatedDescriptions.subList(0, max);
 	}
 
 	@Override
@@ -101,9 +107,10 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 		
 		Map<Individual, SortedSet<NamedClass>> ind2Types = new HashMap<Individual, SortedSet<NamedClass>>();
 		int limit = 1000;
-		int offset = 0;
 		while(!terminationCriteriaSatisfied()){
-			addIndividualsWithTypes(ind2Types, limit, offset);
+			addIndividualsWithTypes(ind2Types, limit, fetchedRows);
+			createEvaluatedDescriptions(ind2Types);
+			fetchedRows += 1000;
 		}
 
 		
@@ -123,11 +130,11 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
-	public NamedClass getPropertyToDescribe() {
+	public NamedClass getClassToDescribe() {
 		return classToDescribe;
 	}
 
-	public void setPropertyToDescribe(NamedClass classToDescribe) {
+	public void setClassToDescribe(NamedClass classToDescribe) {
 		this.classToDescribe = classToDescribe;
 	}
 	
@@ -140,7 +147,7 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 	}
 	
 	private void addIndividualsWithTypes(Map<Individual, SortedSet<NamedClass>> ind2Types, int limit, int offset){
-		String query = String.format("SELECT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
+		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
 		
 		ResultSet rs = new SparqlQuery(query, ks.getEndpoint()).send();
 		Individual ind;
@@ -160,8 +167,46 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 		}
 	}
 	
-	private void createEvaluatedDescriptions(Map<Individual, SortedSet<NamedClass>> ind2Types){
+	private void createEvaluatedDescriptions(Map<Individual, SortedSet<NamedClass>> individual2Types){
+		currentlyBestEvaluatedDescriptions.clear();
 		
+		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
+		for(Entry<Individual, SortedSet<NamedClass>> entry : individual2Types.entrySet()){
+			for(NamedClass nc : entry.getValue()){
+				Integer cnt = result.get(nc);
+				if(cnt == null){
+					cnt = Integer.valueOf(1);
+				} else {
+					cnt = Integer.valueOf(cnt + 1);
+				}
+				result.put(nc, cnt);
+			}
+		}
+		
+		EvaluatedDescription evalDesc;
+		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
+			evalDesc = new EvaluatedDescription(entry.getKey(),
+					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
+			currentlyBestEvaluatedDescriptions.add(evalDesc);
+		}
+	}
+	
+	private SortedSet<Entry<NamedClass, Integer>> sortByValues(Map<NamedClass, Integer> map){
+		SortedSet<Entry<NamedClass, Integer>> sortedSet = new TreeSet<Map.Entry<NamedClass,Integer>>(new Comparator<Entry<NamedClass, Integer>>() {
+
+			@Override
+			public int compare(Entry<NamedClass, Integer> value1, Entry<NamedClass, Integer> value2) {
+				if(value1.getValue() < value2.getValue()){
+					return 1;
+				} else if(value2.getValue() < value1.getValue()){
+					return -1;
+				} else {
+					return value1.getKey().compareTo(value2.getKey());
+				}
+			}
+		});
+		sortedSet.addAll(map.entrySet());
+		return sortedSet;
 	}
 	
 	private double computeScore(){
@@ -174,17 +219,13 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
-	public static void main(String[] args) {
-		Map<String, SortedSet<String>> map = new HashMap<String, SortedSet<String>>();
-		SortedSet<String> set = new TreeSet<String>();
-		set.add("2");set.add("3");
-		map.put("1", set);
+	public static void main(String[] args) throws Exception{
+		SimpleSubclassLearner l = new SimpleSubclassLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/SoccerClub"));
+		l.init();
+		l.start();
 		
-		set = new TreeSet<String>();
-		set.add("2");set.add("4");
-		map.put("1", set);
-		
-		System.out.println(map);
+		System.out.println(l.getCurrentlyBestEvaluatedDescriptions(5));
 	}
 
 }
