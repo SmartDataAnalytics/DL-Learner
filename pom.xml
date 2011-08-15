@@ -27,7 +27,6 @@
 		<module>protege</module>
 		<module>evalplugin</module>
 		<module>autosparql</module>
-    	<module>autosparql-lite</module>
   </modules>
 
 
