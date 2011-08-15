@@ -113,7 +113,7 @@ public class SparqlQuery {
 		try {
 			logger.debug("sending query: length: " + sparqlQueryString.length() + " | ENDPOINT: "
 					+ sparqlEndpoint.getURL().toString());
-
+			
 			// we execute the query and store the result in a rewindable result set
 			ResultSet tmp = queryExecution.execSelect();
 			rs = ResultSetFactory.makeRewindable(tmp);
