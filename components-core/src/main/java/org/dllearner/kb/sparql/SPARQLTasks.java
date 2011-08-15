@@ -605,6 +605,7 @@ public class SPARQLTasks {
 	// tries to detect the type of the resource
 	public Entity guessResourceType(String resource) {
 		SortedSet<String> types = retrieveObjectsForSubjectAndRole(resource, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", 10000);
+//		System.out.println(types);
 		if(types.contains("http://www.w3.org/2002/07/owl#ObjectProperty")) {
 			return new ObjectProperty(resource);
 		} else if(types.contains("http://www.w3.org/2002/07/owl#DatatypeProperty")) {
