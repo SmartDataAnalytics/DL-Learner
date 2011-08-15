@@ -82,6 +82,7 @@ import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -277,7 +278,12 @@ public class Enrichment {
         TreeSet<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions();
         List<EvaluatedAxiom> evaluatedAxioms = new LinkedList<EvaluatedAxiom>();
         for(EvaluatedDescription learnedDescription : learnedDescriptions) {
-        	Axiom axiom = new EquivalentClassesAxiom((NamedClass) resource, learnedDescription.getDescription());
+        	Axiom axiom;
+        	if(equivalence) {
+        		axiom = new EquivalentClassesAxiom((NamedClass) resource, learnedDescription.getDescription());
+        	} else {
+        		axiom = new SubClassAxiom((NamedClass) resource, learnedDescription.getDescription());
+        	}
         	Score score = lp.computeScore(learnedDescription.getDescription());
         	evaluatedAxioms.add(new EvaluatedAxiom(axiom, score)); 
         }
