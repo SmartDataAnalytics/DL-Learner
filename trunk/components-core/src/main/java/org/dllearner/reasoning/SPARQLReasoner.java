@@ -50,9 +50,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public Set<NamedClass> getTypes(Individual individual) {
 		Set<NamedClass> types = new HashSet<NamedClass>();
-		String query = 
-			"SELECT ?class WHERE {" +
-				inAngleBrackets(individual.getName()) + "a ?class.}";
+		String query = String.format("SELECT ?class WHERE {<%s> a ?class.}", individual.getName());
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -67,7 +65,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		if(!(description instanceof NamedClass)){
 			throw new UnsupportedOperationException("Only named classes are supported.");
 		}
-		String query = String.format("ASK {%s a %s}",inAngleBrackets(individual.toString()), inAngleBrackets(((NamedClass)description).getName()));
+		String query = String.format("ASK {<%s> a <%s>}", individual.toString(), ((NamedClass)description).getName());
 		boolean hasType = executeAskQuery(query);
 		return hasType;
 	}
@@ -87,7 +85,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			throw new UnsupportedOperationException("Only named classes are supported.");
 		}
 		SortedSet<Individual> individuals = new TreeSet<Individual>();
-		String query = String.format("SELECT ?ind WHERE {?ind a %s}", inAngleBrackets(((NamedClass)description).getName()));
+		String query = String.format("SELECT ?ind WHERE {?ind a <%s>}", ((NamedClass)description).getName());
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
@@ -109,7 +107,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public Set<Individual> getRelatedIndividuals(Individual individual, ObjectProperty objectProperty) {
 		Set<Individual> individuals = new HashSet<Individual>();
-		String query = String.format("SELECT ?ind WHERE {%s %s ?ind, FILTER(isIRI(?ind))}", inAngleBrackets(individual.getName()), inAngleBrackets(objectProperty.getName()));
+		String query = String.format("SELECT ?ind WHERE {<%s> <%s> ?ind, FILTER(isIRI(?ind))}", individual.getName(), objectProperty.getName());
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -130,9 +128,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	public Map<ObjectProperty, Set<Individual>> getObjectPropertyRelationships(Individual individual) {
 		Map<ObjectProperty, Set<Individual>> prop2individuals = new HashMap<ObjectProperty, Set<Individual>>();
 		String query = String.format("SELECT ?prop ?ind WHERE {" +
-				"%s ?prop ?ind." +
-				" FILTER(isIRI(?ind) && ?prop != %s && ?prop != %s)}", 
-				inAngleBrackets(individual.getName()), inAngleBrackets(RDF.type.getURI()), inAngleBrackets(OWL.sameAs.getURI()));
+				"<%s> ?prop ?ind." +
+				" FILTER(isIRI(?ind) && ?prop != <%s> && ?prop != <%s>)}", 
+				individual.getName(), RDF.type.getURI(), OWL.sameAs.getURI());
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -158,9 +156,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	public Map<Individual, SortedSet<Individual>> getPropertyMembers(ObjectProperty objectProperty) {
 		Map<Individual, SortedSet<Individual>> subject2objects = new HashMap<Individual, SortedSet<Individual>>();
 		String query = String.format("SELECT ?s ?o WHERE {" +
-				"?s %s ?o." +
+				"?s <%s> ?o." +
 				" FILTER(isIRI(?o))}", 
-				inAngleBrackets(objectProperty.getName()));
+				objectProperty.getName());
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -192,9 +190,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(DatatypeProperty datatypeProperty) {
 		Map<Individual, SortedSet<Double>> subject2objects = new HashMap<Individual, SortedSet<Double>>();
 		String query = String.format("SELECT ?s ?o WHERE {" +
-				"?s %s ?o." +
-				" FILTER(DATATYPE(?o) = %s)}", 
-				inAngleBrackets(datatypeProperty.getName()), inAngleBrackets(XSD.DOUBLE.toStringID()));
+				"?s <%s> ?o." +
+				" FILTER(DATATYPE(?o) = <%s>)}", 
+				datatypeProperty.getName(), XSD.DOUBLE.toStringID());
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -220,9 +218,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	public Map<Individual, SortedSet<Integer>> getIntDatatypeMembers(DatatypeProperty datatypeProperty) {
 		Map<Individual, SortedSet<Integer>> subject2objects = new HashMap<Individual, SortedSet<Integer>>();
 		String query = String.format("SELECT ?s ?o WHERE {" +
-				"?s %s ?o." +
-				" FILTER(DATATYPE(?o) = %s)}", 
-				inAngleBrackets(datatypeProperty.getName()), inAngleBrackets(XSD.INT.toStringID()));
+				"?s <%s> ?o." +
+				" FILTER(DATATYPE(?o) = <%s>)}", 
+				datatypeProperty.getName(), XSD.INT.toStringID());
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -248,9 +246,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	public Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembers(DatatypeProperty datatypeProperty) {
 		Map<Individual, SortedSet<Boolean>> subject2objects = new HashMap<Individual, SortedSet<Boolean>>();
 		String query = String.format("SELECT ?s ?o WHERE {" +
-				"?s %s ?o." +
-				" FILTER(DATATYPE(?o) = %s)}", 
-				inAngleBrackets(datatypeProperty.getName()), inAngleBrackets(XSD.BOOLEAN.toStringID()));
+				"?s <%s> ?o." +
+				" FILTER(DATATYPE(?o) = <%s>)}", 
+				datatypeProperty.getName(), XSD.BOOLEAN.toStringID());
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -276,10 +274,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	public SortedSet<Individual> getTrueDatatypeMembers(DatatypeProperty datatypeProperty) {
 		SortedSet<Individual> members = new TreeSet<Individual>();
 		String query = String.format("SELECT ?ind WHERE {" +
-				"?ind %s ?o." +
-				" FILTER(isLiteral(?o) && DATATYPE(?o) = %s && ?o=%s)}", 
-				inAngleBrackets(datatypeProperty.getName()), inAngleBrackets(XSD.BOOLEAN.toStringID()),
-				"\"true\"^^"+inAngleBrackets(XSD.BOOLEAN.toStringID()));
+				"?ind <%s> ?o." +
+				" FILTER(isLiteral(?o) && DATATYPE(?o) = <%s> && ?o = <%s>)}", 
+				datatypeProperty.getName(), XSD.BOOLEAN.toStringID(),
+				"\"true\"^^<" + XSD.BOOLEAN.toStringID() + ">");
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -295,10 +293,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	public SortedSet<Individual> getFalseDatatypeMembers(DatatypeProperty datatypeProperty) {
 		SortedSet<Individual> members = new TreeSet<Individual>();
 		String query = String.format("SELECT ?ind WHERE {" +
-				"?ind %s ?o." +
-				" FILTER(isLiteral(?o) && DATATYPE(?o) = %s && ?o=%s)}", 
-				inAngleBrackets(datatypeProperty.getName()), inAngleBrackets(XSD.BOOLEAN.toStringID()),
-				"\"false\"^^"+inAngleBrackets(XSD.BOOLEAN.toStringID()));
+				"?ind <%s> ?o." +
+				" FILTER(isLiteral(?o) && DATATYPE(?o) = <%s> && ?o = <%s>)}", 
+				datatypeProperty.getName(), XSD.BOOLEAN.toStringID(),
+				"\"false\"^^<"+XSD.BOOLEAN.toStringID() + ">");
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -324,9 +322,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public Description getDomain(ObjectProperty objectProperty) {
 		String query = String.format("SELECT ?domain WHERE {" +
-				"%s %s ?domain. FILTER(isIRI(?domain))" +
+				"<%s> <%s> ?domain. FILTER(isIRI(?domain))" +
 				"}", 
-				inAngleBrackets(objectProperty.getName()), inAngleBrackets(RDFS.domain.getURI()));
+				objectProperty.getName(), RDFS.domain.getURI());
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -347,9 +345,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public Description getDomain(DatatypeProperty datatypeProperty) {
 		String query = String.format("SELECT ?domain WHERE {" +
-				"%s %s ?domain. FILTER(isIRI(?domain))" +
+				"<%s> <%s> ?domain. FILTER(isIRI(?domain))" +
 				"}", 
-				inAngleBrackets(datatypeProperty.getName()), inAngleBrackets(RDFS.domain.getURI()));
+				datatypeProperty.getName(), RDFS.domain.getURI());
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -370,9 +368,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public Description getRange(ObjectProperty objectProperty) {
 		String query = String.format("SELECT ?range WHERE {" +
-				"%s %s ?range. FILTER(isIRI(?range))" +
+				"<%s> <%s> ?range. FILTER(isIRI(?range))" +
 				"}", 
-				inAngleBrackets(objectProperty.getName()), inAngleBrackets(RDFS.range.getURI()));
+				objectProperty.getName(), RDFS.range.getURI());
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -401,10 +399,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		if(!(superClass instanceof NamedClass) && !(subClass instanceof NamedClass)){
 			throw new IllegalArgumentException("Only named classes are supported.");
 		}
-		String query = String.format("ASK {%s %s %s.}", 
-				inAngleBrackets(((NamedClass)subClass).getURI().toString()),
-						inAngleBrackets(RDFS.subClassOf.getURI()),
-						inAngleBrackets(((NamedClass)superClass).getURI().toString()));
+		String query = String.format("ASK {<%s> <%s> <%s>.}", 
+				((NamedClass)subClass).getURI().toString(),
+						RDFS.subClassOf.getURI(),
+						((NamedClass)superClass).getURI().toString());
 		boolean superClassOf = executeAskQuery(query);
 		return superClassOf;
 	}
@@ -414,10 +412,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		if(!(class1 instanceof NamedClass) && !(class2 instanceof NamedClass)){
 			throw new IllegalArgumentException("Only named classes are supported.");
 		}
-		String query = String.format("ASK {%s %s %s.}", 
-				inAngleBrackets(((NamedClass)class1).getURI().toString()),
-						inAngleBrackets(OWL.equivalentClass.getURI()),
-						inAngleBrackets(((NamedClass)class2).getURI().toString()));
+		String query = String.format("ASK {<%s> <%s> <%s>.}", 
+				((NamedClass)class1).getURI().toString(),
+						OWL.equivalentClass.getURI(),
+						((NamedClass)class2).getURI().toString());
 		boolean equivalentClass = executeAskQuery(query);
 		return equivalentClass;
 	}
@@ -425,11 +423,11 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public Set<Description> getAssertedDefinitions(NamedClass namedClass) {
 		Set<Description> definitions = new HashSet<Description>();
-		String query = String.format("SELECT ?class { {%s %s ?class. FILTER(isIRI(?class))} UNION {?class. %s %s. FILTER(isIRI(?class))} }", 
-				inAngleBrackets(namedClass.getURI().toString()),
-				inAngleBrackets(OWL.equivalentClass.getURI()),
-				inAngleBrackets(OWL.equivalentClass.getURI()),
-				inAngleBrackets(namedClass.getURI().toString())	
+		String query = String.format("SELECT ?class { {<%s> <%s> ?class. FILTER(isIRI(?class))} UNION {?class. <%s> <%s>. FILTER(isIRI(?class))} }", 
+				namedClass.getURI().toString(),
+				OWL.equivalentClass.getURI(),
+				OWL.equivalentClass.getURI(),
+				namedClass.getURI().toString()	
 		);
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -458,9 +456,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			throw new IllegalArgumentException("Only named classes are supported.");
 		}
 		SortedSet<Description> superClasses = new TreeSet<Description>();
-		String query = String.format("SELECT ?sup {%s %s ?sup. FILTER(isIRI(?sup))}", 
-				inAngleBrackets(((NamedClass)description).getURI().toString()),
-				inAngleBrackets(RDFS.subClassOf.getURI())
+		String query = String.format("SELECT ?sup {<%s> <%s> ?sup. FILTER(isIRI(?sup))}", 
+				((NamedClass)description).getURI().toString(),
+				RDFS.subClassOf.getURI()
 		);
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -477,9 +475,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			throw new IllegalArgumentException("Only named classes are supported.");
 		}
 		SortedSet<Description> subClasses = new TreeSet<Description>();
-		String query = String.format("SELECT ?sub {?sub %s %s. FILTER(isIRI(?sub))}", 
-				inAngleBrackets(RDFS.subClassOf.getURI()),
-				inAngleBrackets(((NamedClass)description).getURI().toString())
+		String query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
+				RDFS.subClassOf.getURI(),
+				((NamedClass)description).getURI().toString()
 				
 		);
 		ResultSet rs = executeQuery(query);
@@ -500,9 +498,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public SortedSet<ObjectProperty> getSuperProperties(ObjectProperty objectProperty) {
 		SortedSet<ObjectProperty> superProperties = new TreeSet<ObjectProperty>();
-		String query = String.format("SELECT ?sup {%s %s ?sup. FILTER(isIRI(?sup))}", 
-				inAngleBrackets(objectProperty.getURI().toString()),
-				inAngleBrackets(RDFS.subPropertyOf.getURI())
+		String query = String.format("SELECT ?sup {<%s> <%s> ?sup. FILTER(isIRI(?sup))}", 
+				objectProperty.getURI().toString(),
+				RDFS.subPropertyOf.getURI()
 		);
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -516,9 +514,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public SortedSet<ObjectProperty> getSubProperties(ObjectProperty objectProperty) {
 		SortedSet<ObjectProperty> subProperties = new TreeSet<ObjectProperty>();
-		String query = String.format("SELECT ?sub {?sub %s %s. FILTER(isIRI(?sub))}", 
-				inAngleBrackets(RDFS.subPropertyOf.getURI()),
-				inAngleBrackets(objectProperty.getURI().toString())
+		String query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
+				RDFS.subPropertyOf.getURI(),
+				objectProperty.getURI().toString()
 				
 		);
 		ResultSet rs = executeQuery(query);
@@ -548,9 +546,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public SortedSet<DatatypeProperty> getSuperProperties(DatatypeProperty dataProperty) {
 		SortedSet<DatatypeProperty> superProperties = new TreeSet<DatatypeProperty>();
-		String query = String.format("SELECT ?sup {%s %s ?sup. FILTER(isIRI(?sup))}", 
-				inAngleBrackets(dataProperty.getURI().toString()),
-				inAngleBrackets(RDFS.subPropertyOf.getURI())
+		String query = String.format("SELECT ?sup {<%s> <%s> ?sup. FILTER(isIRI(?sup))}", 
+				dataProperty.getURI().toString(),
+				RDFS.subPropertyOf.getURI()
 		);
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -564,9 +562,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public SortedSet<DatatypeProperty> getSubProperties(DatatypeProperty dataProperty) {
 		SortedSet<DatatypeProperty> subProperties = new TreeSet<DatatypeProperty>();
-		String query = String.format("SELECT ?sub {?sub %s %s. FILTER(isIRI(?sub))}", 
-				inAngleBrackets(RDFS.subPropertyOf.getURI()),
-				inAngleBrackets(dataProperty.getURI().toString())
+		String query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
+				RDFS.subPropertyOf.getURI(),
+				dataProperty.getURI().toString()
 				
 		);
 		ResultSet rs = executeQuery(query);
@@ -613,9 +611,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		return ret;
 	}
 	
-	private String inAngleBrackets(String s){
-		return "<" + s + ">";
-	}
 	
 	public static void main(String[] args) {
 		String NS = "http://dbpedia.org/ontology/";
