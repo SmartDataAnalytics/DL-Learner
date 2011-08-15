@@ -23,10 +23,13 @@ import static java.util.Arrays.asList;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -63,6 +66,7 @@ import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AxiomLearningAlgorithm;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
@@ -90,10 +94,20 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.CommonPrefixMap;
+import org.dllearner.utilities.EnrichmentVocabulary;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
 
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -188,6 +202,7 @@ public class Enrichment {
 			} else if(resource instanceof DatatypeProperty) {
 				for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
 					applyLearningAlgorithm(algorithmClass, ks);
+					
 				}
 			} else if(resource instanceof NamedClass) {
 				for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
@@ -291,6 +306,8 @@ public class Enrichment {
 		List<EvaluatedAxiom> learnedAxioms = learner
 				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 		System.out.println(prettyPrint(learnedAxioms));	
+		
+		toRDF(learnedAxioms, learner, ks);
 		return learnedAxioms;
 	}
 	
@@ -391,6 +408,52 @@ public class Enrichment {
 			
 		}
 
+	}
+	
+	public void toRDF(List<EvaluatedAxiom> evalAxioms, LearningAlgorithm algorithm, SparqlEndpointKS ks){
+		List<OWLAxiom> axioms = new ArrayList<OWLAxiom>();
+		
+		OWLDataFactory f = new OWLDataFactoryImpl();
+		
+		String id = "";//TODO
+		OWLIndividual ind = f.getOWLNamedIndividual(IRI.create(id));
+		
+		OWLAxiom ax1 = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.Suggestion, ind);
+		axioms.add(ax1);
+		
+		String algorithmName = algorithm.getClass().getAnnotation(ComponentAnn.class).name();
+		OWLAxiom ax2 = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.usedAlgorithm,
+				ind, f.getOWLNamedIndividual(IRI.create(algorithmName)));
+		axioms.add(ax2);
+		
+		try {
+			OWLAxiom ax3 = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.hasInput,
+					ind, f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL())));
+			axioms.add(ax3);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		
+		for(EvaluatedAxiom evAx : evalAxioms){
+			axioms.addAll(evAx.toRDF());
+		}
+		
+		
+		printManchesterOWLSyntax(axioms);
+	}
+	
+	private void printManchesterOWLSyntax(List<OWLAxiom> axioms){
+		System.out.println("ENRICHMENT[");
+		StringWriter sw = new StringWriter();
+		ManchesterOWLSyntaxObjectRenderer r = new ManchesterOWLSyntaxObjectRenderer(
+				sw, new ManchesterOWLSyntaxPrefixNameShortFormProvider(new DefaultPrefixManager()));
+		
+		for(OWLAxiom ax : axioms){
+			sw.getBuffer().setLength(0);
+			ax.accept(r);
+			System.out.println(sw.toString());
+		}
+		System.out.println("]");
 	}
 
 }
