@@ -79,11 +79,18 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 
 	@Override
 	public SortedSet<Individual> getIndividuals(Description description) {
+		return getIndividuals(description, 0);
+	}
+
+	public SortedSet<Individual> getIndividuals(Description description, int limit) {
 		if(!(description instanceof NamedClass)){
 			throw new UnsupportedOperationException("Only named classes are supported.");
 		}
 		SortedSet<Individual> individuals = new TreeSet<Individual>();
 		String query = String.format("SELECT ?ind WHERE {?ind a %s}", inAngleBrackets(((NamedClass)description).getName()));
+		if(limit != 0) {
+			query += " LIMIT " + limit;
+		}
 		
 		ResultSet rs = executeQuery(query);
 		QuerySolution qs;
@@ -92,8 +99,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			individuals.add(new Individual(qs.getResource("ind").getURI()));
 		}
 		return individuals;
-	}
-
+	}	
+	
 	@Override
 	public SortedSetTuple<Individual> doubleRetrieval(Description description) {
 		throw new UnsupportedOperationException();

@@ -21,7 +21,6 @@ package org.dllearner.cli;
 
 import static java.util.Arrays.asList;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -29,13 +28,11 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.text.DecimalFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -74,6 +71,7 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.Axiom;
@@ -83,31 +81,27 @@ import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.gui.Config;
-import org.dllearner.gui.ConfigSave;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.CommonPrefixMap;
 import org.dllearner.utilities.EnrichmentVocabulary;
+import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
-import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.Datastructures;
-import org.dllearner.utilities.datastructures.SortedSetTuple;
-import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
@@ -216,7 +210,7 @@ public class Enrichment {
 						applyCELOE(ks, false);
 						applyCELOE(ks, true);
 					} else {
-						applyLearningAlgorithm((Class<AxiomLearningAlgorithm>)algorithmClass, ks);
+//						applyLearningAlgorithm((Class<AxiomLearningAlgorithm>)algorithmClass, ks);
 					}
 				}				
 			} else {
@@ -230,8 +224,9 @@ public class Enrichment {
 		
 		// get instances of class as positive examples
 		SPARQLReasoner sr = new SPARQLReasoner(ks);
-		SortedSet<Individual> posExamples = sr.getIndividuals((NamedClass)resource);
+		SortedSet<Individual> posExamples = sr.getIndividuals((NamedClass)resource, 1000);
 		SortedSet<String> posExStr = Helper.getStringSet(posExamples);
+		System.out.println(posExStr.size());
 		
 		// get negative examples via various strategies
 		AutomaticNegativeExampleFinderSPARQL finder = new AutomaticNegativeExampleFinderSPARQL(posExStr, st, null);
@@ -253,7 +248,7 @@ public class Enrichment {
 
         ks.init();
 
-        AbstractReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
+        AbstractReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks2);
         rc.init();
 
         // TODO: super class learning
@@ -275,14 +270,16 @@ public class Enrichment {
 
         // convert the result to axioms (to make it compatible with the other algorithms)
         TreeSet<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions();
+        List<EvaluatedAxiom> evaluatedAxioms = new LinkedList<EvaluatedAxiom>();
         for(EvaluatedDescription learnedDescription : learnedDescriptions) {
         	Axiom axiom = new EquivalentClassesAxiom((NamedClass) resource, learnedDescription.getDescription());
+        	Score score = lp.computeScore(learnedDescription.getDescription());
+        	evaluatedAxioms.add(new EvaluatedAxiom(axiom, score)); 
         }
         
-        // TODO: further axiom conversion
-        
+        toRDF(evaluatedAxioms, la, ks);
         cm.freeAllComponents();		
-		return null;
+		return evaluatedAxioms;
 	}
 	
 	private List<EvaluatedAxiom> applyLearningAlgorithm(Class<? extends AxiomLearningAlgorithm> algorithmClass, SparqlEndpointKS ks) throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
