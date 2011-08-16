@@ -55,6 +55,20 @@ public class DocumentationHTMLGenerator {
 		StringBuffer sb = new StringBuffer();
 		sb.append(getHeader());
 		
+		// heading
+		sb.append("<h1>DL-Learner Components</h1>\n");
+		
+		// generate component overview
+		sb.append("<ul>\n");
+		for(Entry<String, Class<? extends Component>> compEntry : componentNamesInv.entrySet()) {
+			sb.append("<li><a href=\"#" + compEntry.getValue() + "\">"+compEntry.getKey()+"</a></li>\n");
+		}
+		sb.append("</ul>\n");
+		
+		// generate actual documentation per component
+		for(Entry<String, Class<? extends Component>> compEntry : componentNamesInv.entrySet()) {
+			sb.append("<a name=\"#" + compEntry.getValue() + "\" /><h2>"+compEntry.getKey()+"</h2>\n");
+		}
 		
 		sb.append(getFooter());
 	}		
@@ -64,7 +78,7 @@ public class DocumentationHTMLGenerator {
 	}
 	
 	private String getFooter() {
-		return "</body>";
+		return "</body></html>";
 	}
 	
 	public static void main(String[] args) {
