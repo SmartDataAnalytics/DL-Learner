@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+import java.net.URI;
 import java.util.Map;
 
 /**
@@ -42,6 +43,8 @@ public class Thing extends Description {
 	private static final long serialVersionUID = -880276915058868775L;
 	public static final Thing instance = new Thing();
 	
+	private static final URI uri = URI.create("http://www.w3.org/2002/07/owl#Thing");
+	
     public String toString(String baseURI, Map<String,String> prefixes) {
         return "TOP";
     }
@@ -57,7 +60,11 @@ public class Thing extends Description {
 		//return "owl:Thing";
 		return "Thing";
 		
-	}	    
+	}	  
+	
+	public URI getURI(){
+		return uri;
+	}
     
 	public int getLength() {
 		return 1;
