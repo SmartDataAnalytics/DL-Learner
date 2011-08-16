@@ -44,6 +44,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -87,8 +88,11 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 
 	@Override
 	public List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Description> bestDescriptions = new ArrayList<Description>();
+		for(EvaluatedDescription evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)){
+			bestDescriptions.add(evDesc.getDescription());
+		}
+		return bestDescriptions;
 	}
 
 	@Override
@@ -105,6 +109,13 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 		fetchedRows = 0;
 		currentlyBestEvaluatedDescriptions = new ArrayList<EvaluatedDescription>();
 		
+		//get existing super classes
+		SortedSet<Description> existingSuperClasses = reasoner.getSuperClasses(classToDescribe);
+		if(!existingSuperClasses.isEmpty()){
+			logger.info("Existing super classes: " + existingSuperClasses);
+		}
+		
+		
 		Map<Individual, SortedSet<NamedClass>> ind2Types = new HashMap<Individual, SortedSet<NamedClass>>();
 		int limit = 1000;
 		while(!terminationCriteriaSatisfied()){
@@ -114,7 +125,7 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 		}
 
 		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+		logger.info("...finished in {}ms. (Got {} rows)", (System.currentTimeMillis()-startTime), fetchedRows);
 	}
 
 	@Override
@@ -185,10 +196,14 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 		
 		EvaluatedDescription evalDesc;
 		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
-			evalDesc = new EvaluatedDescription(entry.getKey(),
-					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
-			currentlyBestEvaluatedDescriptions.add(evalDesc);
+			if(!entry.getKey().getURI().equals(Thing.instance.getURI())){//omit owl:Thing
+				evalDesc = new EvaluatedDescription(entry.getKey(),
+						new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
+				currentlyBestEvaluatedDescriptions.add(evalDesc);
+			}
+			
 		}
+		
 	}
 	
 	private SortedSet<Entry<NamedClass, Integer>> sortByValues(Map<NamedClass, Integer> map){
