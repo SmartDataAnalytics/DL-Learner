@@ -19,11 +19,15 @@
  */
 package org.dllearner.core;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.ClassUtils;
 
 /**
  * Component manager for the new (as of 2011) annotation based configuration 
@@ -100,7 +104,6 @@ public class AnnComponentManager {
 	 */
 	public Collection<Class<? extends Component>> getComponents() {
 		return components;
-//		return new LinkedList<Class<? extends Component>>(components);
 	}
 	
 	/**
@@ -112,6 +115,88 @@ public class AnnComponentManager {
 	 */
 	public Map<Class<? extends Component>, String> getComponentsNamed() {
 		return componentNames;
+	}
+	
+	public boolean isCompatible() {
+		return false;
+	}
+
+	// gets all components which this component can be plugged into
+	public Collection<Class<? extends Component>> getPluggableComponents(Class<? extends Component> component) {
+		Collection<Class<? extends Component>> pluggableComponents = new LinkedList<Class<? extends Component>>();
+		for(Class<? extends Component> comp : components) {
+			if(isPluggable(comp, component)) {
+				pluggableComponents.add(comp);
+			}
+		}
+		return pluggableComponents;
+	}
+	
+	// should return true if there exists a constructor in "compound" which can take
+	// "component" as argument (in any argument positions) 
+	public boolean isPluggable(Class<? extends Component> compound, Class<? extends Component> argument) {
+		try {
+			Constructor<?>[] constructors = compound.getDeclaredConstructors();
+			for(Constructor<?> constructor : constructors) {
+				Class<?>[] paraTypes = constructor.getParameterTypes();
+				for(Class<?> paraType : paraTypes) {
+					if(ClassUtils.isAssignable(argument, paraType)) {
+						return true;
+					}
+				}
+			}
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean isCompatible(Class<? extends Component> compound, Class<? extends Component>... arguments) {
+		if(areValidComponentConstructorArguments(arguments)) {
+			throw new Error("Please order arguments by their class names.");
+		}		
+		return hasMatchingConstructor(compound, arguments);
+	}
+	
+	private boolean hasMatchingConstructor(Class<? extends Component> compound, Class<? extends Component>... arguments) {
+		try {
+			Constructor<?>[] constructors = compound.getDeclaredConstructors();
+			for(Constructor<?> constructor : constructors) {
+				if(ClassUtils.isAssignable(arguments, constructor.getParameterTypes())) {
+					return true;
+				}
+			}
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
+	 * Components in DL-Learner can be plugged together by invoking an appropriate
+	 * constructor. For efficiency reasons, they should be ordered by class
+	 * names. This method allows to test this convention. 
+	 * 
+	 * Please note that components may have additional further constructors, but
+	 * if a constructor has exclusively components as parameters, then it is 
+	 * required that they are ordered by class name.
+	 * 
+	 * TODO: Possibly, we can replace our naive constructor detection code with
+	 * a better implementation, which can detect whether an appropriate
+	 * constructor exists even without fixing the order of arguments. (E.g. checking 
+	 * assignability for each parameter and argument; putting it into a matrix
+	 * and then checking whether there is a row/column with only 1s.)
+	 * 
+	 * @param arguments Argument classes.
+	 * @return True of the order of arguments is correct and false otherwise.
+	 */
+	public boolean areValidComponentConstructorArguments(Class<? extends Component>... arguments) {
+		for(int i=0; i<arguments.length; i++) {
+			if(arguments[i].getName().compareTo(arguments[i+1].getName())<0) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/**
