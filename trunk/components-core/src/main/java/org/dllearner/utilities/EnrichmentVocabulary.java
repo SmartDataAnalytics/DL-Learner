@@ -17,19 +17,27 @@ public class EnrichmentVocabulary {
 	//the classes
 	public static final OWLClass ChangeSet = factory.getOWLClass(IRI.create(NS + "ChangeSet"));
 	
+	public static final OWLClass SuggestionSet = factory.getOWLClass(IRI.create(NS + "SuggestionSet"));
+	
 	public static final OWLClass Suggestion = factory.getOWLClass(IRI.create(NS + "Suggestion"));
 	
 	public static final OWLClass Parameter = factory.getOWLClass(IRI.create(NS + "Parameter"));
 	
+	public static final OWLClass Creation = factory.getOWLClass(IRI.create(NS + "Creation"));
+	
+	public static final OWLClass AlgorithmRun = factory.getOWLClass(IRI.create(NS + "AlgorithmRun"));
+	
 	
 	//the object properties
-	public static final OWLObjectProperty creation = factory.getOWLObjectProperty(IRI.create(NS + "creation"));
+	public static final OWLObjectProperty creator = factory.getOWLObjectProperty(IRI.create(NS + "creatr"));
 	
 //	public static final OWLObjectProperty hasAxiom = factory.getOWLObjectProperty(IRI.create(NS + "hasAxiom"));
 	
 	public static final OWLObjectProperty hasChange = factory.getOWLObjectProperty(IRI.create(NS + "hasChange"));
 	
 	public static final OWLObjectProperty hasInput = factory.getOWLObjectProperty(IRI.create(NS + "hasInput"));
+	
+	public static final OWLObjectProperty hasSuggestion = factory.getOWLObjectProperty(IRI.create(NS + "hasSuggestion"));
 	
 	public static final OWLObjectProperty hasParameter = factory.getOWLObjectProperty(IRI.create(NS + "hasParameter"));
 	
