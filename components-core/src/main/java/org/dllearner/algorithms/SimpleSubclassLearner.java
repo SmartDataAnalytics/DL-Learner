@@ -54,6 +54,7 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -158,7 +159,9 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 	}
 	
 	private void addIndividualsWithTypes(Map<Individual, SortedSet<NamedClass>> ind2Types, int limit, int offset){
-		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
+//		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
+		
+		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}", classToDescribe.getName(), limit, offset);
 		
 		ResultSet rs = new SparqlQuery(query, ks.getEndpoint()).send();
 		Individual ind;
@@ -176,6 +179,7 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 			}
 			types.add(newType);
 		}
+		
 	}
 	
 	private void createEvaluatedDescriptions(Map<Individual, SortedSet<NamedClass>> individual2Types){

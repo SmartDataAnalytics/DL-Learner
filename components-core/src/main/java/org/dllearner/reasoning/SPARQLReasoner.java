@@ -467,6 +467,22 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		}
 		return superClasses;
 	}
+	
+	public SortedSet<Description> getSuperClasses(Description description, boolean direct){
+		if(!(description instanceof NamedClass)){
+			throw new IllegalArgumentException("Only named classes are supported.");
+		}
+		SortedSet<Description> superClasses = new TreeSet<Description>();
+		//this query is virtuoso specific
+		String query = String.format("SELECT DISTINCT ?y WHERE {" +
+				"{ SELECT ?x ?y WHERE { ?x rdfs:subClassOf ?y } }" +
+				"OPTION ( TRANSITIVE, T_DISTINCT, t_in(?x), t_out(?y), t_step('path_id') as ?path, t_step(?x) as ?route, t_step('step_no') AS ?jump, T_DIRECTION 3 )" +
+				"FILTER ( ?x = <%s> )}", ((NamedClass)description).getURI().toString());
+				
+		
+		
+		return superClasses;
+	}
 
 	@Override
 	public SortedSet<Description> getSubClasses(Description description) {
