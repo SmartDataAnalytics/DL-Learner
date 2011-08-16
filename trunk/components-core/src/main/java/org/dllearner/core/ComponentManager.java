@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2011, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -43,6 +43,24 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.DisjointClassesLearner;
+import org.dllearner.algorithms.SimpleSubclassLearner;
+import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
+import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
+import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
+import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
+import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
+import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
+import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
@@ -110,6 +128,7 @@ public final class ComponentManager {
             "org.dllearner.algorithms.isle.ISLE",
             "org.dllearner.algorithm.qtl.QTL"
      } ));
+
 	private static ComponentManager cm = null;	
 
 	// list of all configuration options of all components
@@ -734,16 +753,6 @@ public final class ComponentManager {
 			
 		}
 		return list;
-	}
-
-	/**
-	 * Returns the name of a DL-Learner component.
-	 * @param component
-	 * @return Name of the component.
-	 */
-	public static String getName(Component component){
-		ComponentAnn ann = component.getClass().getAnnotation(ComponentAnn.class);
-		return ann.name();
 	}
 
 }

@@ -59,6 +59,7 @@ import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
+import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -227,7 +228,7 @@ public class EnrichmentEvaluation {
 				learner.init();
 				// learner.setPropertyToDescribe(property);
 				// learner.setMaxExecutionTimeInSeconds(10);
-				String algName = ComponentManager.getName(learner);
+				String algName = AnnComponentManager.getName(learner);
 				System.out.println("Applying " + algName + " on " + property + " ... ");
 				long startTime = System.currentTimeMillis();
 				boolean timeout = false;
@@ -279,7 +280,7 @@ public class EnrichmentEvaluation {
 				learner.init();
 				// learner.setPropertyToDescribe(property);
 				// learner.setMaxExecutionTimeInSeconds(10);
-				String algName = ComponentManager.getName(learner);
+				String algName = AnnComponentManager.getName(learner);
 				System.out.println("Applying " + algName + " on " + property + " ... ");
 				long startTime = System.currentTimeMillis();
 				boolean timeout = false;
