@@ -1,0 +1,136 @@
+/**
+ * Copyright (C) 2007-2011, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+package org.dllearner.core;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Component manager for the new (as of 2011) annotation based configuration 
+ * system.
+ * 
+ * In the future, this may replace the previous implementation of component
+ * manager.
+ * 
+ * @author Jens Lehmann
+ *
+ */
+public class AnnComponentManager {
+
+    // the list of annotation based components (note that we save them as string here
+    // instead of class objects in order not to have dependencies on the implementation
+    // of components, which are not required to be in the core module - the class
+    // objects are only created on invocation of the component manager);
+    // components must be listed here if they should be supported in interfaces
+    // (CLI, GUI, Web Service) and scripts (HTML documentation generator)
+    private static List<String> componentClassNames = new ArrayList<String>  ( Arrays.asList(new String[]{
+            "org.dllearner.algorithms.celoe.CELOE",    		
+            "org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner",
+            "org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner",
+            "org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner",
+            "org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner",
+            "org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner",
+            "org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner",
+            "org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner",
+            "org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner",
+            "org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner",
+            "org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner",
+            "org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner",
+            "org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner",
+            "org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner",
+            "org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner",
+            "org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner",
+            "org.dllearner.algorithms.algorithms.DisjointClassesLearner",
+            "org.dllearner.algorithms.algorithms.SimpleSubclassLearner",
+    } ));
+    private static Collection<Class<? extends Component>> components;
+    private static Map<Class<? extends Component>, String> componentNames;
+	
+	private static AnnComponentManager cm = null;	
+	
+	private AnnComponentManager() {
+		// conversion of class strings to objects
+		for (String componentClassName : componentClassNames) {
+			try {
+				Class<? extends Component> component = Class.forName(componentClassName).asSubclass(Component.class);
+				components.add(component);
+				componentNames.put(component, getName(component));
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Gets the singleton instance of <code>ComponentManager</code>.
+	 * @return The singleton <code>ComponentManager</code> instance.
+	 */
+	public static AnnComponentManager getInstance() {
+		if(cm == null) {
+			cm = new AnnComponentManager();
+		}
+		return cm;
+	}	
+	
+	/**
+	 * Returns a list of all available components in this instance
+	 * of <code>ComponentManager</code>.
+	 * @return the components A list of component classes available in this
+	 * instance of <code>ComponentManager</code>.
+	 */
+	public Collection<Class<? extends Component>> getComponents() {
+		return components;
+//		return new LinkedList<Class<? extends Component>>(components);
+	}
+	
+	/**
+	 * Convenience methed, which returns a list of components along with 
+	 * their name.
+	 * 
+	 * @return A map where the key is the class of the component and the
+	 * value is its name.
+	 */
+	public Map<Class<? extends Component>, String> getComponentsNamed() {
+		return componentNames;
+	}
+	
+	/**
+	 * Returns the name of a DL-Learner component.
+	 * @param component
+	 * @return Name of the component.
+	 */
+	public static String getName(Class<? extends Component> component){
+		ComponentAnn ann = component.getAnnotation(ComponentAnn.class);
+		return ann.name();
+	}	
+	
+	/**
+	 * Returns the name of a DL-Learner component.
+	 * @param component
+	 * @return Name of the component.
+	 */
+	public static String getName(Component component){
+		ComponentAnn ann = component.getClass().getAnnotation(ComponentAnn.class);
+		return ann.name();
+	}
+}
