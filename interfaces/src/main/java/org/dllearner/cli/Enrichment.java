@@ -64,6 +64,7 @@ import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -304,7 +305,7 @@ public class Enrichment {
 		ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 				maxExecutionTimeInSeconds);
 		learner.init();
-		String algName = ComponentManager.getName(learner);
+		String algName = AnnComponentManager.getName(learner);
 		System.out.print("Applying " + algName + " on " + resource + " ... ");
 		long startTime = System.currentTimeMillis();
 		try {
