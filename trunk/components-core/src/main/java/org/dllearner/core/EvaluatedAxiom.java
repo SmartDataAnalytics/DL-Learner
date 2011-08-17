@@ -3,6 +3,7 @@ package org.dllearner.core;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.utilities.EnrichmentVocabulary;
 import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -60,8 +63,9 @@ public class EvaluatedAxiom {
 		ax.accept(r);
 
 		OWLAxiom ax1 = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.Suggestion, ind);
-		OWLAxiom ax2 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.hasAxiom, ind, sw.toString());
-//		f.getOWLAnnotationAssertionAxiom(f.getOWLAnnotationProperty(IRI.create("annoProp")), ind.getIRI(), ax);
+//		OWLAxiom ax2 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.hasAxiom, ind, sw.toString());
+		OWLAnnotation anno = f.getOWLAnnotation(EnrichmentVocabulary.belongsTo, ind.getIRI());
+		OWLAxiom ax2 = ax.getAnnotatedAxiom(Collections.singleton(anno));
 		OWLAxiom ax3 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.confidence, ind, score.getAccuracy());
 		
 		List<OWLAxiom> axioms = new ArrayList<OWLAxiom>();

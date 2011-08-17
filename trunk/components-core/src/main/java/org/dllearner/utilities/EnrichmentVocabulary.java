@@ -1,6 +1,7 @@
 package org.dllearner.utilities;
 
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
@@ -12,7 +13,9 @@ public class EnrichmentVocabulary {
 	
 	private static final OWLDataFactory factory = new OWLDataFactoryImpl();
 	
+	//the default namespace
 	public static final String NS = "http://www.dl-learner.org/enrichment.owl#";
+	
 	
 	//the classes
 	public static final OWLClass ChangeSet = factory.getOWLClass(IRI.create(NS + "ChangeSet"));
@@ -58,5 +61,9 @@ public class EnrichmentVocabulary {
 	public static final OWLDataProperty version = factory.getOWLDataProperty(IRI.create(NS + "version"));
 	
 	public static final OWLDataProperty hasAxiom = factory.getOWLDataProperty(IRI.create(NS + "hasAxiom"));
+	
+	
+	//the annotation properties
+	public static final OWLAnnotationProperty belongsTo = factory.getOWLAnnotationProperty(IRI.create(NS + "belongsTo"));
 	
 }

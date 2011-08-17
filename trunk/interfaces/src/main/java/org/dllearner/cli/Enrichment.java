@@ -433,7 +433,7 @@ public class Enrichment {
 		
 		
 		printManchesterOWLSyntax(axioms, defaultNamespace);
-//		printTurtleSyntax(axioms);
+		printTurtleSyntax(axioms);
 //		printNTriplesSyntax(axioms);
 	}
 	
@@ -448,7 +448,6 @@ public class Enrichment {
 		try {
 			System.out.println("ENRICHMENT[");
 			
-			OWLOntologyDocumentTarget documentTarget = new SystemOutDocumentTarget();
 			ManchesterOWLSyntaxOntologyFormat manSyntaxFormat = new ManchesterOWLSyntaxOntologyFormat();
 			manSyntaxFormat.setDefaultPrefix(defaultNamespace);
 			
