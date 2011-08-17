@@ -30,6 +30,10 @@ public class EnrichmentVocabulary {
 	
 	public static final OWLClass AlgorithmRun = factory.getOWLClass(IRI.create(NS + "AlgorithmRun"));
 	
+	public static final OWLClass SPARQLEndpoint = factory.getOWLClass(IRI.create(NS + "SPARQL_Endpoint"));
+	
+	public static final OWLClass OWLFile = factory.getOWLClass(IRI.create(NS + "OWL_File"));
+	
 	
 	//the object properties
 	public static final OWLObjectProperty creator = factory.getOWLObjectProperty(IRI.create(NS + "creator"));
@@ -45,6 +49,8 @@ public class EnrichmentVocabulary {
 	public static final OWLObjectProperty hasParameter = factory.getOWLObjectProperty(IRI.create(NS + "hasParameter"));
 	
 	public static final OWLObjectProperty usedAlgorithm = factory.getOWLObjectProperty(IRI.create(NS + "usedAlgorithm"));
+	
+	public static final OWLObjectProperty defaultGraph = factory.getOWLObjectProperty(IRI.create(NS + "defaultGraph"));
 	
 	
 	//the data properties

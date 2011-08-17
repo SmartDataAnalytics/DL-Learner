@@ -110,6 +110,7 @@ import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -401,21 +402,28 @@ public class Enrichment {
 				f.getOWLLiteral(algorithmName));
 		ax = f.getOWLAnnotationAssertionAxiom(algorithmInd.asOWLNamedIndividual().getIRI(), labelAnno);
 		axioms.add(ax);
+		//add version to algorithm
+		//TODO
 		//add algorithm instance to algorithm run instance
 		ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.usedAlgorithm,
 				algorithmRunInd, algorithmInd);
 		axioms.add(ax);
 		//add Parameters to algorithm run instance
 		//TODO
-		
 		//add used input to algorithm run instance
 		try {
+			OWLNamedIndividual knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
+			ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.SPARQLEndpoint, knowldegeBaseInd);
+			axioms.add(ax);
+			ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.defaultGraph, knowldegeBaseInd, f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getDefaultGraphURIs().iterator().next())));
+			axioms.add(ax);
 			ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.hasInput,
-					algorithmRunInd, f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL())));
+					algorithmRunInd, knowldegeBaseInd);
+			axioms.add(ax);
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
-		axioms.add(ax);
+		
 		
 		//add algorithm run instance to suggestion set instance via ObjectProperty creator 
 		ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.creator,
@@ -450,6 +458,7 @@ public class Enrichment {
 			
 			ManchesterOWLSyntaxOntologyFormat manSyntaxFormat = new ManchesterOWLSyntaxOntologyFormat();
 			manSyntaxFormat.setDefaultPrefix(defaultNamespace);
+			manSyntaxFormat.setPrefix("enrichment", "http://www.dl-learner.org/enrichment.owl#");
 			
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = man.createOntology(new HashSet<OWLAxiom>(axioms), IRI.create(defaultNamespace + "enrichment"));
