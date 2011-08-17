@@ -3,12 +3,10 @@ package org.dllearner.algorithms.properties;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -27,7 +25,6 @@ import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.OWL2Datatype;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
@@ -95,16 +92,15 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 		DataRange existingRange = reasoner.getRange(propertyToDescribe);
 		logger.debug("Existing range: " + existingRange);
 		
-		//get objects with types
-		Map<Individual, Set<Datatype>> individual2Types = new HashMap<Individual, Set<Datatype>>();
-		Map<Individual, Set<Datatype>> newIndividual2Types;
+		//get objects with datatypes
+		Map<Individual, SortedSet<Datatype>> individual2Datatypes = new HashMap<Individual, SortedSet<Datatype>>();
 		boolean repeat = true;
+		int limit = 1000;
 		while(!terminationCriteriaSatisfied() && repeat){
-			newIndividual2Types = getObjectsWithDatatypes(fetchedRows);
-			individual2Types.putAll(newIndividual2Types);
-			currentlyBestAxioms = buildBestAxioms(individual2Types);
+			int ret = addIndividualsWithTypes(individual2Datatypes, limit, fetchedRows);
+			currentlyBestAxioms = buildEvaluatedAxioms(individual2Datatypes);
 			fetchedRows += 1000;
-			repeat = !newIndividual2Types.isEmpty();
+			repeat = (ret == limit);
 		}
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
@@ -148,10 +144,10 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
-	private List<EvaluatedAxiom> buildBestAxioms(Map<Individual, Set<Datatype>> individual2Types){
+	private List<EvaluatedAxiom> buildEvaluatedAxioms(Map<Individual, SortedSet<Datatype>> individual2Types){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
 		Map<Datatype, Integer> result = new HashMap<Datatype, Integer>();
-		for(Entry<Individual, Set<Datatype>> entry : individual2Types.entrySet()){
+		for(Entry<Individual, SortedSet<Datatype>> entry : individual2Types.entrySet()){
 			for(Datatype nc : entry.getValue()){
 				Integer cnt = result.get(nc);
 				if(cnt == null){
@@ -194,25 +190,28 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 		return sortedSet;
 	}
 	
-	private Map<Individual, Set<Datatype>> getObjectsWithDatatypes(int offset){
-		Map<Individual, Set<Datatype>> individual2Datatypes = new HashMap<Individual, Set<Datatype>>();
-		int limit = 1000;
+	private int addIndividualsWithTypes(Map<Individual, SortedSet<Datatype>> ind2Datatypes, int limit, int offset){
 		String query = String.format("SELECT ?ind, (DATATYPE(?val) AS ?datatype) WHERE {?ind <%s> ?val.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
+		
 		ResultSet rs = executeQuery(query);
-		QuerySolution qs;
 		Individual ind;
-		Set<Datatype> types;
+		Datatype newType;
+		QuerySolution qs;
+		SortedSet<Datatype> types;
+		int cnt = 0;
 		while(rs.hasNext()){
+			cnt++;
 			qs = rs.next();
 			ind = new Individual(qs.getResource("ind").getURI());
-			types = individual2Datatypes.get(ind);
+			newType = new Datatype(qs.getResource("datatype").getURI());
+			types = ind2Datatypes.get(ind);
 			if(types == null){
-				types = new HashSet<Datatype>();
-				individual2Datatypes.put(ind, types);
+				types = new TreeSet<Datatype>();
+				ind2Datatypes.put(ind, types);
 			}
-			types.add(new Datatype(qs.getResource("datatype").getURI()));
+			types.add(newType);
 		}
-		return individual2Datatypes;
+		return cnt;
 	}
 	
 	/*

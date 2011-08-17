@@ -31,6 +31,7 @@ import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
@@ -97,15 +98,14 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractComponent implemen
 		logger.info("Existing domain: " + existingDomain);
 		
 		//get subjects with types
-		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
-		Map<Individual, Set<NamedClass>> newIndividual2Types;
+		Map<Individual, SortedSet<NamedClass>> individual2Types = new HashMap<Individual, SortedSet<NamedClass>>();
 		boolean repeat = true;
+		int limit = 1000;
 		while(!terminationCriteriaSatisfied() && repeat){
-			newIndividual2Types = getSubjectsWithTypes(fetchedRows);
-			individual2Types.putAll(newIndividual2Types);
-			currentlyBestAxioms = buildBestAxioms(individual2Types);
+			int ret = addIndividualsWithTypes(individual2Types, limit, fetchedRows);
+			currentlyBestAxioms = buildEvaluatedAxioms(individual2Types);
 			fetchedRows += 1000;
-			repeat = !newIndividual2Types.isEmpty();
+			repeat = (ret == limit);
 		}
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
@@ -149,10 +149,10 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractComponent implemen
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
-	private List<EvaluatedAxiom> buildBestAxioms(Map<Individual, Set<NamedClass>> individual2Types){
+	private List<EvaluatedAxiom> buildEvaluatedAxioms(Map<Individual, SortedSet<NamedClass>> individual2Types){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
 		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
-		for(Entry<Individual, Set<NamedClass>> entry : individual2Types.entrySet()){
+		for(Entry<Individual, SortedSet<NamedClass>> entry : individual2Types.entrySet()){
 			for(NamedClass nc : entry.getValue()){
 				Integer cnt = result.get(nc);
 				if(cnt == null){
@@ -195,25 +195,30 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractComponent implemen
 		return sortedSet;
 	}
 	
-	private Map<Individual, Set<NamedClass>> getSubjectsWithTypes(int offset){
-		Map<Individual, Set<NamedClass>> individual2Types = new HashMap<Individual, Set<NamedClass>>();
-		int limit = 1000;
-		String query = String.format("SELECT ?ind ?type WHERE {?ind <%s> ?o. ?ind a ?type.} LIMIT %d OFFSET %d", propertyToDescribe.getURI().toString(), limit, offset);
+	private int addIndividualsWithTypes(Map<Individual, SortedSet<NamedClass>> ind2Types, int limit, int offset){
+		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind <%s> ?o. ?ind a ?type} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
+		
+//		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind <%s> ?o.} LIMIT %d OFFSET %d}}", propertyToDescribe.getName(), limit, offset);
+		
 		ResultSet rs = executeQuery(query);
-		QuerySolution qs;
 		Individual ind;
-		Set<NamedClass> types;
+		NamedClass newType;
+		QuerySolution qs;
+		SortedSet<NamedClass> types;
+		int cnt = 0;
 		while(rs.hasNext()){
+			cnt++;
 			qs = rs.next();
 			ind = new Individual(qs.getResource("ind").getURI());
-			types = individual2Types.get(ind);
+			newType = new NamedClass(qs.getResource("type").getURI());
+			types = ind2Types.get(ind);
 			if(types == null){
-				types = new HashSet<NamedClass>();
-				individual2Types.put(ind, types);
+				types = new TreeSet<NamedClass>();
+				ind2Types.put(ind, types);
 			}
-			types.add(new NamedClass(qs.getResource("type").getURI()));
+			types.add(newType);
 		}
-		return individual2Types;
+		return cnt;
 	}
 	
 	/*
