@@ -295,8 +295,8 @@ public class Enrichment {
 
         CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
         CELOEConfigurator cc = la.getConfigurator();
-        cc.setMaxExecutionTimeInSeconds(100);
-        cc.setNoisePercentage(20);
+        cc.setMaxExecutionTimeInSeconds(10);
+        cc.setNoisePercentage(25);
         la.init();
         System.out.print("running CELOE ... ");
         la.start();
