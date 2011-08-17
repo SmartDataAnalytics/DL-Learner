@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
@@ -65,13 +66,14 @@ import com.hp.hpl.jena.query.ResultSet;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "simple subclass learner", shortName = "clsub", version = 0.1)
 public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SimpleSubclassLearner.class);
 	
-	@ConfigOption(name="classToDescribe", description="", propertyEditorClass=NamedClassEditor.class)
+	@ConfigOption(name="classToDescribe", required=true, description="", propertyEditorClass=NamedClassEditor.class)
 	private NamedClass classToDescribe;
-	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
+	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="", propertyEditorClass=IntegerEditor.class)
 	private int maxExecutionTimeInSeconds = 10;
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
 	private int maxFetchedRows = 0;

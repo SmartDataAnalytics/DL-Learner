@@ -53,4 +53,11 @@ public @interface ComponentAnn {
      * @return A version number of this component.
      */
     double version();
+    
+    /**
+     * An optional description of the component. This can be shown in tool tips,
+     * help etc.
+     * @return The description of the component.
+     */
+    String description() default "";
 }

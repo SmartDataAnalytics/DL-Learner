@@ -50,4 +50,21 @@ public @interface ConfigOption {
      * @return
      */
     Class<?> propertyEditorClass();
+    
+    /**
+     * Returns whether this option is required for initializing the component. 
+     * @return True if the option is required and false otherwise.
+     */
+    boolean required() default false;
+    
+    /**
+     * Returns the default value of this config option. Default values should be set for all
+     * optional values. 
+     * It is an overhead to describe the default value both in the source code and in the
+     * annotation. There are two reasons for this: a) the value of the field cannot easily be accessed 
+     * without creating an instance of the component and b) for more complex structures the default
+     * may only be created in the constructor or init method. 
+     * @return The default value of this option.
+     */
+    String defaultValue() default "";
 }

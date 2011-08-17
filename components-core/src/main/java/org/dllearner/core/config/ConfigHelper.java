@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dllearner.algorithms.SimpleSubclassLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.core.Component;
 
@@ -69,9 +70,18 @@ public class ConfigHelper {
 	 * @return
 	 */
 	public static List<ConfigOption> getConfigOptions(Component component){
+		return getConfigOptions(component.getClass());
+	}
+	
+	/**
+	 * Returns all config options for the given component.
+	 * @param component
+	 * @return
+	 */
+	public static List<ConfigOption> getConfigOptions(Class<? extends Component> component){
 		List<ConfigOption> options = new ArrayList<ConfigOption>();
 		
-		Field[] fields = component.getClass().getDeclaredFields();
+		Field[] fields = component.getDeclaredFields();
 		for(Field f : fields){
         	ConfigOption option = f.getAnnotation(ConfigOption.class);
         	if(option != null){
@@ -80,7 +90,7 @@ public class ConfigHelper {
         }
 		
 		return options;
-	}
+	}	
 	
 	private static Class<?> getClassForObject(Object obj){
 		if(map.containsKey(obj.getClass())){
