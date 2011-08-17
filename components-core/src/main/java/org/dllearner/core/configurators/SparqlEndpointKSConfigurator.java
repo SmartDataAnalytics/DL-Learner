@@ -42,10 +42,10 @@ this.sparqlEndpointKS = sparqlEndpointKS;
 /**
 * @return SparqlEndpointKS
 **/
-public static SparqlEndpointKS getSparqlEndpointKS() {
-SparqlEndpointKS component = ComponentManager.getInstance().knowledgeSource(SparqlEndpointKS.class);
-return component;
-}
+//public static SparqlEndpointKS getSparqlEndpointKS() {
+//SparqlEndpointKS component = ComponentManager.getInstance().knowledgeSource(SparqlEndpointKS.class);
+//return component;
+//}
 
 
 

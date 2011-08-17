@@ -87,9 +87,9 @@ return OWLFileConfigurator.getOWLFile(url);
 /**
 * @return a component ready for initialization SparqlEndpointKS
 **/
-public static SparqlEndpointKS getSparqlEndpointKS()  {
-return SparqlEndpointKSConfigurator.getSparqlEndpointKS();
-}
+//public static SparqlEndpointKS getSparqlEndpointKS()  {
+//return SparqlEndpointKSConfigurator.getSparqlEndpointKS();
+//}
 
 /**
 * @param url URL of SPARQL Endpoint
