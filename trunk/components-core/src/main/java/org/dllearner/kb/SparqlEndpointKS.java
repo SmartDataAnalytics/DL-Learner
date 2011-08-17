@@ -19,15 +19,12 @@
  */
 package org.dllearner.kb;
 
-import java.io.File;
-import java.net.URI;
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.OntologyFormatUnsupportedException;
-import org.dllearner.core.configurators.SparqlEndpointKSConfigurator;
-import org.dllearner.core.owl.KB;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
 /**
@@ -38,42 +35,56 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
  * @author Jens Lehmann
  *
  */
-public class SparqlEndpointKS extends AbstractKnowledgeSource {
+public class SparqlEndpointKS implements KnowledgeSource {
 
 	private SparqlEndpoint endpoint;
+
+	// TODO: turn those into config options
+	private URL url;
+	private List<String> defaultGraphURIs = new LinkedList<String>();
+	private List<String> namedGraphURIs = new LinkedList<String>();
 	
-	private SparqlEndpointKSConfigurator configurator ;
-	
-	@Override
-	public SparqlEndpointKSConfigurator getConfigurator(){
-		return configurator;
-	}	
+	public SparqlEndpointKS() {
+		
+	}
 	
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
 		this.endpoint = endpoint;
 	}
 	
 	@Override
-	public KB toKB() {
-		return null;
-	}
-
-	@Override
-	public String toDIG(URI kbURI) {
-		return null;
-	}
-
-	@Override
-	public void export(File file, OntologyFormat format)
-			throws OntologyFormatUnsupportedException {
-	}
-
-	@Override
 	public void init() throws ComponentInitException {
+		if(endpoint == null) {
+			endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
+		}
 	}
 	
 	public SparqlEndpoint getEndpoint() {
 		return endpoint;
 	}
 
+	public URL getUrl() {
+		return url;
+	}
+
+	public void setUrl(URL url) {
+		this.url = url;
+	}
+
+	public List<String> getDefaultGraphURIs() {
+		return defaultGraphURIs;
+	}
+
+	public void setDefaultGraphURIs(List<String> defaultGraphURIs) {
+		this.defaultGraphURIs = defaultGraphURIs;
+	}
+
+	public List<String> getNamedGraphURIs() {
+		return namedGraphURIs;
+	}
+
+	public void setNamedGraphURIs(List<String> namedGraphURIs) {
+		this.namedGraphURIs = namedGraphURIs;
+	}	
+	
 }
