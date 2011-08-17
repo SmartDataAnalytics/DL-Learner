@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2011, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -38,12 +38,14 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 /**
- * @author Sebastian Hellmann Convenience class for SPARQL queries initialized
+ * Convenience class for SPARQL queries initialized
  *         with a SparqlEndpoint. A Cache can also be used to further improve
  *         query time. Some methods allow basic reasoning
+ * 
+ * @author Sebastian Hellmann 
+ * @author Jens Lehmann
  */
 public class SPARQLTasks {
 
@@ -92,6 +94,16 @@ public class SPARQLTasks {
 			final int maxDepth) {
 		// TODO check for quotes in uris
 		return getRecursiveSuperOrSubClasses(classURI, maxDepth, false);
+	}
+	
+	public SortedSet<String> getParallelClasses(String classURI, int limit) {
+		String query = "SELECT ?sub WHERE { <" + classURI + "> <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
+		query += "?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
+		query += "FILTER( ?sub != <" + classURI + ">) . } LIMIT " + limit;
+		return queryAsSet(query, "?sub");
+//		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
+//		ResultSet rs = sq.send();
+		
 	}
 
 	/**
