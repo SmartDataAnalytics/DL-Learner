@@ -29,7 +29,7 @@ public class EnrichmentVocabulary {
 	
 	
 	//the object properties
-	public static final OWLObjectProperty creator = factory.getOWLObjectProperty(IRI.create(NS + "creatr"));
+	public static final OWLObjectProperty creator = factory.getOWLObjectProperty(IRI.create(NS + "creator"));
 	
 //	public static final OWLObjectProperty hasAxiom = factory.getOWLObjectProperty(IRI.create(NS + "hasAxiom"));
 	

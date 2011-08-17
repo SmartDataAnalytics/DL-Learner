@@ -3,20 +3,18 @@ package org.dllearner.core;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.utilities.EnrichmentVocabulary;
 import org.dllearner.utilities.owl.OWLAPIConverter;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAnnotationAxiom;
-import org.semanticweb.owlapi.model.OWLAnnotationSubject;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
@@ -47,11 +45,12 @@ public class EvaluatedAxiom {
 		return axiom + "(" + score.getAccuracy()+ ")";
 	}
 
-	public List<OWLAxiom> toRDF(){
+	public Map<OWLIndividual, List<OWLAxiom>> toRDF(String defaultNamespace){
+		Map<OWLIndividual, List<OWLAxiom>> ind2Axioms = new HashMap<OWLIndividual, List<OWLAxiom>>();
 		OWLDataFactory f = new OWLDataFactoryImpl();
 		
 		String id = DigestUtils.md5Hex(axiom.toString()) + score.getAccuracy();
-		OWLNamedIndividual ind = f.getOWLNamedIndividual(IRI.create(EnrichmentVocabulary.NS + id));
+		OWLNamedIndividual ind = f.getOWLNamedIndividual(IRI.create(defaultNamespace + id));
 		
 	
 		StringWriter sw = new StringWriter();
@@ -59,7 +58,6 @@ public class EvaluatedAxiom {
 		ManchesterOWLSyntaxObjectRenderer r = new ManchesterOWLSyntaxObjectRenderer(pw, new ManchesterOWLSyntaxPrefixNameShortFormProvider(new DefaultPrefixManager()));
 		OWLAxiom ax = OWLAPIConverter.getOWLAPIAxiom(axiom);
 		ax.accept(r);
-		System.out.println(sw.toString());
 
 		OWLAxiom ax1 = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.Suggestion, ind);
 		OWLAxiom ax2 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.hasAxiom, ind, sw.toString());
@@ -71,7 +69,9 @@ public class EvaluatedAxiom {
 		axioms.add(ax2);
 		axioms.add(ax3);
 		
-		return axioms;
+		ind2Axioms.put(ind, axioms);
+		
+		return ind2Axioms;
 	}
 	
 
