@@ -77,7 +77,7 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  *
  */
-@ComponentAnn(name="CELOE")
+@ComponentAnn(name="CELOE", shortName="celoe", version=1.0)
 public class CELOE extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(CELOE.class);

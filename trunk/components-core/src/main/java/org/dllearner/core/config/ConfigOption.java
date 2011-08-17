@@ -43,11 +43,11 @@ public @interface ConfigOption {
      * The description of this config option
      * @return
      */
-    String description();
+    String description() default "no description available";
 
     /**
      * An implementation of the Property Editor to use
      * @return
      */
-    Class propertyEditorClass();
+    Class<?> propertyEditorClass();
 }

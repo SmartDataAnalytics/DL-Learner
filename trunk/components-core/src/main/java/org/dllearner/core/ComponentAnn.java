@@ -40,4 +40,17 @@ public @interface ComponentAnn {
      */
     String name();
 	
+    /**
+     * The short name of this component, which should exclusively consist of
+     * lower case ASCII symbols without whitespace.
+     * @return The short name of this component.
+     */
+    String shortName();
+    
+    /**
+     * The version of this component. 1.0 indicates a stable component. Developers
+     * should increase the version number in case of major implementation changes. 
+     * @return A version number of this component.
+     */
+    double version();
 }

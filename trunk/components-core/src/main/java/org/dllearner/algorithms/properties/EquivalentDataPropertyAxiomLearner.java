@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
-@ComponentAnn(name="equivalent dataproperty axiom learner")
+@ComponentAnn(name="equivalent dataproperty axiom learner", shortName="dplequiv", version=0.1)
 public class EquivalentDataPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(EquivalentDataPropertyAxiomLearner.class);
