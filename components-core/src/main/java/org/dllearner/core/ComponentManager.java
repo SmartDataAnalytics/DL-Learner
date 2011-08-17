@@ -100,7 +100,7 @@ public final class ComponentManager {
             "org.dllearner.kb.KBFile",
             "org.dllearner.kb.sparql.SparqlKnowledgeSource",
             "org.dllearner.kb.OWLAPIOntology",
-            "org.dllearner.kb.SparqlEndpointKS",
+//            "org.dllearner.kb.SparqlEndpointKS",
 //reasoners
             "org.dllearner.reasoning.OWLAPIReasoner",
             "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",  // added by Josue

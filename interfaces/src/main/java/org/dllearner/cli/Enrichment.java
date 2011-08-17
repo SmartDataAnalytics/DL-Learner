@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -99,8 +100,10 @@ import org.dllearner.utilities.CommonPrefixMap;
 import org.dllearner.utilities.EnrichmentVocabulary;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.SystemOutDocumentTarget;
 import org.semanticweb.owlapi.model.IRI;
@@ -185,7 +188,6 @@ public class Enrichment {
 		classAlgorithms.add(CELOE.class);		
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
 		
 		// sanity check that endpoint/graph returns at least one triple
@@ -210,15 +212,18 @@ public class Enrichment {
 			st.getAllObjectProperties();
 		} else {
 			if(resource instanceof ObjectProperty) {
+				System.out.println(resource + " appears to be an object property. Running appropriate algorithms.");
 				for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
 					applyLearningAlgorithm(algorithmClass, ks);
 				}
 			} else if(resource instanceof DatatypeProperty) {
+				System.out.println(resource + " appears to be a data property. Running appropriate algorithms.");
 				for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
 					applyLearningAlgorithm(algorithmClass, ks);
 					
 				}
 			} else if(resource instanceof NamedClass) {
+				System.out.println(resource + " appears to be a class. Running appropriate algorithms.");
 				for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
 					if(algorithmClass == CELOE.class) {
 						applyCELOE(ks, false);
@@ -234,23 +239,30 @@ public class Enrichment {
 	}
 	
 	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, boolean equivalence) throws ComponentInitException, LearningProblemUnsupportedException, MalformedURLException {
-		SPARQLTasks st = new SPARQLTasks(se);
+//		SPARQLTasks st = new SPARQLTasks(se);
 		
 		// get instances of class as positive examples
 		SPARQLReasoner sr = new SPARQLReasoner(ks);
-		SortedSet<Individual> posExamples = sr.getIndividuals((NamedClass)resource, 50);
+		SortedSet<Individual> posExamples = sr.getIndividuals((NamedClass)resource, 20);
 		SortedSet<String> posExStr = Helper.getStringSet(posExamples);
 		
 		// get negative examples via various strategies
-		AutomaticNegativeExampleFinderSPARQL finder = new AutomaticNegativeExampleFinderSPARQL(posExStr, st, null);
-		finder.makeNegativeExamplesFromNearbyClasses(posExStr, 50);
-		finder.makeNegativeExamplesFromParallelClasses(posExStr, 50);
-		finder.makeNegativeExamplesFromRelatedInstances(posExStr, "http://dbpedia.org/resource/");
-		finder.makeNegativeExamplesFromSuperClasses(resource.getName(), 50);
+//		AutomaticNegativeExampleFinderSPARQL finder = new AutomaticNegativeExampleFinderSPARQL(posExStr, st, null);
+//		finder.makeNegativeExamplesFromNearbyClasses(posExStr, 50);
+//		finder.makeNegativeExamplesFromParallelClasses(posExStr, 50);
+//		finder.makeNegativeExamplesFromRelatedInstances(posExStr, "http://dbpedia.org/resource/");
+//		finder.makeNegativeExamplesFromSuperClasses(resource.getName(), 50);
 //		finder.makeNegativeExamplesFromRandomInstances();
-		SortedSet<String> negExStr = finder.getNegativeExamples(50, false);
+//		SortedSet<String> negExStr = finder.getNegativeExamples(50, false);
+		// use own implementation of negative example finder
+		System.out.print("finding negatives ... ");
+		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
+		SortedSet<String> negExStr = finder.getNegativeExamples(resource.getName(), posExStr);
+		negExStr = SetManipulation.fuzzyShrink(negExStr, 20);
 		SortedSet<Individual> negExamples = Helper.getIndividualSet(negExStr);
 		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
+		
+		System.out.println("done (" + negExStr.size()+ ")");
 		
         ComponentManager cm = ComponentManager.getInstance();
 
@@ -263,7 +275,9 @@ public class Enrichment {
         ks2.getConfigurator().setRecursionDepth(1);
         ks2.getConfigurator().setCloseAfterRecursion(true);
 //        ks2.getConfigurator().setSaveExtractedFragment(true);
+        System.out.println("getting fragment ... ");
         ks2.init();
+        System.out.println("done");
 
         AbstractReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks2);
         rc.init();
@@ -276,15 +290,17 @@ public class Enrichment {
         lp.getConfigurator().setType("equivalence");
         lp.getConfigurator().setAccuracyMethod("fmeasure");
         lp.getConfigurator().setUseApproximations(false);
+        lp.getConfigurator().setMaxExecutionTimeInSeconds(10);
         lp.init();
-
 
         CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
         CELOEConfigurator cc = la.getConfigurator();
         cc.setMaxExecutionTimeInSeconds(100);
         cc.setNoisePercentage(20);
         la.init();
+        System.out.print("running CELOE ... ");
         la.start();
+        System.out.println("done");
 
         // convert the result to axioms (to make it compatible with the other algorithms)
         TreeSet<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions();
