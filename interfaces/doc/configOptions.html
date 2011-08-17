@@ -1,0 +1,156 @@
+<html><head><title>DL-Learner components and configuration options</title>
+<style type="text/css">
+body { line-height: 1.6em; font-size: 15px; font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;  }
+#hor-minimalist-a 	{ font-size: 13px;	background: #fff; margin: 30px;	width: 90%;border-collapse: collapse; 	text-align: left; } 
+#hor-minimalist-a th { font-size: 15px;	font-weight: normal; color: #039; padding: 10px 8px; border-bottom: 2px solid #6678b1;	}
+#hor-minimalist-a td	{ color: #669;padding: 9px 8px 0px 8px;	}
+#hor-minimalist-a tbody tr:hover td 	{ color: #009; }
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script><script type="text/javascript" language="javascript">
+//<![CDATA[
+function showOnlyCat(className){
+	 $('div').show(); $('div').not('.'+className).hide(); }
+function showAllCat(){
+  $('div').show() };
+//]]>
+</script>
+</head><body>
+<h1>DL-Learner Components</h1>
+<p>Filter components by implemented interfaces:</p>
+<ul><a href="#" onClick="showAllCat()">show all</a><li><a href="#" onClick="showOnlyCat('KnowledgeSource')">KnowledgeSource</a></li><li><a href="#" onClick="showOnlyCat('ReasonerComponent')">ReasonerComponent</a></li><li><a href="#" onClick="showOnlyCat('LearningProblem')">LearningProblem</a></li><li><a href="#" onClick="showOnlyCat('LearningAlgorithm')">LearningAlgorithm</a><ul><li><a href="#" onClick="showOnlyCat('AxiomLearningAlgorithm')">AxiomLearningAlgorithm</a></li></ul></li></ul><p>Click on a component to get an overview on its configuration options.</p><ul>
+<div class="LearningAlgorithm"><li><a href="#org.dllearner.algorithms.celoe.CELOE">CELOE</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner">data subPropertyOf axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner">dataproperty domain axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner">dataproperty range learner</a></li></div>
+<div class="LearningAlgorithm"><li><a href="#org.dllearner.algorithms.DisjointClassesLearner">disjoint classes learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner">disjoint dataproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner">disjoint objectproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner">equivalent dataproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner">equivalent objectproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner">functional dataproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner">functional objectproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner">inversefunctional objectproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner">object subPropertyOf axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner">objectproperty domain axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner">objectproperty range learner</a></li></div>
+<div class="LearningAlgorithm"><li><a href="#org.dllearner.algorithms.SimpleSubclassLearner">simple subclass learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner">symmetric objectproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner">transitive objectproperty axiom learner</a></li></div>
+</ul>
+<div class="LearningAlgorithm"><a name="org.dllearner.algorithms.celoe.CELOE"><h2>CELOE</h2></a>
+<p>short name: celoe<br />version: 1.0<br />implements: LearningAlgorithm<br />description: CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.<br /></p>This component does not have configuration options.</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner"><h2>data subPropertyOf axiom learner</h2></a>
+<p>short name: dplsubprop<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DataProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner"><h2>dataproperty domain axiom learner</h2></a>
+<p>short name: dpldomain<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DataProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner"><h2>dataproperty range learner</h2></a>
+<p>short name: dblrange<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DataProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm"><a name="org.dllearner.algorithms.DisjointClassesLearner"><h2>disjoint classes learner</h2></a>
+<p>short name: cldisjoint<br />version: 0.1<br />implements: LearningAlgorithm<br /></p>This component does not have configuration options.</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner"><h2>disjoint dataproperty axiom learner</h2></a>
+<p>short name: dpldisjoint<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DataProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner"><h2>disjoint objectproperty axiom learner</h2></a>
+<p>short name: opldisjoint<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner"><h2>equivalent dataproperty axiom learner</h2></a>
+<p>short name: dplequiv<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DataProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner"><h2>equivalent objectproperty axiom learner</h2></a>
+<p>short name: oplequiv<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner"><h2>functional dataproperty axiom learner</h2></a>
+<p>short name: dplfunc<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DataProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner"><h2>functional objectproperty axiom learner</h2></a>
+<p>short name: oplfunc<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner"><h2>inversefunctional objectproperty axiom learner</h2></a>
+<p>short name: oplinvfunc<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner"><h2>object subPropertyOf axiom learner</h2></a>
+<p>short name: oplsubprop<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner"><h2>objectproperty domain axiom learner</h2></a>
+<p>short name: opldomain<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner"><h2>objectproperty range learner</h2></a>
+<p>short name: oplrange<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm"><a name="org.dllearner.algorithms.SimpleSubclassLearner"><h2>simple subclass learner</h2></a>
+<p>short name: clsub<br />version: 0.1<br />implements: LearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>classToDescribe</td><td></td><td> NamedClass</td><td></td><td> true</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td>10</td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner"><h2>symmetric objectproperty axiom learner</h2></a>
+<p>short name: oplsymm<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner"><h2>transitive objectproperty axiom learner</h2></a>
+<p>short name: opltrans<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td></td><td> Integer</td><td></td><td> false</td></tr>
+<tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> Integer</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+</body></html>
