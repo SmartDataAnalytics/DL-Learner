@@ -77,7 +77,7 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  *
  */
-@ComponentAnn(name="CELOE", shortName="celoe", version=1.0)
+@ComponentAnn(name="CELOE", shortName="celoe", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class CELOE extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(CELOE.class);

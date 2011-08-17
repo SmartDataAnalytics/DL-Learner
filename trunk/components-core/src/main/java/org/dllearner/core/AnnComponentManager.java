@@ -19,10 +19,13 @@
  */
 package org.dllearner.core;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -64,8 +67,8 @@ public class AnnComponentManager {
             "org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner",
             "org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner",
             "org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner",
-            "org.dllearner.algorithms.algorithms.DisjointClassesLearner",
-            "org.dllearner.algorithms.algorithms.SimpleSubclassLearner",
+            "org.dllearner.algorithms.DisjointClassesLearner",
+            "org.dllearner.algorithms.SimpleSubclassLearner",
     } ));
     private static Collection<Class<? extends Component>> components;
     private static Map<Class<? extends Component>, String> componentNames;
@@ -74,6 +77,8 @@ public class AnnComponentManager {
 	
 	private AnnComponentManager() {
 		// conversion of class strings to objects
+		components = new HashSet<Class<? extends Component>>();
+		componentNames = new HashMap<Class<? extends Component>, String>();
 		for (String componentClassName : componentClassNames) {
 			try {
 				Class<? extends Component> component = Class.forName(componentClassName).asSubclass(Component.class);
@@ -198,6 +203,28 @@ public class AnnComponentManager {
 		}
 		return true;
 	}
+
+	// method lists all core interfaces implemented by a component (directly or indirectly)
+	// TODO: incomplete
+	public static List<Class<? extends Component>> getCoreComponentTypes(Class<? extends Component> component) {
+		List<Class<? extends Component>> types = new LinkedList<Class<? extends Component>>();
+		if(KnowledgeSource.class.isAssignableFrom(component)) {
+			types.add(KnowledgeSource.class);
+		}
+		if(LearningAlgorithm.class.isAssignableFrom(component)) {
+			types.add(LearningAlgorithm.class);
+		}
+		if(LearningProblem.class.isAssignableFrom(component)) {
+			types.add(LearningProblem.class);
+		}
+		if(ReasonerComponent.class.isAssignableFrom(component)) {
+			types.add(ReasonerComponent.class);
+		}
+		if(AxiomLearningAlgorithm.class.isAssignableFrom(component)) {
+			types.add(AxiomLearningAlgorithm.class);
+		}
+		return types;
+	}
 	
 	/**
 	 * Returns the name of a DL-Learner component.
@@ -206,6 +233,9 @@ public class AnnComponentManager {
 	 */
 	public static String getName(Class<? extends Component> component){
 		ComponentAnn ann = component.getAnnotation(ComponentAnn.class);
+		if(ann == null) {
+			throw new Error("Component " + component + " does not use component annotation.");
+		}
 		return ann.name();
 	}	
 	
@@ -215,7 +245,66 @@ public class AnnComponentManager {
 	 * @return Name of the component.
 	 */
 	public static String getName(Component component){
-		ComponentAnn ann = component.getClass().getAnnotation(ComponentAnn.class);
-		return ann.name();
+		return getName(component.getClass());
 	}
+	
+	/**
+	 * Returns the name of a DL-Learner component.
+	 * @param component
+	 * @return Name of the component.
+	 */
+	public static String getShortName(Class<? extends Component> component){
+		ComponentAnn ann = component.getAnnotation(ComponentAnn.class);
+		if(ann == null) {
+			throw new Error("Component " + component + " does not use component annotation.");
+		}
+		return ann.shortName();
+	}	
+	
+	/**
+	 * Returns the short name of a DL-Learner component.
+	 * @param component
+	 * @return Short name of the component.
+	 */
+	public static String getShortName(Component component){
+		return getShortName(component.getClass());
+	}
+	
+	/**
+	 * Returns the name of a DL-Learner component.
+	 * @param component
+	 * @return Name of the component.
+	 */
+	public static String getDescription(Class<? extends Component> component){
+		ComponentAnn ann = component.getAnnotation(ComponentAnn.class);
+		return ann.description();
+	}	
+	
+	/**
+	 * Returns the description of a DL-Learner component.
+	 * @param component
+	 * @return Description of the component.
+	 */
+	public static String getDescription(Component component){
+		return getDescription(component.getClass());
+	}	
+	
+	/**
+	 * Returns the version of a DL-Learner component.
+	 * @param component
+	 * @return Version of the component.
+	 */
+	public static double getVersion(Class<? extends Component> component){
+		ComponentAnn ann = component.getAnnotation(ComponentAnn.class);
+		return ann.version();
+	}	
+	
+	/**
+	 * Returns the version of a DL-Learner component.
+	 * @param component
+	 * @return Version of the component.
+	 */
+	public static double getVersion(Component component){
+		return getVersion(component.getClass());
+	}	
 }

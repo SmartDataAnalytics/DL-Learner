@@ -22,6 +22,7 @@ package org.dllearner.algorithms;
 import java.util.List;
 
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Description;
@@ -33,6 +34,7 @@ import org.dllearner.core.owl.Description;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "disjoint classes learner", shortName = "cldisjoint", version = 0.1)
 public class DisjointClassesLearner implements ClassExpressionLearningAlgorithm {
 
 	@Override
