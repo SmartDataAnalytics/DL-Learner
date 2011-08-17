@@ -34,7 +34,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
-@ComponentAnn(name="equivalent objectproperty axiom learner")
+@ComponentAnn(name="equivalent objectproperty axiom learner", shortName="oplequiv", version=0.1)
 public class EquivalentObjectPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(EquivalentObjectPropertyAxiomLearner.class);

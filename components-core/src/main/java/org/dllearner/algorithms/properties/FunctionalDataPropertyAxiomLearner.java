@@ -28,7 +28,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-@ComponentAnn(name="functional dataproperty axiom learner")
+@ComponentAnn(name="functional dataproperty axiom learner", shortName="dplfunc", version=0.1)
 public class FunctionalDataPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(FunctionalDataPropertyAxiomLearner.class);

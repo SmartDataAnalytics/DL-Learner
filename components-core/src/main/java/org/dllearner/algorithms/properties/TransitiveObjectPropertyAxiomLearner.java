@@ -29,7 +29,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-@ComponentAnn(name="transitive objectproperty axiom learner")
+@ComponentAnn(name="transitive objectproperty axiom learner", shortName="opltrans", version=0.1)
 public class TransitiveObjectPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(TransitiveObjectPropertyAxiomLearner.class);

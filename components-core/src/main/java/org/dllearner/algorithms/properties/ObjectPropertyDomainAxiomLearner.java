@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
-@ComponentAnn(name="objectproperty domain axiom learner")
+@ComponentAnn(name="objectproperty domain axiom learner", shortName="opldomain", version=0.1)
 public class ObjectPropertyDomainAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner.class);
