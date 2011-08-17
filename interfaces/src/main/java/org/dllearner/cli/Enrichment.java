@@ -22,7 +22,6 @@ package org.dllearner.cli;
 import static java.util.Arrays.asList;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -103,7 +102,6 @@ import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.OWLOntologyDocumentTarget;
 import org.semanticweb.owlapi.io.SystemOutDocumentTarget;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -115,12 +113,9 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -403,7 +398,8 @@ public class Enrichment {
 		ax = f.getOWLAnnotationAssertionAxiom(algorithmInd.asOWLNamedIndividual().getIRI(), labelAnno);
 		axioms.add(ax);
 		//add version to algorithm
-		//TODO
+		ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.version, algorithmInd, algorithm.getClass().getAnnotation(ComponentAnn.class).version());
+		axioms.add(ax);
 		//add algorithm instance to algorithm run instance
 		ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.usedAlgorithm,
 				algorithmRunInd, algorithmInd);
