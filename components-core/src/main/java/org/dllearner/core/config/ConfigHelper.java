@@ -74,6 +74,58 @@ public class ConfigHelper {
 	}
 	
 	/**
+	 * 
+	 * @param component The component to analyse.
+	 * @return All config options of the component with their respective value.
+	 */
+	public static Map<ConfigOption,String> getConfigOptionValuesString(Component component) {
+		Map<ConfigOption,String> optionValues = new HashMap<ConfigOption,String>();
+		Field[] fields = getConfigOptions(component).getClass().getDeclaredFields();
+		for(Field field : fields) {
+			ConfigOption option = field.getAnnotation(ConfigOption.class);
+			if(option != null) {
+				Class<? extends PropertyEditor> editorClass = option.propertyEditorClass();
+				PropertyEditor editor = null;
+				try {
+					editor = editorClass.newInstance();
+					Object object = field.get(component);
+					editor.setValue(object);
+					String value = editor.getAsText();
+					optionValues.put(option, value);
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return optionValues;
+	}	
+	
+	/**
+	 * 
+	 * @param component The component to analyse.
+	 * @return All config options of the component with their respective value.
+	 */
+	public static Map<ConfigOption,Object> getConfigOptionValues(Component component) {
+		Map<ConfigOption,Object> optionValues = new HashMap<ConfigOption,Object>();
+		Field[] fields = getConfigOptions(component).getClass().getDeclaredFields();
+		for(Field field : fields) {
+			ConfigOption option = field.getAnnotation(ConfigOption.class);
+			if(option != null) {
+				try {
+					optionValues.put(option, field.get(component));
+				} catch (IllegalArgumentException e1) {
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		return optionValues;
+	}	
+	
+	/**
 	 * Returns all config options for the given component.
 	 * @param component
 	 * @return
