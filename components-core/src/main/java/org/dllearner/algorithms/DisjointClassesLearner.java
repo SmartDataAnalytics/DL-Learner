@@ -288,7 +288,7 @@ public class DisjointClassesLearner implements ClassExpressionLearningAlgorithm,
 		l.init();
 		l.start();
 		
-		for(EvaluatedDescription e : l.getCurrentlyBestEvaluatedDescriptions(300)){
+		for(EvaluatedAxiom e : l.getCurrentlyBestEvaluatedAxioms(50)){
 			System.out.println(e);
 		}
 		

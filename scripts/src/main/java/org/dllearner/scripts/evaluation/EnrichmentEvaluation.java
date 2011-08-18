@@ -38,7 +38,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+import org.apache.velocity.context.EvaluateContext;
 import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
 import org.dllearner.algorithms.celoe.CELOE;
@@ -59,14 +63,17 @@ import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -94,9 +101,9 @@ public class EnrichmentEvaluation {
 	private int nrOfAxiomsToLearn = 10;
 
 	// can be used to only evaluate a part of DBpedia
-	private int maxObjectProperties = 10;
-	private int maxDataProperties = 10;
-	private int maxClasses = 10;
+	private int maxObjectProperties = 0;
+	private int maxDataProperties = 0;
+	private int maxClasses = 0;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
@@ -135,9 +142,9 @@ public class EnrichmentEvaluation {
 		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
-		classAlgorithms.add(DisjointClassesLearner.class);
+//		classAlgorithms.add(DisjointClassesLearner.class);
 		classAlgorithms.add(SimpleSubclassLearner.class);
-		classAlgorithms.add(CELOE.class);
+//		classAlgorithms.add(CELOE.class);
 		
 		initDBConnection();
 	}
@@ -196,7 +203,7 @@ public class EnrichmentEvaluation {
 			IllegalAccessException, InvocationTargetException, NoSuchMethodException,
 			ComponentInitException {
 		long overallStartTime = System.currentTimeMillis();
-		ComponentManager cm = ComponentManager.getInstance();
+//		ComponentManager cm = ComponentManager.getInstance();
 
 		// create DBpedia Live knowledge source
 		SparqlEndpoint se = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
@@ -206,7 +213,9 @@ public class EnrichmentEvaluation {
 		
 		evaluateObjectProperties(ks);
 		
-//		evaluateDataProperties(ks);
+		evaluateDataProperties(ks);
+		
+		evaluateClasses(ks);
 		
 		System.out.println("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
 
@@ -217,50 +226,58 @@ public class EnrichmentEvaluation {
 
 		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
 			int objectProperties = 0;
-			for (ObjectProperty property : properties) {
-
-				// dynamically invoke constructor with SPARQL knowledge source
-				AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
-						SparqlEndpointKS.class).newInstance(ks);
-				ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
-				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
-						maxExecutionTimeInSeconds);
-				learner.init();
-				// learner.setPropertyToDescribe(property);
-				// learner.setMaxExecutionTimeInSeconds(10);
-				String algName = AnnComponentManager.getName(learner);
-				System.out.println("Applying " + algName + " on " + property + " ... ");
-				long startTime = System.currentTimeMillis();
-				boolean timeout = false;
-				try {
-					learner.start();
-				} catch (Exception e) {
-					if(e.getCause() instanceof SocketTimeoutException){
-						timeout = true;
-					}
-				}
-				long runTime = System.currentTimeMillis() - startTime;
-				List<EvaluatedAxiom> learnedAxioms = learner
-						.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-				if(timeout){
-					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime);
-				} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
-					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime);
-				} else {
-					for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
-						double score = learnedAxiom.getScore().getAccuracy();
-						if (Double.isNaN(score)) {
-							score = -1;
+			
+			String algName = "";
+				for (ObjectProperty property : properties) {
+					
+					try {
+						// dynamically invoke constructor with SPARQL knowledge source
+						AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
+								SparqlEndpointKS.class).newInstance(ks);
+						ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
+						ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
+								maxExecutionTimeInSeconds);
+						learner.init();
+						// learner.setPropertyToDescribe(property);
+						// learner.setMaxExecutionTimeInSeconds(10);
+						algName = AnnComponentManager.getName(learner);
+						System.out.println("Applying " + algName + " on " + property + " ... ");
+						long startTime = System.currentTimeMillis();
+						boolean timeout = false;
+						try {
+							learner.start();
+						} catch (Exception e) {
+							if(e.getCause() instanceof SocketTimeoutException){
+								timeout = true;throw e;
+							}
 						}
-						writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
-								score, runTime);
+						long runTime = System.currentTimeMillis() - startTime;
+						List<EvaluatedAxiom> learnedAxioms = learner
+								.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+						if(timeout){
+							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime);
+						} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
+							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime);
+						} else {
+							for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+								double score = learnedAxiom.getScore().getAccuracy();
+								if (Double.isNaN(score)) {
+									score = -1;
+								}
+								writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
+										score, runTime);
+							}
+						}
+						objectProperties++;
+						if (maxObjectProperties != 0 && objectProperties > maxObjectProperties) {
+							break;
+						}
+					
+					} catch (Exception e) {
+						logger.error("Error occured for object property " + property.getName() + " with algorithm " + algName , e);
 					}
 				}
-				objectProperties++;
-				if (maxObjectProperties != 0 && objectProperties > maxObjectProperties) {
-					break;
-				}
-			}
+			
 		}
 	}
 	
@@ -269,8 +286,11 @@ public class EnrichmentEvaluation {
 
 		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
 			int dataProperties = 0;
+			
+			String algName = "";
 			for (DatatypeProperty property : properties) {
 
+				try{
 				// dynamically invoke constructor with SPARQL knowledge source
 				AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
 						SparqlEndpointKS.class).newInstance(ks);
@@ -280,7 +300,7 @@ public class EnrichmentEvaluation {
 				learner.init();
 				// learner.setPropertyToDescribe(property);
 				// learner.setMaxExecutionTimeInSeconds(10);
-				String algName = AnnComponentManager.getName(learner);
+				algName = AnnComponentManager.getName(learner);
 				System.out.println("Applying " + algName + " on " + property + " ... ");
 				long startTime = System.currentTimeMillis();
 				boolean timeout = false;
@@ -311,6 +331,72 @@ public class EnrichmentEvaluation {
 				dataProperties++;
 				if (maxDataProperties != 0 && dataProperties > maxDataProperties) {
 					break;
+				}
+				
+			} catch (Exception e) {
+				logger.error("Error occured for data property " + property.getName() + " with algorithm " + algName , e);
+			}
+			}
+		}
+	}
+	
+	private void evaluateClasses(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException{
+		Set<NamedClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+
+		for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
+			int classesCnt = 0;
+			for (NamedClass cls : classes) {
+
+				try{
+					// dynamically invoke constructor with SPARQL knowledge source
+					LearningAlgorithm learner = algorithmClass.getConstructor(
+							SparqlEndpointKS.class).newInstance(ks);
+					ConfigHelper.configure(learner, "classToDescribe", cls.toString());
+					ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
+							maxExecutionTimeInSeconds);
+					learner.init();
+					// learner.setPropertyToDescribe(property);
+					// learner.setMaxExecutionTimeInSeconds(10);
+					String algName = AnnComponentManager.getName(learner);
+					System.out.println("Applying " + algName + " on " + cls + " ... ");
+					long startTime = System.currentTimeMillis();
+					boolean timeout = false;
+					try {
+						learner.start();
+					} catch (Exception e) {
+						if(e.getCause() instanceof SocketTimeoutException){
+							timeout = true;
+						}
+					}
+					long runTime = System.currentTimeMillis() - startTime;
+					if(learner instanceof AxiomLearningAlgorithm){
+						List<EvaluatedAxiom> learnedAxioms = ((AxiomLearningAlgorithm)learner)
+								.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+						if(timeout){
+							writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime);
+						} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
+							writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime);
+						} else {
+							for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+								double score = learnedAxiom.getScore().getAccuracy();
+								if (Double.isNaN(score)) {
+									score = -1;
+								}
+								writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
+										score, runTime);
+							}
+						}
+					} else if(learner instanceof AbstractCELA){
+						
+					}
+					
+					classesCnt++;
+					if (maxClasses != 0 && classesCnt > maxClasses) {
+						break;
+					}
+					
+				} catch(Exception e){
+					logger.error("Error occured for class " + cls.getName(), e);
 				}
 			}
 		}
@@ -357,11 +443,15 @@ public class EnrichmentEvaluation {
 
 	public static void main(String[] args) throws IllegalArgumentException, SecurityException,
 			InstantiationException, IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException, ComponentInitException, SQLException {
+			NoSuchMethodException, ComponentInitException, SQLException, IOException {
 		EnrichmentEvaluation ee = new EnrichmentEvaluation();
 		ee.start();
 		// ee.printResultsPlain();
 		Files.createFile(new File("enrichment_eval.html"), ee.printHTMLTable());
+		FileAppender app = new FileAppender(new SimpleLayout(), "log/enrichmentEvalErrors.log");
+		Logger.getRootLogger().setLevel(Level.ERROR);
+		Logger.getRootLogger().removeAllAppenders();
+		Logger.getRootLogger().addAppender(app);
 	}
 
 }
