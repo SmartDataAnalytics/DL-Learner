@@ -132,6 +132,26 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  */
 public class Enrichment {
 
+	// data structure for holding the result of an algorithm run
+	private class AlgorithmRun {
+		
+		private LearningAlgorithm algorithm;
+		private List<EvaluatedAxiom> axioms;
+		
+		public AlgorithmRun(LearningAlgorithm algorithm, List<EvaluatedAxiom> axioms) {
+			this.algorithm = algorithm;
+			this.axioms = axioms;
+		}
+		
+		public LearningAlgorithm getAlgorithm() {
+			return algorithm;
+		}
+
+		public List<EvaluatedAxiom> getAxioms() {
+			return axioms;
+		}		
+	}
+	
 	private static Logger logger = Logger.getLogger(Enrichment.class);
 	private DecimalFormat df = new DecimalFormat("##0.0");
 	private static final String DEFAULT_NS = "http://localhost:8080/";
@@ -155,6 +175,9 @@ public class Enrichment {
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
+	
+	// list of generated axioms while script is running
+	
 	
 	private CommonPrefixMap prefixes = new CommonPrefixMap();
 	
@@ -188,6 +211,7 @@ public class Enrichment {
 		classAlgorithms.add(CELOE.class);		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
 		
 		// sanity check that endpoint/graph returns at least one triple
@@ -206,44 +230,66 @@ public class Enrichment {
 		SPARQLTasks st = new SPARQLTasks(se);
 		
 		if(resource == null) {
-			// TODO: automatically run over all resources if no specific resource was specified
-			st.getAllClasses();
-			st.getAllDataProperties();
-			st.getAllObjectProperties();
+			// loop over all entities and call appropriate algorithms
+			Set<NamedClass> classes = st.getAllClasses();
+			for(NamedClass nc : classes) {
+				runClassLearningAlgorithms(ks, nc);				
+			}
+			Set<ObjectProperty> objectProperties = st.getAllObjectProperties();			
+			for(ObjectProperty property : objectProperties) {
+				runObjectPropertyAlgorithms(ks, property);				
+			}
+			Set<DatatypeProperty> dataProperties = st.getAllDataProperties();
+			for(DatatypeProperty property : dataProperties) {
+				runDataPropertyAlgorithms(ks, property);		
+			}
 		} else {
 			if(resource instanceof ObjectProperty) {
 				System.out.println(resource + " appears to be an object property. Running appropriate algorithms.");
-				for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
-					applyLearningAlgorithm(algorithmClass, ks);
-				}
+				runObjectPropertyAlgorithms(ks, (ObjectProperty) resource);
 			} else if(resource instanceof DatatypeProperty) {
 				System.out.println(resource + " appears to be a data property. Running appropriate algorithms.");
-				for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
-					applyLearningAlgorithm(algorithmClass, ks);
-					
-				}
+				runDataPropertyAlgorithms(ks, (DatatypeProperty) resource);
 			} else if(resource instanceof NamedClass) {
 				System.out.println(resource + " appears to be a class. Running appropriate algorithms.");
-				for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
-					if(algorithmClass == CELOE.class) {
-						applyCELOE(ks, false);
-						applyCELOE(ks, true);
-					} else {
-//						applyLearningAlgorithm((Class<AxiomLearningAlgorithm>)algorithmClass, ks);
-					}
-				}				
+				runClassLearningAlgorithms(ks, (NamedClass) resource);				
 			} else {
 				throw new Error("The type " + resource.getClass() + " of resource " + resource + " cannot be handled by this enrichment tool.");
 			}
 		}
 	}
 	
-	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, boolean equivalence) throws ComponentInitException, LearningProblemUnsupportedException, MalformedURLException {
+	@SuppressWarnings("unchecked")
+	private void runClassLearningAlgorithms(SparqlEndpointKS ks, NamedClass nc) throws ComponentInitException {
+		System.out.println(resource + " appears to be a class. Running appropriate algorithms.");
+		for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
+			if(algorithmClass == CELOE.class) {
+				applyCELOE(ks, nc, false);
+				applyCELOE(ks, nc, true);
+			} else {
+				applyLearningAlgorithm((Class<AxiomLearningAlgorithm>)algorithmClass, ks, nc);
+			}
+		}
+	}
+	
+	private void runObjectPropertyAlgorithms(SparqlEndpointKS ks, ObjectProperty property) throws ComponentInitException {
+		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
+			applyLearningAlgorithm(algorithmClass, ks, property);
+		}		
+	}
+	
+	private void runDataPropertyAlgorithms(SparqlEndpointKS ks, DatatypeProperty property) throws ComponentInitException {
+		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
+			applyLearningAlgorithm(algorithmClass, ks, property);
+		}		
+	}	
+	
+	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, NamedClass nc, boolean equivalence) throws ComponentInitException {
 //		SPARQLTasks st = new SPARQLTasks(se);
 		
 		// get instances of class as positive examples
 		SPARQLReasoner sr = new SPARQLReasoner(ks);
-		SortedSet<Individual> posExamples = sr.getIndividuals((NamedClass)resource, 20);
+		SortedSet<Individual> posExamples = sr.getIndividuals(nc, 20);
 		SortedSet<String> posExStr = Helper.getStringSet(posExamples);
 		
 		// get negative examples via various strategies
@@ -257,7 +303,7 @@ public class Enrichment {
 		// use own implementation of negative example finder
 		System.out.print("finding negatives ... ");
 		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
-		SortedSet<String> negExStr = finder.getNegativeExamples(resource.getName(), posExStr);
+		SortedSet<String> negExStr = finder.getNegativeExamples(nc.getName(), posExStr);
 		negExStr = SetManipulation.fuzzyShrink(negExStr, 20);
 		SortedSet<Individual> negExamples = Helper.getIndividualSet(negExStr);
 		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
@@ -286,21 +332,30 @@ public class Enrichment {
         ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, rc);
 //        lp.setPositiveExamples(posExamples);
 //        lp.setNegativeExamples(negExamples);
-        lp.getConfigurator().setClassToDescribe(resource.getURI().toURL());
+        try {
+			lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		}
         lp.getConfigurator().setType("equivalence");
         lp.getConfigurator().setAccuracyMethod("fmeasure");
         lp.getConfigurator().setUseApproximations(false);
         lp.getConfigurator().setMaxExecutionTimeInSeconds(10);
         lp.init();
 
-        CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
+        CELOE la = null;
+		try {
+			la = cm.learningAlgorithm(CELOE.class, lp, rc);
+		} catch (LearningProblemUnsupportedException e) {
+			e.printStackTrace();
+		}
         CELOEConfigurator cc = la.getConfigurator();
         cc.setMaxExecutionTimeInSeconds(10);
         cc.setNoisePercentage(25);
         la.init();
         System.out.print("running CELOE ... ");
         la.start();
-        System.out.println("done");
+        System.out.println("done");		
 
         // convert the result to axioms (to make it compatible with the other algorithms)
         TreeSet<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions();
@@ -308,9 +363,9 @@ public class Enrichment {
         for(EvaluatedDescription learnedDescription : learnedDescriptions) {
         	Axiom axiom;
         	if(equivalence) {
-        		axiom = new EquivalentClassesAxiom((NamedClass) resource, learnedDescription.getDescription());
+        		axiom = new EquivalentClassesAxiom(nc, learnedDescription.getDescription());
         	} else {
-        		axiom = new SubClassAxiom((NamedClass) resource, learnedDescription.getDescription());
+        		axiom = new SubClassAxiom(nc, learnedDescription.getDescription());
         	}
         	Score score = lp.computeScore(learnedDescription.getDescription());
         	evaluatedAxioms.add(new EvaluatedAxiom(axiom, score)); 
@@ -321,19 +376,24 @@ public class Enrichment {
 		return evaluatedAxioms;
 	}
 	
-	private List<EvaluatedAxiom> applyLearningAlgorithm(Class<? extends AxiomLearningAlgorithm> algorithmClass, SparqlEndpointKS ks) throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
-				SparqlEndpointKS.class).newInstance(ks);
+	private List<EvaluatedAxiom> applyLearningAlgorithm(Class<? extends AxiomLearningAlgorithm> algorithmClass, SparqlEndpointKS ks, Entity entity) throws ComponentInitException {
+		AxiomLearningAlgorithm learner = null;
+		try {
+			learner = algorithmClass.getConstructor(
+					SparqlEndpointKS.class).newInstance(ks);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if(classAlgorithms.contains(algorithmClass)) {
-			ConfigHelper.configure(learner, "classToDescribe", resource);
+			ConfigHelper.configure(learner, "classToDescribe", entity);
 		} else {
-			ConfigHelper.configure(learner, "propertyToDescribe", resource);
+			ConfigHelper.configure(learner, "propertyToDescribe", entity);
 		}
 		ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 				maxExecutionTimeInSeconds);
 		learner.init();
 		String algName = AnnComponentManager.getName(learner);
-		System.out.print("Applying " + algName + " on " + resource + " ... ");
+		System.out.print("Applying " + algName + " on " + entity + " ... ");
 		long startTime = System.currentTimeMillis();
 		try {
 			learner.start();
