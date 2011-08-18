@@ -22,6 +22,7 @@ package org.dllearner.algorithms;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,14 +30,18 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.NamedClassEditor;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
@@ -58,7 +63,7 @@ import com.hp.hpl.jena.query.ResultSet;
  *
  */
 @ComponentAnn(name = "disjoint classes learner", shortName = "cldisjoint", version = 0.1)
-public class DisjointClassesLearner implements ClassExpressionLearningAlgorithm {
+public class DisjointClassesLearner implements ClassExpressionLearningAlgorithm, AxiomLearningAlgorithm {
 	
 	
 	private static final Logger logger = LoggerFactory.getLogger(DisjointClassesLearner.class);
@@ -178,6 +183,30 @@ public class DisjointClassesLearner implements ClassExpressionLearningAlgorithm 
 		return currentlyBestEvaluatedDescriptions.subList(0, max);
 	}
 	
+	@Override
+	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
+		List<Axiom> bestAxioms = new ArrayList<Axiom>();
+		
+		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms)){
+			bestAxioms.add(evAx.getAxiom());
+		}
+		
+		return bestAxioms;
+	}
+
+	@Override
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
+		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
+		Set<Description> descriptions;
+		for(EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)){
+			descriptions = new HashSet<Description>();
+			descriptions.add(classToDescribe);
+			descriptions.add(ed.getDescription());
+			axioms.add(new EvaluatedAxiom(new DisjointClassesAxiom(descriptions), new AxiomScore(ed.getAccuracy())));
+		}
+		return axioms;
+	}
+	
 	private List<EvaluatedDescription> buildEvaluatedClassDescriptions(Map<NamedClass, Integer> class2Count, Set<NamedClass> allClasses){
 		List<EvaluatedDescription> evalDescs = new ArrayList<EvaluatedDescription>();
 		
@@ -265,7 +294,5 @@ public class DisjointClassesLearner implements ClassExpressionLearningAlgorithm 
 		
 	}
 
-	
-	
 
 }
