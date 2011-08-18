@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,12 +53,31 @@ public class DisjointClassesAxiom extends TerminologicalAxiom {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return "DisjointClasses()";
+		StringBuffer sb = new StringBuffer();
+		sb.append("DisjointClasses(");
+		Iterator<Description> it = descriptions.iterator();
+		while(it.hasNext()){
+			sb.append(it.next().toString());
+			if(it.hasNext()){
+				sb.append(", ");
+			}
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		throw new Error("DisjointClassesAxiom: Not implemented");
+		StringBuffer sb = new StringBuffer();
+		sb.append("DisjointClasses(");
+		Iterator<Description> it = descriptions.iterator();
+		while(it.hasNext()){
+			sb.append(it.next().toKBSyntaxString());
+			if(it.hasNext()){
+				sb.append(", ");
+			}
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 	
 	
@@ -83,7 +103,17 @@ public class DisjointClassesAxiom extends TerminologicalAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "DISJOINT_CLASSES_AXIOM NOT IMPLEMENTED";
+		StringBuffer sb = new StringBuffer();
+		sb.append("DisjointClasses(");
+		Iterator<Description> it = descriptions.iterator();
+		while(it.hasNext()){
+			sb.append(it.next().toManchesterSyntaxString(baseURI, prefixes));
+			if(it.hasNext()){
+				sb.append(", ");
+			}
+		}
+		sb.append(")");
+		return sb.toString();
 	}	
 	
 }

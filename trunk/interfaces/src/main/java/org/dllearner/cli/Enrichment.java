@@ -21,6 +21,7 @@ package org.dllearner.cli;
 
 import static java.util.Arrays.asList;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -127,6 +128,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  * Command Line Interface for Enrichment.
@@ -495,7 +497,16 @@ public class Enrichment {
 				algorithmRunInd, algorithmInd);
 		axioms.add(ax);
 		//add Parameters to algorithm run instance
-		//TODO
+		OWLIndividual paramInd;
+		for(Entry<ConfigOption, String> entry : parameters.entrySet()){
+			paramInd = f.getOWLNamedIndividual(IRI.create(generateId()));
+			ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.Parameter, paramInd);
+			axioms.add(ax);
+			ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.parameterName, paramInd, entry.getKey().name());
+			axioms.add(ax);
+			ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.parameterValue, paramInd, entry.getValue());
+			axioms.add(ax);
+		}
 		//add used input to algorithm run instance
 		try {
 			OWLNamedIndividual knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
@@ -561,10 +572,24 @@ public class Enrichment {
 		}
 	}
 	
+//	private Model getModel(List<OWLAxiom> axioms) {
+//		Model model = ModelFactory.createDefaultModel();
+//		try {
+//			Conversion.OWLAPIOntology2JenaModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms)), model);
+//		} catch (OWLOntologyCreationException e) {
+//			e.printStackTrace();
+//		}
+//		return model;
+//	}	
+	
 	private Model getModel(List<OWLAxiom> axioms) {
 		Model model = ModelFactory.createDefaultModel();
 		try {
-			Conversion.OWLAPIOntology2JenaModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms)), model);
+			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms));
+//			String s = new org.aksw.commons.owlapi.StringConverter(ontology).toStringAsRDFXML();System.out.println(s);
+			String s = new org.aksw.commons.owlapi.StringConverter(ontology).toStringAsTurtle();System.out.println(s);
+			ByteArrayInputStream bs = new ByteArrayInputStream(s.getBytes());
+	        model.read(bs, "", "TURTLE");
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
@@ -695,6 +720,18 @@ public class Enrichment {
 						axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
 					}
 					Model model = e.getModel(axioms);
+					for(Statement st : model.listStatements().toList()){
+						System.out.println("--------------------");
+//						System.out.println(st);
+						if(st.getSubject().isResource()){
+							System.out.println(st.getSubject());
+						}
+						System.out.println(st.getPredicate());
+						if(st.getObject().isResource()){
+							
+						}
+						System.out.println(st.getObject());
+					}
 					if(options.has("o")) {
 						model.write(new FileOutputStream(f));
 					} else {

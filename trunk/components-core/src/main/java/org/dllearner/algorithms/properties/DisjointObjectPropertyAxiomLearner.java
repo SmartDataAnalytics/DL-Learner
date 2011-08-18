@@ -137,9 +137,8 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
 		List<Axiom> bestAxioms = new ArrayList<Axiom>();
 		
-		Iterator<EvaluatedAxiom> it = currentlyBestAxioms.iterator();
-		while(bestAxioms.size() < nrOfAxioms && it.hasNext()){
-			bestAxioms.add(it.next().getAxiom());
+		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms)){
+			bestAxioms.add(evAx.getAxiom());
 		}
 		
 		return bestAxioms;
