@@ -24,38 +24,33 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
-import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
+import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.NamedClassEditor;
-import org.dllearner.core.config.ObjectPropertyEditor;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
+import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.ClassScore;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -67,7 +62,7 @@ import com.hp.hpl.jena.query.ResultSet;
  *
  */
 @ComponentAnn(name = "simple subclass learner", shortName = "clsub", version = 0.1)
-public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
+public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm, AxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SimpleSubclassLearner.class);
 	
@@ -103,6 +98,26 @@ public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm {
 			int nrOfDescriptions) {
 		int max = Math.min(currentlyBestEvaluatedDescriptions.size(), nrOfDescriptions);
 		return currentlyBestEvaluatedDescriptions.subList(0, max);
+	}
+	
+	@Override
+	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
+		List<Axiom> bestAxioms = new ArrayList<Axiom>();
+		
+		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms)){
+			bestAxioms.add(evAx.getAxiom());
+		}
+		
+		return bestAxioms;
+	}
+
+	@Override
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
+		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
+		for(EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)){
+			axioms.add(new EvaluatedAxiom(new SubClassAxiom(classToDescribe, ed.getDescription()), new AxiomScore(ed.getAccuracy())));
+		}
+		return axioms;
 	}
 
 	@Override
