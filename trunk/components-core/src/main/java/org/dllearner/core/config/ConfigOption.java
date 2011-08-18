@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.config;
 
+import java.beans.PropertyEditor;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -49,7 +50,7 @@ public @interface ConfigOption {
      * An implementation of the Property Editor to use
      * @return
      */
-    Class<?> propertyEditorClass();
+    Class<? extends PropertyEditor> propertyEditorClass();
     
     /**
      * Returns whether this option is required for initializing the component. 

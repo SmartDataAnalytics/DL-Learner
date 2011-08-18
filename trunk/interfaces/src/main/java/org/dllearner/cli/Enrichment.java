@@ -21,6 +21,8 @@ package org.dllearner.cli;
 
 import static java.util.Arrays.asList;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
@@ -79,6 +82,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigHelper;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -135,20 +139,28 @@ public class Enrichment {
 	// data structure for holding the result of an algorithm run
 	private class AlgorithmRun {
 		
-		private LearningAlgorithm algorithm;
+		// we only store the algorithm class and not the learning algorithm object,
+		// since otherwise we run into memory problems for full enrichment
+		private Class<? extends LearningAlgorithm> algorithm;
 		private List<EvaluatedAxiom> axioms;
-		
-		public AlgorithmRun(LearningAlgorithm algorithm, List<EvaluatedAxiom> axioms) {
+		private Map<ConfigOption,String> parameters;
+
+		public AlgorithmRun(Class<? extends LearningAlgorithm> algorithm, List<EvaluatedAxiom> axioms, Map<ConfigOption,String> parameters) {
 			this.algorithm = algorithm;
 			this.axioms = axioms;
+			this.parameters = parameters;
 		}
 		
-		public LearningAlgorithm getAlgorithm() {
+		public Class<? extends LearningAlgorithm> getAlgorithm() {
 			return algorithm;
 		}
 
 		public List<EvaluatedAxiom> getAxioms() {
 			return axioms;
+		}		
+		
+		public Map<ConfigOption, String> getParameters() {
+			return parameters;
 		}		
 	}
 	
@@ -177,7 +189,7 @@ public class Enrichment {
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
 	
 	// list of generated axioms while script is running
-	
+	private List<AlgorithmRun> algorithmRuns;
 	
 	private CommonPrefixMap prefixes = new CommonPrefixMap();
 	
@@ -209,6 +221,8 @@ public class Enrichment {
 		classAlgorithms.add(DisjointClassesLearner.class);
 		classAlgorithms.add(SimpleSubclassLearner.class);
 		classAlgorithms.add(CELOE.class);		
+		
+		algorithmRuns = new LinkedList<AlgorithmRun>();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -318,7 +332,7 @@ public class Enrichment {
         ks2.getConfigurator().setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
         ks2.getConfigurator().setUseLits(false);
         ks2.getConfigurator().setUseCacheDatabase(true);
-        ks2.getConfigurator().setRecursionDepth(1);
+        ks2.getConfigurator().setRecursionDepth(2);
         ks2.getConfigurator().setCloseAfterRecursion(true);
 //        ks2.getConfigurator().setSaveExtractedFragment(true);
         System.out.println("getting fragment ... ");
@@ -371,7 +385,7 @@ public class Enrichment {
         	evaluatedAxioms.add(new EvaluatedAxiom(axiom, score)); 
         }
         
-        toRDF(evaluatedAxioms, la, ks);
+        algorithmRuns.add(new AlgorithmRun(CELOE.class, evaluatedAxioms, ConfigHelper.getConfigOptionValuesString(la)));
         cm.freeAllComponents();		
 		return evaluatedAxioms;
 	}
@@ -409,7 +423,7 @@ public class Enrichment {
 				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 		System.out.println(prettyPrint(learnedAxioms));	
 		
-		toRDF(learnedAxioms, learner, ks);
+		algorithmRuns.add(new AlgorithmRun(learner.getClass(), learnedAxioms, ConfigHelper.getConfigOptionValuesString(learner)));
 		return learnedAxioms;
 	}
 	
@@ -437,11 +451,11 @@ public class Enrichment {
 	/*
 	 * Generates list of OWL axioms.
 	 */
-	private void toRDF(List<EvaluatedAxiom> evalAxioms, LearningAlgorithm algorithm, SparqlEndpointKS ks){
-		toRDF(evalAxioms, algorithm, ks, null);
+	private List<OWLAxiom> toRDF(List<EvaluatedAxiom> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,String> parameters, SparqlEndpointKS ks){
+		return toRDF(evalAxioms, algorithm, parameters, ks, null);
 	}
 	
-	private void toRDF(List<EvaluatedAxiom> evalAxioms, LearningAlgorithm algorithm, SparqlEndpointKS ks, String defaultNamespace){
+	private List<OWLAxiom> toRDF(List<EvaluatedAxiom> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,String> parameters, SparqlEndpointKS ks, String defaultNamespace){
 		if(defaultNamespace == null || defaultNamespace.isEmpty()){
 			defaultNamespace = DEFAULT_NS;
 		}
@@ -464,7 +478,7 @@ public class Enrichment {
 		ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.AlgorithmRun, algorithmRunInd);
 		axioms.add(ax);
 		//generate instance for algorithm
-		String algorithmName = algorithm.getClass().getAnnotation(ComponentAnn.class).name();
+		String algorithmName = algorithm.getAnnotation(ComponentAnn.class).name();
 		String algorithmID = "http://dl-learner.org#" + algorithmName.replace(" ", "_");
 		OWLIndividual algorithmInd = f.getOWLNamedIndividual(IRI.create(algorithmID));
 		//add label to algorithm instance
@@ -474,7 +488,7 @@ public class Enrichment {
 		ax = f.getOWLAnnotationAssertionAxiom(algorithmInd.asOWLNamedIndividual().getIRI(), labelAnno);
 		axioms.add(ax);
 		//add version to algorithm
-		ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.version, algorithmInd, algorithm.getClass().getAnnotation(ComponentAnn.class).version());
+		ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.version, algorithmInd, algorithm.getAnnotation(ComponentAnn.class).version());
 		axioms.add(ax);
 		//add algorithm instance to algorithm run instance
 		ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.usedAlgorithm,
@@ -512,9 +526,10 @@ public class Enrichment {
 		}
 		
 		
-		printManchesterOWLSyntax(axioms, defaultNamespace);
-		printTurtleSyntax(axioms);
+//		printManchesterOWLSyntax(axioms, defaultNamespace);
+//		printTurtleSyntax(axioms);
 //		printNTriplesSyntax(axioms);
+		return axioms;
 	}
 	
 	  private String generateId(){
@@ -545,6 +560,16 @@ public class Enrichment {
 			e.printStackTrace();
 		}
 	}
+	
+	private Model getModel(List<OWLAxiom> axioms) {
+		Model model = ModelFactory.createDefaultModel();
+		try {
+			Conversion.OWLAPIOntology2JenaModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms)), model);
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
+		return model;
+	}	
 	
 	/*
 	 * Write axioms in Turtle syntax.
@@ -578,6 +603,10 @@ public class Enrichment {
 		}
 	}
 	
+	public List<AlgorithmRun> getAlgorithmRuns() {
+		return algorithmRuns;
+	}
+
 	public static void main(String[] args) throws IOException, ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException {
 		
 		SimpleLayout layout = new SimpleLayout();
@@ -598,9 +627,9 @@ public class Enrichment {
 		parser.acceptsAll(asList("r", "resource"),
 				"The resource for which enrichment axioms should be suggested.").withOptionalArg().ofType(URI.class);
 		parser.acceptsAll(asList("o", "output"), "Specify a file where the output can be written.")
-				.withOptionalArg();
+				.withOptionalArg().ofType(File.class);
 		parser.acceptsAll(asList("f", "format"),
-				"Format of the generated output (plain, html, rdf).").withOptionalArg()
+				"Format of the generated output (plain, html, rdf/xml, turtle, manchester, sparul).").withOptionalArg()
 				.ofType(String.class).defaultsTo("plain");
 
 		// parse options and display a message for the user in case of problems
@@ -651,7 +680,30 @@ public class Enrichment {
 			Enrichment e = new Enrichment(se, resource, verbose);
 			e.start();
 
-			// TODO: print output in correct format
+			SparqlEndpointKS ks = new SparqlEndpointKS(se);
+			
+			// TODO: some handling for inaccessible files or overwriting existing files
+			File f = (File) options.valueOf("o");
+			
+			// print output in correct format
+			if(options.has("f")) {
+				// TODO: handle other formats
+				if(options.valueOf("f").equals("turtle")) {
+					List<AlgorithmRun> runs = e.getAlgorithmRuns();
+					List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
+					for(AlgorithmRun run : runs) {
+						axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
+					}
+					Model model = e.getModel(axioms);
+					if(options.has("o")) {
+						model.write(new FileOutputStream(f));
+					} else {
+						System.out.println("ENRICHMENT[");
+						model.write(System.out);
+						System.out.println("]");
+					}
+				}
+			}
 			
 		}
 
