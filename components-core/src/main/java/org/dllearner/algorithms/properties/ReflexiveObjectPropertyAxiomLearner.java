@@ -90,7 +90,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractComponent imple
 			logger.info("Property is already declared as reflexive in knowledge base.");
 		}
 		
-		//get fraction of instances s with <s p o> also exists <o p s> 
+		//get fraction of instances s with <s p s> 
 		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?reflexiv WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?o1.FILTER(?s=?o)}}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeQuery(query);

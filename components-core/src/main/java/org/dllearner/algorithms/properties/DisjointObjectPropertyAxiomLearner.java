@@ -17,7 +17,6 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
@@ -26,6 +25,7 @@ import org.dllearner.core.owl.DisjointObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
+import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -92,7 +92,8 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		//TODO
 		
 		//at first get all existing objectproperties in knowledgebase
-		Set<ObjectProperty> objectProperties = getAllObjectProperties();
+		Set<ObjectProperty> objectProperties = new SPARQLTasks(ks.getEndpoint()).getAllObjectProperties();
+		objectProperties.remove(propertyToDescribe);
 		
 		//get properties and how often they occur
 				int limit = 1000;
@@ -220,22 +221,6 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
-	private Set<ObjectProperty> getAllObjectProperties() {
-		Set<ObjectProperty> properties = new TreeSet<ObjectProperty>();
-		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:ObjectProperty}";
-		
-		ResultSet q = executeQuery(query);
-		while (q.hasNext()) {
-			QuerySolution qs = q.next();
-			properties.add(new ObjectProperty(qs.getResource("p").getURI()));
-		}
-		//remove property to describe
-		properties.remove(propertyToDescribe);
-		
-		return properties;
-	}
-	
-	
 	/*
 	 * Executes a SELECT query and returns the result.
 	 */
@@ -256,7 +241,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	
 	public static void main(String[] args) throws Exception{
 		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/writer"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/assembly"));
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
