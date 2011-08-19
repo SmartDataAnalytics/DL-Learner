@@ -19,12 +19,16 @@
  */
 package org.dllearner.scripts.evaluation;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -38,14 +42,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.apache.velocity.context.EvaluateContext;
-import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
@@ -57,19 +61,17 @@ import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
+import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -80,8 +82,17 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.CommonPrefixMap;
 import org.dllearner.utilities.Files;
+import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.reasoner.InferenceType;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 /**
  * Evaluation of enrichment algorithms on DBpedia (Live).
@@ -103,7 +114,7 @@ public class EnrichmentEvaluation {
 	// can be used to only evaluate a part of DBpedia
 	private int maxObjectProperties = 0;
 	private int maxDataProperties = 0;
-	private int maxClasses = 0;
+	private int maxClasses = 10;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
@@ -113,6 +124,9 @@ public class EnrichmentEvaluation {
 	
 	private Connection conn;
 	private PreparedStatement ps;
+	
+	private OWLOntology dbPediaOntology;
+	private OWLReasoner reasoner;
 
 	public EnrichmentEvaluation() {
 
@@ -121,25 +135,25 @@ public class EnrichmentEvaluation {
 		prefixes.put("dbo","http://dbpedia.org/ontology/");
 		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(ObjectPropertyDomainAxiomLearner.class);
-		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
-		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
-		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
+//		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
+//		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
+//		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
+//		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
+//		objectPropertyAlgorithms.add(ObjectPropertyDomainAxiomLearner.class);
+//		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
+//		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
+//		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
+//		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
+//		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
+//		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
 
 		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
-		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class); 
-		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
+//		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
+//		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
+//		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
+//		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
+//		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class); 
+//		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
 //		classAlgorithms.add(DisjointClassesLearner.class);
@@ -147,6 +161,7 @@ public class EnrichmentEvaluation {
 //		classAlgorithms.add(CELOE.class);
 		
 		initDBConnection();
+		loadDBpediaOntology();
 	}
 
 	private void initDBConnection() {
@@ -381,7 +396,7 @@ public class EnrichmentEvaluation {
 								double score = learnedAxiom.getScore().getAccuracy();
 								if (Double.isNaN(score)) {
 									score = -1;
-								}
+								}System.out.println(learnedAxiom.getAxiom().toManchesterSyntaxString(algName, prefixes) + ":" + isEntailed(learnedAxiom));
 								writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
 										score, runTime);
 							}
@@ -440,10 +455,36 @@ public class EnrichmentEvaluation {
 		s.close();
 		return sb.toString();
 	}
+	
+	private boolean isEntailed(EvaluatedAxiom evalAxiom){
+		OWLAxiom axiom = OWLAPIConverter.getOWLAPIAxiom(evalAxiom.getAxiom());
+		boolean entailed = reasoner.isEntailed(axiom);
+		return entailed;
+	}
+	
+	/**
+	 * Loads DBpedia ontology from remote URL and initializes the reasoner.
+	 */
+	private void loadDBpediaOntology(){
+		try {
+			URL url = new URL("http://downloads.dbpedia.org/3.6/dbpedia_3.6.owl.bz2");
+			InputStream is = new BufferedInputStream(url.openStream());
+			 CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
+			 dbPediaOntology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(in);
+			 reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbPediaOntology);
+			 reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (CompressorException e) {
+			e.printStackTrace();
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		} 
+	}
 
-	public static void main(String[] args) throws IllegalArgumentException, SecurityException,
-			InstantiationException, IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException, ComponentInitException, SQLException, IOException {
+	public static void main(String[] args) throws Exception {
 		EnrichmentEvaluation ee = new EnrichmentEvaluation();
 		ee.start();
 		// ee.printResultsPlain();
