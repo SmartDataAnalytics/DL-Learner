@@ -1,11 +1,9 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.dllearner.core.AbstractComponent;
-import org.dllearner.core.AxiomLearningAlgorithm;
+import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
@@ -13,7 +11,6 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.configurators.Configurator;
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.InverseFunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -29,7 +26,7 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 
 @ComponentAnn(name="inversefunctional objectproperty axiom learner", shortName="oplinvfunc", version=0.1)
-public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(InverseFunctionalObjectPropertyAxiomLearner.class);
 	
@@ -117,12 +114,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractCompone
 	}
 
 	@Override
-	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		return currentlyBestAxioms.isEmpty() ? Collections.<Axiom>emptyList() : Collections.singletonList(currentlyBestAxioms.get(0).getAxiom());
-	}
-	
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
 		return currentlyBestAxioms;
 	}
 

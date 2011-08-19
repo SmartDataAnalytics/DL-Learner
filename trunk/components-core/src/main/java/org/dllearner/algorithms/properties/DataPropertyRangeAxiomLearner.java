@@ -10,8 +10,7 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AbstractComponent;
-import org.dllearner.core.AxiomLearningAlgorithm;
+import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
@@ -36,7 +35,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
 @ComponentAnn(name="dataproperty range learner", shortName="dblrange", version=0.1)
-public class DataPropertyRangeAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(DataPropertyRangeAxiomLearner.class);
 	
@@ -106,24 +105,8 @@ public class DataPropertyRangeAxiomLearner extends AbstractComponent implements 
 	}
 
 	@Override
-	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		List<Axiom> bestAxioms = new ArrayList<Axiom>();
-		
-		Iterator<EvaluatedAxiom> it = currentlyBestAxioms.iterator();
-		while(bestAxioms.size() < nrOfAxioms && it.hasNext()){
-			bestAxioms.add(it.next().getAxiom());
-		}
-		
-		return bestAxioms;
-	}
-	
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		int max = Math.min(currentlyBestAxioms.size(), nrOfAxioms);
-		
-		List<EvaluatedAxiom> bestAxioms = currentlyBestAxioms.subList(0, max);
-		
-		return bestAxioms;
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
+		return currentlyBestAxioms;
 	}
 
 	@Override

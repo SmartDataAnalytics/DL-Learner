@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AxiomLearningAlgorithm;
+import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -63,7 +63,7 @@ import com.hp.hpl.jena.query.ResultSet;
  *
  */
 @ComponentAnn(name = "disjoint classes learner", shortName = "cldisjoint", version = 0.1)
-public class DisjointClassesLearner implements ClassExpressionLearningAlgorithm, AxiomLearningAlgorithm {
+public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm implements ClassExpressionLearningAlgorithm {
 	
 	
 	private static final Logger logger = LoggerFactory.getLogger(DisjointClassesLearner.class);
