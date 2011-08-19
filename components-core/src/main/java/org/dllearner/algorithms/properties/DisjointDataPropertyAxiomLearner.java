@@ -3,7 +3,6 @@ package org.dllearner.algorithms.properties;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,8 +10,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AbstractComponent;
-import org.dllearner.core.AxiomLearningAlgorithm;
+import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
@@ -20,10 +18,8 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.configurators.Configurator;
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DisjointDatatypePropertyAxiom;
-import org.dllearner.core.owl.SubDatatypePropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -36,7 +32,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
 @ComponentAnn(name="disjoint dataproperty axiom learner", shortName="dpldisjoint", version=0.1)
-public class DisjointDataPropertyAxiomLearner extends AbstractComponent implements AxiomLearningAlgorithm {
+public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner.class);
 	
@@ -133,24 +129,8 @@ public class DisjointDataPropertyAxiomLearner extends AbstractComponent implemen
 	}
 
 	@Override
-	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		List<Axiom> bestAxioms = new ArrayList<Axiom>();
-		
-		Iterator<EvaluatedAxiom> it = currentlyBestAxioms.iterator();
-		while(bestAxioms.size() < nrOfAxioms && it.hasNext()){
-			bestAxioms.add(it.next().getAxiom());
-		}
-		
-		return bestAxioms;
-	}
-	
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		int max = Math.min(currentlyBestAxioms.size(), nrOfAxioms);
-		
-		List<EvaluatedAxiom> bestAxioms = currentlyBestAxioms.subList(0, max);
-		
-		return bestAxioms;
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
+		return currentlyBestAxioms;
 	}
 
 	@Override

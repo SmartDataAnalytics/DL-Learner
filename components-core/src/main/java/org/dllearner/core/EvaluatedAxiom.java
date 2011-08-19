@@ -63,9 +63,9 @@ public class EvaluatedAxiom {
 		ax.accept(r);
 
 		OWLAxiom ax1 = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.Suggestion, ind);
-//		OWLAxiom ax2 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.hasAxiom, ind, sw.toString());
+		OWLAxiom ax2 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.hasAxiom, ind, sw.toString());
 		OWLAnnotation anno = f.getOWLAnnotation(EnrichmentVocabulary.belongsTo, ind.getIRI());
-		OWLAxiom ax2 = ax.getAnnotatedAxiom(Collections.singleton(anno));
+//		OWLAxiom ax2 = ax.getAnnotatedAxiom(Collections.singleton(anno));
 		OWLAxiom ax3 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.confidence, ind, score.getAccuracy());
 		
 		List<OWLAxiom> axioms = new ArrayList<OWLAxiom>();

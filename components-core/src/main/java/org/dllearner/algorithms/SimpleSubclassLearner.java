@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AxiomLearningAlgorithm;
+import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -62,7 +62,7 @@ import com.hp.hpl.jena.query.ResultSet;
  *
  */
 @ComponentAnn(name = "simple subclass learner", shortName = "clsub", version = 0.1)
-public class SimpleSubclassLearner implements ClassExpressionLearningAlgorithm, AxiomLearningAlgorithm {
+public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implements ClassExpressionLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SimpleSubclassLearner.class);
 	
