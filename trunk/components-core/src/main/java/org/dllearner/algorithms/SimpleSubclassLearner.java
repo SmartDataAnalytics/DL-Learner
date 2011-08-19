@@ -215,14 +215,15 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 			}
 		}
 		
+		//omit owl:Thing and classToDescribe
+		result.remove(new NamedClass(Thing.instance.getURI()));
+		result.remove(classToDescribe);
+		
 		EvaluatedDescription evalDesc;
 		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
-			if(!entry.getKey().getURI().equals(Thing.instance.getURI())){//omit owl:Thing
-				evalDesc = new EvaluatedDescription(entry.getKey(),
-						new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
-				currentlyBestEvaluatedDescriptions.add(evalDesc);
-			}
-			
+			evalDesc = new EvaluatedDescription(entry.getKey(),
+					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
+			currentlyBestEvaluatedDescriptions.add(evalDesc);
 		}
 		
 	}

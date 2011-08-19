@@ -51,6 +51,6 @@ public class SubClassAxiom extends TerminologicalAxiom {
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
 		// TODO Auto-generated method stub
-		return "SUBCLASS NOT IMPLEMENTED";
+		return subConcept.toManchesterSyntaxString(baseURI, prefixes) + " subClassOf: " + superConcept.toManchesterSyntaxString(baseURI, prefixes);
 	}	
 }
