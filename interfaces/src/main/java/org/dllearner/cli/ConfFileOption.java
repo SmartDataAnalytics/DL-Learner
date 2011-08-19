@@ -205,7 +205,12 @@ public class ConfFileOption {
 			else
 				return completeOption + "=" + doubleValue;
 		else
-			return completeOption + "=" + stringValue;
+			if(isListOption)
+				return completeOption + "=" + listTuples;
+			else if(isSetOption)
+				return completeOption + "=" + setValues;
+			else
+				return completeOption + "=" + stringValue;
 	}
 	
 	public String getFullName() {
