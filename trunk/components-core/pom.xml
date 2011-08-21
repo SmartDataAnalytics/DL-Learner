@@ -4,7 +4,6 @@
 
 	<groupId>org.dllearner</groupId>
 	<artifactId>components-core</artifactId>
-	<packaging>jar</packaging>
 
 	<name>DL Learner Core Components</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
@@ -109,6 +108,15 @@
 					</distroConfigurations>
 				</configuration>
 			</plugin>
+      <plugin>
+            <groupId>com.mycila.maven-license-plugin</groupId>
+            <artifactId>maven-license-plugin</artifactId>
+            <configuration>
+                <header>src/etc/header.txt</header>
+            </configuration>
+        </plugin>
+      
+      
 		</plugins>
 	</build>
 
