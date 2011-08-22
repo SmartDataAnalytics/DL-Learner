@@ -1,17 +1,32 @@
 <assembly>
-  <id>archive</id>
-  <formats>
-    <format>tar.gz</format>
-  </formats>
-  
-  <fileSets>
-    <fileSet>
-     <directory>${project.build.directory}/dl-learner-dist</directory>
-     <outputDirectory>/</outputDirectory>
-    </fileSet>
-    <fileSet>
-    <directory>../examples</directory>
-    <outputDirectory>examples</outputDirectory>
-    </fileSet>
-  </fileSets>
+	<id>archive</id>
+	<formats>
+		<format>tar.gz</format>
+	</formats>
+
+	<fileSets>
+		<fileSet>
+			<directory>${project.build.directory}/dl-learner-dist/dl-learner-${release.name}/lib</directory>
+			<outputDirectory>lib</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>${project.build.directory}/dl-learner-dist/bin</directory>
+			<outputDirectory>/</outputDirectory>
+			<fileMode>0755</fileMode>
+		</fileSet>
+		<fileSet>
+			<directory>../examples</directory>
+			<outputDirectory>examples</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>doc</directory>
+			<outputDirectory>docs</outputDirectory>
+			<includes>
+				<include>configOptions.html</include>
+				<include>javadoc.html</include>
+			</includes>
+		</fileSet>
+
+	</fileSets>
+
 </assembly>
