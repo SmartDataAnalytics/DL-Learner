@@ -116,6 +116,13 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>appassembler-maven-plugin</artifactId>
 				<version>1.1.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>assemble</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
 					<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
 					<repoPath>lib</repoPath>
@@ -147,6 +154,41 @@
 							<name>gui</name>
 						</program>
 					</programs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<finalName>dl-learner-${maven.build.timestamp}</finalName>
+					<descriptors>
+						<descriptor>src/main/assemble/archive.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<items>
+						<item>timestamp</item>
+					</items>
+					<timestampFormat>{0, date, yyyy-MM-dd}</timestampFormat>
 				</configuration>
 			</plugin>
 		</plugins>
