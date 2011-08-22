@@ -93,15 +93,38 @@ public class ConfParserConfiguration implements IConfiguration {
 
         List<ConfFileOption> options = parser.getConfOptions();
         for (ConfFileOption option : options) {
-            String fullName = option.getFullName();
-            String stringValue = option.getValue().toString();
-            try {
-                props.setProperty(fullName, stringValue);
-            } catch (Exception e) {
-                throw new RuntimeException("Problem with property name: " + fullName + " and value " + stringValue,e);
+            if (!excludedFromProperties(option)) {
+                String fullName = option.getFullName();
+                String stringValue = option.getValue().toString();
+                try {
+                    props.setProperty(fullName, stringValue);
+                } catch (Exception e) {
+                    throw new RuntimeException("Problem with property name: " + fullName + " and value " + stringValue,e);
+                }
             }
         }
         return props;
+    }
+
+
+    /**
+     * Determine if this option should be excluded from the properties list.
+     *
+     * @param option The option to test
+     * @return True if it should be excluded
+     */
+    private boolean excludedFromProperties(ConfFileOption option){
+       boolean result = false;
+
+       if(option.isStringOption()){
+           String subOption = option.getSubOption();
+           /** Exclude where suboption = true */
+           if(subOption.equals("type")){
+               result = true;
+           }
+       }
+
+        return result;
     }
 
     @Override
@@ -112,5 +135,31 @@ public class ConfParserConfiguration implements IConfiguration {
     @Override
     public Set<String> getNegativeExamples() {
         return parser.getNegativeExamples();
+    }
+
+    @Override
+    public Collection<String> getBeanNames() {
+        Collection<String> beanNames = new HashSet<String>();
+
+        List<ConfFileOption> options = parser.getConfOptions();
+        for (ConfFileOption option : options) {
+            beanNames.add(option.getOption());
+        }
+        return beanNames;
+    }
+
+    @Override
+    public Class getClass(String beanName) {
+        Class result = null;
+        /** TODO Do something that isn't hard coded like this or use a more specific name than type. The result of this must be the class - so however we get it doesn't matter */
+        ConfFileOption option = parser.getConfOptionsByName(beanName + ".type");
+        try {
+            result = Class.forName((String) option.getValue());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Problem getting class type for bean: " + beanName + " - trying to instantiate class: " + option.getValue());
+        }
+
+        return result;
+
     }
 }

@@ -5,6 +5,7 @@ import org.dllearner.confparser2.ConfParserConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -30,6 +31,8 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         Resource confFile = new ClassPathResource("/org/dllearner/configuration/spring/configurationBasedPropertyOverrideConfigurer.conf");
         ConfParserConfiguration configuration = new ConfParserConfiguration(confFile);
 
+        BeanDefinitionRegistryPostProcessor beanDefinitionRegistryPostProcessor = new ConfigurationBasedBeanDefinitionRegistryPostProcessor(configuration);
+
         ConfigurationBasedPropertyOverrideConfigurer configurer = new ConfigurationBasedPropertyOverrideConfigurer(configuration, false);
         configurer.setProperties(configuration.getProperties());
         configurer.getComponentKeyPrefixes().add("component:");
@@ -41,7 +44,9 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         springConfigurationFiles[0] = springConfigurationLocation;
         context = new ClassPathXmlApplicationContext(springConfigurationFiles, false);
 
+        context.addBeanFactoryPostProcessor(beanDefinitionRegistryPostProcessor);
         context.addBeanFactoryPostProcessor(configurer);
+
         context.refresh();
 
     }
@@ -59,10 +64,13 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         TestBean secondBean = testBean.getComponent();
         validateSecondBean(secondBean);
         validateThirdBean(secondBean.getComponent());
+        validateFourthBean(context.getBean("fourthBean", TestBean.class));
     }
 
     private void validateThirdBean(TestBean thirdBean) {
         Assert.assertEquals(thirdBean.getIntValue(), (Integer) 3);
+        TestBean fourthBean = thirdBean.getComponent();
+        validateFourthBean(fourthBean);
     }
 
     private void validateFirstBean(TestBean testBean) {
@@ -83,5 +91,9 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         Assert.assertTrue(secondBean.getComponent() != null);
     }
 
+
+    private void validateFourthBean(TestBean fourthBean){
+        Assert.assertEquals(fourthBean.getSimpleValue(), "Fourth Bean - not specified in xml");
+    }
 
 }
