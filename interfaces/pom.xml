@@ -13,9 +13,9 @@
 		<artifactId>dllearner-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-	
+
 	<properties>
-	<release.name>1.0-alpha-1</release.name>
+		<release.name>1.0-alpha-1</release.name>
 	</properties>
 
 	<build>
@@ -145,19 +145,10 @@
 							<mainClass>org.dllearner.cli.Enrichment</mainClass>
 							<name>enrichment</name>
 						</program>
-						<!-- 
-						<program>
-							<mainClass>org.dllearner.gui.StartGUI</mainClass>
-							<name>gui</name>
-						</program>
-						<program>
-							<mainClass>org.dllearner.cli.QuickStart</mainClass>
-							<name>quickstart</name>
-						</program>
-						<program>
-							<mainClass>org.dllearner.server.DLLearnerWS</mainClass>
-							<name>ws</name>
-						</program> -->
+						<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> <name>gui</name> 
+							</program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
+							<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
+							<name>ws</name> </program> -->
 					</programs>
 				</configuration>
 			</plugin>
@@ -196,6 +187,45 @@
 					<timestampFormat>{0, date, yyyy-MM-dd}</timestampFormat>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>de.akquinet.maven</groupId>
+				<artifactId>maven-latex-plugin</artifactId>
+				<version>1.1</version>
+				<configuration>
+					<settings>
+						<!-- all tex main documents in this folder (including subfolders) will 
+							be processed -->
+						<texDirectory>${basedir}/doc/manual</texDirectory>
+						<!-- the generated artifacts will be copied to this folder relative 
+							to ${project.reporting.outputDirectory} -->
+						<outputDirectory>.</outputDirectory>
+						<!-- the working directory, for temporary files and LaTeX processing -->
+						<tempDirectory>${project.build.directory}/m2latex</tempDirectory>
+						<!-- clean up the working directory in the end? May be used for debugging -->
+						<cleanUp>true</cleanUp>
+						<!-- path to the TeX scripts, if none, it must be on the system path -->
+						<texPath />
+						<!-- the latex command -->
+						<texCommand>pdflatex</texCommand>
+						<!-- the bibtex command -->
+						<bibtexCommand>bibtex</bibtexCommand>
+						<!-- the arguments to use when calling latex -->
+						<texCommandArgs>
+							<texCommandArg>-interaction=nonstopmode</texCommandArg>
+							<texCommandArg>--src-specials</texCommandArg>
+						</texCommandArgs>
+					</settings>
+				</configuration>
+				<executions>
+					<!-- execute latex goal automatically during the site phase -->
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>latex</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -214,7 +244,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		
+
 
 
 		<dependency>
