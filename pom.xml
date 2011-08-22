@@ -490,6 +490,13 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</pluginRepository>
+		<pluginRepository>
+            <id>maven-latex-plugin-repo</id>
+            <url>http://akquinet.github.com/maven-latex-plugin/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
 	</pluginRepositories>
 
 
