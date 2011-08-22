@@ -1,12 +1,17 @@
 <assembly>
   <id>archive</id>
   <formats>
-    <format>zip</format>
+    <format>tar.gz</format>
   </formats>
+  
   <fileSets>
     <fileSet>
-     <directory>${project.build.directory}/appassembler</directory>
+     <directory>${project.build.directory}/dl-learner-dist</directory>
      <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <fileSet>
+    <directory>../examples</directory>
+    <outputDirectory>examples</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>
