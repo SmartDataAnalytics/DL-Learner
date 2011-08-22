@@ -35,6 +35,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,6 +73,7 @@ import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -80,6 +82,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.utilities.CommonPrefixMap;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.owl.OWLAPIConverter;
@@ -181,10 +184,10 @@ public class EnrichmentEvaluation {
 			s.executeUpdate("DROP TABLE IF EXISTS evaluation");
 			s.executeUpdate("CREATE TABLE evaluation ("
 					+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-					+ "entity VARCHAR(200), algorithm VARCHAR(100), axiom VARCHAR(500), score DOUBLE, runtime_ms INT(20))");
+					+ "entity VARCHAR(200), algorithm VARCHAR(100), axiom VARCHAR(500), score DOUBLE, runtime_ms INT(20), entailed BOOLEAN)");
 			s.close();
 			ps = conn.prepareStatement("INSERT INTO evaluation ("
-					+ "entity, algorithm, axiom, score, runtime_ms ) " + "VALUES(?,?,?,?,?)");
+					+ "entity, algorithm, axiom, score, runtime_ms, entailed ) " + "VALUES(?,?,?,?,?,?)");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -198,13 +201,14 @@ public class EnrichmentEvaluation {
 		}
 	}
 
-	private void writeToDB(String entity, String algorithm, String axiom, double score, long runTime) {
+	private void writeToDB(String entity, String algorithm, String axiom, double score, long runTime, boolean entailed) {
 		try {
 			ps.setString(1, entity);
 			ps.setString(2, algorithm);
 			ps.setString(3, axiom);
 			ps.setDouble(4, score);
 			ps.setLong(5, runTime);
+			ps.setBoolean(6, entailed);
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -270,9 +274,9 @@ public class EnrichmentEvaluation {
 						List<EvaluatedAxiom> learnedAxioms = learner
 								.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 						if(timeout){
-							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime);
+							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
 						} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
-							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime);
+							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
 						} else {
 							for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
 								double score = learnedAxiom.getScore().getAccuracy();
@@ -280,7 +284,7 @@ public class EnrichmentEvaluation {
 									score = -1;
 								}
 								writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
-										score, runTime);
+										score, runTime, isEntailed(learnedAxiom));
 							}
 						}
 						objectProperties++;
@@ -330,9 +334,9 @@ public class EnrichmentEvaluation {
 				List<EvaluatedAxiom> learnedAxioms = learner
 						.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 				if(timeout){
-					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime);
+					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
 				} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
-					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime);
+					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
 				} else {
 					for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
 						double score = learnedAxiom.getScore().getAccuracy();
@@ -340,7 +344,7 @@ public class EnrichmentEvaluation {
 							score = -1;
 						}
 						writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
-								score, runTime);
+								score, runTime, isEntailed(learnedAxiom));
 					}
 				}
 				dataProperties++;
@@ -384,25 +388,31 @@ public class EnrichmentEvaluation {
 						}
 					}
 					long runTime = System.currentTimeMillis() - startTime;
+					List<EvaluatedAxiom> learnedAxioms = null;
 					if(learner instanceof AxiomLearningAlgorithm){
-						List<EvaluatedAxiom> learnedAxioms = ((AxiomLearningAlgorithm)learner)
+						learnedAxioms = ((AxiomLearningAlgorithm)learner)
 								.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-						if(timeout){
-							writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime);
-						} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
-							writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime);
-						} else {
-							for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
-								double score = learnedAxiom.getScore().getAccuracy();
-								if (Double.isNaN(score)) {
-									score = -1;
-								}System.out.println(learnedAxiom.getAxiom().toManchesterSyntaxString(algName, prefixes) + ":" + isEntailed(learnedAxiom));
-								writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
-										score, runTime);
-							}
-						}
 					} else if(learner instanceof AbstractCELA){
-						
+						learnedAxioms = new ArrayList<EvaluatedAxiom>();
+						List<? extends EvaluatedDescription> learnedDescriptions = ((AbstractCELA)learner).getCurrentlyBestEvaluatedDescriptions(nrOfAxiomsToLearn);
+						for(EvaluatedDescription learnedDescription : learnedDescriptions){
+							//TODO create axioms and differ between equivalent and subclass mode in CELOE
+							learnedAxioms.add(new EvaluatedAxiom(null, new AxiomScore(learnedDescription.getAccuracy())));
+						}
+					}
+					if(timeout){
+						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
+					} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
+						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
+					} else {
+						for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+							double score = learnedAxiom.getScore().getAccuracy();
+							if (Double.isNaN(score)) {
+								score = -1;
+							}
+							writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
+									score, runTime, isEntailed(learnedAxiom));
+						}
 					}
 					
 					classesCnt++;
