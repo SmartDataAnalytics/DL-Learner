@@ -13,6 +13,10 @@
 		<artifactId>dllearner-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
+	
+	<properties>
+	<release.name>1.0-alpha-1</release.name>
+	</properties>
 
 	<build>
 		<finalName>interfaces</finalName>
@@ -125,22 +129,14 @@
 				</executions>
 				<configuration>
 					<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
-					<repoPath>lib</repoPath>
-					<repositoryName>lib</repositoryName>
+					<repoPath>dl-learner-${release.name}/lib</repoPath>
+					<repositoryName>dl-learner-${release.name}/lib</repositoryName>
 					<extraJvmArguments>-Xms256m -Xmx1024m</extraJvmArguments>
 					<platforms>
 						<platform>windows</platform>
 						<platform>unix</platform>
 					</platforms>
 					<programs>
-						<program>
-							<mainClass>org.dllearner.cli.Start</mainClass>
-							<name>start</name>
-						</program>
-						<program>
-							<mainClass>org.dllearner.cli.QuickStart</mainClass>
-							<name>quickstart</name>
-						</program>
 						<program>
 							<mainClass>org.dllearner.cli.CLI</mainClass>
 							<name>cli</name>
@@ -149,10 +145,19 @@
 							<mainClass>org.dllearner.cli.Enrichment</mainClass>
 							<name>enrichment</name>
 						</program>
+						<!-- 
 						<program>
 							<mainClass>org.dllearner.gui.StartGUI</mainClass>
 							<name>gui</name>
 						</program>
+						<program>
+							<mainClass>org.dllearner.cli.QuickStart</mainClass>
+							<name>quickstart</name>
+						</program>
+						<program>
+							<mainClass>org.dllearner.server.DLLearnerWS</mainClass>
+							<name>ws</name>
+						</program> -->
 					</programs>
 				</configuration>
 			</plugin>
@@ -167,7 +172,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<finalName>dl-learner-${maven.build.timestamp}</finalName>
+					<finalName>dl-learner-${release.name}</finalName>
 					<descriptors>
 						<descriptor>src/main/assemble/archive.xml</descriptor>
 					</descriptors>
@@ -198,7 +203,6 @@
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
-
 		</dependency>
 
 		<!-- Added the dependency of the core tests so that they will be accessible 
@@ -210,10 +214,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.dllearner</groupId>
-			<artifactId>components-ext</artifactId>
-		</dependency>
+		
 
 
 		<dependency>
