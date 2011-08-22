@@ -18,6 +18,110 @@
 		<release.name>1.0-alpha-1</release.name>
 	</properties>
 
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<finalName>interfaces</finalName>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>appassembler-maven-plugin</artifactId>
+						<version>1.1.1</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>assemble</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
+							<repoPath>dl-learner-${release.name}/lib</repoPath>
+							<repositoryName>dl-learner-${release.name}/lib</repositoryName>
+							<extraJvmArguments>-Xms256m -Xmx1024m</extraJvmArguments>
+							<installArtifacts>false</installArtifacts>
+							<platforms>
+								<platform>windows</platform>
+								<platform>unix</platform>
+							</platforms>
+							<programs>
+								<program>
+									<mainClass>org.dllearner.cli.Start</mainClass>
+									<name>cli</name>
+								</program>
+								<program>
+									<mainClass>org.dllearner.cli.Enrichment</mainClass>
+									<name>enrichment</name>
+								</program>
+								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> 
+									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
+									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
+									<name>ws</name> </program> -->
+							</programs>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>attached</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<finalName>dl-learner-${release.name}</finalName>
+							<descriptors>
+								<descriptor>src/main/assemble/archive.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>de.akquinet.maven</groupId>
+						<artifactId>maven-latex-plugin</artifactId>
+						<version>1.1</version>
+						<configuration>
+							<settings>
+								<!-- all tex main documents in this folder (including subfolders) 
+									will be processed -->
+								<texDirectory>${basedir}/doc/manual</texDirectory>
+								<!-- the generated artifacts will be copied to this folder relative 
+									to ${project.reporting.outputDirectory} -->
+								<outputDirectory>.</outputDirectory>
+								<!-- the working directory, for temporary files and LaTeX processing -->
+								<tempDirectory>${project.build.directory}/m2latex</tempDirectory>
+								<!-- clean up the working directory in the end? May be used for debugging -->
+								<cleanUp>true</cleanUp>
+								<!-- path to the TeX scripts, if none, it must be on the system path -->
+								<texPath />
+								<!-- the latex command -->
+								<texCommand>pdflatex</texCommand>
+								<!-- the bibtex command -->
+								<bibtexCommand>bibtex</bibtexCommand>
+								<!-- the arguments to use when calling latex -->
+								<texCommandArgs>
+									<texCommandArg>-interaction=nonstopmode</texCommandArg>
+									<texCommandArg>--src-specials</texCommandArg>
+								</texCommandArgs>
+							</settings>
+						</configuration>
+						<executions>
+							<!-- execute latex goal automatically during the site phase -->
+							<execution>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>latex</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<build>
 		<finalName>interfaces</finalName>
 		<plugins>
@@ -64,168 +168,7 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>de.tarent.maven.plugins</groupId>
-				<artifactId>maven-pkg-plugin</artifactId>
-				<version>2.1.0</version>
-				<configuration>
 
-					<defaultTarget>all</defaultTarget>
-
-					<defaultDistro>ubuntu_intrepid</defaultDistro>
-					<shortDescription>My Short Project Description...</shortDescription>
-
-					<defaults>
-						<section>misc</section>
-						<mainClass>org.dllearner.cli.Start</mainClass>
-						<architecture>all</architecture>
-						<srcAuxFilesDir>src/main/pkg</srcAuxFilesDir>
-						<maintainer>Jens Lehmann</maintainer>
-					</defaults>
-
-					<targetConfigurations>
-
-						<targetConfiguration>
-							<target>i386</target>
-
-							<architecture>i386</architecture>
-							<srcJNIFilesDir>src/main/native/i386</srcJNIFilesDir>
-
-						</targetConfiguration>
-
-						<targetConfiguration>
-							<target>armel</target>
-
-							<architecture>armel</architecture>
-							<srcJNIFilesDir>src/main/native/armel</srcJNIFilesDir>
-
-						</targetConfiguration>
-
-					</targetConfigurations>
-
-					<distroConfigurations>
-						<distroConfiguration>
-
-							<distros>
-								<distro>ubuntu_intrepid</distro>
-								<distro>ubuntu_karmic</distro>
-							</distros>
-
-						</distroConfiguration>
-					</distroConfigurations>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>appassembler-maven-plugin</artifactId>
-				<version>1.1.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>assemble</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
-					<repoPath>dl-learner-${release.name}/lib</repoPath>
-					<repositoryName>dl-learner-${release.name}/lib</repositoryName>
-					<extraJvmArguments>-Xms256m -Xmx1024m</extraJvmArguments>
-					<platforms>
-						<platform>windows</platform>
-						<platform>unix</platform>
-					</platforms>
-					<programs>
-						<program>
-							<mainClass>org.dllearner.cli.CLI</mainClass>
-							<name>cli</name>
-						</program>
-						<program>
-							<mainClass>org.dllearner.cli.Enrichment</mainClass>
-							<name>enrichment</name>
-						</program>
-						<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> <name>gui</name> 
-							</program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
-							<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
-							<name>ws</name> </program> -->
-					</programs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>attached</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<finalName>dl-learner-${release.name}</finalName>
-					<descriptors>
-						<descriptor>src/main/assemble/archive.xml</descriptor>
-					</descriptors>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>buildnumber-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<goals>
-							<goal>create</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<items>
-						<item>timestamp</item>
-					</items>
-					<timestampFormat>{0, date, yyyy-MM-dd}</timestampFormat>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>de.akquinet.maven</groupId>
-				<artifactId>maven-latex-plugin</artifactId>
-				<version>1.1</version>
-				<configuration>
-					<settings>
-						<!-- all tex main documents in this folder (including subfolders) will 
-							be processed -->
-						<texDirectory>${basedir}/doc/manual</texDirectory>
-						<!-- the generated artifacts will be copied to this folder relative 
-							to ${project.reporting.outputDirectory} -->
-						<outputDirectory>.</outputDirectory>
-						<!-- the working directory, for temporary files and LaTeX processing -->
-						<tempDirectory>${project.build.directory}/m2latex</tempDirectory>
-						<!-- clean up the working directory in the end? May be used for debugging -->
-						<cleanUp>true</cleanUp>
-						<!-- path to the TeX scripts, if none, it must be on the system path -->
-						<texPath />
-						<!-- the latex command -->
-						<texCommand>pdflatex</texCommand>
-						<!-- the bibtex command -->
-						<bibtexCommand>bibtex</bibtexCommand>
-						<!-- the arguments to use when calling latex -->
-						<texCommandArgs>
-							<texCommandArg>-interaction=nonstopmode</texCommandArg>
-							<texCommandArg>--src-specials</texCommandArg>
-						</texCommandArgs>
-					</settings>
-				</configuration>
-				<executions>
-					<!-- execute latex goal automatically during the site phase -->
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>latex</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
@@ -234,7 +177,6 @@
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
 		</dependency>
-
 		<!-- Added the dependency of the core tests so that they will be accessible 
 			from the tests in this component -->
 		<dependency>
@@ -243,21 +185,15 @@
 			<classifier>tests</classifier>
 			<scope>test</scope>
 		</dependency>
-
-
-
-
 		<dependency>
 			<groupId>com.jamonapi</groupId>
 			<artifactId>jamon</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -270,8 +206,6 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 		</dependency>
-
-
 		<dependency>
 			<groupId>org.aksw.commons</groupId>
 			<artifactId>model</artifactId>
@@ -287,7 +221,6 @@
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
