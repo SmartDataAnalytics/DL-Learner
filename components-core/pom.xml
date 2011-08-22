@@ -16,31 +16,26 @@
 
 	<build>
 		<plugins>
-			<!--Surefire - for JUnits-->
+			<!--Surefire - for JUnits -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<!--
-						Uncomment this when the junits are independent of a runtime
-						directory
-					-->
-					<!--<includes>-->
-					<!--<include>org/dllearner/test/junit/*</include>-->
-					<!--</includes>-->
+					<!-- Uncomment this when the junits are independent of a runtime directory -->
+					<!--<includes> -->
+					<!--<include>org/dllearner/test/junit/*</include> -->
+					<!--</includes> -->
 					<excludes>
 						<exclude>org/dllearner/test/*</exclude>
 						<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
 						<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>
-						<!--This line excludes inner classes-->
+						<!--This line excludes inner classes -->
 						<exclude>**/*$*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
-			<!--
-				Jar the tests up into a separate jar so other components tests' can
-				leverage them
-			-->
+			<!-- Jar the tests up into a separate jar so other components tests' can 
+				leverage them -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -108,15 +103,43 @@
 					</distroConfigurations>
 				</configuration>
 			</plugin>
-      <plugin>
-            <groupId>com.mycila.maven-license-plugin</groupId>
-            <artifactId>maven-license-plugin</artifactId>
-            <configuration>
-                <header>src/etc/header.txt</header>
-            </configuration>
-        </plugin>
-      
-      
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<configuration>
+					<header>src/etc/header.txt</header>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<show>public</show>
+					<nohelp>true</nohelp>
+					<destDir>doc/javadoc</destDir>
+					<doctitle>DL-Learner Javadoc</doctitle>
+					<author>true</author>
+					<nodeprecated>false</nodeprecated>
+					<nodeprecatedlist>false</nodeprecatedlist>
+					<noindex>false</noindex>
+					<nonavbar>false</nonavbar>
+					<notree>false</notree>
+					<overview>src/etc/overview.html</overview>
+					<source>1.6</source>
+					<sourcepath>src/main/java</sourcepath>
+					<splitindex>true</splitindex>
+					<stylesheetfile>src/etc/javadoc.css</stylesheetfile>
+					<use>true</use>
+					<version>true</version>#
+					<linksource>true</linksource>
+					<bottom>&lt;img style='float:right' src='http://sflogo.sourceforge.net/sflogo.php?group_id=203619&amp;type=1' width='88' height='31' border='0' alt='SourceForge.net Logo' /&gt; DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007-2011 Jens Lehmann</bottom>
+					<encoding>ISO-8859-1</encoding>
+					<windowtitle>DL-Learner Javadoc</windowtitle>
+				</configuration>
+			</plugin>
+
+
 		</plugins>
 	</build>
 
@@ -133,13 +156,13 @@
 			</exclusions>
 		</dependency>
 
-		<!-- THIS IS FROM THE UNIBAS REPO-->
+		<!-- THIS IS FROM THE UNIBAS REPO -->
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi</artifactId>
 		</dependency>
 
-		<!-- THIS IS FROM THE UNIBAS REPO-->
+		<!-- THIS IS FROM THE UNIBAS REPO -->
 		<dependency>
 			<groupId>com.owldl</groupId>
 			<artifactId>pellet</artifactId>
@@ -156,10 +179,8 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 
-		<!--
-			Available via central, we use the latest with minor mods to DL
-			Learner source (IE Dig related code)
-		-->
+		<!-- Available via central, we use the latest with minor mods to DL Learner 
+			source (IE Dig related code) -->
 		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>jena</artifactId>
@@ -171,7 +192,7 @@
 			</exclusions>
 		</dependency>
 
-		<!--JSON is in Central-->
+		<!--JSON is in Central -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -211,9 +232,9 @@
 			<groupId>com.jamonapi</groupId>
 			<artifactId>jamon</artifactId>
 		</dependency>
-		
 
-		<!--JENA ARQ is in central - we use the latest-->
+
+		<!--JENA ARQ is in central - we use the latest -->
 		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>arq</artifactId>
@@ -253,16 +274,16 @@
 			<version>1.0</version>
 		</dependency>
 
-       
-        <dependency>
-        	<groupId>org.slf4j</groupId>
-        	<artifactId>slf4j-api</artifactId>
-        	<version>1.5.8</version>
-        </dependency>
-        <dependency>
-        	<groupId>commons-codec</groupId>
-        	<artifactId>commons-codec</artifactId>
-        	<version>20041127.091804</version>
-        </dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.5.8</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>20041127.091804</version>
+		</dependency>
 	</dependencies>
 </project>
