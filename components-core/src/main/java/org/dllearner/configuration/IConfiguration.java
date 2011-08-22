@@ -19,6 +19,7 @@
 
 package org.dllearner.configuration;
 
+import java.util.Collection;
 import java.util.Properties;
 import java.util.Set;
 
@@ -51,6 +52,21 @@ public interface IConfiguration {
      * @return A Properties Object.
      */
     public Properties getProperties();
+
+    /**
+     * Get a collection of all the bean names defined in the configuration.
+     *
+     * @return a collection of all the bean names defined in the configuration.
+     */
+    public Collection<String> getBeanNames();
+
+    /**
+     * Get the class for the given bean.
+     *
+     * @param beanName The name of the bean to get the class for.
+     * @return The class for the given bean.
+     */
+    public Class getClass(String beanName);
 
     /**
      * Get the set of positive examples associated with this configuration.
