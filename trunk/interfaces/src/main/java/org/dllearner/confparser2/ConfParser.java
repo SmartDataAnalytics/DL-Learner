@@ -161,7 +161,7 @@ public class ConfParser implements ConfParserConstants {
             jj_consume_token(26);
             label_2:
             while (true) {
-              if (jj_2_4(2)) {
+              if (jj_2_4(4)) {
                 ;
               } else {
                 break label_2;
@@ -171,14 +171,14 @@ public class ConfParser implements ConfParserConstants {
                 tmp = String();
                 break;
               case ID:
-                tmp = Id();
+                tmp = ComplexId();
                 break;
               default:
                 jj_la1[2] = jj_gen;
                 jj_consume_token(-1);
                 throw new ParseException();
               }
-                                                           values.add(tmp);
+                                                                   values.add(tmp);
               jj_consume_token(30);
             }
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -186,16 +186,16 @@ public class ConfParser implements ConfParserConstants {
               tmp = String();
               break;
             case ID:
-              tmp = Id();
+              tmp = ComplexId();
               break;
             default:
               jj_la1[3] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
-                                      values.add(tmp);
+                                             values.add(tmp);
             jj_consume_token(29);
-                                                             isSet=true;
+                                                                    isSet=true;
             break;
           default:
             jj_la1[9] = jj_gen;
@@ -298,7 +298,9 @@ public class ConfParser implements ConfParserConstants {
                         else if(isList)
                                 confOption = new ConfFileOption(option,subOption,tuples);
                         else
-                        { if(useColon)
+                        { // this is just a temporary hack to get the double colon notation working;
+                          // of course we can pass value1 and value2 as separate parameters later on
+                          if(useColon)
                                 confOption = new ConfFileOption(option,subOption,value1 + ":" + value2);
                           else
                                 confOption = new ConfFileOption(option,subOption,value);
@@ -351,6 +353,28 @@ public class ConfParser implements ConfParserConstants {
       throw new ParseException();
     }
                 {if (true) return KBParser.getInternalURI(name);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public String ComplexId() throws ParseException {
+  Token t1,t2;
+    if (jj_2_9(2)) {
+      t1 = jj_consume_token(ID);
+      jj_consume_token(28);
+      t2 = jj_consume_token(ID);
+                                     {if (true) return t1.image + ":" + t2.image;}
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ID:
+        t1 = jj_consume_token(ID);
+            {if (true) return t1.image;}
+        break;
+      default:
+        jj_la1[12] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -442,6 +466,13 @@ public class ConfParser implements ConfParserConstants {
     finally { jj_save(7, xla); }
   }
 
+  private boolean jj_2_9(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_9(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(8, xla); }
+  }
+
   private boolean jj_3R_5() {
     if (jj_scan_token(COMMAND_END)) return true;
     if (jj_3R_4()) return true;
@@ -449,7 +480,7 @@ public class ConfParser implements ConfParserConstants {
   }
 
   private boolean jj_3R_11() {
-    if (jj_3R_4()) return true;
+    if (jj_3R_19()) return true;
     return false;
   }
 
@@ -464,8 +495,8 @@ public class ConfParser implements ConfParserConstants {
     return false;
   }
 
-  private boolean jj_3R_17() {
-    if (jj_scan_token(DOUBLE)) return true;
+  private boolean jj_3R_4() {
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 
@@ -515,8 +546,30 @@ public class ConfParser implements ConfParserConstants {
     return false;
   }
 
-  private boolean jj_3R_4() {
+  private boolean jj_3R_20() {
     if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_19() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_9()) {
+    jj_scanpos = xsp;
+    if (jj_3R_20()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_9() {
+    if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(28)) return true;
+    if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_18() {
+    if (jj_scan_token(STRING)) return true;
     return false;
   }
 
@@ -541,8 +594,8 @@ public class ConfParser implements ConfParserConstants {
     return false;
   }
 
-  private boolean jj_3R_18() {
-    if (jj_scan_token(STRING)) return true;
+  private boolean jj_3R_16() {
+    if (jj_scan_token(NUMBER)) return true;
     return false;
   }
 
@@ -587,8 +640,8 @@ public class ConfParser implements ConfParserConstants {
     return false;
   }
 
-  private boolean jj_3R_16() {
-    if (jj_scan_token(NUMBER)) return true;
+  private boolean jj_3R_17() {
+    if (jj_scan_token(DOUBLE)) return true;
     return false;
   }
 
@@ -613,7 +666,7 @@ public class ConfParser implements ConfParserConstants {
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[12];
+  final private int[] jj_la1 = new int[13];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -621,12 +674,12 @@ public class ConfParser implements ConfParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1c00,0x100,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1007000,0x4000000,0x8000000,0x1001000,};
+      jj_la1_0 = new int[] {0x1c00,0x100,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1007000,0x4000000,0x8000000,0x1001000,0x1000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[8];
+  final private JJCalls[] jj_2_rtns = new JJCalls[9];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -641,7 +694,7 @@ public class ConfParser implements ConfParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -656,7 +709,7 @@ public class ConfParser implements ConfParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -667,7 +720,7 @@ public class ConfParser implements ConfParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -678,7 +731,7 @@ public class ConfParser implements ConfParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -688,7 +741,7 @@ public class ConfParser implements ConfParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -698,7 +751,7 @@ public class ConfParser implements ConfParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -815,7 +868,7 @@ public class ConfParser implements ConfParserConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < 13; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -854,7 +907,7 @@ public class ConfParser implements ConfParserConstants {
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 9; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -869,6 +922,7 @@ public class ConfParser implements ConfParserConstants {
             case 5: jj_3_6(); break;
             case 6: jj_3_7(); break;
             case 7: jj_3_8(); break;
+            case 8: jj_3_9(); break;
           }
         }
         p = p.next;

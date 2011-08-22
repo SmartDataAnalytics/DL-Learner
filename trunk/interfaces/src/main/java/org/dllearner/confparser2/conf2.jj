@@ -183,8 +183,8 @@ ConfFileOption ConfOption() :
          // empty set
          | LOOKAHEAD("{" "}") "{" "}" {isSet=true;}
          // set with several elements 
-         | "{" ( LOOKAHEAD(2) ( tmp=String() | tmp=Id() ) {values.add(tmp);} "," )* 
-           (tmp=String() | tmp=Id()) {values.add(tmp);} "}" {isSet=true;}  
+         | "{" ( LOOKAHEAD(4) ( tmp=String() | tmp=ComplexId() ) { values.add(tmp);} "," )* 
+           (tmp=String() | tmp=ComplexId()) {values.add(tmp);} "}" {isSet=true;}  
          // empty list
          | LOOKAHEAD("[" "]") "[" "]" {isList=true;}
          // a list with several elements, which tuples
@@ -255,6 +255,15 @@ String Individual() :
 		return KBParser.getInternalURI(name);
 	}
 }
+
+String ComplexId() :
+{  Token t1,t2;
+}
+{
+  LOOKAHEAD(2) t1=<ID> ":" t2=<ID> { return t1.image + ":" + t2.image; }  
+ |t1=<ID> { return t1.image; }
+}
+ 
 
 String Id() : 
 {
