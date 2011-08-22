@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections15.BidiMap;
+import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 import org.apache.commons.lang.ClassUtils;
 
 /**
@@ -71,19 +73,22 @@ public class AnnComponentManager {
             "org.dllearner.algorithms.SimpleSubclassLearner",
     } ));
     private static Collection<Class<? extends Component>> components;
-    private static Map<Class<? extends Component>, String> componentNames;
+    private static BidiMap<Class<? extends Component>, String> componentNames;
+    private static BidiMap<Class<? extends Component>, String> componentNamesShort;
 	
 	private static AnnComponentManager cm = null;	
 	
 	private AnnComponentManager() {
 		// conversion of class strings to objects
 		components = new HashSet<Class<? extends Component>>();
-		componentNames = new HashMap<Class<? extends Component>, String>();
+		componentNames = new DualHashBidiMap<Class<? extends Component>, String>();
+		componentNamesShort = new DualHashBidiMap<Class<? extends Component>, String>();
 		for (String componentClassName : componentClassNames) {
 			try {
 				Class<? extends Component> component = Class.forName(componentClassName).asSubclass(Component.class);
 				components.add(component);
 				componentNames.put(component, getName(component));
+				componentNamesShort.put(component, getShortName(component));
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -112,15 +117,26 @@ public class AnnComponentManager {
 	}
 	
 	/**
-	 * Convenience methed, which returns a list of components along with 
+	 * Convenience method, which returns a list of components along with 
 	 * their name.
 	 * 
 	 * @return A map where the key is the class of the component and the
 	 * value is its name.
 	 */
-	public Map<Class<? extends Component>, String> getComponentsNamed() {
+	public BidiMap<Class<? extends Component>, String> getComponentsNamed() {
 		return componentNames;
 	}
+	
+	/**
+	 * Convenience method, which returns a list of components along with 
+	 * their name.
+	 * 
+	 * @return A map where the key is the class of the component and the
+	 * value is its name.
+	 */
+	public BidiMap<Class<? extends Component>, String> getComponentsNamedShort() {
+		return componentNamesShort;
+	}	
 	
 	public boolean isCompatible() {
 		return false;

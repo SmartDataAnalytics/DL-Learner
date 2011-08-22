@@ -2,6 +2,8 @@ package org.dllearner.confparser2;
 
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.configuration.IConfiguration;
+import org.dllearner.core.AnnComponentManager;
+import org.dllearner.core.Component;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.springframework.core.io.Resource;
 
@@ -149,16 +151,27 @@ public class ConfParserConfiguration implements IConfiguration {
     }
 
     @Override
-    public Class getClass(String beanName) {
-        Class result = null;
-        /** TODO Do something that isn't hard coded like this or use a more specific name than type. The result of this must be the class - so however we get it doesn't matter */
+    public Class<?> getClass(String beanName) {
+        Class<?> result = null;
         ConfFileOption option = parser.getConfOptionsByName(beanName + ".type");
+        String value = (String) option.getValue();
+        // first option: use long name of @ComponentAnn annotation
+        Class<? extends Component> classFromName = AnnComponentManager.getInstance().getComponentsNamed().getKey(value);
+        if(classFromName != null) {
+        	return classFromName;
+        }
+        // second option: use short name of @ComponentAnn annotation
+        Class<? extends Component> classFromShortName = AnnComponentManager.getInstance().getComponentsNamedShort().getKey(value);
+        if(classFromShortName != null) {
+        	return classFromShortName;
+        }
+        // third option: use specified class name
         try {
-            result = Class.forName((String) option.getValue());
+            result = Class.forName(value);
         } catch (ClassNotFoundException e) {
+        	// if all methods fail, throw an exception
             throw new RuntimeException("Problem getting class type for bean: " + beanName + " - trying to instantiate class: " + option.getValue());
         }
-
         return result;
 
     }
