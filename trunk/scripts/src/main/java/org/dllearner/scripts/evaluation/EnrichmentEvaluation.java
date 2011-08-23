@@ -50,27 +50,12 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
-import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
-import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
-import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
-import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
-import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
-import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
@@ -159,7 +144,7 @@ public class EnrichmentEvaluation {
 //		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
-//		classAlgorithms.add(DisjointClassesLearner.class);
+		classAlgorithms.add(DisjointClassesLearner.class);
 		classAlgorithms.add(SimpleSubclassLearner.class);
 //		classAlgorithms.add(CELOE.class);
 		
@@ -181,11 +166,11 @@ public class EnrichmentEvaluation {
 			conn = DriverManager.getConnection(url, dbUser, dbPass);
 
 			Statement s = conn.createStatement();
-			s.executeUpdate("DROP TABLE IF EXISTS evaluation");
-			s.executeUpdate("CREATE TABLE evaluation ("
-					+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-					+ "entity VARCHAR(200), algorithm VARCHAR(100), axiom VARCHAR(500), score DOUBLE, runtime_ms INT(20), entailed BOOLEAN)");
-			s.close();
+//			s.executeUpdate("DROP TABLE IF EXISTS evaluation");
+//			s.executeUpdate("CREATE TABLE evaluation ("
+//					+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+//					+ "entity VARCHAR(200), algorithm VARCHAR(100), axiom VARCHAR(500), score DOUBLE, runtime_ms INT(20), entailed BOOLEAN)");
+//			s.close();
 			ps = conn.prepareStatement("INSERT INTO evaluation ("
 					+ "entity, algorithm, axiom, score, runtime_ms, entailed ) " + "VALUES(?,?,?,?,?,?)");
 		} catch (ClassNotFoundException e) {
@@ -431,8 +416,31 @@ public class EnrichmentEvaluation {
 
 	}
 
-	public void printResultsLaTeX() {
-
+	public void printResultsLaTeX() throws Exception{
+		double threshold = 0.9;
+		
+		for(Class<? extends LearningAlgorithm> algo : classAlgorithms){
+			String algoName = algo.getAnnotation(ComponentAnn.class).name();
+			//compute average number of suggestions above threshold
+			PreparedStatement ps = conn.prepareStatement("SELECT AVG(cnt) FROM (SELECT entity, COUNT(axiom) AS cnt FROM (SELECT * FROM evaluation WHERE algorithm=? AND score >=?) AS A GROUP BY entity) AS B");
+			ps.setString(1, algoName);
+			ps.setDouble(2, threshold);
+			java.sql.ResultSet rs = ps.executeQuery();
+			rs.next();System.out.println(rs.getDouble(1));
+			int avgSuggestionsAboveThreshold = rs.getInt(1);
+			
+			//compute average runtime
+			ps = conn.prepareStatement("SELECT AVG(runtime_ms) FROM evaluation WHERE algorithm=?");
+			ps.setString(1, algoName);
+			rs = ps.executeQuery();
+			rs.next();
+			int avgRuntimeInMilliseconds = rs.getInt(1);
+			
+			//compute 
+			
+			System.out.println(algoName + "-" + avgSuggestionsAboveThreshold + "-" + avgRuntimeInMilliseconds);
+		}
+		
 	}
 
 	public String printHTMLTable() throws SQLException {
@@ -496,8 +504,9 @@ public class EnrichmentEvaluation {
 
 	public static void main(String[] args) throws Exception {
 		EnrichmentEvaluation ee = new EnrichmentEvaluation();
-		ee.start();
+//		ee.start();
 		// ee.printResultsPlain();
+		ee.printResultsLaTeX();
 		Files.createFile(new File("enrichment_eval.html"), ee.printHTMLTable());
 		FileAppender app = new FileAppender(new SimpleLayout(), "log/enrichmentEvalErrors.log");
 		Logger.getRootLogger().setLevel(Level.ERROR);
