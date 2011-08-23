@@ -695,7 +695,7 @@ public class Start {
 		// components
 		String message = "OK";
 		if (component instanceof KBFile)
-			message = ((KBFile) component).getURL().toString() + " read";
+			message = ((KBFile) component).getUrl().toString() + " read";
 		else if (component instanceof DIGReasoner) {
 			DIGReasoner reasoner = (DIGReasoner) component;
 			message = "using " + reasoner.getIdentifier() + " connected via DIG 1.1 at "

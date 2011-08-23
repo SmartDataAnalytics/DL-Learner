@@ -103,10 +103,10 @@ public class OntologyEngineering {
 		// load OWL in reasoner
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
 		if(args[0].startsWith("http")) {
-			ks.getConfigurator().setUrl(new URL(args[0]));
+			ks.setURL(new URL(args[0]));
 		} else {
 			File owlFile = new File(args[0]);
-			ks.getConfigurator().setUrl(owlFile.toURI().toURL());
+			ks.setURL(owlFile.toURI().toURL());
 		}
 		ks.init();
 		AbstractReasonerComponent reasoner = null;
