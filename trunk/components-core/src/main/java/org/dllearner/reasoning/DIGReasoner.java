@@ -78,7 +78,7 @@ import org.kr.dl.dig.v1_1.IndividualSetDocument.IndividualSet;
 public class DIGReasoner extends AbstractReasonerComponent {
 	
 	private DIGReasonerConfigurator configurator;
-	@Override
+
 	public DIGReasonerConfigurator getConfigurator(){
 		return configurator;
 	}

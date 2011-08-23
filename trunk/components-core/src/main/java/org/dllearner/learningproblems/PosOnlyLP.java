@@ -58,7 +58,6 @@ public class PosOnlyLP extends AbstractLearningProblem {
 //	private PosNegLPStandard definitionLP;
 	private PosOnlyLPConfigurator configurator;
 	
-	@Override
 	public PosOnlyLPConfigurator getConfigurator(){
 		return configurator;
 	}	

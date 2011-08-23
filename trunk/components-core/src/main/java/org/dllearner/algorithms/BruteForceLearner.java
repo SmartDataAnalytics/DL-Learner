@@ -28,7 +28,6 @@ import java.util.Map;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.BruteForceLearnerConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -58,11 +57,11 @@ import org.dllearner.learningproblems.ScorePosNeg;
  */
 public class BruteForceLearner extends AbstractCELA {
 	
-	private BruteForceLearnerConfigurator configurator;
-	@Override
-	public BruteForceLearnerConfigurator getConfigurator(){
-		return configurator;
-	}
+//	private BruteForceLearnerConfigurator configurator;
+//	@Override
+//	public BruteForceLearnerConfigurator getConfigurator(){
+//		return configurator;
+//	}
 	
     
 	private AbstractLearningProblem learningProblem;
@@ -85,7 +84,7 @@ public class BruteForceLearner extends AbstractCELA {
     	super(learningProblem, rs);
     	this.learningProblem = learningProblem;
     	this.rs = rs;
-    	this.configurator = new BruteForceLearnerConfigurator(this);
+//    	this.configurator = new BruteForceLearnerConfigurator(this);
     }
     
 	public static String getName() {

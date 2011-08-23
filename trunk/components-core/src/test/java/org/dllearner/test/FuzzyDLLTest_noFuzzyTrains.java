@@ -110,7 +110,7 @@ public class FuzzyDLLTest_noFuzzyTrains {
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
 		// ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/fuzzyTrains/fuzzyTrains_v1.0.owl"));
-		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/noFuzzyTrains_v1.5.owl"));
+		ks.setURL(new URL("file", null, "../examples/fuzzydll/noFuzzyTrains_v1.5.owl"));
 		ks.init();
 
 		AbstractReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);

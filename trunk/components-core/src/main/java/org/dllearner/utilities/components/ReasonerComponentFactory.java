@@ -54,7 +54,7 @@ public class ReasonerComponentFactory {
 			// knowledge source
 			OWLFile ks = cm.knowledgeSource(OWLFile.class);
 			URL fileURL = new File(ontologyFile).toURI().toURL();
-			ks.getConfigurator().setUrl(fileURL);
+			ks.setURL(fileURL);
 			ks.init();
 
 			// reasoner component

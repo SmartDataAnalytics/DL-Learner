@@ -76,7 +76,6 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 
 	private int errorIndex = 0;
 	
-	@Override
 	public FuzzyPosNegLPStandardConfigurator getConfigurator() {
 		return configurator;
 	}

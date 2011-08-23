@@ -195,7 +195,6 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 		reasoner.dispose();
 	}
 
-	@Override
 	public ProtegeReasonerConfigurator getConfigurator() {
 		return configurator;
 	}

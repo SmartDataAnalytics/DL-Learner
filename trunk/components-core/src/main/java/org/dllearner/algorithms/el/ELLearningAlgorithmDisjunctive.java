@@ -150,7 +150,6 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		return (PosNegLP) learningProblem;
 	}
 	
-	@Override
 	public Configurator getConfigurator() {
 		return configurator;
 	}	

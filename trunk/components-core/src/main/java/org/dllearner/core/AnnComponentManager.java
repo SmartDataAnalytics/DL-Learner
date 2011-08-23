@@ -53,7 +53,9 @@ public class AnnComponentManager {
     // components must be listed here if they should be supported in interfaces
     // (CLI, GUI, Web Service) and scripts (HTML documentation generator)
     private static List<String> componentClassNames = new ArrayList<String>  ( Arrays.asList(new String[]{
-            "org.dllearner.algorithms.celoe.CELOE",    		
+            "org.dllearner.algorithms.celoe.CELOE",    	
+            "org.dllearner.algorithms.BruteForceLearner",
+            "org.dllearner.algorithms.RandomGuesser",
             "org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner",
             "org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner",
             "org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner",

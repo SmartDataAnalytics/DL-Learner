@@ -36,7 +36,7 @@ import org.dllearner.core.options.InvalidConfigOptionValueException;
  */
 public abstract class AbstractComponent implements Component {
 	
-	protected Configurator configurator;
+//	protected Configurator configurator;
 	
 	/**
 	 * For each component, a configurator class is generated in package
@@ -46,7 +46,7 @@ public abstract class AbstractComponent implements Component {
 	 * a component.
 	 * @return An object allowing to configure this component.
 	 */
-	public abstract Configurator getConfigurator();
+//	public abstract Configurator getConfigurator();
 	
 	/**
 	 * Returns the name of this component. By default, "unnamed 

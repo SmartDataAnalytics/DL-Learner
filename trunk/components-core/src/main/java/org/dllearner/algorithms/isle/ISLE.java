@@ -132,7 +132,6 @@ public class ISLE extends AbstractCELA {
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
 	
-	@Override
 	public ISLEConfigurator getConfigurator() {
 		return configurator;
 	}

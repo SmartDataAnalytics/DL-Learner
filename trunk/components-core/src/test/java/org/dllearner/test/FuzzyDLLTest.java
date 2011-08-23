@@ -101,7 +101,7 @@ public class FuzzyDLLTest {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/foodItems_v1.owl"));
+		ks.setURL(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/foodItems_v1.owl"));
 		ks.init();
 
 		//ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
