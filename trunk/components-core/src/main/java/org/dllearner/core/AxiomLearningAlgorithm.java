@@ -49,6 +49,7 @@ public interface AxiomLearningAlgorithm extends LearningAlgorithm {
 	 */
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms);
 	
-	
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms,
+			double accuracyThreshold);
 
 }
