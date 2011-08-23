@@ -1,6 +1,7 @@
 package org.dllearner.configuration.spring;
 
-import javax.annotation.PostConstruct;
+import org.dllearner.core.Component;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import java.util.Set;
  *
  * Test Bean for testing that we can store all the types we need.
  */
-public class TestBean {
+public class TestBean implements Component{
 
     private String simpleValue;
     private TestBean component;
@@ -26,7 +27,6 @@ public class TestBean {
     private boolean initialized = false;
 
 
-    @PostConstruct
     public void init(){
         initialized = true;
     }

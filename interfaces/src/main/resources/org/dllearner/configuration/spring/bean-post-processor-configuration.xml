@@ -3,7 +3,5 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean class="org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor">
-        <property name="initAnnotationType" value="javax.annotation.PostConstruct"/>
-    </bean>
+    <bean class="org.dllearner.configuration.spring.ComponentInitializationBeanPostProcessor"/>
 </beans>
