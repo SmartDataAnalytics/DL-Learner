@@ -72,7 +72,8 @@
 							</execution>
 						</executions>
 						<configuration>
-							<finalName>dl-learner-${release.name}</finalName>
+							<finalName>dllearner-${release.name}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
 							<descriptors>
 								<descriptor>src/main/assemble/archive.xml</descriptor>
 							</descriptors>

@@ -6,12 +6,27 @@
 
 	<fileSets>
 		<fileSet>
-			<directory>${project.build.directory}/dl-learner-dist/dl-learner-${release.name}/lib</directory>
+			<directory>${project.build.directory}/dl-learner-dist/dl-learner-${release.name}/lib
+			</directory>
 			<outputDirectory>lib</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>${project.build.directory}/dl-learner-dist/bin</directory>
 			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>
+					*.bat
+				</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.build.directory}/dl-learner-dist/bin</directory>
+			<outputDirectory>/</outputDirectory>
+			<excludes>
+				<exclude>
+					*.bat
+				</exclude>
+			</excludes>
 			<fileMode>0755</fileMode>
 		</fileSet>
 		<fileSet>
@@ -24,6 +39,13 @@
 			<includes>
 				<include>configOptions.html</include>
 				<include>javadoc.html</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.build.directory}/site</directory>
+			<outputDirectory>docs</outputDirectory>
+			<includes>
+				<include>manual.pdf</include>
 			</includes>
 		</fileSet>
 
