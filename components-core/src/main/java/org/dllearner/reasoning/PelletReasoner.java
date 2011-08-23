@@ -423,7 +423,6 @@ public class PelletReasoner extends AbstractReasonerComponent {
 		classifier.dispose();
 	}
 
-	@Override
 	public PelletReasonerConfigurator getConfigurator() {
 		return configurator;
 	}

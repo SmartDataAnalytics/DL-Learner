@@ -65,7 +65,6 @@ public class PosNegLPStandard extends PosNegLP {
 	
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;
 	
-	@Override
 	public PosNegLPStandardConfigurator getConfigurator() {
 		return configurator;
 	}

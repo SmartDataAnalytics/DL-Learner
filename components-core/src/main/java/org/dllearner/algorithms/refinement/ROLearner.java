@@ -64,7 +64,7 @@ import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 public class ROLearner extends AbstractCELA {
 	
 	private ROLearnerConfigurator configurator;
-	@Override
+
 	public ROLearnerConfigurator getConfigurator(){
 		return configurator;
 	}

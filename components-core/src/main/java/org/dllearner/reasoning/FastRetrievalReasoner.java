@@ -51,7 +51,7 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
 public class FastRetrievalReasoner extends AbstractReasonerComponent {
 
 	private FastRetrievalReasonerConfigurator configurator;
-	@Override
+
 	public FastRetrievalReasonerConfigurator getConfigurator(){
 		return configurator;
 	}

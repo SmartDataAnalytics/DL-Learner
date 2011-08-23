@@ -56,11 +56,11 @@ import org.dllearner.utilities.Helper;
  */
 public class GP extends AbstractCELA {
 	
-	private GPConfigurator configurator;
-	@Override
-	public GPConfigurator getConfigurator(){
-		return configurator;
-	}
+//	private GPConfigurator configurator;
+//	@Override
+//	public GPConfigurator getConfigurator(){
+//		return configurator;
+//	}
 	
 	
     // NumberFormat f;
@@ -141,7 +141,7 @@ public class GP extends AbstractCELA {
      */
     public GP(PosNegLP learningProblem, AbstractReasonerComponent rs) {
        	super(learningProblem, rs);
-    	this.configurator = new GPConfigurator(this);
+//    	this.configurator = new GPConfigurator(this);
     }
       
 	public static String getName() {

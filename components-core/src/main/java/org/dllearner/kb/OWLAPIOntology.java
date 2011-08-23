@@ -39,7 +39,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 public class OWLAPIOntology extends AbstractKnowledgeSource {
 
 	private OWLAPIOntologyConfigurator configurator;
-	@Override
+
 	public OWLAPIOntologyConfigurator getConfigurator(){
 		return configurator;
 	}

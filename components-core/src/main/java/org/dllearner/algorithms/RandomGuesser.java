@@ -50,11 +50,11 @@ import org.dllearner.core.owl.Description;
  */
 public class RandomGuesser extends AbstractCELA {
 
-	private RandomGuesserConfigurator configurator;
-	@Override
-	public RandomGuesserConfigurator getConfigurator(){
-		return configurator;
-	}
+//	private RandomGuesserConfigurator configurator;
+//	@Override
+//	public RandomGuesserConfigurator getConfigurator(){
+//		return configurator;
+//	}
 	
     private Description bestDefinition = null;
     private Score bestScore;
@@ -69,7 +69,7 @@ public class RandomGuesser extends AbstractCELA {
 	
 	public RandomGuesser(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs) {
 	   	super(learningProblem, rs);
-		this.configurator = new RandomGuesserConfigurator(this);
+//		this.configurator = new RandomGuesserConfigurator(this);
 	}
 	
 	public static String getName() {

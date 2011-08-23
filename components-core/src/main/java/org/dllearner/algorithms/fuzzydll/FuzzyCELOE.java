@@ -154,7 +154,6 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 //	private PrintWriter out;
 //	private long start = 0;
 	
-	@Override
 	public FuzzyCELOEConfigurator getConfigurator() {
 		return configurator;
 	}

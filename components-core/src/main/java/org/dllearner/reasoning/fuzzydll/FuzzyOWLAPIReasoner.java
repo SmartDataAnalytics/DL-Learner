@@ -139,7 +139,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	
 	// private String reasonerType = "pellet";
 	private FuzzyOWLAPIReasonerConfigurator configurator;
-	@Override
+
 	public FuzzyOWLAPIReasonerConfigurator getConfigurator(){
 		return configurator;
 	}

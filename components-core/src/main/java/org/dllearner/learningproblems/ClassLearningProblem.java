@@ -85,7 +85,6 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	private HeuristicType heuristic = HeuristicType.AMEASURE;
 	
-	@Override
 	public ClassLearningProblemConfigurator getConfigurator(){
 		return configurator;
 	}	

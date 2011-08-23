@@ -99,7 +99,7 @@ public class FuzzyDLLTest_Trains_noFuzzyIndividuals {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_v2.1a.owl"));
+		ks.setURL(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_v2.1a.owl"));
 		ks.init();
 
 //		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);

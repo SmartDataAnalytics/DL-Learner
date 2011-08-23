@@ -83,7 +83,7 @@ import org.dllearner.utilities.Helper;
 public class OCEL extends AbstractCELA {
 	
 	private OCELConfigurator configurator;
-	@Override
+
 	public OCELConfigurator getConfigurator(){
 		return configurator;
 	}

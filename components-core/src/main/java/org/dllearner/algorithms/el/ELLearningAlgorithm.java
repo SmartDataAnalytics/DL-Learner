@@ -30,10 +30,11 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.config.BooleanEditor;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.configurators.ELLearningAlgorithmConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
@@ -54,7 +55,7 @@ import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 public class ELLearningAlgorithm extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
-	private ELLearningAlgorithmConfigurator configurator;
+//	private ELLearningAlgorithmConfigurator configurator;
 	
 	private ELDown2 operator;
 	
@@ -63,6 +64,10 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	
 	private double treeSearchTimeSeconds = 1.0;
 	private long treeStartTime;
+	// "instanceBasedDisjoints", "Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator."
+	
+	@ConfigOption(name="instanceBasedDisjoints", required=false, defaultValue="true", description="Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.", propertyEditorClass=BooleanEditor.class)
+	private boolean instanceBasedDisjoints = true;
 	
 	// a set with limited size (currently the ordering is defined in the class itself)
 	private EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(AbstractCELA.MAX_NR_OF_RESULTS);
@@ -73,7 +78,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	
 	public ELLearningAlgorithm(PosNegLP problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
-		configurator = new ELLearningAlgorithmConfigurator(this);
+//		configurator = new ELLearningAlgorithmConfigurator(this);
 	}
 	
 	public static String getName() {
@@ -91,18 +96,18 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		return (PosNegLP) learningProblem;
 	}
 	
-	@Override
-	public ELLearningAlgorithmConfigurator getConfigurator() {
-		return configurator;
-	}	
+//	@Override
+//	public ELLearningAlgorithmConfigurator getConfigurator() {
+//		return configurator;
+//	}	
 	
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-//		options.add(CommonConfigOptions.getNoisePercentage());
-//		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
-		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
-		return options;
-	}		
+//	public static Collection<ConfigOption<?>> createConfigOptions() {
+//		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+////		options.add(CommonConfigOptions.getNoisePercentage());
+////		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
+//		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
+//		return options;
+//	}		
 	
 	@Override
 	public void init() throws ComponentInitException {
@@ -110,7 +115,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		heuristic = new StableHeuristic();
 		candidates = new TreeSet<SearchTreeNode>(heuristic);
 		
-		operator = new ELDown2(reasoner, configurator.getInstanceBasedDisjoints());
+		operator = new ELDown2(reasoner, instanceBasedDisjoints);
 	}	
 	
 	@Override

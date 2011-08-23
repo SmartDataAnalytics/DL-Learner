@@ -104,7 +104,6 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 
 	private FastInstanceCheckerConfigurator configurator;
 
-	@Override
 	public FastInstanceCheckerConfigurator getConfigurator() {
 		return configurator;
 	}

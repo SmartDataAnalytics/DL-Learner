@@ -82,7 +82,6 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 		return returnList;
 	}
 
-	@Override
 	public Configurator getConfigurator() {
 		// TODO Auto-generated method stub
 		return null;

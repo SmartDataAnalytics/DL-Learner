@@ -144,7 +144,6 @@ public class CELOE extends AbstractCELA {
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
 	
-	@Override
 	public CELOEConfigurator getConfigurator() {
 		return configurator;
 	}

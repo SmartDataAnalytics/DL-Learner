@@ -47,20 +47,23 @@ public class OWLFile extends AbstractKnowledgeSource {
 	private static Logger logger = Logger
 	.getLogger(OWLFile.class);
 	
+	// TODO: turn this into a config option
+	private URL url;
+	
 //	private URL url;
-	private OWLFileConfigurator configurator ;
-	@Override
-	public OWLFileConfigurator getConfigurator(){
-		return configurator;
-	}
+//	private OWLFileConfigurator configurator ;
+//	@Override
+//	public OWLFileConfigurator getConfigurator(){
+//		return configurator;
+//	}
 
 	public static String getName() {
 		return "OWL file";
 	}
 	
-	public OWLFile(){
-		configurator = new OWLFileConfigurator(this);
-	}
+//	public OWLFile(){
+//		configurator = new OWLFileConfigurator(this);
+//	}
 	
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
@@ -84,7 +87,7 @@ public class OWLFile extends AbstractKnowledgeSource {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
-		if(configurator.getUrl() == null) {
+		if(url == null) {
 			logger.error("Cannot initialise OWL file with empty URL");
 		}
 		
@@ -107,15 +110,16 @@ public class OWLFile extends AbstractKnowledgeSource {
 	@Override
 	public String toDIG(URI kbURI) {
 		// TODO: need some handling for cases where the URL was not set
-		return OWLAPIDIGConverter.getTellsString(configurator.getUrl(), OntologyFormat.RDF_XML, kbURI);
+		return OWLAPIDIGConverter.getTellsString(url, OntologyFormat.RDF_XML, kbURI);
 	}
 
 	public URL getURL() {
-		return configurator.getUrl();
+//		return configurator.getUrl();
+		return url;
 	}
 	public void setURL(URL url) {
-//		this.url = url;
-		configurator.setUrl(url);
+		this.url = url;
+//		configurator.setUrl(url);
 	}
 
 	/* (non-Javadoc)

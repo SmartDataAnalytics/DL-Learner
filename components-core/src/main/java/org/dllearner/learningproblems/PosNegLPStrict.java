@@ -53,7 +53,7 @@ public class PosNegLPStrict extends PosNegLP {
 	private double errorPenalty = defaultErrorPenalty;
 	
 	private PosNegLPStrictConfigurator configurator;
-	@Override
+
 	public PosNegLPStrictConfigurator getConfigurator(){
 		return configurator;
 	}

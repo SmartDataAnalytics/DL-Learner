@@ -20,13 +20,12 @@
 package org.dllearner.kb;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.configurators.KBFileConfigurator;
@@ -38,6 +37,8 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGConverter;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+
 
 /**
  * KB files are an internal convenience format used in DL-Learner. Their
@@ -47,19 +48,20 @@ import org.dllearner.reasoning.DIGConverter;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "KB file", shortName = "kbfile", version = 0.8)
 public class KBFile extends AbstractKnowledgeSource {
 
 	private static Logger logger = Logger.getLogger(KBFile.class);
 	
 	private KB kb;
-	
-	private KBFileConfigurator configurator;
+
+	@org.dllearner.core.config.ConfigOption(name = "url", description = "URL pointer to the KB file", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
+    private String url;
 
 	/**
 	 * Default constructor (needed for reflection in ComponentManager).
 	 */
 	public KBFile() {
-		configurator = new KBFileConfigurator(this);
 	}
 	
 	/**
@@ -71,64 +73,28 @@ public class KBFile extends AbstractKnowledgeSource {
 	 * @param kb A KB object.
 	 */
 	public KBFile(KB kb) {
-		configurator = new KBFileConfigurator(this);
 		this.kb = kb;
 	}
-	
-	@Override
-	public KBFileConfigurator getConfigurator(){
-		return configurator;
-	}	
 	
 	public static String getName() {
 		return "KB file";
 	}
 	
+    @Override
+    public void init() throws ComponentInitException {
+        try {
+            if (getUrl() != null) {
+                kb = KBParser.parseKBFile(getUrl());
+                logger.trace("KB File " + getUrl() + " parsed successfully.");
+            } else {
+                throw new ComponentInitException("No URL option or kb object given. Cannot initialise KBFile component.");
+            }
 
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-//		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system",null, true, true));
-		URLConfigOption urlOption = new URLConfigOption("url", "URL pointer to the KB file",null, false, true);
-		urlOption.setRefersToFile(true);
-		options.add(urlOption);
-		return options;
-	}
+        } catch (ParseException e) {
+            throw new ComponentInitException("KB file " + getUrl() + " could not be parsed correctly.", e);
+        }
+    }
 
-	/*
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-	
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#init()
-	 */
-	@Override
-	public void init() throws ComponentInitException {
-		try {
-			
-			// we either need a specified URL (if object is created  
-			// via component manager) or the kb object has been
-			// passed directly (via constructor)
-			if(kb == null) {
-				if(configurator.getUrl() != null) {
-					kb = KBParser.parseKBFile(configurator.getUrl());
-					logger.trace("KB File " + configurator.getUrl() + " parsed successfully.");
-				} else {
-					throw new ComponentInitException("No URL option or kb object given. Cannot initialise KBFile component.");
-				}
-			}
-						
-		} catch (IOException e) {
-			throw new ComponentInitException("KB file " + configurator.getUrl() + " could not be read.", e);
-		} catch (ParseException e) {
-			throw new ComponentInitException("KB file " + configurator.getUrl() + " could not be parsed correctly.", e);
-		}
-		
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -150,33 +116,19 @@ public class KBFile extends AbstractKnowledgeSource {
 	@Override
 	public void export(File file, org.dllearner.core.OntologyFormat format){
 		kb.export(file, format);
-//		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-//        URI ontologyURI = URI.create("http://example.com");
-//        URI physicalURI = file.toURI();
-//        SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
-//        manager.addURIMapper(mapper);
-//        OWLOntology ontology;
-//		try {
-//			ontology = manager.createOntology(ontologyURI);
-//			// OWLAPIReasoner.fillOWLAPIOntology(manager,ontology,kb);
-//			OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
-//			manager.saveOntology(ontology);			
-//		} catch (OWLOntologyCreationException e) {
-//			e.printStackTrace();
-//		} catch (UnknownOWLOntologyException e) {
-//			e.printStackTrace();
-//		} catch (OWLOntologyStorageException e) {
-//			e.printStackTrace();
-//		}
 	}
 	
-	public URL getURL() {
-		return configurator.getUrl();
+	public String getUrl() {
+		return url;
 	}
 
 	@Override
 	public KB toKB() {
 		return kb;
 	}
-	
+
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }
