@@ -1,15 +1,15 @@
 package org.dllearner.configuration.spring;
 
 import junit.framework.Assert;
-import org.dllearner.confparser2.ConfParserConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,31 +23,27 @@ import org.springframework.core.io.Resource;
 public class ConfigurationBasedPropertyOverrideConfigurerTest {
 
 
-    private ConfigurableApplicationContext context;
+    private ApplicationContext context;
 
     @Before
     public void setUp() throws Exception {
 
+        ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
+
+        /** The DL-Learner Config File */
         Resource confFile = new ClassPathResource("/org/dllearner/configuration/spring/configurationBasedPropertyOverrideConfigurer.conf");
-        ConfParserConfiguration configuration = new ConfParserConfiguration(confFile);
 
-        BeanDefinitionRegistryPostProcessor beanDefinitionRegistryPostProcessor = new ConfigurationBasedBeanDefinitionRegistryPostProcessor(configuration);
+        /** Component Key Prefixes */
+        List<String> componentKeyPrefixes = new ArrayList<String>();
+        componentKeyPrefixes.add("component:");
+        componentKeyPrefixes.add(":");
 
-        ConfigurationBasedPropertyOverrideConfigurer configurer = new ConfigurationBasedPropertyOverrideConfigurer(configuration, false);
-        configurer.setProperties(configuration.getProperties());
-        configurer.getComponentKeyPrefixes().add("component:");
-        configurer.getComponentKeyPrefixes().add(":");
+        /** Spring Config Files */
+        List<Resource> springConfigResources = new ArrayList<Resource>();
+        springConfigResources.add(new ClassPathResource("/org/dllearner/configuration/spring/configuration-based-property-override-configurer-configuration.xml"));
 
-
-        String springConfigurationLocation = "/org/dllearner/configuration/spring/configuration-based-property-override-configurer-configuration.xml";
-        String[] springConfigurationFiles = new String[1];
-        springConfigurationFiles[0] = springConfigurationLocation;
-        context = new ClassPathXmlApplicationContext(springConfigurationFiles, false);
-
-        context.addBeanFactoryPostProcessor(beanDefinitionRegistryPostProcessor);
-        context.addBeanFactoryPostProcessor(configurer);
-
-        context.refresh();
+        /** Build The Application Context */
+        context =  builder.buildApplicationContext(confFile,componentKeyPrefixes,springConfigResources);
 
     }
 
