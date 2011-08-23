@@ -21,6 +21,7 @@ public class TestBean {
     private Map mapValue;
     private Set positiveValues;
     private Set negativeValues;
+    private Set<TestBean> componentSet;
 
     public String getSimpleValue() {
         return simpleValue;
@@ -84,5 +85,13 @@ public class TestBean {
 
     public void setNegativeValues(Set negativeValues) {
         this.negativeValues = negativeValues;
+    }
+
+    public Set<TestBean> getComponentSet() {
+        return componentSet;
+    }
+
+    public void setComponentSet(Set<TestBean> componentSet) {
+        this.componentSet = componentSet;
     }
 }
