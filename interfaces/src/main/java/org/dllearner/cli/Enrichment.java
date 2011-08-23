@@ -184,6 +184,7 @@ public class Enrichment {
 	// number of axioms which will be learned/considered (only applies to
 	// some learners)
 	private int nrOfAxiomsToLearn = 10;	
+	private double threshold = 0.7;
 	
 	// lists of algorithms to apply
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
@@ -195,10 +196,11 @@ public class Enrichment {
 	
 	private CommonPrefixMap prefixes = new CommonPrefixMap();
 	
-	public Enrichment(SparqlEndpoint se, Entity resource, boolean verbose) {
+	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, boolean verbose) {
 		this.se = se;
 		this.resource = resource;
 		this.verbose = verbose;
+		this.threshold = threshold;
 		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
 		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
@@ -374,7 +376,7 @@ public class Enrichment {
         System.out.println("done");		
 
         // convert the result to axioms (to make it compatible with the other algorithms)
-        TreeSet<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions();
+        List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
         List<EvaluatedAxiom> evaluatedAxioms = new LinkedList<EvaluatedAxiom>();
         for(EvaluatedDescription learnedDescription : learnedDescriptions) {
         	Axiom axiom;
@@ -422,7 +424,7 @@ public class Enrichment {
 		long runtime = System.currentTimeMillis() - startTime;
 		System.out.println("done in " + runtime + "ms");
 		List<EvaluatedAxiom> learnedAxioms = learner
-				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn, threshold);
 		System.out.println(prettyPrint(learnedAxioms));	
 		
 		algorithmRuns.add(new AlgorithmRun(learner.getClass(), learnedAxioms, ConfigHelper.getConfigOptionValuesString(learner)));
@@ -656,6 +658,9 @@ public class Enrichment {
 		parser.acceptsAll(asList("f", "format"),
 				"Format of the generated output (plain, html, rdf/xml, turtle, manchester, sparul).").withOptionalArg()
 				.ofType(String.class).defaultsTo("plain");
+		parser.acceptsAll(asList("t", "threshold"),
+				"Confidence threshold for suggestions. Set it to a value between 0 and 1.").withOptionalArg() 
+				.ofType(Double.class).defaultsTo(0.7);
 
 		// parse options and display a message for the user in case of problems
 		OptionSet options = null;
@@ -701,8 +706,9 @@ public class Enrichment {
 			}
 			
 			boolean verbose = (Boolean) options.valueOf("v");
+			double threshold = (Double) options.valueOf("t");
 			
-			Enrichment e = new Enrichment(se, resource, verbose);
+			Enrichment e = new Enrichment(se, resource, threshold, verbose);
 			e.start();
 
 			SparqlEndpointKS ks = new SparqlEndpointKS(se);
