@@ -5,10 +5,10 @@ import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.ManagedSet;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -92,8 +92,33 @@ public class ConfigurationBasedPropertyOverrideConfigurer extends PropertyOverri
         if (referencedBeanName != null && !referencedBeanName.isEmpty()) {
             applyBeanReferencePropertyValue(factory, beanName, property, referencedBeanName);
         } else {
-            /** We have a regular property value */
-            applyRegularPropertyValue(property, bd, obj);
+            //TODO I don't like this code - refactor to make it more elegant later
+            if(obj instanceof Collection){
+                /** Now check for a Collection of component references */
+                Collection collection = (Collection) obj;
+
+                /** TODO: Now we only work with Sets as that is what comes from the configuration - but we should probably support other collection types as well */
+                /** The managed set is the key to getting this to work - there are other managed objects we could use in the future */
+                Collection components = new ManagedSet();
+
+                for (Object o : collection) {
+                    if(o instanceof String){
+                        referencedBeanName = getReferencedBeanName(o);
+                        if(referencedBeanName != null && !referencedBeanName.isEmpty()){
+                            components.add(new RuntimeBeanReference(referencedBeanName));
+                        }
+                    }
+                }
+                if (components.isEmpty()) {
+                    applyRegularPropertyValue(property, bd, obj);
+                } else {
+                    bd.getPropertyValues().addPropertyValue(property, components);
+                }
+
+            }else{
+                /** We have a regular property value */
+                applyRegularPropertyValue(property, bd, obj);
+            }
         }
     }
 

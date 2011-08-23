@@ -65,6 +65,7 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         validateSecondBean(secondBean);
         validateThirdBean(secondBean.getComponent());
         validateFourthBean(context.getBean("fourthBean", TestBean.class));
+        Assert.assertTrue(testBean.getComponentSet().size() == 3);
     }
 
     private void validateThirdBean(TestBean thirdBean) {
@@ -89,6 +90,7 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         Assert.assertTrue(secondBean.getSetValue().contains("e"));
         Assert.assertTrue(secondBean.getMapValue().get("f").equals("g"));
         Assert.assertTrue(secondBean.getComponent() != null);
+        Assert.assertTrue(secondBean.getComponentSet().size() == 2);
     }
 
 
