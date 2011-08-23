@@ -163,7 +163,7 @@ public class EvaluationComputingScript {
 		ComponentManager cm = ComponentManager.getInstance();
 		// initialize KnowledgeSource
 		ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(ontologyURI.toURL());
+		ks.setURL(ontologyURI.toURL());
 		ks.init();
 			
 		System.out.println("Loaded ontology " + ontologyURI + ".");

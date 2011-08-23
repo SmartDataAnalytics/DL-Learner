@@ -115,7 +115,6 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		return options;
 	}
 	
-	@Override
 	public Configurator getConfigurator() {
 		return null;
 	}

@@ -257,6 +257,14 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		return bestEvaluatedDescriptions.getSet().last();
 	}	
 	
+	public boolean isInstanceBasedDisjoints() {
+		return instanceBasedDisjoints;
+	}
+
+	public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
+		this.instanceBasedDisjoints = instanceBasedDisjoints;
+	}
+
 	@Override
 	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();

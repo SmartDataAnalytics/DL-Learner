@@ -92,7 +92,7 @@ public class Learner {
 
             ELLearningAlgorithm la = cm.learningAlgorithm(ELLearningAlgorithm.class, lp, rc);
 
-            la.getConfigurator().setInstanceBasedDisjoints(false);
+            la.setInstanceBasedDisjoints(false);
 //        CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
             la.init();
             log.debug("Running learning algorithm");
