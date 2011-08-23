@@ -61,7 +61,6 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         validateSecondBean(secondBean);
         validateThirdBean(secondBean.getComponent());
         validateFourthBean(context.getBean("fourthBean", TestBean.class));
-        Assert.assertTrue(testBean.getComponentSet().size() == 3);
     }
 
     private void validateThirdBean(TestBean thirdBean) {
@@ -77,6 +76,8 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         Assert.assertTrue(testBean.getSetValue().contains("a"));
         Assert.assertTrue(testBean.getMapValue().get("a").equals("b"));
         Assert.assertTrue(testBean.getComponent() != null);
+        Assert.assertTrue(testBean.getComponentSet().size() == 3);
+        Assert.assertTrue(testBean.isInitialized());
     }
 
     private void validateSecondBean(TestBean secondBean) {
@@ -87,6 +88,7 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         Assert.assertTrue(secondBean.getMapValue().get("f").equals("g"));
         Assert.assertTrue(secondBean.getComponent() != null);
         Assert.assertTrue(secondBean.getComponentSet().size() == 2);
+        Assert.assertTrue(secondBean.isInitialized());
     }
 
 

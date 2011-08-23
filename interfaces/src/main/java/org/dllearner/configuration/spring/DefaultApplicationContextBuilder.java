@@ -5,9 +5,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,13 +33,20 @@ public class DefaultApplicationContextBuilder implements ApplicationContextBuild
         configurer.setProperties(configuration.getProperties());
         configurer.getComponentKeyPrefixes().addAll(componentKeyPrefixes);
 
-        String[] springConfigurationFiles = new String[springConfigurationLocations.size()];
+        /** These files need to be loaded first */
+        List<Resource> allSpringConfigFiles = new ArrayList<Resource>();
+        allSpringConfigFiles.add(new ClassPathResource("/org/dllearner/configuration/spring/bean-post-processor-configuration.xml"));
+        allSpringConfigFiles.addAll(springConfigurationLocations);
+
+        String[] springConfigurationFiles = new String[allSpringConfigFiles.size()];
         int ctr = 0;
-        for (Resource springConfigurationLocation : springConfigurationLocations) {
+        for (Resource springConfigurationLocation : allSpringConfigFiles) {
            springConfigurationFiles[ctr] = springConfigurationLocation.getFile().toURI().toString();
+           ctr++;
         }
         context = new ClassPathXmlApplicationContext(springConfigurationFiles, false);
 
+        /** These post processors run before object instantiation */
         context.addBeanFactoryPostProcessor(beanDefinitionRegistryPostProcessor);
         context.addBeanFactoryPostProcessor(configurer);
 
