@@ -1,5 +1,6 @@
 package org.dllearner.configuration.spring;
 
+import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,6 +23,13 @@ public class TestBean {
     private Set positiveValues;
     private Set negativeValues;
     private Set<TestBean> componentSet;
+    private boolean initialized = false;
+
+
+    @PostConstruct
+    public void init(){
+        initialized = true;
+    }
 
     public String getSimpleValue() {
         return simpleValue;
@@ -93,5 +101,13 @@ public class TestBean {
 
     public void setComponentSet(Set<TestBean> componentSet) {
         this.componentSet = componentSet;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
     }
 }
