@@ -115,6 +115,10 @@ public class Start {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
+
+		System.out.println("********************************************************************************");
+		System.out.println("* Caution: The command line interface is currently unlikely to work correctly. *");
+		System.out.println("********************************************************************************");
 		
 		System.out.println("DL-Learner " + Info.build + " command line interface");
 		
