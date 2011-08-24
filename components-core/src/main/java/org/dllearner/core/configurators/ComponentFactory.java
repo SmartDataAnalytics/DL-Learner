@@ -290,9 +290,9 @@ return ISLEConfigurator.getISLE(learningProblem, reasoningService);
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization OCEL
 **/
-public static OCEL getOCEL(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
-return OCELConfigurator.getOCEL(learningProblem, reasoningService);
-}
+//public static OCEL getOCEL(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+//return OCELConfigurator.getOCEL(learningProblem, reasoningService);
+//}
 
 /**
 * @param learningProblem see LearningProblem

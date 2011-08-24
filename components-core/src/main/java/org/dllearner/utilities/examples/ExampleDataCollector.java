@@ -34,6 +34,7 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -85,11 +86,11 @@ public class ExampleDataCollector {
 			
 			FastInstanceChecker rc = ComponentFactory.getFastInstanceChecker(tmp);
 			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(rc, pos, neg);
-			OCEL la = ComponentFactory.getOCEL(lp, rc);
+			OCEL la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, rc);
 //			la.getConfigurator().setUseNegation(false);
 //			la.getConfigurator().setUseAllConstructor(false);
 //			la.getConfigurator().setUseExistsConstructor(false);
-			la.getConfigurator().setUseDataHasValueConstructor(true);
+			la.setUseDataHasValueConstructor(true);
 			for(AbstractKnowledgeSource ks: tmp){
 				ks.init();
 			}

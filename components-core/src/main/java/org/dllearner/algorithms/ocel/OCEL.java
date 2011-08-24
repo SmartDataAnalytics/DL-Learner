@@ -28,11 +28,10 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.OCELConfigurator;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -82,16 +81,15 @@ import org.dllearner.utilities.Helper;
  */
 public class OCEL extends AbstractCELA {
 	
-	private OCELConfigurator configurator;
-
-	public OCELConfigurator getConfigurator(){
-		return configurator;
-	}
+//	private OCELConfigurator configurator;
+//
+//	public OCELConfigurator getConfigurator(){
+//		return configurator;
+//	}
 	
 	// actual algorithm
 	private ROLearner2 algorithm;
-	private static Logger logger = Logger
-		.getLogger(OCEL.class);
+	private static Logger logger = Logger.getLogger(OCEL.class);
 	private String logLevel = CommonConfigOptions.logLevelDefault;	
 	RhoDRDown operator;	
 
@@ -125,6 +123,7 @@ public class OCEL extends AbstractCELA {
 	private static double noisePercentageDefault = 0.0;
 	private double noisePercentage = noisePercentageDefault;
 	private NamedClass startClass = null;
+	private boolean useDataHasValueConstructor = false;
 	//refactor this
 	private static boolean usePropernessChecksDefault = false;
 	private boolean usePropernessChecks = usePropernessChecksDefault;
@@ -139,11 +138,20 @@ public class OCEL extends AbstractCELA {
 	private int guaranteeXgoodDescriptions = CommonConfigOptions.guaranteeXgoodDescriptionsDefault;
 	private int maxClassDescriptionTests = CommonConfigOptions.maxClassDescriptionTestsDefault;
 	
+	private double negativeWeight;
+	private double startNodeBonus;
+	private double expansionPenaltyFactor;
+	private int negationPenalty;
+	private boolean terminateOnNoiseReached = true;
+	
 	// Variablen zur Einstellung der Protokollierung
 	// boolean quiet = false;
 	boolean showBenchmarkInformation = false;
 	// boolean createTreeString = false;
 	// String searchTree = new String();
+	private int cardinalityLimit;
+	private boolean useStringDatatypes;
+	private boolean instanceBasedDisjoints;
 
 	// Konfiguration des Algorithmus
 	// Faktor für horizontale Erweiterung (notwendig für completeness)
@@ -153,12 +161,12 @@ public class OCEL extends AbstractCELA {
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
 	public OCEL(PosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-		this.configurator = new OCELConfigurator(this);
+//		this.configurator = new OCELConfigurator(this);
 	}
 	
 	public OCEL(PosOnlyLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-		this.configurator = new OCELConfigurator(this);
+//		this.configurator = new OCELConfigurator(this);
 	}
 	
 	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
@@ -332,9 +340,9 @@ public class OCEL extends AbstractCELA {
 		} else {
 			if(learningProblem instanceof PosOnlyLP) {
 //				throw new RuntimeException("does not work with positive examples only yet");
-				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0, configurator);
+				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			} else {
-				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size(), configurator);
+				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			}
 		}
 		
@@ -392,7 +400,7 @@ public class OCEL extends AbstractCELA {
 		operator = new RhoDRDown(
 				reasoner,
 				classHierarchy,
-				configurator,
+//				configurator,
 					applyAllFilter,
 					applyExistsFilter,
 					useAllConstructor, 
@@ -403,13 +411,16 @@ public class OCEL extends AbstractCELA {
 					useNegation,
 					useBooleanDatatypes,
 					useDoubleDatatypes,
-					startClass
+					startClass,
+					cardinalityLimit, 
+					useStringDatatypes, 
+					instanceBasedDisjoints
 			);		
 			
 		// create an algorithm object and pass all configuration
 		// options to it
 		algorithm = new ROLearner2(
-				configurator,
+//				configurator,
 				learningProblem,
 				reasoner,
 				operator,
@@ -430,7 +441,12 @@ public class OCEL extends AbstractCELA {
 				minExecutionTimeInSeconds,
 				guaranteeXgoodDescriptions,
 				maxClassDescriptionTests,
-				forceRefinementLengthIncrease
+				forceRefinementLengthIncrease,
+				terminateOnNoiseReached,
+				negativeWeight, 
+				startNodeBonus, 
+				expansionPenaltyFactor, 
+				negationPenalty
 		);
 		// note: used concepts and roles do not need to be passed
 		// as argument, because it is sufficient to prepare the
@@ -497,5 +513,333 @@ public class OCEL extends AbstractCELA {
 	
 	public RhoDRDown getRefinementOperator() {
 		return operator;
+	}
+
+	public RhoDRDown getOperator() {
+		return operator;
+	}
+
+	public void setOperator(RhoDRDown operator) {
+		this.operator = operator;
+	}
+
+	public boolean isWriteSearchTree() {
+		return writeSearchTree;
+	}
+
+	public void setWriteSearchTree(boolean writeSearchTree) {
+		this.writeSearchTree = writeSearchTree;
+	}
+
+	public File getSearchTreeFile() {
+		return searchTreeFile;
+	}
+
+	public void setSearchTreeFile(File searchTreeFile) {
+		this.searchTreeFile = searchTreeFile;
+	}
+
+	public boolean isReplaceSearchTree() {
+		return replaceSearchTree;
+	}
+
+	public void setReplaceSearchTree(boolean replaceSearchTree) {
+		this.replaceSearchTree = replaceSearchTree;
+	}
+
+	public String getHeuristic() {
+		return heuristic;
+	}
+
+	public void setHeuristic(String heuristic) {
+		this.heuristic = heuristic;
+	}
+
+	public Set<NamedClass> getAllowedConcepts() {
+		return allowedConcepts;
+	}
+
+	public void setAllowedConcepts(Set<NamedClass> allowedConcepts) {
+		this.allowedConcepts = allowedConcepts;
+	}
+
+	public Set<ObjectProperty> getAllowedRoles() {
+		return allowedRoles;
+	}
+
+	public void setAllowedRoles(Set<ObjectProperty> allowedRoles) {
+		this.allowedRoles = allowedRoles;
+	}
+
+	public Set<NamedClass> getIgnoredConcepts() {
+		return ignoredConcepts;
+	}
+
+	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+		this.ignoredConcepts = ignoredConcepts;
+	}
+
+	public Set<ObjectProperty> getIgnoredRoles() {
+		return ignoredRoles;
+	}
+
+	public void setIgnoredRoles(Set<ObjectProperty> ignoredRoles) {
+		this.ignoredRoles = ignoredRoles;
+	}
+
+	public Set<NamedClass> getUsedConcepts() {
+		return usedConcepts;
+	}
+
+	public void setUsedConcepts(Set<NamedClass> usedConcepts) {
+		this.usedConcepts = usedConcepts;
+	}
+
+	public Set<ObjectProperty> getUsedRoles() {
+		return usedRoles;
+	}
+
+	public void setUsedRoles(Set<ObjectProperty> usedRoles) {
+		this.usedRoles = usedRoles;
+	}
+
+	public boolean isApplyAllFilter() {
+		return applyAllFilter;
+	}
+
+	public void setApplyAllFilter(boolean applyAllFilter) {
+		this.applyAllFilter = applyAllFilter;
+	}
+
+	public boolean isApplyExistsFilter() {
+		return applyExistsFilter;
+	}
+
+	public void setApplyExistsFilter(boolean applyExistsFilter) {
+		this.applyExistsFilter = applyExistsFilter;
+	}
+
+	public boolean isUseTooWeakList() {
+		return useTooWeakList;
+	}
+
+	public void setUseTooWeakList(boolean useTooWeakList) {
+		this.useTooWeakList = useTooWeakList;
+	}
+
+	public boolean isUseOverlyGeneralList() {
+		return useOverlyGeneralList;
+	}
+
+	public void setUseOverlyGeneralList(boolean useOverlyGeneralList) {
+		this.useOverlyGeneralList = useOverlyGeneralList;
+	}
+
+	public boolean isUseShortConceptConstruction() {
+		return useShortConceptConstruction;
+	}
+
+	public void setUseShortConceptConstruction(boolean useShortConceptConstruction) {
+		this.useShortConceptConstruction = useShortConceptConstruction;
+	}
+
+	public boolean isImproveSubsumptionHierarchy() {
+		return improveSubsumptionHierarchy;
+	}
+
+	public void setImproveSubsumptionHierarchy(boolean improveSubsumptionHierarchy) {
+		this.improveSubsumptionHierarchy = improveSubsumptionHierarchy;
+	}
+
+	public boolean isUseAllConstructor() {
+		return useAllConstructor;
+	}
+
+	public void setUseAllConstructor(boolean useAllConstructor) {
+		this.useAllConstructor = useAllConstructor;
+	}
+
+	public boolean isUseExistsConstructor() {
+		return useExistsConstructor;
+	}
+
+	public void setUseExistsConstructor(boolean useExistsConstructor) {
+		this.useExistsConstructor = useExistsConstructor;
+	}
+
+	public boolean isUseHasValueConstructor() {
+		return useHasValueConstructor;
+	}
+
+	public void setUseHasValueConstructor(boolean useHasValueConstructor) {
+		this.useHasValueConstructor = useHasValueConstructor;
+	}
+
+	public int getValueFrequencyThreshold() {
+		return valueFrequencyThreshold;
+	}
+
+	public void setValueFrequencyThreshold(int valueFrequencyThreshold) {
+		this.valueFrequencyThreshold = valueFrequencyThreshold;
+	}
+
+	public boolean isUseCardinalityRestrictions() {
+		return useCardinalityRestrictions;
+	}
+
+	public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
+		this.useCardinalityRestrictions = useCardinalityRestrictions;
+	}
+
+	public boolean isUseNegation() {
+		return useNegation;
+	}
+
+	public void setUseNegation(boolean useNegation) {
+		this.useNegation = useNegation;
+	}
+
+	public boolean isUseBooleanDatatypes() {
+		return useBooleanDatatypes;
+	}
+
+	public void setUseBooleanDatatypes(boolean useBooleanDatatypes) {
+		this.useBooleanDatatypes = useBooleanDatatypes;
+	}
+
+	public boolean isUseDoubleDatatypes() {
+		return useDoubleDatatypes;
+	}
+
+	public void setUseDoubleDatatypes(boolean useDoubleDatatypes) {
+		this.useDoubleDatatypes = useDoubleDatatypes;
+	}
+
+	public double getNoisePercentage() {
+		return noisePercentage;
+	}
+
+	public void setNoisePercentage(double noisePercentage) {
+		this.noisePercentage = noisePercentage;
+	}
+
+	public NamedClass getStartClass() {
+		return startClass;
+	}
+
+	public void setStartClass(NamedClass startClass) {
+		this.startClass = startClass;
+	}
+
+	public boolean isUsePropernessChecks() {
+		return usePropernessChecks;
+	}
+
+	public void setUsePropernessChecks(boolean usePropernessChecks) {
+		this.usePropernessChecks = usePropernessChecks;
+	}
+
+	public int getMaxPosOnlyExpansion() {
+		return maxPosOnlyExpansion;
+	}
+
+	public void setMaxPosOnlyExpansion(int maxPosOnlyExpansion) {
+		this.maxPosOnlyExpansion = maxPosOnlyExpansion;
+	}
+
+	public boolean isForceRefinementLengthIncrease() {
+		return forceRefinementLengthIncrease;
+	}
+
+	public void setForceRefinementLengthIncrease(boolean forceRefinementLengthIncrease) {
+		this.forceRefinementLengthIncrease = forceRefinementLengthIncrease;
+	}
+
+	public int getMaxExecutionTimeInSeconds() {
+		return maxExecutionTimeInSeconds;
+	}
+
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	}
+
+	public int getMinExecutionTimeInSeconds() {
+		return minExecutionTimeInSeconds;
+	}
+
+	public void setMinExecutionTimeInSeconds(int minExecutionTimeInSeconds) {
+		this.minExecutionTimeInSeconds = minExecutionTimeInSeconds;
+	}
+
+	public int getGuaranteeXgoodDescriptions() {
+		return guaranteeXgoodDescriptions;
+	}
+
+	public void setGuaranteeXgoodDescriptions(int guaranteeXgoodDescriptions) {
+		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
+	}
+
+	public int getMaxClassDescriptionTests() {
+		return maxClassDescriptionTests;
+	}
+
+	public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
+		this.maxClassDescriptionTests = maxClassDescriptionTests;
+	}
+
+	public boolean isShowBenchmarkInformation() {
+		return showBenchmarkInformation;
+	}
+
+	public void setShowBenchmarkInformation(boolean showBenchmarkInformation) {
+		this.showBenchmarkInformation = showBenchmarkInformation;
+	}
+
+	public double getNegativeWeight() {
+		return negativeWeight;
+	}
+
+	public void setNegativeWeight(double negativeWeight) {
+		this.negativeWeight = negativeWeight;
+	}
+
+	public double getStartNodeBonus() {
+		return startNodeBonus;
+	}
+
+	public void setStartNodeBonus(double startNodeBonus) {
+		this.startNodeBonus = startNodeBonus;
+	}
+
+	public double getExpansionPenaltyFactor() {
+		return expansionPenaltyFactor;
+	}
+
+	public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
+		this.expansionPenaltyFactor = expansionPenaltyFactor;
+	}
+
+	public double getNegationPenalty() {
+		return negationPenalty;
+	}
+
+	public void setNegationPenalty(int negationPenalty) {
+		this.negationPenalty = negationPenalty;
+	}
+
+	public boolean isUseDataHasValueConstructor() {
+		return useDataHasValueConstructor;
+	}
+
+	public void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
+		this.useDataHasValueConstructor = useDataHasValueConstructor;
+	}
+
+	public boolean isTerminateOnNoiseReached() {
+		return terminateOnNoiseReached;
+	}
+
+	public void setTerminateOnNoiseReached(boolean terminateOnNoiseReached) {
+		this.terminateOnNoiseReached = terminateOnNoiseReached;
 	}
 }

@@ -146,12 +146,11 @@ public class RefinementOperatorTests {
 		
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts); 
 		classHierarchy.thinOutSubsumptionHierarchy();
+		
+		System.out.println(" UNIT TEST INCOMPLETE AFTER FRAMEWORK CHANGE, BECAUSE CLASS HIERARCHY IS NOT PASSED TO REFINEMENT OPERATOR ");
 		RhoDRDown op = new RhoDRDown(
-				reasoner,
-				classHierarchy,
-				Thing.instance,
-				la.getConfigurator()
-			);		
+				reasoner // TODO: pass class hierarchy here
+			);
 		
 		Description concept = KBParser.parseConcept("EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND TOP)");
 		Set<Description> results = op.refine(concept,8);

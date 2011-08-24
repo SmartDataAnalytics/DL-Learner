@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -131,20 +132,20 @@ public class NewSample {
 		PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard( f, posExamples, negExamples);
 		
 		// learning algorithm
-		OCEL la = ComponentFactory.getOCEL( lp, f);
+		OCEL la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);
 		//OPTIONAL PARAMETERS
-		la.getConfigurator().setUseAllConstructor( false);
-		la.getConfigurator().setUseExistsConstructor(true);
-		la.getConfigurator().setUseCardinalityRestrictions(false);
-		la.getConfigurator().setUseExistsConstructor(true);
-		la.getConfigurator().setUseNegation(false);
-		la.getConfigurator().setWriteSearchTree(false);
-		la.getConfigurator().setSearchTreeFile("log/searchTree.txt");
-		la.getConfigurator().setReplaceSearchTree(true);
-		la.getConfigurator().setNoisePercentage(0.0);
-		SortedSet<String> ignore = new TreeSet<String>();
-		ignore.add("http://example.com/foo#car");
-		la.getConfigurator().setIgnoredConcepts(ignore);
+		la.setUseAllConstructor( false);
+		la.setUseExistsConstructor(true);
+		la.setUseCardinalityRestrictions(false);
+		la.setUseExistsConstructor(true);
+		la.setUseNegation(false);
+		la.setWriteSearchTree(false);
+//		la.setSearchTreeFile("log/searchTree.txt");
+		la.setReplaceSearchTree(true);
+		la.setNoisePercentage(0.0);
+//		SortedSet<String> ignore = new TreeSet<String>();
+//		ignore.add("http://example.com/foo#car");
+//		la.setIgnoredConcepts(ignore);
 		
 
 		// all components need to be initialised before they can be used

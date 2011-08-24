@@ -35,7 +35,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -64,7 +63,7 @@ import com.jamonapi.Monitor;
 public class ROLearner2 {
 
 	private static Logger logger = Logger.getLogger(ROLearner2.class);
-	private OCELConfigurator configurator;
+//	private OCELConfigurator configurator;
 
 	// basic setup: learning problem and reasoning service
 	private AbstractReasonerComponent rs;
@@ -211,8 +210,18 @@ public class ROLearner2 {
 	private String baseURI;
 	private Map<String, String> prefixes;
 
+	private boolean terminateOnNoiseReached;
+
+	private double negativeWeight;
+
+	private double startNodeBonus;
+
+	private double expansionPenaltyFactor;
+
+	private int negationPenalty;
+
 	public ROLearner2(
-			OCELConfigurator configurator,
+//			OCELConfigurator configurator,
 			AbstractLearningProblem learningProblem,
 			AbstractReasonerComponent rs,
 			RefinementOperator operator,
@@ -224,7 +233,9 @@ public class ROLearner2 {
 			boolean useTooWeakList, boolean useOverlyGeneralList,
 			boolean useShortConceptConstruction, boolean usePropernessChecks,
 			int maxPosOnlyExpansion, int maxExecutionTimeInSeconds, int minExecutionTimeInSeconds,
-			int guaranteeXgoodDescriptions, int maxClassDescriptionTests, boolean forceRefinementLengthIncrease) {
+			int guaranteeXgoodDescriptions, int maxClassDescriptionTests, boolean forceRefinementLengthIncrease,
+			boolean terminateOnNoiseReached,
+			double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
 
 		
 			PosNegLP lp = (PosNegLP) learningProblem;
@@ -234,11 +245,17 @@ public class ROLearner2 {
 			nrOfPositiveExamples = positiveExamples.size();
 			nrOfNegativeExamples = negativeExamples.size();
 
+			this.negativeWeight = negativeWeight;
+			this.startNodeBonus = startNodeBonus;
+			this.expansionPenaltyFactor = expansionPenaltyFactor;
+			this.negationPenalty = negationPenalty;
+			
 			// System.out.println(nrOfPositiveExamples);
 			// System.out.println(nrOfNegativeExamples);
 			// System.exit(0);
 
-		this.configurator = configurator;
+//		this.configurator = configurator;
+		this.terminateOnNoiseReached = terminateOnNoiseReached;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 		this.rs = rs;
 		this.operator = (RhoDRDown) operator;
@@ -353,10 +370,10 @@ public class ROLearner2 {
 
 		// start search with start class
 		if (startDescription == null) {
-			startNode = new ExampleBasedNode(configurator, Thing.instance);
+			startNode = new ExampleBasedNode(Thing.instance, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			startNode.setCoveredExamples(positiveExamples, negativeExamples);
 		} else {
-			startNode = new ExampleBasedNode(configurator, startDescription);
+			startNode = new ExampleBasedNode(startDescription,  negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			Set<Individual> coveredNegatives = rs.hasType(startDescription, negativeExamples);
 			Set<Individual> coveredPositives = rs.hasType(startDescription, positiveExamples);
 			startNode.setCoveredExamples(coveredPositives, coveredNegatives);
@@ -627,7 +644,7 @@ public class ROLearner2 {
 							properRefinements.add(refinement);
 							tooWeakList.add(refinement);
 
-							ExampleBasedNode newNode = new ExampleBasedNode(configurator, refinement);
+							ExampleBasedNode newNode = new ExampleBasedNode(refinement, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 							newNode.setHorizontalExpansion(refinement.getLength() - 1);
 							newNode.setTooWeak(true);
 							newNode
@@ -717,7 +734,7 @@ public class ROLearner2 {
 			if (nonRedundant) {
 
 				// newly created node
-				ExampleBasedNode newNode = new ExampleBasedNode(configurator, refinement);
+				ExampleBasedNode newNode = new ExampleBasedNode(refinement, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 				// die -1 ist wichtig, da sonst keine gleich langen Refinements
 				// für den neuen Knoten erlaubt wären z.B. person => male
 				newNode.setHorizontalExpansion(refinement.getLength() - 1);
@@ -1326,7 +1343,7 @@ public class ROLearner2 {
 		// reached - unless this termination criterion is switched off using terminateOnNoiseReached = false
 		if (guaranteeXgoodAlreadyReached){
 			result = true;
-		} else if(solutions.size() >= guaranteeXgoodDescriptions && configurator.getTerminateOnNoiseReached()) {
+		} else if(solutions.size() >= guaranteeXgoodDescriptions && terminateOnNoiseReached) {
 				if(guaranteeXgoodDescriptions != 1) {
 				logger.info("Minimum number (" + guaranteeXgoodDescriptions
 						+ ") of good descriptions reached.");

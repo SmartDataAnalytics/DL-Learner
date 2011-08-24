@@ -229,8 +229,26 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 		
 		singleSuggestionMode = configurator.getSingleSuggestionMode();
 		
+		// TODO: 1. turn those into instance variables / fields 2. provide getters/setters; 
+		// 3. annotate them with @ConfigOption => this all needs to be done in FuzzyRhoDRDown,
+		// not in this class
+		boolean useExistsConstructor = true;
+		int valueFrequencyThreshold = 2;
+		boolean useCardinalityRestrictions = false;
+		int cardinalityLimit = 1;
+		boolean useHasValueConstructor = false;
+		boolean useNegation = true;
+		boolean useStringDatatypes = false;
+		boolean useBooleanDatatypes = false;
+		boolean useDoubleDatatypes = false;
+		boolean instanceBasedDisjoints = true;
+		boolean applyAllFilter = true;
+		boolean applyExistsFilter = true;
+		boolean useAllConstructor = true;
+
 		// create refinement operator
-		operator = new FuzzyRhoDRDown(reasoner, classHierarchy, startClass, configurator);
+		operator = new FuzzyRhoDRDown(reasoner, classHierarchy, cardinalityLimit, useHasValueConstructor, useStringDatatypes, instanceBasedDisjoints, applyAllFilter, applyExistsFilter, useAllConstructor,
+				useExistsConstructor, valueFrequencyThreshold, useCardinalityRestrictions, useNegation, useBooleanDatatypes, useDoubleDatatypes, (NamedClass) startClass);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
 		if(configurator.getWriteSearchTree()) {

@@ -21,7 +21,6 @@ package org.dllearner.algorithms.ocel;
 
 import java.util.List;
 
-import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Negation;
@@ -70,7 +69,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public class MultiHeuristic implements ExampleBasedHeuristic {
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
-	private OCELConfigurator configurator;
+//	private OCELConfigurator configurator;
 	
 	// heuristic parameters
 	private double expansionPenaltyFactor = 0.02;
@@ -80,6 +79,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	// penalise errors on positive examples harder than on negative examples
 	// (positive weight = 1)
 	private double negativeWeight = 1.0; // was 0.8;
+	private int negationPenalty = 0;
 	
 	// examples
 	private int nrOfNegativeExamples;
@@ -92,13 +92,13 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 //		this(nrOfPositiveExamples, nrOfNegativeExamples, 0.02, 0.5);
 	}
 	
-	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, OCELConfigurator configurator) {
+	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
-		this.configurator = configurator;
-		negativeWeight = configurator.getNegativeWeight();
-		startNodeBonus = configurator.getStartNodeBonus();
-		expansionPenaltyFactor = configurator.getExpansionPenaltyFactor();
+//		this.configurator = configurator;
+		this.negativeWeight = negativeWeight;
+		this.startNodeBonus = startNodeBonus;
+		this.expansionPenaltyFactor = expansionPenaltyFactor;
 	}
 	
 //	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {
@@ -144,8 +144,8 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		return (coveredPositives + negativeWeight * (nrOfNegativeExamples - coveredNegatives))/(double)nrOfExamples;
 	}
 	
-	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples, OCELConfigurator configurator) {
-		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples, configurator);
+	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples, double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
+		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 		return multi.getNodeScore(node);
 	}
 	
@@ -162,7 +162,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		// we put a penalty on negations, because they often overfit
 		// (TODO: make configurable)
 		else if(description instanceof Negation) {
-			bonus = -configurator.getNegationPenalty();
+			bonus = -negationPenalty;
 		}
 		
 //		if(description instanceof BooleanValueRestriction)

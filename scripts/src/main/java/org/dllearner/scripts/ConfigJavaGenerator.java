@@ -31,17 +31,16 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AbstractComponent;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
-import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentManager;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.configurators.FuzzyCELOEConfigurator;
 import org.dllearner.core.configurators.ISLEConfigurator;
-import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.ROLearnerConfigurator;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.ConfigOption;
@@ -70,7 +69,7 @@ public final class ConfigJavaGenerator {
 	private static final SortedSet<String> EXTENDSREFINEMENTOPERATOR = 
 		new TreeSet<String>(Arrays.asList(new String[]{
 				ROLearnerConfigurator.class.getSimpleName(),
-				OCELConfigurator.class.getSimpleName(),
+//				OCELConfigurator.class.getSimpleName(),
 				CELOEConfigurator.class.getSimpleName(),
 				FuzzyCELOEConfigurator.class.getSimpleName(),
 				ISLEConfigurator.class.getSimpleName()
