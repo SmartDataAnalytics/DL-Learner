@@ -19,7 +19,9 @@
 
 package org.dllearner.learningproblems;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -28,6 +30,9 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.options.BooleanConfigOption;
+import org.dllearner.core.options.DoubleConfigOption;
+import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
@@ -82,6 +87,18 @@ public class PosNegLPStandard extends PosNegLP {
 		this.negativeExamples = negativeExamples;
 	}
 
+	public static Collection<org.dllearner.core.options.ConfigOption<?>> createConfigOptions() {
+		Collection<org.dllearner.core.options.ConfigOption<?>> options = new LinkedList<org.dllearner.core.options.ConfigOption<?>>(PosNegLP.createConfigOptions());
+		BooleanConfigOption approx = new BooleanConfigOption("useApproximations", "whether to use stochastic approximations for computing accuracy", false);
+		options.add(approx);
+		DoubleConfigOption approxAccuracy = new DoubleConfigOption("approxAccuracy", "accuracy of the approximation (only for expert use)", 0.05);
+		options.add(approxAccuracy);
+		StringConfigOption accMethod = new StringConfigOption("accuracyMethod", "Specifies, which method/function to use for computing accuracy.","predacc"); //  or domain/range of a property.
+		accMethod.setAllowedValues(new String[] {"fmeasure", "predacc"});
+		options.add(accMethod);		
+		return options;
+	}	
+	
 	@Override
 	public void init() {
 		super.init();

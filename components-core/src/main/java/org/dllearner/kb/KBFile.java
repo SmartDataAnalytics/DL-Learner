@@ -22,12 +22,15 @@ package org.dllearner.kb;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -72,6 +75,15 @@ public class KBFile extends AbstractKnowledgeSource {
 	public KBFile(KB kb) {
 		this.kb = kb;
 	}
+	
+	public static Collection<org.dllearner.core.options.ConfigOption<?>> createConfigOptions() {
+		Collection<org.dllearner.core.options.ConfigOption<?>> options = new LinkedList<org.dllearner.core.options.ConfigOption<?>>();
+//		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system",null, true, true));
+		URLConfigOption urlOption = new URLConfigOption("url", "URL pointer to the KB file",null, false, true);
+		urlOption.setRefersToFile(true);
+		options.add(urlOption);
+		return options;
+	}	
 	
 	public static String getName() {
 		return "KB file";
