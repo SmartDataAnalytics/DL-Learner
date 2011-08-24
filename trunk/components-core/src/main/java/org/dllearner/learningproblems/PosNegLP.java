@@ -19,11 +19,17 @@
 
 package org.dllearner.learningproblems;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.options.BooleanConfigOption;
+import org.dllearner.core.options.CommonConfigOptions;
+import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.options.StringSetConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
@@ -84,6 +90,20 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 		super(reasoningService);
 	}
 	
+	public static Collection<org.dllearner.core.options.ConfigOption<?>> createConfigOptions() {
+		Collection<org.dllearner.core.options.ConfigOption<?>> options = new LinkedList<org.dllearner.core.options.ConfigOption<?>>();
+		options.add(new StringSetConfigOption("positiveExamples",
+				"positive examples",null, true, false));
+		options.add(new StringSetConfigOption("negativeExamples",
+				"negative examples",null, true, false));
+		options.add(new BooleanConfigOption("useRetrievalForClassficiation", 
+				"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.", false));
+		options.add(CommonConfigOptions.getPercentPerLenghtUnitOption(0.05));
+		StringConfigOption multiInstanceChecks = new StringConfigOption("useMultiInstanceChecks", "See UseMultiInstanceChecks enum. - NO LONGER FULLY SUPPORTED.","twoChecks");
+		multiInstanceChecks.setAllowedValues(new String[] {"never", "twoChecks", "oneCheck"});
+		options.add(multiInstanceChecks);
+		return options;
+	}	
 
 	/*
 	 * (non-Javadoc)
