@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
@@ -79,6 +80,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "OWL Class Expression Learner", shortName = "ocel", version = 1.2)
 public class OCEL extends AbstractCELA {
 	
 //	private OCELConfigurator configurator;
@@ -91,14 +93,17 @@ public class OCEL extends AbstractCELA {
 	private ROLearner2 algorithm;
 	private static Logger logger = Logger.getLogger(OCEL.class);
 	private String logLevel = CommonConfigOptions.logLevelDefault;	
-	RhoDRDown operator;	
-
+	
+	// dependencies
+	private RhoDRDown operator;	
+	private ExampleBasedHeuristic heuristic;
+	
 	// configuration options
 	private boolean writeSearchTree;
 	private File searchTreeFile;
 	private boolean replaceSearchTree = false;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
-	private String heuristic = "multi";
+	private String heuristicStr = "multi";
 	Set<NamedClass> allowedConcepts;
 	Set<ObjectProperty> allowedRoles;
 	Set<NamedClass> ignoredConcepts;
@@ -244,9 +249,9 @@ public class OCEL extends AbstractCELA {
 		else if(name.equals("heuristic")) {
 			String value = (String) entry.getValue();
 			if(value.equals("lexicographic"))
-				heuristic = "lexicographic";
+				heuristicStr = "lexicographic";
 			else
-				heuristic = "flexible";
+				heuristicStr = "flexible";
 		} else if(name.equals("allowedConcepts")) {
 			allowedConcepts = CommonConfigMappings.getAtomicConceptSet((Set<String>)entry.getValue());
 		} else if(name.equals("allowedRoles")) {
@@ -328,21 +333,21 @@ public class OCEL extends AbstractCELA {
 			Files.clearFile(searchTreeFile);
 
 		// adjust heuristic
-		ExampleBasedHeuristic algHeuristic;
+
 		
-		if(heuristic == "lexicographic")
-			algHeuristic = new LexicographicHeuristic();
-		else if(heuristic == "flexible") {
+		if(heuristicStr == "lexicographic")
+			heuristic = new LexicographicHeuristic();
+		else if(heuristicStr == "flexible") {
 			if(learningProblem instanceof PosOnlyLP) {
 				throw new RuntimeException("does not work with positive examples only yet");
 			}
-			algHeuristic = new FlexibleHeuristic(((PosNegLP)learningProblem).getNegativeExamples().size(), ((PosNegLP)learningProblem).getPercentPerLengthUnit());
+			heuristic = new FlexibleHeuristic(((PosNegLP)learningProblem).getNegativeExamples().size(), ((PosNegLP)learningProblem).getPercentPerLengthUnit());
 		} else {
 			if(learningProblem instanceof PosOnlyLP) {
 //				throw new RuntimeException("does not work with positive examples only yet");
-				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
+				heuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			} else {
-				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
+				heuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			}
 		}
 		
@@ -424,7 +429,7 @@ public class OCEL extends AbstractCELA {
 				learningProblem,
 				reasoner,
 				operator,
-				algHeuristic,
+				heuristic,
 				startClass,
 				// usedConcepts,
 				// usedRoles,
@@ -548,11 +553,11 @@ public class OCEL extends AbstractCELA {
 	}
 
 	public String getHeuristic() {
-		return heuristic;
+		return heuristicStr;
 	}
 
 	public void setHeuristic(String heuristic) {
-		this.heuristic = heuristic;
+		this.heuristicStr = heuristic;
 	}
 
 	public Set<NamedClass> getAllowedConcepts() {
@@ -841,5 +846,9 @@ public class OCEL extends AbstractCELA {
 
 	public void setTerminateOnNoiseReached(boolean terminateOnNoiseReached) {
 		this.terminateOnNoiseReached = terminateOnNoiseReached;
+	}
+
+	public void setHeuristic(ExampleBasedHeuristic heuristic) {
+		this.heuristic = heuristic;
 	}
 }
