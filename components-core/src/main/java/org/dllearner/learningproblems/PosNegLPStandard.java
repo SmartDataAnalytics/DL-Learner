@@ -72,6 +72,10 @@ public class PosNegLPStandard extends PosNegLP {
 	public PosNegLPStandard() {
 	}
 
+    public PosNegLPStandard(AbstractReasonerComponent reasoningService){
+        super(reasoningService);
+    }
+
 	public PosNegLPStandard(AbstractReasonerComponent reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
 		this.setReasoner(reasoningService);
 		this.positiveExamples = positiveExamples;

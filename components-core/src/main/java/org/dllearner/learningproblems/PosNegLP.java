@@ -20,6 +20,7 @@
 package org.dllearner.learningproblems;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -36,9 +37,9 @@ import sun.beans.editors.DoubleEditor;
  */
 public abstract class PosNegLP extends AbstractLearningProblem {
 	
-	protected Set<Individual> positiveExamples;
-	protected Set<Individual> negativeExamples;
-	protected Set<Individual> allExamples;
+	protected Set<Individual> positiveExamples = new TreeSet<Individual>();
+	protected Set<Individual> negativeExamples = new TreeSet<Individual>();
+	protected Set<Individual> allExamples = new TreeSet<Individual>();
 
     @org.dllearner.core.config.ConfigOption(name = "useRetrievalForClassification", description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false", propertyEditorClass = BoolEditor.class)
     private boolean useRetrievalForClassification = false;
