@@ -22,9 +22,11 @@ package org.dllearner.algorithms.properties;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -173,8 +175,12 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		property2Count.remove(propertyToDescribe);
 		
 		EvaluatedAxiom evalAxiom;
+		Set<ObjectProperty> properties;
 		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
-			evalAxiom = new EvaluatedAxiom(new EquivalentObjectPropertiesAxiom(propertyToDescribe, entry.getKey()),
+			properties = new HashSet<ObjectProperty>();
+			properties.add(propertyToDescribe);
+			properties.add(entry.getKey());
+			evalAxiom = new EvaluatedAxiom(new EquivalentObjectPropertiesAxiom(properties),
 					new AxiomScore(entry.getValue() / (double)all));
 			axioms.add(evalAxiom);
 		}

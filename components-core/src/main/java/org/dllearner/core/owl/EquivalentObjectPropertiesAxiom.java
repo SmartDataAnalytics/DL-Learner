@@ -19,40 +19,57 @@
 
 package org.dllearner.core.owl;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class EquivalentObjectPropertiesAxiom extends PropertyAxiom {
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -1085651734702155330L;
-	private ObjectProperty role;
-	private ObjectProperty equivRole;
+	private Set<ObjectProperty> equivalentProperties;
 	
-	public EquivalentObjectPropertiesAxiom(ObjectProperty equivRole, ObjectProperty role) {
-		this.role = role;
-		this.equivRole = equivRole;
+	public EquivalentObjectPropertiesAxiom(Set<ObjectProperty> equivalentProperties) {
+		this.equivalentProperties = equivalentProperties;
 	}
 	
-	public ObjectProperty getRole() {
-		return role;
-	}
-
-	public ObjectProperty getEquivalentRole() {
-		return equivRole;
+	public Set<ObjectProperty> getEquivalentProperties() {
+		return equivalentProperties;
 	}
 
 	public int getLength() {
-		return 1 + role.getLength() + equivRole.getLength();
+		int length = 1;
+		for(ObjectProperty p: equivalentProperties)
+			length += p.getLength();
+		return length;
 	}
 		
 	public String toString(String baseURI, Map<String,String> prefixes) {
-		return "EquivalentObjectProperties(" + equivRole.toString(baseURI, prefixes) + "," + role.toString(baseURI, prefixes) + ")";
+		StringBuffer sb = new StringBuffer();
+		sb.append("EquivalentObjectProperties(");
+		Iterator<ObjectProperty> it = equivalentProperties.iterator();
+		while(it.hasNext()){
+			sb.append(it.next().toString(baseURI, prefixes));
+			if(it.hasNext()){
+				sb.append(", ");
+			}
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return "EquivalentObjectProperties(" + equivRole.toKBSyntaxString(baseURI, prefixes) + "," + role.toKBSyntaxString(baseURI, prefixes) + ")";
+		StringBuffer sb = new StringBuffer();
+		sb.append("EquivalentObjectProperties(");
+		Iterator<ObjectProperty> it = equivalentProperties.iterator();
+		while(it.hasNext()){
+			sb.append(it.next().toKBSyntaxString(baseURI, prefixes));
+			if(it.hasNext()){
+				sb.append(", ");
+			}
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 	
 	@Override
@@ -69,6 +86,16 @@ public class EquivalentObjectPropertiesAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return equivRole.toString(baseURI, prefixes) + " EquivalentTo: " + role.toString(baseURI, prefixes);
+		StringBuffer sb = new StringBuffer();
+		sb.append("EquivalentObjectProperties(");
+		Iterator<ObjectProperty> it = equivalentProperties.iterator();
+		while(it.hasNext()){
+			sb.append(it.next().toManchesterSyntaxString(baseURI, prefixes));
+			if(it.hasNext()){
+				sb.append(", ");
+			}
+		}
+		sb.append(")");
+		return sb.toString();
 	}	
 }
