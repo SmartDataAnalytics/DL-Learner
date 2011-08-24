@@ -152,6 +152,10 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	@Override
 	public void init() throws ComponentInitException {
 
+        if(rc == null){
+            rc = new OWLAPIReasoner(sources);
+            rc.init();
+        }
 //		try {
 			atomicConcepts = rc.getNamedClasses();
 			datatypeProperties = rc.getDatatypeProperties();
