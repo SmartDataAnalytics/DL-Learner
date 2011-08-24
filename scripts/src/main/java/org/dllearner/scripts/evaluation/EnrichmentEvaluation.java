@@ -52,6 +52,15 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
+import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
+import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
+import org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
+import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
+import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
@@ -100,9 +109,9 @@ public class EnrichmentEvaluation {
 	private int nrOfAxiomsToLearn = 10;
 
 	// can be used to only evaluate a part of DBpedia
-	private int maxObjectProperties = 0;
-	private int maxDataProperties = 0;
-	private int maxClasses = 10;
+	private int maxObjectProperties = 3;
+	private int maxDataProperties = 3;
+	private int maxClasses = 3;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
@@ -129,19 +138,19 @@ public class EnrichmentEvaluation {
 //		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
 //		objectPropertyAlgorithms.add(ObjectPropertyDomainAxiomLearner.class);
 //		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
-//		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
-//		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
-//		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
-//		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
-//		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
+		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
 
 		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
 //		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
 //		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
-//		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
-//		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
-//		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class); 
-//		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
+		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
+		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class); 
+		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
 		classAlgorithms.add(DisjointClassesLearner.class);
@@ -165,14 +174,6 @@ public class EnrichmentEvaluation {
 			String url = "jdbc:mysql://" + dbServer + "/" + dbName;
 			conn = DriverManager.getConnection(url, dbUser, dbPass);
 
-			Statement s = conn.createStatement();
-//			s.executeUpdate("DROP TABLE IF EXISTS evaluation");
-//			s.executeUpdate("CREATE TABLE evaluation ("
-//					+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-//					+ "entity VARCHAR(200), algorithm VARCHAR(100), axiom VARCHAR(500), score DOUBLE, runtime_ms INT(20), entailed BOOLEAN)");
-//			s.close();
-			ps = conn.prepareStatement("INSERT INTO evaluation ("
-					+ "entity, algorithm, axiom, score, runtime_ms, entailed ) " + "VALUES(?,?,?,?,?,?)");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -182,6 +183,22 @@ public class EnrichmentEvaluation {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void dropAndCreateTable(){
+		try {
+			Statement s = conn.createStatement();
+			s.executeUpdate("DROP TABLE IF EXISTS evaluation");
+			s.executeUpdate("CREATE TABLE evaluation ("
+					+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+					+ "entity VARCHAR(200), algorithm VARCHAR(100), axiom VARCHAR(500), score DOUBLE, runtime_ms INT(20), entailed BOOLEAN)");
+			s.close();
+			
+			ps = conn.prepareStatement("INSERT INTO evaluation ("
+					+ "entity, algorithm, axiom, score, runtime_ms, entailed ) " + "VALUES(?,?,?,?,?,?)");
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -206,6 +223,8 @@ public class EnrichmentEvaluation {
 	public void start() throws IllegalArgumentException, SecurityException, InstantiationException,
 			IllegalAccessException, InvocationTargetException, NoSuchMethodException,
 			ComponentInitException {
+		dropAndCreateTable();
+		
 		long overallStartTime = System.currentTimeMillis();
 //		ComponentManager cm = ComponentManager.getInstance();
 
@@ -385,7 +404,7 @@ public class EnrichmentEvaluation {
 							learnedAxioms.add(new EvaluatedAxiom(null, new AxiomScore(learnedDescription.getAccuracy())));
 						}
 					}
-					if(timeout){
+					if(timeout && learnedAxioms.isEmpty()){
 						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
 					} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
 						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
@@ -419,26 +438,82 @@ public class EnrichmentEvaluation {
 	public void printResultsLaTeX() throws Exception{
 		double threshold = 0.9;
 		
-		for(Class<? extends LearningAlgorithm> algo : classAlgorithms){
+		List<Class<? extends LearningAlgorithm>> algorithms = new ArrayList<Class<? extends LearningAlgorithm>>();
+		algorithms.addAll(classAlgorithms);
+		algorithms.addAll(objectPropertyAlgorithms);
+		algorithms.addAll(dataPropertyAlgorithms);
+		
+		for(Class<? extends LearningAlgorithm> algo : algorithms){
 			String algoName = algo.getAnnotation(ComponentAnn.class).name();
+			
+			//get number of entities
+			ps = conn.prepareStatement("SELECT COUNT(DISTINCT entity) FROM evaluation WHERE algorithm=?");
+			ps.setString(1, algoName);
+			java.sql.ResultSet rs = ps.executeQuery();
+			rs.next();
+			int overallNumberOfEntities = rs.getInt(1);
+			
+			//get number of entities with empty result
+			ps = conn.prepareStatement("SELECT COUNT(DISTINCT entity) FROM evaluation WHERE algorithm=? AND axiom=?");
+			ps.setString(1, algoName);
+			ps.setString(2, "NULL");
+			rs = ps.executeQuery();
+			rs.next();
+			int numberOfEntitiesWithEmptyResult = rs.getInt(1);
+			
+			//get number of entities with timout
+			ps = conn.prepareStatement("SELECT COUNT(DISTINCT entity) FROM evaluation WHERE algorithm=? AND axiom=?");
+			ps.setString(1, algoName);
+			ps.setString(2, "TIMEOUT");
+			rs = ps.executeQuery();
+			rs.next();
+			int numberOfEntitiesWithTimeout = rs.getInt(1);
+			
 			//compute average number of suggestions above threshold
 			PreparedStatement ps = conn.prepareStatement("SELECT AVG(cnt) FROM (SELECT entity, COUNT(axiom) AS cnt FROM (SELECT * FROM evaluation WHERE algorithm=? AND score >=?) AS A GROUP BY entity) AS B");
 			ps.setString(1, algoName);
 			ps.setDouble(2, threshold);
-			java.sql.ResultSet rs = ps.executeQuery();
-			rs.next();System.out.println(rs.getDouble(1));
-			int avgSuggestionsAboveThreshold = rs.getInt(1);
+			rs = ps.executeQuery();
+			rs.next();
+			double avgSuggestionsAboveThreshold = rs.getDouble(1);
 			
 			//compute average runtime
-			ps = conn.prepareStatement("SELECT AVG(runtime_ms) FROM evaluation WHERE algorithm=?");
+			ps = conn.prepareStatement("SELECT AVG(runtime) FROM (SELECT MAX(runtime_ms) AS runtime FROM evaluation WHERE algorithm=?) AS A");
 			ps.setString(1, algoName);
 			rs = ps.executeQuery();
 			rs.next();
-			int avgRuntimeInMilliseconds = rs.getInt(1);
+			double avgRuntimeInMilliseconds = rs.getDouble(1);
 			
-			//compute 
+			//compute ratio for complete timeouts
+			double timeoutRatio = (double)numberOfEntitiesWithTimeout / overallNumberOfEntities;
 			
-			System.out.println(algoName + "-" + avgSuggestionsAboveThreshold + "-" + avgRuntimeInMilliseconds);
+			//compute avg. score
+			ps = conn.prepareStatement("SELECT AVG(avg) FROM (SELECT AVG(score) AS avg FROM evaluation WHERE algorithm=? AND score >= ? GROUP BY entity) AS A");
+			ps.setString(1, algoName);
+			ps.setDouble(2, threshold);
+			rs = ps.executeQuery();
+			rs.next();
+			double avgScore= rs.getDouble(1);
+			
+			//compute avg. max. score
+			ps = conn.prepareStatement("SELECT AVG(max) FROM (SELECT MAX(score) AS max FROM evaluation WHERE algorithm=? AND score>=? GROUP BY entity) AS A");
+			ps.setString(1, algoName);
+			ps.setDouble(2, threshold);
+			rs = ps.executeQuery();
+			rs.next();
+			double avgMaxScore = rs.getDouble(1);
+			
+			System.out.println("###############");
+			System.out.println(algoName);
+			System.out.println("Overall entities: " + overallNumberOfEntities);
+			System.out.println("Overall entities with emtpy result: " + numberOfEntitiesWithEmptyResult);
+			System.out.println("Overall entities with emtpy timeout: " + numberOfEntitiesWithTimeout);
+			System.out.println("Avg. #Suggestions above t: " + avgSuggestionsAboveThreshold);
+			System.out.println("Avg. runtime in ms: " + avgRuntimeInMilliseconds);
+			System.out.println("Timeout ratio: " + timeoutRatio);
+			System.out.println("Avg. score: " + avgScore);
+			System.out.println("Avg. max. score: " + avgMaxScore);
+			
 		}
 		
 	}
