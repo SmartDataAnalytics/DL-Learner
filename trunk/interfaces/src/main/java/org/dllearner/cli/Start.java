@@ -257,7 +257,9 @@ public class Start {
 			// the
 			// future
 			cm.applyConfigEntry(ks, "url", entry.getKey());
-
+            if(ks instanceof OWLFile){
+                ((OWLFile)ks).setURL(entry.getKey());
+            }
 			sources.add(ks);
 			configureComponent(cm, ks, parser);
 			initComponent(cm, ks);
