@@ -8,6 +8,8 @@ import java.beans.PropertyEditor;
 
 public class BooleanEditor implements PropertyEditor {
 
+	private Boolean value;
+	
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		// TODO Auto-generated method stub
@@ -16,8 +18,7 @@ public class BooleanEditor implements PropertyEditor {
 
 	@Override
 	public String getAsText() {
-		// TODO Auto-generated method stub
-		return null;
+		return value.toString();
 	}
 
 	@Override
@@ -64,8 +65,7 @@ public class BooleanEditor implements PropertyEditor {
 
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-
+		value = Boolean.valueOf(text);
 	}
 
 	@Override

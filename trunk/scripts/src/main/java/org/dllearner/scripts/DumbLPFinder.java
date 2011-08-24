@@ -240,10 +240,10 @@ public class DumbLPFinder {
 							.indToString(negExamples));
 
 			// learning algorithm
-			la = ComponentFactory.getOCEL(lp, f);
-			la.getConfigurator().setNoisePercentage(0.0);
-			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
-			la.getConfigurator().setMaxExecutionTimeInSeconds(30);
+			la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);;
+			la.setNoisePercentage(0.0);
+			la.setGuaranteeXgoodDescriptions(1);
+			la.setMaxExecutionTimeInSeconds(30);
 			
 			ks.init();
 			f.init();	

@@ -29,6 +29,7 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -86,6 +87,7 @@ import sun.beans.editors.BoolEditor;
  * @author Jens Lehmann
  * 
  */
+@ComponentAnn(name = "fast instance checker", shortName = "fic", version = 0.9)
 public class FastInstanceChecker extends AbstractReasonerComponent {
 
 	private static Logger logger = Logger.getLogger(FastInstanceChecker.class);

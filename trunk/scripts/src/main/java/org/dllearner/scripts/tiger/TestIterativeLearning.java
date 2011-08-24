@@ -27,6 +27,7 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -637,16 +638,16 @@ public class TestIterativeLearning {
 			// Math.floor(0.8d*((double)ex.getPosTrain().size()));
 		}
 
-		OCEL la = ComponentFactory.getOCEL(lp, rc);
+		OCEL la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, rc);
 //		CELOE la = ComponentFactory.getCELOE(lp, rc);
-		la.getConfigurator().setUseExistsConstructor(true);
+		la.setUseExistsConstructor(true);
 
-		la.getConfigurator().setUseAllConstructor(false);
-		la.getConfigurator().setUseCardinalityRestrictions(false);
-		la.getConfigurator().setUseNegation(false);
-		la.getConfigurator().setUseHasValueConstructor(false);
-		la.getConfigurator().setUseDataHasValueConstructor(config.useDataHasValue);
-		la.getConfigurator().setValueFrequencyThreshold(valueFrequencyThreshold);
+		la.setUseAllConstructor(false);
+		la.setUseCardinalityRestrictions(false);
+		la.setUseNegation(false);
+		la.setUseHasValueConstructor(false);
+		la.setUseDataHasValueConstructor(config.useDataHasValue);
+		la.setValueFrequencyThreshold(valueFrequencyThreshold);
 //		la.getConfigurator().setInstanceBasedDisjoints(true);
 		
 //		la.getConfigurator().setIgnoredConcepts(
@@ -656,17 +657,17 @@ public class TestIterativeLearning {
 //						"http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation",
 //						"http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag" })));
 
-		la.getConfigurator().setNoisePercentage(noise);
-		la.getConfigurator().setTerminateOnNoiseReached(true);
-		la.getConfigurator().setMaxExecutionTimeInSeconds(maxExecutionTime);
+		la.setNoisePercentage(noise);
+		la.setTerminateOnNoiseReached(true);
+		la.setMaxExecutionTimeInSeconds(maxExecutionTime);
 
 		if (config.useStartClass) {
-			la.getConfigurator().setStartClass(prefix + "Sentence");
+			la.setStartClass(new NamedClass(prefix + "Sentence"));
 		}
 
-		la.getConfigurator().setWriteSearchTree(config.searchTree);
-		la.getConfigurator().setSearchTreeFile("log/searchTreeTiger.txt");
-		la.getConfigurator().setReplaceSearchTree(true);
+		la.setWriteSearchTree(config.searchTree);
+		la.setSearchTreeFile(new File("log/searchTreeTiger.txt"));
+		la.setReplaceSearchTree(true);
 		return la;
 	}
 	

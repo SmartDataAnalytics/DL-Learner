@@ -34,11 +34,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
@@ -317,21 +316,21 @@ public class WikipediaCategoryCleaner {
 					posExamples, negExamples);
 	
 			// learning algorithm
-			la = ComponentFactory.getOCEL(lp, f);
-			OCELConfigurator lc = la.getConfigurator();
-			la.getConfigurator().setNoisePercentage(20);
-			la.getConfigurator().setGuaranteeXgoodDescriptions(100);
-			la.getConfigurator().setMaxExecutionTimeInSeconds(50);
+			la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);
+//			OCELConfigurator lc = la.getConfigurator();
+			la.setNoisePercentage(20);
+			la.setGuaranteeXgoodDescriptions(100);
+			la.setMaxExecutionTimeInSeconds(50);
 			
-			lc.setUseAllConstructor(false);
-			lc.setUseBooleanDatatypes(false);
-			lc.setUseCardinalityRestrictions(false);
-			lc.setUseNegation(false);
-			lc.setUseHasValueConstructor(false);
-			lc.setUseDoubleDatatypes(false);
-			lc.setWriteSearchTree(true);
-			lc.setSearchTreeFile("log/dbpedia.txt");
-			lc.setReplaceSearchTree(true);
+			la.setUseAllConstructor(false);
+			la.setUseBooleanDatatypes(false);
+			la.setUseCardinalityRestrictions(false);
+			la.setUseNegation(false);
+			la.setUseHasValueConstructor(false);
+			la.setUseDoubleDatatypes(false);
+			la.setWriteSearchTree(true);
+//			la.setSearchTreeFile("log/dbpedia.txt");
+			la.setReplaceSearchTree(true);
 			
 			ks.init();
 			f.init();

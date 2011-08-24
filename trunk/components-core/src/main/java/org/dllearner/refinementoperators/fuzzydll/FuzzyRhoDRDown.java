@@ -27,16 +27,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.OCELConfigurator;
-import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -203,30 +201,29 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 		init();
 	}
 	
-	public FuzzyRhoDRDown(AbstractReasonerComponent reasoner, ClassHierarchy subHierarchy, Description startClass, RefinementOperatorConfigurator configurator) {
-		this.rs = reasoner;
-		this.subHierarchy = subHierarchy;
-		this.startClass = startClass;
-		useAllConstructor = configurator.getUseAllConstructor();
-		useExistsConstructor = configurator.getUseExistsConstructor();
-		useHasValueConstructor = configurator.getUseHasValueConstructor();
-		useDataHasValueConstructor = configurator.getUseDataHasValueConstructor();
-		frequencyThreshold = configurator.getValueFrequencyThreshold();
-		useCardinalityRestrictions = configurator.getUseCardinalityRestrictions();
-		cardinalityLimit = configurator.getCardinalityLimit();
-		useNegation = configurator.getUseNegation();
-		useBooleanDatatypes = configurator.getUseBooleanDatatypes();
-		useDoubleDatatypes = configurator.getUseDoubleDatatypes();
-		useStringDatatypes = configurator.getUseStringDatatypes();
-		init();
-	}
-	
-	// TODO constructor which takes a RhoDRDownConfigurator object;
-	// this should be an interface implemented e.g. by ExampleBasedROLComponentConfigurator;
+//	public FuzzyRhoDRDown(AbstractReasonerComponent reasoner, ClassHierarchy subHierarchy, Description startClass, RefinementOperatorConfigurator configurator) {
+//		this.rs = reasoner;
+//		this.subHierarchy = subHierarchy;
+//		this.startClass = startClass;
+//		useAllConstructor = configurator.getUseAllConstructor();
+//		useExistsConstructor = configurator.getUseExistsConstructor();
+//		useHasValueConstructor = configurator.getUseHasValueConstructor();
+//		setUseDataHasValueConstructor(configurator.getUseDataHasValueConstructor());
+//		frequencyThreshold = configurator.getValueFrequencyThreshold();
+//		useCardinalityRestrictions = configurator.getUseCardinalityRestrictions();
+//		cardinalityLimit = configurator.getCardinalityLimit();
+//		useNegation = configurator.getUseNegation();
+//		useBooleanDatatypes = configurator.getUseBooleanDatatypes();
+//		useDoubleDatatypes = configurator.getUseDoubleDatatypes();
+//		useStringDatatypes = configurator.getUseStringDatatypes();
+//		init();
+//	}
+//	
+
 	// the goal is to use the configurator system while still being flexible enough to
 	// use one refinement operator in several learning algorithms
-	public FuzzyRhoDRDown(AbstractReasonerComponent reasoningService, ClassHierarchy subHierarchy, OCELConfigurator configurator, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
-			boolean useExistsConstructor, boolean useHasValueConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
+	public FuzzyRhoDRDown(AbstractReasonerComponent reasoningService, ClassHierarchy subHierarchy, int cardinalityLimit, boolean useHasValueConstructor, boolean useStringDatatypes, boolean instanceBasedDisjoints, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
+			boolean useExistsConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
 		this.rs = reasoningService;
 		this.subHierarchy = subHierarchy;
 		this.applyAllFilter = applyAllFilter;
@@ -236,13 +233,12 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 		this.useHasValueConstructor = useHasValueConstructor;
 		this.frequencyThreshold = valueFrequencyThreshold;
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
-		cardinalityLimit = configurator.getCardinalityLimit();
-		this.useDataHasValueConstructor = configurator.getUseDataHasValueConstructor();
+		this.cardinalityLimit = cardinalityLimit;
 		this.useNegation = useNegation;
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		this.useDoubleDatatypes = useDoubleDatatypes;
-		useStringDatatypes = configurator.getUseStringDatatypes();
-		instanceBasedDisjoints = configurator.getInstanceBasedDisjoints();
+		this.useStringDatatypes = useStringDatatypes;
+		this.instanceBasedDisjoints = instanceBasedDisjoints;
 		if(startClass != null) {
 			this.startClass = startClass;
 		}
@@ -1528,4 +1524,5 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 //		System.out.println(splits);
 //		System.exit(0);
 	}
+
 }

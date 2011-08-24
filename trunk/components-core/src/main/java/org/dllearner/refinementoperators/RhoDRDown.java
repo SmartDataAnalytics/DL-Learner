@@ -27,15 +27,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.BooleanValueRestriction;
@@ -221,8 +220,9 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	// this should be an interface implemented e.g. by ExampleBasedROLComponentConfigurator;
 	// the goal is to use the configurator system while still being flexible enough to
 	// use one refinement operator in several learning algorithms
-	public RhoDRDown(AbstractReasonerComponent reasoningService, ClassHierarchy subHierarchy, OCELConfigurator configurator, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
-			boolean useExistsConstructor, boolean useHasValueConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
+	public RhoDRDown(AbstractReasonerComponent reasoningService, ClassHierarchy subHierarchy, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
+			boolean useExistsConstructor, boolean useHasValueConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass,
+			int cardinalityLimit, boolean useStringDatatypes, boolean instanceBasedDisjoints) {
 		this.rs = reasoningService;
 		this.subHierarchy = subHierarchy;
 		this.applyAllFilter = applyAllFilter;
@@ -232,13 +232,12 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		this.useHasValueConstructor = useHasValueConstructor;
 		this.frequencyThreshold = valueFrequencyThreshold;
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
-		cardinalityLimit = configurator.getCardinalityLimit();
-		this.useDataHasValueConstructor = configurator.getUseDataHasValueConstructor();
+		this.cardinalityLimit = cardinalityLimit;
 		this.useNegation = useNegation;
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		this.useDoubleDatatypes = useDoubleDatatypes;
-		useStringDatatypes = configurator.getUseStringDatatypes();
-		instanceBasedDisjoints = configurator.getInstanceBasedDisjoints();
+		this.useStringDatatypes = useStringDatatypes;
+		this.instanceBasedDisjoints = instanceBasedDisjoints;
 		if(startClass != null) {
 			this.startClass = startClass;
 		}

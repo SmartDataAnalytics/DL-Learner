@@ -41,13 +41,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.AbstractComponent;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -386,9 +385,9 @@ public class SemanticBibleComparison {
 		else if(exp.toString().contains("NORMAL")){
 			if(exp.equals(Experiments.NORMAL_10000_CTESTS_FASTINST)){
 				la = prepareNormalExperiment(true, posExamples, negExamples);
-				la.getConfigurator().setUseAllConstructor(false);
-				la.getConfigurator().setUseNegation(false);
-				la.getConfigurator().setUseCardinalityRestrictions(false);
+				la.setUseAllConstructor(false);
+				la.setUseNegation(false);
+				la.setUseCardinalityRestrictions(false);
 			}else{
 				la = prepareNormalExperiment(false, posExamples, negExamples);
 			}
@@ -397,31 +396,31 @@ public class SemanticBibleComparison {
 			System.exit(0);
 			}
 		
-		OCELConfigurator c = la.getConfigurator();
+//		OCELConfigurator c = la.getConfigurator();
 		
 		//defaultSettings:
-		c.setUseHasValueConstructor(false);
-		c.setUseBooleanDatatypes(false);
-		c.setUseDoubleDatatypes(false);
+		la.setUseHasValueConstructor(false);
+		la.setUseBooleanDatatypes(false);
+		la.setUseDoubleDatatypes(false);
 		
 
 		if(exp.toString().contains("HASVALUE")){
-			c.setUseHasValueConstructor(true);
+			la.setUseHasValueConstructor(true);
 		}
 		
 		
 		if(exp.toString().contains("10s")){
-			c.setMaxExecutionTimeInSeconds(10);
-			c.setMinExecutionTimeInSeconds(10);
+			la.setMaxExecutionTimeInSeconds(10);
+			la.setMinExecutionTimeInSeconds(10);
 			
 		}else if(exp.toString().contains("100s")){
-			c.setMaxExecutionTimeInSeconds(100);
-			c.setMinExecutionTimeInSeconds(100);
+			la.setMaxExecutionTimeInSeconds(100);
+			la.setMinExecutionTimeInSeconds(100);
 			
 		}else if(exp.toString().contains("1000_CTESTS")){
-			c.setMaxClassDescriptionTests(1000);
+			la.setMaxClassDescriptionTests(1000);
 		}else if(exp.toString().contains("10000_CTESTS")){
-			c.setMaxClassDescriptionTests(10000);
+			la.setMaxClassDescriptionTests(10000);
 			
 		}
 		//la.getConfigurator();
@@ -478,8 +477,8 @@ public class SemanticBibleComparison {
 							.indToString(negExamples));
 	
 			// learning algorithm
-			la = ComponentFactory.getOCEL(lp, f);
-			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
+			la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);
+			la.setGuaranteeXgoodDescriptions(1);
 			Config conf = new Config(ComponentManager.getInstance(), ks, f, lp, la);
 			new ConfigSave(conf).saveFile(new File(tmpFilename));
 			
@@ -529,8 +528,8 @@ public class SemanticBibleComparison {
 							.indToString(negExamples));
 	
 			// learning algorithm
-			la = ComponentFactory.getOCEL(lp, f);
-			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
+			la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);
+			la.setGuaranteeXgoodDescriptions(1);
 			Config c = new Config(ComponentManager.getInstance(), ks, f, lp, la);
 			new ConfigSave(c).saveFile(new File(tmpFilename));
 			
