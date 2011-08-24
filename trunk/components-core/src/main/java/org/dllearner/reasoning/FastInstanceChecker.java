@@ -67,6 +67,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import sun.beans.editors.BoolEditor;
 
 /**
@@ -126,6 +127,12 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 
     @ConfigOption(name="defaultNegation", description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false, propertyEditorClass = BoolEditor.class)
     private boolean defaultNegation = true;
+
+    @ConfigOption(name = "forAllRetrievalSemantics", description = "This option controls how to interpret the all quantifier in forall r.C. The standard option is" +
+            "to return all those which do not have an r-filler not in C. The domain semantics is to use those" +
+            "which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to"+
+            "use those which have at least one r-filler and do not have an r-filler not in C.",defaultValue = "standard",propertyEditorClass = StringTrimmerEditor.class)
+    private String forAllSemantics;
 
 	/**
 	 * Creates an instance of the fast instance checker.
@@ -1036,5 +1043,13 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 
     public void setDefaultNegation(boolean defaultNegation) {
         this.defaultNegation = defaultNegation;
+    }
+
+    public String getForAllSemantics() {
+        return forAllSemantics;
+    }
+
+    public void setForAllSemantics(String forAllSemantics) {
+        this.forAllSemantics = forAllSemantics;
     }
 }
