@@ -116,7 +116,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		// reasoning options (i.e. options are the same up to reversed example sets)
 //		definitionLP.init();
 		
-		individuals = new LinkedList<Individual>(reasoner.getIndividuals());
+		individuals = new LinkedList<Individual>(getReasoner().getIndividuals());
 		positiveExamplesShuffled = new LinkedList<Individual>(positiveExamples);
 		Random rand = new Random(1);
 		Collections.shuffle(individuals, rand);
@@ -144,7 +144,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	 */
 	@Override
 	public ScorePosOnly computeScore(Description description) {
-		Set<Individual> retrieval = reasoner.getIndividuals(description);
+		Set<Individual> retrieval = getReasoner().getIndividuals(description);
 		
 		Set<Individual> instancesCovered = new TreeSet<Individual>();
 		Set<Individual> instancesNotCovered = new TreeSet<Individual>();
@@ -178,7 +178,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	 */
 	@Override
 	public double getAccuracy(Description description) {
-		Set<Individual> retrieval = reasoner.getIndividuals(description);
+		Set<Individual> retrieval = getReasoner().getIndividuals(description);
 		
 		int instancesCovered = 0;
 		for(Individual ind : positiveExamples) {
@@ -215,7 +215,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		int upperEstimateA = positiveExamples.size();
 		
 		for(Individual ind : positiveExamplesShuffled) {
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				instancesCovered++;
 			} else {
 				instancesNotCovered ++;
@@ -267,7 +267,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		
 		for(Individual ind : individuals) {
 
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				instancesDescription++;
 			}
 			

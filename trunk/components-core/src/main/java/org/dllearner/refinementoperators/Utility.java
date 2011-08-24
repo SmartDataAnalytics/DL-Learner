@@ -117,7 +117,7 @@ public final class Utility {
 	 * @param applicableObjectProperties The set of applicable properties.
 	 * @return The most general applicable properties.
 	 */
-	public SortedSet<ObjectProperty> computeMgr(SortedSet<ObjectProperty> applicableObjectProperties) {
+	public Set<ObjectProperty> computeMgr(Set<ObjectProperty> applicableObjectProperties) {
 		return Helper.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties);
 	}
 	

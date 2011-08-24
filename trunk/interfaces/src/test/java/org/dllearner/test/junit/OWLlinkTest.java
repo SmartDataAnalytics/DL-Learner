@@ -61,11 +61,11 @@ public class OWLlinkTest {
 				}
 				rc = start.getReasonerComponent();
 				if(rc instanceof OWLAPIReasoner){
-					((OWLAPIReasoner)rc).getConfigurator().setReasonerType("owllink");
-					((OWLAPIReasoner)rc).getConfigurator().setOwlLinkURL(new URL(OWL_LINK_URL));
+					((OWLAPIReasoner)rc).setReasonerTypeString("owllink");
+					((OWLAPIReasoner)rc).setOwlLinkURL(OWL_LINK_URL);
 				} else if(rc instanceof FastInstanceChecker){
-					((FastInstanceChecker)rc).getConfigurator().setReasonerType("owllink");
-					((FastInstanceChecker)rc).getConfigurator().setOwlLinkURL(new URL(OWL_LINK_URL));
+					((FastInstanceChecker)rc).getReasonerComponent().setReasonerTypeString("owllink");
+					((FastInstanceChecker)rc).getReasonerComponent().setOwlLinkURL(OWL_LINK_URL);
 				} else {
 					continue;
 				}

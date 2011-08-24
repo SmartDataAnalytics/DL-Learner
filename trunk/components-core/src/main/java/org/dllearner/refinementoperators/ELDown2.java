@@ -380,7 +380,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			
 			// init sets R' and R''
 			// more efficient
-			SortedSet<ObjectProperty> rpSet = utility.computeMgr(appOPs);
+			Set<ObjectProperty> rpSet = utility.computeMgr(appOPs);
 			rpSet.retainAll(rSet);
 //			SortedSet<ObjectProperty> rpSet = new TreeSet<ObjectProperty>();
 //			for(ObjectProperty rEl : rSet) {

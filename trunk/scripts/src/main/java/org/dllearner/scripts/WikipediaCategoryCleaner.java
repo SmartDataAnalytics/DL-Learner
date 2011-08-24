@@ -309,7 +309,7 @@ public class WikipediaCategoryCleaner {
 			tmp.add(ks);
 			// reasoner
 			FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
-			f.getConfigurator().setDefaultNegation(false);
+			f.setDefaultNegation(false);
 			//OWLAPIReasoner f = ComponentFactory.getOWLAPIReasoner(tmp);
 	
 			// learning problem

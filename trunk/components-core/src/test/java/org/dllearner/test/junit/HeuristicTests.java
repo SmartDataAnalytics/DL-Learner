@@ -303,10 +303,10 @@ public class HeuristicTests {
 	
 	// convencience method to set the learning problem to a desired configuration (approximations disabled)
 	private static void configurePosNegStandardLP(PosNegLPStandard problem, Set<Individual> positiveExamples, Set<Individual> negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
-		problem.getConfigurator().setPositiveExamples(Helper.getStringSet(positiveExamples)); 
-		problem.getConfigurator().setNegativeExamples(Helper.getStringSet(negativeExamples));
-		problem.getConfigurator().setAccuracyMethod(accuracyMethod);
-		problem.getConfigurator().setUseApproximations(useApproximations);
+		problem.setPositiveExamples(positiveExamples);
+		problem.setNegativeExamples(negativeExamples);
+		problem.setAccuracyMethod(accuracyMethod);
+		problem.setUseApproximations(useApproximations);
 		problem.init();		
 	}	
 }

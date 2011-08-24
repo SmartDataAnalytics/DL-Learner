@@ -274,7 +274,7 @@ public class Helper {
 
 	}
 
-	public static <T> SortedSet<T> intersection(SortedSet<T> set1, SortedSet<T> set2) {
+	public static <T> Set<T> intersection(Set<T> set1, Set<T> set2) {
 		// TreeSet<T> intersection = (TreeSet<T>) set1.clone();
 		// TODO: effizienter implementieren d.h. lange Liste klonen und dann
 		// retainAll
@@ -284,8 +284,8 @@ public class Helper {
 		return intersection;
 	}
 
-	public static <T> SortedSet<T> intersectionTuple(SortedSet<T> set, SortedSetTuple<T> tuple) {
-		SortedSet<T> ret = intersection(set, tuple.getPosSet());
+	public static <T> Set<T> intersectionTuple(Set<T> set, SortedSetTuple<T> tuple) {
+		Set<T> ret = intersection(set, tuple.getPosSet());
 		ret.retainAll(tuple.getNegSet());
 		return ret;
 	}

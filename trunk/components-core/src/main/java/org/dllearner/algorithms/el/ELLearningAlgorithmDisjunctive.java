@@ -19,13 +19,7 @@
 
 package org.dllearner.algorithms.el;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
@@ -113,8 +107,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	private double posWeight = 1.2; // 2;
 	private int startPosExamplesSize;
 //	private int startNegExamplesSize;
-	private SortedSet<Individual> currentPosExamples;
-	private SortedSet<Individual> currentNegExamples;
+	private Set<Individual> currentPosExamples;
+	private Set<Individual> currentNegExamples;
 	private SearchTreeNode bestCurrentNode;
 	private double bestCurrentScore = 0;
 	private long treeStartTime;

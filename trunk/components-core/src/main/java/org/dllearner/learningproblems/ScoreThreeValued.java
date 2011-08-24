@@ -21,7 +21,6 @@ package org.dllearner.learningproblems;
 
 import java.text.DecimalFormat;
 import java.util.Set;
-import java.util.SortedSet;
 
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
@@ -55,12 +54,12 @@ public class ScoreThreeValued extends ScorePosNeg {
 	private boolean showCorrectClassifications = false;
 	private static ScoreMethod scoreMethod = ScoreMethod.POSITIVE;
 	
-	private SortedSet<Individual> posClassified;
-	private SortedSet<Individual> neutClassified;
-	private SortedSet<Individual> negClassified;
-	private SortedSet<Individual> posExamples;
-	private SortedSet<Individual> neutExamples;
-	private SortedSet<Individual> negExamples;
+	private Set<Individual> posClassified;
+	private Set<Individual> neutClassified;
+	private Set<Individual> negClassified;
+	private Set<Individual> posExamples;
+	private Set<Individual> neutExamples;
+	private Set<Individual> negExamples;
 	
     private Set<Individual> posAsNeg;
     private Set<Individual> negAsPos;
@@ -86,12 +85,12 @@ public class ScoreThreeValued extends ScorePosNeg {
     		double errorPenalty,
     		boolean penaliseNeutralExamples,
     		double percentPerLengthUnit,
-    		SortedSet<Individual> posClassified,
-    		SortedSet<Individual> neutClassified,
-    		SortedSet<Individual> negClassified,
-    		SortedSet<Individual> posExamples,
-    		SortedSet<Individual> neutExamples,
-    		SortedSet<Individual> negExamples) {
+    		Set<Individual> posClassified,
+    		Set<Individual> neutClassified,
+    		Set<Individual> negClassified,
+    		Set<Individual> posExamples,
+    		Set<Individual> neutExamples,
+    		Set<Individual> negExamples) {
     	this.conceptLength = conceptLength;
     	this.accuracyPenalty = accuracyPenalty;
     	this.errorPenalty = errorPenalty;
@@ -207,11 +206,11 @@ public class ScoreThreeValued extends ScorePosNeg {
         return str;
     }
 
-	public SortedSet<Individual> getNegClassified() {
+	public Set<Individual> getNegClassified() {
 		return negClassified;
 	}
 
-	public SortedSet<Individual> getPosClassified() {
+	public Set<Individual> getPosClassified() {
 		return posClassified;
 	}
 

@@ -332,7 +332,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		negExampleTrees = new ArrayList<QueryTree<String>>();
 	}
 	
-	private List<String> convert(SortedSet<Individual> individuals){
+	private List<String> convert(Set<Individual> individuals){
 		List<String> list = new ArrayList<String>();
 		for(Individual ind : individuals){
 			list.add(ind.toString());

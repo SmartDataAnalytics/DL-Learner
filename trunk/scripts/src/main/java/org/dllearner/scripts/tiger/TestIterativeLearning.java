@@ -300,15 +300,15 @@ public class TestIterativeLearning {
 		logger.debug("Total set \n" + allExamples);
 		logger.debug("Initial training set \n" + learn);
 
-		SortedSet<String> posAsPos = new TreeSet<String>();
-		SortedSet<String> posAsNeg = new TreeSet<String>();
-		SortedSet<String> negAsNeg = new TreeSet<String>();
-		SortedSet<String> negAsPos = new TreeSet<String>();
+		Set<String> posAsPos = new TreeSet<String>();
+		Set<String> posAsNeg = new TreeSet<String>();
+		Set<String> negAsNeg = new TreeSet<String>();
+		Set<String> negAsPos = new TreeSet<String>();
 		
 		
-		SortedSet<String> retrieved = new TreeSet<String>();
-		SortedSet<String> newTestRetrieved = new TreeSet<String>();
-		SortedSet<String> newTrainRetrieved = new TreeSet<String>();
+		Set<String> retrieved = new TreeSet<String>();
+		Set<String> newTestRetrieved = new TreeSet<String>();
+		Set<String> newTrainRetrieved = new TreeSet<String>();
 
 		String lastConcept = "";
 		double precision = 0.0;
@@ -378,9 +378,9 @@ public class TestIterativeLearning {
 					+ newTestRetrieved.size());
 
 			Examples newlyFound = new Examples();
-			SortedSet<String> discoveredPosInStore = Helper.intersection(newTrainRetrieved, allExamples
+			Set<String> discoveredPosInStore = Helper.intersection(newTrainRetrieved, allExamples
 					.getPosTrain());
-			SortedSet<String> misclassifiedNegInStore = Helper.intersection(newTrainRetrieved, allExamples
+			Set<String> misclassifiedNegInStore = Helper.intersection(newTrainRetrieved, allExamples
 					.getNegTrain());
 			newlyFound.addPosTrain(discoveredPosInStore);
 			newlyFound.addNegTrain(misclassifiedNegInStore);
@@ -602,7 +602,7 @@ public class TestIterativeLearning {
 		return result;
 	}
 
-	private static void _getLabels(SortedSet<String> sentenceURIs, int limit) {
+	private static void _getLabels(Set<String> sentenceURIs, int limit) {
 		Monitor m = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "_getLabels").start();
 		int i = 0;
 		for (String sentenceURI : sentenceURIs) {

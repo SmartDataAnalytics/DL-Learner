@@ -19,6 +19,7 @@
 
 package org.dllearner.utilities.datastructures;
 
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -42,9 +43,9 @@ public class SortedSetTuple<T> {
 		negSet = new TreeSet<T>();
 	}
 	
-	public SortedSetTuple(SortedSet<T> posSet, SortedSet<T> negSet) {
-		this.posSet = posSet;
-		this.negSet = negSet;
+	public SortedSetTuple(Set<T> posSet, Set<T> negSet) {
+		this.posSet = new TreeSet<T>(posSet);
+		this.negSet = new TreeSet<T>(negSet);
 	}
 
 	public SortedSet<T> getPosSet() {
