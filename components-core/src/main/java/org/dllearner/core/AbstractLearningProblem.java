@@ -34,12 +34,11 @@ import org.dllearner.core.owl.Description;
  */
 public abstract class AbstractLearningProblem extends AbstractComponent implements LearningProblem {
 	
-	/**
-	 * Implementations of learning problems can use this class
-	 * variable to perform reasoner operations.
-	 */
-	protected AbstractReasonerComponent reasoner;
-	
+	private AbstractReasonerComponent reasoner;
+
+    public AbstractLearningProblem(){
+
+    }
 	/**
 	 * Constructs a learning problem using a reasoning service for
 	 * querying the background knowledge. It can be used for 
@@ -109,5 +108,17 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
 	 * @return A value between 0 and 1 indicating the quality (of a class description)
 	 * or -1 as described above.
 	 */	
-	public abstract double getAccuracyOrTooWeak(Description description, double noise);		
+	public abstract double getAccuracyOrTooWeak(Description description, double noise);
+
+    /**
+     * Implementations of learning problems can use this class
+     * variable to perform reasoner operations.
+     */
+    public AbstractReasonerComponent getReasoner() {
+        return reasoner;
+    }
+
+    public void setReasoner(AbstractReasonerComponent reasoner) {
+        this.reasoner = reasoner;
+    }
 }

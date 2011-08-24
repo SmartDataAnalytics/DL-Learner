@@ -22,11 +22,11 @@ package org.dllearner.reasoning;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.OWLAPIReasonerConfigurator;
-import org.dllearner.core.options.*;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.*;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
@@ -40,10 +40,10 @@ import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -58,18 +58,13 @@ import java.util.Map.Entry;
  *
  * @author Jens Lehmann
  */
+@ComponentAnn(name = "OWLAPIReasoner", shortName = "owlApiReasoner", version = 0.8)
 public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 //	private static Logger logger = Logger
 //	.getLogger(OWLAPIReasoner.class);	
 
     //private String reasonerType = "pellet";
-    private OWLAPIReasonerConfigurator configurator;
-
-    public OWLAPIReasonerConfigurator getConfigurator() {
-        return configurator;
-    }
-
     private OWLReasoner reasoner;
     private OWLOntologyManager manager;
 
@@ -102,40 +97,18 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     // references to OWL API ontologies
     private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
+    @ConfigOption(name = "reasonerType", description = "The name of the OWL APIReasoner to use {\"fact\", \"hermit\", \"owllink\", \"pellet\"}", defaultValue = "pellet", required = false, propertyEditorClass = StringTrimmerEditor.class)
+    private String reasonerTypeString = "pellet";
+    @ConfigOption(name = "owlLinkURL", description = "The URL to the owl server", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
+    private String owlLinkURL;
 
-    public OWLAPIReasoner(Set<AbstractKnowledgeSource> sources) {
-        super(sources);
-        this.configurator = new OWLAPIReasonerConfigurator(this);
+
+    public OWLAPIReasoner() {
+
     }
 
     public static String getName() {
         return "OWL API reasoner";
-    }
-
-
-    public static Collection<ConfigOption<?>> createConfigOptions() {
-        Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-        StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++, HermiT, OWLlink or Pellet, which means \"fact\", \"hermit\", \"owllink\" or \"pellet\"", "pellet", false, true);
-        type.setAllowedValues(new String[]{"fact", "hermit", "owllink", "pellet"});
-
-        // closure option? see:
-        // http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
-        options.add(type);
-        try {
-            URLConfigOption owlLinkURL = new URLConfigOption("owlLinkURL", "the URL to the remote OWLlink server", new URL("http://localhost:8080/"), false, true);
-            options.add(owlLinkURL);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return options;
-    }
-
-    /* (non-Javadoc)
-      * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.config.ConfigEntry)
-      */
-    @Override
-    public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-
     }
 
     @Override
@@ -262,17 +235,17 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         OWLReasonerConfiguration conf = new SimpleConfiguration(progressMonitor, freshEntityPolicy, timeOut, individualNodeSetPolicy);
 
         // create actual reasoner
-        if (configurator.getReasonerType().equals("fact")) {
+        if (getReasonerTypeString().equals("fact")) {
             try {
                 reasoner = new FaCTPlusPlusReasonerFactory().createNonBufferingReasoner(ontology, conf);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             System.out.println("Using FaCT++.");
-        } else if (configurator.getReasonerType().equals("hermit")) {
+        } else if (getReasonerTypeString().equals("hermit")) {
             // instantiate HermiT reasoner
             reasoner = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
-        } else if (configurator.getReasonerType().equals("pellet")) {
+        } else if (getReasonerTypeString().equals("pellet")) {
             // instantiate Pellet reasoner
             reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology, conf);
 
@@ -283,7 +256,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         } else {
             try {
                 OWLlinkHTTPXMLReasonerFactory factory = new OWLlinkHTTPXMLReasonerFactory();
-                URL url = getConfigurator().getOwlLinkURL();//Configure the server end-point
+                URL url = new URL(getOwlLinkURL());//Configure the server end-point
                 OWLlinkReasonerConfiguration config = new OWLlinkReasonerConfiguration(url);
                 reasoner = factory.createNonBufferingReasoner(ontology, config);
                 System.out.println(reasoner.getReasonerName());
@@ -392,9 +365,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
       */
     @Override
     public ReasonerType getReasonerType() {
-        if (configurator.getReasonerType().equals("fact")) {
+        if (getReasonerTypeString().equals("fact")) {
             return ReasonerType.OWLAPI_FACT;
-        } else if (configurator.getReasonerType().equals("hermit")) {
+        } else if (getReasonerTypeString().equals("hermit")) {
             return ReasonerType.OWLAPI_HERMIT;
         } else {
             return ReasonerType.OWLAPI_PELLET;
@@ -1029,4 +1002,19 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         return reasoner;
     }
 
+    public String getReasonerTypeString() {
+        return reasonerTypeString;
+    }
+
+    public void setReasonerTypeString(String reasonerTypeString) {
+        this.reasonerTypeString = reasonerTypeString;
+    }
+
+    public String getOwlLinkURL() {
+        return owlLinkURL;
+    }
+
+    public void setOwlLinkURL(String owlLinkURL) {
+        this.owlLinkURL = owlLinkURL;
+    }
 }

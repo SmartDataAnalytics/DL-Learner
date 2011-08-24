@@ -152,8 +152,8 @@ public class DBpediaClassLearnerCELOE {
         PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
         lp.setPositiveExamples(posExamples);
         lp.setNegativeExamples(negExamples);
-        lp.getConfigurator().setAccuracyMethod("fmeasure");
-        lp.getConfigurator().setUseApproximations(false);
+        lp.setAccuracyMethod("fmeasure");
+        lp.setUseApproximations(false);
         lp.init();
 
 

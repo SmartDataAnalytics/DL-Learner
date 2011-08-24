@@ -64,11 +64,11 @@ public class ReasonerComponentFactory {
 				break;
 			case OWLAPI_FACT:
 				rc = cm.reasoner(OWLAPIReasoner.class, ks);
-				((OWLAPIReasoner) rc).getConfigurator().setReasonerType("fact");
+				((OWLAPIReasoner) rc).setReasonerTypeString("fact");
 				break;
 			case OWLAPI_PELLET:
 				rc = cm.reasoner(OWLAPIReasoner.class, ks);
-				((OWLAPIReasoner) rc).getConfigurator().setReasonerType("pellet");
+				((OWLAPIReasoner) rc).setReasonerTypeString("pellet");
 				break;
 			default:
 				rc = cm.reasoner(FastInstanceChecker.class, ks);

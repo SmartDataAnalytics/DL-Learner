@@ -19,13 +19,7 @@
 
 package org.dllearner.learningproblems.fuzzydll;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -41,7 +35,6 @@ import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.Heuristics;
-import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
@@ -248,9 +241,9 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	public ScorePosNeg computeScore(Description concept) {
 		if(useOldDIGOptions) {
 			if (useRetrievalForClassification) {
-				SortedSet<Individual> posClassified = reasoner.getIndividuals(concept);
-				SortedSet<Individual> posAsPos = Helper.intersection(positiveExamples, posClassified);
-				SortedSet<Individual> negAsPos = Helper.intersection(negativeExamples, posClassified);
+				SortedSet<Individual> posClassified = getReasoner().getIndividuals(concept);
+				Set<Individual> posAsPos = Helper.intersection(positiveExamples, posClassified);
+				Set<Individual> negAsPos = Helper.intersection(negativeExamples, posClassified);
 				SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
 
 				// piecewise set construction
@@ -266,13 +259,13 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 				return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
 			// instance checks for classification
 			} else {		
-				SortedSet<Individual> posAsPos = new TreeSet<Individual>();
-				SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
-				SortedSet<Individual> negAsPos = new TreeSet<Individual>();
-				SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
+				Set<Individual> posAsPos = new TreeSet<Individual>();
+				Set<Individual> posAsNeg = new TreeSet<Individual>();
+				Set<Individual> negAsPos = new TreeSet<Individual>();
+				Set<Individual> negAsNeg = new TreeSet<Individual>();
 				
 				if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
-					SortedSet<Individual> posClassified = reasoner.hasType(concept, allExamples);
+					SortedSet<Individual> posClassified = getReasoner().hasType(concept, allExamples);
 					SortedSet<Individual> negClassified = Helper.difference(allExamples, posClassified);
 					posAsPos = Helper.intersection(positiveExamples, posClassified);
 					posAsNeg = Helper.intersection(positiveExamples, negClassified);
@@ -286,14 +279,14 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 				} else {
 					
 					for (Individual example : positiveExamples) {
-						if (reasoner.hasType(concept, example)) {
+						if (getReasoner().hasType(concept, example)) {
 							posAsPos.add(example);
 						} else {
 							posAsNeg.add(example);
 						}
 					}
 					for (Individual example : negativeExamples) {
-						if (reasoner.hasType(concept, example))
+						if (getReasoner().hasType(concept, example))
 							negAsPos.add(example);
 						else
 							negAsNeg.add(example);
@@ -310,14 +303,14 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
 			
 			for (Individual example : positiveExamples) {
-				if (reasoner.hasType(concept, example)) {
+				if (getReasoner().hasType(concept, example)) {
 					posAsPos.add(example);
 				} else {
 					posAsNeg.add(example);
 				}
 			}
 			for (Individual example : negativeExamples) {
-				if (reasoner.hasType(concept, example))
+				if (getReasoner().hasType(concept, example))
 					negAsPos.add(example);
 				else
 					negAsNeg.add(example);
@@ -388,7 +381,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 					Individual posExample = itPos.next();
 //					System.out.println(posExample);
 					
-					if(reasoner.hasType(description, posExample)) {
+					if(getReasoner().hasType(description, posExample)) {
 						posClassifiedAsPos++;
 					} else {
 						notCoveredPos++;
@@ -403,7 +396,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 				
 				if(itNeg.hasNext()) {
 					Individual negExample = itNeg.next();
-					if(!reasoner.hasType(description, negExample)) {
+					if(!getReasoner().hasType(description, negExample)) {
 						negClassifiedAsNeg++;
 					}
 					nrOfNegChecks++;
@@ -430,7 +423,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			int instancesNotCovered = 0;
 			
 			for(Individual ind : positiveExamples) {
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					instancesCovered++;
 				} else {
 					instancesNotCovered ++;
@@ -447,7 +440,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			
 			for(Individual ind : negativeExamples) {
 
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					instancesDescription++;
 				}
 				testsPerformed++;
@@ -534,7 +527,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		double individualCounter = totalTruth;
 		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
 			// accumulatedSingleMembership += singleMembership;
-			nonAccumulativeDescriptionMembership = 1 - Math.abs(fuzzyExample.getTruthDegree() - reasoner.hasTypeFuzzyMembership(description, fuzzyExample));
+			nonAccumulativeDescriptionMembership = 1 - Math.abs(fuzzyExample.getTruthDegree() - getReasoner().hasTypeFuzzyMembership(description, fuzzyExample));
 			descriptionMembership += nonAccumulativeDescriptionMembership;
 			individualCounter -= fuzzyExample.getTruthDegree();
 			if ((accumulativeDescriptionMembership + (nonAccumulativeDescriptionMembership * fuzzyExample.getTruthDegree()) + individualCounter) < ((1 - noise) * totalTruth))
@@ -569,7 +562,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		int notCoveredNeg = 0;
 		
 		for (Individual example : positiveExamples) {
-			if (!reasoner.hasType(description, example)) {
+			if (!getReasoner().hasType(description, example)) {
 				notCoveredPos++;
 				if(notCoveredPos >= maxNotCovered) {
 					return -1;
@@ -577,7 +570,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			} 
 		}
 		for (Individual example : negativeExamples) {
-			if (!reasoner.hasType(description, example)) {
+			if (!getReasoner().hasType(description, example)) {
 				notCoveredNeg++;
 			}
 		}		
@@ -589,14 +582,14 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		// crisp F-measure
 		int additionalInstances = 0;
 		for(Individual ind : negativeExamples) {
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				additionalInstances++;
 			}
 		}
 		
 		int coveredInstances = 0;
 		for(Individual ind : positiveExamples) {
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				coveredInstances++;
 			}
 		}
@@ -622,7 +615,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		double lastMembershipDegree = 0;
 
 		for (FuzzyIndividual ind: fuzzyExamples) {
-			lastMembershipDegree = (1 - Math.abs(ind.getTruthDegree() - reasoner.hasTypeFuzzyMembership(description, ind)));
+			lastMembershipDegree = (1 - Math.abs(ind.getTruthDegree() - getReasoner().hasTypeFuzzyMembership(description, ind)));
 			coveredMembershipDegree += lastMembershipDegree * ind.getTruthDegree();
 			totalMembershipDegree += ind.getTruthDegree();
 			invertedCoveredMembershipDegree += (1 - ind.getTruthDegree()) * (1 - lastMembershipDegree);
@@ -669,7 +662,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		int upperEstimateA = positiveExamples.size();
 		
 		for(Individual ind : positiveExamples) {
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				instancesCovered++;
 			} else {
 				instancesNotCovered ++;
@@ -732,7 +725,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		
 		for(Individual ind : negativeExamples) {
 
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				instancesDescription++;
 			}
 			

@@ -152,14 +152,14 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 //		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
 		approxDelta = configurator.getApproxAccuracy();
 		
-		if(!reasoner.getNamedClasses().contains(classToDescribe)) {
+		if(!getReasoner().getNamedClasses().contains(classToDescribe)) {
 			throw new ComponentInitException("The class \"" + configurator.getClassToDescribe() + "\" does not exist. Make sure you spelled it correctly.");
 		}
 		
-		classInstances = new LinkedList<Individual>(reasoner.getIndividuals(classToDescribe));
+		classInstances = new LinkedList<Individual>(getReasoner().getIndividuals(classToDescribe));
 		// sanity check
 		if(classInstances.size() == 0) {
-			throw new ComponentInitException("Class " + classToDescribe + " has 0 instances according to \"" + ComponentManager.getInstance().getComponentName(reasoner.getClass()) + "\". Cannot perform class learning with 0 instances.");
+			throw new ComponentInitException("Class " + classToDescribe + " has 0 instances according to \"" + ComponentManager.getInstance().getComponentName(getReasoner().getClass()) + "\". Cannot perform class learning with 0 instances.");
 		}
 		
 		classInstancesSet = new TreeSet<Individual>(classInstances);
@@ -174,10 +174,10 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		
 		// we compute the instances of the super class to perform
 		// optimisations later on
-		Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
-		TreeSet<Individual> superClassInstancesTmp = new TreeSet<Individual>(reasoner.getIndividuals());
+		Set<Description> superClasses = getReasoner().getClassHierarchy().getSuperClasses(classToDescribe);
+		TreeSet<Individual> superClassInstancesTmp = new TreeSet<Individual>(getReasoner().getIndividuals());
 		for(Description superClass : superClasses) {
-			superClassInstancesTmp.retainAll(reasoner.getIndividuals(superClass));
+			superClassInstancesTmp.retainAll(getReasoner().getIndividuals(superClass));
 		}
 		// we create one list, which includes instances of the class (an instance of the class is also instance of all super classes) ...
 		classAndSuperClassInstances = new LinkedList<Individual>(superClassInstancesTmp);
@@ -194,7 +194,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			Description classToDescribeNeg = new Negation(classToDescribe);
 			negatedClassInstances = new TreeSet<Individual>();
 			for(Individual ind : superClassInstances) {
-				if(reasoner.hasType(classToDescribeNeg, ind)) {
+				if(getReasoner().hasType(classToDescribeNeg, ind)) {
 					negatedClassInstances.add(ind);
 				}
 			}
@@ -213,7 +213,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		// overhang
 		Set<Individual> additionalInstances = new TreeSet<Individual>();
 		for(Individual ind : superClassInstances) {
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				additionalInstances.add(ind);
 			}
 		}
@@ -221,7 +221,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		// coverage
 		Set<Individual> coveredInstances = new TreeSet<Individual>();
 		for(Individual ind : classInstances) {
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				coveredInstances.add(ind);
 			}
 		}
@@ -292,7 +292,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			int instancesNotCovered = 0;
 			
 			for(Individual ind : classInstances) {
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					instancesCovered++;
 				} else {
 					instancesNotCovered ++;
@@ -309,7 +309,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			
 			for(Individual ind : superClassInstances) {
 
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					instancesDescription++;
 				}
 				testsPerformed++;
@@ -346,7 +346,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			int upperEstimateA = classInstances.size();
 			
 			for(Individual ind : classInstances) {
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					instancesCovered++;
 				} else {
 					instancesNotCovered ++;
@@ -416,7 +416,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			
 			for(Individual ind : superClassInstances) {
 
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					instancesDescription++;
 				}
 				
@@ -487,7 +487,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 					Individual posExample = itPos.next();
 //					System.out.println(posExample);
 					
-					if(reasoner.hasType(description, posExample)) {
+					if(getReasoner().hasType(description, posExample)) {
 						posClassifiedAsPos++;
 					} else {
 						notCoveredPos++;
@@ -502,7 +502,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 				
 				if(itNeg.hasNext()) {
 					Individual negExample = itNeg.next();
-					if(!reasoner.hasType(description, negExample)) {
+					if(!getReasoner().hasType(description, negExample)) {
 						negClassifiedAsNeg++;
 					}
 					nrOfNegChecks++;
@@ -537,7 +537,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			// computing R(A)
 			TreeSet<Individual> coveredInstancesSet = new TreeSet<Individual>();
 			for(Individual ind : classInstances) {
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					coveredInstancesSet.add(ind);
 				}
 				if(terminationTimeExpired()){
@@ -554,7 +554,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			// computing R(C) restricted to relevant instances
 			TreeSet<Individual> additionalInstancesSet = new TreeSet<Individual>();
 			for(Individual ind : superClassInstances) {
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					additionalInstancesSet.add(ind);
 				}
 				if(terminationTimeExpired()){
@@ -570,7 +570,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			// computing R(C) restricted to relevant instances
 			int additionalInstances = 0;
 			for(Individual ind : superClassInstances) {
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					additionalInstances++;
 				}
 				if(terminationTimeExpired()){
@@ -581,7 +581,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			// computing R(A)
 			int coveredInstances = 0;
 			for(Individual ind : classInstances) {
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					coveredInstances++;
 				}
 				if(terminationTimeExpired()){
@@ -635,9 +635,9 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			Description descriptionNeg = new Negation(description);
 			// loop through all relevant instances
 			for(Individual ind : classAndSuperClassInstances) {
-				if(reasoner.hasType(description, ind)) {
+				if(getReasoner().hasType(description, ind)) {
 					icPos.add(ind);
-				} else if(reasoner.hasType(descriptionNeg, ind)) {
+				} else if(getReasoner().hasType(descriptionNeg, ind)) {
 					icNeg.add(ind);
 				}
 				if(terminationTimeExpired()){
@@ -712,7 +712,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	public double getRecall(Description description) {
 		int coveredInstances = 0;
 		for(Individual ind : classInstances) {
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				coveredInstances++;
 			}
 		}		
@@ -723,14 +723,14 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 
 		int additionalInstances = 0;
 		for(Individual ind : superClassInstances) {
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				additionalInstances++;
 			}
 		}
 		
 		int coveredInstances = 0;
 		for(Individual ind : classInstances) {
-			if(reasoner.hasType(description, ind)) {
+			if(getReasoner().hasType(description, ind)) {
 				coveredInstances++;
 			}
 		}
@@ -834,10 +834,10 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		} else {
 			axiom = new SubClassAxiom(classToDescribe, description);
 		}
-		return reasoner.remainsSatisfiable(axiom);
+		return getReasoner().remainsSatisfiable(axiom);
 	}
 	
 	public boolean followsFromKB(Description description) {
-		return equivalence ? reasoner.isEquivalentClass(description, classToDescribe) : reasoner.isSuperClassOf(description, classToDescribe);
+		return equivalence ? getReasoner().isEquivalentClass(description, classToDescribe) : getReasoner().isSuperClassOf(description, classToDescribe);
 	}
 }

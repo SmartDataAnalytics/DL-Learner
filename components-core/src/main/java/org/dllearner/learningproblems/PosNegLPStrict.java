@@ -20,6 +20,7 @@
 package org.dllearner.learningproblems;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -44,7 +45,7 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  */
 public class PosNegLPStrict extends PosNegLP {
 
-	private SortedSet<Individual> neutralExamples;
+	private Set<Individual> neutralExamples;
 	private boolean penaliseNeutralExamples = false;
 	
 	private static final double defaultAccuracyPenalty = 1;
@@ -104,7 +105,7 @@ public class PosNegLPStrict extends PosNegLP {
 		// compute neutral examples, i.e. those which are neither positive
 		// nor negative (we have to take care to copy sets instead of 
 		// modifying them)
-		neutralExamples = Helper.intersection(reasoner.getIndividuals(),positiveExamples);
+		neutralExamples = Helper.intersection(getReasoner().getIndividuals(),positiveExamples);
 		neutralExamples.retainAll(negativeExamples);
 	}
 
@@ -113,23 +114,23 @@ public class PosNegLPStrict extends PosNegLP {
 	 */
 	@Override
 	public ScorePosNeg computeScore(Description concept) {
-	   	if(useRetrievalForClassification) {
-    		if(reasoner.getReasonerType() == ReasonerType.FAST_RETRIEVAL) {
-        		SortedSetTuple<Individual> tuple = reasoner.doubleRetrieval(concept);
+	   	if(isUseRetrievalForClassification()) {
+    		if(getReasoner().getReasonerType() == ReasonerType.FAST_RETRIEVAL) {
+        		SortedSetTuple<Individual> tuple = getReasoner().doubleRetrieval(concept);
         		// this.defPosSet = tuple.getPosSet();
         		// this.defNegSet = tuple.getNegSet();  
-        		SortedSet<Individual> neutClassified = Helper.intersectionTuple(reasoner.getIndividuals(),tuple);
-        		return new ScoreThreeValued(concept.getLength(),accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, tuple.getPosSet(),neutClassified,tuple.getNegSet(),positiveExamples,neutralExamples,negativeExamples);
-    		} else if(reasoner.getReasonerType() == ReasonerType.KAON2) {
-    			SortedSet<Individual> posClassified = reasoner.getIndividuals(concept);
-    			SortedSet<Individual> negClassified = reasoner.getIndividuals(new Negation(concept));
-    			SortedSet<Individual> neutClassified = Helper.intersection(reasoner.getIndividuals(),posClassified);
+        		Set<Individual> neutClassified = Helper.intersectionTuple(getReasoner().getIndividuals(),tuple);
+        		return new ScoreThreeValued(concept.getLength(),accuracyPenalty, errorPenalty, penaliseNeutralExamples, getPercentPerLengthUnit(), tuple.getPosSet(),neutClassified,tuple.getNegSet(),positiveExamples,neutralExamples,negativeExamples);
+    		} else if(getReasoner().getReasonerType() == ReasonerType.KAON2) {
+    			SortedSet<Individual> posClassified = getReasoner().getIndividuals(concept);
+    			SortedSet<Individual> negClassified = getReasoner().getIndividuals(new Negation(concept));
+    			Set<Individual> neutClassified = Helper.intersection(getReasoner().getIndividuals(),posClassified);
     			neutClassified.retainAll(negClassified);
-    			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples);     			
+    			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, getPercentPerLengthUnit(), posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples);
     		} else
     			throw new Error("score cannot be computed in this configuration");
     	} else {
-    		if(reasoner.getReasonerType() == ReasonerType.KAON2) {
+    		if(getReasoner().getReasonerType() == ReasonerType.KAON2) {
     			if(penaliseNeutralExamples)
     				throw new Error("It does not make sense to use single instance checks when" +
     						"neutral examples are penalized. Use Retrievals instead.");
@@ -144,28 +145,28 @@ public class PosNegLPStrict extends PosNegLP {
     			// umstellen
     			// pos => pos
     			for(Individual example : positiveExamples) {
-    				if(reasoner.hasType(concept, example))
+    				if(getReasoner().hasType(concept, example))
     					posClassified.add(example);
     			}
     			// neg => pos
     			for(Individual example: negativeExamples) {
-    				if(reasoner.hasType(concept, example))
+    				if(getReasoner().hasType(concept, example))
     					posClassified.add(example);
     			}
     			// pos => neg
     			for(Individual example : positiveExamples) {
-    				if(reasoner.hasType(new Negation(concept), example))
+    				if(getReasoner().hasType(new Negation(concept), example))
     					negClassified.add(example);
     			}
     			// neg => neg
     			for(Individual example : negativeExamples) {
-    				if(reasoner.hasType(new Negation(concept), example))
+    				if(getReasoner().hasType(new Negation(concept), example))
     					negClassified.add(example);
     			}    			
     			
-    			SortedSet<Individual> neutClassified = Helper.intersection(reasoner.getIndividuals(),posClassified);
+    			Set<Individual> neutClassified = Helper.intersection(getReasoner().getIndividuals(),posClassified);
     			neutClassified.retainAll(negClassified);
-    			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples); 		
+    			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, getPercentPerLengthUnit(), posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples);
     		} else
     			throw new Error("score cannot be computed in this configuration");
     	}
@@ -179,7 +180,7 @@ public class PosNegLPStrict extends PosNegLP {
 		throw new UnsupportedOperationException("Method not implemented for three valued definition learning problem.");
 	}
 
-	public SortedSet<Individual> getNeutralExamples() {
+	public Set<Individual> getNeutralExamples() {
 		return neutralExamples;
 	}
 

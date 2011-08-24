@@ -121,6 +121,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 */
 	protected Set<AbstractKnowledgeSource> sources;
 
+
+    public AbstractReasonerComponent(){
+
+    }
 	/**
 	 * Constructs a new reasoner component.
 	 * 
@@ -139,6 +143,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	public Set<AbstractKnowledgeSource> getSources() {
 		return sources;
 	}
+
+    public void setSources(Set<AbstractKnowledgeSource> sources){
+        this.sources = sources;
+    }
 
 	/**
 	 * Method to exchange the reasoner underlying the learning problem.

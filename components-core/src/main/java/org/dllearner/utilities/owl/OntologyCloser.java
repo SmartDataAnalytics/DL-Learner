@@ -66,7 +66,8 @@ public class OntologyCloser {
 		this.kbFile = new KBFile(this.kb);
 		Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
 		ks.add(this.kbFile);
-		OWLAPIReasoner owlapi = new OWLAPIReasoner(ks);
+		OWLAPIReasoner owlapi = new OWLAPIReasoner();
+        owlapi.setSources(ks);
 		try {
 			owlapi.init();
 		} catch (ComponentInitException e) {
@@ -88,7 +89,8 @@ public class OntologyCloser {
 		ks.add(this.kbFile);
 		
 		sc.printAndSet("updating reasoner");
-		OWLAPIReasoner owlapi = new OWLAPIReasoner(ks);
+		OWLAPIReasoner owlapi = new OWLAPIReasoner();
+        owlapi.setSources(ks);
 		sc.printAndSet("init");
 		try {
 			owlapi.init();

@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.dllearner.confparser2.ConfParser;
 import org.dllearner.confparser2.ParseException;
+import org.dllearner.core.AbstractCELA;
+import org.springframework.context.ApplicationContext;
 
 /**
  * 
@@ -32,8 +34,20 @@ import org.dllearner.confparser2.ParseException;
  * 
  * @author Jens Lehmann
  *
+ * TODO: this isn't working fully yet.
  */
 public class CLI {
+
+
+
+    public CLI(){
+
+    }
+
+    public void run(ApplicationContext context, String algorithmBeanName){
+        AbstractCELA algorithm = context.getBean(algorithmBeanName, AbstractCELA.class);
+        algorithm.start();
+    }
 
 	/**
 	 * @param args
@@ -41,6 +55,7 @@ public class CLI {
 	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args) throws FileNotFoundException, ParseException {
+        /** TODO Get conf file location from args */
 		ConfParser parser = ConfParser.parseFile(new File("../test/newconf/test1.conf"));
 		List<ConfFileOption> options = parser.getConfOptions();
 		for(ConfFileOption option : options) {
@@ -50,5 +65,6 @@ public class CLI {
 		System.out.println("positive examples: " + parser.getPositiveExamples());
 		System.out.println("negative examples: " + parser.getNegativeExamples());
 	}
+
 
 }

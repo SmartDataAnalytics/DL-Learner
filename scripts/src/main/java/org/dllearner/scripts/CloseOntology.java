@@ -62,7 +62,8 @@ public class CloseOntology {
 			owlFile.setURL(inputURI.toURL());
 			Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
 			ks.add(owlFile);
-			OWLAPIReasoner owlapireasoner = new OWLAPIReasoner(ks);
+			OWLAPIReasoner owlapireasoner = new OWLAPIReasoner();
+            owlapireasoner.setSources(ks);
 			owlapireasoner.init();
 
 			// close

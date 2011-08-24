@@ -20,10 +20,6 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,14 +34,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.FastInstanceCheckerConfigurator;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.options.URLConfigOption;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.Constant;
@@ -77,6 +66,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import sun.beans.editors.BoolEditor;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -101,12 +91,6 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	private static Logger logger = Logger.getLogger(FastInstanceChecker.class);
 
 //	private boolean defaultNegation = true;
-
-	private FastInstanceCheckerConfigurator configurator;
-
-	public FastInstanceCheckerConfigurator getConfigurator() {
-		return configurator;
-	}
 
 	private Set<NamedClass> atomicConcepts;
 	private Set<ObjectProperty> atomicRoles;
@@ -137,53 +121,14 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	private Map<DatatypeProperty, Map<Individual, SortedSet<Double>>> dd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Double>>>();
 	private Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Integer>>>();
 	private Map<DatatypeProperty, Map<Individual, SortedSet<String>>> sd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<String>>>();
-	
+
+    @ConfigOption(name="defaultNegation", description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false, propertyEditorClass = BoolEditor.class)
+    private boolean defaultNegation = true;
+
 	/**
 	 * Creates an instance of the fast instance checker.
-	 * @param sources The knowledge sources used as input.
 	 */
-	public FastInstanceChecker(Set<AbstractKnowledgeSource> sources) {
-		super(sources);
-		this.configurator = new FastInstanceCheckerConfigurator(this);
-	}
-
-	/**
-	 * @return The options of this component.
-	 */
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		StringConfigOption type = new StringConfigOption("reasonerType",
-				"FaCT++, HermiT, OWLlink or Pellet to dematerialize", "pellet", false, true);
-		type.setAllowedValues(new String[] { "fact", "hermit", "owllink", "pellet" });
-		// closure option? see:
-		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
-		options.add(type);
-		try {
-			URLConfigOption owlLinkURL = new URLConfigOption("owlLinkURL", "the URL to the remote OWLlink server", new URL("http://localhost:8080/"), false, true);
-			options.add(owlLinkURL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		options.add(new BooleanConfigOption("defaultNegation", "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", true, false, true));
-		StringConfigOption forallSemantics = new StringConfigOption("forallRetrievalSemantics",
-				"This option controls how to interpret the all quantifier in \forall r.C. The standard option is" +
-				"to return all those which do not have an r-filler not in C. The domain semantics is to use those" +
-				"which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to" +
-				"use those which have at least one r-filler and do not have an r-filler not in C.", "standard");
-		forallSemantics.setAllowedValues(new String[] { "standard", "domain", "forallExists" });
-		// closure option? see:
-		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
-//		options.add(forallSemantics);		
-		return options;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.config.ConfigEntry)
-	 */
-	@Override
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+	public FastInstanceChecker() {
 	}
 
 	/**
@@ -200,11 +145,6 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
-		// rc = new OWLAPIReasoner(sources);
-		rc = ComponentFactory.getOWLAPIReasoner(sources);
-		rc.getConfigurator().setReasonerType(configurator.getReasonerType());
-		rc.getConfigurator().setOwlLinkURL(configurator.getOwlLinkURL());
-		rc.init();
 
 //		try {
 			atomicConcepts = rc.getNamedClasses();
@@ -230,7 +170,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 				SortedSet<Individual> pos = rc.getIndividuals(atomicConcept);
 				classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
 
-				if (configurator.getDefaultNegation()) {
+				if (isDefaultNegation()) {
 					classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
 				} else {
 					// Pellet needs approximately infinite time to answer
@@ -292,7 +232,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 				return classInstancesNeg.get((NamedClass) child).contains(individual);
 			} else {
 				// default negation
-				if(configurator.getDefaultNegation()) {
+				if(isDefaultNegation()) {
 					return !hasTypeImpl(child, individual);
 				} else {
 					logger.debug("Converting description to negation normal form in fast instance check (should be avoided if possible).");
@@ -1071,5 +1011,20 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc) {
 		return rc.getAssertedDefinitionsImpl(nc);
 	}
-	
+
+    public OWLAPIReasoner getReasonerComponent() {
+        return rc;
+    }
+
+    public void setReasonerComponent(OWLAPIReasoner rc) {
+        this.rc = rc;
+    }
+
+    public boolean isDefaultNegation() {
+        return defaultNegation;
+    }
+
+    public void setDefaultNegation(boolean defaultNegation) {
+        this.defaultNegation = defaultNegation;
+    }
 }

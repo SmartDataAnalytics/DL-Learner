@@ -19,24 +19,16 @@
 
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Set;
-import java.util.SortedSet;
 
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigMappings;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.options.StringSetConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import sun.beans.editors.BoolEditor;
+import sun.beans.editors.DoubleEditor;
 
 /**
  * @author Jens Lehmann
@@ -44,15 +36,19 @@ import org.dllearner.utilities.Helper;
  */
 public abstract class PosNegLP extends AbstractLearningProblem {
 	
-	protected SortedSet<Individual> positiveExamples;
-	protected SortedSet<Individual> negativeExamples;
-	protected SortedSet<Individual> allExamples;
-	
-	protected boolean useRetrievalForClassification = false;
-	protected UseMultiInstanceChecks useMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
-	protected double percentPerLengthUnit = 0.05;
+	protected Set<Individual> positiveExamples;
+	protected Set<Individual> negativeExamples;
+	protected Set<Individual> allExamples;
 
-	/**
+    @org.dllearner.core.config.ConfigOption(name = "useRetrievalForClassification", description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false", propertyEditorClass = BoolEditor.class)
+    private boolean useRetrievalForClassification = false;
+    @org.dllearner.core.config.ConfigOption(name = "useMultiInstanceChecks", description = "Use The Multi Instance Checks", defaultValue = "UseMultiInstanceChecks.TWOCHECKS", required = false, propertyEditorClass = StringTrimmerEditor.class)
+    private UseMultiInstanceChecks useMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
+    @org.dllearner.core.config.ConfigOption(name = "percentPerLengthUnit", description = "Percent Per Length Unit", defaultValue = "0.05", required = false, propertyEditorClass = DoubleEditor.class)
+    private double percentPerLengthUnit = 0.05;
+
+
+    /**
 	 * If instance checks are used for testing concepts (e.g. no retrieval), then
 	 * there are several options to do this. The enumeration lists the supported
 	 * options. These options are only important if the reasoning mechanism 
@@ -77,56 +73,17 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 		 */
 		ONECHECK
 	};
-	
+
+
+    public PosNegLP(){
+
+    }
+
 	public PosNegLP(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
 	}
 	
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringSetConfigOption("positiveExamples",
-				"positive examples",null, true, false));
-		options.add(new StringSetConfigOption("negativeExamples",
-				"negative examples",null, true, false));
-		options.add(new BooleanConfigOption("useRetrievalForClassficiation", 
-				"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.", false));
-		options.add(CommonConfigOptions.getPercentPerLenghtUnitOption(0.05));
-		StringConfigOption multiInstanceChecks = new StringConfigOption("useMultiInstanceChecks", "See UseMultiInstanceChecks enum. - NO LONGER FULLY SUPPORTED.","twoChecks");
-		multiInstanceChecks.setAllowedValues(new String[] {"never", "twoChecks", "oneCheck"});
-		options.add(multiInstanceChecks);
-		return options;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	@SuppressWarnings( { "unchecked" })
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if (name.equals("positiveExamples"))
-			positiveExamples = CommonConfigMappings
-					.getIndividualSet((Set<String>) entry.getValue());
-		else if (name.equals("negativeExamples"))
-			negativeExamples = CommonConfigMappings
-					.getIndividualSet((Set<String>) entry.getValue());
-		else if (name.equals("useRetrievalForClassficiation")) {
-			useRetrievalForClassification = (Boolean) entry.getValue();
-		} else if (name.equals("percentPerLengthUnit"))
-			percentPerLengthUnit = (Double) entry.getValue();
-		else if (name.equals("useMultiInstanceChecks")) {
-			String value = (String) entry.getValue();
-			if(value.equals("oneCheck"))
-				useMultiInstanceChecks = UseMultiInstanceChecks.ONECHECK;
-			else if(value.equals("twoChecks"))
-				useMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
-			else
-				useMultiInstanceChecks = UseMultiInstanceChecks.NEVER;	
-		}
-	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -137,19 +94,19 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 		allExamples = Helper.union(positiveExamples, negativeExamples);
 	}
 	
-	public SortedSet<Individual> getNegativeExamples() {
+	public Set<Individual> getNegativeExamples() {
 		return negativeExamples;
 	}
 
-	public SortedSet<Individual> getPositiveExamples() {
+	public Set<Individual> getPositiveExamples() {
 		return positiveExamples;
 	}
 	
-	public void setNegativeExamples(SortedSet<Individual> set) {
+	public void setNegativeExamples(Set<Individual> set) {
 		this.negativeExamples=set;
 	}
 
-	public void setPositiveExamples(SortedSet<Individual> set) {
+	public void setPositiveExamples(Set<Individual> set) {
 		this.positiveExamples=set;
 	}
 	
@@ -158,5 +115,26 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 	public double getPercentPerLengthUnit() {
 		return percentPerLengthUnit;
 	}
-	
+
+    public void setPercentPerLengthUnit(double percentPerLengthUnit) {
+        this.percentPerLengthUnit = percentPerLengthUnit;
+    }
+
+    public boolean isUseRetrievalForClassification() {
+        return useRetrievalForClassification;
+    }
+
+    public void setUseRetrievalForClassification(boolean useRetrievalForClassification) {
+        this.useRetrievalForClassification = useRetrievalForClassification;
+    }
+
+    public UseMultiInstanceChecks getUseMultiInstanceChecks() {
+        return useMultiInstanceChecks;
+    }
+
+    public void setUseMultiInstanceChecks(UseMultiInstanceChecks useMultiInstanceChecks) {
+        this.useMultiInstanceChecks = useMultiInstanceChecks;
+    }
+
+
 }

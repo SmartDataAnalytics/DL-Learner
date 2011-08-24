@@ -20,19 +20,14 @@
 package org.dllearner.kb;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URI;
-import java.util.Collection;
-import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.configurators.KBFileConfigurator;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.URLConfigOption;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -55,8 +50,10 @@ public class KBFile extends AbstractKnowledgeSource {
 	
 	private KB kb;
 
-	@org.dllearner.core.config.ConfigOption(name = "url", description = "URL pointer to the KB file", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
+	@ConfigOption(name = "url", description = "URL pointer to the KB file", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String url;
+    @ConfigOption(name = "baseDir", description = "Base Directory to look for the file in", defaultValue = ".", required = false, propertyEditorClass = StringTrimmerEditor.class)
+    private String baseDir;
 
 	/**
 	 * Default constructor (needed for reflection in ComponentManager).
@@ -83,8 +80,18 @@ public class KBFile extends AbstractKnowledgeSource {
     @Override
     public void init() throws ComponentInitException {
         try {
+
             if (getUrl() != null) {
-                kb = KBParser.parseKBFile(getUrl());
+                String fileString = getUrl();
+                if (fileString.startsWith("http:") || fileString.startsWith("file:")) {
+                    /** Leave it as is */
+                    kb = KBParser.parseKBFile(getUrl());
+                } else {
+                    File f = new File(baseDir, getUrl());
+                    setUrl(f.toURI().toString());
+                    kb = KBParser.parseKBFile(f);
+                }
+
                 logger.trace("KB File " + getUrl() + " parsed successfully.");
             } else {
                 throw new ComponentInitException("No URL option or kb object given. Cannot initialise KBFile component.");
@@ -92,6 +99,8 @@ public class KBFile extends AbstractKnowledgeSource {
 
         } catch (ParseException e) {
             throw new ComponentInitException("KB file " + getUrl() + " could not be parsed correctly.", e);
+        }catch (FileNotFoundException e) {
+            throw new ComponentInitException("KB file " + getUrl() + " could not be found.", e);
         }
     }
 
@@ -130,5 +139,13 @@ public class KBFile extends AbstractKnowledgeSource {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getBaseDir() {
+        return baseDir;
+    }
+
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
     }
 }

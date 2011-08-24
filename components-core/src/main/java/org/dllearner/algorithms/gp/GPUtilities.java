@@ -19,12 +19,7 @@
 
 package org.dllearner.algorithms.gp;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -474,7 +469,7 @@ public class GPUtilities {
     private static ScoreThreeValued getScore(int conceptLength, AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, SortedSet<Individual> posClassified, SortedSet<Individual> negClassified) {
     	// es muss hier die Helper-Methode verwendet werden, sonst werden
     	// Individuals gel�scht !!
-    	SortedSet<Individual> neutClassified = Helper.intersection(rs.getIndividuals(),posClassified); 
+        Set<Individual> neutClassified = Helper.intersection(rs.getIndividuals(),posClassified);
     	// learningProblem.getReasoner().getIndividuals();
     	// neutClassified.retainAll(posClassified);
     	neutClassified.retainAll(negClassified);

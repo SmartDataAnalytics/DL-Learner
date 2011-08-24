@@ -363,7 +363,7 @@ public class EvaluationComputingScript {
 			} else {
 				reasoner = null;
 				reasoner = cm.reasoner(FastInstanceChecker.class, ks);
-				((FastInstanceChecker) reasoner).getConfigurator().setDefaultNegation(false);
+				((FastInstanceChecker) reasoner).setDefaultNegation(false);
 				System.out.println("using FastInstanceChecker");
 			}
 

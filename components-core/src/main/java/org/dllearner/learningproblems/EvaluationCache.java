@@ -20,6 +20,7 @@
 package org.dllearner.learningproblems;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
@@ -104,7 +105,7 @@ public class EvaluationCache {
 	}
 	
 	private SortedSetTuple<Individual> handleMultiConjunction(Intersection mc) {
-		SortedSet<Individual> pos = cache.get(mc.getChild(0));
+		Set<Individual> pos = cache.get(mc.getChild(0));
 		for(int i=1; i<mc.getChildren().size(); i++) {
 			pos = Helper.intersection(pos, cache.get(mc.getChild(i)));
 		}		

@@ -367,7 +367,7 @@ public class ReasonerTests {
 				System.out.println("Using " + type + " reasoner...");
 				try {
 					reasoner = cm.reasoner(FastInstanceChecker.class, ks);
-					reasoner.getConfigurator().setReasonerType(type);
+					reasoner.getReasonerComponent().setReasonerTypeString(type);
 					reasoner.init();
 					
 					lp.changeReasonerComponent(reasoner);
