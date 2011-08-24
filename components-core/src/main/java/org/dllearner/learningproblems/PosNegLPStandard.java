@@ -63,8 +63,10 @@ public class PosNegLPStandard extends PosNegLP {
 	// and class instances to positive examples)
     @ConfigOption(name = "approxDelta", description = "The Approximate Delta", defaultValue = "0.05", required = false, propertyEditorClass = DoubleEditor.class)
 	private double approxDelta = 0.05;
+    
     @ConfigOption(name = "useApproximations", description = "Use Approximations", defaultValue = "false", required = false, propertyEditorClass = BoolEditor.class)
 	private boolean useApproximations;
+    
     @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy.",defaultValue = "predacc", propertyEditorClass = StringTrimmerEditor.class)
     private String accuracyMethod = "predacc";
 

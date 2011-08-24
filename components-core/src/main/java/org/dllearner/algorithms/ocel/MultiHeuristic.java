@@ -21,6 +21,12 @@ package org.dllearner.algorithms.ocel;
 
 import java.util.List;
 
+import org.dllearner.core.Component;
+import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DoubleEditor;
+import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Negation;
@@ -66,19 +72,32 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * @author Jens Lehmann
  *
  */
-public class MultiHeuristic implements ExampleBasedHeuristic {
+@ComponentAnn(name = "multiple criteria heuristic", shortName = "multiheuristic", version = 0.7)
+public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
 //	private OCELConfigurator configurator;
 	
 	// heuristic parameters
+	
+	@ConfigOption(name = "expansionPenaltyFactor", defaultValue="0.02", propertyEditorClass = DoubleEditor.class)
 	private double expansionPenaltyFactor = 0.02;
+	
+	@ConfigOption(name = "gainBonusFactor", defaultValue="0.5", propertyEditorClass = DoubleEditor.class)
 	private double gainBonusFactor = 0.5;
+	
+	@ConfigOption(name = "nodeChildPenalty", defaultValue="0.0001", propertyEditorClass = DoubleEditor.class)
 	private double nodeChildPenalty = 0.0001; // (use higher values than 0.0001 for simple learning problems);
+	
+	@ConfigOption(name = "startNodeBonus", defaultValue="0.1", propertyEditorClass = DoubleEditor.class)
 	private double startNodeBonus = 0.1; //was 2.0
+	
 	// penalise errors on positive examples harder than on negative examples
 	// (positive weight = 1)
+	@ConfigOption(name = "negativeWeight", defaultValue="1.0", propertyEditorClass = DoubleEditor.class)
 	private double negativeWeight = 1.0; // was 0.8;
+	
+	@ConfigOption(name = "negationPenalty", defaultValue="0", propertyEditorClass = IntegerEditor.class)
 	private int negationPenalty = 0;
 	
 	// examples
@@ -108,6 +127,10 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 //		this.gainBonusFactor = gainBonusFactor;
 //	}
 
+	@Override
+	public void init() throws ComponentInitException {
+		// nothing to do here
+	}	
 	
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
@@ -180,4 +203,5 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		}
 		return bonus;
 	}
+
 }

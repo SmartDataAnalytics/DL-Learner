@@ -37,6 +37,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
