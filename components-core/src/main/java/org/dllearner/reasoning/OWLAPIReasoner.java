@@ -107,6 +107,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     }
 
+    public OWLAPIReasoner(Set<AbstractKnowledgeSource> sources) {
+        super(sources);
+    }
+
     public static String getName() {
         return "OWL API reasoner";
     }

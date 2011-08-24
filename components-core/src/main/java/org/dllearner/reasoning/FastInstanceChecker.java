@@ -133,7 +133,11 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	public FastInstanceChecker() {
 	}
 
-	/**
+    public FastInstanceChecker(Set<AbstractKnowledgeSource> sources) {
+        super(sources);
+    }
+
+    /**
 	 * @return The name of this component.
 	 */
 	public static String getName() {
