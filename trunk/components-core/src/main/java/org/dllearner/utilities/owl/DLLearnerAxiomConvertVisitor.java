@@ -20,18 +20,35 @@
 package org.dllearner.utilities.owl;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.dllearner.core.owl.AsymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyDomainAxiom;
+import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DisjointClassesAxiom;
+import org.dllearner.core.owl.DisjointDatatypePropertyAxiom;
+import org.dllearner.core.owl.DisjointObjectPropertyAxiom;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
+import org.dllearner.core.owl.EquivalentDatatypePropertiesAxiom;
+import org.dllearner.core.owl.EquivalentObjectPropertiesAxiom;
+import org.dllearner.core.owl.FunctionalDatatypePropertyAxiom;
+import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
+import org.dllearner.core.owl.InverseFunctionalObjectPropertyAxiom;
+import org.dllearner.core.owl.IrreflexiveObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
+import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
 import org.dllearner.core.owl.ReflexiveObjectPropertyAxiom;
 import org.dllearner.core.owl.SubClassAxiom;
+import org.dllearner.core.owl.SubDatatypePropertyAxiom;
+import org.dllearner.core.owl.SubObjectPropertyAxiom;
+import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
+import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyRangeAxiom;
@@ -42,6 +59,7 @@ import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDatatypeDefinitionAxiom;
 import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
@@ -63,6 +81,7 @@ import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLSameIndividualAxiom;
@@ -164,9 +183,12 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 	}
 
 	@Override
-	public void visit(OWLEquivalentObjectPropertiesAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLEquivalentObjectPropertiesAxiom ax) {
+		Set<ObjectProperty> properties = new HashSet<ObjectProperty>();
+		for(OWLObjectPropertyExpression expr : ax.getProperties()){
+			properties.add(new ObjectProperty(expr.asOWLObjectProperty().toStringID()));
+		}
+		axiom = new EquivalentObjectPropertiesAxiom(properties);
 	}
 
 	@Override
@@ -182,21 +204,25 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 	}
 
 	@Override
-	public void visit(OWLDisjointDataPropertiesAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLDisjointDataPropertiesAxiom ax) {
+		Iterator<OWLDataPropertyExpression> iter = ax.getProperties().iterator();
+		DatatypeProperty p1 = new DatatypeProperty(iter.next().asOWLDataProperty().toStringID());
+		DatatypeProperty p2 = new DatatypeProperty(iter.next().asOWLDataProperty().toStringID());
+		axiom = new DisjointDatatypePropertyAxiom(p1, p2);
 	}
 
 	@Override
-	public void visit(OWLDisjointObjectPropertiesAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLDisjointObjectPropertiesAxiom ax) {
+		Iterator<OWLObjectPropertyExpression> iter = ax.getProperties().iterator();
+		ObjectProperty p1 = new ObjectProperty(iter.next().asOWLObjectProperty().toStringID());
+		ObjectProperty p2 = new ObjectProperty(iter.next().asOWLObjectProperty().toStringID());
+		axiom = new DisjointObjectPropertyAxiom(p1, p2);
 	}
 
 	@Override
-	public void visit(OWLObjectPropertyRangeAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLObjectPropertyRangeAxiom ax) {
+		axiom = new ObjectPropertyRangeAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()),
+				DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(ax.getRange()));
 	}
 
 	@Override
@@ -206,14 +232,14 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 	}
 
 	@Override
-	public void visit(OWLFunctionalObjectPropertyAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLFunctionalObjectPropertyAxiom ax) {
+		axiom = new FunctionalObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
-	public void visit(OWLSubObjectPropertyOfAxiom arg0) {
-		// TODO Auto-generated method stub
+	public void visit(OWLSubObjectPropertyOfAxiom ax) {
+		axiom = new SubObjectPropertyAxiom(new ObjectProperty(ax.getSubProperty().asOWLObjectProperty().toStringID()),
+				new ObjectProperty(ax.getSuperProperty().asOWLObjectProperty().toStringID()));
 		
 	}
 
@@ -224,27 +250,27 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 	}
 
 	@Override
-	public void visit(OWLSymmetricObjectPropertyAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLSymmetricObjectPropertyAxiom ax) {
+		axiom = new SymmetricObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
-	public void visit(OWLDataPropertyRangeAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLDataPropertyRangeAxiom ax) {
+		axiom = new DatatypePropertyRangeAxiom(new DatatypeProperty(ax.getProperty().asOWLDataProperty().toStringID()),
+				new Datatype(ax.getRange().asOWLDatatype().toStringID()));
 	}
 
 	@Override
-	public void visit(OWLFunctionalDataPropertyAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLFunctionalDataPropertyAxiom ax) {
+		axiom = new FunctionalDatatypePropertyAxiom(new DatatypeProperty(ax.getProperty().asOWLDataProperty().toStringID()));
 	}
 
 	@Override
-	public void visit(OWLEquivalentDataPropertiesAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLEquivalentDataPropertiesAxiom ax) {
+		Iterator<OWLDataPropertyExpression> iter = ax.getProperties().iterator();
+		DatatypeProperty p1 = new DatatypeProperty(iter.next().asOWLDataProperty().toStringID());
+		DatatypeProperty p2 = new DatatypeProperty(iter.next().asOWLDataProperty().toStringID());
+		axiom = new EquivalentDatatypePropertiesAxiom(p1, p2);
 	}
 
 	@Override
@@ -254,9 +280,11 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 	}
 
 	@Override
-	public void visit(OWLEquivalentClassesAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLEquivalentClassesAxiom ax) {
+		Iterator<OWLClassExpression> iter = ax.getClassExpressions().iterator();
+		Description d1 = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(iter.next());
+		Description d2 = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(iter.next());
+		axiom = new EquivalentClassesAxiom(d1, d2);
 	}
 
 	@Override
@@ -266,27 +294,24 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 	}
 
 	@Override
-	public void visit(OWLTransitiveObjectPropertyAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLTransitiveObjectPropertyAxiom ax) {
+		axiom = new TransitiveObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
-	public void visit(OWLIrreflexiveObjectPropertyAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLIrreflexiveObjectPropertyAxiom ax) {
+		axiom = new IrreflexiveObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
-	public void visit(OWLSubDataPropertyOfAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLSubDataPropertyOfAxiom ax) {
+		axiom = new SubDatatypePropertyAxiom(new DatatypeProperty(ax.getSubProperty().asOWLDataProperty().toStringID()),
+				new DatatypeProperty(ax.getSuperProperty().asOWLDataProperty().toStringID()));
 	}
 
 	@Override
-	public void visit(OWLInverseFunctionalObjectPropertyAxiom arg0) {
-		// TODO Auto-generated method stub
-		
+	public void visit(OWLInverseFunctionalObjectPropertyAxiom ax) {
+		axiom = new InverseFunctionalObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
