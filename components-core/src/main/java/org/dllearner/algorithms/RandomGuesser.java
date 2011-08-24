@@ -24,11 +24,7 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.GPUtilities;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.Score;
+import org.dllearner.core.*;
 import org.dllearner.core.configurators.RandomGuesserConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -48,6 +44,7 @@ import org.dllearner.core.owl.Description;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "Random Guesser", shortName = "randomGuesser", version = 0.8)
 public class RandomGuesser extends AbstractCELA {
 
 //	private RandomGuesserConfigurator configurator;

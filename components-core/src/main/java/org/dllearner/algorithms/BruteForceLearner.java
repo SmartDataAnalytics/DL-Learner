@@ -28,6 +28,7 @@ import java.util.Map;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -55,6 +56,7 @@ import org.dllearner.learningproblems.ScorePosNeg;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "Brute Force Learner", shortName = "bruteForce", version = 0.8)
 public class BruteForceLearner extends AbstractCELA {
 	
 //	private BruteForceLearnerConfigurator configurator;
