@@ -20,7 +20,6 @@
 package org.dllearner.algorithms;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +30,9 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.NamedClassEditor;
@@ -45,9 +44,7 @@ import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,13 +65,8 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	
 	@ConfigOption(name="classToDescribe", required=true, description="", propertyEditorClass=NamedClassEditor.class)
 	private NamedClass classToDescribe;
-	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="", propertyEditorClass=IntegerEditor.class)
-	private int maxExecutionTimeInSeconds = 10;
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
 	private int maxFetchedRows = 0;
-	
-	private SPARQLReasoner reasoner;
-	private SparqlEndpointKS ks;
 	
 	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
 	private long startTime;
@@ -146,19 +138,6 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		logger.info("...finished in {}ms. (Got {} rows)", (System.currentTimeMillis()-startTime), fetchedRows);
 	}
 
-	@Override
-	public void init() throws ComponentInitException {
-		reasoner = new SPARQLReasoner(ks);
-	}
-	
-	public int getMaxExecutionTimeInSeconds() {
-		return maxExecutionTimeInSeconds;
-	}
-
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
-	}
-
 	public NamedClass getClassToDescribe() {
 		return classToDescribe;
 	}
@@ -180,7 +159,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		
 		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}", classToDescribe.getName(), limit, offset);
 		
-		ResultSet rs = new SparqlQuery(query, ks.getEndpoint()).send();
+		ResultSet rs = executeSelectQuery(query);
 		Individual ind;
 		NamedClass newType;
 		QuerySolution qs;
@@ -228,24 +207,6 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		
 	}
 	
-	private SortedSet<Entry<NamedClass, Integer>> sortByValues(Map<NamedClass, Integer> map){
-		SortedSet<Entry<NamedClass, Integer>> sortedSet = new TreeSet<Map.Entry<NamedClass,Integer>>(new Comparator<Entry<NamedClass, Integer>>() {
-
-			@Override
-			public int compare(Entry<NamedClass, Integer> value1, Entry<NamedClass, Integer> value2) {
-				if(value1.getValue() < value2.getValue()){
-					return 1;
-				} else if(value2.getValue() < value1.getValue()){
-					return -1;
-				} else {
-					return value1.getKey().compareTo(value2.getKey());
-				}
-			}
-		});
-		sortedSet.addAll(map.entrySet());
-		return sortedSet;
-	}
-	
 	private double computeScore(){
 		return 0;
 	}
@@ -258,7 +219,8 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	
 	public static void main(String[] args) throws Exception{
 		SimpleSubclassLearner l = new SimpleSubclassLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/SoccerClub"));
+		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 5);
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Criminal"));
 		l.init();
 		l.start();
 		

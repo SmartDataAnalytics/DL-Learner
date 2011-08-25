@@ -20,9 +20,7 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,22 +29,17 @@ import java.util.TreeSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.config.IntegerEditor;
-import org.dllearner.core.configurators.Configurator;
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,13 +53,8 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
 	private DatatypeProperty propertyToDescribe;
-	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
-	private int maxExecutionTimeInSeconds = 10;
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
 	private int maxFetchedRows = 0;
-	
-	private SPARQLReasoner reasoner;
-	private SparqlEndpointKS ks;
 	
 	private List<EvaluatedAxiom> currentlyBestAxioms;
 	private long startTime;
@@ -76,14 +64,6 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		this.ks = ks;
 	}
 	
-	public int getMaxExecutionTimeInSeconds() {
-		return maxExecutionTimeInSeconds;
-	}
-
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
-	}
-
 	public DatatypeProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
@@ -128,18 +108,6 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		return currentlyBestAxioms;
 	}
 
-	@Override
-	public Configurator getConfigurator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void init() throws ComponentInitException {
-		reasoner = new SPARQLReasoner(ks);
-		
-	}
-	
 	private boolean terminationCriteriaSatisfied(){
 		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
 		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
@@ -171,31 +139,11 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		return axioms;
 	}
 	
-	/*
-	 * Returns the entries of the map sorted by value.
-	 */
-	private SortedSet<Entry<Datatype, Integer>> sortByValues(Map<Datatype, Integer> map){
-		SortedSet<Entry<Datatype, Integer>> sortedSet = new TreeSet<Map.Entry<Datatype,Integer>>(new Comparator<Entry<Datatype, Integer>>() {
-
-			@Override
-			public int compare(Entry<Datatype, Integer> value1, Entry<Datatype, Integer> value2) {
-				if(value1.getValue() < value2.getValue()){
-					return 1;
-				} else if(value2.getValue() < value1.getValue()){
-					return -1;
-				} else {
-					return value1.getKey().getURI().compareTo(value2.getKey().getURI());
-				}
-			}
-		});
-		sortedSet.addAll(map.entrySet());
-		return sortedSet;
-	}
 	
 	private int addIndividualsWithTypes(Map<Individual, SortedSet<Datatype>> ind2Datatypes, int limit, int offset){
 		String query = String.format("SELECT ?ind, (DATATYPE(?val) AS ?datatype) WHERE {?ind <%s> ?val.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		Individual ind;
 		Datatype newType;
 		QuerySolution qs;
@@ -216,22 +164,4 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		return cnt;
 	}
 	
-	/*
-	 * Executes a SELECT query and returns the result.
-	 */
-	private ResultSet executeQuery(String query){
-		logger.info("Sending query \n {}", query);
-		
-		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
-		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
-		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
-			queryExecution.addDefaultGraph(dgu);
-		}
-		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
-			queryExecution.addNamedGraph(ngu);
-		}			
-		ResultSet resultSet = queryExecution.execSelect();
-		return resultSet;
-	}
-
 }
