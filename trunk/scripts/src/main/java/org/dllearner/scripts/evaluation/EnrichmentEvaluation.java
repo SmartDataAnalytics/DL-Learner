@@ -44,6 +44,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -76,25 +78,42 @@ import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigHelper;
+import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DisjointClassesAxiom;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.CommonPrefixMap;
 import org.dllearner.utilities.Files;
+import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.datastructures.SetManipulation;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.DLLearnerAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.ini4j.IniPreferences;
@@ -149,9 +168,9 @@ public class EnrichmentEvaluation {
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();//getEndpointDBpediaLiveAKSW();
 
 	// can be used to only evaluate a part of DBpedia
-	private int maxObjectProperties = 3;
-	private int maxDataProperties = 3;
-	private int maxClasses = 3;
+	private int maxObjectProperties = 10;
+	private int maxDataProperties = 10;
+	private int maxClasses = 10;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
@@ -288,12 +307,12 @@ public class EnrichmentEvaluation {
 
 	}
 	
-	private void evaluateObjectProperties(SparqlEndpointKS ks)throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException{
+	private void evaluateObjectProperties(SparqlEndpointKS ks)throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
 		Set<ObjectProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllObjectProperties();
 
 		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
 			int objectProperties = 0;
-			
+			Thread.sleep(10000);
 			String algName = "";
 				for (ObjectProperty property : properties) {
 					
@@ -326,8 +345,9 @@ public class EnrichmentEvaluation {
 							try {
 								learner.start();
 							} catch (Exception e) {
+								timeout = true;
 								if(e.getCause() instanceof SocketTimeoutException){
-									timeout = true;
+									
 								} else {
 									e.printStackTrace();
 								}
@@ -364,12 +384,12 @@ public class EnrichmentEvaluation {
 		}
 	}
 	
-	private void evaluateDataProperties(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException{
+	private void evaluateDataProperties(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
 		Set<DatatypeProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
 
 		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
 			int dataProperties = 0;
-			
+			Thread.sleep(10000);
 			String algName = "";
 			for (DatatypeProperty property : properties) {
 
@@ -402,8 +422,9 @@ public class EnrichmentEvaluation {
 					try {
 						learner.start();
 					} catch (Exception e) {
+						timeout = true;
 						if(e.getCause() instanceof SocketTimeoutException){
-							timeout = true;
+							
 						} else {
 							e.printStackTrace();
 						}
@@ -439,11 +460,12 @@ public class EnrichmentEvaluation {
 		}
 	}
 	
-	private void evaluateClasses(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException{
+	private void evaluateClasses(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
 		Set<NamedClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
 
 		for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
 			int classesCnt = 0;
+			Thread.sleep(10000);
 			for (NamedClass cls : classes) {
 
 				try{
@@ -475,8 +497,9 @@ public class EnrichmentEvaluation {
 						try {
 							learner.start();
 						} catch (Exception e) {
+							timeout = true;
 							if(e.getCause() instanceof SocketTimeoutException){
-								timeout = true;
+								
 							} else {
 								e.printStackTrace();
 							}
@@ -489,12 +512,7 @@ public class EnrichmentEvaluation {
 						learnedAxioms = ((AxiomLearningAlgorithm)learner)
 								.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 					} else if(learner instanceof AbstractCELA){
-						learnedAxioms = new ArrayList<EvaluatedAxiom>();
-						List<? extends EvaluatedDescription> learnedDescriptions = ((AbstractCELA)learner).getCurrentlyBestEvaluatedDescriptions(nrOfAxiomsToLearn);
-						for(EvaluatedDescription learnedDescription : learnedDescriptions){
-							//TODO create axioms and differ between equivalent and subclass mode in CELOE
-							learnedAxioms.add(new EvaluatedAxiom(null, new AxiomScore(learnedDescription.getAccuracy())));
-						}
+						learnedAxioms = applyCELOE(ks, cls, false);
 					}
 					if(timeout && learnedAxioms.isEmpty()){
 						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
@@ -522,6 +540,87 @@ public class EnrichmentEvaluation {
 			}
 		}
 	}
+	
+	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, NamedClass nc, boolean equivalence) throws ComponentInitException {
+		// get instances of class as positive examples
+		SPARQLReasoner sr = new SPARQLReasoner(ks);
+		SortedSet<Individual> posExamples = sr.getIndividuals(nc, 20);
+		SortedSet<String> posExStr = Helper.getStringSet(posExamples);
+		
+		// get negative examples via various strategies
+		System.out.print("finding negatives ... ");
+		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
+		SortedSet<String> negExStr = finder.getNegativeExamples(nc.getName(), posExStr);
+		negExStr = SetManipulation.fuzzyShrink(negExStr, 20);
+		SortedSet<Individual> negExamples = Helper.getIndividualSet(negExStr);
+		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
+		
+		System.out.println("done (" + negExStr.size()+ ")");
+		
+        ComponentManager cm = ComponentManager.getInstance();
+
+        SparqlKnowledgeSource ks2 = cm.knowledgeSource(SparqlKnowledgeSource.class);
+        ks2.getConfigurator().setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
+        ks2.getConfigurator().setUrl(ks.getEndpoint().getURL());
+        ks2.getConfigurator().setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
+        ks2.getConfigurator().setUseLits(false);
+        ks2.getConfigurator().setUseCacheDatabase(true);
+        ks2.getConfigurator().setRecursionDepth(2);
+        ks2.getConfigurator().setCloseAfterRecursion(true);
+//        ks2.getConfigurator().setSaveExtractedFragment(true);
+        System.out.println("getting fragment ... ");
+        ks2.init();
+        System.out.println("done");
+
+        AbstractReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks2);
+        rc.init();
+
+        // TODO: super class learning
+        ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, rc);
+//        lp.setPositiveExamples(posExamples);
+//        lp.setNegativeExamples(negExamples);
+        try {
+			lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		}
+        lp.getConfigurator().setType("equivalence");
+        lp.getConfigurator().setAccuracyMethod("fmeasure");
+        lp.getConfigurator().setUseApproximations(false);
+        lp.getConfigurator().setMaxExecutionTimeInSeconds(10);
+        lp.init();
+
+        CELOE la = null;
+		try {
+			la = cm.learningAlgorithm(CELOE.class, lp, rc);
+		} catch (LearningProblemUnsupportedException e) {
+			e.printStackTrace();
+		}
+        CELOEConfigurator cc = la.getConfigurator();
+        cc.setMaxExecutionTimeInSeconds(10);
+        cc.setNoisePercentage(25);
+        la.init();
+        System.out.print("running CELOE ... ");
+        la.start();
+        System.out.println("done");		
+
+        // convert the result to axioms (to make it compatible with the other algorithms)
+        List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
+        List<EvaluatedAxiom> evaluatedAxioms = new LinkedList<EvaluatedAxiom>();
+        for(EvaluatedDescription learnedDescription : learnedDescriptions) {
+        	Axiom axiom;
+        	if(equivalence) {
+        		axiom = new EquivalentClassesAxiom(nc, learnedDescription.getDescription());
+        	} else {
+        		axiom = new SubClassAxiom(nc, learnedDescription.getDescription());
+        	}
+        	Score score = lp.computeScore(learnedDescription.getDescription());
+        	evaluatedAxioms.add(new EvaluatedAxiom(axiom, score)); 
+        }
+        
+        cm.freeAllComponents();		
+		return evaluatedAxioms;
+	}
 
 	public void printResultsPlain() {
 
@@ -540,7 +639,7 @@ public class EnrichmentEvaluation {
 		ps.execute();
 		
 		StringBuilder table1 = new StringBuilder();
-		table1.append("\\begin{tabulary}{\\textwidth}{LCCCCC}\\toprule\n");
+		table1.append("\\begin{tabulary}{\\textwidth}{LRRRRR}\\toprule\n");
 		table1.append(" algorithm & Avg. \\#suggestions & Avg. runtime in ms & timeout in \\% & Avg. score & Avg. maximum score\\\\\\midrule\n");
 		
 		for(Class<? extends LearningAlgorithm> algo : algorithms){
@@ -615,7 +714,7 @@ public class EnrichmentEvaluation {
 			System.out.println("Avg. max. score: " + avgMaxScore);
 			
 			table1.
-			append(algoName.replace("learner", "").trim()).append(" & ").
+			append(algoName.replace("axiom learner", "").trim()).append(" & ").
 			append(avgSuggestionsAboveThreshold).append(" & ").
 			append(avgRuntimeInMilliseconds).append(" & ").
 			append(timeoutRatio).append(" & ").
@@ -624,12 +723,64 @@ public class EnrichmentEvaluation {
 			append("\\\\\n");
 			
 		}
-		
 		table1.append("\\bottomrule\n\\end{tabulary}");
 		System.out.println(table1.toString());
 		
 		
+		//second part of evaluation
+		
+		StringBuilder table2 = new StringBuilder();
+		table2.append("\\begin{tabulary}{\\textwidth}{LCCCCC}\\toprule\n");
+		table2.append("& & & \\multicolumn{3}{c}{Estimated precision} \\\\\n");
+		table2.append(" axiom type & recall & additional axioms & no & maybe & yes \\\\\\midrule\n");
+		
 		//get all axiomtypes and corresponding algorithm
+		Map<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> axiomType2Algorithm = getAxiomTypesWithLearningAlgorithms();
+		
+		// get all entities in database because we compute recall only for axioms of entities which we have tested
+		// we use only entities for which triples in the endpoint are contained
+		java.sql.ResultSet rs = conn.prepareStatement("SELECT DISTINCT entity FROM evaluation WHERE axiom != 'NULL'").executeQuery();
+		Set<OWLEntity> entities = new HashSet<OWLEntity>();
+		IRI iri;
+		while(rs.next()){
+			iri = IRI.create("http://dbpedia.org/ontology/" + rs.getString(1).substring(4));
+			if(dbPediaOntology.containsClassInSignature(iri)){
+				entities.add(factory.getOWLClass(iri));
+			} else if(dbPediaOntology.containsObjectPropertyInSignature(iri)){
+				entities.add(factory.getOWLObjectProperty(iri));
+			} else if(dbPediaOntology.containsDataPropertyInSignature(iri)){
+				entities.add(factory.getOWLDataProperty(iri));
+			}
+		}
+
+		//compute recall for each axiom type
+		for(Entry<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> entry : axiomType2Algorithm.entrySet()){
+			AxiomType<? extends OWLAxiom> type = entry.getKey();
+			algorithms = entry.getValue();
+			
+			int found = 0;
+			int all = 0;
+			for(OWLAxiom axiom : dbPediaOntology.getAxioms(type)){
+				if(isRelevantAxiom(axiom, entities)){
+					all++;
+					if(existsInDatabase(axiom)){
+						found++;
+					} else {
+						System.out.println(axiom);
+					}
+				}
+			}
+			table2.
+			append(type.getName()).append(" & ").
+			append(found + "/" + all ).append(" & & & & \\\\\n");
+			System.out.println(type.getName() + ": " + found + "/" + all);
+		}
+		
+		table2.append("\\end{tabulary}");
+		System.out.println(table2.toString());
+	}
+	
+	private Map<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> getAxiomTypesWithLearningAlgorithms(){
 		Map<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> axiomType2Algorithm = new HashMap<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>>();
 		axiomType2Algorithm.put(AxiomType.SUBCLASS_OF, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{SimpleSubclassLearner.class, CELOE.class}));
 		axiomType2Algorithm.put(AxiomType.EQUIVALENT_CLASSES, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{CELOE.class}));
@@ -651,42 +802,7 @@ public class EnrichmentEvaluation {
 		axiomType2Algorithm.put(AxiomType.DATA_PROPERTY_DOMAIN, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{DataPropertyDomainAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.DATA_PROPERTY_RANGE, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{DataPropertyRangeAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.FUNCTIONAL_DATA_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{FunctionalDataPropertyAxiomLearner.class}));
-		
-		// get all entities in database because we compute recall only for axioms of entities which we have tested
-		// we use only entities for which triples in the endpoint are contained
-		java.sql.ResultSet rs = conn.prepareStatement("SELECT DISTINCT entity FROM evaluation WHERE axiom != 'NULL'").executeQuery();
-		Set<OWLEntity> entities = new HashSet<OWLEntity>();
-		IRI iri;
-		while(rs.next()){
-			iri = IRI.create("http://dbpedia.org/ontology/" + rs.getString(1).substring(4));
-			if(dbPediaOntology.containsClassInSignature(iri)){
-				entities.add(factory.getOWLClass(iri));
-			} else if(dbPediaOntology.containsObjectPropertyInSignature(iri)){
-				entities.add(factory.getOWLObjectProperty(iri));
-			} else if(dbPediaOntology.containsDataPropertyInSignature(iri)){
-				entities.add(factory.getOWLDataProperty(iri));
-			}
-		}
-
-		//compute for each axiom type the recall
-		for(Entry<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> entry : axiomType2Algorithm.entrySet()){
-			AxiomType<? extends OWLAxiom> type = entry.getKey();
-			algorithms = entry.getValue();
-			
-			int found = 0;
-			int all = 0;
-			for(OWLAxiom axiom : dbPediaOntology.getAxioms(type)){
-				if(isRelevantAxiom(axiom, entities)){
-					all++;
-					if(existsInDatabase(axiom)){
-						found++;
-					} else {
-						System.out.println(axiom);
-					}
-				}
-			}
-			System.out.println(type.getName() + ": " + found + "/" + all);
-		}
+		return axiomType2Algorithm;
 	}
 	
 	private boolean isRelevantAxiom(OWLAxiom axiom, Set<OWLEntity> entities){
@@ -731,7 +847,7 @@ public class EnrichmentEvaluation {
 	}
 	
 	private double round(double value){
-		return Math.round( value * 100. ) / 100.;
+		return Math.round( value * 10. ) / 10.;
 	}
 
 	public String printHTMLTable() throws SQLException {
@@ -793,9 +909,11 @@ public class EnrichmentEvaluation {
 		} 
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception
+	
+	{
 		EnrichmentEvaluation ee = new EnrichmentEvaluation();
-		ee.start();
+//		ee.start();
 		// ee.printResultsPlain();
 		ee.printResultsLaTeX();
 		Files.createFile(new File("enrichment_eval.html"), ee.printHTMLTable());
