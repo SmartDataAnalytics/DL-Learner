@@ -56,7 +56,7 @@ public class CLI {
 	 */
 	public static void main(String[] args) throws FileNotFoundException, ParseException {
         /** TODO Get conf file location from args */
-		ConfParser parser = ConfParser.parseFile(new File("../test/newconf/test1.conf"));
+		ConfParser parser = ConfParser.parseFile(new File("../examples/family/father.conf"));
 		List<ConfFileOption> options = parser.getConfOptions();
 		for(ConfFileOption option : options) {
 			System.out.println(option);

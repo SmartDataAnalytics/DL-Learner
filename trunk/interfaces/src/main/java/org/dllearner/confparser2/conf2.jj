@@ -195,7 +195,8 @@ ConfFileOption ConfOption() :
            "(" (tmp=String() | tmp=Id()) "," (tmp2=String() | tmp2=Id()) ")"
            {tuples.add(new StringTuple(tmp,tmp2));} 
            "]" {isList=true;}         
-         ) <CONF_END>
+         )
+         // <CONF_END>
   {
   	if(containsSubOption) {
   		if(isNumeric)
