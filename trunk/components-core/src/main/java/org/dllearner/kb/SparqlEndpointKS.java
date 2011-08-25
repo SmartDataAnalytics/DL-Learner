@@ -23,9 +23,13 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.ListStringEditor;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.springframework.beans.propertyeditors.URLEditor;
 
 /**
  * SPARQL endpoint knowledge source (without fragment extraction),
@@ -35,13 +39,20 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "SPARQL endpoint", shortName = "sparql", version = 0.2)
 public class SparqlEndpointKS implements KnowledgeSource {
 
 	private SparqlEndpoint endpoint;
 
 	// TODO: turn those into config options
+	
+	@ConfigOption(name = "url", required=true, propertyEditorClass = URLEditor.class)
 	private URL url;
+	
+	@ConfigOption(name = "url", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
 	private List<String> defaultGraphURIs = new LinkedList<String>();
+	
+	@ConfigOption(name = "url", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
 	private List<String> namedGraphURIs = new LinkedList<String>();
 	
 	public SparqlEndpointKS() {

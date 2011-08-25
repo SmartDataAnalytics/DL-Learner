@@ -32,6 +32,7 @@ import javax.swing.ProgressMonitor;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
@@ -72,6 +73,7 @@ import com.jamonapi.MonitorFactory;
  * @author Sebastian Knappe
  * @author Sebastian Hellmann
  */
+@ComponentAnn(name = "SPARQL endpoint fragment", shortName = "sparqlfrag", version = 0.5)
 public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 
 	private ProgressMonitor mon;
