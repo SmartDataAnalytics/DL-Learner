@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.core.IndividualReasoner;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.SchemaReasoner;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
@@ -39,11 +41,15 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.utilities.owl.ConceptComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +69,46 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	
 	public SPARQLReasoner(SparqlEndpointKS ks) {
 		this.ks = ks;
+	}
+	
+	public final ClassHierarchy prepareSubsumptionHierarchy() {
+		logger.info("Preparing subsumption hierarchy ...");
+		long startTime = System.currentTimeMillis();
+		ConceptComparator conceptComparator = new ConceptComparator();
+		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, SortedSet<Description>>(
+				conceptComparator);
+		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, SortedSet<Description>>(
+				conceptComparator);
+
+		// parents/children of top ...
+		SortedSet<Description> tmp = getSubClasses(Thing.instance);
+		subsumptionHierarchyUp.put(Thing.instance, new TreeSet<Description>());
+		subsumptionHierarchyDown.put(Thing.instance, tmp);
+
+		// ... bottom ...
+		tmp = getSuperClasses(Nothing.instance);
+		subsumptionHierarchyUp.put(Nothing.instance, tmp);
+		subsumptionHierarchyDown.put(Nothing.instance, new TreeSet<Description>());
+		
+		// ... and named classes
+		Set<NamedClass> atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+		for (NamedClass atom : atomicConcepts) {
+			tmp = getSubClasses(atom);
+			// quality control: we explicitly check that no reasoner implementation returns null here
+			if(tmp == null) {
+				logger.error("Class hierarchy: getSubClasses returned null instead of empty set."); 
+			}			
+			subsumptionHierarchyDown.put(atom, tmp);
+
+			tmp = getSuperClasses(atom);
+			// quality control: we explicitly check that no reasoner implementation returns null here
+			if(tmp == null) {
+				logger.error("Class hierarchy: getSuperClasses returned null instead of empty set."); 
+			}			
+			subsumptionHierarchyUp.put(atom, tmp);
+		}		
+		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
+		return new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
 
 	@Override
@@ -470,8 +516,11 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 
 	@Override
 	public SortedSet<Description> getSuperClasses(Description description) {
-		if(!(description instanceof NamedClass)){
+		if(!(description instanceof NamedClass || description instanceof Thing || description instanceof Nothing)){
 			throw new IllegalArgumentException("Only named classes are supported.");
+		}
+		if(description instanceof Nothing){
+			description = new NamedClass("http://www.w3.org/2002/07/owl#Nothing");
 		}
 		SortedSet<Description> superClasses = new TreeSet<Description>();
 		String query = String.format("SELECT ?sup {<%s> <%s> ?sup. FILTER(isIRI(?sup))}", 
@@ -505,8 +554,11 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 
 	@Override
 	public SortedSet<Description> getSubClasses(Description description) {
-		if(!(description instanceof NamedClass)){
+		if(!(description instanceof NamedClass || description instanceof Thing)){
 			throw new IllegalArgumentException("Only named classes are supported.");
+		}
+		if(description instanceof Thing){
+			description = new NamedClass(Thing.instance.getURI());
 		}
 		SortedSet<Description> subClasses = new TreeSet<Description>();
 		String query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
