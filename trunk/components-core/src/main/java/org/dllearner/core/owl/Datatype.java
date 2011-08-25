@@ -26,7 +26,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class Datatype implements DataRange {
+public class Datatype implements DataRange, Comparable<Datatype> {
 	
     private URI uri;
 
@@ -90,5 +90,10 @@ public class Datatype implements DataRange {
 		} else if (!uri.equals(other.uri))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Datatype o) {
+		return this.getURI().compareTo(o.getURI());
 	}	
 }
