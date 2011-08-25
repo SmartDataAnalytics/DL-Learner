@@ -24,11 +24,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.dllearner.algorithms.SimpleSubclassLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.core.Component;
 
@@ -54,7 +54,7 @@ public class ConfigHelper {
 	 * @param configValue the value of the config option
 	 */
 	public static <T> void configure(Component component, String configName, T configValue){
-		Field[] fields = component.getClass().getDeclaredFields();
+		List<Field> fields = getAllFields(component);
         for(Field f : fields){
         	ConfigOption option = f.getAnnotation(ConfigOption.class);
         	if(option != null){
@@ -161,7 +161,20 @@ public class ConfigHelper {
         }
 		
 		return options;
-	}	
+	}
+	
+	/*
+	 * returns the declared fields for the class and its superclass.
+	 */
+	private static List<Field> getAllFields(Component component){
+		List<Field> fields = new ArrayList<Field>();
+		fields.addAll(Arrays.asList(component.getClass().getDeclaredFields()));
+		//check also the fields of the super class if exists
+		if(component.getClass().getSuperclass() != null){
+			fields.addAll(Arrays.asList(component.getClass().getSuperclass().getDeclaredFields()));
+		}
+		return fields;
+	}
 	
 	private static Class<?> getClassForObject(Object obj){
 		if(map.containsKey(obj.getClass())){

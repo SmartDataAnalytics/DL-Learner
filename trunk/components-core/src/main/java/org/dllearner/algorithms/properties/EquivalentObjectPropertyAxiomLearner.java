@@ -20,7 +20,6 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,22 +27,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.EquivalentObjectPropertiesAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,13 +51,8 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
-	@ConfigOption(name="maxExecutionTimeInSeconds", description="", propertyEditorClass=IntegerEditor.class)
-	private int maxExecutionTimeInSeconds = 10;
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
 	private int maxFetchedRows = 0;
-	
-	private SPARQLReasoner reasoner;
-	private SparqlEndpointKS ks;
 	
 	private List<EvaluatedAxiom> currentlyBestAxioms;
 	private long startTime;
@@ -73,14 +62,6 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		this.ks = ks;
 	}
 	
-	public int getMaxExecutionTimeInSeconds() {
-		return maxExecutionTimeInSeconds;
-	}
-
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
-	}
-
 	public ObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
@@ -121,7 +102,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		
 		while(!terminationCriteriaSatisfied() && repeat){
 			query = String.format(queryTemplate, propertyToDescribe, limit, offset);
-			ResultSet rs = executeQuery(query);
+			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
 			repeat = false;
 			while(rs.hasNext()){
@@ -151,18 +132,6 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		return currentlyBestAxioms;
 	}
 
-	@Override
-	public Configurator getConfigurator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void init() throws ComponentInitException {
-		reasoner = new SPARQLReasoner(ks);
-		
-	}
-	
 	private boolean terminationCriteriaSatisfied(){
 		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
 		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
@@ -189,43 +158,5 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		return axioms;
 	}
 	
-	/*
-	 * Returns the entries of the map sorted by value.
-	 */
-	private SortedSet<Entry<ObjectProperty, Integer>> sortByValues(Map<ObjectProperty, Integer> map){
-		SortedSet<Entry<ObjectProperty, Integer>> sortedSet = new TreeSet<Map.Entry<ObjectProperty,Integer>>(new Comparator<Entry<ObjectProperty, Integer>>() {
-
-			@Override
-			public int compare(Entry<ObjectProperty, Integer> value1, Entry<ObjectProperty, Integer> value2) {
-				if(value1.getValue() < value2.getValue()){
-					return 1;
-				} else if(value2.getValue() < value1.getValue()){
-					return -1;
-				} else {
-					return value1.getKey().compareTo(value2.getKey());
-				}
-			}
-		});
-		sortedSet.addAll(map.entrySet());
-		return sortedSet;
-	}
-	
-	/*
-	 * Executes a SELECT query and returns the result.
-	 */
-	private ResultSet executeQuery(String query){
-		logger.info("Sending query \n {}", query);
-		
-		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
-		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
-		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
-			queryExecution.addDefaultGraph(dgu);
-		}
-		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
-			queryExecution.addNamedGraph(ngu);
-		}			
-		ResultSet resultSet = queryExecution.execSelect();
-		return resultSet;
-	}
 
 }
