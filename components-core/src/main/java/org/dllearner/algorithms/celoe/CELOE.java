@@ -711,7 +711,7 @@ public class CELOE extends AbstractCELA {
 		stop || 
 		(configurator.getMaxClassDescriptionTests() != 0 && (expressionTests >= configurator.getMaxClassDescriptionTests())) ||
 		(configurator.getMaxExecutionTimeInSeconds() != 0 && ((System.nanoTime() - nanoStartTime) >= (configurator.getMaxExecutionTimeInSeconds()*1000000000l))) ||
-		(configurator.getTerminateOnNoiseReached() && (100*getCurrentlyBestAccuracy()>100-configurator.getNoisePercentage()));
+		(configurator.getTerminateOnNoiseReached() && (100*getCurrentlyBestAccuracy()>=100-configurator.getNoisePercentage()));
 	}
 	
 	private void reset() {

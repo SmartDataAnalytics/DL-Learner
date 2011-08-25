@@ -285,7 +285,6 @@ public class ConfParser implements ConfParserConstants {
         }
       }
     }
-    jj_consume_token(CONF_END);
         if(containsSubOption) {
                 if(isNumeric)
                         if(isDouble)
@@ -490,13 +489,13 @@ public class ConfParser implements ConfParserConstants {
     return false;
   }
 
-  private boolean jj_3_3() {
-    if (jj_scan_token(NEG_EX)) return true;
+  private boolean jj_3R_4() {
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 
-  private boolean jj_3R_4() {
-    if (jj_scan_token(ID)) return true;
+  private boolean jj_3_3() {
+    if (jj_scan_token(NEG_EX)) return true;
     return false;
   }
 
@@ -536,6 +535,11 @@ public class ConfParser implements ConfParserConstants {
     return false;
   }
 
+  private boolean jj_3R_20() {
+    if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
   private boolean jj_3R_15() {
     if (jj_3R_4()) return true;
     return false;
@@ -543,11 +547,6 @@ public class ConfParser implements ConfParserConstants {
 
   private boolean jj_3R_8() {
     if (jj_3R_17()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_20() {
-    if (jj_scan_token(ID)) return true;
     return false;
   }
 
@@ -589,13 +588,13 @@ public class ConfParser implements ConfParserConstants {
     return false;
   }
 
-  private boolean jj_3R_14() {
-    if (jj_3R_18()) return true;
+  private boolean jj_3R_16() {
+    if (jj_scan_token(NUMBER)) return true;
     return false;
   }
 
-  private boolean jj_3R_16() {
-    if (jj_scan_token(NUMBER)) return true;
+  private boolean jj_3R_14() {
+    if (jj_3R_18()) return true;
     return false;
   }
 
