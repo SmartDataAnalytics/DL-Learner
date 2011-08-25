@@ -20,16 +20,42 @@
 package org.dllearner.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
+import org.dllearner.reasoning.SPARQLReasoner;
+
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 /**
  * @author Lorenz Bühmann
  * @author Jens Lehmann
  */
 public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements AxiomLearningAlgorithm{
+	
+	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="", propertyEditorClass=IntegerEditor.class)
+	protected int maxExecutionTimeInSeconds = 10;
+	
+	protected SparqlEndpointKS ks;
+	protected SPARQLReasoner reasoner;
+	
+	public int getMaxExecutionTimeInSeconds() {
+		return maxExecutionTimeInSeconds;
+	}
+
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	}
 
 	@Override
 	public void start() {
@@ -37,6 +63,7 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 
 	@Override
 	public void init() throws ComponentInitException {
+		reasoner = new SPARQLReasoner(ks);
 	}
 
 	@Override
@@ -85,6 +112,44 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 	public Configurator getConfigurator() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	protected ResultSet executeSelectQuery(String query) {
+		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(),
+				query);
+		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
+		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
+			queryExecution.addNamedGraph(ngu);
+		}
+		ResultSet resultSet = queryExecution.execSelect();
+		return resultSet;
+	}
+	
+	protected boolean executeAskQuery(String query){
+		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
+			queryExecution.addNamedGraph(ngu);
+		}			
+		boolean result = queryExecution.execAsk();
+		return result;
+	}
+	
+	protected <K, V extends Comparable<V>> List<Entry<K, V>> sortByValues(Map<K, V> map){
+		List<Entry<K, V>> entries = new ArrayList<Entry<K, V>>(map.entrySet());
+        Collections.sort(entries, new Comparator<Entry<K, V>>() {
+
+			@Override
+			public int compare(Entry<K, V> o1, Entry<K, V> o2) {
+				return o2.getValue().compareTo(o1.getValue());
+			}
+		});
+        return entries;
 	}
 
 }
