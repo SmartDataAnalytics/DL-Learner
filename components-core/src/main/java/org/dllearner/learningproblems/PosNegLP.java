@@ -26,6 +26,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.StringConfigOption;
@@ -111,8 +112,15 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
 		allExamples = Helper.union(positiveExamples, negativeExamples);
+		
+		if(!reasoner.getIndividuals().containsAll(allExamples)) {
+			String str = "The examples below are not contained in the knowledge base (check spelling and prefixes)\n";
+			Set<Individual> inds = Helper.difference(allExamples, reasoner.getIndividuals());
+			str += inds.toString();
+			throw new ComponentInitException(str);
+		}
 	}
 	
 	public Set<Individual> getNegativeExamples() {

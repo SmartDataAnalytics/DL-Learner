@@ -34,7 +34,7 @@ import org.dllearner.core.owl.Description;
  */
 public abstract class AbstractLearningProblem extends AbstractComponent implements LearningProblem {
 	
-	private AbstractReasonerComponent reasoner;
+	protected AbstractReasonerComponent reasoner;
 
     public AbstractLearningProblem(){
 

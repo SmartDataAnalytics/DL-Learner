@@ -27,6 +27,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.config.ConfigOption;
@@ -102,7 +103,7 @@ public class PosNegLPStandard extends PosNegLP {
 	}	
 	
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
 		super.init();
 
 		String accM = getAccuracyMethod();
@@ -498,8 +499,17 @@ public class PosNegLPStandard extends PosNegLP {
 	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
 	public double getPredAccuracyOrTooWeakExact(Description description, double noise) {
-		
+		// TODO: what we essentially need here is that if the noise justifies 
+		// not covering 1.23 examples, then we stop with 2 examples not covered;
+		// but when noise justifies not covering exactly 2 examples, we can actually
+		// only stop with 3 examples; so we would have to add 1 for exact matches
+		// which is not done yet
 		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
+		// maybe use this approach:
+//		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size()+0.0001);
+		
+		System.out.println("noise: " + noise);
+		System.out.println("max not covered: " + maxNotCovered);
 		
 		int notCoveredPos = 0;
 		int notCoveredNeg = 0;
@@ -507,6 +517,9 @@ public class PosNegLPStandard extends PosNegLP {
 		for (Individual example : positiveExamples) {
 			if (!getReasoner().hasType(description, example)) {
 				notCoveredPos++;
+				
+				System.out.println("d:" + description + "; ex:" + example);
+				
 				if(notCoveredPos >= maxNotCovered) {
 					return -1;
 				}
@@ -517,6 +530,9 @@ public class PosNegLPStandard extends PosNegLP {
 				notCoveredNeg++;
 			}
 		}
+		
+		System.out.println("not covered pos: " + notCoveredPos);
+		System.out.println("not covered neg: " + notCoveredNeg);
 		
 //		if(useFMeasure) {
 //			double recall = (positiveExamples.size() - notCoveredPos) / (double) positiveExamples.size();

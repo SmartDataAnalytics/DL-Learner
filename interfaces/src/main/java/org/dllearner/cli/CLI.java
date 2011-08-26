@@ -30,6 +30,12 @@ import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.confparser2.ParseException;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Thing;
+import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -42,8 +48,6 @@ import org.springframework.core.io.Resource;
  *
  */
 public class CLI {
-
-
 
     public CLI(){
 
@@ -58,8 +62,9 @@ public class CLI {
 	 * @param args
 	 * @throws ParseException 
 	 * @throws IOException 
+	 * @throws ReasoningMethodUnsupportedException 
 	 */
-	public static void main(String[] args) throws ParseException, IOException {
+	public static void main(String[] args) throws ParseException, IOException, ReasoningMethodUnsupportedException {
 		
 		System.out.println("DL-Learner " + Info.build + " [TODO: read pom.version and put it here (make sure that the code for getting the version also works in the release build!)] command line interface");
 		
@@ -87,10 +92,23 @@ public class CLI {
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
         ApplicationContext  context =  builder.buildApplicationContext(confFile,componentKeyPrefixes,springConfigResources);
         
+        // a lot of debugging stuff
+//        FastInstanceChecker fi = context.getBean("reasoner", FastInstanceChecker.class);
+//        System.out.println(fi.getClassHierarchy());
+//        NamedClass male = new NamedClass("http://localhost/foo#male");
+//        System.out.println(fi.getIndividuals(new NamedClass("http://localhost/foo#male")));
+//        System.out.println(fi.getIndividuals().size());
+//        System.out.println("has type: " + fi.hasTypeImpl(male, new Individual("http://localhost/foo#bernd")));
+//        
+//        PosNegLPStandard lp = context.getBean("lp", PosNegLPStandard.class);
+//        System.out.println(lp.getPositiveExamples());
+//        System.out.println(lp.getNegativeExamples());
+//        System.out.println(lp.getAccuracy(new NamedClass("http://localhost/foo#male")));
+        
         // start algorithm in conf file
         OCEL algorithm = context.getBean("alg",OCEL.class);
         algorithm.start();
-		
+        
 	}
 
 }
