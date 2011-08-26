@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.configurators.PosNegLPStrictConfigurator;
@@ -100,7 +101,7 @@ public class PosNegLPStrict extends PosNegLP {
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
 		super.init();
 		// compute neutral examples, i.e. those which are neither positive
 		// nor negative (we have to take care to copy sets instead of 
