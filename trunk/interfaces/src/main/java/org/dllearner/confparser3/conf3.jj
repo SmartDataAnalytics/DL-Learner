@@ -108,21 +108,9 @@ SKIP :
 TOKEN :
 {
     < COMMAND_END: "." >
-  | < CONF_END: ";" >
-  | < POS_EX: "+" >
-  | < NEG_EX: "-" >
   | < ID: ["a"-"z"] (["_","a"-"z","A"-"Z","0"-"9"])* >
   | < NUMBER: (["1"-"9"] (["0"-"9"])* | "0") >
   | < DOUBLE: (["1"-"9"] (["0"-"9"])* | "0") "." (["0"-"9"])* >
-  | <TOP: "TOP" >
-  | <BOTTOM: "BOTTOM" >
-  | <AND: "AND" >
-  | <OR: "OR" >
-  | <EXISTS: "EXISTS" | "SOME" >
-  | <ALL: "ALL" | "FORALL" >
-  | <NOT: "NEG" | "NOT" >
-  | <GE: ">=" >
-  | <LE: "<=" >
   | <STRING: "\"" (~["\"","\\","\n","\r"])* "\"">
 }
 
@@ -157,7 +145,12 @@ ConfFileOption2 ConfOption() :
   "="  (  // two strings separated by a double colon
          // LOOKAHEAD(2) value1=Id() ":" value2=Id() { useColon = true; }
          // simple string
-           propertyValue = Id() { val = propertyValue; propertyType = String.class; }
+         	propertyValue = Id() {
+         	if(propertyValue.equals("true") || propertyValue.equals("false")) {
+         	   val = Boolean.valueOf(propertyValue); propertyType = Boolean.class;
+         	} else {
+         		val = propertyValue; propertyType = String.class; 
+         	} }
   		 // simple string enclosed in quotes
          | propertyValue = String() { val = propertyValue; inQuotes = true; propertyType = String.class; }
          | val = Integer() { propertyValue = val.toString(); propertyType = Integer.class;} 
@@ -167,7 +160,7 @@ ConfFileOption2 ConfOption() :
          // set with several elements which are quoted
          | LOOKAHEAD(4) "{" (  LOOKAHEAD(2) tmp=String() { values.add(tmp);} "," )* 
            tmp=String() {values.add(tmp);} "}" 
-           { propertyType = Set.class; propertyValue = "{ TODO }"; }           
+           { propertyType = Set.class; propertyValue = "{ TODO }"; val = values; inQuotes = true;}           
          // set with several elements which are not quoted
          | "{" ( LOOKAHEAD(4) tmp=Id() { values.add(tmp);} "," )* 
            ( tmp=Id()) {values.add(tmp);} "}" 
