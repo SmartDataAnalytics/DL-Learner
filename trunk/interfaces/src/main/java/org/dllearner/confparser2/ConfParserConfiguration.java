@@ -24,9 +24,11 @@ import java.util.*;
 public class ConfParserConfiguration implements IConfiguration {
 
     private final ConfParser parser;
+    private final String baseDir;
 
     public ConfParserConfiguration(Resource source){
         try {
+            baseDir = source.getFile().getAbsoluteFile().getParent();
             parser = new ConfParser(source.getInputStream());
             parser.Start();
         } catch (ParseException e) {
@@ -174,5 +176,10 @@ public class ConfParserConfiguration implements IConfiguration {
         }
         return result;
 
+    }
+
+    @Override
+    public String getBaseDir() {
+        return baseDir;
     }
 }

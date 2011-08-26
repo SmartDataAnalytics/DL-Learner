@@ -60,6 +60,13 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 */
 	protected AbstractReasonerComponent reasoner;
 
+
+    /**
+     * Default Constructor
+     */
+    public AbstractCELA(){
+
+    }
 	/**
 	 * Each learning algorithm gets a learning problem and
 	 * a reasoner as input.
@@ -270,5 +277,28 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
 		return new LinkedList<Class<? extends AbstractLearningProblem>>();
 	}
-	
+
+    /**
+     * The learning problem variable, which must be used by
+     * all learning algorithm implementations.
+     */
+    public AbstractLearningProblem getLearningProblem() {
+        return learningProblem;
+    }
+
+    public void setLearningProblem(AbstractLearningProblem learningProblem) {
+        this.learningProblem = learningProblem;
+    }
+
+    /**
+     * The reasoning service variable, which must be used by
+     * all learning algorithm implementations.
+     */
+    public AbstractReasonerComponent getReasoner() {
+        return reasoner;
+    }
+
+    public void setReasoner(AbstractReasonerComponent reasoner) {
+        this.reasoner = reasoner;
+    }
 }

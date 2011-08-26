@@ -982,7 +982,7 @@ public class ROLearner extends AbstractCELA {
 			// System.out.println("max. number of one-step refinements: " + maxNrOfRefinements);
 			// System.out.println("max. number of children of a node: " + maxNrOfChildren);
 			logger.debug("subsumption time: " + Helper.prettyPrintNanoSeconds(reasoner.getSubsumptionReasoningTimeNs()));
-			logger.debug("instance check time: " + Helper.prettyPrintNanoSeconds(reasoner.getInstanceCheckReasoningTimeNs()));					
+			logger.debug("instance check time: " + Helper.prettyPrintNanoSeconds(reasoner.getInstanceCheckReasoningTimeNs()));
 		}
 		
 		if(showBenchmarkInformation) {

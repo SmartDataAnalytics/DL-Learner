@@ -162,6 +162,10 @@ public class OCEL extends AbstractCELA {
 	// Faktor für horizontale Erweiterung (notwendig für completeness)
 	// double horizontalExpansionFactor = 0.6;	
 
+
+    public OCEL(){
+
+    }
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
 	public OCEL(PosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
@@ -318,7 +322,7 @@ public class OCEL extends AbstractCELA {
 	public void init() throws ComponentInitException {
 		
 		// exit with a ComponentInitException if the reasoner is unsupported for this learning algorithm
-		if(reasoner.getReasonerType() == ReasonerType.DIG) {
+		if(getReasoner().getReasonerType() == ReasonerType.DIG) {
 			throw new ComponentInitException("DIG does not support the inferences needed in the selected learning algorithm component: " + getName());
 		}
 		
@@ -341,14 +345,15 @@ public class OCEL extends AbstractCELA {
 			if(learningProblem instanceof PosOnlyLP) {
 				throw new RuntimeException("does not work with positive examples only yet");
 			}
-			heuristic = new FlexibleHeuristic(((PosNegLP)learningProblem).getNegativeExamples().size(), ((PosNegLP)learningProblem).getPercentPerLengthUnit());
+			heuristic = new FlexibleHeuristic(((PosNegLP) getLearningProblem()).getNegativeExamples().size(), ((PosNegLP) getLearningProblem()).getPercentPerLengthUnit());
 		} else {
-			if(learningProblem instanceof PosOnlyLP) {
+            //The Heuristic is now injected
+//			if(getLearningProblem() instanceof PosOnlyLP) {
 //				throw new RuntimeException("does not work with positive examples only yet");
-				heuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-			} else {
-				heuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-			}
+//				heuristic = new MultiHeuristic(((PosOnlyLP) getLearningProblem()).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
+//			} else {
+//				heuristic = new MultiHeuristic(((PosNegLP) getLearningProblem()).getPositiveExamples().size(),((PosNegLP) getLearningProblem()).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
+//			}
 		}
 		
 		// warn the user if he/she sets any non-standard heuristic, because it will just be ignored
@@ -552,11 +557,11 @@ public class OCEL extends AbstractCELA {
 		this.replaceSearchTree = replaceSearchTree;
 	}
 
-	public String getHeuristic() {
+	public String getHeuristicStr() {
 		return heuristicStr;
 	}
 
-	public void setHeuristic(String heuristic) {
+	public void setHeuristicStr(String heuristic) {
 		this.heuristicStr = heuristic;
 	}
 
@@ -851,4 +856,8 @@ public class OCEL extends AbstractCELA {
 	public void setHeuristic(ExampleBasedHeuristic heuristic) {
 		this.heuristic = heuristic;
 	}
+
+    public ExampleBasedHeuristic getHeuristic() {
+        return heuristic;
+    }
 }

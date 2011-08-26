@@ -139,11 +139,6 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		return options;
 	}	
 	
-	// we can assume a PosNegLP, because it is the only supported one
-	private PosNegLP getLearningProblem() {
-		return (PosNegLP) learningProblem;
-	}
-	
 	public Configurator getConfigurator() {
 		return configurator;
 	}	
@@ -399,8 +394,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		trees.clear();
 		currentSolution.clear();
 		bestEvaluatedDescription = learningProblem.evaluate(Thing.instance);
-		currentPosExamples = getLearningProblem().getPositiveExamples();
-		currentNegExamples = getLearningProblem().getNegativeExamples();
+		currentPosExamples = ((PosNegLP)getLearningProblem()).getPositiveExamples();
+		currentNegExamples = ((PosNegLP)getLearningProblem()).getNegativeExamples();
 		startPosExamplesSize = currentPosExamples.size();
 //		startNegExamplesSize = currentNegExamples.size();
 	}
