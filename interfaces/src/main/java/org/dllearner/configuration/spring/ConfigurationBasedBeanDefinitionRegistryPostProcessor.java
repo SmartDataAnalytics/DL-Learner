@@ -1,6 +1,8 @@
 package org.dllearner.configuration.spring;
 
 import org.dllearner.configuration.IConfiguration;
+import org.dllearner.kb.KBFile;
+import org.dllearner.kb.OWLFile;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -37,6 +39,12 @@ public class ConfigurationBasedBeanDefinitionRegistryPostProcessor implements Be
                 BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(beanClass);
 
                 BeanDefinition definition = builder.getBeanDefinition();
+
+                /** Add Base Directory */
+                if(beanClass.isAssignableFrom(KBFile.class)  || beanClass.isAssignableFrom(OWLFile.class)){
+                    definition.getPropertyValues().addPropertyValue("baseDir",configuration.getBaseDir());
+                }
+
                 registry.registerBeanDefinition(beanName,definition);
             }
         }

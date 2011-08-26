@@ -73,6 +73,12 @@ public class AnnComponentManager {
             "org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner",
             "org.dllearner.algorithms.DisjointClassesLearner",
             "org.dllearner.algorithms.SimpleSubclassLearner",
+            "org.dllearner.kb.KBFile",
+            "org.dllearner.learningproblems.PosNegLPStandard",
+            "org.dllearner.reasoning.FastInstanceChecker",
+            "org.dllearner.algorithms.ocel.OCEL",
+            "org.dllearner.algorithms.ocel.MultiHeuristic",
+            "org.dllearner.refinementoperators.RhoDRDown",
     } ));
     private static Collection<Class<? extends Component>> components;
     private static BidiMap<Class<? extends Component>, String> componentNames;

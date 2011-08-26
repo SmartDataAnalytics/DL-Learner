@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.GPUtilities;
 import org.dllearner.core.*;
-import org.dllearner.core.configurators.RandomGuesserConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;

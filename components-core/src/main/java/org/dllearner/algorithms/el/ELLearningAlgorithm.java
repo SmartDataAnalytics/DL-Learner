@@ -32,9 +32,6 @@ import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.configurators.Configurator;
-import org.dllearner.core.configurators.ELLearningAlgorithmConfigurator;
-import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
@@ -91,11 +88,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		return problems;
 	}
 	
-	// we can assume a PosNegLP, because it is the only supported one
-	private PosNegLP getLearningProblem() {
-		return (PosNegLP) learningProblem;
-	}
-	
+
 //	@Override
 //	public ELLearningAlgorithmConfigurator getConfigurator() {
 //		return configurator;
@@ -166,7 +159,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		Description description = descriptionTree.transformToDescription();
 		
 //		double accuracy = getLearningProblem().getAccuracyOrTooWeak(description, 0);
-		int negCovers = getLearningProblem().coveredNegativeExamplesOrTooWeak(description);
+		int negCovers = ((PosNegLP)getLearningProblem()).coveredNegativeExamplesOrTooWeak(description);
 		if(negCovers == -1) {
 //		if(accuracy == -1) {
 			node.setTooWeak();

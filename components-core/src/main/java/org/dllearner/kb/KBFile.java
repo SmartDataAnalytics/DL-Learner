@@ -55,7 +55,6 @@ public class KBFile extends AbstractKnowledgeSource {
 
 	@ConfigOption(name = "url", description = "URL pointer to the KB file", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String url;
-    @ConfigOption(name = "baseDir", description = "Base Directory to look for the file in", defaultValue = ".", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String baseDir;
 
 	/**

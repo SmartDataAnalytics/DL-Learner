@@ -27,13 +27,14 @@ public class DefaultApplicationContextBuilder implements ApplicationContextBuild
         ConfigurableApplicationContext context = null;
         ConfParserConfiguration configuration = new ConfParserConfiguration(confFile);
 
+        // Post Processors
         BeanDefinitionRegistryPostProcessor beanDefinitionRegistryPostProcessor = new ConfigurationBasedBeanDefinitionRegistryPostProcessor(configuration);
 
         ConfigurationBasedPropertyOverrideConfigurer configurer = new ConfigurationBasedPropertyOverrideConfigurer(configuration, false);
         configurer.setProperties(configuration.getProperties());
         configurer.getComponentKeyPrefixes().addAll(componentKeyPrefixes);
 
-        /** These files need to be loaded first */
+        //These files need to be loaded first
         List<Resource> allSpringConfigFiles = new ArrayList<Resource>();
         allSpringConfigFiles.add(new ClassPathResource("/org/dllearner/configuration/spring/bean-post-processor-configuration.xml"));
         allSpringConfigFiles.addAll(springConfigurationLocations);
@@ -46,10 +47,11 @@ public class DefaultApplicationContextBuilder implements ApplicationContextBuild
         }
         context = new ClassPathXmlApplicationContext(springConfigurationFiles, false);
 
-        /** These post processors run before object instantiation */
+        // These post processors run before object instantiation
         context.addBeanFactoryPostProcessor(beanDefinitionRegistryPostProcessor);
         context.addBeanFactoryPostProcessor(configurer);
 
+        //Instantiate and initialize the beans.
         context.refresh();
         return context;
     }

@@ -1,6 +1,7 @@
 package org.dllearner.cli;
 
 import junit.framework.Assert;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -33,6 +34,7 @@ public class FatherCLITest {
         /** The DL-Learner Config File */
         Resource confFile = new FileSystemResource("./examples/family/father.conf");
 
+//        confFile.getAbsoluteFile().getParent(
         /** Component Key Prefixes */
         List<String> componentKeyPrefixes = new ArrayList<String>();
         componentKeyPrefixes.add("component:");
@@ -50,10 +52,18 @@ public class FatherCLITest {
 
     @Test
     public void testFatherConf(){
-        context.getBean("kbFile");
 
-        PosNegLPStandard lp = context.getBean("learningProblem", PosNegLPStandard.class);
+        PosNegLPStandard lp = context.getBean("lp", PosNegLPStandard.class);
         Assert.assertTrue(lp.getPositiveExamples().size() == 3);
         Assert.assertTrue(lp.getNegativeExamples().size() == 4);
+        Assert.assertNotNull(lp.getReasoner());
+
+        OCEL algorithm = context.getBean("alg",OCEL.class);
+        Assert.assertNotNull(algorithm);
+
+        algorithm.start();
+
+
+
     }
 }

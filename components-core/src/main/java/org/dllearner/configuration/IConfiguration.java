@@ -86,6 +86,12 @@ public interface IConfiguration {
      */
     public Set<String> getNegativeExamples();
 
+    /**
+     * Get the Base Directory where this configuration should be running out of.
+     *
+     * @return The Base Directory where this configuration should be running out of.
+     */
+    public String getBaseDir();
 
 
 }

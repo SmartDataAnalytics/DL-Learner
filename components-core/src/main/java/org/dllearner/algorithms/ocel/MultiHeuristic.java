@@ -119,7 +119,11 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 		this.startNodeBonus = startNodeBonus;
 		this.expansionPenaltyFactor = expansionPenaltyFactor;
 	}
-	
+
+    public MultiHeuristic(){
+
+    }
+
 //	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {
 //		this.nrOfNegativeExamples = nrOfNegativeExamples;
 //		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
@@ -204,4 +208,11 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 		return bonus;
 	}
 
+    public double getExpansionPenaltyFactor() {
+        return expansionPenaltyFactor;
+    }
+
+    public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
+        this.expansionPenaltyFactor = expansionPenaltyFactor;
+    }
 }

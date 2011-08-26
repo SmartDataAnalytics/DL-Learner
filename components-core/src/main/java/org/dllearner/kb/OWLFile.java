@@ -49,7 +49,7 @@ public class OWLFile extends AbstractKnowledgeSource {
 	
 	// TODO: turn this into a config option
 	private URL url;
-	
+	private String baseDir;
 //	private URL url;
 //	private OWLFileConfigurator configurator ;
 //	@Override
@@ -139,4 +139,11 @@ public class OWLFile extends AbstractKnowledgeSource {
 		throw new Error("OWL -> KB conversion not implemented yet.");
 	}
 
+    public String getBaseDir() {
+        return baseDir;
+    }
+
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
+    }
 }
