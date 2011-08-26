@@ -131,6 +131,22 @@ public class Heuristics {
 	}
 	
 	/**
+	 * Computes the 95% confidence interval average of an experiment with boolean outcomes,
+	 * e.g. heads or tails coin throws. It uses the very efficient, but still accurate
+	 * Wald method. 
+	 * @param success Number of successes, e.g. number of times the coin shows head.
+	 * @param total Total number of tries, e.g. total number of times the coin was thrown.
+	 * @return The average of the lower border and upper border of the 95% confidence interval.
+	 */
+	public static double getConfidenceInterval95WaldAverage(int total, int success) {
+		if(success > total || total < 1) {
+			throw new IllegalArgumentException("95% confidence interval for " + success + " out of " + total + " trials cannot be estimated.");
+		}
+		double[] interval = getConfidenceInterval95Wald(total, success);
+		return (interval[0] + interval[1]) / 2;
+	}
+	
+	/**
 	 * Computes whether a hypothesis is too weak, i.e. it has more errors on the positive examples
 	 * than allowed by the noise parameter.
 	 * @param nrOfPositiveExamples The number of positive examples in the learning problem.
