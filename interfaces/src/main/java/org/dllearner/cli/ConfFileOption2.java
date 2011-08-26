@@ -44,6 +44,7 @@ public class ConfFileOption2 {
 	
 	// TODO: Do we want to store the actual value as object here or leave it up to
 	// the corresponding PropertyEditor to create it?
+	// WARNING: This feature does not work in conjunction with prefix post-processing yet!
 	@Deprecated
 	private Object valueObject;
 	
