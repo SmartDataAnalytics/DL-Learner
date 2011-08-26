@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.OntologyFormat;
@@ -42,6 +43,7 @@ import org.dllearner.reasoning.OWLAPIDIGConverter;
  * @author Jens Lehmann
  * 
  */
+@ComponentAnn(name = "OWL File", shortName = "owlfile", version = 0.9)
 public class OWLFile extends AbstractKnowledgeSource {
 
 	private static Logger logger = Logger
