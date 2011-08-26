@@ -47,6 +47,9 @@ import org.dllearner.utilities.datastructures.StringTuple;
 
 public class ConfParser {
 	
+	// special directives (those without a property name)
+	private Map<String,ConfFileOption2> specialOptions = new HashMap<String,ConfFileOption2>();
+	
 	// conf file options
 	private List<ConfFileOption2> confOptions = new LinkedList<ConfFileOption2>();
 	private Map<String,ConfFileOption2> confOptionsByProperty = new HashMap<String,ConfFileOption2>();
@@ -120,9 +123,16 @@ void Start() :
 }
 {
   (		confOption = ConfOption()  		  
-  	   { addConfOption(confOption); }
+  	   { if(confOption.getPropertyName() == null) {
+  	   		specialOptions.put(confOption.getBeanName(),confOption);
+  	     } else { 
+  	     	addConfOption(confOption); 
+  	     } 
+  	   }
   )*
   <EOF>
+  { PostProcessor pp = new PostProcessor(confOptions, specialOptions);
+    pp.applyAll(); }
 }
 
 ConfFileOption2 ConfOption() : 
@@ -136,7 +146,7 @@ ConfFileOption2 ConfOption() :
 	boolean inQuotes = false;
 	String beanName;
 	String propertyName = "";
-	String propertyValue;
+	String propertyValue = "";
 	Class<?> propertyType;
 	Object val = null;
 }
@@ -158,35 +168,34 @@ ConfFileOption2 ConfOption() :
          // empty set
          | LOOKAHEAD("{" "}") "{" "}" { val = new HashSet(); propertyType = Set.class; propertyValue = "{}"; }
          // set with several elements which are quoted
-         | LOOKAHEAD(4) "{" (  LOOKAHEAD(2) tmp=String() { values.add(tmp);} "," )* 
-           tmp=String() {values.add(tmp);} "}" 
-           { propertyType = Set.class; propertyValue = "{ TODO }"; val = values; inQuotes = true;}           
+         | LOOKAHEAD(4) "{" (  LOOKAHEAD(2) tmp=String() { values.add(tmp); propertyValue += "\"" + tmp + "\", ";} "," )* 
+           tmp=String() {values.add(tmp); propertyValue += "\"" + tmp + "\"";} "}" 
+           { propertyType = Set.class; propertyValue = "{"+ propertyValue + "}";; val = values; inQuotes = true;}           
          // set with several elements which are not quoted
-         | "{" ( LOOKAHEAD(4) tmp=Id() { values.add(tmp);} "," )* 
-           ( tmp=Id()) {values.add(tmp);} "}" 
-           { val = values; propertyType = Set.class; propertyValue = "{ TODO }"; }  
+         | "{" ( LOOKAHEAD(4) tmp=Id() { values.add(tmp); propertyValue += tmp + ", "; } "," )* 
+           ( tmp=Id()) {values.add(tmp); propertyValue += tmp;} "}" 
+           { val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; }  
          // empty list
          | LOOKAHEAD("[" "]") "[" "]" { val = new LinkedList(); propertyType = List.class; propertyValue = "[]";}
          // a list with several elements, which tuples
          // e.g. [("a","b"),("c","d")]
          | "[" 
-           ( LOOKAHEAD(6) "(" (tmp=String() | tmp=Id()) "," (tmp2=String() | tmp2=Id()) ")"
-           {tuples.add(new StringTuple(tmp,tmp2));} "," )*
-           "(" (tmp=String() | tmp=Id()) "," (tmp2=String() | tmp2=Id()) ")"
-           {tuples.add(new StringTuple(tmp,tmp2));} 
-           "]" { val = values; propertyType = List.class;}         
+           ( LOOKAHEAD(6) "(" tmp=String() "," tmp2=String()  ")"
+           {tuples.add(new StringTuple(tmp,tmp2)); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\"), "; } "," )*
+           "(" tmp=String() "," tmp2=String() ")"
+           {tuples.add(new StringTuple(tmp,tmp2)); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\")";} 
+           "]" { val = tuples; propertyType = List.class; propertyValue = "["+ propertyValue + "]";}         
          )
          // <CONF_END>
   {
-  	if(containsSubOption) {
-  		option.setInQuotes(inQuotes);
-  		option.setBeanName(beanName);
+  	option.setInQuotes(inQuotes);
+  	option.setBeanName(beanName);
+ 	if(containsSubOption) {
   		option.setPropertyName(propertyName);
-  		option.setPropertyType(propertyType); 
-  		option.setValueObject(val); 				
-  	} else {
-  		// ... currently nothing here (maybe special parser directives)
   	}
+  	option.setPropertyType(propertyType);
+  	option.setPropertyValue(propertyValue);  
+  	option.setValueObject(val);	
   	return option;
   }
 }

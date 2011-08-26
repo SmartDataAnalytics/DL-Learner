@@ -15,7 +15,7 @@ public class ParseTest {
 	public void test() throws FileNotFoundException, ParseException {
 		ConfParser parser = ConfParser.parseFile(new File("../examples/family/father_new.conf"));
 		for(ConfFileOption2 option : parser.getConfOptions()) {
-			System.out.print(option.getBeanName() + "." + option.getPropertyName() + " = " + option.getValueObject());
+			System.out.print(option.getBeanName() + "." + option.getPropertyName() + " = " + option.getPropertyValue());
 			if((option.getPropertyType().equals(String.class) || option.getPropertyType().equals(Set.class)) && !option.isInQuotes()) {
 				System.out.println("    (bean reference)");
 			} else {

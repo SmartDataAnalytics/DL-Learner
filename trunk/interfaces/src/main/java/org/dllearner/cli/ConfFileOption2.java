@@ -44,6 +44,7 @@ public class ConfFileOption2 {
 	
 	// TODO: Do we want to store the actual value as object here or leave it up to
 	// the corresponding PropertyEditor to create it?
+	@Deprecated
 	private Object valueObject;
 	
 	public ConfFileOption2() {
@@ -90,10 +91,12 @@ public class ConfFileOption2 {
 		this.propertyType = propertyType;
 	}
 
+	@Deprecated
 	public Object getValueObject() {
 		return valueObject;
 	}
 
+	@Deprecated
 	public void setValueObject(Object valueObject) {
 		this.valueObject = valueObject;
 	}
