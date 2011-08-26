@@ -20,13 +20,19 @@
 package org.dllearner.cli;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.dllearner.confparser2.ConfParser;
+import org.dllearner.Info;
+import org.dllearner.algorithms.ocel.OCEL;
+import org.dllearner.configuration.spring.ApplicationContextBuilder;
+import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.confparser2.ParseException;
 import org.dllearner.core.AbstractCELA;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 /**
  * 
@@ -34,7 +40,6 @@ import org.springframework.context.ApplicationContext;
  * 
  * @author Jens Lehmann
  *
- * TODO: this isn't working fully yet.
  */
 public class CLI {
 
@@ -52,19 +57,40 @@ public class CLI {
 	/**
 	 * @param args
 	 * @throws ParseException 
-	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws FileNotFoundException, ParseException {
-        /** TODO Get conf file location from args */
-		ConfParser parser = ConfParser.parseFile(new File("../examples/family/father.conf"));
-		List<ConfFileOption> options = parser.getConfOptions();
-		for(ConfFileOption option : options) {
-			System.out.println(option);
+	public static void main(String[] args) throws ParseException, IOException {
+		
+		System.out.println("DL-Learner " + Info.build + " [TODO: read pom.version and put it here (make sure that the code for getting the version also works in the release build!)] command line interface");
+		
+		// currently, CLI has exactly one parameter - the conf file
+		if(args.length == 0) {
+			System.out.println("You need to give a conf file as argument.");
+			System.exit(0);
 		}
 		
-		System.out.println("positive examples: " + parser.getPositiveExamples());
-		System.out.println("negative examples: " + parser.getNegativeExamples());
-	}
+		// read file and print and print a message if it does not exist
+		File file = new File(args[args.length - 1]);
+		Resource confFile = new FileSystemResource(args[args.length - 1]);
+		if(!file.exists()) {
+			System.out.println("File \"" + file + "\" does not exist.");
+			System.exit(0);			
+		}
+		
+		// build application context 
+        List<String> componentKeyPrefixes = new ArrayList<String>();
+        componentKeyPrefixes.add("component:");
+        componentKeyPrefixes.add(":");
 
+        List<Resource> springConfigResources = new ArrayList<Resource>();
+
+        ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
+        ApplicationContext  context =  builder.buildApplicationContext(confFile,componentKeyPrefixes,springConfigResources);
+        
+        // start algorithm in conf file
+        OCEL algorithm = context.getBean("alg",OCEL.class);
+        algorithm.start();
+		
+	}
 
 }
