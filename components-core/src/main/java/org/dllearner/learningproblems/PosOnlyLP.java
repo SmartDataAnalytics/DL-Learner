@@ -30,6 +30,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.configurators.PosOnlyLPConfigurator;
 import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.ConfigEntry;
@@ -45,6 +46,7 @@ import org.dllearner.core.owl.Individual;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "positive only learning problem", shortName = "posonlylp", version = 0.6)
 public class PosOnlyLP extends AbstractLearningProblem {
 
 	protected SortedSet<Individual> positiveExamples;

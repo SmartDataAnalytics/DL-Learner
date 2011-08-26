@@ -149,6 +149,10 @@ public class CELOE extends AbstractCELA {
 		return configurator;
 	}
 	
+	public CELOE() {
+		
+	}
+	
 	public CELOE(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 		configurator = new CELOEConfigurator(this);
