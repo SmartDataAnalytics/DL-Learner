@@ -19,37 +19,13 @@ public interface ConfParserConstants {
   /** RegularExpression Id. */
   int COMMAND_END = 8;
   /** RegularExpression Id. */
-  int CONF_END = 9;
+  int ID = 9;
   /** RegularExpression Id. */
-  int POS_EX = 10;
+  int NUMBER = 10;
   /** RegularExpression Id. */
-  int NEG_EX = 11;
+  int DOUBLE = 11;
   /** RegularExpression Id. */
-  int ID = 12;
-  /** RegularExpression Id. */
-  int NUMBER = 13;
-  /** RegularExpression Id. */
-  int DOUBLE = 14;
-  /** RegularExpression Id. */
-  int TOP = 15;
-  /** RegularExpression Id. */
-  int BOTTOM = 16;
-  /** RegularExpression Id. */
-  int AND = 17;
-  /** RegularExpression Id. */
-  int OR = 18;
-  /** RegularExpression Id. */
-  int EXISTS = 19;
-  /** RegularExpression Id. */
-  int ALL = 20;
-  /** RegularExpression Id. */
-  int NOT = 21;
-  /** RegularExpression Id. */
-  int GE = 22;
-  /** RegularExpression Id. */
-  int LE = 23;
-  /** RegularExpression Id. */
-  int STRING = 24;
+  int STRING = 12;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -65,21 +41,9 @@ public interface ConfParserConstants {
     "<FORMAL_COMMENT>",
     "<MULTI_LINE_COMMENT>",
     "\".\"",
-    "\";\"",
-    "\"+\"",
-    "\"-\"",
     "<ID>",
     "<NUMBER>",
     "<DOUBLE>",
-    "\"TOP\"",
-    "\"BOTTOM\"",
-    "\"AND\"",
-    "\"OR\"",
-    "<EXISTS>",
-    "<ALL>",
-    "<NOT>",
-    "\">=\"",
-    "\"<=\"",
     "<STRING>",
     "\"=\"",
     "\"{\"",
