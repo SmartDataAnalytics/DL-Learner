@@ -58,7 +58,7 @@ import java.util.Map.Entry;
  *
  * @author Jens Lehmann
  */
-@ComponentAnn(name = "OWLAPIReasoner", shortName = "owlApiReasoner", version = 0.8)
+@ComponentAnn(name = "OWL API Reasoner", shortName = "oar", version = 0.8)
 public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 //	private static Logger logger = Logger
