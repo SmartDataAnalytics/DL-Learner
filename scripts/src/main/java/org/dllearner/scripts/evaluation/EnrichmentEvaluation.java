@@ -50,6 +50,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -702,17 +703,6 @@ public class EnrichmentEvaluation {
 			rs.next();
 			double avgMaxScore = round(rs.getDouble(1));
 			
-			System.out.println("###############");
-			System.out.println(algoName);
-			System.out.println("Overall entities: " + overallNumberOfEntities);
-			System.out.println("Overall entities with emtpy result: " + numberOfEntitiesWithEmptyResult);
-			System.out.println("Overall entities with emtpy timeout: " + numberOfEntitiesWithTimeout);
-			System.out.println("Avg. \\#Suggestions above t: " + avgSuggestionsAboveThreshold);
-			System.out.println("Avg. runtime in ms: " + avgRuntimeInMilliseconds);
-			System.out.println("Timeout ratio: " + timeoutRatio);
-			System.out.println("Avg. score: " + avgScore);
-			System.out.println("Avg. max. score: " + avgMaxScore);
-			
 			table1.
 			append(algoName.replace("axiom learner", "").trim()).append(" & ").
 			append(avgSuggestionsAboveThreshold).append(" & ").
@@ -753,27 +743,40 @@ public class EnrichmentEvaluation {
 			}
 		}
 
+		
+		
 		//compute recall for each axiom type
+		ps = conn.prepareStatement("SELECT axiom FROM evaluation WHERE algorithm=? AND score>=?");
 		for(Entry<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> entry : axiomType2Algorithm.entrySet()){
 			AxiomType<? extends OWLAxiom> type = entry.getKey();
 			algorithms = entry.getValue();
 			
-			int found = 0;
-			int all = 0;
-			for(OWLAxiom axiom : dbPediaOntology.getAxioms(type)){
-				if(isRelevantAxiom(axiom, entities)){
-					all++;
-					if(existsInDatabase(axiom)){
-						found++;
-					} else {
-						System.out.println(axiom);
-					}
-				}
+			ps.setString(1, algorithms.get(0).getAnnotation(ComponentAnn.class).name());
+			ps.setDouble(2, threshold);
+			
+			//get all found axioms for specific axiom type 
+			Set<String> foundAxioms = new TreeSet<String>();
+			rs = ps.executeQuery();
+			while(rs.next()){
+				foundAxioms.add(rs.getString(1));
 			}
+			
+			
+			Set<String> relevantAxioms = getRelevantAxioms(type, entities);
+			
+			Set<String> notFoundAxioms = org.mindswap.pellet.utils.SetUtils.difference(relevantAxioms, foundAxioms);
+			
+			Set<String> additionalAxioms = org.mindswap.pellet.utils.SetUtils.difference(foundAxioms, relevantAxioms);
+			
+			int total = relevantAxioms.size();
+			int found = total-notFoundAxioms.size();
+			
 			table2.
 			append(type.getName()).append(" & ").
-			append(found + "/" + all ).append(" & & & & \\\\\n");
-			System.out.println(type.getName() + ": " + found + "/" + all);
+			append( found + "/" + total ).append(" & ").
+			append(additionalAxioms.size()).
+			append(" & & & \\\\\n");
+			System.out.println(type.getName() + ": " + found + "/" + total);
 		}
 		
 		table2.append("\\end{tabulary}");
@@ -803,6 +806,19 @@ public class EnrichmentEvaluation {
 		axiomType2Algorithm.put(AxiomType.DATA_PROPERTY_RANGE, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{DataPropertyRangeAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.FUNCTIONAL_DATA_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{FunctionalDataPropertyAxiomLearner.class}));
 		return axiomType2Algorithm;
+	}
+	
+	private Set<String> getRelevantAxioms(AxiomType<? extends OWLAxiom> axiomType, Set<OWLEntity> entities){
+		Set<String> relevantAxioms = new HashSet<String>();
+		for(OWLAxiom axiom : dbPediaOntology.getAxioms(axiomType)){
+			if(!axiom.getClassesInSignature().contains(factory.getOWLThing())){
+				if(isRelevantAxiom(axiom, entities)){
+					String axiomString = DLLearnerAxiomConvertVisitor.getDLLearnerAxiom(axiom).toManchesterSyntaxString(baseURI, prefixes);
+					relevantAxioms.add(axiomString);
+				}
+			}
+		}
+		return relevantAxioms;
 	}
 	
 	private boolean isRelevantAxiom(OWLAxiom axiom, Set<OWLEntity> entities){
