@@ -96,6 +96,7 @@ public class ConfParser implements ConfParserConstants {
 
         ConfFileOption2 option = new ConfFileOption2();
         boolean isBeanRef = false;
+        boolean isBeanCollection = false;
         String beanName;
         String propertyName = "";
         String propertyValue = "";
@@ -164,7 +165,7 @@ public class ConfParser implements ConfParserConstants {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case 17:
           jj_consume_token(17);
-                 val = new HashSet(); propertyType = Set.class; propertyValue = "-"; isBeanRef = true;
+                 val = new HashSet(); propertyType = Set.class; propertyValue = "-"; isBeanCollection = true;
           break;
         case 14:
           jj_consume_token(14);
@@ -182,7 +183,7 @@ public class ConfParser implements ConfParserConstants {
           tmp = Id();
                         values.add(tmp); propertyValue += tmp;
           jj_consume_token(15);
-             val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; isBeanRef = true;
+             val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; isBeanCollection = true;
           break;
         default:
           jj_la1[3] = jj_gen;
@@ -228,6 +229,7 @@ public class ConfParser implements ConfParserConstants {
       }
     }
         option.setBeanRef(isBeanRef);
+        option.setBeanReferenceCollection(isBeanCollection);
         option.setBeanName(beanName);
         if(containsSubOption) {
                 option.setPropertyName(propertyName);

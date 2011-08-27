@@ -29,10 +29,6 @@ public class DefaultApplicationContextBuilder implements ApplicationContextBuild
         // Post Processors
         BeanDefinitionRegistryPostProcessor beanDefinitionRegistryPostProcessor = new ConfigurationBasedBeanDefinitionRegistryPostProcessor(configuration);
 
-        ConfigurationBasedPropertyOverrideConfigurer configurer = new ConfigurationBasedPropertyOverrideConfigurer(configuration, false);
-        configurer.setProperties(configuration.getProperties());
-        configurer.getComponentKeyPrefixes().addAll(componentKeyPrefixes);
-
         //These files need to be loaded first
         List<Resource> allSpringConfigFiles = new ArrayList<Resource>();
         allSpringConfigFiles.add(new ClassPathResource("/org/dllearner/configuration/spring/bean-post-processor-configuration.xml"));
@@ -48,7 +44,6 @@ public class DefaultApplicationContextBuilder implements ApplicationContextBuild
 
         // These post processors run before object instantiation
         context.addBeanFactoryPostProcessor(beanDefinitionRegistryPostProcessor);
-        context.addBeanFactoryPostProcessor(configurer);
 
         //Instantiate and initialize the beans.
         context.refresh();

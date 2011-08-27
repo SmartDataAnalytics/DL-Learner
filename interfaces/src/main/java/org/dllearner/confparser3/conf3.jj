@@ -144,6 +144,7 @@ ConfFileOption2 ConfOption() :
 	
 	ConfFileOption2 option = new ConfFileOption2();
 	boolean isBeanRef = false;
+	boolean isBeanCollection = false;
 	String beanName;
 	String propertyName = "";
 	String propertyValue = "";
@@ -172,11 +173,11 @@ ConfFileOption2 ConfOption() :
            tmp=String() {values.add(tmp); propertyValue += "\"" + tmp + "\"";} "}" 
            { propertyType = Set.class; propertyValue = "{"+ propertyValue + "}";; val = values; }
          // empty bean set
-         | "-" { val = new HashSet(); propertyType = Set.class; propertyValue = "-"; isBeanRef = true;}           
+         | "-" { val = new HashSet(); propertyType = Set.class; propertyValue = "-"; isBeanCollection = true;}
          // set with several elements which are not quoted
          | "{" ( LOOKAHEAD(4) tmp=Id() { values.add(tmp); propertyValue += tmp + ", "; } "," )* 
            ( tmp=Id()) {values.add(tmp); propertyValue += tmp;} "}" 
-           { val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; isBeanRef = true;}  
+           { val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; isBeanCollection = true;}
          // empty list
          | LOOKAHEAD("[" "]") "[" "]" { val = new LinkedList(); propertyType = List.class; propertyValue = "[]";}
          // a list with several elements, which tuples
@@ -191,6 +192,7 @@ ConfFileOption2 ConfOption() :
          // <CONF_END>
   {
   	option.setBeanRef(isBeanRef);
+  	option.setBeanReferenceCollection(isBeanCollection);
   	option.setBeanName(beanName);
  	if(containsSubOption) {
   		option.setPropertyName(propertyName);
@@ -214,7 +216,8 @@ String Individual() :
 }
 
 String ComplexId() :
-{  Token t1,t2;
+{
+  Token t1,t2;
 }
 {
   LOOKAHEAD(2) t1=<ID> ":" t2=<ID> { return t1.image + ":" + t2.image; }  

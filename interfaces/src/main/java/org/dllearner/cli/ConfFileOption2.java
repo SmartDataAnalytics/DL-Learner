@@ -20,6 +20,8 @@
 package org.dllearner.cli;
 
 
+import org.dllearner.configuration.IConfigurationProperty;
+
 /**
  * Programmatic representation of an option setting in a conf file:
  * bean.property = value;
@@ -29,10 +31,12 @@ package org.dllearner.cli;
  * @author Jens Lehmann
  *
  */
-public class ConfFileOption2 {
+public class ConfFileOption2 implements IConfigurationProperty{
 
 	// a boolean flag which indicates whether it is a reference to a bean (or set/list of beans)
 	private boolean isBeanRef;
+
+    private boolean isBeanReferenceCollection;
 	
 	private String beanName;
 	
@@ -101,5 +105,34 @@ public class ConfFileOption2 {
 	public void setBeanRef(boolean isBeanRef) {
 		this.isBeanRef = isBeanRef;
 	}
-	
+
+    @Override
+    public String getName() {
+        return getPropertyName();
+    }
+
+    @Override
+    public String getValue() {
+        return getPropertyValue();
+    }
+
+    @Override
+    public boolean isBeanReference() {
+        return isBeanRef();
+    }
+
+    @Override
+    public Class getType() {
+        return getPropertyType();
+    }
+
+    @Override
+    public boolean isBeanReferenceCollection() {
+        return isBeanReferenceCollection;
+    }
+
+    public void setBeanReferenceCollection(boolean beanReferenceCollection) {
+        isBeanReferenceCollection = beanReferenceCollection;
+    }
+
 }

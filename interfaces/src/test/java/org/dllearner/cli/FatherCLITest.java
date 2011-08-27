@@ -5,7 +5,7 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
-import org.dllearner.confparser2.ConfParserConfiguration;
+import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class FatherCLITest {
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
 
         /** The DL-Learner Config File */
-        Resource confFile = new FileSystemResource("../examples/family/father.conf");
+        Resource confFile = new FileSystemResource("../examples/family/father_new.conf");
 
 //        confFile.getAbsoluteFile().getParent(
         //Component Key Prefixes

@@ -2,7 +2,7 @@ package org.dllearner.configuration.spring;
 
 import junit.framework.Assert;
 import org.dllearner.configuration.IConfiguration;
-import org.dllearner.confparser2.ConfParserConfiguration;
+import org.dllearner.confparser3.ConfParserConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,6 +90,7 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         Assert.assertEquals(secondBean.getIntValue(), (Integer) 85);
         Assert.assertEquals(secondBean.getDoubleValue(), (Double) 178.5);
         Assert.assertTrue(secondBean.getSetValue().contains("e"));
+        Assert.assertTrue(secondBean.getSetValue().contains("f"));
         Assert.assertTrue(secondBean.getMapValue().get("f").equals("g"));
         Assert.assertTrue(secondBean.getComponent() != null);
         Assert.assertTrue(secondBean.getComponentSet().size() == 2);
