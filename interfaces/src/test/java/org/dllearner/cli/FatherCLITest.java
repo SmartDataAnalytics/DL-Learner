@@ -2,8 +2,10 @@ package org.dllearner.cli;
 
 import junit.framework.Assert;
 import org.dllearner.algorithms.ocel.OCEL;
+import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
+import org.dllearner.confparser2.ConfParserConfiguration;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,17 +37,19 @@ public class FatherCLITest {
         Resource confFile = new FileSystemResource("../examples/family/father.conf");
 
 //        confFile.getAbsoluteFile().getParent(
-        /** Component Key Prefixes */
+        //Component Key Prefixes
         List<String> componentKeyPrefixes = new ArrayList<String>();
         componentKeyPrefixes.add("component:");
         componentKeyPrefixes.add(":");
 
-        /** Spring Config Files */
+        //Spring Config Files
         List<Resource> springConfigResources = new ArrayList<Resource>();
 //        springConfigResources.add(new ClassPathResource("/org/dllearner/configuration/spring/configuration-based-property-override-configurer-configuration.xml"));
 
-        /** Build The Application Context */
-        context =  builder.buildApplicationContext(confFile,componentKeyPrefixes,springConfigResources);
+        //DL-Learner Configuration Object
+        IConfiguration configuration = new ConfParserConfiguration(confFile);
+        //Build The Application Context
+        context =  builder.buildApplicationContext(configuration, componentKeyPrefixes,springConfigResources);
 
     }
 

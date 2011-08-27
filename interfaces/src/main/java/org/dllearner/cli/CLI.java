@@ -26,16 +26,13 @@ import java.util.List;
 
 import org.dllearner.Info;
 import org.dllearner.algorithms.ocel.OCEL;
+import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
+import org.dllearner.confparser2.ConfParserConfiguration;
 import org.dllearner.confparser2.ParseException;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.FastInstanceChecker;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -89,8 +86,11 @@ public class CLI {
 
         List<Resource> springConfigResources = new ArrayList<Resource>();
 
+        //DL-Learner Configuration Object
+        IConfiguration configuration = new ConfParserConfiguration(confFile);
+
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-        ApplicationContext  context =  builder.buildApplicationContext(confFile,componentKeyPrefixes,springConfigResources);
+        ApplicationContext  context =  builder.buildApplicationContext(configuration,componentKeyPrefixes,springConfigResources);
         
         // a lot of debugging stuff
 //        FastInstanceChecker fi = context.getBean("reasoner", FastInstanceChecker.class);
