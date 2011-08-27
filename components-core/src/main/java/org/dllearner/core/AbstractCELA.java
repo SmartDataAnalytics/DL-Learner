@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import org.dllearner.core.owl.Description;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Abstract superclass of all class expression learning algorithm implementations.
@@ -286,6 +287,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
         return learningProblem;
     }
 
+    @Autowired
     public void setLearningProblem(AbstractLearningProblem learningProblem) {
         this.learningProblem = learningProblem;
     }
@@ -298,6 +300,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
         return reasoner;
     }
 
+    @Autowired
     public void setReasoner(AbstractReasonerComponent reasoner) {
         this.reasoner = reasoner;
     }

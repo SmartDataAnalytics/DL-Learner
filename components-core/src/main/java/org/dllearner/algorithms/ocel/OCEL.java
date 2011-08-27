@@ -55,6 +55,7 @@ import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The DL-Learner learning algorithm component for the example
@@ -529,6 +530,7 @@ public class OCEL extends AbstractCELA {
 		return operator;
 	}
 
+    @Autowired
 	public void setOperator(RhoDRDown operator) {
 		this.operator = operator;
 	}
@@ -853,6 +855,7 @@ public class OCEL extends AbstractCELA {
 		this.terminateOnNoiseReached = terminateOnNoiseReached;
 	}
 
+    @Autowired
 	public void setHeuristic(ExampleBasedHeuristic heuristic) {
 		this.heuristic = heuristic;
 	}

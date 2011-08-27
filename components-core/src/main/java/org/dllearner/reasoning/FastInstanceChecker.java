@@ -67,6 +67,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import sun.beans.editors.BoolEditor;
 
@@ -105,6 +106,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	private TreeSet<Individual> individuals;
 
 	// private ReasonerComponent rs;
+
 	private OWLAPIReasoner rc;
 
 	// we use sorted sets (map indices) here, because they have only log(n)
@@ -1033,6 +1035,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
         return rc;
     }
 
+    @Autowired
     public void setReasonerComponent(OWLAPIReasoner rc) {
         this.rc = rc;
     }
