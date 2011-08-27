@@ -1,5 +1,6 @@
 package org.dllearner.configuration.spring;
 
+import org.dllearner.configuration.IConfiguration;
 import org.dllearner.confparser2.ConfParserConfiguration;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -23,10 +24,8 @@ import java.util.List;
 public class DefaultApplicationContextBuilder implements ApplicationContextBuilder{
 
     @Override
-    public ApplicationContext buildApplicationContext(Resource confFile, List<String> componentKeyPrefixes, List<Resource> springConfigurationLocations) throws IOException{
+    public ApplicationContext buildApplicationContext(IConfiguration configuration, List<String> componentKeyPrefixes, List<Resource> springConfigurationLocations) throws IOException{
         ConfigurableApplicationContext context = null;
-        ConfParserConfiguration configuration = new ConfParserConfiguration(confFile);
-
         // Post Processors
         BeanDefinitionRegistryPostProcessor beanDefinitionRegistryPostProcessor = new ConfigurationBasedBeanDefinitionRegistryPostProcessor(configuration);
 

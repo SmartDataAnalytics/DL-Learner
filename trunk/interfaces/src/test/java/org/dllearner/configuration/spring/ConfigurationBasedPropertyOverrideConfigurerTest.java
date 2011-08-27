@@ -1,6 +1,8 @@
 package org.dllearner.configuration.spring;
 
 import junit.framework.Assert;
+import org.dllearner.configuration.IConfiguration;
+import org.dllearner.confparser2.ConfParserConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,20 +32,23 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
 
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
 
-        /** The DL-Learner Config File */
+        //The DL-Learner Config File
         Resource confFile = new ClassPathResource("/org/dllearner/configuration/spring/configurationBasedPropertyOverrideConfigurer.conf");
 
-        /** Component Key Prefixes */
+        //Component Key Prefixes
         List<String> componentKeyPrefixes = new ArrayList<String>();
         componentKeyPrefixes.add("component:");
         componentKeyPrefixes.add(":");
 
-        /** Spring Config Files */
+        //Spring Config Files
         List<Resource> springConfigResources = new ArrayList<Resource>();
         springConfigResources.add(new ClassPathResource("/org/dllearner/configuration/spring/configuration-based-property-override-configurer-configuration.xml"));
 
-        /** Build The Application Context */
-        context =  builder.buildApplicationContext(confFile,componentKeyPrefixes,springConfigResources);
+        //DL-Learner Configuration Object
+        IConfiguration configuration = new ConfParserConfiguration(confFile);
+
+        // Build The Application Context
+        context =  builder.buildApplicationContext(configuration,componentKeyPrefixes,springConfigResources);
 
     }
 
