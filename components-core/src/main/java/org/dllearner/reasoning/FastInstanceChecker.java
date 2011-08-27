@@ -1035,7 +1035,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
         return rc;
     }
 
-    @Autowired
+    @Autowired(required = false)
     public void setReasonerComponent(OWLAPIReasoner rc) {
         this.rc = rc;
     }
