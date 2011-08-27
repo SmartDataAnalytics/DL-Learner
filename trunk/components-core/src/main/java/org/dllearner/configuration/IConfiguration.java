@@ -94,4 +94,7 @@ public interface IConfiguration {
     public String getBaseDir();
 
 
+    public Collection<IConfigurationProperty> getConfigurationOptions(String beanName);
+
+
 }

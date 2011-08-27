@@ -2,6 +2,7 @@ package org.dllearner.confparser2;
 
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.configuration.IConfiguration;
+import org.dllearner.configuration.IConfigurationProperty;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.utilities.datastructures.StringTuple;
@@ -181,5 +182,10 @@ public class ConfParserConfiguration implements IConfiguration {
     @Override
     public String getBaseDir() {
         return baseDir;
+    }
+
+    @Override
+    public Collection<IConfigurationProperty> getConfigurationOptions(String beanName) {
+        throw new RuntimeException("Don't use this class - use the one in the confparser3 package.");
     }
 }

@@ -80,6 +80,7 @@ public class AnnComponentManager {
             "org.dllearner.learningproblems.PosNegLPStandard",
             "org.dllearner.learningproblems.PosOnlyLP",
             "org.dllearner.reasoning.FastInstanceChecker",
+            "org.dllearner.reasoning.OWLAPIReasoner",
             "org.dllearner.algorithms.ocel.OCEL",
             "org.dllearner.algorithms.ocel.MultiHeuristic",
             "org.dllearner.refinementoperators.RhoDRDown",

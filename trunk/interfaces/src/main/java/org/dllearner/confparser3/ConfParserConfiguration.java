@@ -1,0 +1,125 @@
+package org.dllearner.confparser3;
+
+import org.dllearner.cli.ConfFileOption2;
+import org.dllearner.configuration.IConfiguration;
+import org.dllearner.configuration.IConfigurationProperty;
+import org.dllearner.core.AnnComponentManager;
+import org.dllearner.core.Component;
+import org.springframework.core.io.Resource;
+
+import java.io.IOException;
+import java.util.*;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Chris
+ * Date: 8/27/11
+ * Time: 7:21 AM
+ * <p/>
+ * Conf Parser Based implementation.
+ */
+public class ConfParserConfiguration implements IConfiguration {
+
+    private final ConfParser parser;
+    private final String baseDir;
+    private final String typeProperty = "type";
+
+
+    public ConfParserConfiguration(Resource source) {
+        try {
+            baseDir = source.getFile().getAbsoluteFile().getParent();
+            parser = new ConfParser(source.getInputStream());
+            parser.Start();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Object getObjectValue(String key) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Properties getProperties() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Collection<String> getBeanNames() {
+        Set<String> result = new HashSet<String>();
+        Map<String,List<ConfFileOption2>> beans = parser.getConfOptionsByBean();
+        result.addAll(beans.keySet());
+        return result;
+    }
+
+    @Override
+    public Class getClass(String beanName) {
+
+        List<ConfFileOption2> confOptions = parser.getConfOptionsByBean(beanName);
+
+        ConfFileOption2 option = null;
+        for (ConfFileOption2 confOption : confOptions) {
+            if(typeProperty.equalsIgnoreCase(confOption.getPropertyName())){
+                option = confOption;
+            }
+        }
+
+        if(option == null){
+            throw new RuntimeException("No type property set for bean: " + beanName);
+        }
+
+        Class<?> result = null;
+
+        String value = (String) option.getPropertyValue();
+        // first option: use long name of @ComponentAnn annotation
+        Class<? extends Component> classFromName = AnnComponentManager.getInstance().getComponentsNamed().getKey(value);
+        if(classFromName != null) {
+        	return classFromName;
+        }
+        // second option: use short name of @ComponentAnn annotation
+        Class<? extends Component> classFromShortName = AnnComponentManager.getInstance().getComponentsNamedShort().getKey(value);
+        if(classFromShortName != null) {
+        	return classFromShortName;
+        }
+        // third option: use specified class name
+        try {
+            result = Class.forName(value);
+        } catch (ClassNotFoundException e) {
+        	// if all methods fail, throw an exception
+            throw new RuntimeException("Problem getting class type for bean: " + beanName + " - trying to instantiate class: " + option.getPropertyValue());
+        }
+        return result;
+    }
+
+    @Override
+    public Set<String> getPositiveExamples() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Set<String> getNegativeExamples() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String getBaseDir() {
+        return baseDir;
+    }
+
+    @Override
+    public Collection<IConfigurationProperty> getConfigurationOptions(String beanName) {
+        List<ConfFileOption2> confFileOptions = parser.getConfOptionsByBean(beanName);
+        Collection<IConfigurationProperty> result = new ArrayList<IConfigurationProperty>();
+
+        for (ConfFileOption2 confFileOption : confFileOptions) {
+
+            if (!typeProperty.equalsIgnoreCase(confFileOption.getPropertyName())) {
+                result.add(confFileOption);
+            }
+        }
+        return result;
+    }
+}
