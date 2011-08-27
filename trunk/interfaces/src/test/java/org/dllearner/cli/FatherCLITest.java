@@ -22,52 +22,53 @@ import java.util.List;
  * User: Chris
  * Date: 8/23/11
  * Time: 5:21 AM
- *
+ * <p/>
  * Test for the CLI Class
  */
 public class FatherCLITest {
 
-    private static ApplicationContext context;
-    @BeforeClass
-    public static void setUp() throws IOException{
-
+    public ApplicationContext createApplicationContext(Resource confFile) throws IOException {
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
 
-        /** The DL-Learner Config File */
-        Resource confFile = new FileSystemResource("../examples/family/father.conf");
-
-//        confFile.getAbsoluteFile().getParent(
-        //Component Key Prefixes
         List<String> componentKeyPrefixes = new ArrayList<String>();
         componentKeyPrefixes.add("component:");
         componentKeyPrefixes.add(":");
 
         //Spring Config Files
         List<Resource> springConfigResources = new ArrayList<Resource>();
-//        springConfigResources.add(new ClassPathResource("/org/dllearner/configuration/spring/configuration-based-property-override-configurer-configuration.xml"));
 
         //DL-Learner Configuration Object
         IConfiguration configuration = new ConfParserConfiguration(confFile);
         //Build The Application Context
-        context =  builder.buildApplicationContext(configuration, componentKeyPrefixes,springConfigResources);
 
+        ApplicationContext context = builder.buildApplicationContext(configuration, componentKeyPrefixes, springConfigResources);
+        return context;
     }
 
 
     @Test
-    public void testFatherConf(){
+    public void testFatherConf() throws Exception {
+        Resource confFile = new FileSystemResource("../examples/family/father.conf");
+        ApplicationContext context = createApplicationContext(confFile);
+        validateContext(context);
+    }
 
+    @Test
+    public void testFatherAutoWiredConf() throws Exception {
+        Resource confFile = new FileSystemResource("../examples/family/father_autowired.conf");
+        ApplicationContext context = createApplicationContext(confFile);
+        validateContext(context);
+    }
+
+    private void validateContext(ApplicationContext context) {
         PosNegLPStandard lp = context.getBean("lp", PosNegLPStandard.class);
         Assert.assertTrue(lp.getPositiveExamples().size() == 3);
         Assert.assertTrue(lp.getNegativeExamples().size() == 4);
         Assert.assertNotNull(lp.getReasoner());
 
-        OCEL algorithm = context.getBean("alg",OCEL.class);
+        OCEL algorithm = context.getBean("alg", OCEL.class);
         Assert.assertNotNull(algorithm);
 
         algorithm.start();
-
-
-
     }
 }

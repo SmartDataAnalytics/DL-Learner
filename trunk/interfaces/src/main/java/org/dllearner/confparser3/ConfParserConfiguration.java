@@ -38,16 +38,6 @@ public class ConfParserConfiguration implements IConfiguration {
     }
 
     @Override
-    public Object getObjectValue(String key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Properties getProperties() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public Collection<String> getBeanNames() {
         Set<String> result = new HashSet<String>();
         Map<String,List<ConfFileOption2>> beans = parser.getConfOptionsByBean();
@@ -95,22 +85,12 @@ public class ConfParserConfiguration implements IConfiguration {
     }
 
     @Override
-    public Set<String> getPositiveExamples() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Set<String> getNegativeExamples() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public String getBaseDir() {
         return baseDir;
     }
 
     @Override
-    public Collection<IConfigurationProperty> getConfigurationOptions(String beanName) {
+    public Collection<IConfigurationProperty> getConfigurationProperties(String beanName) {
         List<ConfFileOption2> confFileOptions = parser.getConfOptionsByBean(beanName);
         Collection<IConfigurationProperty> result = new ArrayList<IConfigurationProperty>();
 

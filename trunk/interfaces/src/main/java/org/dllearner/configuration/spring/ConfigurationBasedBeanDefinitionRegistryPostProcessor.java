@@ -66,7 +66,7 @@ public class ConfigurationBasedBeanDefinitionRegistryPostProcessor implements Be
 
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
 
-            Collection<IConfigurationProperty> properties = configuration.getConfigurationOptions(beanName);
+            Collection<IConfigurationProperty> properties = configuration.getConfigurationProperties(beanName);
 
             for (IConfigurationProperty property : properties) {
 
