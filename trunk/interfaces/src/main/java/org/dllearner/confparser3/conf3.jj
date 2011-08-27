@@ -143,7 +143,7 @@ ConfFileOption2 ConfOption() :
 	List<StringTuple> tuples = new LinkedList<StringTuple>();
 	
 	ConfFileOption2 option = new ConfFileOption2();
-	boolean inQuotes = false;
+	boolean isBeanRef = false;
 	String beanName;
 	String propertyName = "";
 	String propertyValue = "";
@@ -159,10 +159,10 @@ ConfFileOption2 ConfOption() :
          	if(propertyValue.equals("true") || propertyValue.equals("false")) {
          	   val = Boolean.valueOf(propertyValue); propertyType = Boolean.class;
          	} else {
-         		val = propertyValue; propertyType = String.class; 
+         		val = propertyValue; propertyType = String.class; isBeanRef =  true;
          	} }
   		 // simple string enclosed in quotes
-         | propertyValue = String() { val = propertyValue; inQuotes = true; propertyType = String.class; }
+         | propertyValue = String() { val = propertyValue; propertyType = String.class; }
          | val = Integer() { propertyValue = val.toString(); propertyType = Integer.class;} 
          | val = Double() { propertyValue = val.toString(); propertyType = Double.class; }
          // empty set
@@ -170,11 +170,13 @@ ConfFileOption2 ConfOption() :
          // set with several elements which are quoted
          | LOOKAHEAD(4) "{" (  LOOKAHEAD(2) tmp=String() { values.add(tmp); propertyValue += "\"" + tmp + "\", ";} "," )* 
            tmp=String() {values.add(tmp); propertyValue += "\"" + tmp + "\"";} "}" 
-           { propertyType = Set.class; propertyValue = "{"+ propertyValue + "}";; val = values; inQuotes = true;}           
+           { propertyType = Set.class; propertyValue = "{"+ propertyValue + "}";; val = values; }
+         // empty bean set
+         | "-" { val = new HashSet(); propertyType = Set.class; propertyValue = "-"; isBeanRef = true;}           
          // set with several elements which are not quoted
          | "{" ( LOOKAHEAD(4) tmp=Id() { values.add(tmp); propertyValue += tmp + ", "; } "," )* 
            ( tmp=Id()) {values.add(tmp); propertyValue += tmp;} "}" 
-           { val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; }  
+           { val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; isBeanRef = true;}  
          // empty list
          | LOOKAHEAD("[" "]") "[" "]" { val = new LinkedList(); propertyType = List.class; propertyValue = "[]";}
          // a list with several elements, which tuples
@@ -188,7 +190,7 @@ ConfFileOption2 ConfOption() :
          )
          // <CONF_END>
   {
-  	option.setInQuotes(inQuotes);
+  	option.setBeanRef(isBeanRef);
   	option.setBeanName(beanName);
  	if(containsSubOption) {
   		option.setPropertyName(propertyName);

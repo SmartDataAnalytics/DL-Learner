@@ -95,7 +95,7 @@ public class ConfParser implements ConfParserConstants {
         List<StringTuple> tuples = new LinkedList<StringTuple>();
 
         ConfFileOption2 option = new ConfFileOption2();
-        boolean inQuotes = false;
+        boolean isBeanRef = false;
         String beanName;
         String propertyName = "";
         String propertyValue = "";
@@ -122,12 +122,12 @@ public class ConfParser implements ConfParserConstants {
                 if(propertyValue.equals("true") || propertyValue.equals("false")) {
                    val = Boolean.valueOf(propertyValue); propertyType = Boolean.class;
                 } else {
-                        val = propertyValue; propertyType = String.class;
+                        val = propertyValue; propertyType = String.class; isBeanRef =  true;
                 }
       break;
     case STRING:
       propertyValue = String();
-                                      val = propertyValue; inQuotes = true; propertyType = String.class;
+                                      val = propertyValue; propertyType = String.class;
       break;
     case NUMBER:
       val = Integer();
@@ -159,9 +159,13 @@ public class ConfParser implements ConfParserConstants {
         tmp = String();
                          values.add(tmp); propertyValue += "\u005c"" + tmp + "\u005c"";
         jj_consume_token(15);
-             propertyType = Set.class; propertyValue = "{"+ propertyValue + "}";; val = values; inQuotes = true;
+             propertyType = Set.class; propertyValue = "{"+ propertyValue + "}";; val = values;
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case 17:
+          jj_consume_token(17);
+                 val = new HashSet(); propertyType = Set.class; propertyValue = "-"; isBeanRef = true;
+          break;
         case 14:
           jj_consume_token(14);
           label_3:
@@ -178,18 +182,18 @@ public class ConfParser implements ConfParserConstants {
           tmp = Id();
                         values.add(tmp); propertyValue += tmp;
           jj_consume_token(15);
-             val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}";
+             val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; isBeanRef = true;
           break;
         default:
           jj_la1[3] = jj_gen;
           if (jj_2_6(2147483647)) {
-            jj_consume_token(17);
             jj_consume_token(18);
+            jj_consume_token(19);
                                         val = new LinkedList(); propertyType = List.class; propertyValue = "[]";
           } else {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case 17:
-              jj_consume_token(17);
+            case 18:
+              jj_consume_token(18);
               label_4:
               while (true) {
                 if (jj_2_3(6)) {
@@ -197,21 +201,21 @@ public class ConfParser implements ConfParserConstants {
                 } else {
                   break label_4;
                 }
-                jj_consume_token(19);
+                jj_consume_token(20);
                 tmp = String();
                 jj_consume_token(16);
                 tmp2 = String();
-                jj_consume_token(20);
+                jj_consume_token(21);
             tuples.add(new StringTuple(tmp,tmp2)); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + tmp2 + "\u005c"), ";
                 jj_consume_token(16);
               }
-              jj_consume_token(19);
+              jj_consume_token(20);
               tmp = String();
               jj_consume_token(16);
               tmp2 = String();
-              jj_consume_token(20);
+              jj_consume_token(21);
             tuples.add(new StringTuple(tmp,tmp2)); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + tmp2 + "\u005c")";
-              jj_consume_token(18);
+              jj_consume_token(19);
                  val = tuples; propertyType = List.class; propertyValue = "["+ propertyValue + "]";
               break;
             default:
@@ -223,7 +227,7 @@ public class ConfParser implements ConfParserConstants {
         }
       }
     }
-        option.setInQuotes(inQuotes);
+        option.setBeanRef(isBeanRef);
         option.setBeanName(beanName);
         if(containsSubOption) {
                 option.setPropertyName(propertyName);
@@ -257,7 +261,7 @@ public class ConfParser implements ConfParserConstants {
   Token t1,t2;
     if (jj_2_7(2)) {
       t1 = jj_consume_token(ID);
-      jj_consume_token(21);
+      jj_consume_token(22);
       t2 = jj_consume_token(ID);
                                      {if (true) return t1.image + ":" + t2.image;}
     } else {
@@ -375,29 +379,29 @@ public class ConfParser implements ConfParserConstants {
   }
 
   private boolean jj_3_6() {
-    if (jj_scan_token(17)) return true;
     if (jj_scan_token(18)) return true;
+    if (jj_scan_token(19)) return true;
     return false;
   }
 
   private boolean jj_3_7() {
     if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(22)) return true;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_scan_token(20)) return true;
+    if (jj_3R_5()) return true;
+    if (jj_scan_token(16)) return true;
+    if (jj_3R_5()) return true;
     if (jj_scan_token(21)) return true;
+    if (jj_scan_token(16)) return true;
     return false;
   }
 
   private boolean jj_3R_5() {
     if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    if (jj_scan_token(19)) return true;
-    if (jj_3R_5()) return true;
-    if (jj_scan_token(16)) return true;
-    if (jj_3R_5()) return true;
-    if (jj_scan_token(20)) return true;
-    if (jj_scan_token(16)) return true;
     return false;
   }
 
@@ -435,7 +439,7 @@ public class ConfParser implements ConfParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x200,0x100,0x1e00,0x4000,0x20000,0x1200,0x200,};
+      jj_la1_0 = new int[] {0x200,0x100,0x1e00,0x24000,0x40000,0x1200,0x200,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[7];
   private boolean jj_rescan = false;
@@ -621,7 +625,7 @@ public class ConfParser implements ConfParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[22];
+    boolean[] la1tokens = new boolean[23];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -635,7 +639,7 @@ public class ConfParser implements ConfParserConstants {
         }
       }
     }
-    for (int i = 0; i < 22; i++) {
+    for (int i = 0; i < 23; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
