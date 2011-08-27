@@ -1,14 +1,36 @@
+/**
+ * Copyright (C) 2007-2011, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.confparser3;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Set;
 
 import org.dllearner.cli.ConfFileOption2;
-import org.dllearner.confparser3.ConfParser;
-import org.dllearner.confparser3.ParseException;
 import org.junit.Test;
 
+/**
+ * Conf parser tests.
+ * 
+ * @author Jens Lehmann
+ *
+ */
 public class ParseTest {
 
 	@Test
@@ -16,7 +38,7 @@ public class ParseTest {
 		ConfParser parser = ConfParser.parseFile(new File("../examples/family/father_new.conf"));
 		for(ConfFileOption2 option : parser.getConfOptions()) {
 			System.out.print(option.getBeanName() + "." + option.getPropertyName() + " = " + option.getPropertyValue());
-			if((option.getPropertyType().equals(String.class) || option.getPropertyType().equals(Set.class)) && !option.isInQuotes()) {
+			if(option.isBeanRef()) {
 				System.out.println("    (bean reference)");
 			} else {
 				System.out.println();

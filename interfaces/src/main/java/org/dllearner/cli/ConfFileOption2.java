@@ -31,10 +31,8 @@ package org.dllearner.cli;
  */
 public class ConfFileOption2 {
 
-	// a boolean flag which indicates whether the value was in quotes
-	// TODO: alternatively, we could use a flag "isBeanReferrence" - bean references are (currently) 
-	// those options which do not have quotes, but have type "String" or "Set"
-	private boolean inQuotes;
+	// a boolean flag which indicates whether it is a reference to a bean (or set/list of beans)
+	private boolean isBeanRef;
 	
 	private String beanName;
 	
@@ -52,14 +50,6 @@ public class ConfFileOption2 {
 	
 	public ConfFileOption2() {
 		
-	}
-
-	public boolean isInQuotes() {
-		return inQuotes;
-	}
-
-	public void setInQuotes(boolean inQuotes) {
-		this.inQuotes = inQuotes;
 	}
 
 	public String getBeanName() {
@@ -102,6 +92,14 @@ public class ConfFileOption2 {
 	@Deprecated
 	public void setValueObject(Object valueObject) {
 		this.valueObject = valueObject;
+	}
+
+	public boolean isBeanRef() {
+		return isBeanRef;
+	}
+
+	public void setBeanRef(boolean isBeanRef) {
+		this.isBeanRef = isBeanRef;
 	}
 	
 }

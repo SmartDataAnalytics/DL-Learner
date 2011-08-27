@@ -49,6 +49,7 @@ public interface ConfParserConstants {
     "\"{\"",
     "\"}\"",
     "\",\"",
+    "\"-\"",
     "\"[\"",
     "\"]\"",
     "\"(\"",
