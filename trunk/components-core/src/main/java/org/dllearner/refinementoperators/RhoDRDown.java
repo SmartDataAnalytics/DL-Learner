@@ -70,6 +70,7 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * A downward refinement operator, which makes use of domains
@@ -1640,6 +1641,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		return reasoner;
 	}
 
+    @Autowired
 	public void setReasoner(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 	}

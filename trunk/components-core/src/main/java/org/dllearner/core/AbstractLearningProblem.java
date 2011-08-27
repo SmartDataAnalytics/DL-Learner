@@ -20,6 +20,7 @@
 package org.dllearner.core;
 
 import org.dllearner.core.owl.Description;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Base class for all learning problems.
@@ -118,6 +119,7 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
         return reasoner;
     }
 
+    @Autowired
     public void setReasoner(AbstractReasonerComponent reasoner) {
         this.reasoner = reasoner;
     }
