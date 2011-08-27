@@ -1,7 +1,6 @@
 package org.dllearner.configuration.spring;
 
 import org.dllearner.configuration.IConfiguration;
-import org.dllearner.confparser2.ConfParserConfiguration;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;

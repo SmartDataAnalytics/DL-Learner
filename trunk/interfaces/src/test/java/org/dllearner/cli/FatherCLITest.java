@@ -34,7 +34,7 @@ public class FatherCLITest {
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
 
         /** The DL-Learner Config File */
-        Resource confFile = new FileSystemResource("../examples/family/father_new.conf");
+        Resource confFile = new FileSystemResource("../examples/family/father.conf");
 
 //        confFile.getAbsoluteFile().getParent(
         //Component Key Prefixes
