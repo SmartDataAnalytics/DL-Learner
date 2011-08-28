@@ -46,11 +46,11 @@ import org.dllearner.reasoning.OWLAPIDIGConverter;
 @ComponentAnn(name = "OWL File", shortName = "owlfile", version = 0.9)
 public class OWLFile extends AbstractKnowledgeSource {
 
-	private static Logger logger = Logger
-	.getLogger(OWLFile.class);
+	private static Logger logger = Logger.getLogger(OWLFile.class);
 	
 	// TODO: turn this into a config option
 	private URL url;
+	
 	private String baseDir;
 //	private URL url;
 //	private OWLFileConfigurator configurator ;
@@ -119,6 +119,7 @@ public class OWLFile extends AbstractKnowledgeSource {
 //		return configurator.getUrl();
 		return url;
 	}
+	
 	public void setURL(URL url) {
 		this.url = url;
 //		configurator.setUrl(url);
@@ -148,4 +149,12 @@ public class OWLFile extends AbstractKnowledgeSource {
     public void setBaseDir(String baseDir) {
         this.baseDir = baseDir;
     }
+
+	public URL getUrl() {
+		return url;
+	}
+
+	public void setUrl(URL url) {
+		this.url = url;
+	}
 }

@@ -98,9 +98,9 @@ public class LearnOSMClasses {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		SparqlKnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
-		ks.getConfigurator().setInstances(instances);
-		ks.getConfigurator().setPredefinedEndpoint("LOCALGEODATA");
-		ks.getConfigurator().setSaveExtractedFragment(true);
+		ks.setInstances(instances);
+		ks.setPredefinedEndpoint("LOCALGEODATA");
+		ks.setSaveExtractedFragment(true);
 		Manipulator m = Manipulator.getDefaultManipulator();
 		m.addRule(new StringToResource(Months.DECEMBER,"http://linkedgeodata.org/vocabulary", 0));
 		ks.setManipulator(m);

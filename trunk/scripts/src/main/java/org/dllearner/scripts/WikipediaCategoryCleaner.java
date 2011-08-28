@@ -286,21 +286,21 @@ public class WikipediaCategoryCleaner {
 							"http://dbpedia.org").toURL(), SetManipulation
 							.indToString(instances));
 	
-			SparqlKnowledgeSourceConfigurator c = ks.getConfigurator();
+//			SparqlKnowledgeSourceConfigurator c = ks.getConfigurator();
 			
-			c.setCloseAfterRecursion(true);
-			c.setRecursionDepth(1);
+			ks.setCloseAfterRecursion(true);
+			ks.setRecursionDepth(1);
 			if(LOCAL){
-			c.setPredefinedEndpoint("LOCALDBPEDIA");
+			ks.setPredefinedEndpoint("LOCALDBPEDIA");
 			}else{
-				c.setPredefinedEndpoint("DBPEDIA");
+				ks.setPredefinedEndpoint("DBPEDIA");
 			}
-			c.setUseLits(false);
-			c.setGetAllSuperClasses(true);
-			c.setGetPropertyInformation(false);
-			c.setVerbosity("warning");
-			c.setCacheDir(Cache.getPersistantCacheDir());
-			c.setPredefinedFilter("YAGOONLY");
+			ks.setUseLits(false);
+			ks.setGetAllSuperClasses(true);
+			ks.setPropertyInformation(false);
+//			ks.setVerbosity("warning");
+			ks.setCacheDir(Cache.getPersistantCacheDir());
+			ks.setPredefinedFilter("YAGOONLY");
 			
 			
 			

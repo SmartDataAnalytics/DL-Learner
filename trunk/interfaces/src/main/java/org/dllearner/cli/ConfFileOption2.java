@@ -118,7 +118,7 @@ public class ConfFileOption2 implements IConfigurationProperty{
     }
 
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return getPropertyType();
     }
 

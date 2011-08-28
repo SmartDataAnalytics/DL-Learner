@@ -99,10 +99,10 @@ public class Stanley {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		SparqlKnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
-		ks.getConfigurator().setInstances(instances);
-		ks.getConfigurator().setPredefinedEndpoint("LOCALGEODATA");
+		ks.setInstances(instances);
+		ks.setPredefinedEndpoint("LOCALGEODATA");
 		//ks.getConfigurator().setPredefinedEndpoint("LOCALDBPEDIA");
-		ks.getConfigurator().setSaveExtractedFragment(true);
+		ks.setSaveExtractedFragment(true);
 		Manipulator m = Manipulator.getDefaultManipulator();
 		//m.addRule(new StringToResource(Months.NOVEMBER,"http://linkedgeodata.org/vocabulary", 0));
 		m.addRule(new AddAllStringsAsClasses(Months.NOVEMBER, "http://linkedgeodata.org/vocabulary"));

@@ -444,25 +444,25 @@ public class SemanticBibleComparison {
 							"http://localhost:2020/bible").toURL(), SetManipulation
 							.indToString(instances));
 	
-			SparqlKnowledgeSourceConfigurator c = ks.getConfigurator();
+//			SparqlKnowledgeSourceConfigurator c = ks.getConfigurator();
 			
-			c.setCloseAfterRecursion(true);
-			c.setRecursionDepth(2);
-			c.setPredefinedEndpoint("LOCALJOSEKIBIBLE");
-			c.setUseLits(true);
-			c.setGetAllSuperClasses(true);
-			c.setGetPropertyInformation(true);
-			c.setVerbosity("warning");
+			ks.setCloseAfterRecursion(true);
+			ks.setRecursionDepth(2);
+			ks.setPredefinedEndpoint("LOCALJOSEKIBIBLE");
+			ks.setUseLits(true);
+			ks.setGetAllSuperClasses(true);
+			ks.setPropertyInformation(true);
+//			ks.setVerbosity("warning");
 			
 			if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP)){
-				c.setGetPropertyInformation(false);
+				ks.setPropertyInformation(false);
 			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSE_NOPROP)){
-				c.setCloseAfterRecursion(false);
-				c.setGetPropertyInformation(false);
+				ks.setCloseAfterRecursion(false);
+				ks.setPropertyInformation(false);
 			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1)){
-				c.setRecursionDepth(1);
+				ks.setRecursionDepth(1);
 			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3)){
-				c.setRecursionDepth(3);
+				ks.setRecursionDepth(3);
 			}
 			
 			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();

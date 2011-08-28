@@ -125,21 +125,21 @@ public class DBpediaClassLearnerCELOE {
         ComponentManager cm = ComponentManager.getInstance();
 
         SparqlKnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
-        ks.getConfigurator().setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
+        ks.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
         //ks.getConfigurator().setPredefinedEndpoint("DBPEDIA"); // TODO: probably the official endpoint is too slow?
-        ks.getConfigurator().setUrl(new URL(endpointurl));
-        ks.getConfigurator().setUseLits(false);
-        ks.getConfigurator().setUseCacheDatabase(true);
-        ks.getConfigurator().setRecursionDepth(1);
-        ks.getConfigurator().setCloseAfterRecursion(true);
-        ks.getConfigurator().setSaveExtractedFragment(true);
-        ks.getConfigurator().setPredList(new HashSet<String>(Arrays.asList(new String[]{
+        ks.setUrl(new URL(endpointurl));
+        ks.setUseLits(false);
+        ks.setUseCacheDatabase(true);
+        ks.setRecursionDepth(1);
+        ks.setCloseAfterRecursion(true);
+        ks.setSaveExtractedFragment(true);
+        ks.setPredList(new HashSet<String>(Arrays.asList(new String[]{
                 "http://dbpedia.org/property/wikiPageUsesTemplate",
                 "http://dbpedia.org/ontology/wikiPageExternalLink",
                 "http://dbpedia.org/property/wordnet_type",
                 "http://www.w3.org/2002/07/owl#sameAs"})));
 
-        ks.getConfigurator().setObjList(new HashSet<String>(Arrays.asList(new String[]{
+        ks.setObjList(new HashSet<String>(Arrays.asList(new String[]{
                 "http://dbpedia.org/class/yago/", "" +
                 "http://dbpedia.org/resource/Category:"})));
 

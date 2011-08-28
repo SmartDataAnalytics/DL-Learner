@@ -561,13 +561,13 @@ public class EnrichmentEvaluation {
         ComponentManager cm = ComponentManager.getInstance();
 
         SparqlKnowledgeSource ks2 = cm.knowledgeSource(SparqlKnowledgeSource.class);
-        ks2.getConfigurator().setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
-        ks2.getConfigurator().setUrl(ks.getEndpoint().getURL());
-        ks2.getConfigurator().setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
-        ks2.getConfigurator().setUseLits(false);
-        ks2.getConfigurator().setUseCacheDatabase(true);
-        ks2.getConfigurator().setRecursionDepth(2);
-        ks2.getConfigurator().setCloseAfterRecursion(true);
+        ks2.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
+        ks2.setUrl(ks.getEndpoint().getURL());
+        ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
+        ks2.setUseLits(false);
+        ks2.setUseCacheDatabase(true);
+        ks2.setRecursionDepth(2);
+        ks2.setCloseAfterRecursion(true);
 //        ks2.getConfigurator().setSaveExtractedFragment(true);
         System.out.println("getting fragment ... ");
         ks2.init();
