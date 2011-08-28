@@ -77,7 +77,7 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 		} else {
 			CELOE celoe = (CELOE) config.getLearningAlgorithm();
 			this.rootNode = celoe.getSearchTreeRoot();
-			cmp = new SearchTreeNodeCmpWrapper(new OEHeuristicRuntime(celoe.getConfigurator()));
+			cmp = new SearchTreeNodeCmpWrapper(new OEHeuristicRuntime());
 		}
 		this.ebNodeModel = new EBNodeTreeModel(rootNode, cmp);
 

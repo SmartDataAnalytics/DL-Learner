@@ -51,6 +51,7 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.statistics.Stat;
 
 /**
@@ -221,12 +222,13 @@ public class OntologyEngineering {
 					lp.init();
 
 					CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-					CELOEConfigurator cf = celoe.getConfigurator();
-					cf.setUseNegation(false);
-					cf.setValueFrequencyThreshold(3);
-					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
-					cf.setNoisePercentage(noisePercent);
-					cf.setMaxNrOfResults(10);
+//					CELOEConfigurator cf = celoe.getConfigurator();
+					RhoDRDown op = (RhoDRDown) celoe.getOperator();
+					op.setUseNegation(false);
+					op.setFrequencyThreshold(3);
+					celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+					celoe.setNoisePercentage(noisePercent);
+					celoe.setMaxNrOfResults(10);
 					celoe.init();
 
 					celoe.start();

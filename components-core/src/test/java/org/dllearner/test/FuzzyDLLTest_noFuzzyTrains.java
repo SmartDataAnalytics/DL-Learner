@@ -54,6 +54,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Helper;
 
 /**
@@ -130,12 +131,12 @@ public class FuzzyDLLTest_noFuzzyTrains {
 //		Set<String> aaaaaaaaaa = new TreeSet<String>();
 //		aaaaaaaaaa.add("Nothing");
 //		fc.getConfigurator().setIgnoredConcepts(aaaaaaaaaa);
-		fc.getConfigurator().setMaxClassDescriptionTests(1000);
-		fc.getConfigurator().setMaxExecutionTimeInSeconds(0);
-		fc.getConfigurator().setUseDoubleDatatypes(false);
-		fc.getConfigurator().setUseCardinalityRestrictions(false);
-		fc.getConfigurator().setWriteSearchTree(true);
-		fc.getConfigurator().setSearchTreeFile("log/searchTreeNonFuzzy.txt");
+		fc.setMaxClassDescriptionTests(1000);
+		fc.setMaxExecutionTimeInSeconds(0);
+		((RhoDRDown)fc.getOperator()).setUseDoubleDatatypes(false);
+		((RhoDRDown)fc.getOperator()).setUseCardinalityRestrictions(false);
+		fc.setWriteSearchTree(true);
+		fc.setSearchTreeFile("log/searchTreeNonFuzzy.txt");
 		fc.init();
 		fc.start();		
 		

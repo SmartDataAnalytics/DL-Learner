@@ -31,16 +31,13 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.config.BooleanEditor;
-import org.dllearner.core.configurators.CELOEConfigurator;
+import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.DoubleConfigOption;
@@ -82,7 +79,7 @@ import com.jamonapi.MonitorFactory;
 public class CELOE extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(CELOE.class);
-	private CELOEConfigurator configurator;
+//	private CELOEConfigurator configurator;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;	
@@ -145,9 +142,36 @@ public class CELOE extends AbstractCELA {
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
 	
-	public CELOEConfigurator getConfigurator() {
-		return configurator;
-	}
+	ConceptComparator cc = new ConceptComparator();
+	
+	// TODO: turn those into config options
+	
+	Set<NamedClass> allowedConcepts = new TreeSet<NamedClass>(cc);
+	Set<NamedClass> ignoredConcepts = new TreeSet<NamedClass>(cc);
+
+	private boolean writeSearchTree;
+
+	private String searchTreeFile = "log/searchTree.txt";
+
+	private int maxNrOfResults;
+
+	private double noisePercentage;
+
+	private boolean filterDescriptionsFollowingFromKB;
+
+	private boolean reuseExistingDescription;
+
+	private boolean replaceSearchTree;
+
+	private int maxClassDescriptionTests;
+
+	private int maxExecutionTimeInSeconds;
+
+	private boolean terminateOnNoiseReached;
+	
+//	public CELOEConfigurator getConfigurator() {
+//		return configurator;
+//	}
 	
 	public CELOE() {
 		
@@ -155,7 +179,7 @@ public class CELOE extends AbstractCELA {
 	
 	public CELOE(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
-		configurator = new CELOEConfigurator(this);
+//		configurator = new CELOEConfigurator(this);
 	}
 
 	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
@@ -206,8 +230,8 @@ public class CELOE extends AbstractCELA {
 		// compute used concepts/roles from allowed/ignored
 		// concepts/roles
 		Set<NamedClass> usedConcepts;
-		Set<NamedClass> allowedConcepts = configurator.getAllowedConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getAllowedConcepts());
-		Set<NamedClass> ignoredConcepts = configurator.getIgnoredConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getIgnoredConcepts());
+//		Set<NamedClass> allowedConcepts = configurator.getAllowedConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getAllowedConcepts());
+//		Set<NamedClass> ignoredConcepts = configurator.getIgnoredConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getIgnoredConcepts());
 		if(allowedConcepts != null) {
 			// sanity check to control if no non-existing concepts are in the list
 			Helper.checkConcepts(reasoner, allowedConcepts);
@@ -224,36 +248,40 @@ public class CELOE extends AbstractCELA {
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
 		classHierarchy.thinOutSubsumptionHierarchy();
 		
-		heuristic = new OEHeuristicRuntime(configurator);
+		heuristic = new OEHeuristicRuntime();
 		
 		minimizer = new DescriptionMinimizer(reasoner);
 		
 		startClass = Thing.instance;
 		
-		singleSuggestionMode = configurator.getSingleSuggestionMode();
+//		singleSuggestionMode = configurator.getSingleSuggestionMode();
 		
 		// create refinement operator
-		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
+		if(operator == null) {
+			operator = new RhoDRDown();
+			((RhoDRDown)operator).setStartClass(startClass);
+			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
+		}
+//		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
-		if(configurator.getWriteSearchTree()) {
-			File f = new File(configurator.getSearchTreeFile());
+		if(writeSearchTree) {
+			File f = new File(searchTreeFile );
 //			System.out.println(f.getAbsolutePath());
 			Files.clearFile(f);
 		}
 		
-		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(configurator.getMaxNrOfResults());
+		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
 		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
 		
 		// we put important parameters in class variables
-		noise = configurator.getNoisePercentage()/100d;
+		noise = noisePercentage/100d;
 //		System.out.println("noise " + noise);
-		maxDepth = configurator.getMaxDepth();
+//		maxDepth = configurator.getMaxDepth();
 		// (filterFollowsFromKB is automatically set to false if the problem
 		// is not a class learning problem
-		filterFollowsFromKB = configurator.getFilterDescriptionsFollowingFromKB()
-		  && isClassLearningProblem;
+		filterFollowsFromKB = filterDescriptionsFollowingFromKB && isClassLearningProblem;
 		
 		// actions specific to ontology engineering
 		if(isClassLearningProblem) {
@@ -268,7 +296,7 @@ public class CELOE extends AbstractCELA {
 			// superfluous to add super classes in this case)
 			if(isEquivalenceProblem) {
 				Set<Description> existingDefinitions = reasoner.getAssertedDefinitions(classToDescribe);
-				if(configurator.getReuseExistingDescription() && (existingDefinitions.size() > 0)) {
+				if(reuseExistingDescription && (existingDefinitions.size() > 0)) {
 					// the existing definition is reused, which in the simplest case means to
 					// use it as a start class or, if it is already too specific, generalise it
 					
@@ -429,7 +457,7 @@ public class CELOE extends AbstractCELA {
 			updateMinMaxHorizExp(nextNode);
 			
 			// writing the search tree (if configured)
-			if (configurator.getWriteSearchTree()) {
+			if (writeSearchTree) {
 				String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
 				if (refinements.size() > 1) {
 					treeString += "all expanded nodes:\n";
@@ -440,10 +468,10 @@ public class CELOE extends AbstractCELA {
 				treeString += startNode.toTreeString(baseURI);
 				treeString += "\n";
 
-				if (configurator.getReplaceSearchTree())
-					Files.createFile(new File(configurator.getSearchTreeFile()), treeString);
+				if (replaceSearchTree)
+					Files.createFile(new File(searchTreeFile), treeString);
 				else
-					Files.appendFile(new File(configurator.getSearchTreeFile()), treeString);
+					Files.appendFile(new File(searchTreeFile), treeString);
 			}
 			
 //			System.out.println(loop);
@@ -713,9 +741,9 @@ public class CELOE extends AbstractCELA {
 	private boolean terminationCriteriaSatisfied() {
 		return 
 		stop || 
-		(configurator.getMaxClassDescriptionTests() != 0 && (expressionTests >= configurator.getMaxClassDescriptionTests())) ||
-		(configurator.getMaxExecutionTimeInSeconds() != 0 && ((System.nanoTime() - nanoStartTime) >= (configurator.getMaxExecutionTimeInSeconds()*1000000000l))) ||
-		(configurator.getTerminateOnNoiseReached() && (100*getCurrentlyBestAccuracy()>=100-configurator.getNoisePercentage()));
+		(maxClassDescriptionTests != 0 && (expressionTests >= maxClassDescriptionTests)) ||
+		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l))) ||
+		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage));
 	}
 	
 	private void reset() {
@@ -818,6 +846,118 @@ public class CELOE extends AbstractCELA {
 	 */
 	public int getClassExpressionTests() {
 		return expressionTests;
+	}
+
+	public RefinementOperator getOperator() {
+		return operator;
+	}
+
+	public void setOperator(RefinementOperator operator) {
+		this.operator = operator;
+	}
+
+	public Description getStartClass() {
+		return startClass;
+	}
+
+	public void setStartClass(Description startClass) {
+		this.startClass = startClass;
+	}
+
+	public Set<NamedClass> getAllowedConcepts() {
+		return allowedConcepts;
+	}
+
+	public void setAllowedConcepts(Set<NamedClass> allowedConcepts) {
+		this.allowedConcepts = allowedConcepts;
+	}
+
+	public Set<NamedClass> getIgnoredConcepts() {
+		return ignoredConcepts;
+	}
+
+	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+		this.ignoredConcepts = ignoredConcepts;
+	}
+
+	public boolean isWriteSearchTree() {
+		return writeSearchTree;
+	}
+
+	public void setWriteSearchTree(boolean writeSearchTree) {
+		this.writeSearchTree = writeSearchTree;
+	}
+
+	public String getSearchTreeFile() {
+		return searchTreeFile;
+	}
+
+	public void setSearchTreeFile(String searchTreeFile) {
+		this.searchTreeFile = searchTreeFile;
+	}
+
+	public int getMaxNrOfResults() {
+		return maxNrOfResults;
+	}
+
+	public void setMaxNrOfResults(int maxNrOfResults) {
+		this.maxNrOfResults = maxNrOfResults;
+	}
+
+	public double getNoisePercentage() {
+		return noisePercentage;
+	}
+
+	public void setNoisePercentage(double noisePercentage) {
+		this.noisePercentage = noisePercentage;
+	}
+
+	public boolean isFilterDescriptionsFollowingFromKB() {
+		return filterDescriptionsFollowingFromKB;
+	}
+
+	public void setFilterDescriptionsFollowingFromKB(boolean filterDescriptionsFollowingFromKB) {
+		this.filterDescriptionsFollowingFromKB = filterDescriptionsFollowingFromKB;
+	}
+
+	public boolean isReplaceSearchTree() {
+		return replaceSearchTree;
+	}
+
+	public void setReplaceSearchTree(boolean replaceSearchTree) {
+		this.replaceSearchTree = replaceSearchTree;
+	}
+
+	public int getMaxClassDescriptionTests() {
+		return maxClassDescriptionTests;
+	}
+
+	public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
+		this.maxClassDescriptionTests = maxClassDescriptionTests;
+	}
+
+	public int getMaxExecutionTimeInSeconds() {
+		return maxExecutionTimeInSeconds;
+	}
+
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	}
+
+	public boolean isTerminateOnNoiseReached() {
+		return terminateOnNoiseReached;
+	}
+
+	public void setTerminateOnNoiseReached(boolean terminateOnNoiseReached) {
+		this.terminateOnNoiseReached = terminateOnNoiseReached;
+	}
+
+	public boolean isReuseExistingDescription() {
+		return reuseExistingDescription;
+	}
+
+	public void setReuseExistingDescription(boolean reuseExistingDescription) {
+		this.reuseExistingDescription = reuseExistingDescription;
 	}	
 	
 }

@@ -1645,4 +1645,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 	public void setReasoner(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 	}
+
+	public ClassHierarchy getSubHierarchy() {
+		return subHierarchy;
+	}
+
+	public void setSubHierarchy(ClassHierarchy subHierarchy) {
+		this.subHierarchy = subHierarchy;
+	}
+
+	public Description getStartClass() {
+		return startClass;
+	}
+
+	public void setStartClass(Description startClass) {
+		this.startClass = startClass;
+	}
 }
