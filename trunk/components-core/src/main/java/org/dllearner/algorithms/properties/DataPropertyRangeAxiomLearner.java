@@ -39,7 +39,6 @@ import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,9 +129,10 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		}
 		
 		EvaluatedAxiom evalAxiom;
+		int total = individual2Types.keySet().size();
 		for(Entry<Datatype, Integer> entry : sortByValues(result)){
 			evalAxiom = new EvaluatedAxiom(new DatatypePropertyRangeAxiom(propertyToDescribe, entry.getKey()),
-					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
+					computeScore(total, entry.getValue()));
 			axioms.add(evalAxiom);
 		}
 		
@@ -163,5 +163,4 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		}
 		return cnt;
 	}
-	
 }

@@ -199,16 +199,13 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		result.remove(classToDescribe);
 		
 		EvaluatedDescription evalDesc;
+		int total = individual2Types.keySet().size();
 		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
 			evalDesc = new EvaluatedDescription(entry.getKey(),
-					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
+					computeScore(total, entry.getValue()));
 			currentlyBestEvaluatedDescriptions.add(evalDesc);
 		}
 		
-	}
-	
-	private double computeScore(){
-		return 0;
 	}
 	
 	private boolean terminationCriteriaSatisfied(){
@@ -218,8 +215,8 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SimpleSubclassLearner l = new SimpleSubclassLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 5);
+		SimpleSubclassLearner l = new SimpleSubclassLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveOpenLink()));
+		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 10);
 		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Criminal"));
 		l.init();
 		l.start();

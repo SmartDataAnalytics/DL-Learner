@@ -35,7 +35,6 @@ import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,17 +137,17 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 	
 	private List<EvaluatedAxiom> buildAxioms(Map<ObjectProperty, Integer> property2Count){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
-		Integer all = property2Count.get(propertyToDescribe);
+		Integer total = property2Count.get(propertyToDescribe);
 		property2Count.remove(propertyToDescribe);
 		
 		EvaluatedAxiom evalAxiom;
 		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
 			evalAxiom = new EvaluatedAxiom(new SubObjectPropertyAxiom(propertyToDescribe, entry.getKey()),
-					new AxiomScore(entry.getValue() / (double)all));
+					computeScore(total, entry.getValue()));
 			axioms.add(evalAxiom);
 		}
 		
-		property2Count.put(propertyToDescribe, all);
+		property2Count.put(propertyToDescribe, total);
 		return axioms;
 	}
 	

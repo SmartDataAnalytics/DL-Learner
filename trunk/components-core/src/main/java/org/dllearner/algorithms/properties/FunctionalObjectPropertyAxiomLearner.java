@@ -31,7 +31,6 @@ import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,8 +106,8 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			notFunctional = qs.getLiteral("notfunctional").getInt();
 		}
 		if(all > 0){
-			double frac = (all - notFunctional) / (double)all;
-			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalObjectPropertyAxiom(propertyToDescribe),
+					computeScore(all, all - notFunctional)));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -118,5 +117,5 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
 		return currentlyBestAxioms;
 	}
-
+	
 }

@@ -38,8 +38,8 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,10 +129,14 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 			}
 		}
 		
+		//omit owl:Thing
+		result.remove(new NamedClass(Thing.instance.getURI()));
+		
 		EvaluatedAxiom evalAxiom;
+		int total = individual2Types.keySet().size();
 		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
 			evalAxiom = new EvaluatedAxiom(new ObjectPropertyDomainAxiom(propertyToDescribe, entry.getKey()),
-					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
+					computeScore(total, entry.getValue()));
 			axioms.add(evalAxiom);
 		}
 		

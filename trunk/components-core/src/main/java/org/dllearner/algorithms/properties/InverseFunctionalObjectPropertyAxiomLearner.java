@@ -25,6 +25,7 @@ import java.util.List;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
@@ -32,6 +33,7 @@ import org.dllearner.core.owl.InverseFunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,14 +103,14 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 		query = "SELECT (COUNT(DISTINCT ?s) AS ?noninversefunctional) WHERE {?s1 <%s> ?o. ?s2 <%s> ?o. FILTER(?s1 != ?s2) }";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
-		int notFunctional = 1;
+		int notInverseFunctional = 1;
 		while(rs.hasNext()){
 			qs = rs.next();
-			notFunctional = qs.getLiteral("noninversefunctional").getInt();
+			notInverseFunctional = qs.getLiteral("noninversefunctional").getInt();
 		}
 		if(all > 0){
-			double frac = (all - notFunctional) / (double)all;
-			currentlyBestAxioms.add(new EvaluatedAxiom(new InverseFunctionalObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			currentlyBestAxioms.add(new EvaluatedAxiom(new InverseFunctionalObjectPropertyAxiom(propertyToDescribe),
+					computeScore(all, all - notInverseFunctional)));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));

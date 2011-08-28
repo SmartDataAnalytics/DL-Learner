@@ -25,14 +25,23 @@ public class AxiomScore extends Score{
 	
 	private static final long serialVersionUID = 555252118489924570L;
 	private double accuracy;
+	private double confidence;
 	
 	public AxiomScore(double accuracy) {
+		this.accuracy = accuracy;
+	}
+	
+	public AxiomScore(double accuracy, double confidence) {
 		this.accuracy = accuracy;
 	}
 
 	@Override
 	public double getAccuracy() {
 		return accuracy;
+	}
+	
+	public double getConfidence(){
+		return confidence;
 	}
 
 }

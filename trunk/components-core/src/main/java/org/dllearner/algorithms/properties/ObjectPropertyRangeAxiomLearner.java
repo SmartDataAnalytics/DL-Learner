@@ -38,9 +38,9 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,10 +130,14 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 			}
 		}
 		
+		//omit owl:Thing
+		result.remove(new NamedClass(Thing.instance.getURI()));
+		
 		EvaluatedAxiom evalAxiom;
+		int total = individual2Types.keySet().size();
 		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
 			evalAxiom = new EvaluatedAxiom(new ObjectPropertyRangeAxiom(propertyToDescribe, entry.getKey()),
-					new AxiomScore(entry.getValue() / (double)individual2Types.keySet().size()));
+					computeScore(total, entry.getValue()));
 			axioms.add(evalAxiom);
 		}
 		
@@ -167,9 +171,9 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	}
 	
 	public static void main(String[] args) throws Exception{
-		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/aircraftElectronic"));
-		l.setMaxExecutionTimeInSeconds(0);
+		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/academicAdvisor"));
+		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));

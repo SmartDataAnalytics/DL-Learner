@@ -31,7 +31,6 @@ import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ReflexiveObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +98,8 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			int reflexive = qs.getLiteral("reflexiv").getInt();
 			if(all > 0){
 				double frac = reflexive / (double)all;
-				currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+				currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe),
+						computeScore(all, reflexive)));
 			}
 			
 		}
