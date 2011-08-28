@@ -22,11 +22,10 @@ public interface ApplicationContextBuilder {
      * Note: In case of multiple spring config file locations, later bean definitions will override ones defined in earlier loaded files. This can be leveraged to deliberately override certain bean definitions via an extra XML file.
      *
      * @param configuration                The DL-Learner Configuration object.
-     * @param componentKeyPrefixes         The List of Strings which indicate a component/bean reference in the configuration file. (e.g. 'component:', ':', etc.)
      * @param springConfigurationLocations An ordered list of Spring Configuration Files - beans in later files can override beans in earlier files.
      * @return An Application Context
      * @throws IOException If there's a problem reading any of the files.
      */
-    public ApplicationContext buildApplicationContext(IConfiguration configuration, List<String> componentKeyPrefixes, List<Resource> springConfigurationLocations) throws IOException;
+    public ApplicationContext buildApplicationContext(IConfiguration configuration, List<Resource> springConfigurationLocations) throws IOException;
 
 }

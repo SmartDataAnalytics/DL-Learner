@@ -29,10 +29,6 @@ public class MoosiqueCLITest {
     public ApplicationContext createApplicationContext(Resource confFile) throws IOException {
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
 
-        List<String> componentKeyPrefixes = new ArrayList<String>();
-        componentKeyPrefixes.add("component:");
-        componentKeyPrefixes.add(":");
-
         //Spring Config Files
         List<Resource> springConfigResources = new ArrayList<Resource>();
 
@@ -40,7 +36,7 @@ public class MoosiqueCLITest {
         IConfiguration configuration = new ConfParserConfiguration(confFile);
         //Build The Application Context
 
-        ApplicationContext context = builder.buildApplicationContext(configuration, componentKeyPrefixes, springConfigResources);
+        ApplicationContext context = builder.buildApplicationContext(configuration, springConfigResources);
         return context;
     }
 

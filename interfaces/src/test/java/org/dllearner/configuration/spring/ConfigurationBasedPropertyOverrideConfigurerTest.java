@@ -35,11 +35,6 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         //The DL-Learner Config File
         Resource confFile = new ClassPathResource("/org/dllearner/configuration/spring/configurationBasedPropertyOverrideConfigurer.conf");
 
-        //Component Key Prefixes
-        List<String> componentKeyPrefixes = new ArrayList<String>();
-        componentKeyPrefixes.add("component:");
-        componentKeyPrefixes.add(":");
-
         //Spring Config Files
         List<Resource> springConfigResources = new ArrayList<Resource>();
         springConfigResources.add(new ClassPathResource("/org/dllearner/configuration/spring/configuration-based-property-override-configurer-configuration.xml"));
@@ -48,7 +43,7 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         IConfiguration configuration = new ConfParserConfiguration(confFile);
 
         // Build The Application Context
-        context =  builder.buildApplicationContext(configuration,componentKeyPrefixes,springConfigResources);
+        context =  builder.buildApplicationContext(configuration,springConfigResources);
 
     }
 
