@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.ProgressMonitor;
@@ -81,21 +82,21 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 	private static final boolean debugExitAfterExtraction = false; // switches
 
 
-	private SparqlKnowledgeSourceConfigurator configurator;
+//	private SparqlKnowledgeSourceConfigurator configurator;
 
 	/**
 	 * @return the configurator for this Knowledgesource
 	 */
-	public SparqlKnowledgeSourceConfigurator getConfigurator() {
-		return configurator;
-	}
+//	public SparqlKnowledgeSourceConfigurator getConfigurator() {
+//		return configurator;
+//	}
 
 	public SparqlKnowledgeSource() {
-		this.configurator = new SparqlKnowledgeSourceConfigurator(this);
+//		this.configurator = new SparqlKnowledgeSourceConfigurator(this);
 	}
 
-	// these are saved for further reference
-	private URL url;
+
+	
 	private SparqlEndpoint endpoint = null;
 
 	//private String format = "N-TRIPLES";
@@ -119,6 +120,53 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 
 	// mainly used for statistic
 	private int nrOfExtractedAxioms = 0;
+
+	//// TODO: turn those into config options ///
+	private URL url;
+	
+	private Set<String> instances;
+	
+	private int recursionDepth;
+
+	private boolean getAllSuperClasses;
+
+	private boolean closeAfterRecursion;
+
+	private boolean propertyInformation;
+
+	private int breakSuperClassRetrievalAfter;
+
+	private boolean dissolveBlankNodes;
+
+	private boolean saveExtractedFragment;
+
+	private String predefinedEndpoint;
+
+	private Collection<String> defaultGraphURIs;
+
+	private Collection<String> namedGraphURIs;
+
+	private boolean useCache;
+
+	private String cacheDir;
+
+	private boolean useCacheDatabase;
+
+	private String predefinedFilter;
+
+	private Set<String> objList;
+
+	private Set<String> predList;
+
+	private boolean useLits;
+
+	private String predefinedManipulator;
+
+	private List<StringTuple> replacePredicate;
+
+	private boolean useImprovedSparqlTupelAquisitor;
+
+	private List<StringTuple> replaceObject;
 
 
 	public static String getName() {
@@ -236,7 +284,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 		}
 		logger.trace(getURL());
 		logger.trace(getSparqlEndpoint());
-		logger.trace(configurator.getInstances());
+//		logger.trace(configurator.getInstances());
 		Manager m = new Manager();
 		m.addProgressMonitor(mon);
 
@@ -246,12 +294,9 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 		TupleAquisitor tupleAquisitor = getTupleAquisitor();
 
 		Configuration configuration = new Configuration(tupleAquisitor,
-				manipulator, configurator.getRecursionDepth(), configurator
-						.getGetAllSuperClasses(), configurator
-						.getCloseAfterRecursion(), configurator
-						.getGetPropertyInformation(), configurator
-						.getBreakSuperClassRetrievalAfter(),
-						configurator.getDissolveBlankNodes());
+				manipulator, recursionDepth, getAllSuperClasses, 
+						closeAfterRecursion, propertyInformation, breakSuperClassRetrievalAfter,
+						dissolveBlankNodes);
 
 		// give everything to the manager
 		m.useConfiguration(configuration);
@@ -264,7 +309,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 			List<Node> seedNodes=new ArrayList<Node>();
 			
 			//if(!threaded){
-				seedNodes = m.extract(configurator.getInstances());
+				seedNodes = m.extract(instances);
 			/*}else{
 				int maxPoolSize = configurator.getInstances().size();
 				ThreadPoolExecutor ex = new ThreadPoolExecutor(5,maxPoolSize,1,TimeUnit.SECONDS,new ArrayBlockingQueue<Runnable>(100));
@@ -291,7 +336,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 			extractionTime.stop();
 		
 			
-			fragment = m.getOWLAPIOntologyForNodes(seedNodes, configurator.getSaveExtractedFragment());
+			fragment = m.getOWLAPIOntologyForNodes(seedNodes, saveExtractedFragment);
 			
 
 			logger.info("Finished collecting fragment. needed "+extractionTime.getLastValue()+" ms");
@@ -370,16 +415,16 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 	 */
 	public URL getURL() {
 		if(endpoint == null){
-			if(url==null){
-				if(configurator.getPredefinedEndpoint() == null){
-						url = configurator.getUrl();
-					return url;
+			if(getUrl()==null){
+				if(predefinedEndpoint == null){
+						setUrl(url);
+					return getUrl();
 				}else{
 					return getSparqlEndpoint().getURL();
 				}
 				
 			}else{
-				return url;
+				return getUrl();
 			}
 		}else {
 			return endpoint.getURL();
@@ -395,13 +440,12 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 	
 	public SparqlEndpoint getSparqlEndpoint(){
 		if(endpoint==null) {
-			if (configurator.getPredefinedEndpoint() == null) {
+			if (predefinedEndpoint == null) {
 				endpoint = new SparqlEndpoint(getURL(), new LinkedList<String>(
-						configurator.getDefaultGraphURIs()),
-						new LinkedList<String>(configurator.getNamedGraphURIs()));
+						defaultGraphURIs),
+						new LinkedList<String>(namedGraphURIs));
 			} else {
-				endpoint = SparqlEndpoint.getEndpointByName(configurator
-						.getPredefinedEndpoint());
+				endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
 				// System.out.println(endpoint);
 	
 			}
@@ -414,8 +458,8 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 
 		// get Options for endpoints
 		
-		if (configurator.getUseCache()){
-			return new SPARQLTasks(new Cache(configurator.getCacheDir(), configurator.getUseCacheDatabase()),
+		if (useCache){
+			return new SPARQLTasks(new Cache(cacheDir, useCacheDatabase),
 					getSparqlEndpoint());
 		}else {
 			return new SPARQLTasks(getSparqlEndpoint());
@@ -424,14 +468,13 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 
 	public SparqlQueryMaker getSparqlQueryMaker() {
 		// get Options for Filters
-		if (configurator.getPredefinedFilter() == null) {
-			return new SparqlQueryMaker("forbid", configurator.getObjList(),
-					configurator.getPredList(), configurator.getUseLits());
+		if (predefinedFilter == null) {
+			return new SparqlQueryMaker("forbid", objList,
+					predList, useLits);
 
 		} else {
 
-			return SparqlQueryMaker.getSparqlQueryMakerByName(configurator
-					.getPredefinedFilter());
+			return SparqlQueryMaker.getSparqlQueryMakerByName(predefinedFilter);
 		}
 
 	}
@@ -443,16 +486,15 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 		}
 		
 		// get Options for Filters
-		if (configurator.getPredefinedManipulator() != null) {
-			return Manipulator.getManipulatorByName(configurator
-					.getPredefinedManipulator());
+		if (predefinedManipulator != null) {
+			return Manipulator.getManipulatorByName(predefinedManipulator);
 
 		} else {
 			Manipulator m = Manipulator.getDefaultManipulator();
-			for (StringTuple st : configurator.getReplacePredicate()) {
+			for (StringTuple st : replacePredicate) {
 				m.addRule(new PredicateReplacementRule(Months.MAY, st.a, st.b));
 			}
-			for (StringTuple st : configurator.getReplaceObject()) {
+			for (StringTuple st : replaceObject) {
 				m.addRule(new ObjectReplacementRule(Months.MAY, st.a, st.b));
 			}
 			return m;
@@ -467,9 +509,9 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 
 	public TupleAquisitor getTupleAquisitor() {
 		TupleAquisitor ret = null;
-		if (configurator.getUseImprovedSparqlTupelAquisitor()) {
+		if (useImprovedSparqlTupelAquisitor) {
 			ret = new SparqlTupleAquisitorImproved(getSparqlQueryMaker(),
-					getSPARQLTasks(), configurator.getRecursionDepth());
+					getSPARQLTasks(), recursionDepth);
 		} else {
 			ret = new SparqlTupleAquisitor(getSparqlQueryMaker(),
 					getSPARQLTasks());
@@ -498,11 +540,11 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 	}
 
 	public boolean isUseCache() {
-		return configurator.getUseCache();
+		return useCache;
 	}
 
 	public String getCacheDir() {
-		return configurator.getCacheDir();
+		return cacheDir;
 	}
 
 	public int getNrOfExtractedAxioms() {
@@ -511,6 +553,182 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 	
 	public void addProgressMonitor(ProgressMonitor mon){
 		this.mon = mon;
+	}
+
+	public void setUrl(URL url) {
+		this.url = url;
+	}
+
+	public URL getUrl() {
+		return url;
+	}
+
+	public Set<String> getInstances() {
+		return instances;
+	}
+
+	public void setInstances(Set<String> instances) {
+		this.instances = instances;
+	}
+
+	public int getRecursionDepth() {
+		return recursionDepth;
+	}
+
+	public void setRecursionDepth(int recursionDepth) {
+		this.recursionDepth = recursionDepth;
+	}
+
+	public boolean isGetAllSuperClasses() {
+		return getAllSuperClasses;
+	}
+
+	public void setGetAllSuperClasses(boolean getAllSuperClasses) {
+		this.getAllSuperClasses = getAllSuperClasses;
+	}
+
+	public boolean isCloseAfterRecursion() {
+		return closeAfterRecursion;
+	}
+
+	public void setCloseAfterRecursion(boolean closeAfterRecursion) {
+		this.closeAfterRecursion = closeAfterRecursion;
+	}
+
+	public boolean isPropertyInformation() {
+		return propertyInformation;
+	}
+
+	public void setPropertyInformation(boolean propertyInformation) {
+		this.propertyInformation = propertyInformation;
+	}
+
+	public int getBreakSuperClassRetrievalAfter() {
+		return breakSuperClassRetrievalAfter;
+	}
+
+	public void setBreakSuperClassRetrievalAfter(int breakSuperClassRetrievalAfter) {
+		this.breakSuperClassRetrievalAfter = breakSuperClassRetrievalAfter;
+	}
+
+	public boolean isDissolveBlankNodes() {
+		return dissolveBlankNodes;
+	}
+
+	public void setDissolveBlankNodes(boolean dissolveBlankNodes) {
+		this.dissolveBlankNodes = dissolveBlankNodes;
+	}
+
+	public boolean isSaveExtractedFragment() {
+		return saveExtractedFragment;
+	}
+
+	public void setSaveExtractedFragment(boolean saveExtractedFragment) {
+		this.saveExtractedFragment = saveExtractedFragment;
+	}
+
+	public String getPredefinedEndpoint() {
+		return predefinedEndpoint;
+	}
+
+	public void setPredefinedEndpoint(String predefinedEndpoint) {
+		this.predefinedEndpoint = predefinedEndpoint;
+	}
+
+	public Collection<String> getDefaultGraphURIs() {
+		return defaultGraphURIs;
+	}
+
+	public void setDefaultGraphURIs(Collection<String> defaultGraphURIs) {
+		this.defaultGraphURIs = defaultGraphURIs;
+	}
+
+	public Collection<String> getNamedGraphURIs() {
+		return namedGraphURIs;
+	}
+
+	public void setNamedGraphURIs(Collection<String> namedGraphURIs) {
+		this.namedGraphURIs = namedGraphURIs;
+	}
+
+	public boolean isUseCacheDatabase() {
+		return useCacheDatabase;
+	}
+
+	public void setUseCacheDatabase(boolean useCacheDatabase) {
+		this.useCacheDatabase = useCacheDatabase;
+	}
+
+	public String getPredefinedFilter() {
+		return predefinedFilter;
+	}
+
+	public void setPredefinedFilter(String predefinedFilter) {
+		this.predefinedFilter = predefinedFilter;
+	}
+
+	public Set<String> getObjList() {
+		return objList;
+	}
+
+	public void setObjList(Set<String> objList) {
+		this.objList = objList;
+	}
+
+	public Set<String> getPredList() {
+		return predList;
+	}
+
+	public void setPredList(Set<String> predList) {
+		this.predList = predList;
+	}
+
+	public boolean isUseLits() {
+		return useLits;
+	}
+
+	public void setUseLits(boolean useLits) {
+		this.useLits = useLits;
+	}
+
+	public String getPredefinedManipulator() {
+		return predefinedManipulator;
+	}
+
+	public void setPredefinedManipulator(String predefinedManipulator) {
+		this.predefinedManipulator = predefinedManipulator;
+	}
+
+	public List<StringTuple> getReplacePredicate() {
+		return replacePredicate;
+	}
+
+	public void setReplacePredicate(List<StringTuple> replacePredicate) {
+		this.replacePredicate = replacePredicate;
+	}
+
+	public boolean isUseImprovedSparqlTupelAquisitor() {
+		return useImprovedSparqlTupelAquisitor;
+	}
+
+	public void setUseImprovedSparqlTupelAquisitor(boolean useImprovedSparqlTupelAquisitor) {
+		this.useImprovedSparqlTupelAquisitor = useImprovedSparqlTupelAquisitor;
+	}
+
+	public List<StringTuple> getReplaceObject() {
+		return replaceObject;
+	}
+
+	public void setReplaceObject(List<StringTuple> replaceObject) {
+		this.replaceObject = replaceObject;
+	}
+
+	public void setUseCache(boolean useCache) {
+		this.useCache = useCache;
+	}
+
+	public void setCacheDir(String cacheDir) {
+		this.cacheDir = cacheDir;
 	}
 
 	

@@ -223,10 +223,10 @@ public class DumbLPFinder {
 							"http://www.blabla.com").toURL(), SetManipulation
 							.indToString(instances));
 
-			ks.getConfigurator().setCloseAfterRecursion(true);
-			ks.getConfigurator().setRecursionDepth(2);
-			ks.getConfigurator().setPredefinedEndpoint("LOCALJOSEKIBIBLE");
-			ks.getConfigurator().setUseLits(true);
+			ks.setCloseAfterRecursion(true);
+			ks.setRecursionDepth(2);
+			ks.setPredefinedEndpoint("LOCALJOSEKIBIBLE");
+			ks.setUseLits(true);
 
 			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 			tmp.add(ks);
