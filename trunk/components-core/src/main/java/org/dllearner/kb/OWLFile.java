@@ -20,6 +20,7 @@
 package org.dllearner.kb;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
@@ -50,7 +51,7 @@ public class OWLFile extends AbstractKnowledgeSource {
 	
 	// TODO: turn this into a config option
 	private URL url;
-	
+    private String fileName;
 	private String baseDir;
 //	private URL url;
 //	private OWLFileConfigurator configurator ;
@@ -90,8 +91,12 @@ public class OWLFile extends AbstractKnowledgeSource {
 	@Override
 	public void init() throws ComponentInitException {
 		if(url == null) {
-			logger.error("Cannot initialise OWL file with empty URL");
-		}
+            try {
+                url = new URL("file://"+ baseDir + "/" + fileName);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        }
 		
 		/*
 			try {
@@ -157,4 +162,12 @@ public class OWLFile extends AbstractKnowledgeSource {
 	public void setUrl(URL url) {
 		this.url = url;
 	}
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 }
