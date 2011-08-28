@@ -42,6 +42,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.refinementoperators.RhoDRDown;
 
 /**
  * This class produces a fragment for dbpedia and linkedgeodata
@@ -117,17 +118,18 @@ public class Stanley {
 		lp.init();
 		
 		CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+		RhoDRDown op = (RhoDRDown) celoe.getOperator();
 //		ROLComponent2 celoe = cm.learningAlgorithm(ROLComponent2.class, lp, reasoner);
-		celoe.getConfigurator().setUseAllConstructor(false);
+		op.setUseAllConstructor(false);
 //		celoe.getConfigurator().setUseExistsConstructor(false);
-		celoe.getConfigurator().setUseCardinalityRestrictions(false);
-		celoe.getConfigurator().setUseBooleanDatatypes(false);
-		celoe.getConfigurator().setUseDoubleDatatypes(false);
-		celoe.getConfigurator().setUseNegation(false);
-		celoe.getConfigurator().setUseHasValueConstructor(true);
-		celoe.getConfigurator().setValueFrequencyThreshold(3);
-		celoe.getConfigurator().setMaxExecutionTimeInSeconds(100);
-		celoe.getConfigurator().setNoisePercentage(0.2);
+		op.setUseCardinalityRestrictions(false);
+		op.setUseBooleanDatatypes(false);
+		op.setUseDoubleDatatypes(false);
+		op.setUseNegation(false);
+		op.setUseHasValueConstructor(true);
+		op.setFrequencyThreshold(3);
+		celoe.setMaxExecutionTimeInSeconds(100);
+		celoe.setNoisePercentage(0.2);
 		celoe.init();
 		
 		// debugging

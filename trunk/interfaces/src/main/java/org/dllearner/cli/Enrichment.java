@@ -367,9 +367,9 @@ public class Enrichment {
 		} catch (LearningProblemUnsupportedException e) {
 			e.printStackTrace();
 		}
-        CELOEConfigurator cc = la.getConfigurator();
-        cc.setMaxExecutionTimeInSeconds(10);
-        cc.setNoisePercentage(25);
+//        CELOEConfigurator cc = la.getConfigurator();
+        la.setMaxExecutionTimeInSeconds(10);
+        la.setNoisePercentage(25);
         la.init();
         System.out.print("running CELOE ... ");
         la.start();

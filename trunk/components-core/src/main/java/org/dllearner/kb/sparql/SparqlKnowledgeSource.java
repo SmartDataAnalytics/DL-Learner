@@ -142,9 +142,9 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 
 	private String predefinedEndpoint;
 
-	private Collection<String> defaultGraphURIs;
+	private Collection<String> defaultGraphURIs = new LinkedList<String>();
 
-	private Collection<String> namedGraphURIs;
+	private Collection<String> namedGraphURIs = new LinkedList<String>();
 
 	private boolean useCache;
 
@@ -162,11 +162,11 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 
 	private String predefinedManipulator;
 
-	private List<StringTuple> replacePredicate;
+	private List<StringTuple> replacePredicate  = new LinkedList<StringTuple>();
 
 	private boolean useImprovedSparqlTupelAquisitor;
 
-	private List<StringTuple> replaceObject;
+	private List<StringTuple> replaceObject  = new LinkedList<StringTuple>();
 
 
 	public static String getName() {

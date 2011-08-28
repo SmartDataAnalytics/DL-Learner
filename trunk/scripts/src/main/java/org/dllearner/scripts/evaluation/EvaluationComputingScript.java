@@ -35,6 +35,7 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.ConceptComparator;
 
 
@@ -273,12 +274,13 @@ public class EvaluationComputingScript {
 						lp.getConfigurator().setUseApproximations(useApproximations);
 						lp.init();
 						celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-						cf = celoe.getConfigurator();
-						cf.setUseNegation(false);
-						cf.setValueFrequencyThreshold(3);
-						cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
-						cf.setNoisePercentage(noisePercent);
-						cf.setMaxNrOfResults(10);
+//						cf = celoe.getConfigurator();
+						RhoDRDown op = (RhoDRDown) celoe.getOperator();
+						op.setUseNegation(false);
+						op.setFrequencyThreshold(3);
+						celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+						celoe.setNoisePercentage(noisePercent);
+						celoe.setMaxNrOfResults(10);
 //						if(testReuseExistingDescription == ThreeValuedLogic.True){
 //							cf.setReuseExistingDescription(true);
 //						} else {
@@ -384,12 +386,13 @@ public class EvaluationComputingScript {
 					lp.getConfigurator().setUseApproximations(useApproximations);
 					lp.init();
 					celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-					cf = celoe.getConfigurator();
-					cf.setUseNegation(false);
-					cf.setValueFrequencyThreshold(3);
-					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
-					cf.setNoisePercentage(noisePercent);
-					cf.setMaxNrOfResults(10);
+					RhoDRDown op = (RhoDRDown) celoe.getOperator();
+//					cf = celoe.getConfigurator();
+					op.setUseNegation(false);
+					op.setFrequencyThreshold(3);
+					celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+					celoe.setNoisePercentage(noisePercent);
+					celoe.setMaxNrOfResults(10);
 //					if(testReuseExistingDescription == ThreeValuedLogic.True){
 //						cf.setReuseExistingDescription(true);
 //					} else {
@@ -400,8 +403,8 @@ public class EvaluationComputingScript {
 //					} else {
 //						cf.setFilterDescriptionsFollowingFromKB(false);
 //					}
-					cf.setReuseExistingDescription(reuseExistingDescription);
-					cf.setFilterDescriptionsFollowingFromKB(filterDescriptionsFollowingFromKB);
+					celoe.setReuseExistingDescription(reuseExistingDescription);
+					celoe.setFilterDescriptionsFollowingFromKB(filterDescriptionsFollowingFromKB);
 					celoe.init();
 
 					celoe.start();
@@ -463,12 +466,13 @@ public class EvaluationComputingScript {
 				lp.getConfigurator().setUseApproximations(true);
 				lp.init();
 				celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-				cf = celoe.getConfigurator();
-				cf.setUseNegation(false);
-				cf.setValueFrequencyThreshold(3);
-				cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
-				cf.setNoisePercentage(noisePercent);
-				cf.setMaxNrOfResults(10);
+				RhoDRDown op = (RhoDRDown) celoe.getOperator();
+//				cf = celoe.getConfigurator();
+				op.setUseNegation(false);
+				op.setFrequencyThreshold(3);
+				celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+				celoe.setNoisePercentage(noisePercent);
+				celoe.setMaxNrOfResults(10);
 //				if(testReuseExistingDescription == ThreeValuedLogic.True){
 //					cf.setReuseExistingDescription(true);
 //				} else {

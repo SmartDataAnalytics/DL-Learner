@@ -50,6 +50,7 @@ import org.dllearner.core.owl.Individual;
 public class PosOnlyLP extends AbstractLearningProblem {
 
 	protected SortedSet<Individual> positiveExamples;
+	
 	private List<Individual> positiveExamplesShuffled;
 //	protected SortedSet<Individual> pseudoNegatives;
 	private List<Individual> individuals;
@@ -329,5 +330,9 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	
 	private double getAccuracy(double coverage, double protusion) {
 		return 0.5 * (coverage + Math.sqrt(protusion));
+	}
+
+	public void setPositiveExamples(SortedSet<Individual> positiveExamples) {
+		this.positiveExamples = positiveExamples;
 	}	
 }

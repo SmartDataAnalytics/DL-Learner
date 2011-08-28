@@ -53,6 +53,7 @@ import org.dllearner.gui.ConfigSave;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SetManipulation;
@@ -158,15 +159,17 @@ public class DBpediaClassLearnerCELOE {
 
 
         CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
-        CELOEConfigurator cc = la.getConfigurator();
-        cc.setMaxExecutionTimeInSeconds(100);
+//        CELOEConfigurator cc = la.getConfigurator();
+        la.setMaxExecutionTimeInSeconds(100);
 
-        cc.setUseNegation(false);
-        cc.setUseAllConstructor(false);
-        cc.setUseCardinalityRestrictions(false);
-        cc.setUseHasValueConstructor(true);
-        cc.setNoisePercentage(20);
-        cc.setIgnoredConcepts(new HashSet<String>(Arrays.asList(new String[]{classToLearn})));
+        RhoDRDown op = (RhoDRDown) la.getOperator();
+        
+        op.setUseNegation(false);
+        op.setUseAllConstructor(false);
+        op.setUseCardinalityRestrictions(false);
+        op.setUseHasValueConstructor(true);
+        la.setNoisePercentage(20);
+        la.setIgnoredConcepts(new HashSet<NamedClass>(Arrays.asList(new NamedClass[]{new NamedClass(classToLearn)})));
         la.init();
 
         // to write the above configuration in a conf file (optional)

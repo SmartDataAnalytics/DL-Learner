@@ -21,6 +21,7 @@ package org.dllearner.algorithms.celoe;
 
 import java.util.Comparator;
 
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.utilities.owl.ConceptComparator;
 
@@ -32,6 +33,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "OEHeuristicRuntime", shortName = "OEHeuristicRuntime", version = 0.5)
 public class OEHeuristicRuntime implements Comparator<OENode>{
 	
 	// strong penalty for long descriptions
@@ -44,8 +46,8 @@ public class OEHeuristicRuntime implements Comparator<OENode>{
 	// syntactic comparison as final comparison criterion
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
-	public OEHeuristicRuntime(CELOEConfigurator configurator) {
-		expansionPenaltyFactor = configurator.getExpansionPenaltyFactor();
+	public OEHeuristicRuntime() {
+
 	}
 	
 	@Override
@@ -83,5 +85,25 @@ public class OEHeuristicRuntime implements Comparator<OENode>{
 
 	public double getExpansionPenaltyFactor() {
 		return expansionPenaltyFactor;
+	}
+
+	public double getGainBonusFactor() {
+		return gainBonusFactor;
+	}
+
+	public void setGainBonusFactor(double gainBonusFactor) {
+		this.gainBonusFactor = gainBonusFactor;
+	}
+
+	public double getNodeRefinementPenalty() {
+		return nodeRefinementPenalty;
+	}
+
+	public void setNodeRefinementPenalty(double nodeRefinementPenalty) {
+		this.nodeRefinementPenalty = nodeRefinementPenalty;
+	}
+
+	public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
+		this.expansionPenaltyFactor = expansionPenaltyFactor;
 	}	
 }

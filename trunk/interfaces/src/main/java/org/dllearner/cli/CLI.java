@@ -32,6 +32,7 @@ import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.confparser3.ParseException;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -101,7 +102,7 @@ public class CLI {
 //        System.out.println(lp.getAccuracy(new NamedClass("http://localhost/foo#male")));
         
         // start algorithm in conf file
-        OCEL algorithm = context.getBean("alg",OCEL.class);
+        LearningAlgorithm algorithm = context.getBean("alg",LearningAlgorithm.class);
         algorithm.start();
         
 	}
