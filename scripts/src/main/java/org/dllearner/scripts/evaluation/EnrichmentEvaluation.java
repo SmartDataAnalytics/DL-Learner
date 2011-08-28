@@ -20,9 +20,11 @@
 package org.dllearner.scripts.evaluation;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -41,16 +43,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
-import org.apache.commons.collections.SetUtils;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -94,7 +96,6 @@ import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -104,7 +105,6 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -123,7 +123,6 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
@@ -151,10 +150,10 @@ public class EnrichmentEvaluation {
 	
 	// max. number of attempts per algorithm and entity, because to many queries 
 	// in a short time could cause blocking by the endpoint
-	private final int maxAttempts = 3; 
+	private final int maxAttempts = 5; 
 	
 	//delay between 2 attempts
-	private final int delayInMilliseconds = 10000;
+	private final int delayInMilliseconds = 15000;
 
 	// max. execution time for each learner for each entity
 	private int maxExecutionTimeInSeconds = 10;
@@ -166,7 +165,8 @@ public class EnrichmentEvaluation {
 	// only axioms with a score above this threshold will be considered
 	private double threshold = 0.7;
 	
-	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();//getEndpointDBpediaLiveAKSW();
+	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+//	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 
 	// can be used to only evaluate a part of DBpedia
 	private int maxObjectProperties = 10;
@@ -191,6 +191,7 @@ public class EnrichmentEvaluation {
 		prefixes = new HashMap<String,String>();
 		prefixes.put("dbp","http://dbpedia.org/property/");
 		prefixes.put("dbo","http://dbpedia.org/ontology/");
+		prefixes.put("yago", "http://dbpedia.org/class/");
 		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
 		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
@@ -336,6 +337,7 @@ public class EnrichmentEvaluation {
 							timeout = false;
 							if(attempt > 1){
 								try {
+									System.out.println("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
 									Thread.sleep(delayInMilliseconds);
 								} catch (InterruptedException e) {
 									e.printStackTrace();
@@ -765,6 +767,7 @@ public class EnrichmentEvaluation {
 			Set<String> relevantAxioms = getRelevantAxioms(type, entities);
 			
 			Set<String> notFoundAxioms = org.mindswap.pellet.utils.SetUtils.difference(relevantAxioms, foundAxioms);
+			System.out.println(notFoundAxioms);
 			
 			Set<String> additionalAxioms = org.mindswap.pellet.utils.SetUtils.difference(foundAxioms, relevantAxioms);
 			
@@ -777,14 +780,50 @@ public class EnrichmentEvaluation {
 			append(additionalAxioms.size()).
 			append(" & & & \\\\\n");
 			System.out.println(type.getName() + ": " + found + "/" + total);
+			
+			
+			//write additional axioms into file
+			writeToDisk(type, additionalAxioms);
 		}
 		
 		table2.append("\\end{tabulary}");
 		System.out.println(table2.toString());
 	}
 	
+	private void writeToDisk(AxiomType<? extends OWLAxiom> axiomType, Set<String> axioms){
+		String fileName = axiomType.getName().replaceAll(" ", "_") + ".txt";
+		
+		BufferedWriter out = null;
+		try {
+			File dir = new File("evaluation");
+			if(!dir.exists()){
+				dir.mkdir();
+			}
+			
+			File file = new File(dir + File.separator + fileName);
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			out = new BufferedWriter(new FileWriter(file));
+			for(String axiom : axioms){
+				out.write(axiom);
+				out.newLine();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(out != null){
+				try {
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	private Map<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> getAxiomTypesWithLearningAlgorithms(){
-		Map<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> axiomType2Algorithm = new HashMap<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>>();
+		Map<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> axiomType2Algorithm = new LinkedHashMap<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>>();
 		axiomType2Algorithm.put(AxiomType.SUBCLASS_OF, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{SimpleSubclassLearner.class, CELOE.class}));
 		axiomType2Algorithm.put(AxiomType.EQUIVALENT_CLASSES, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{CELOE.class}));
 		axiomType2Algorithm.put(AxiomType.DISJOINT_CLASSES, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{DisjointClassesLearner.class}));
@@ -929,7 +968,7 @@ public class EnrichmentEvaluation {
 	
 	{
 		EnrichmentEvaluation ee = new EnrichmentEvaluation();
-//		ee.start();
+		ee.start();
 		// ee.printResultsPlain();
 		ee.printResultsLaTeX();
 		Files.createFile(new File("enrichment_eval.html"), ee.printHTMLTable());
