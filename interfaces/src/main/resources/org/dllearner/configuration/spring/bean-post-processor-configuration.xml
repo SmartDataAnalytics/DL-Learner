@@ -7,6 +7,7 @@
     <context:annotation-config/>
     <bean class="org.dllearner.configuration.spring.ComponentInitializationBeanPostProcessor"/>
 
+    <!--Register Custom Property Editors - for going from Strings to Objects-->
     <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
         <property name="propertyEditorRegistrars">
             <list>
@@ -17,4 +18,14 @@
 
     <bean id="customPropertyEditorRegistrar"
           class="org.dllearner.configuration.spring.CustomPropertyEditorRegistrar"/>
+
+    <!--Register custom conversion services for converting types to type.-->
+    <bean id="conversionService"
+          class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="org.dllearner.core.converter.MapToStringTupleListConverter"/>
+            </set>
+        </property>
+    </bean>
 </beans>
