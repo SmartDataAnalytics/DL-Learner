@@ -63,7 +63,7 @@ public class ConfParserConfiguration implements IConfiguration {
 
         Class<?> result = null;
 
-        String value = (String) option.getPropertyValue();
+        String value = (String) option.getValue();
         // first option: use long name of @ComponentAnn annotation
         Class<? extends Component> classFromName = AnnComponentManager.getInstance().getComponentsNamed().getKey(value);
         if(classFromName != null) {
@@ -79,7 +79,7 @@ public class ConfParserConfiguration implements IConfiguration {
             result = Class.forName(value);
         } catch (ClassNotFoundException e) {
         	// if all methods fail, throw an exception
-            throw new RuntimeException("Problem getting class type for bean: " + beanName + " - trying to instantiate class: " + option.getPropertyValue());
+            throw new RuntimeException("Problem getting class type for bean: " + beanName + " - trying to instantiate class: " + value);
         }
         return result;
     }

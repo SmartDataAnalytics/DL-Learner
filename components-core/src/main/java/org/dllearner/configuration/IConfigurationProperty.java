@@ -23,7 +23,7 @@ public interface IConfigurationProperty {
      *
      * @return The String representation of the value of this property.
      */
-    public String getValue();
+    public Object getValue();
 
     /**
      * Get the type of this value.

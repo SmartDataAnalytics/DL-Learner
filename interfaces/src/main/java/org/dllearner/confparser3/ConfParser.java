@@ -92,7 +92,7 @@ public class ConfParser implements ConfParserConstants {
         boolean containsSubOption=false;
         String value="", value1="", value2="", tmp="", tmp2="";
         Set<String> values = new HashSet<String>();
-        List<StringTuple> tuples = new LinkedList<StringTuple>();
+        Map<String,String> tuples = new HashMap<String,String>();
 
         ConfFileOption2 option = new ConfFileOption2();
         boolean isBeanRef = false;
@@ -207,7 +207,7 @@ public class ConfParser implements ConfParserConstants {
                 jj_consume_token(16);
                 tmp2 = String();
                 jj_consume_token(21);
-            tuples.add(new StringTuple(tmp,tmp2)); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + tmp2 + "\u005c"), ";
+            tuples.put(tmp,tmp2); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + tmp2 + "\u005c"), ";
                 jj_consume_token(16);
               }
               jj_consume_token(20);
@@ -215,7 +215,7 @@ public class ConfParser implements ConfParserConstants {
               jj_consume_token(16);
               tmp2 = String();
               jj_consume_token(21);
-            tuples.add(new StringTuple(tmp,tmp2)); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + tmp2 + "\u005c")";
+            tuples.put(tmp,tmp2); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + tmp2 + "\u005c")";
               jj_consume_token(19);
                  val = tuples; propertyType = List.class; propertyValue = "["+ propertyValue + "]";
               break;

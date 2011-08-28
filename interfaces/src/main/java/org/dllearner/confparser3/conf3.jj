@@ -140,7 +140,7 @@ ConfFileOption2 ConfOption() :
 	boolean containsSubOption=false;
 	String value="", value1="", value2="", tmp="", tmp2=""; 
 	Set<String> values = new HashSet<String>();
-	List<StringTuple> tuples = new LinkedList<StringTuple>();
+	Map<String,String> tuples = new HashMap<String,String>();
 	
 	ConfFileOption2 option = new ConfFileOption2();
 	boolean isBeanRef = false;
@@ -184,9 +184,9 @@ ConfFileOption2 ConfOption() :
          // e.g. [("a","b"),("c","d")]
          | "[" 
            ( LOOKAHEAD(6) "(" tmp=String() "," tmp2=String()  ")"
-           {tuples.add(new StringTuple(tmp,tmp2)); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\"), "; } "," )*
+           { tuples.put(tmp,tmp2); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\"), "; } "," )*
            "(" tmp=String() "," tmp2=String() ")"
-           {tuples.add(new StringTuple(tmp,tmp2)); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\")";} 
+           { tuples.put(tmp,tmp2); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\")";}
            "]" { val = tuples; propertyType = List.class; propertyValue = "["+ propertyValue + "]";}         
          )
          // <CONF_END>
