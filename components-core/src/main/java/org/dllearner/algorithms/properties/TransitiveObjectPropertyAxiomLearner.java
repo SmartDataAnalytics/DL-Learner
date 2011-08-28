@@ -32,7 +32,6 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +99,8 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			int transitive = qs.getLiteral("transitive").getInt();
 			if(all > 0){
 				double frac = transitive / (double)all;
-				currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+				currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe),
+						computeScore(all, transitive)));
 			}
 			
 		}

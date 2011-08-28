@@ -31,7 +31,6 @@ import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.IrreflexiveObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +110,8 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		
 		if(all > 0){
 			double frac = irreflexive / (double)all;
-			currentlyBestAxioms.add(new EvaluatedAxiom(new IrreflexiveObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+			currentlyBestAxioms.add(new EvaluatedAxiom(new IrreflexiveObjectPropertyAxiom(propertyToDescribe),
+					computeScore(all, irreflexive)));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));

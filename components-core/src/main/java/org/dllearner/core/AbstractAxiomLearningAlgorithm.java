@@ -30,8 +30,11 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
+import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 
 import com.hp.hpl.jena.query.ResultSet;
@@ -150,6 +153,15 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 			}
 		});
         return entries;
+	}
+	
+	protected Score computeScore(int total, int success){
+		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
+		
+		double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
+		double confidence = confidenceInterval[1] - confidenceInterval[0];
+		
+		return new AxiomScore(accuracy, confidence);
 	}
 
 }

@@ -31,7 +31,6 @@ import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +98,8 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			int symmetric = qs.getLiteral("symmetric").getInt();
 			if(all > 0){
 				double frac = symmetric / (double)all;
-				currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe), new AxiomScore(frac)));
+				currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
+						computeScore(all, symmetric)));
 			}
 			
 		}

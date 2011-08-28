@@ -35,7 +35,6 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.SubDatatypePropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,17 +137,17 @@ public class SubDataPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorith
 	
 	private List<EvaluatedAxiom> buildAxioms(Map<DatatypeProperty, Integer> property2Count){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
-		Integer all = property2Count.get(propertyToDescribe);
+		Integer total = property2Count.get(propertyToDescribe);
 		property2Count.remove(propertyToDescribe);
 		
 		EvaluatedAxiom evalAxiom;
 		for(Entry<DatatypeProperty, Integer> entry : sortByValues(property2Count)){
 			evalAxiom = new EvaluatedAxiom(new SubDatatypePropertyAxiom(propertyToDescribe, entry.getKey()),
-					new AxiomScore(entry.getValue() / (double)all));
+					computeScore(total, entry.getValue()));
 			axioms.add(evalAxiom);
 		}
 		
-		property2Count.put(propertyToDescribe, all);
+		property2Count.put(propertyToDescribe, total);
 		return axioms;
 	}
 	
