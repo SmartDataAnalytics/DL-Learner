@@ -79,18 +79,13 @@ public class CLI {
 			System.exit(0);			
 		}
 		
-		// build application context 
-        List<String> componentKeyPrefixes = new ArrayList<String>();
-        componentKeyPrefixes.add("component:");
-        componentKeyPrefixes.add(":");
-
         List<Resource> springConfigResources = new ArrayList<Resource>();
 
         //DL-Learner Configuration Object
         IConfiguration configuration = new ConfParserConfiguration(confFile);
 
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-        ApplicationContext  context =  builder.buildApplicationContext(configuration,componentKeyPrefixes,springConfigResources);
+        ApplicationContext  context =  builder.buildApplicationContext(configuration,springConfigResources);
         
         // a lot of debugging stuff
 //        FastInstanceChecker fi = context.getBean("reasoner", FastInstanceChecker.class);

@@ -23,7 +23,7 @@ import java.util.List;
 public class DefaultApplicationContextBuilder implements ApplicationContextBuilder{
 
     @Override
-    public ApplicationContext buildApplicationContext(IConfiguration configuration, List<String> componentKeyPrefixes, List<Resource> springConfigurationLocations) throws IOException{
+    public ApplicationContext buildApplicationContext(IConfiguration configuration, List<Resource> springConfigurationLocations) throws IOException{
         ConfigurableApplicationContext context = null;
         // Post Processors
         BeanDefinitionRegistryPostProcessor beanDefinitionRegistryPostProcessor = new ConfigurationBasedBeanDefinitionRegistryPostProcessor(configuration);
