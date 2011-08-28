@@ -66,6 +66,11 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         validateSecondBean(secondBean);
         validateThirdBean(secondBean.getComponent());
         validateFourthBean(context.getBean("fourthBean", TestBean.class));
+        validateFifthBean(context.getBean("fifthBean", TestBean.class));
+    }
+
+    private void validateFifthBean(TestBean fifthBean) {
+        Assert.assertTrue(fifthBean.getSimpleValue().equals("http://localhost/foo#test"));
     }
 
     private void validateThirdBean(TestBean thirdBean) {

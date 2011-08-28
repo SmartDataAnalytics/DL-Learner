@@ -73,17 +73,16 @@ public class ConfigurationBasedBeanDefinitionRegistryPostProcessor implements Be
                 Object value = property.getValue();
                 //Process Single Bean References
                 if (property.isBeanReference()) {
-                    BeanDefinition referencedBean = beanFactory.getBeanDefinition(property.getValue());
+                    BeanDefinition referencedBean = beanFactory.getBeanDefinition((String)property.getValue());
                     value = referencedBean;
                 }
 
                 //Process collections of bean references
                 if(property.isBeanReferenceCollection()){
-                    StringTokenizer tokenizer = new StringTokenizer(property.getValue(),"{,} ",false);
                     Collection<RuntimeBeanReference> beanReferences = new ManagedSet<RuntimeBeanReference>();
-                    while(tokenizer.hasMoreTokens()){
-                        String referencedBeanName = tokenizer.nextToken();
-                        beanReferences.add(new RuntimeBeanReference(referencedBeanName));
+                    Collection<String> referencedBeanNames = (Collection<String>)property.getValue();
+                    for (String referencedBeanName : referencedBeanNames) {
+                         beanReferences.add(new RuntimeBeanReference(referencedBeanName));
                     }
                     value = beanReferences;
                 }

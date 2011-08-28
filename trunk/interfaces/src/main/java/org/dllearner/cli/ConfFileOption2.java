@@ -46,10 +46,6 @@ public class ConfFileOption2 implements IConfigurationProperty{
 	
 	private Class<?> propertyType;
 	
-	// TODO: Do we want to store the actual value as object here or leave it up to
-	// the corresponding PropertyEditor to create it?
-	// WARNING: This feature does not work in conjunction with prefix post-processing yet!
-	@Deprecated
 	private Object valueObject;
 	
 	public ConfFileOption2() {
@@ -112,8 +108,8 @@ public class ConfFileOption2 implements IConfigurationProperty{
     }
 
     @Override
-    public String getValue() {
-        return getPropertyValue();
+    public Object getValue() {
+        return getValueObject();
     }
 
     @Override

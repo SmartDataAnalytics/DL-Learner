@@ -19,13 +19,9 @@
  */
 package org.dllearner.confparser3;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.*;
 
 import org.dllearner.cli.ConfFileOption2;
-import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
  * Performs post processing of conf files based on special parsing directives.
@@ -50,17 +46,47 @@ public class PostProcessor {
 		// apply prefix directive
 		ConfFileOption2 prefixOption = directives.get("prefixes");
 		if(prefixOption != null) {
-			List<StringTuple> prefixes = (List<StringTuple>) prefixOption.getValueObject();
+			Map<String,String> prefixes = (Map<String,String>) prefixOption.getValueObject();
 			
 			// loop through all options and replaces prefixes
 			for(ConfFileOption2 option : confOptions) {
-				String value = option.getPropertyValue();
-				for(StringTuple prefix : prefixes) {
-					// we only replace the prefix if it occurs directly after a quote
-					value = value.replaceAll("\"" + prefix.a + ":", "\"" + prefix.b);
-				}
-				option.setPropertyValue(value);
+                Object valueObject = option.getValue();
+
+                if(valueObject instanceof String){
+                    for (String prefix : prefixes.keySet()) {
+                        // we only replace the prefix if it occurs directly after a quote
+                        valueObject = ((String) valueObject).replaceAll(prefix + ":", prefixes.get(prefix));
+                    }
+
+                }else{
+                    // Check for collections of string
+                    if (valueObject instanceof Collection) {
+                        processStringCollection(prefixes, (Collection) valueObject);
+                    }
+                }
+
+				option.setValueObject(valueObject);
 			}
 		}
 	}
+
+    private void processStringCollection(Map<String,String> prefixes, Collection valueObject) {
+        Map<String, String> oldNewStringValues = new HashMap<String, String>();
+        Iterator itr = valueObject.iterator();
+        while (itr.hasNext()) {
+            for (String prefix : prefixes.keySet()) {
+                Object nextObject = itr.next();
+                if (nextObject instanceof String) {
+                    String oldValue = (String) nextObject;
+                    String newValue = oldValue.replaceAll( prefix + ":", prefixes.get(prefix));
+                    oldNewStringValues.put(oldValue, newValue);
+                }
+            }
+        }
+
+        Collection<String> oldValues = oldNewStringValues.keySet();
+        Collection<String> newValues = oldNewStringValues.values();
+        valueObject.removeAll(oldValues);
+        valueObject.addAll(newValues);
+    }
 }
