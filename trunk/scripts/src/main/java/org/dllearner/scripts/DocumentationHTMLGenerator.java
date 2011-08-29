@@ -22,10 +22,9 @@ package org.dllearner.scripts;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
-import org.dllearner.algorithms.SimpleSubclassLearner;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigHelper;
