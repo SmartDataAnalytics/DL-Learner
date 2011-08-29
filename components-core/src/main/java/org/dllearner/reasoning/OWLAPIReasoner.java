@@ -332,7 +332,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         for (OWLNamedIndividual owlIndividual : owlIndividuals) {
             individuals.add(new Individual(owlIndividual.toStringID()));
         }
-
+        
         // remove top and bottom properties (for backwards compatibility)
 //		atomicRoles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
 //		atomicRoles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#topObjectProperty"));

@@ -227,6 +227,8 @@ public class CELOE extends AbstractCELA {
 	@Override
 	public void init() throws ComponentInitException {
 		
+//		System.out.println("inds: " + reasoner.getIndividuals());
+		
 		// compute used concepts/roles from allowed/ignored
 		// concepts/roles
 		Set<NamedClass> usedConcepts;
@@ -248,7 +250,10 @@ public class CELOE extends AbstractCELA {
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
 		classHierarchy.thinOutSubsumptionHierarchy();
 		
-		heuristic = new OEHeuristicRuntime();
+		// if no one injected a heuristic, we use a default one
+		if(heuristic == null) {
+			heuristic = new OEHeuristicRuntime();
+		}
 		
 		minimizer = new DescriptionMinimizer(reasoner);
 		
