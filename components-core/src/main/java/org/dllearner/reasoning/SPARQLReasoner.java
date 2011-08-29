@@ -53,6 +53,7 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,7 +142,20 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		model.add(loadIncrementally(query));
 		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o}";
 		model.add(loadIncrementally(query));
-		
+		Set<AxiomType> propertyCharacteristics = new HashSet<AxiomType>();
+		propertyCharacteristics.add(AxiomType.TRANSITIVE_OBJECT_PROPERTY);
+		propertyCharacteristics.add(AxiomType.FUNCTIONAL_DATA_PROPERTY);
+		propertyCharacteristics.add(AxiomType.FUNCTIONAL_OBJECT_PROPERTY);
+		propertyCharacteristics.add(AxiomType.REFLEXIVE_OBJECT_PROPERTY);
+		propertyCharacteristics.add(AxiomType.IRREFLEXIVE_OBJECT_PROPERTY);
+		propertyCharacteristics.add(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY);
+		propertyCharacteristics.add(AxiomType.SYMMETRIC_OBJECT_PROPERTY);
+		propertyCharacteristics.add(AxiomType.ASYMMETRIC_OBJECT_PROPERTY);
+
+		for(AxiomType type : propertyCharacteristics){
+			query = "CONSTRUCT {?s a <%s>} WHERE {?s a %s}".replaceAll("%s", type.getName());
+			model.add(loadIncrementally(query));
+		}
 		
 		for(Statement st : model.listStatements().toList()){
 			System.out.println(st);
