@@ -21,6 +21,8 @@ package org.dllearner.scripts.evaluation;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -50,6 +52,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
@@ -131,12 +134,20 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
+import org.semanticweb.owlapi.reasoner.TimeOutException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * Evaluation of enrichment algorithms on DBpedia (Live).
@@ -171,7 +182,7 @@ public class EnrichmentEvaluation {
 	// can be used to only evaluate a part of DBpedia
 	private int maxObjectProperties = 10;
 	private int maxDataProperties = 10;
-	private int maxClasses = 10;
+	private int maxClasses = 3;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
@@ -295,12 +306,12 @@ public class EnrichmentEvaluation {
 		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		ks.init();
 		
-		evaluateObjectProperties(ks);
+//		evaluateObjectProperties(ks);
 //		
 //		Thread.sleep(10000);
-		
-		evaluateDataProperties(ks);
-		
+//		
+//		evaluateDataProperties(ks);
+//		
 //		Thread.sleep(10000);
 //		
 		evaluateClasses(ks);
@@ -748,7 +759,7 @@ public class EnrichmentEvaluation {
 		
 		
 		//compute recall for each axiom type
-		ps = conn.prepareStatement("SELECT axiom FROM evaluation WHERE algorithm=? AND score>=?");
+		ps = conn.prepareStatement("SELECT axiom, entailed, score FROM evaluation WHERE algorithm=? AND score>=?");
 		for(Entry<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> entry : axiomType2Algorithm.entrySet()){
 			AxiomType<? extends OWLAxiom> type = entry.getKey();
 			algorithms = entry.getValue();
@@ -758,21 +769,35 @@ public class EnrichmentEvaluation {
 			
 			//get all found axioms for specific axiom type 
 			Set<String> foundAxioms = new TreeSet<String>();
+			Map<String, Double> foundAndNotEntailedAxioms = new TreeMap<String, Double>();
 			rs = ps.executeQuery();
+			String axiom;
+			boolean entailed;
+			double score;
 			while(rs.next()){
-				foundAxioms.add(rs.getString(1));
+				axiom = rs.getString(1);
+				entailed = rs.getBoolean(2);
+				score = rs.getDouble(3);
+				
+				foundAxioms.add(axiom);
+				if(!entailed){
+					foundAndNotEntailedAxioms.put(axiom, score);
+				}
 			}
 			
-			
+			//get all axioms in the reference ontology for a specific axiom type
 			Set<String> relevantAxioms = getRelevantAxioms(type, entities);
-			
-			Set<String> notFoundAxioms = org.mindswap.pellet.utils.SetUtils.difference(relevantAxioms, foundAxioms);
-			System.out.println(notFoundAxioms);
-			
-			Set<String> additionalAxioms = org.mindswap.pellet.utils.SetUtils.difference(foundAxioms, relevantAxioms);
+			//compute the axioms which are in the reference ontology, but not be computed by the learning algorithm
+			Set<String> missedAxioms = org.mindswap.pellet.utils.SetUtils.difference(relevantAxioms, foundAxioms);
+			System.out.println(missedAxioms);
+			//compute the additional found axioms which were not entailed
+			for(String relAxiom : relevantAxioms){
+				foundAndNotEntailedAxioms.remove(relAxiom);
+			}
+			Set<String> additionalAxioms = foundAndNotEntailedAxioms.keySet();
 			
 			int total = relevantAxioms.size();
-			int found = total-notFoundAxioms.size();
+			int found = total - missedAxioms.size();
 			
 			table2.
 			append(type.getName()).append(" & ").
@@ -782,12 +807,46 @@ public class EnrichmentEvaluation {
 			System.out.println(type.getName() + ": " + found + "/" + total);
 			
 			
-			//write additional axioms into file
-			writeToDisk(type, additionalAxioms);
+			//write additional axioms with score into file
+			writeToDisk(type, foundAndNotEntailedAxioms);
+			//write missed axioms into file
+			writeToDisk(type, missedAxioms);
 		}
 		
 		table2.append("\\end{tabulary}");
 		System.out.println(table2.toString());
+	}
+	
+	private void writeToDisk(AxiomType<? extends OWLAxiom> axiomType, Map<String, Double> axiomsWithAccurracy){
+		String fileName = axiomType.getName().replaceAll(" ", "_") + ".txt";
+		
+		BufferedWriter out = null;
+		try {
+			File dir = new File("evaluation/additional");
+			if(!dir.exists()){
+				dir.mkdirs();
+			}
+			
+			File file = new File(dir + File.separator + fileName);
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			out = new BufferedWriter(new FileWriter(file));
+			for(Entry<String, Double> entry : axiomsWithAccurracy.entrySet()){
+				out.write(entry.getKey() + " (" + round(entry.getValue())*100 + "%)");
+				out.newLine();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(out != null){
+				try {
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	private void writeToDisk(AxiomType<? extends OWLAxiom> axiomType, Set<String> axioms){
@@ -795,9 +854,9 @@ public class EnrichmentEvaluation {
 		
 		BufferedWriter out = null;
 		try {
-			File dir = new File("evaluation");
+			File dir = new File("evaluation/missed");
 			if(!dir.exists()){
-				dir.mkdir();
+				dir.mkdirs();
 			}
 			
 			File file = new File(dir + File.separator + fileName);
@@ -962,6 +1021,41 @@ public class EnrichmentEvaluation {
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} 
+	}
+	
+	private void loadCurrentDBpediaOntology(){
+		int limit = 1000;
+		int offset = 0;
+		String query = "CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o} LIMIT %d OFFSET %d";
+		Model model = ModelFactory.createDefaultModel();
+		
+		QueryExecution qExec;
+		Model newModel;
+		boolean repeat = true;
+		while(repeat){
+			repeat = false;
+			qExec = QueryExecutionFactory.sparqlService("http://live.dbpedia.org/sparql", QueryFactory.create(String.format(query, limit, offset)), "http://live.dbpedia.org/ontology");
+			newModel = qExec.execConstruct();
+			model.add(newModel);
+			repeat = newModel.size() > 0;
+			offset += limit;
+		}
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			model.write(baos, "RDF/XML");
+			ByteArrayInputStream bs = new ByteArrayInputStream(baos.toByteArray());
+			dbPediaOntology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(bs);
+			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbPediaOntology);
+			reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		} catch (InconsistentOntologyException e) {
+			e.printStackTrace();
+		} catch (ReasonerInterruptedException e) {
+			e.printStackTrace();
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) throws Exception
