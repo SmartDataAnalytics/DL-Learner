@@ -29,6 +29,9 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.aksw.commons.sparql.api.core.QueryExecutionFactory;
+import org.aksw.commons.sparql.api.http.QueryExecutionFactoryHttp;
+import org.aksw.commons.sparql.api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.core.IndividualReasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.SchemaReasoner;
@@ -56,8 +59,12 @@ import org.slf4j.LoggerFactory;
 import com.clarkparsia.owlapiv3.XSD;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -110,12 +117,49 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
 		return new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
+	
+	public void loadSchema(){
+		Model model = ModelFactory.createDefaultModel();
+		
+		//load class hierarchy
+		String query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?o} WHERE {?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?o}";
+		model.add(loadIncrementally(query));
+		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#equivalentClass> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#equivalentClass> ?o}";
+		model.add(loadIncrementally(query));
+		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#disjointWith> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#disjointWith> ?o}";
+		model.add(loadIncrementally(query));
+		//load domain axioms
+		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#domain> ?o} WHERE {?s <http://www.w3.org/2000/01/rdf-schema#domain> ?o}";
+		model.add(loadIncrementally(query));
+		//load range axioms
+		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#range> ?o} WHERE {?s <http://www.w3.org/2000/01/rdf-schema#range> ?o}";
+		model.add(loadIncrementally(query));
+		//load property hierarchy
+		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?o} WHERE {?s <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?o}";
+		model.add(loadIncrementally(query));
+		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#equivalentProperty> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#equivalentProperty> ?o}";
+		model.add(loadIncrementally(query));
+		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o}";
+		model.add(loadIncrementally(query));
+		
+		
+		for(Statement st : model.listStatements().toList()){
+			System.out.println(st);
+		}
+	}
+	
+	private Model loadIncrementally(String query){
+		QueryExecutionFactory f = new QueryExecutionFactoryHttp(ks.getEndpoint().getURL().toString(), ks.getEndpoint().getDefaultGraphURIs());
+		f = new QueryExecutionFactoryPaginated(f, 1000);
+		Model model = f.createQueryExecution(query).execConstruct();
+		return model;
+	}
 
 	@Override
 	public Set<NamedClass> getTypes(Individual individual) {
 		Set<NamedClass> types = new HashSet<NamedClass>();
 		String query = String.format("SELECT ?class WHERE {<%s> a ?class.}", individual.getName());
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -154,7 +198,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			query += " LIMIT " + limit;
 		}
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -173,7 +217,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		Set<Individual> individuals = new HashSet<Individual>();
 		String query = String.format("SELECT ?ind WHERE {<%s> <%s> ?ind, FILTER(isIRI(?ind))}", individual.getName(), objectProperty.getName());
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -196,7 +240,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				" FILTER(isIRI(?ind) && ?prop != <%s> && ?prop != <%s>)}", 
 				individual.getName(), RDF.type.getURI(), OWL.sameAs.getURI());
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		Set<Individual> individuals;
 		ObjectProperty property;
@@ -224,7 +268,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				" FILTER(isIRI(?o))}", 
 				objectProperty.getName());
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		Individual sub;
 		Individual obj;
@@ -258,7 +302,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				" FILTER(DATATYPE(?o) = <%s>)}", 
 				datatypeProperty.getName(), XSD.DOUBLE.toStringID());
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		Individual sub;
 		Double obj;
@@ -286,7 +330,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				" FILTER(DATATYPE(?o) = <%s>)}", 
 				datatypeProperty.getName(), XSD.INT.toStringID());
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		Individual sub;
 		Integer obj;
@@ -314,7 +358,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				" FILTER(DATATYPE(?o) = <%s>)}", 
 				datatypeProperty.getName(), XSD.BOOLEAN.toStringID());
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		Individual sub;
 		Boolean obj;
@@ -343,7 +387,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				datatypeProperty.getName(), XSD.BOOLEAN.toStringID(),
 				"\"true\"^^<" + XSD.BOOLEAN.toStringID() + ">");
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -362,7 +406,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				datatypeProperty.getName(), XSD.BOOLEAN.toStringID(),
 				"\"false\"^^<"+XSD.BOOLEAN.toStringID() + ">");
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -390,7 +434,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				"}", 
 				objectProperty.getName(), RDFS.domain.getURI());
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		List<Description> domains = new ArrayList<Description>();
 		while(rs.hasNext()){
@@ -413,7 +457,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				"}", 
 				datatypeProperty.getName(), RDFS.domain.getURI());
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		List<Description> domains = new ArrayList<Description>();
 		while(rs.hasNext()){
@@ -436,7 +480,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				"}", 
 				objectProperty.getName(), RDFS.range.getURI());
 		
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		List<Description> ranges = new ArrayList<Description>();
 		while(rs.hasNext()){
@@ -493,7 +537,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				OWL.equivalentClass.getURI(),
 				namedClass.getURI().toString()	
 		);
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -527,7 +571,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				((NamedClass)description).getURI().toString(),
 				RDFS.subClassOf.getURI()
 		);
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -566,7 +610,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				((NamedClass)description).getURI().toString()
 				
 		);
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -588,7 +632,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				objectProperty.getURI().toString(),
 				RDFS.subPropertyOf.getURI()
 		);
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -605,7 +649,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				objectProperty.getURI().toString()
 				
 		);
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -636,7 +680,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				dataProperty.getURI().toString(),
 				RDFS.subPropertyOf.getURI()
 		);
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -653,7 +697,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 				dataProperty.getURI().toString()
 				
 		);
-		ResultSet rs = executeQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -672,7 +716,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		throw new UnsupportedOperationException();
 	}
 	
-	private ResultSet executeQuery(String query){
+	private ResultSet executeSelectQuery(String query){
 		logger.info("Sending query \n {}", query);
 		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
 		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
@@ -697,11 +741,25 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		return ret;
 	}
 	
+	private Model executeConstructQuery(String query){
+		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
+			queryExecution.addNamedGraph(ngu);
+		}			
+		Model ret = queryExecution.execConstruct();
+		return ret;
+	}
+	
 	
 	public static void main(String[] args) {
 		String NS = "http://dbpedia.org/ontology/";
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		SPARQLReasoner r = new SPARQLReasoner(ks);
+		
+		r.loadSchema();
 		
 //		ObjectProperty oP = new ObjectProperty(NS + "league");
 //		for(Entry<Individual, SortedSet<Individual>> entry : r.getPropertyMembers(oP).entrySet()){
