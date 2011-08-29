@@ -508,8 +508,8 @@ public class PosNegLPStandard extends PosNegLP {
 		// maybe use this approach:
 //		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size()+0.0001);
 		
-		System.out.println("noise: " + noise);
-		System.out.println("max not covered: " + maxNotCovered);
+//		System.out.println("noise: " + noise);
+//		System.out.println("max not covered: " + maxNotCovered);
 		
 		int notCoveredPos = 0;
 		int notCoveredNeg = 0;
@@ -518,7 +518,7 @@ public class PosNegLPStandard extends PosNegLP {
 			if (!getReasoner().hasType(description, example)) {
 				notCoveredPos++;
 				
-				System.out.println("d:" + description + "; ex:" + example);
+//				System.out.println("d:" + description + "; ex:" + example);
 				
 				if(notCoveredPos >= maxNotCovered) {
 					return -1;
@@ -531,8 +531,8 @@ public class PosNegLPStandard extends PosNegLP {
 			}
 		}
 		
-		System.out.println("not covered pos: " + notCoveredPos);
-		System.out.println("not covered neg: " + notCoveredNeg);
+//		System.out.println("not covered pos: " + notCoveredPos);
+//		System.out.println("not covered neg: " + notCoveredNeg);
 		
 //		if(useFMeasure) {
 //			double recall = (positiveExamples.size() - notCoveredPos) / (double) positiveExamples.size();

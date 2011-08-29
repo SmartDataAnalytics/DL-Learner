@@ -279,6 +279,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		
 //		subHierarchy = rs.getClassHierarchy();
 	public void init() {	
+//		System.out.println("subHierarchy: " + subHierarchy);
+		
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
 		for(ObjectProperty op : reasoner.getObjectProperties()) {
