@@ -26,8 +26,6 @@ import org.dllearner.configuration.IConfigurationProperty;
  * Programmatic representation of an option setting in a conf file:
  * bean.property = value;
  * 
- * TODO: Class is not stable yet.
- * 
  * @author Jens Lehmann
  *
  */
@@ -46,6 +44,8 @@ public class ConfFileOption2 implements IConfigurationProperty{
 	
 	private Class<?> propertyType;
 	
+	// the object should be either a primitive, a Collection<String> or a Map<String,String>,
+	// the actual mapping from Strings to datatypes is later done e.g. by property editors
 	private Object valueObject;
 	
 	public ConfFileOption2() {
@@ -84,12 +84,10 @@ public class ConfFileOption2 implements IConfigurationProperty{
 		this.propertyType = propertyType;
 	}
 
-	@Deprecated
 	public Object getValueObject() {
 		return valueObject;
 	}
 
-	@Deprecated
 	public void setValueObject(Object valueObject) {
 		this.valueObject = valueObject;
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2011, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,7 +19,11 @@
  */
 package org.dllearner.confparser3;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.dllearner.cli.ConfFileOption2;
 
@@ -58,11 +62,17 @@ public class PostProcessor {
                         valueObject = ((String) valueObject).replaceAll(prefix + ":", prefixes.get(prefix));
                     }
 
-                }else{
+                } else if(valueObject instanceof Map) {
+                	throw new Error("Map post processing not implemented yet");
+                } else if(valueObject instanceof Collection){
                     // Check for collections of string
                     if (valueObject instanceof Collection) {
-                        processStringCollection(prefixes, (Collection) valueObject);
+                        processStringCollection(prefixes, (Collection<?>) valueObject);
                     }
+                } else if(valueObject instanceof Boolean || valueObject instanceof Integer || valueObject instanceof Double) {
+                	// nothing needs to be done for booleans
+                } else {
+                	throw new Error("Unknown conf option type " + valueObject.getClass());
                 }
 
 				option.setValueObject(valueObject);
