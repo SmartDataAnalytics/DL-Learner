@@ -73,8 +73,7 @@ public class ConfigurationBasedBeanDefinitionRegistryPostProcessor implements Be
                 Object value = property.getValue();
                 //Process Single Bean References
                 if (property.isBeanReference()) {
-                    BeanDefinition referencedBean = beanFactory.getBeanDefinition((String)property.getValue());
-                    value = referencedBean;
+                    value = new RuntimeBeanReference((String)property.getValue());
                 }
 
                 //Process collections of bean references

@@ -6,7 +6,7 @@ import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.confparser3.ConfParserConfiguration;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -51,9 +51,9 @@ public class MoosiqueCLITest {
 
 
     private void validateContext(ApplicationContext context) {
-        PosNegLPStandard lp = context.getBean("lp", PosNegLPStandard.class);
+        PosOnlyLP lp = context.getBean("lp", PosOnlyLP.class);
         Assert.assertTrue(lp.getPositiveExamples().size() == 3);
-        Assert.assertTrue(lp.getNegativeExamples().size() == 4);
+//        Assert.assertTrue(lp.getNegativeExamples().size() == 4);
         Assert.assertNotNull(lp.getReasoner());
 
         CELOE algorithm = context.getBean("alg", CELOE.class);
