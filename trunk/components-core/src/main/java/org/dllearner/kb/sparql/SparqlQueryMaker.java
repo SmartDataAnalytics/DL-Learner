@@ -178,8 +178,6 @@ public class SparqlQueryMaker {
 			terms.add(assembleTerms(tmpterms, "&&"));
 		}
 		
-		
-		
 		for (String pred : getPredicateFilterList()) {
 			terms.add(not + "regex(str(" + predicateVariable + "), '" + pred
 					+ "')");

@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -126,19 +127,19 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 	
 	private Set<String> instances;
 	
-	private int recursionDepth;
+	private int recursionDepth = 1;
 
-	private boolean getAllSuperClasses;
+	private boolean getAllSuperClasses = true;
 
-	private boolean closeAfterRecursion;
+	private boolean closeAfterRecursion = true;
 
 	private boolean propertyInformation;
 
-	private int breakSuperClassRetrievalAfter;
+	private int breakSuperClassRetrievalAfter = 1000;
 
-	private boolean dissolveBlankNodes;
+	private boolean dissolveBlankNodes = true;
 
-	private boolean saveExtractedFragment;
+	private boolean saveExtractedFragment = false;
 
 	private String predefinedEndpoint;
 
@@ -146,19 +147,19 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 
 	private Collection<String> namedGraphURIs = new LinkedList<String>();
 
-	private boolean useCache;
+	private boolean useCache = true;
 
-	private String cacheDir;
+	private String cacheDir = "cache";
 
 	private boolean useCacheDatabase;
 
 	private String predefinedFilter;
 
-	private Set<String> objList;
+	private Set<String> objList = new TreeSet<String>();
 
-	private Set<String> predList;
+	private Set<String> predList = new TreeSet<String>() ;
 
-	private boolean useLits;
+	private boolean useLits = true;
 
 	private String predefinedManipulator;
 

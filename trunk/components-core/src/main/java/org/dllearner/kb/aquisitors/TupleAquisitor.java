@@ -72,6 +72,7 @@ public abstract class TupleAquisitor {
 			}
 		}catch(Exception e){
 			logger.warn("Caught exception in tupleaquisitor, ignoring it: "+e.toString());
+			e.printStackTrace();
 			return new TreeSet<RDFNodeTuple>();
 			
 		}
