@@ -63,6 +63,7 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.PropertyContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -121,9 +122,9 @@ public class CELOE extends AbstractCELA {
 	
 	private long nanoStartTime;
 	
-	// important parameters
+	// important parameters (non-config options but internal)
 	private double noise;
-	private double maxDepth;
+
 	private boolean filterFollowsFromKB;	
 	
 	// less important parameters
@@ -142,32 +143,35 @@ public class CELOE extends AbstractCELA {
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
 	
-	ConceptComparator cc = new ConceptComparator();
-	
 	// TODO: turn those into config options
 	
-	Set<NamedClass> allowedConcepts = new TreeSet<NamedClass>(cc);
-	Set<NamedClass> ignoredConcepts = new TreeSet<NamedClass>(cc);
+	// important: do not initialise those with empty sets
+	// null = no settings for allowance / ignorance
+	// empty set = allow / ignore nothing (it is often not desired to allow no class!)
+	Set<NamedClass> allowedConcepts = null;
+	Set<NamedClass> ignoredConcepts = null;
 
-	private boolean writeSearchTree;
+	private boolean writeSearchTree = false;
 
 	private String searchTreeFile = "log/searchTree.txt";
 
-	private int maxNrOfResults;
+	private int maxNrOfResults = 10;
 
-	private double noisePercentage;
+	private double noisePercentage = 0.0;
 
-	private boolean filterDescriptionsFollowingFromKB;
+	private boolean filterDescriptionsFollowingFromKB = false;
 
-	private boolean reuseExistingDescription;
+	private boolean reuseExistingDescription = false;
 
-	private boolean replaceSearchTree;
+	private boolean replaceSearchTree = false;
 
-	private int maxClassDescriptionTests;
+	private int maxClassDescriptionTests = 0;
 
-	private int maxExecutionTimeInSeconds;
+	private int maxExecutionTimeInSeconds = 100;
 
-	private boolean terminateOnNoiseReached;
+	private boolean terminateOnNoiseReached = false;
+	
+	private double maxDepth = 7;
 	
 //	public CELOEConfigurator getConfigurator() {
 //		return configurator;
@@ -226,9 +230,7 @@ public class CELOE extends AbstractCELA {
 	
 	@Override
 	public void init() throws ComponentInitException {
-		
-//		System.out.println("inds: " + reasoner.getIndividuals());
-		
+			
 		// compute used concepts/roles from allowed/ignored
 		// concepts/roles
 		Set<NamedClass> usedConcepts;
@@ -249,7 +251,7 @@ public class CELOE extends AbstractCELA {
 //		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
 		classHierarchy.thinOutSubsumptionHierarchy();
-		
+
 		// if no one injected a heuristic, we use a default one
 		if(heuristic == null) {
 			heuristic = new OEHeuristicRuntime();
@@ -266,13 +268,14 @@ public class CELOE extends AbstractCELA {
 			operator = new RhoDRDown();
 			((RhoDRDown)operator).setStartClass(startClass);
 			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
+			((RhoDRDown)operator).setReasoner(reasoner);
+			((RhoDRDown)operator).init();
 		}
 //		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
 		if(writeSearchTree) {
 			File f = new File(searchTreeFile );
-//			System.out.println(f.getAbsolutePath());
 			Files.clearFile(f);
 		}
 		
@@ -287,6 +290,12 @@ public class CELOE extends AbstractCELA {
 		// (filterFollowsFromKB is automatically set to false if the problem
 		// is not a class learning problem
 		filterFollowsFromKB = filterDescriptionsFollowingFromKB && isClassLearningProblem;
+		
+//		Set<Description> concepts = operator.refine(Thing.instance, 5);
+//		for(Description concept : concepts) {
+//			System.out.println(concept);
+//		}
+//		System.out.println("refinements of thing: " + concepts.size());
 		
 		// actions specific to ontology engineering
 		if(isClassLearningProblem) {
@@ -434,12 +443,15 @@ public class CELOE extends AbstractCELA {
 //			for(Description refinement : refinements) {
 //				System.out.println("refinement: " + refinement);
 //			}
+//			if(loop > 10) {
+//				System.exit(0);
+//			}
 			
 			while(refinements.size() != 0) {
 				// pick element from set
 				Description refinement = refinements.pollFirst();
 				int length = refinement.getLength();
-				
+								
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
 				if(length > horizExp && refinement.getDepth() <= maxDepth) {
@@ -538,7 +550,7 @@ public class CELOE extends AbstractCELA {
 	// returns true if node was added and false otherwise
 	private boolean addNode(Description description, OENode parentNode) {
 		
-//		System.out.println(description);
+//		System.out.println("d: " + description);
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
@@ -857,6 +869,7 @@ public class CELOE extends AbstractCELA {
 		return operator;
 	}
 
+	@Autowired(required=false)
 	public void setOperator(RefinementOperator operator) {
 		this.operator = operator;
 	}
