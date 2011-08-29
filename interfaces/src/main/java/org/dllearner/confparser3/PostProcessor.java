@@ -65,10 +65,7 @@ public class PostProcessor {
                 } else if(valueObject instanceof Map) {
                 	throw new Error("Map post processing not implemented yet");
                 } else if(valueObject instanceof Collection){
-                    // Check for collections of string
-                    if (valueObject instanceof Collection) {
-                        processStringCollection(prefixes, (Collection<?>) valueObject);
-                    }
+                    processStringCollection(prefixes, (Collection<?>) valueObject);
                 } else if(valueObject instanceof Boolean || valueObject instanceof Integer || valueObject instanceof Double) {
                 	// nothing needs to be done for booleans
                 } else {

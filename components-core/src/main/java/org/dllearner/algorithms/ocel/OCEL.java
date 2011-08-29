@@ -339,7 +339,7 @@ public class OCEL extends AbstractCELA {
 
 		// adjust heuristic
 
-		
+		if(heuristic == null) {
 		if(heuristicStr == "lexicographic")
 			heuristic = new LexicographicHeuristic();
 		else if(heuristicStr == "flexible") {
@@ -348,13 +348,13 @@ public class OCEL extends AbstractCELA {
 			}
 			heuristic = new FlexibleHeuristic(((PosNegLP) getLearningProblem()).getNegativeExamples().size(), ((PosNegLP) getLearningProblem()).getPercentPerLengthUnit());
 		} else {
-            //The Heuristic is now injected
-//			if(getLearningProblem() instanceof PosOnlyLP) {
-//				throw new RuntimeException("does not work with positive examples only yet");
+			if(getLearningProblem() instanceof PosOnlyLP) {
+				throw new RuntimeException("does not work with positive examples only yet");
 //				heuristic = new MultiHeuristic(((PosOnlyLP) getLearningProblem()).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-//			} else {
-//				heuristic = new MultiHeuristic(((PosNegLP) getLearningProblem()).getPositiveExamples().size(),((PosNegLP) getLearningProblem()).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-//			}
+			} else {
+				heuristic = new MultiHeuristic(((PosNegLP) getLearningProblem()).getPositiveExamples().size(),((PosNegLP) getLearningProblem()).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
+			}
+		}
 		}
 		
 		// warn the user if he/she sets any non-standard heuristic, because it will just be ignored
@@ -408,6 +408,7 @@ public class OCEL extends AbstractCELA {
 		// create a refinement operator and pass all configuration
 		// variables to it
 //		RhoDRDown 
+		if(operator == null) {
 		operator = new RhoDRDown(
 				reasoner,
 				classHierarchy,
@@ -427,7 +428,8 @@ public class OCEL extends AbstractCELA {
 					useStringDatatypes, 
 					instanceBasedDisjoints
 			);		
-			
+		}	
+		
 		// create an algorithm object and pass all configuration
 		// options to it
 		algorithm = new ROLearner2(
@@ -530,7 +532,7 @@ public class OCEL extends AbstractCELA {
 		return operator;
 	}
 
-    @Autowired
+    @Autowired(required=false)
 	public void setOperator(RhoDRDown operator) {
 		this.operator = operator;
 	}
@@ -855,7 +857,7 @@ public class OCEL extends AbstractCELA {
 		this.terminateOnNoiseReached = terminateOnNoiseReached;
 	}
 
-    @Autowired
+    @Autowired(required=false)
 	public void setHeuristic(ExampleBasedHeuristic heuristic) {
 		this.heuristic = heuristic;
 	}
