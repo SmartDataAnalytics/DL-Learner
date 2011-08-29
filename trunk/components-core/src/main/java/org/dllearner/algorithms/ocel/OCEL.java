@@ -409,6 +409,8 @@ public class OCEL extends AbstractCELA {
 		// variables to it
 //		RhoDRDown 
 		if(operator == null) {
+			// TODO: switch to default constructor and inject only 
+			// the necessary things (class hierarchy)
 		operator = new RhoDRDown(
 				reasoner,
 				classHierarchy,
@@ -428,7 +430,10 @@ public class OCEL extends AbstractCELA {
 					useStringDatatypes, 
 					instanceBasedDisjoints
 			);		
-		}	
+		} else {
+			// we still have to inject the class hierarchy even if the operator is configured
+			operator.setSubHierarchy(classHierarchy);
+		}
 		
 		// create an algorithm object and pass all configuration
 		// options to it
