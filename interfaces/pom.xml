@@ -169,6 +169,7 @@
                         <exclude>org/dllearner/test/SpringTest.java</exclude>
                         <exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
                         <exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
+                        <exclude>org/dllearner/configuration/spring/ConfigurationBasedPropertyOverrideConfigurerTest.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
