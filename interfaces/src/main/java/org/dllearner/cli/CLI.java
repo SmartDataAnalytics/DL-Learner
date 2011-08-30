@@ -24,16 +24,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlObject;
 import org.dllearner.Info;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
+import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.confparser3.ParseException;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.utilities.Files;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -47,7 +51,11 @@ import org.springframework.core.io.Resource;
  */
 public class CLI {
 
-    public CLI(){
+	private static Logger logger = Logger.getLogger(CLI.class);
+	
+	private boolean writeSpringConfiguration = false;
+
+	public CLI(){
 
     }
 
@@ -56,6 +64,14 @@ public class CLI {
         algorithm.start();
     }
 
+    public boolean isWriteSpringConfiguration() {
+		return writeSpringConfiguration;
+	}
+
+	public void setWriteSpringConfiguration(boolean writeSpringConfiguration) {
+		this.writeSpringConfiguration = writeSpringConfiguration;
+	}    
+    
 	/**
 	 * @param args
 	 * @throws ParseException 
@@ -100,6 +116,23 @@ public class CLI {
 //        System.out.println(lp.getPositiveExamples());
 //        System.out.println(lp.getNegativeExamples());
 //        System.out.println(lp.getAccuracy(new NamedClass("http://localhost/foo#male")));
+    
+        // get a CLI bean if it exists
+        CLI cli = null;
+        if(context.getBeansOfType(CLI.class).size()>0) {
+        	System.out.println();
+        	cli = context.getBean(CLI.class);
+        	SpringConfigurationXMLBeanConverter converter = new SpringConfigurationXMLBeanConverter();
+        	XmlObject xml = converter.convert(configuration);
+        	String springFilename = file.getCanonicalPath().replace(".conf", ".xml");
+        	File springFile = new File(springFilename);
+        	if(springFile.exists()) {
+        		logger.warn("Cannot write Spring configuration, because " + springFilename + " already exists.");
+        	} else {
+        		Files.createFile(springFile, xml.toString());
+        	}
+//        	SpringConfigurationXMLBeanConverter converter;
+        }
         
         // start algorithm in conf file
         LearningAlgorithm algorithm = context.getBean("alg",LearningAlgorithm.class);
