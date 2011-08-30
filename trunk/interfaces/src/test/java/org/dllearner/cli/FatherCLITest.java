@@ -1,13 +1,15 @@
 package org.dllearner.cli;
 
 import junit.framework.Assert;
+import org.apache.xmlbeans.XmlObject;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
+import org.dllearner.configuration.util.ConfigurationXMLBeanConverter;
+import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -35,6 +37,10 @@ public class FatherCLITest {
 
         //DL-Learner Configuration Object
         IConfiguration configuration = new ConfParserConfiguration(confFile);
+
+        ConfigurationXMLBeanConverter converter = new SpringConfigurationXMLBeanConverter();
+        XmlObject object = converter.convert(configuration);
+        System.out.println(object.toString());
         //Build The Application Context
 
         ApplicationContext context = builder.buildApplicationContext(configuration, springConfigResources);

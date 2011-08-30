@@ -25,13 +25,6 @@ public interface IConfigurationProperty {
      */
     public Object getValue();
 
-    /**
-     * Get the type of this value.
-     *
-     * @return The type of this value.
-     */
-    public Class getType();
-
 
     /**
      * Does this property represent a bean reference?
