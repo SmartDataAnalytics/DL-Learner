@@ -44,8 +44,8 @@ public class FuzzyOEHeuristicRuntime implements Comparator<FuzzyOENode>{
 	// syntactic comparison as final comparison criterion
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
-	public FuzzyOEHeuristicRuntime(FuzzyCELOEConfigurator configurator) {
-		expansionPenaltyFactor = configurator.getExpansionPenaltyFactor();
+	public FuzzyOEHeuristicRuntime() {
+//		expansionPenaltyFactor = configurator.getExpansionPenaltyFactor();
 	}
 	
 	@Override
@@ -81,7 +81,29 @@ public class FuzzyOEHeuristicRuntime implements Comparator<FuzzyOENode>{
 		return score;
 	}
 
+
 	public double getExpansionPenaltyFactor() {
 		return expansionPenaltyFactor;
+	}
+
+	public double getGainBonusFactor() {
+		return gainBonusFactor;
+	}
+
+	public void setGainBonusFactor(double gainBonusFactor) {
+		this.gainBonusFactor = gainBonusFactor;
+	}
+
+	public double getNodeRefinementPenalty() {
+		return nodeRefinementPenalty;
+	}
+
+	public void setNodeRefinementPenalty(double nodeRefinementPenalty) {
+		this.nodeRefinementPenalty = nodeRefinementPenalty;
+	}
+
+	public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
+		this.expansionPenaltyFactor = expansionPenaltyFactor;
 	}	
+		
 }
