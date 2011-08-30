@@ -35,6 +35,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
@@ -60,10 +61,10 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLP;
 import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard;
+import org.dllearner.refinementoperators.FuzzyRhoDRDown;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.refinementoperators.fuzzydll.FuzzyRhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -71,6 +72,7 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.PropertyContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -86,7 +88,7 @@ import com.jamonapi.MonitorFactory;
 public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLearningAlgorithm {
 
 	private static Logger logger = Logger.getLogger(FuzzyCELOE.class);
-	private FuzzyCELOEConfigurator configurator;
+//	private FuzzyCELOEConfigurator configurator;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;	
@@ -130,7 +132,6 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	
 	// important parameters
 	private double noise;
-	private double maxDepth;
 	private boolean filterFollowsFromKB;	
 	
 	// less important parameters
@@ -154,13 +155,47 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 //	private PrintWriter out;
 //	private long start = 0;
 	
-	public FuzzyCELOEConfigurator getConfigurator() {
-		return configurator;
+	// TODO: turn those into config options
+	
+	// important: do not initialise those with empty sets
+	// null = no settings for allowance / ignorance
+	// empty set = allow / ignore nothing (it is often not desired to allow no class!)
+	Set<NamedClass> allowedConcepts = null;
+	Set<NamedClass> ignoredConcepts = null;
+
+	private boolean writeSearchTree = false;
+
+	private String searchTreeFile = "log/searchTree.txt";
+
+	private int maxNrOfResults = 10;
+
+	private double noisePercentage = 0.0;
+
+	private boolean filterDescriptionsFollowingFromKB = false;
+
+	private boolean reuseExistingDescription = false;
+
+	private boolean replaceSearchTree = false;
+
+	private int maxClassDescriptionTests = 0;
+
+	private int maxExecutionTimeInSeconds = 100;
+
+	private boolean terminateOnNoiseReached = false;
+	
+	private double maxDepth = 7;	
+	
+	public FuzzyCELOE() {
+		
 	}
+	
+//	public FuzzyCELOEConfigurator getConfigurator() {
+//		return configurator;
+//	}
 	
 	public FuzzyCELOE(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
-		configurator = new FuzzyCELOEConfigurator(this);
+//		configurator = new FuzzyCELOEConfigurator(this);
 	}
 
 	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
@@ -206,67 +241,71 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	@Override
 	public void init() throws ComponentInitException {
 		
-		// TODO: remove, just for testing purposes
-//		FileWriter fstream;
-//		try {			
-//			fstream = new FileWriter("../examples/fuzzydll/kk.log");
-//			out = new PrintWriter(fstream);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// compute used concepts/roles from allowed/ignored
+		// concepts/roles
+		Set<NamedClass> usedConcepts;
+//		Set<NamedClass> allowedConcepts = configurator.getAllowedConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getAllowedConcepts());
+//		Set<NamedClass> ignoredConcepts = configurator.getIgnoredConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getIgnoredConcepts());
+		if(allowedConcepts != null) {
+			// sanity check to control if no non-existing concepts are in the list
+			Helper.checkConcepts(reasoner, allowedConcepts);
+			usedConcepts = allowedConcepts;
+		} else if(ignoredConcepts != null) {
+			usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
+		} else {
+			usedConcepts = Helper.computeConcepts(reasoner);
+		}
 		
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
-		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
+//		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
+		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
 		classHierarchy.thinOutSubsumptionHierarchy();
-		
-		heuristic = new FuzzyOEHeuristicRuntime(configurator);
+
+		// if no one injected a heuristic, we use a default one
+		if(heuristic == null) {
+			heuristic = new FuzzyOEHeuristicRuntime();
+		}
 		
 		minimizer = new DescriptionMinimizer(reasoner);
 		
 		startClass = Thing.instance;
 		
-		singleSuggestionMode = configurator.getSingleSuggestionMode();
+//		singleSuggestionMode = configurator.getSingleSuggestionMode();
 		
-		// TODO: 1. turn those into instance variables / fields 2. provide getters/setters; 
-		// 3. annotate them with @ConfigOption => this all needs to be done in FuzzyRhoDRDown,
-		// not in this class
-		boolean useExistsConstructor = true;
-		int valueFrequencyThreshold = 2;
-		boolean useCardinalityRestrictions = false;
-		int cardinalityLimit = 1;
-		boolean useHasValueConstructor = false;
-		boolean useNegation = true;
-		boolean useStringDatatypes = false;
-		boolean useBooleanDatatypes = false;
-		boolean useDoubleDatatypes = false;
-		boolean instanceBasedDisjoints = true;
-		boolean applyAllFilter = true;
-		boolean applyExistsFilter = true;
-		boolean useAllConstructor = true;
-
 		// create refinement operator
-		operator = new FuzzyRhoDRDown(reasoner, classHierarchy, cardinalityLimit, useHasValueConstructor, useStringDatatypes, instanceBasedDisjoints, applyAllFilter, applyExistsFilter, useAllConstructor,
-				useExistsConstructor, valueFrequencyThreshold, useCardinalityRestrictions, useNegation, useBooleanDatatypes, useDoubleDatatypes, (NamedClass) startClass);
+		if(operator == null) {
+			operator = new RhoDRDown();
+			((RhoDRDown)operator).setStartClass(startClass);
+			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
+			((RhoDRDown)operator).setReasoner(reasoner);
+			((RhoDRDown)operator).init();
+		}
+//		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
-		if(configurator.getWriteSearchTree()) {
-			Files.clearFile(new File(configurator.getSearchTreeFile()));
+		if(writeSearchTree) {
+			File f = new File(searchTreeFile );
+			Files.clearFile(f);
 		}
 		
-		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(configurator.getMaxNrOfResults());
+		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
 		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
 		
 		// we put important parameters in class variables
-		noise = configurator.getNoisePercentage()/100d;
+		noise = noisePercentage/100d;
 //		System.out.println("noise " + noise);
-		maxDepth = configurator.getMaxDepth();
+//		maxDepth = configurator.getMaxDepth();
 		// (filterFollowsFromKB is automatically set to false if the problem
 		// is not a class learning problem
-		filterFollowsFromKB = configurator.getFilterDescriptionsFollowingFromKB()
-		  && isClassLearningProblem;
+		filterFollowsFromKB = filterDescriptionsFollowingFromKB && isClassLearningProblem;
+		
+//		Set<Description> concepts = operator.refine(Thing.instance, 5);
+//		for(Description concept : concepts) {
+//			System.out.println(concept);
+//		}
+//		System.out.println("refinements of thing: " + concepts.size());
 		
 		// actions specific to ontology engineering
 		if(isClassLearningProblem) {
@@ -281,7 +320,7 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 			// superfluous to add super classes in this case)
 			if(isEquivalenceProblem) {
 				Set<Description> existingDefinitions = reasoner.getAssertedDefinitions(classToDescribe);
-				if(configurator.getReuseExistingDescription() && (existingDefinitions.size() > 0)) {
+				if(reuseExistingDescription && (existingDefinitions.size() > 0)) {
 					// the existing definition is reused, which in the simplest case means to
 					// use it as a start class or, if it is already too specific, generalise it
 					
@@ -344,7 +383,7 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 								"sensible to learn a description in this case.");
 					}					
 				}
-			}				
+			}					
 		} else if(learningProblem instanceof PosOnlyLP) {
 			examples = ((PosOnlyLP)learningProblem).getPositiveExamples();
 		// changed by Josue
@@ -457,7 +496,7 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 			updateMinMaxHorizExp(nextNode);
 			
 			// writing the search tree (if configured)
-			if (configurator.getWriteSearchTree()) {
+			if (writeSearchTree) {
 				String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
 				if (refinements.size() > 1) {
 					treeString += "all expanded nodes:\n";
@@ -468,10 +507,10 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 				treeString += startNode.toTreeString(baseURI);
 				treeString += "\n";
 
-				if (configurator.getReplaceSearchTree())
-					Files.createFile(new File(configurator.getSearchTreeFile()), treeString);
+				if (replaceSearchTree)
+					Files.createFile(new File(searchTreeFile), treeString);
 				else
-					Files.appendFile(new File(configurator.getSearchTreeFile()), treeString);
+					Files.appendFile(new File(searchTreeFile), treeString);
 			}
 			
 //			System.out.println(loop);
@@ -758,9 +797,9 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	private boolean terminationCriteriaSatisfied() {
 		return 
 		stop || 
-		(configurator.getMaxClassDescriptionTests() != 0 && (expressionTests >= configurator.getMaxClassDescriptionTests())) ||
-		(configurator.getMaxExecutionTimeInSeconds() != 0 && ((System.nanoTime() - nanoStartTime) >= (configurator.getMaxExecutionTimeInSeconds()*1000000000l))) ||
-		(configurator.getTerminateOnNoiseReached() && (100*getCurrentlyBestAccuracy()>100-configurator.getNoisePercentage()));
+		(maxClassDescriptionTests != 0 && (expressionTests >= maxClassDescriptionTests)) ||
+		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l))) ||
+		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage));
 	}
 	
 	private void reset() {
@@ -860,13 +899,6 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	public int getMinimumHorizontalExpansion() {
 		return minHorizExp;
 	}
-	
-	/**
-	 * @return the expressionTests
-	 */
-	public int getClassExpressionTests() {
-		return expressionTests;
-	}
 
 	// added by Josue (when implementing FuzzyClassExpressionLearningAlgorithm)
 
@@ -881,5 +913,128 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 			int nrOfDescriptions) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+
+	/**
+	 * @return the expressionTests
+	 */
+	public int getClassExpressionTests() {
+		return expressionTests;
+	}
+
+	public RefinementOperator getOperator() {
+		return operator;
+	}
+
+	@Autowired(required=false)
+	public void setOperator(RefinementOperator operator) {
+		this.operator = operator;
+	}
+
+	public Description getStartClass() {
+		return startClass;
+	}
+
+	public void setStartClass(Description startClass) {
+		this.startClass = startClass;
+	}
+
+	public Set<NamedClass> getAllowedConcepts() {
+		return allowedConcepts;
+	}
+
+	public void setAllowedConcepts(Set<NamedClass> allowedConcepts) {
+		this.allowedConcepts = allowedConcepts;
+	}
+
+	public Set<NamedClass> getIgnoredConcepts() {
+		return ignoredConcepts;
+	}
+
+	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+		this.ignoredConcepts = ignoredConcepts;
+	}
+
+	public boolean isWriteSearchTree() {
+		return writeSearchTree;
+	}
+
+	public void setWriteSearchTree(boolean writeSearchTree) {
+		this.writeSearchTree = writeSearchTree;
+	}
+
+	public String getSearchTreeFile() {
+		return searchTreeFile;
+	}
+
+	public void setSearchTreeFile(String searchTreeFile) {
+		this.searchTreeFile = searchTreeFile;
+	}
+
+	public int getMaxNrOfResults() {
+		return maxNrOfResults;
+	}
+
+	public void setMaxNrOfResults(int maxNrOfResults) {
+		this.maxNrOfResults = maxNrOfResults;
+	}
+
+	public double getNoisePercentage() {
+		return noisePercentage;
+	}
+
+	public void setNoisePercentage(double noisePercentage) {
+		this.noisePercentage = noisePercentage;
+	}
+
+	public boolean isFilterDescriptionsFollowingFromKB() {
+		return filterDescriptionsFollowingFromKB;
+	}
+
+	public void setFilterDescriptionsFollowingFromKB(boolean filterDescriptionsFollowingFromKB) {
+		this.filterDescriptionsFollowingFromKB = filterDescriptionsFollowingFromKB;
+	}
+
+	public boolean isReplaceSearchTree() {
+		return replaceSearchTree;
+	}
+
+	public void setReplaceSearchTree(boolean replaceSearchTree) {
+		this.replaceSearchTree = replaceSearchTree;
+	}
+
+	public int getMaxClassDescriptionTests() {
+		return maxClassDescriptionTests;
+	}
+
+	public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
+		this.maxClassDescriptionTests = maxClassDescriptionTests;
+	}
+
+	public int getMaxExecutionTimeInSeconds() {
+		return maxExecutionTimeInSeconds;
+	}
+
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	}
+
+	public boolean isTerminateOnNoiseReached() {
+		return terminateOnNoiseReached;
+	}
+
+	public void setTerminateOnNoiseReached(boolean terminateOnNoiseReached) {
+		this.terminateOnNoiseReached = terminateOnNoiseReached;
+	}
+
+	public boolean isReuseExistingDescription() {
+		return reuseExistingDescription;
+	}
+
+	public void setReuseExistingDescription(boolean reuseExistingDescription) {
+		this.reuseExistingDescription = reuseExistingDescription;
 	}	
+		
+	
 }

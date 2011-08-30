@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.refinementoperators.fuzzydll;
+package org.dllearner.refinementoperators;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,6 +35,8 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.config.BooleanEditor;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -63,12 +65,10 @@ import org.dllearner.core.owl.StringValueRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
-import org.dllearner.refinementoperators.MathOperations;
-import org.dllearner.refinementoperators.RefinementOperatorAdapter;
-import org.dllearner.refinementoperators.Utility;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * A downward refinement operator, which makes use of domains
@@ -92,7 +92,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 	private static Logger logger = Logger
 	.getLogger(FuzzyRhoDRDown.class);	
 	
-	private AbstractReasonerComponent rs;
+	private AbstractReasonerComponent reasoner;
 	
 	// hierarchies
 	private ClassHierarchy subHierarchy;
@@ -170,23 +170,46 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 	// staistics
 	public long mComputationTimeNs = 0;
 	public long topComputationTimeNs = 0;
-	
+
+	@ConfigOption(name = "applyAllFilter", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean applyAllFilter = true;
+	
+	@ConfigOption(name = "applyExistsFilter", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean applyExistsFilter = true;
+	
+	@ConfigOption(name = "useAllConstructor", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useAllConstructor = true;
+	
+	@ConfigOption(name = "useExistsConstructor", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useExistsConstructor = true;
+	
+	@ConfigOption(name = "useHasValueConstructor", defaultValue="false", propertyEditorClass = BooleanEditor.class)
 	private boolean useHasValueConstructor = false;
+	
+	@ConfigOption(name = "useCardinalityRestrictions", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useCardinalityRestrictions = true;
+	
+	@ConfigOption(name = "useNegation", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useNegation = true;
+	
+	@ConfigOption(name = "useBooleanDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useBooleanDatatypes = true;
+	
+	@ConfigOption(name = "useDoubleDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useDoubleDatatypes = true;
-	@SuppressWarnings("unused")
+	
+	@ConfigOption(name = "useStringDatatypes", defaultValue="false", propertyEditorClass = BooleanEditor.class)
 	private boolean useStringDatatypes = false;
+	
+	@ConfigOption(name = "disjointChecks", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean disjointChecks = true;
+	
+	@ConfigOption(name = "instanceBasedDisjoints", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean instanceBasedDisjoints = true;
 	
-	private boolean dropDisjuncts = false;
-
+	@ConfigOption(name = "dropDisjuncts", defaultValue="false", propertyEditorClass = BooleanEditor.class)
+	private boolean dropDisjuncts = false;	
+	
 	// caches for reasoner queries
 	private Map<Description,Map<Description,Boolean>> cachedDisjoints = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);
 
@@ -196,8 +219,8 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 	
 	public FuzzyRhoDRDown(AbstractReasonerComponent reasoningService) {
 //		this(reasoningService, reasoningService.getClassHierarchy(), null, true, true, true, true, true, 3, true, true, true, true, null);
-		this.rs = reasoningService;
-		this.subHierarchy = rs.getClassHierarchy();
+		this.reasoner = reasoningService;
+		this.subHierarchy = reasoner.getClassHierarchy();
 		init();
 	}
 	
@@ -224,7 +247,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 	// use one refinement operator in several learning algorithms
 	public FuzzyRhoDRDown(AbstractReasonerComponent reasoningService, ClassHierarchy subHierarchy, int cardinalityLimit, boolean useHasValueConstructor, boolean useStringDatatypes, boolean instanceBasedDisjoints, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
 			boolean useExistsConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
-		this.rs = reasoningService;
+		this.reasoner = reasoningService;
 		this.subHierarchy = subHierarchy;
 		this.applyAllFilter = applyAllFilter;
 		this.applyExistsFilter = applyExistsFilter;
@@ -249,9 +272,9 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 	public void init() {	
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
-		for(ObjectProperty op : rs.getObjectProperties()) {
-			opDomains.put(op, rs.getDomain(op));
-			opRanges.put(op, rs.getRange(op));
+		for(ObjectProperty op : reasoner.getObjectProperties()) {
+			opDomains.put(op, reasoner.getDomain(op));
+			opRanges.put(op, reasoner.getRange(op));
 			
 			if(useHasValueConstructor) {
 				// init
@@ -259,7 +282,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 				valueFrequency.put(op, opMap);
 				
 				// sets ordered by corresponding individual (which we ignore)
-				Collection<SortedSet<Individual>> fillerSets = rs.getPropertyMembers(op).values();
+				Collection<SortedSet<Individual>> fillerSets = reasoner.getPropertyMembers(op).values();
 				for(SortedSet<Individual> fillerSet : fillerSets) {
 					for(Individual i : fillerSet) {
 //						System.out.println("op " + op + " i " + i);
@@ -287,15 +310,15 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 			
 		}
 		
-		for(DatatypeProperty dp : rs.getDatatypeProperties()) {
-			dpDomains.put(dp, rs.getDomain(dp));
+		for(DatatypeProperty dp : reasoner.getDatatypeProperties()) {
+			dpDomains.put(dp, reasoner.getDomain(dp));
 			
 			if(useDataHasValueConstructor) {
 				Map<Constant, Integer> dpMap = new TreeMap<Constant, Integer>();
 				dataValueFrequency.put(dp, dpMap);
 				
 				// sets ordered by corresponding individual (which we ignore)
-				Collection<SortedSet<Constant>> fillerSets = rs.getDatatypeMembers(dp).values();
+				Collection<SortedSet<Constant>> fillerSets = reasoner.getDatatypeMembers(dp).values();
 				for(SortedSet<Constant> fillerSet : fillerSets) {
 					for(Constant i : fillerSet) {
 //						System.out.println("op " + op + " i " + i);
@@ -327,16 +350,16 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 		dataValueFrequency = null;
 		
 		// compute splits for double datatype properties
-		for(DatatypeProperty dp : rs.getDoubleDatatypeProperties()) {
+		for(DatatypeProperty dp : reasoner.getDoubleDatatypeProperties()) {
 			computeSplits(dp);
 		}
 		
 		// determine the maximum number of fillers for each role
 		// (up to a specified cardinality maximum)
 		if(useCardinalityRestrictions) {
-		for(ObjectProperty op : rs.getObjectProperties()) {
+		for(ObjectProperty op : reasoner.getObjectProperties()) {
 			int maxFillers = 0;
-			Map<Individual,SortedSet<Individual>> opMembers = rs.getPropertyMembers(op);
+			Map<Individual,SortedSet<Individual>> opMembers = reasoner.getPropertyMembers(op);
 			for(SortedSet<Individual> inds : opMembers.values()) {
 				if(inds.size()>maxFillers)
 					maxFillers = inds.size();
@@ -544,7 +567,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
-			Set<ObjectProperty> moreSpecialRoles = rs.getSubProperties(ar);
+			Set<ObjectProperty> moreSpecialRoles = reasoner.getSubProperties(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles)
 				refinements.add(new ObjectSomeRestriction(moreSpecialRole, description.getChild(0)));
 
@@ -588,7 +611,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
-			Set<ObjectProperty> moreSpecialRoles = rs.getSubProperties(ar);
+			Set<ObjectProperty> moreSpecialRoles = reasoner.getSubProperties(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
 				refinements.add(new ObjectAllRestriction(moreSpecialRole, description.getChild(0)));
 			}
@@ -667,7 +690,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 		} else if (description instanceof StringValueRestriction) {
 			StringValueRestriction svr = (StringValueRestriction) description;
 			DatatypeProperty dp = svr.getRestrictedPropertyExpression();
-			Set<DatatypeProperty> subDPs = rs.getSubProperties(dp);
+			Set<DatatypeProperty> subDPs = reasoner.getSubProperties(dp);
 			for(DatatypeProperty subDP : subDPs) {
 				refinements.add(new StringValueRestriction(subDP, svr.getStringValue()));
 			}
@@ -968,7 +991,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 		
 		// boolean datatypes, e.g. testPositive = true
 		if(useBooleanDatatypes) {
-			Set<DatatypeProperty> booleanDPs = rs.getBooleanDatatypeProperties();
+			Set<DatatypeProperty> booleanDPs = reasoner.getBooleanDatatypeProperties();
 			for(DatatypeProperty dp : booleanDPs) {
 				m2.add(new BooleanValueRestriction(dp,true));
 				m2.add(new BooleanValueRestriction(dp,false));
@@ -979,7 +1002,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 		SortedSet<Description> m3 = new TreeSet<Description>(conceptComparator);
 		if(useExistsConstructor) {
 			// only uses most general roles
-			for(ObjectProperty r : rs.getMostGeneralProperties()) {
+			for(ObjectProperty r : reasoner.getMostGeneralProperties()) {
 				m3.add(new ObjectSomeRestriction(r, new Thing()));
 			}				
 		}
@@ -988,13 +1011,13 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 			// we allow \forall r.\top here because otherwise the operator
 			// becomes too difficult to manage due to dependencies between
 			// M_A and M_A' where A'=ran(r)
-			for(ObjectProperty r : rs.getMostGeneralProperties()) {
+			for(ObjectProperty r : reasoner.getMostGeneralProperties()) {
 				m3.add(new ObjectAllRestriction(r, new Thing()));
 			}				
 		}		
 		
 		if(useDoubleDatatypes) {
-			Set<DatatypeProperty> doubleDPs = rs.getDoubleDatatypeProperties();
+			Set<DatatypeProperty> doubleDPs = reasoner.getDoubleDatatypeProperties();
 			for(DatatypeProperty dp : doubleDPs) {
 				if(splits.get(dp).size()>0) {
 					DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
@@ -1006,7 +1029,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 		}		
 		
 		if(useDataHasValueConstructor) {
-			Set<DatatypeProperty> stringDPs = rs.getStringDatatypeProperties();
+			Set<DatatypeProperty> stringDPs = reasoner.getStringDatatypeProperties();
 			for(DatatypeProperty dp : stringDPs) {
 				// loop over frequent values
 				Set<Constant> freqValues = frequentDataValues.get(dp);
@@ -1020,7 +1043,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 		
 		SortedSet<Description> m4 = new TreeSet<Description>(conceptComparator);
 		if(useCardinalityRestrictions) {
-			for(ObjectProperty r : rs.getMostGeneralProperties()) {
+			for(ObjectProperty r : reasoner.getMostGeneralProperties()) {
 				int maxFillers = maxNrOfFillers.get(r);
 				// zero fillers: <= -1 r.C does not make sense
 				// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
@@ -1205,8 +1228,8 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 						// even if every instance of the candidate is also present in the index ...
 						// if have to be checked if with the same fuzzy degree
 						// SortedSet<Individual> tmp = rs.getIndividuals(index);
-						SortedSet<FuzzyIndividual> tmpIndex = rs.getFuzzyIndividuals(index);
-						SortedSet<FuzzyIndividual> tmpCandidate = rs.getFuzzyIndividuals(candidate);
+						SortedSet<FuzzyIndividual> tmpIndex = reasoner.getFuzzyIndividuals(index);
+						SortedSet<FuzzyIndividual> tmpCandidate = reasoner.getFuzzyIndividuals(candidate);
 						
 						Iterator itCandidate = tmpCandidate.iterator();
 						Iterator itIndex = tmpIndex.iterator();
@@ -1259,8 +1282,8 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 					boolean meaningful;
 //					System.out.println("not disjoint");
 					if(instanceBasedDisjoints) {
-						SortedSet<Individual> tmp = rs.getIndividuals(index);
-						tmp.removeAll(rs.getIndividuals(new Negation(candidate)));
+						SortedSet<Individual> tmp = reasoner.getIndividuals(index);
+						tmp.removeAll(reasoner.getIndividuals(new Negation(candidate)));
 						meaningful = tmp.size() != 0;
 //						System.out.println("instances " + tmp.size());
 					} else {
@@ -1289,14 +1312,14 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 		mgdd.put(domain, new TreeSet<DatatypeProperty>());
 		mgsd.put(domain, new TreeSet<DatatypeProperty>());
 		
-		SortedSet<ObjectProperty> mostGeneral = rs.getMostGeneralProperties();
+		SortedSet<ObjectProperty> mostGeneral = reasoner.getMostGeneralProperties();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
-		SortedSet<DatatypeProperty> mostGeneralDP = rs.getMostGeneralDatatypeProperties();
+		SortedSet<DatatypeProperty> mostGeneralDP = reasoner.getMostGeneralDatatypeProperties();
 		// we make the (reasonable) assumption here that all sub and super
 		// datatype properties have the same type (e.g. boolean, integer, double)
-		Set<DatatypeProperty> mostGeneralBDP = Helper.intersection(mostGeneralDP, rs.getBooleanDatatypeProperties());
-		Set<DatatypeProperty> mostGeneralDDP = Helper.intersection(mostGeneralDP, rs.getDoubleDatatypeProperties());
-		Set<DatatypeProperty> mostGeneralSDP = Helper.intersection(mostGeneralDP, rs.getStringDatatypeProperties());
+		Set<DatatypeProperty> mostGeneralBDP = Helper.intersection(mostGeneralDP, reasoner.getBooleanDatatypeProperties());
+		Set<DatatypeProperty> mostGeneralDDP = Helper.intersection(mostGeneralDP, reasoner.getDoubleDatatypeProperties());
+		Set<DatatypeProperty> mostGeneralSDP = Helper.intersection(mostGeneralDP, reasoner.getStringDatatypeProperties());
 		computeMgbdRecursive(domain, mostGeneralBDP, mgbd.get(domain));	
 		computeMgddRecursive(domain, mostGeneralDDP, mgdd.get(domain));
 		computeMgsdRecursive(domain, mostGeneralSDP, mgsd.get(domain));
@@ -1307,7 +1330,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 			if(appOP.get(domain).contains(prop))
 				mgrTmp.add(prop);
 			else
-				computeMgrRecursive(domain, rs.getSubProperties(prop), mgrTmp);
+				computeMgrRecursive(domain, reasoner.getSubProperties(prop), mgrTmp);
 		}
 	}
 	
@@ -1316,7 +1339,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 			if(appBD.get(domain).contains(prop))
 				mgbdTmp.add(prop);
 			else
-				computeMgbdRecursive(domain, rs.getSubProperties(prop), mgbdTmp);
+				computeMgbdRecursive(domain, reasoner.getSubProperties(prop), mgbdTmp);
 		}
 	}	
 	
@@ -1325,7 +1348,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 			if(appDD.get(domain).contains(prop))
 				mgddTmp.add(prop);
 			else
-				computeMgddRecursive(domain, rs.getSubProperties(prop), mgddTmp);
+				computeMgddRecursive(domain, reasoner.getSubProperties(prop), mgddTmp);
 		}
 	}		
 	
@@ -1334,41 +1357,41 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 			if(appDD.get(domain).contains(prop))
 				mgsdTmp.add(prop);
 			else
-				computeMgsdRecursive(domain, rs.getSubProperties(prop), mgsdTmp);
+				computeMgsdRecursive(domain, reasoner.getSubProperties(prop), mgsdTmp);
 		}
 	}	
 	
 	// computes the set of applicable properties for a given class
 	private void computeApp(NamedClass domain) {
 		// object properties
-		Set<ObjectProperty> mostGeneral = rs.getObjectProperties();
+		Set<ObjectProperty> mostGeneral = reasoner.getObjectProperties();
 		Set<ObjectProperty> applicableRoles = new TreeSet<ObjectProperty>();
 		for(ObjectProperty role : mostGeneral) {
 			// TODO: currently we just rely on named classes as roles,
 			// instead of computing dom(r) and ran(r)
-			Description d = rs.getDomain(role);
+			Description d = reasoner.getDomain(role);
 			if(!isDisjoint(domain,d))
 				applicableRoles.add(role);
 		}
 		appOP.put(domain, applicableRoles);
 		
 		// boolean datatype properties
-		Set<DatatypeProperty> mostGeneralBDPs = rs.getBooleanDatatypeProperties();
+		Set<DatatypeProperty> mostGeneralBDPs = reasoner.getBooleanDatatypeProperties();
 		Set<DatatypeProperty> applicableBDPs = new TreeSet<DatatypeProperty>();
 		for(DatatypeProperty role : mostGeneralBDPs) {
 //			Description d = (NamedClass) rs.getDomain(role);
-			Description d = rs.getDomain(role);
+			Description d = reasoner.getDomain(role);
 			if(!isDisjoint(domain,d))
 				applicableBDPs.add(role);
 		}
 		appBD.put(domain, applicableBDPs);	
 		
 		// double datatype properties
-		Set<DatatypeProperty> mostGeneralDDPs = rs.getDoubleDatatypeProperties();
+		Set<DatatypeProperty> mostGeneralDDPs = reasoner.getDoubleDatatypeProperties();
 		Set<DatatypeProperty> applicableDDPs = new TreeSet<DatatypeProperty>();
 		for(DatatypeProperty role : mostGeneralDDPs) {
 //			Description d = (NamedClass) rs.getDomain(role);
-			Description d = rs.getDomain(role);
+			Description d = reasoner.getDomain(role);
 //			System.out.println("domain: " + d);
 			if(!isDisjoint(domain,d))
 				applicableDDPs.add(role);
@@ -1417,7 +1440,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 				result = isDisjointInstanceBased(d1,d2);
 			} else {
 				Description d = new Intersection(d1, d2);
-				result = rs.isSuperClassOf(new Nothing(), d);				
+				result = reasoner.isSuperClassOf(new Nothing(), d);				
 			}
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
@@ -1444,8 +1467,8 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 	}	
 	
 	private boolean isDisjointInstanceBased(Description d1, Description d2) {
-		SortedSet<Individual> d1Instances = rs.getIndividuals(d1);
-		SortedSet<Individual> d2Instances = rs.getIndividuals(d2);
+		SortedSet<Individual> d1Instances = reasoner.getIndividuals(d1);
+		SortedSet<Individual> d2Instances = reasoner.getIndividuals(d2);
 //		System.out.println(d1 + " " + d2);
 //		System.out.println(d1 + " " + d1Instances);
 //		System.out.println(d2 + " " + d2Instances);
@@ -1476,7 +1499,7 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 //		if(tmp2==null) {
 			Description notA = new Negation(a);
 			Description d = new Intersection(notA, b);
-			Boolean result = rs.isSuperClassOf(new Nothing(), d);
+			Boolean result = reasoner.isSuperClassOf(new Nothing(), d);
 			// ... add to cache ...
 			return result;
 //		} else
@@ -1491,13 +1514,13 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 		Description notA = new Negation(a);
 		Description d = new Intersection(notA, b);
 		// check b subClassOf b AND NOT A (if yes then it is not meaningful)
-		return !rs.isSuperClassOf(d, b);
+		return !reasoner.isSuperClassOf(d, b);
 	}
 	
 	private void computeSplits(DatatypeProperty dp) {
 		Set<Double> valuesSet = new TreeSet<Double>();
 //		Set<Individual> individuals = rs.getIndividuals();
-		Map<Individual,SortedSet<Double>> valueMap = rs.getDoubleDatatypeMembers(dp);
+		Map<Individual,SortedSet<Double>> valueMap = reasoner.getDoubleDatatypeMembers(dp);
 		// add all values to the set (duplicates will be remove automatically)
 		for(Entry<Individual,SortedSet<Double>> e : valueMap.entrySet())
 			valuesSet.addAll(e.getValue());
@@ -1525,4 +1548,126 @@ public class FuzzyRhoDRDown extends RefinementOperatorAdapter {
 //		System.exit(0);
 	}
 
+
+	public int getFrequencyThreshold() {
+		return frequencyThreshold;
+	}
+
+	public void setFrequencyThreshold(int frequencyThreshold) {
+		this.frequencyThreshold = frequencyThreshold;
+	}
+
+	public boolean isUseDataHasValueConstructor() {
+		return useDataHasValueConstructor;
+	}
+
+	public void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
+		this.useDataHasValueConstructor = useDataHasValueConstructor;
+	}
+
+	public boolean isApplyAllFilter() {
+		return applyAllFilter;
+	}
+
+	public void setApplyAllFilter(boolean applyAllFilter) {
+		this.applyAllFilter = applyAllFilter;
+	}
+
+	public boolean isUseAllConstructor() {
+		return useAllConstructor;
+	}
+
+	public void setUseAllConstructor(boolean useAllConstructor) {
+		this.useAllConstructor = useAllConstructor;
+	}
+
+	public boolean isUseExistsConstructor() {
+		return useExistsConstructor;
+	}
+
+	public void setUseExistsConstructor(boolean useExistsConstructor) {
+		this.useExistsConstructor = useExistsConstructor;
+	}
+
+	public boolean isUseHasValueConstructor() {
+		return useHasValueConstructor;
+	}
+
+	public void setUseHasValueConstructor(boolean useHasValueConstructor) {
+		this.useHasValueConstructor = useHasValueConstructor;
+	}
+
+	public boolean isUseCardinalityRestrictions() {
+		return useCardinalityRestrictions;
+	}
+
+	public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
+		this.useCardinalityRestrictions = useCardinalityRestrictions;
+	}
+
+	public boolean isUseNegation() {
+		return useNegation;
+	}
+
+	public void setUseNegation(boolean useNegation) {
+		this.useNegation = useNegation;
+	}
+
+	public boolean isUseBooleanDatatypes() {
+		return useBooleanDatatypes;
+	}
+
+	public void setUseBooleanDatatypes(boolean useBooleanDatatypes) {
+		this.useBooleanDatatypes = useBooleanDatatypes;
+	}
+
+	public boolean isUseDoubleDatatypes() {
+		return useDoubleDatatypes;
+	}
+
+	public void setUseDoubleDatatypes(boolean useDoubleDatatypes) {
+		this.useDoubleDatatypes = useDoubleDatatypes;
+	}
+
+	public boolean isUseStringDatatypes() {
+		return useStringDatatypes;
+	}
+
+	public void setUseStringDatatypes(boolean useStringDatatypes) {
+		this.useStringDatatypes = useStringDatatypes;
+	}
+
+	public boolean isInstanceBasedDisjoints() {
+		return instanceBasedDisjoints;
+	}
+
+	public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
+		this.instanceBasedDisjoints = instanceBasedDisjoints;
+	}
+
+	public AbstractReasonerComponent getReasoner() {
+		return reasoner;
+	}
+
+    @Autowired
+	public void setReasoner(AbstractReasonerComponent reasoner) {
+		this.reasoner = reasoner;
+	}
+
+	public ClassHierarchy getSubHierarchy() {
+		return subHierarchy;
+	}
+
+	public void setSubHierarchy(ClassHierarchy subHierarchy) {
+		this.subHierarchy = subHierarchy;
+	}
+
+	public Description getStartClass() {
+		return startClass;
+	}
+
+	public void setStartClass(Description startClass) {
+		this.startClass = startClass;
+	}	
+	
 }

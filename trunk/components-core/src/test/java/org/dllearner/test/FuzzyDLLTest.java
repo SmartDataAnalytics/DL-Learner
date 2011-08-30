@@ -53,6 +53,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard;
 import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
+import org.dllearner.refinementoperators.FuzzyRhoDRDown;
 
 /**
  * A script, which learns definitions / super classes of classes in the DBpedia ontology.
@@ -123,10 +124,12 @@ public class FuzzyDLLTest {
 //		Set<String> aaaaaaaaaa = new TreeSet<String>();
 //		aaaaaaaaaa.add("Nothing");
 //		fc.getConfigurator().setIgnoredConcepts(aaaaaaaaaa);
-		fc.getConfigurator().setMaxClassDescriptionTests(1000);
-		fc.getConfigurator().setMaxExecutionTimeInSeconds(0);
-		fc.getConfigurator().setUseDoubleDatatypes(false);
-		fc.getConfigurator().setUseCardinalityRestrictions(false);
+		fc.setMaxClassDescriptionTests(1000);
+		fc.setMaxExecutionTimeInSeconds(0);
+		FuzzyRhoDRDown op = (FuzzyRhoDRDown) fc.getOperator();
+		op.setUseDoubleDatatypes(false);
+		op.setUseCardinalityRestrictions(false);
+		op.init();
 		fc.init();
 		fc.start();		
 		
