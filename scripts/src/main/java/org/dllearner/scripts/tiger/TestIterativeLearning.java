@@ -19,14 +19,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.algorithms.ocel.ROLearner2;
+import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ComponentPool;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
@@ -453,7 +452,7 @@ public class TestIterativeLearning {
 		urls.addAll(ExampleDataCollector.convert(sentenceXMLFolder, ex.getNegTrain()));
 
 		for (URL u : urls) {
-			OWLFile ks = ComponentFactory.getOWLFile(u);
+			OWLFile ks = new OWLFile(u);
 			tmp.add(ks);
 		}
 		return tmp;
@@ -503,7 +502,7 @@ public class TestIterativeLearning {
 		Set<AbstractKnowledgeSource> tmp = _getOWL(ex);
 		// Set<KnowledgeSource> tmp = _getSPARQL(ex);
 
-		FastInstanceChecker rc = ComponentFactory.getFastInstanceChecker(tmp);
+		FastInstanceChecker rc = new FastInstanceChecker(tmp);
 		for (AbstractKnowledgeSource ks : tmp) {
 			ks.init();
 		}
@@ -519,8 +518,7 @@ public class TestIterativeLearning {
 
 		try {
 			FastInstanceChecker rc = _getFastInstanceChecker(ex);
-			PosNegLPStandard lp = ComponentFactory
-					.getPosNegLPStandard(rc, ex.getPosTrain(), ex.getNegTrain());
+			PosNegLPStandard lp = new PosNegLPStandard(rc, Helper.getIndividualSet(ex.getPosTrain()), Helper.getIndividualSet(ex.getNegTrain()));
 			AbstractCELA la = _getROLLearner(lp, rc, config, ex, iteration);
 			lp.init();
 			la.init();

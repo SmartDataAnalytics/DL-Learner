@@ -47,10 +47,13 @@ public @interface ConfigOption {
     String description() default "no description available";
 
     /**
-     * An implementation of the Property Editor to use
+     * An implementation of the Property Editor to use.
+     * 
+     * TODO: This might not be needed in the future.
+     * 
      * @return
      */
-    Class<? extends PropertyEditor> propertyEditorClass();
+    Class<? extends PropertyEditor> propertyEditorClass() default PropertyEditor.class;
     
     /**
      * Returns whether this option is required for initializing the component. 

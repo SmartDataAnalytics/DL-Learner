@@ -37,8 +37,6 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.extraction.Manager;
@@ -54,6 +52,7 @@ import org.dllearner.scripts.improveWikipedia.ConceptSPARQLReEvaluator;
 import org.dllearner.scripts.improveWikipedia.ConceptSelector;
 import org.dllearner.scripts.improveWikipedia.WikipediaCategoryTasks;
 import org.dllearner.utilities.Files;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
@@ -281,8 +280,7 @@ public class WikipediaCategoryCleaner {
 			instances.addAll(SetManipulation.stringToInd(posExamples));
 			instances.addAll(SetManipulation.stringToInd(negExamples));
 	
-			SparqlKnowledgeSource ks = ComponentFactory
-					.getSparqlKnowledgeSource(URI.create(
+			SparqlKnowledgeSource ks = new SparqlKnowledgeSource(URI.create(
 							"http://dbpedia.org").toURL(), SetManipulation
 							.indToString(instances));
 	
@@ -307,13 +305,12 @@ public class WikipediaCategoryCleaner {
 			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 			tmp.add(ks);
 			// reasoner
-			FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
+			FastInstanceChecker f = new FastInstanceChecker(tmp);
 			f.setDefaultNegation(false);
 			//OWLAPIReasoner f = ComponentFactory.getOWLAPIReasoner(tmp);
 	
 			// learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
-					posExamples, negExamples);
+			PosNegLPStandard lp = new PosNegLPStandard(f, Helper.getIndividualSet(posExamples), Helper.getIndividualSet(negExamples));
 	
 			// learning algorithm
 			la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);

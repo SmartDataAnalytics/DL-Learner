@@ -32,10 +32,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
@@ -218,11 +217,9 @@ public class DumbLPFinder {
 			instances.addAll(posExamples);
 			instances.addAll(negExamples);
 
-			SparqlKnowledgeSource ks = ComponentFactory
-					.getSparqlKnowledgeSource(URI.create(
-							"http://www.blabla.com").toURL(), SetManipulation
-							.indToString(instances));
-
+			SparqlKnowledgeSource ks = new SparqlKnowledgeSource();
+			ks.setUrl(URI.create("http://www.blabla.com").toURL());
+			ks.setInstances(SetManipulation.indToString(instances));
 			ks.setCloseAfterRecursion(true);
 			ks.setRecursionDepth(2);
 			ks.setPredefinedEndpoint("LOCALJOSEKIBIBLE");
@@ -231,14 +228,14 @@ public class DumbLPFinder {
 			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 			tmp.add(ks);
 			// reasoner
-			OWLAPIReasoner f = ComponentFactory
-					.getOWLAPIReasoner(tmp);
+			OWLAPIReasoner f = new OWLAPIReasoner(tmp);
 
 			// learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
-					SetManipulation.indToString(posExamples), SetManipulation
-							.indToString(negExamples));
-
+			PosNegLPStandard lp = new PosNegLPStandard();
+			lp.setReasoner(f);
+			lp.setPositiveExamples(posExamples);
+			lp.setNegativeExamples(negExamples);
+				
 			// learning algorithm
 			la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);;
 			la.setNoisePercentage(0.0);

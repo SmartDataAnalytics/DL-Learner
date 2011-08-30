@@ -25,11 +25,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.FastRetrievalReasonerConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
@@ -68,7 +67,7 @@ public class FastRetrievalReasoner extends AbstractReasonerComponent {
 		super(sources);
 		this.configurator = new FastRetrievalReasonerConfigurator(this);
 		
-		rc = ComponentFactory.getOWLAPIReasoner(sources);
+		rc = new OWLAPIReasoner(sources);
 		try {
 			rc.init();
 		} catch (ComponentInitException e1) {

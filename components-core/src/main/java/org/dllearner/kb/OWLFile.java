@@ -64,10 +64,13 @@ public class OWLFile extends AbstractKnowledgeSource {
 		return "OWL file";
 	}
 	
-//	public OWLFile(){
-//		configurator = new OWLFileConfigurator(this);
-//	}
+	public OWLFile(){
+
+	}
 	
+	public OWLFile(URL url) {
+		this.url = url;
+	}
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
