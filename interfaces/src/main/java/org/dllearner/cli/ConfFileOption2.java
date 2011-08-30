@@ -116,11 +116,6 @@ public class ConfFileOption2 implements IConfigurationProperty{
     }
 
     @Override
-    public Class<?> getType() {
-        return getPropertyType();
-    }
-
-    @Override
     public boolean isBeanReferenceCollection() {
         return isBeanReferenceCollection;
     }
