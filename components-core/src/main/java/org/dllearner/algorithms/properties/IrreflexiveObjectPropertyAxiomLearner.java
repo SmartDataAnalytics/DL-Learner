@@ -31,6 +31,7 @@ import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.IrreflexiveObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +100,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		}
 		
 		//get number of instances s where not exists  <s p s> 
-		query = "SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. OPTIONAL{?s <%s> ?o1.FILTER(?s = ?o1)} FILTER(!BOUND(?o1))}";
+		query = "SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER(?s != ?o)}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
 		int irreflexive = 0;
@@ -109,7 +110,6 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		}
 		
 		if(all > 0){
-			double frac = irreflexive / (double)all;
 			currentlyBestAxioms.add(new EvaluatedAxiom(new IrreflexiveObjectPropertyAxiom(propertyToDescribe),
 					computeScore(all, irreflexive)));
 		}
@@ -120,6 +120,12 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
 		return currentlyBestAxioms;
+	}
+	
+	public static void main(String[] args) {
+		IrreflexiveObjectPropertyAxiomLearner l = new IrreflexiveObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/thumbnail"));
+		l.start();
 	}
 	
 }
