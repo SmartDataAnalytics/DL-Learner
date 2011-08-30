@@ -153,7 +153,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		propertyCharacteristics.add(AxiomType.ASYMMETRIC_OBJECT_PROPERTY);
 
 		for(AxiomType type : propertyCharacteristics){
-			query = "CONSTRUCT {?s a <%s>} WHERE {?s a %s}".replaceAll("%s", type.getName());
+			query = "CONSTRUCT {?s a <http://www.w3.org/2002/07/owl#%s>} WHERE {?s a <http://www.w3.org/2002/07/owl#%s>}".replaceAll("%s", type.getName());
 			model.add(loadIncrementally(query));
 		}
 		
@@ -772,9 +772,9 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		String NS = "http://dbpedia.org/ontology/";
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		SPARQLReasoner r = new SPARQLReasoner(ks);
-		
+		long startTime = System.currentTimeMillis();
 		r.loadSchema();
-		
+		System.out.println("Time needed: " + (System.currentTimeMillis()-startTime) + "ms");
 //		ObjectProperty oP = new ObjectProperty(NS + "league");
 //		for(Entry<Individual, SortedSet<Individual>> entry : r.getPropertyMembers(oP).entrySet()){
 //			System.out.println(entry.getKey());
