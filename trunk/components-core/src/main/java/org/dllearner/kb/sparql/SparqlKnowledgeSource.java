@@ -96,7 +96,10 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 //		this.configurator = new SparqlKnowledgeSourceConfigurator(this);
 	}
 
-
+	public SparqlKnowledgeSource(URL url, Set<String> instances) {
+		this.url = url;
+		this.instances = instances;
+	}
 	
 	private SparqlEndpoint endpoint = null;
 

@@ -46,8 +46,6 @@ import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.gui.Config;
@@ -439,8 +437,7 @@ public class SemanticBibleComparison {
 			instances.addAll(posExamples);
 			instances.addAll(negExamples);
 	
-			SparqlKnowledgeSource ks = ComponentFactory
-					.getSparqlKnowledgeSource(URI.create(
+			SparqlKnowledgeSource ks = new SparqlKnowledgeSource(URI.create(
 							"http://localhost:2020/bible").toURL(), SetManipulation
 							.indToString(instances));
 	
@@ -468,13 +465,10 @@ public class SemanticBibleComparison {
 			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 			tmp.add(ks);
 			// reasoner
-			OWLAPIReasoner f = ComponentFactory
-					.getOWLAPIReasoner(tmp);
+			OWLAPIReasoner f = new OWLAPIReasoner(tmp);
 	
 			// learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
-					SetManipulation.indToString(posExamples), SetManipulation
-							.indToString(negExamples));
+			PosNegLPStandard lp = new PosNegLPStandard(f, posExamples, negExamples);
 	
 			// learning algorithm
 			la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);
@@ -505,7 +499,7 @@ public class SemanticBibleComparison {
 				e.printStackTrace();
 				flawInExperiment = true;
 			}
-			OWLFile ks = ComponentFactory.getOWLFile( fileURL);
+			OWLFile ks = new OWLFile( fileURL);
 					
 			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 			tmp.add(ks);
@@ -514,18 +508,16 @@ public class SemanticBibleComparison {
 			
 			// reasoner
 			if(fic){
-				f = ComponentFactory.getFastInstanceChecker(tmp);
+				f = new FastInstanceChecker(tmp);
 				((FastInstanceChecker)f).setDefaultNegation(true);
 				
 			}else{
-				f = ComponentFactory.getOWLAPIReasoner(tmp);
+				f = new OWLAPIReasoner(tmp);
 			}
 //			ReasonerComponent rs = ComponentManager.getInstance().reasoningService(f);
 	
 //			 learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
-					SetManipulation.indToString(posExamples), SetManipulation
-							.indToString(negExamples));
+			PosNegLPStandard lp = new PosNegLPStandard(f, posExamples, negExamples);
 	
 			// learning algorithm
 			la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);

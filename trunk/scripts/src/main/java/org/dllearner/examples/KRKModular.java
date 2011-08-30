@@ -16,11 +16,10 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -489,7 +488,7 @@ public class KRKModular {
 		Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
 		ks.add(kbFile);
 		
-		reasoner = ComponentFactory.getOWLAPIReasoner(ks);
+		reasoner = new OWLAPIReasoner(ks);
 		
 		((OWLAPIReasoner)reasoner).setReasonerTypeString("fact");
 		try{

@@ -35,11 +35,11 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.Files;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.URLencodeUTF8;
 
 /**
@@ -80,12 +80,15 @@ public class ExampleDataCollector {
 			urls.add(add);
 			
 			for(URL u: urls){
-				OWLFile ks = ComponentFactory.getOWLFile(u);
+				OWLFile ks = new OWLFile();
+				ks.setUrl(u);
 				tmp.add(ks);
 			}
 			
-			FastInstanceChecker rc = ComponentFactory.getFastInstanceChecker(tmp);
-			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(rc, pos, neg);
+			FastInstanceChecker rc = new FastInstanceChecker(tmp);
+			PosNegLPStandard lp = new PosNegLPStandard(rc);
+			lp.setPositiveExamples(Helper.getIndividualSet(pos));
+			lp.setNegativeExamples(Helper.getIndividualSet(neg));
 			OCEL la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, rc);
 //			la.getConfigurator().setUseNegation(false);
 //			la.getConfigurator().setUseAllConstructor(false);

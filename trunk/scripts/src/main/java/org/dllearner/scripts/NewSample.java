@@ -34,17 +34,17 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.Files;
+import org.dllearner.utilities.Helper;
 
 import com.jamonapi.MonitorFactory;
 
@@ -121,15 +121,16 @@ public class NewSample {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		OWLFile ks = ComponentFactory.getOWLFile( fileURL);
+		OWLFile ks = new OWLFile();
+		ks.setUrl(fileURL);
 				
 		Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
 		tmp.add(ks);
 		// reasoner
-		FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
+		FastInstanceChecker f = new FastInstanceChecker(tmp);
 
 		// learning problem
-		PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard( f, posExamples, negExamples);
+		PosNegLPStandard lp =  new PosNegLPStandard( f, Helper.getIndividualSet(posExamples), Helper.getIndividualSet(negExamples));
 		
 		// learning algorithm
 		OCEL la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);
