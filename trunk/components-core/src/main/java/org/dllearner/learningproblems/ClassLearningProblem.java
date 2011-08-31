@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.AbstractLearningProblem;
@@ -57,6 +58,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "ClassLearningProblem", shortName = "clp", version = 0.6)
 public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	private static Logger logger = Logger.getLogger(ClassLearningProblem.class);
@@ -813,6 +815,10 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	 */
 	public NamedClass getClassToDescribe() {
 		return classToDescribe;
+	}
+
+	public void setClassToDescribe(NamedClass classToDescribe) {
+		this.classToDescribe = classToDescribe;
 	}
 
 	/* (non-Javadoc)
