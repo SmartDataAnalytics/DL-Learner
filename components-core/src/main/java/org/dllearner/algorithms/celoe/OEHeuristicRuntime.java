@@ -22,7 +22,6 @@ package org.dllearner.algorithms.celoe;
 import java.util.Comparator;
 
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.utilities.owl.ConceptComparator;
 
 /**

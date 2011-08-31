@@ -19,12 +19,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
@@ -227,7 +226,7 @@ public class EvaluationComputingScript {
 		ComponentManager cm = ComponentManager.getInstance();
 		ClassLearningProblem lp = null;
 		CELOE celoe = null;
-		CELOEConfigurator cf = null;
+//		CELOEConfigurator cf = null;
 		TreeSet<EvaluatedDescriptionClass> suggestions;
 		for (int i = 0; i <= 1; i++) {
 			if (i == 0) {
@@ -298,8 +297,8 @@ public class EvaluationComputingScript {
 //						} else {
 //							cf.setFilterDescriptionsFollowingFromKB(false);
 //						}
-						cf.setReuseExistingDescription(reuseExistingDescription);
-						cf.setFilterDescriptionsFollowingFromKB(filterDescriptionsFollowingFromKB);
+						celoe.setReuseExistingDescription(reuseExistingDescription);
+						celoe.setFilterDescriptionsFollowingFromKB(filterDescriptionsFollowingFromKB);
 						
 						celoe.init();
 
@@ -362,7 +361,7 @@ public class EvaluationComputingScript {
 		ComponentManager cm = ComponentManager.getInstance();
 		ClassLearningProblem lp = null;
 		CELOE celoe = null;
-		CELOEConfigurator cf = null;
+//		CELOEConfigurator cf = null;
 		TreeSet<EvaluatedDescriptionClass> suggestions;
 		for (int i = 0; i <= 1; i++) {
 			if (i == 0) {
@@ -456,7 +455,7 @@ public class EvaluationComputingScript {
 		// shrinkSet(classes, 20);
 		ClassLearningProblem lp = null;
 		CELOE celoe = null;
-		CELOEConfigurator cf = null;
+//		CELOEConfigurator cf = null;
 		for (NamedClass nc : classes) {
 			// check whether the class has sufficient instances
 			int instanceCount = reasoner.getIndividuals(nc).size();
@@ -494,8 +493,8 @@ public class EvaluationComputingScript {
 //				} else {
 //					cf.setFilterDescriptionsFollowingFromKB(false);
 //				}
-				cf.setReuseExistingDescription(reuseExistingDescription);
-				cf.setFilterDescriptionsFollowingFromKB(filterDescriptionsFollowingFromKB);
+				celoe.setReuseExistingDescription(reuseExistingDescription);
+				celoe.setFilterDescriptionsFollowingFromKB(filterDescriptionsFollowingFromKB);
 				celoe.init();
 
 				celoe.start();
