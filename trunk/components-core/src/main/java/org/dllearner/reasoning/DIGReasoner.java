@@ -37,11 +37,10 @@ import java.util.TreeSet;
 import javax.xml.namespace.QName;
 
 import org.apache.xmlbeans.XmlCursor;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.DIGReasonerConfigurator;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -62,12 +61,12 @@ import org.dllearner.utilities.owl.RoleComparator;
 import org.kr.dl.dig.v1_1.Concepts;
 import org.kr.dl.dig.v1_1.Csynonyms;
 import org.kr.dl.dig.v1_1.IdType;
+import org.kr.dl.dig.v1_1.IndividualSetDocument.IndividualSet;
 import org.kr.dl.dig.v1_1.Named;
 import org.kr.dl.dig.v1_1.ResponseDocument;
 import org.kr.dl.dig.v1_1.ResponsesDocument;
 import org.kr.dl.dig.v1_1.Roles;
 import org.kr.dl.dig.v1_1.Rsynonyms;
-import org.kr.dl.dig.v1_1.IndividualSetDocument.IndividualSet;
 
 /**
  * DIG 1.1 implementation of the reasoner interface.
@@ -76,13 +75,6 @@ import org.kr.dl.dig.v1_1.IndividualSetDocument.IndividualSet;
  * 
  */
 public class DIGReasoner extends AbstractReasonerComponent {
-	
-	private DIGReasonerConfigurator configurator;
-
-	public DIGReasonerConfigurator getConfigurator(){
-		return configurator;
-	}
-	
 
 	URL reasonerURL;
 
@@ -116,7 +108,6 @@ public class DIGReasoner extends AbstractReasonerComponent {
 	
 	public DIGReasoner(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
-		this.configurator =  new DIGReasonerConfigurator(this);
 		try {
 			reasonerURL = new URL("http://localhost:8081");
 		} catch (MalformedURLException e) {

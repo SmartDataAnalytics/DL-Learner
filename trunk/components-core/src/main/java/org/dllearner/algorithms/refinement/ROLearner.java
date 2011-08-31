@@ -36,7 +36,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.ROLearnerConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -62,12 +61,6 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 
 public class ROLearner extends AbstractCELA {
-	
-	private ROLearnerConfigurator configurator;
-
-	public ROLearnerConfigurator getConfigurator(){
-		return configurator;
-	}
 	
 	private static Logger logger = Logger
 	.getLogger(AbstractCELA.class);	
@@ -213,7 +206,6 @@ public class ROLearner extends AbstractCELA {
 	public ROLearner(PosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
 		this.learningProblem = learningProblem;
-		this.configurator =  new ROLearnerConfigurator(this);
 		baseURI = reasoningService.getBaseURI();
 		
 	}

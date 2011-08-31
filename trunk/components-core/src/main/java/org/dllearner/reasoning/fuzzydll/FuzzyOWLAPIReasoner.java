@@ -33,19 +33,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.FuzzyOWLAPIReasonerConfigurator;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
@@ -58,15 +54,15 @@ import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.OWL2Datatype;
-import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.OWL2Datatype;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.UntypedConstant;
+import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -138,11 +134,6 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 //	.getLogger(OWLAPIReasoner.class);	
 	
 	// private String reasonerType = "pellet";
-	private FuzzyOWLAPIReasonerConfigurator configurator;
-
-	public FuzzyOWLAPIReasonerConfigurator getConfigurator(){
-		return configurator;
-	}
 	
 	private OWLReasoner reasoner;
 	private OWLOntologyManager manager;
@@ -179,10 +170,10 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	// private FuzzyDLReasonerManager fuzzyReasoner;
 	private int reasonersComparationCounter = 0;
 	private int reasonersComparationDisparityCounter = 0;
+	private URL owlLinkURL;
 	
 	public FuzzyOWLAPIReasoner(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
-		this.configurator = new FuzzyOWLAPIReasonerConfigurator(this);
 	}
 	
 	public static String getName() {
@@ -330,20 +321,8 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		IndividualNodeSetPolicy individualNodeSetPolicy = IndividualNodeSetPolicy.BY_NAME;
 		OWLReasonerConfiguration conf = new SimpleConfiguration(progressMonitor, freshEntityPolicy, timeOut, individualNodeSetPolicy);
 		
-		// create actual reasoner
-		if(configurator.getReasonerType().equals("fact")) {
-			try {
-				reasoner = new FaCTPlusPlusReasonerFactory().createNonBufferingReasoner(ontology, conf);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}		
-			System.out.println("Using FaCT++.");
-		} else if(configurator.getReasonerType().equals("hermit")){
-			// instantiate HermiT reasoner
-			reasoner = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
-		} else if(configurator.getReasonerType().equals("pellet")){		
-			
-		} else if(configurator.getReasonerType().equals("fuzzydl")){
+		// create actual reasoner if it was not injected
+		if(reasoner == null) {
 			// added by Josue
 			// create actual fuzzy reasoner and computes initial fuzzy memberships
 			// ontology and conf are passed so FuzzyDLReasonerManager can instanciate also a Pellet reasoner
@@ -356,7 +335,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		} else {
 			try {
 				OWLlinkHTTPXMLReasonerFactory factory = new OWLlinkHTTPXMLReasonerFactory();
-				URL url = getConfigurator().getOwlLinkURL();//Configure the server end-point
+				URL url = owlLinkURL;//Configure the server end-point
 				OWLlinkReasonerConfiguration config = new OWLlinkReasonerConfiguration(url);
 				reasoner = factory.createNonBufferingReasoner(ontology, config);
 				System.out.println(reasoner.getReasonerName());
@@ -471,13 +450,14 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	 */
 	@Override
 	public ReasonerType getReasonerType() {
-		if(configurator.getReasonerType().equals("fact")){
-			return ReasonerType.OWLAPI_FACT;
-		} else if(configurator.getReasonerType().equals("hermit")){
-			return ReasonerType.OWLAPI_HERMIT;
-		} else{
-			return ReasonerType.OWLAPI_PELLET;
-		}
+//		if(configurator.getReasonerType().equals("fact")){
+//			return ReasonerType.OWLAPI_FACT;
+//		} else if(configurator.getReasonerType().equals("hermit")){
+//			return ReasonerType.OWLAPI_HERMIT;
+//		} else{
+//			return ReasonerType.OWLAPI_PELLET;
+//		}
+		return null;
 	}
 
 //	@Override
@@ -1159,6 +1139,18 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 //		System.out.println("----->: " + fuzzyReasonerOutput);
 		
 		return fuzzyReasonerOutput;
+	}
+
+	public void setReasoner(OWLReasoner reasoner) {
+		this.reasoner = reasoner;
+	}
+
+	public URL getOwlLinkURL() {
+		return owlLinkURL;
+	}
+
+	public void setOwlLinkURL(URL owlLinkURL) {
+		this.owlLinkURL = owlLinkURL;
 	}
 	
 }

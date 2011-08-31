@@ -32,12 +32,11 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OENode;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.ISLEConfigurator;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
@@ -74,7 +73,6 @@ import com.jamonapi.MonitorFactory;
 public class ISLE extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(CELOE.class);
-	private ISLEConfigurator configurator;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;	
@@ -131,14 +129,19 @@ public class ISLE extends AbstractCELA {
 	private int expressionTests = 0;
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
-	
-	public ISLEConfigurator getConfigurator() {
-		return configurator;
-	}
+
+	private double noisePercentage = 0.0;
+
+	private int maxNrOfResults = 10;
+
+	private boolean filterDescriptionsFollowingFromKB = true;
+
+	private long maxExecutionTimeInSeconds = 10;
+
+	private boolean reuseExistingDescription = false;
 	
 	public ISLE(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
-		configurator = new ISLEConfigurator(this);
 	}
 
 	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
@@ -186,23 +189,31 @@ public class ISLE extends AbstractCELA {
 		
 		startClass = Thing.instance;
 		
-		singleSuggestionMode = configurator.getSingleSuggestionMode();
+//		singleSuggestionMode = configurator.getSingleSuggestionMode();
 		
 		// create refinement operator
-		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
+//		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
+		// create refinement operator
+		if(operator == null) {
+			operator = new RhoDRDown();
+			((RhoDRDown)operator).setStartClass(startClass);
+			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
+			((RhoDRDown)operator).setReasoner(reasoner);
+			((RhoDRDown)operator).init();
+		}		
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
 		
-		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(configurator.getMaxNrOfResults());
+		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
 		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
 		
 		// we put important parameters in class variables
-		noise = configurator.getNoisePercentage()/100d;
-		maxDepth = configurator.getMaxDepth();
+		noise = noisePercentage/100d;
+//		maxDepth = configurator.getMaxDepth();
 		// (filterFollowsFromKB is automatically set to false if the problem
 		// is not a class learning problem
-		filterFollowsFromKB = configurator.getFilterDescriptionsFollowingFromKB()
+		filterFollowsFromKB = filterDescriptionsFollowingFromKB
 		  && isClassLearningProblem;
 		
 		// actions specific to ontology engineering
@@ -218,7 +229,7 @@ public class ISLE extends AbstractCELA {
 			// superfluous to add super classes in this case)
 			if(isEquivalenceProblem) {
 				Set<Description> existingDefinitions = reasoner.getAssertedDefinitions(classToDescribe);
-				if(configurator.getReuseExistingDescription() && (existingDefinitions.size() > 0)) {
+				if(reuseExistingDescription  && (existingDefinitions.size() > 0)) {
 					// the existing definition is reused, which in the simplest case means to
 					// use it as a start class or, if it is already too specific, generalise it
 					
@@ -624,7 +635,7 @@ public class ISLE extends AbstractCELA {
 	}
 	
 	private boolean terminationCriteriaSatisfied() {
-		return stop || ((System.nanoTime() - nanoStartTime) >= (configurator.getMaxExecutionTimeInSeconds()*1000000000l));
+		return stop || ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l));
 	}
 	
 	private void reset() {

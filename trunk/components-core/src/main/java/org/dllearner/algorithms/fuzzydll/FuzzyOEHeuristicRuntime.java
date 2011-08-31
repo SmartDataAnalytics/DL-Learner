@@ -21,7 +21,6 @@ package org.dllearner.algorithms.fuzzydll;
 
 import java.util.Comparator;
 
-import org.dllearner.core.configurators.FuzzyCELOEConfigurator;
 import org.dllearner.utilities.owl.ConceptComparator;
 
 /**

@@ -45,11 +45,10 @@ import org.dllearner.algorithm.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.core.AbstractComponent;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
-import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
@@ -60,6 +59,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.utilities.Helper;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -113,10 +113,6 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
 		options.add(new IntegerConfigOption("maxQueryTreeDepth", "recursion depth of query tree extraction", 2));
 		return options;
-	}
-	
-	public Configurator getConfigurator() {
-		return null;
 	}
 	
 	public QTL(AbstractLearningProblem learningProblem, SparqlEndpointKS endpointKS) throws LearningProblemUnsupportedException{
@@ -350,7 +346,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		ks.init();
 		PosOnlyLP lp = new PosOnlyLP();	
 		cm.getPool().registerComponent(lp);
-		lp.getConfigurator().setPositiveExamples(positiveExamples);
+		lp.setPositiveExamples(Helper.getIndividualSet(positiveExamples));
 		QTL qtl = new QTL(lp, ks);
 		qtl.init();
 		qtl.start();

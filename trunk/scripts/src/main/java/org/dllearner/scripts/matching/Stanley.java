@@ -43,6 +43,7 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.Helper;
 
 /**
  * This class produces a fragment for dbpedia and linkedgeodata
@@ -114,7 +115,7 @@ public class Stanley {
 		reasoner.init();
 		
 		PosOnlyLP lp = cm.learningProblem(PosOnlyLP.class, reasoner);
-		lp.getConfigurator().setPositiveExamples(positives);
+		lp.setPositiveExamples(Helper.getIndividualSet(positives));
 		lp.init();
 		
 		CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);

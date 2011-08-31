@@ -37,9 +37,8 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.BooleanEditor;
-import org.dllearner.core.configurators.RefinementOperatorConfigurator;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -230,25 +229,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		this.subHierarchy = reasoner.getClassHierarchy();
 		init();
 	}
-	
-	public RhoDRDown(AbstractReasonerComponent reasoner, ClassHierarchy subHierarchy, Description startClass, RefinementOperatorConfigurator configurator) {
-		this.reasoner = reasoner;
-		this.subHierarchy = subHierarchy;
-		this.startClass = startClass;
-		useAllConstructor = configurator.getUseAllConstructor();
-		useExistsConstructor = configurator.getUseExistsConstructor();
-		useHasValueConstructor = configurator.getUseHasValueConstructor();
-		useDataHasValueConstructor = configurator.getUseDataHasValueConstructor();
-		frequencyThreshold = configurator.getValueFrequencyThreshold();
-		useCardinalityRestrictions = configurator.getUseCardinalityRestrictions();
-		cardinalityLimit = configurator.getCardinalityLimit();
-		useNegation = configurator.getUseNegation();
-		useBooleanDatatypes = configurator.getUseBooleanDatatypes();
-		useDoubleDatatypes = configurator.getUseDoubleDatatypes();
-		useStringDatatypes = configurator.getUseStringDatatypes();
-		init();
-	}
-	
+		
 	// TODO constructor which takes a RhoDRDownConfigurator object;
 	// this should be an interface implemented e.g. by ExampleBasedROLComponentConfigurator;
 	// the goal is to use the configurator system while still being flexible enough to

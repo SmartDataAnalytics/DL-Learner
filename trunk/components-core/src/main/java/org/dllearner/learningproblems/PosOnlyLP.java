@@ -31,7 +31,6 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.configurators.PosOnlyLPConfigurator;
 import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -58,21 +57,12 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	// approximation of accuracy +- 0.03 %
 	private static final double approx = 0.03;	
 	
-//	private PosNegLPStandard definitionLP;
-	private PosOnlyLPConfigurator configurator;
-	
-	public PosOnlyLPConfigurator getConfigurator(){
-		return configurator;
-	}	
-	
 	public PosOnlyLP() {
 		super(null);
-		configurator = new PosOnlyLPConfigurator(this);
 	}
 	
 	public PosOnlyLP(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
-		configurator = new PosOnlyLPConfigurator(this);
 	}
 
 	/*

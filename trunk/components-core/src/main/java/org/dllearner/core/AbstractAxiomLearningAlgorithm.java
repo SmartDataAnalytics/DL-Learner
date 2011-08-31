@@ -28,7 +28,6 @@ import java.util.Map.Entry;
 
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
-import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
@@ -38,8 +37,6 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
@@ -115,11 +112,6 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 		}
 		
 		return returnList;
-	}
-
-	public Configurator getConfigurator() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	protected ResultSet executeSelectQuery(String query) {
