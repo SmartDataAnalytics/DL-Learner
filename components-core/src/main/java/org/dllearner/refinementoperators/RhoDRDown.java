@@ -1663,4 +1663,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 	public void setStartClass(Description startClass) {
 		this.startClass = startClass;
 	}
+
+	public int getCardinalityLimit() {
+		return cardinalityLimit;
+	}
+
+	public void setCardinalityLimit(int cardinalityLimit) {
+		this.cardinalityLimit = cardinalityLimit;
+	}
 }
