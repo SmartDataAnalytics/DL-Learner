@@ -79,6 +79,7 @@ public class AnnComponentManager {
             "org.dllearner.kb.sparql.SparqlKnowledgeSource",
             "org.dllearner.learningproblems.PosNegLPStandard",
             "org.dllearner.learningproblems.PosOnlyLP",
+            "org.dllearner.learningproblems.ClassLearningProblem",
             "org.dllearner.reasoning.FastInstanceChecker",
             "org.dllearner.reasoning.OWLAPIReasoner",
             "org.dllearner.algorithms.ocel.OCEL",
