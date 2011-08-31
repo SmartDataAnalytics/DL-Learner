@@ -26,10 +26,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.DoubleConfigOption;
@@ -39,8 +39,6 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.utilities.Helper;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import sun.beans.editors.BoolEditor;
-import sun.beans.editors.DoubleEditor;
 
 /**
  * The aim of this learning problem is to learn a concept definition such that

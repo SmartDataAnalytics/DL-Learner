@@ -35,8 +35,6 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import sun.beans.editors.BoolEditor;
-import sun.beans.editors.DoubleEditor;
 
 /**
  * @author Jens Lehmann
