@@ -16,7 +16,7 @@
 		<gwt.version>2.3.0</gwt.version>
 
 		<!--Define the AKSW dependency version -->
-		<aksw.version>0.2-SNAPSHOT</aksw.version>
+		<aksw.version>0.1</aksw.version>
 	</properties>
 
 	<modules>
@@ -275,11 +275,6 @@
 			<dependency>
 				<groupId>org.aksw.commons</groupId>
 				<artifactId>sparql</artifactId>
-				<version>${aksw.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.aksw.commons</groupId>
-				<artifactId>sparql-scala</artifactId>
 				<version>${aksw.version}</version>
 			</dependency>
 			<dependency>

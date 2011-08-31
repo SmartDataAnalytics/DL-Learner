@@ -55,10 +55,6 @@
             <groupId>org.aksw.commons</groupId>
             <artifactId>sparql</artifactId>
         </dependency>
-         <dependency>
-				<groupId>org.aksw.commons</groupId>
-				<artifactId>sparql-scala</artifactId>
-			</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,9 +26,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.aksw.commons.sparql.core.SparqlEndpoint;
-import org.aksw.commons.sparql.core.decorator.CachingSparqlEndpoint;
-import org.aksw.commons.sparql.core.impl.HttpSparqlEndpoint;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
@@ -39,13 +37,12 @@ import org.dllearner.algorithm.tbsl.sparql.Query;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.util.LatexWriter;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import scala.actors.threadpool.Arrays;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -96,7 +93,8 @@ public class Evaluation{
 		
 		String endpointURL = props.getProperty("endpointURL", "http://live.dbpedia.org/sparql");
 		String defaultGraphURI = props.getProperty("defaultGraphURI", "http://live.dbpedia.org");
-		this.endpoint = new CachingSparqlEndpoint(new HttpSparqlEndpoint(endpointURL, defaultGraphURI), "cache");
+		// TODO: use aksw-commons-sparql instead of sparql-scala
+//		this.endpoint = new CachingSparqlEndpoint(new HttpSparqlEndpoint(endpointURL, defaultGraphURI), "cache");
 		try {
 			stbl.setEndpoint(new org.dllearner.kb.sparql.SparqlEndpoint(
 					new URL(endpointURL), Collections.singletonList(defaultGraphURI), Collections.<String>emptyList()));
@@ -181,12 +179,13 @@ public class Evaluation{
 	private Set<String> getResources(String query){
 		Set<String> resources = new HashSet<String>();
 		
-		ResultSet rs = endpoint.executeSelect(query);
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			resources.add(qs.getResource("uri").getURI());
-		}
+		// TODO: use aksw-commons-sparql instead of sparql-scala
+//		ResultSet rs = endpoint.executeSelect(query);
+//		QuerySolution qs;
+//		while(rs.hasNext()){
+//			qs = rs.next();
+//			resources.add(qs.getResource("uri").getURI());
+//		}
 		
 		return resources;
 	}
@@ -195,6 +194,8 @@ public class Evaluation{
 		logger.debug("Query: " + query);
 		Object answer = null;
 		
+		// TODO: use aksw-commons-sparql instead of sparql-scala
+		/*
 		if(query.contains("ASK")){
 			answer = endpoint.executeAsk(query);
 		}  else {
@@ -225,10 +226,13 @@ public class Evaluation{
 			}
 		}
 		logger.debug("Answer: " + answer);
+		*/
 		return answer;
 	}
 	
 	public void setEndpoint(SparqlEndpoint endpoint){
+		// TODO: use aksw-commons-sparql instead of sparql-scala
+		/*
 		this.endpoint = endpoint;
 		try {
 			stbl.setEndpoint(new org.dllearner.kb.sparql.SparqlEndpoint(
@@ -236,6 +240,7 @@ public class Evaluation{
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 	
 	public void setUseRemoteValidation(boolean useRemoteValidation){

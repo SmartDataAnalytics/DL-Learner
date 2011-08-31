@@ -173,18 +173,20 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	}
 	
 	private Model loadIncrementally(String query){
-		try {
+//		try {
 			QueryExecutionFactory f = new QueryExecutionFactoryHttp(ks.getEndpoint().getURL().toString(), ks.getEndpoint().getDefaultGraphURIs());
-			f = new QueryExecutionFactoryCache(f, new CacheImpl(CacheCoreH2.create("cache", 60 * 24 *5)));
+//			f = new QueryExecutionFactoryCache(f, new CacheImpl(CacheCoreH2.create("cache", 60 * 24 *5)));
+			System.out.println("SPARQLReasoner.loadIncrementally needs to be rewritten for aksw-commons 0.1");
+			System.exit(0);
 			f = new QueryExecutionFactoryPaginated(f, 1000);
 			Model model = f.createQueryExecution(query).execConstruct();
 			return model;
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
 	}
 
 	@Override
