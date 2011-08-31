@@ -180,9 +180,9 @@ public class EnrichmentEvaluation {
 //	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 
 	// can be used to only evaluate a part of DBpedia
-	private int maxObjectProperties = 10;
-	private int maxDataProperties = 10;
-	private int maxClasses = 3;
+	private int maxObjectProperties = 20;
+	private int maxDataProperties = 0;
+	private int maxClasses = 0;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
@@ -226,9 +226,10 @@ public class EnrichmentEvaluation {
 		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
-		classAlgorithms.add(DisjointClassesLearner.class);
-		classAlgorithms.add(SimpleSubclassLearner.class);
 //		classAlgorithms.add(CELOE.class);
+//		classAlgorithms.add(DisjointClassesLearner.class);
+		classAlgorithms.add(SimpleSubclassLearner.class);
+		
 		
 		initDBConnection();
 		loadDBpediaOntology();
@@ -260,7 +261,7 @@ public class EnrichmentEvaluation {
 		}
 	}
 	
-	private void dropAndCreateTable(){
+	public void dropAndCreateTable(){
 		try {
 			Statement s = conn.createStatement();
 			s.executeUpdate("DROP TABLE IF EXISTS evaluation");
@@ -296,24 +297,21 @@ public class EnrichmentEvaluation {
 	public void start() throws IllegalArgumentException, SecurityException, InstantiationException,
 			IllegalAccessException, InvocationTargetException, NoSuchMethodException,
 			ComponentInitException, InterruptedException {
-		dropAndCreateTable();
+//		dropAndCreateTable();
 		
 		long overallStartTime = System.currentTimeMillis();
-//		ComponentManager cm = ComponentManager.getInstance();
-
-		// create DBpedia Live knowledge source
 
 		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		ks.init();
 		
 //		evaluateObjectProperties(ks);
 //		
-//		Thread.sleep(10000);
+//		Thread.sleep(20000);
 //		
 //		evaluateDataProperties(ks);
 //		
-//		Thread.sleep(10000);
-//		
+//		Thread.sleep(20000);
+		
 		evaluateClasses(ks);
 		
 		System.out.println("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
@@ -483,51 +481,58 @@ public class EnrichmentEvaluation {
 			for (NamedClass cls : classes) {
 
 				try{
-					// dynamically invoke constructor with SPARQL knowledge source
-					LearningAlgorithm learner = algorithmClass.getConstructor(
-							SparqlEndpointKS.class).newInstance(ks);
-					ConfigHelper.configure(learner, "classToDescribe", cls.toString());
-					ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
-							maxExecutionTimeInSeconds);
-					learner.init();
-					// learner.setPropertyToDescribe(property);
-					// learner.setMaxExecutionTimeInSeconds(10);
-					String algName = AnnComponentManager.getName(learner);
-					
-					int attempt = 0;
-					long startTime = 0;
-					boolean timeout = true;
-					while(timeout && attempt++ < maxAttempts){
-						timeout = false;
-						if(attempt > 1){
+					List<EvaluatedAxiom> learnedAxioms = null;
+					long startTime = System.currentTimeMillis();
+					boolean timeout = false;
+					String algName;
+					if(algorithmClass == CELOE.class){
+						algName = CELOE.class.getSimpleName();
+						System.out.println("Applying " + algName + " on " + cls + " ... ");
+						learnedAxioms = applyCELOE(ks, cls, false);
+					} else {
+						
+						// dynamically invoke constructor with SPARQL knowledge source
+						LearningAlgorithm learner = algorithmClass.getConstructor(
+								SparqlEndpointKS.class).newInstance(ks);
+						ConfigHelper.configure(learner, "classToDescribe", cls.toString());
+						ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
+								maxExecutionTimeInSeconds);
+						learner.init();
+						// learner.setPropertyToDescribe(property);
+						// learner.setMaxExecutionTimeInSeconds(10);
+						algName = AnnComponentManager.getName(learner);
+						int attempt = 0;
+						
+						timeout = true;
+						while(timeout && attempt++ < maxAttempts){
+							timeout = false;
+							if(attempt > 1){
+								try {
+									Thread.sleep(delayInMilliseconds);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+							System.out.println("Applying " + algName + " on " + cls + " ... (Attempt " + attempt + ")");
+							startTime = System.currentTimeMillis();
 							try {
-								Thread.sleep(delayInMilliseconds);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
+								learner.start();
+							} catch (Exception e) {
+								timeout = true;
+								if(e.getCause() instanceof SocketTimeoutException){
+									
+								} else {
+									e.printStackTrace();
+								}
 							}
 						}
-						System.out.println("Applying " + algName + " on " + cls + " ... (Attempt " + attempt + ")");
-						startTime = System.currentTimeMillis();
-						try {
-							learner.start();
-						} catch (Exception e) {
-							timeout = true;
-							if(e.getCause() instanceof SocketTimeoutException){
-								
-							} else {
-								e.printStackTrace();
-							}
-						}
+						learnedAxioms = ((AxiomLearningAlgorithm)learner)
+						.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 					}
+					
 					
 					long runTime = System.currentTimeMillis() - startTime;
-					List<EvaluatedAxiom> learnedAxioms = null;
-					if(learner instanceof AxiomLearningAlgorithm){
-						learnedAxioms = ((AxiomLearningAlgorithm)learner)
-								.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-					} else if(learner instanceof AbstractCELA){
-						learnedAxioms = applyCELOE(ks, cls, false);
-					}
+					
 					if(timeout && learnedAxioms.isEmpty()){
 						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
 					} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
@@ -1062,6 +1067,7 @@ public class EnrichmentEvaluation {
 	
 	{
 		EnrichmentEvaluation ee = new EnrichmentEvaluation();
+		ee.dropAndCreateTable();
 		ee.start();
 		// ee.printResultsPlain();
 		ee.printResultsLaTeX();
