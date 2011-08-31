@@ -62,6 +62,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -142,24 +143,27 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		model.add(loadIncrementally(query));
 		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o}";
 		model.add(loadIncrementally(query));
-		Set<AxiomType> propertyCharacteristics = new HashSet<AxiomType>();
-		propertyCharacteristics.add(AxiomType.TRANSITIVE_OBJECT_PROPERTY);
-		propertyCharacteristics.add(AxiomType.FUNCTIONAL_DATA_PROPERTY);
-		propertyCharacteristics.add(AxiomType.FUNCTIONAL_OBJECT_PROPERTY);
-		propertyCharacteristics.add(AxiomType.REFLEXIVE_OBJECT_PROPERTY);
-		propertyCharacteristics.add(AxiomType.IRREFLEXIVE_OBJECT_PROPERTY);
-		propertyCharacteristics.add(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY);
-		propertyCharacteristics.add(AxiomType.SYMMETRIC_OBJECT_PROPERTY);
-		propertyCharacteristics.add(AxiomType.ASYMMETRIC_OBJECT_PROPERTY);
+		//load inverse relation
+		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#inverseOf> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#inverseOf> ?o}";
+		model.add(loadIncrementally(query));
+		//load property characteristics
+		Set<Resource> propertyCharacteristics = new HashSet<Resource>();
+		propertyCharacteristics.add(OWL.FunctionalProperty);
+		propertyCharacteristics.add(OWL.InverseFunctionalProperty);
+		propertyCharacteristics.add(OWL.SymmetricProperty);
+		propertyCharacteristics.add(OWL.TransitiveProperty);
+		propertyCharacteristics.add(OWL2.ReflexiveProperty);
+		propertyCharacteristics.add(OWL2.IrreflexiveProperty);
+		propertyCharacteristics.add(OWL2.AsymmetricProperty);
 
-		for(AxiomType type : propertyCharacteristics){
-			query = "CONSTRUCT {?s a <http://www.w3.org/2002/07/owl#%s>} WHERE {?s a <http://www.w3.org/2002/07/owl#%s>}".replaceAll("%s", type.getName());
+		for(Resource propChar : propertyCharacteristics){
+			query = "CONSTRUCT {?s a <%s>} WHERE {?s a <%s>}".replaceAll("%s", propChar.getURI());
 			model.add(loadIncrementally(query));
 		}
 		
-		for(Statement st : model.listStatements().toList()){
-			System.out.println(st);
-		}
+//		for(Statement st : model.listStatements().toList()){
+//			System.out.println(st);
+//		}
 	}
 	
 	private Model loadIncrementally(String query){
@@ -397,7 +401,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		SortedSet<Individual> members = new TreeSet<Individual>();
 		String query = String.format("SELECT ?ind WHERE {" +
 				"?ind <%s> ?o." +
-				" FILTER(isLiteral(?o) && DATATYPE(?o) = <%s> && ?o = <%s>)}", 
+				" FILTER(isLiteral(?o) && DATATYPE(?o) = <%s> && ?o = %s)}", 
 				datatypeProperty.getName(), XSD.BOOLEAN.toStringID(),
 				"\"true\"^^<" + XSD.BOOLEAN.toStringID() + ">");
 		
@@ -416,7 +420,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		SortedSet<Individual> members = new TreeSet<Individual>();
 		String query = String.format("SELECT ?ind WHERE {" +
 				"?ind <%s> ?o." +
-				" FILTER(isLiteral(?o) && DATATYPE(?o) = <%s> && ?o = <%s>)}", 
+				" FILTER(isLiteral(?o) && DATATYPE(?o) = <%s> && ?o = %s)}", 
 				datatypeProperty.getName(), XSD.BOOLEAN.toStringID(),
 				"\"false\"^^<"+XSD.BOOLEAN.toStringID() + ">");
 		
@@ -775,22 +779,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		long startTime = System.currentTimeMillis();
 		r.loadSchema();
 		System.out.println("Time needed: " + (System.currentTimeMillis()-startTime) + "ms");
-//		ObjectProperty oP = new ObjectProperty(NS + "league");
-//		for(Entry<Individual, SortedSet<Individual>> entry : r.getPropertyMembers(oP).entrySet()){
-//			System.out.println(entry.getKey());
-//			System.out.println(entry.getValue());
-//		}
-//		
-//		DatatypeProperty dP = new DatatypeProperty(NS+ "areaLand");
-//		for(Entry<Individual, SortedSet<Double>> entry : r.getDoubleDatatypeMembers(dP).entrySet()){
-//			System.out.println(entry.getKey());
-//			System.out.println(entry.getValue());
-//		}
-		
-		DatatypeProperty dP = new DatatypeProperty(NS+ "internationally");
-		for(Individual ind : r.getTrueDatatypeMembers(dP)){
-			System.out.println(ind);
-		}
 		
 	}
 
