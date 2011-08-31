@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.learningproblems.fuzzydll;
+package org.dllearner.learningproblems;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -36,12 +36,7 @@ import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
-import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
-import org.dllearner.learningproblems.ScorePosNeg;
-import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.utilities.Helper;
 
 /**
