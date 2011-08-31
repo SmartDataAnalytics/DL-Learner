@@ -19,20 +19,16 @@
 
 package org.dllearner.core;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
-import org.apache.commons.lang.ClassUtils;
 
 /**
  * Component manager for the new (as of 2011) annotation based configuration 
@@ -175,7 +171,7 @@ public class AnnComponentManager {
 			for(Constructor<?> constructor : constructors) {
 				Class<?>[] paraTypes = constructor.getParameterTypes();
 				for(Class<?> paraType : paraTypes) {
-					if(ClassUtils.isAssignable(argument, paraType)) {
+					if(org.springframework.util.ClassUtils.isAssignable(argument, paraType)) {
 						return true;
 					}
 				}
@@ -197,9 +193,10 @@ public class AnnComponentManager {
 		try {
 			Constructor<?>[] constructors = compound.getDeclaredConstructors();
 			for(Constructor<?> constructor : constructors) {
-				if(ClassUtils.isAssignable(arguments, constructor.getParameterTypes())) {
+				// TODO: ClassUtils is no longer in the dependencies
+//				if(ClassUtils.isAssignable(arguments, constructor.getParameterTypes())) {
 					return true;
-				}
+//				}
 			}
 		} catch (SecurityException e) {
 			e.printStackTrace();

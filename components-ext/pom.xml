@@ -53,10 +53,6 @@
 			<artifactId>sparql</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.aksw.commons</groupId>
-			<artifactId>sparql-scala</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-core</artifactId>
 			<version>3.3.0</version>
