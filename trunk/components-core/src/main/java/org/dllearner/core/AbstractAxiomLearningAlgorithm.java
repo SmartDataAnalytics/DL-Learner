@@ -30,13 +30,16 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
@@ -45,6 +48,8 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  * @author Jens Lehmann
  */
 public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements AxiomLearningAlgorithm{
+	
+	private static final Logger logger = LoggerFactory.getLogger(AbstractAxiomLearningAlgorithm.class);
 	
 	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="", propertyEditorClass=IntegerEditor.class)
 	protected int maxExecutionTimeInSeconds = 10;
@@ -118,20 +123,20 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 	}
 	
 	protected ResultSet executeSelectQuery(String query) {
+		logger.info("Sending query\n{} ...", query);
 		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(),
 				query);
 		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
-		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
-			queryExecution.addDefaultGraph(dgu);
-		}
-		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
-			queryExecution.addNamedGraph(ngu);
-		}
+		queryExecution.setDefaultGraphURIs(ks.getEndpoint().getDefaultGraphURIs());
+		queryExecution.setNamedGraphURIs(ks.getEndpoint().getNamedGraphURIs());
+		
 		ResultSet resultSet = queryExecution.execSelect();
+		
 		return resultSet;
 	}
 	
 	protected boolean executeAskQuery(String query){
+		logger.info("Sending query\n{} ...", query);
 		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
 		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);

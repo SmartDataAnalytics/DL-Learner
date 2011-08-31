@@ -244,7 +244,7 @@ public class ExtendedQueryEngineHTTP
         // TODO Allow other content types.
         httpQuery.setAccept(HttpParams.contentTypeResultsXML);
 
-        InputStream in = doTimedExec(httpQuery);
+        InputStream in = httpQuery.exec();
 
 
         ResultSet rs = ResultSetFactory.fromXML(in);
