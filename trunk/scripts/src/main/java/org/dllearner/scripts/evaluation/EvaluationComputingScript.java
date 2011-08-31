@@ -33,6 +33,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -251,27 +252,33 @@ public class EvaluationComputingScript {
 //					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
 					for (int k = 0; k <= 3; k++) {
 						lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-						lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-						lp.getConfigurator().setCheckConsistency(false);
-						lp.getConfigurator().setType("equivalence");
+						lp.setClassToDescribe(nc);
+						lp.setCheckConsistency(false);
+						lp.setEquivalence(true);
+//						lp.setType("equivalence");
 						System.out.println("Learning equivalentClass expressions");
 						if (k == 0) {
-							lp.getConfigurator().setAccuracyMethod("standard");
+//							lp.getConfigurator().setAccuracyMethod("standard");
+							lp.setHeuristic(HeuristicType.AMEASURE);
 							System.out.println("Using accuracy method: standard");
 						} else if (k == 1) {
-							lp.getConfigurator().setAccuracyMethod("fmeasure");
+//							lp.getConfigurator().setAccuracyMethod("fmeasure");
+							lp.setHeuristic(HeuristicType.AMEASURE);
 							System.out.println("Using accuracy method: F-Measure");
 						} else if (k == 2) {
-							lp.getConfigurator().setAccuracyMethod("pred_acc");
+//							lp.getConfigurator().setAccuracyMethod("pred_acc");
+							lp.setHeuristic(HeuristicType.PRED_ACC);
 							System.out.println("Using accuracy method: Predictive accuracy");
 						} else if (k == 3) {
-							lp.getConfigurator().setAccuracyMethod("jaccard");
+//							lp.getConfigurator().setAccuracyMethod("jaccard");
+							lp.setHeuristic(HeuristicType.JACCARD);
 							System.out.println("Using accuracy method: Jaccard");
 						} else {
-							lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
+//							lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
+							lp.setHeuristic(HeuristicType.GEN_FMEASURE);
 							System.out.println("Using accuracy method: Generalised F-Measure");
 						}
-						lp.getConfigurator().setUseApproximations(useApproximations);
+						lp.setUseApproximations(useApproximations);
 						lp.init();
 						celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
 //						cf = celoe.getConfigurator();
@@ -377,13 +384,15 @@ public class EvaluationComputingScript {
 					System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes));
 					
 					lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-					lp.getConfigurator().setCheckConsistency(false);
-					lp.getConfigurator().setType("equivalence");
+					lp.setClassToDescribe(nc);
+					lp.setCheckConsistency(false);
+//					lp.getConfigurator().setType("equivalence");
+					lp.setEquivalence(true);
 					System.out.println("Learning equivalentClass expressions");
-					lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
+//					lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
+					lp.setHeuristic(HeuristicType.GEN_FMEASURE);
 					System.out.println("Using accuracy method: Generalised F-Measure");
-					lp.getConfigurator().setUseApproximations(useApproximations);
+					lp.setUseApproximations(useApproximations);
 					lp.init();
 					celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
 					RhoDRDown op = (RhoDRDown) celoe.getOperator();
@@ -459,11 +468,13 @@ public class EvaluationComputingScript {
 						+ " with " + instanceCount + " instances");
 				
 				lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-				lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-				lp.getConfigurator().setCheckConsistency(false);
-				lp.getConfigurator().setType("equivalence");
+				lp.setClassToDescribe(nc);
+				lp.setCheckConsistency(false);
+//				lp.getConfigurator().setType("equivalence");
+				lp.setEquivalence(true);
 				System.out.println("Learning equivalentClass expressions");
-				lp.getConfigurator().setUseApproximations(true);
+//				lp.getConfigurator().setUseApproximations(true);
+				lp.setUseApproximations(true);
 				lp.init();
 				celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
 				RhoDRDown op = (RhoDRDown) celoe.getOperator();

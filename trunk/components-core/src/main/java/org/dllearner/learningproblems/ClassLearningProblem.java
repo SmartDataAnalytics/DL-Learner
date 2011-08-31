@@ -65,11 +65,13 @@ public class ClassLearningProblem extends AbstractLearningProblem {
     private long nanoStartTime;
 	private static int maxExecutionTimeInSeconds = 10;
 	
+	// TODO: config option
 	private NamedClass classToDescribe;
+	
 	private List<Individual> classInstances;
 	private TreeSet<Individual> classInstancesSet;
 	private boolean equivalence = true;
-	private ClassLearningProblemConfigurator configurator;
+//	private ClassLearningProblemConfigurator configurator;
 	// approximation of accuracy
 	private double approxDelta = 0.05;
 	
@@ -77,6 +79,9 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	// factor for higher weight on recall (needed for subclass learning)
 	private double coverageFactor;
+	
+	private double betaSC = 3.0;
+	private double betaEq = 1.0;
 	
 	// instances of super classes excluding instances of the class itself
 	private List<Individual> superClassInstances;
@@ -87,13 +92,19 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	private HeuristicType heuristic = HeuristicType.AMEASURE;
 	
-	public ClassLearningProblemConfigurator getConfigurator(){
-		return configurator;
-	}	
+	private boolean checkConsistency = true;
+	
+	public ClassLearningProblem() {
+		
+	}
+	
+//	public ClassLearningProblemConfigurator getConfigurator(){
+//		return configurator;
+//	}	
 	
 	public ClassLearningProblem(AbstractReasonerComponent reasoner) {
 		super(reasoner);
-		configurator = new ClassLearningProblemConfigurator(this);
+//		configurator = new ClassLearningProblemConfigurator(this);
 	}
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
@@ -127,35 +138,35 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	@Override
 	public void init() throws ComponentInitException {
-		classToDescribe = new NamedClass(configurator.getClassToDescribe().toString());
-		useApproximations = configurator.getUseApproximations();
+//		classToDescribe = new NamedClass(configurator.getClassToDescribe().toString());
+//		useApproximations = configurator.getUseApproximations();
 		
-		String accM = configurator.getAccuracyMethod();
-		if(accM.equals("standard")) {
-			heuristic = HeuristicType.AMEASURE;
-		} else if(accM.equals("fmeasure")) {
-			heuristic = HeuristicType.FMEASURE;
-		} else if(accM.equals("generalised_fmeasure")) {
-			heuristic = HeuristicType.GEN_FMEASURE;
-		} else if(accM.equals("jaccard")) {
-			heuristic = HeuristicType.JACCARD;
-		} else if(accM.equals("pred_acc")) {
-			heuristic = HeuristicType.PRED_ACC;
-		}
+//		String accM = configurator.getAccuracyMethod();
+//		if(accM.equals("standard")) {
+//			heuristic = HeuristicType.AMEASURE;
+//		} else if(accM.equals("fmeasure")) {
+//			heuristic = HeuristicType.FMEASURE;
+//		} else if(accM.equals("generalised_fmeasure")) {
+//			heuristic = HeuristicType.GEN_FMEASURE;
+//		} else if(accM.equals("jaccard")) {
+//			heuristic = HeuristicType.JACCARD;
+//		} else if(accM.equals("pred_acc")) {
+//			heuristic = HeuristicType.PRED_ACC;
+//		}
 		
 		if(useApproximations && heuristic.equals(HeuristicType.PRED_ACC)) {
 			System.err.println("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first to verify that it works.");
 		}		
 		
 		if(useApproximations && !(heuristic.equals(HeuristicType.PRED_ACC) || heuristic.equals(HeuristicType.AMEASURE) || heuristic.equals(HeuristicType.FMEASURE))) {
-			throw new ComponentInitException("Approximations only supported for F-Measure or Standard-Measure. It is unsupported for \"" + accM + ".\"");
+			throw new ComponentInitException("Approximations only supported for F-Measure or Standard-Measure. It is unsupported for \"" + heuristic + ".\"");
 		}
 		
 //		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
-		approxDelta = configurator.getApproxAccuracy();
+//		approxDelta = configurator.getApproxAccuracy();
 		
 		if(!getReasoner().getNamedClasses().contains(classToDescribe)) {
-			throw new ComponentInitException("The class \"" + configurator.getClassToDescribe() + "\" does not exist. Make sure you spelled it correctly.");
+			throw new ComponentInitException("The class \"" + classToDescribe + "\" does not exist. Make sure you spelled it correctly.");
 		}
 		
 		classInstances = new LinkedList<Individual>(getReasoner().getIndividuals(classToDescribe));
@@ -165,13 +176,13 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		}
 		
 		classInstancesSet = new TreeSet<Individual>(classInstances);
-		equivalence = (configurator.getType().equals("equivalence"));
-		maxExecutionTimeInSeconds = configurator.getMaxExecutionTimeInSeconds();
+//		equivalence = (configurator.getType().equals("equivalence"));
+//		maxExecutionTimeInSeconds = configurator.getMaxExecutionTimeInSeconds();
 		
 		if(equivalence) {
-			coverageFactor = configurator.getBetaEq();
+			coverageFactor = betaEq;
 		} else {
-			coverageFactor = configurator.getBetaSC();
+			coverageFactor = betaSC;
 		}
 		
 		// we compute the instances of the super class to perform
@@ -244,7 +255,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			acc = getAccuracyOrTooWeakExact(description, 1);
 		}
 		
-		if(configurator.getCheckConsistency()) {
+		if(checkConsistency) {
 			
 			// we check whether the axiom already follows from the knowledge base
 //			boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);			
@@ -845,5 +856,69 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	public boolean followsFromKB(Description description) {
 		return equivalence ? getReasoner().isEquivalentClass(description, classToDescribe) : getReasoner().isSuperClassOf(description, classToDescribe);
+	}
+
+	public static int getMaxExecutionTimeInSeconds() {
+		return maxExecutionTimeInSeconds;
+	}
+
+	public static void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+		ClassLearningProblem.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	}
+
+	public boolean isEquivalence() {
+		return equivalence;
+	}
+
+	public void setEquivalence(boolean equivalence) {
+		this.equivalence = equivalence;
+	}
+
+	public boolean isUseApproximations() {
+		return useApproximations;
+	}
+
+	public void setUseApproximations(boolean useApproximations) {
+		this.useApproximations = useApproximations;
+	}
+
+	public HeuristicType getHeuristic() {
+		return heuristic;
+	}
+
+	public void setHeuristic(HeuristicType heuristic) {
+		this.heuristic = heuristic;
+	}
+
+	public double getApproxDelta() {
+		return approxDelta;
+	}
+
+	public void setApproxDelta(double approxDelta) {
+		this.approxDelta = approxDelta;
+	}
+
+	public double getBetaSC() {
+		return betaSC;
+	}
+
+	public void setBetaSC(double betaSC) {
+		this.betaSC = betaSC;
+	}
+
+	public double getBetaEq() {
+		return betaEq;
+	}
+
+	public void setBetaEq(double betaEq) {
+		this.betaEq = betaEq;
+	}
+
+	public boolean isCheckConsistency() {
+		return checkConsistency;
+	}
+
+	public void setCheckConsistency(boolean checkConsistency) {
+		this.checkConsistency = checkConsistency;
 	}
 }
