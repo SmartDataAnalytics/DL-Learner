@@ -28,7 +28,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class BooleanValueRestriction extends DatatypeValueRestriction {
+public class BooleanValueRestriction extends DatatypeValueRestriction implements Comparable<BooleanValueRestriction>{
 
 	/**
 	 * 
@@ -71,5 +71,14 @@ public class BooleanValueRestriction extends DatatypeValueRestriction {
 		String ret= "("+restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + " IS " + ((String)value.toKBSyntaxString(baseURI, prefixes)).toUpperCase()+")";
 		return ret;
 		
+	}
+
+	@Override
+	public int compareTo(BooleanValueRestriction o) {
+		int ret = getRestrictedPropertyExpression().compareTo(o.getRestrictedPropertyExpression());
+		if(ret == 0){//if properties are the same we compare the boolean values
+			ret = Boolean.valueOf(getBooleanValue()).compareTo(Boolean.valueOf(o.getBooleanValue())); 
+		}
+		return ret;
 	}
 }
