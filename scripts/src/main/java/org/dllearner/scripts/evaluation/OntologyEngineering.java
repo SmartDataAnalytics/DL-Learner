@@ -49,6 +49,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -204,20 +205,23 @@ public class OntologyEngineering {
 					// learn equivalence axiom
 					ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class,
 							reasoner);
-					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+					lp.setClassToDescribe(nc);
 					if (i == 0) {
 						System.out
 								.println("generating suggestions for equivalent class (please wait "
 										+ algorithmRuntimeInSeconds + " seconds)");
-						lp.getConfigurator().setType("equivalence");
+//						lp.getConfigurator().setType("equivalence");
+						lp.setEquivalence(true);
 					} else {
 						System.out.println("suggestions for super class (please wait "
 								+ algorithmRuntimeInSeconds + " seconds)");
-						lp.getConfigurator().setType("superClass");
+//						lp.getConfigurator().setType("superClass");
+						lp.setEquivalence(false);
 					}
-					lp.getConfigurator().setUseApproximations(useApproximations);
+					lp.setUseApproximations(useApproximations);
 					if(useFMeasure) {
-						lp.getConfigurator().setAccuracyMethod("fmeasure");	
+//						lp.getConfigurator().setAccuracyMethod("fmeasure");
+						lp.setHeuristic(HeuristicType.FMEASURE);
 					}
 					lp.init();
 

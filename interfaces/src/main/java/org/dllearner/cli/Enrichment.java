@@ -99,6 +99,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.CommonPrefixMap;
@@ -350,15 +351,17 @@ public class Enrichment {
         ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, rc);
 //        lp.setPositiveExamples(posExamples);
 //        lp.setNegativeExamples(negExamples);
-        try {
-			lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		}
-        lp.getConfigurator().setType("equivalence");
-        lp.getConfigurator().setAccuracyMethod("fmeasure");
-        lp.getConfigurator().setUseApproximations(false);
-        lp.getConfigurator().setMaxExecutionTimeInSeconds(10);
+//        try {
+			lp.setClassToDescribe(nc);
+//		} catch (MalformedURLException e1) {
+//			e1.printStackTrace();
+//		}
+//        lp.setType("equivalence");
+        lp.setEquivalence(true);
+//        lp.setAccuracyMethod("fmeasure");
+        lp.setHeuristic(HeuristicType.FMEASURE);
+        lp.setUseApproximations(false);
+        lp.setMaxExecutionTimeInSeconds(10);
         lp.init();
 
         CELOE la = null;
