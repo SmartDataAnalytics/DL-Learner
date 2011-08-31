@@ -58,6 +58,7 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerType;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.StringFormatter;
@@ -378,14 +379,17 @@ public class SemanticBibleComparison {
 	
 	public static OCEL experimentalSetup(Experiments exp,SortedSet<Individual> posExamples, SortedSet<Individual> negExamples ){
 		OCEL la = null;
-		if(exp.toString().contains("SPARQL"))
+		RhoDRDown op = null;
+		if(exp.toString().contains("SPARQL")) {
 			la = prepareSparqlExperiment(exp, posExamples, negExamples);
-		else if(exp.toString().contains("NORMAL")){
+			op = (RhoDRDown) la.getOperator();
+		} else if(exp.toString().contains("NORMAL")){
 			if(exp.equals(Experiments.NORMAL_10000_CTESTS_FASTINST)){
 				la = prepareNormalExperiment(true, posExamples, negExamples);
-				la.setUseAllConstructor(false);
-				la.setUseNegation(false);
-				la.setUseCardinalityRestrictions(false);
+				op = (RhoDRDown) la.getOperator();
+				op.setUseAllConstructor(false);
+				op.setUseNegation(false);
+				op.setUseCardinalityRestrictions(false);
 			}else{
 				la = prepareNormalExperiment(false, posExamples, negExamples);
 			}
@@ -397,13 +401,13 @@ public class SemanticBibleComparison {
 //		OCELConfigurator c = la.getConfigurator();
 		
 		//defaultSettings:
-		la.setUseHasValueConstructor(false);
-		la.setUseBooleanDatatypes(false);
-		la.setUseDoubleDatatypes(false);
+		op.setUseHasValueConstructor(false);
+		op.setUseBooleanDatatypes(false);
+		op.setUseDoubleDatatypes(false);
 		
 
 		if(exp.toString().contains("HASVALUE")){
-			la.setUseHasValueConstructor(true);
+			op.setUseHasValueConstructor(true);
 		}
 		
 		
