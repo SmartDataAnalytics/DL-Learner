@@ -52,7 +52,7 @@ import org.dllearner.core.options.fuzzydll.FuzzyExample;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard;
+import org.dllearner.learningproblems.FuzzyPosNegLPStandard;
 import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
 import org.dllearner.refinementoperators.FuzzyRhoDRDown;
 import org.dllearner.utilities.Helper;
