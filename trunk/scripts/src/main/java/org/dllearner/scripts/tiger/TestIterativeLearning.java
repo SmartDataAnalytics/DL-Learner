@@ -637,15 +637,16 @@ public class TestIterativeLearning {
 		}
 
 		OCEL la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, rc);
+		RhoDRDown op = (RhoDRDown) la.getOperator();
 //		CELOE la = ComponentFactory.getCELOE(lp, rc);
-		la.setUseExistsConstructor(true);
+		op.setUseExistsConstructor(true);
 
-		la.setUseAllConstructor(false);
-		la.setUseCardinalityRestrictions(false);
-		la.setUseNegation(false);
-		la.setUseHasValueConstructor(false);
-		la.setUseDataHasValueConstructor(config.useDataHasValue);
-		la.setValueFrequencyThreshold(valueFrequencyThreshold);
+		op.setUseAllConstructor(false);
+		op.setUseCardinalityRestrictions(false);
+		op.setUseNegation(false);
+		op.setUseHasValueConstructor(false);
+		op.setUseDataHasValueConstructor(config.useDataHasValue);
+		op.setFrequencyThreshold(valueFrequencyThreshold);
 //		la.getConfigurator().setInstanceBasedDisjoints(true);
 		
 //		la.getConfigurator().setIgnoredConcepts(

@@ -48,6 +48,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.scripts.improveWikipedia.ConceptSPARQLReEvaluator;
 import org.dllearner.scripts.improveWikipedia.ConceptSelector;
 import org.dllearner.scripts.improveWikipedia.WikipediaCategoryTasks;
@@ -318,13 +319,14 @@ public class WikipediaCategoryCleaner {
 			la.setNoisePercentage(20);
 			la.setGuaranteeXgoodDescriptions(100);
 			la.setMaxExecutionTimeInSeconds(50);
+			RhoDRDown op = (RhoDRDown) la.getOperator();
 			
-			la.setUseAllConstructor(false);
-			la.setUseBooleanDatatypes(false);
-			la.setUseCardinalityRestrictions(false);
-			la.setUseNegation(false);
-			la.setUseHasValueConstructor(false);
-			la.setUseDoubleDatatypes(false);
+			op.setUseAllConstructor(false);
+			op.setUseBooleanDatatypes(false);
+			op.setUseCardinalityRestrictions(false);
+			op.setUseNegation(false);
+			op.setUseHasValueConstructor(false);
+			op.setUseDoubleDatatypes(false);
 			la.setWriteSearchTree(true);
 //			la.setSearchTreeFile("log/dbpedia.txt");
 			la.setReplaceSearchTree(true);

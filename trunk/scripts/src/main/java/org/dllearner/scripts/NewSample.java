@@ -43,6 +43,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 
@@ -134,12 +135,13 @@ public class NewSample {
 		
 		// learning algorithm
 		OCEL la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, f);
+		RhoDRDown op = (RhoDRDown) la.getOperator();
 		//OPTIONAL PARAMETERS
-		la.setUseAllConstructor( false);
-		la.setUseExistsConstructor(true);
-		la.setUseCardinalityRestrictions(false);
-		la.setUseExistsConstructor(true);
-		la.setUseNegation(false);
+		op.setUseAllConstructor( false);
+		op.setUseExistsConstructor(true);
+		op.setUseCardinalityRestrictions(false);
+		op.setUseExistsConstructor(true);
+		op.setUseNegation(false);
 		la.setWriteSearchTree(false);
 //		la.setSearchTreeFile("log/searchTree.txt");
 		la.setReplaceSearchTree(true);

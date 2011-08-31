@@ -112,20 +112,20 @@ public class OCEL extends AbstractCELA {
 	// these are computed as the result of the previous four settings
 	Set<NamedClass> usedConcepts;
 	Set<ObjectProperty> usedRoles;	
-	private boolean applyAllFilter = true;
-	private boolean applyExistsFilter = true;	
+//	private boolean applyAllFilter = true;
+//	private boolean applyExistsFilter = true;	
 	private boolean useTooWeakList = true;
 	private boolean useOverlyGeneralList = true;
 	private boolean useShortConceptConstruction = true;
 	private boolean improveSubsumptionHierarchy = true;
-	private boolean useAllConstructor = CommonConfigOptions.useAllConstructorDefault;
-	private boolean useExistsConstructor = CommonConfigOptions.useExistsConstructorDefault;
-	private boolean useHasValueConstructor = CommonConfigOptions.useHasValueConstructorDefault;
-	private int valueFrequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
-	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
-	private boolean useNegation = CommonConfigOptions.useNegationDefault;
-	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
-	private boolean useDoubleDatatypes = CommonConfigOptions.useDoubleDatatypesDefault;
+//	private boolean useAllConstructor = CommonConfigOptions.useAllConstructorDefault;
+//	private boolean useExistsConstructor = CommonConfigOptions.useExistsConstructorDefault;
+//	private boolean useHasValueConstructor = CommonConfigOptions.useHasValueConstructorDefault;
+//	private int valueFrequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
+//	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
+//	private boolean useNegation = CommonConfigOptions.useNegationDefault;
+//	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
+//	private boolean useDoubleDatatypes = CommonConfigOptions.useDoubleDatatypesDefault;
 	private static double noisePercentageDefault = 0.0;
 	private double noisePercentage = noisePercentageDefault;
 	private NamedClass startClass = null;
@@ -144,10 +144,10 @@ public class OCEL extends AbstractCELA {
 	private int guaranteeXgoodDescriptions = CommonConfigOptions.guaranteeXgoodDescriptionsDefault;
 	private int maxClassDescriptionTests = CommonConfigOptions.maxClassDescriptionTestsDefault;
 	
-	private double negativeWeight;
-	private double startNodeBonus;
-	private double expansionPenaltyFactor;
-	private int negationPenalty;
+	private double negativeWeight = 1.0;
+	private double startNodeBonus = 1.0;
+	private double expansionPenaltyFactor = 0.02;
+	private int negationPenalty = 0;
 	private boolean terminateOnNoiseReached = true;
 	
 	// Variablen zur Einstellung der Protokollierung
@@ -155,9 +155,9 @@ public class OCEL extends AbstractCELA {
 	boolean showBenchmarkInformation = false;
 	// boolean createTreeString = false;
 	// String searchTree = new String();
-	private int cardinalityLimit;
-	private boolean useStringDatatypes;
-	private boolean instanceBasedDisjoints;
+//	private int cardinalityLimit = 5;
+//	private boolean useStringDatatypes = false;
+//	private boolean instanceBasedDisjoints = true;
 
 	// Konfiguration des Algorithmus
 	// Faktor für horizontale Erweiterung (notwendig für completeness)
@@ -266,9 +266,9 @@ public class OCEL extends AbstractCELA {
 		} else if(name.equals("ignoredRoles")) {
 			ignoredRoles = CommonConfigMappings.getAtomicRoleSet((Set<String>)entry.getValue());
 		} else if(name.equals("applyAllFilter")) {
-			applyAllFilter = (Boolean) entry.getValue();
+//			applyAllFilter = (Boolean) entry.getValue();
 		} else if(name.equals("applyExistsFilter")) {
-			applyExistsFilter = (Boolean) entry.getValue();
+//			applyExistsFilter = (Boolean) entry.getValue();
 		} else if(name.equals("useTooWeakList")) {
 			useTooWeakList = (Boolean) entry.getValue();
 		} else if(name.equals("useOverlyGeneralList")) {
@@ -278,23 +278,23 @@ public class OCEL extends AbstractCELA {
 		} else if(name.equals("improveSubsumptionHierarchy")) {
 			improveSubsumptionHierarchy = (Boolean) entry.getValue();
 		} else if(name.equals("useAllConstructor")) {
-			useAllConstructor = (Boolean) entry.getValue();
+//			useAllConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useExistsConstructor")) {
-			useExistsConstructor = (Boolean) entry.getValue();
+//			useExistsConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useHasValueConstructor")) {
-			useHasValueConstructor = (Boolean) entry.getValue();
+//			useHasValueConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("valueFrequencyThreshold")) {
-			valueFrequencyThreshold = (Integer) entry.getValue();
+//			valueFrequencyThreshold = (Integer) entry.getValue();
 		} else if(name.equals("useCardinalityRestrictions")) {
-			useCardinalityRestrictions = (Boolean) entry.getValue();
+//			useCardinalityRestrictions = (Boolean) entry.getValue();
 		} else if(name.equals("useNegation")) {
-			useNegation = (Boolean) entry.getValue();
+//			useNegation = (Boolean) entry.getValue();
 		} else if(name.equals("noisePercentage")) {
 			noisePercentage = (Double) entry.getValue();
 		} else if(name.equals("useBooleanDatatypes")) {
-			useBooleanDatatypes = (Boolean) entry.getValue();
+//			useBooleanDatatypes = (Boolean) entry.getValue();
 		} else if(name.equals("useDoubleDatatypes")) {
-			useDoubleDatatypes = (Boolean) entry.getValue();
+//			useDoubleDatatypes = (Boolean) entry.getValue();
 		} else if(name.equals("usePropernessChecks")) {
 			usePropernessChecks = (Boolean) entry.getValue();
 		} else if(name.equals("maxPosOnlyExpansion")) {
@@ -409,27 +409,33 @@ public class OCEL extends AbstractCELA {
 		// variables to it
 //		RhoDRDown 
 		if(operator == null) {
-			// TODO: switch to default constructor and inject only 
-			// the necessary things (class hierarchy)
-		operator = new RhoDRDown(
-				reasoner,
-				classHierarchy,
-//				configurator,
-					applyAllFilter,
-					applyExistsFilter,
-					useAllConstructor, 
-					useExistsConstructor,
-					useHasValueConstructor,
-					valueFrequencyThreshold,
-					useCardinalityRestrictions,
-					useNegation,
-					useBooleanDatatypes,
-					useDoubleDatatypes,
-					startClass,
-					cardinalityLimit, 
-					useStringDatatypes, 
-					instanceBasedDisjoints
-			);		
+			// we use a default operator and inject the class hierarchy for now
+			operator = new RhoDRDown();
+			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
+			((RhoDRDown)operator).setReasoner(reasoner);
+			((RhoDRDown)operator).init();
+			
+//		operator = new RhoDRDown(
+//				reasoner,
+//				classHierarchy,
+////				configurator,
+//					applyAllFilter,
+//					applyExistsFilter,
+////					useAllConstructor,
+//					true,
+////					useExistsConstructor,
+//					true,
+//					useHasValueConstructor,
+//					valueFrequencyThreshold,
+//					useCardinalityRestrictions,
+//					useNegation,
+//					useBooleanDatatypes,
+//					useDoubleDatatypes,
+//					startClass,
+//					cardinalityLimit, 
+//					useStringDatatypes, 
+//					instanceBasedDisjoints
+//			);		
 		} else {
 			// we still have to inject the class hierarchy even if the operator is configured
 			operator.setSubHierarchy(classHierarchy);
@@ -622,22 +628,6 @@ public class OCEL extends AbstractCELA {
 		this.usedRoles = usedRoles;
 	}
 
-	public boolean isApplyAllFilter() {
-		return applyAllFilter;
-	}
-
-	public void setApplyAllFilter(boolean applyAllFilter) {
-		this.applyAllFilter = applyAllFilter;
-	}
-
-	public boolean isApplyExistsFilter() {
-		return applyExistsFilter;
-	}
-
-	public void setApplyExistsFilter(boolean applyExistsFilter) {
-		this.applyExistsFilter = applyExistsFilter;
-	}
-
 	public boolean isUseTooWeakList() {
 		return useTooWeakList;
 	}
@@ -668,70 +658,6 @@ public class OCEL extends AbstractCELA {
 
 	public void setImproveSubsumptionHierarchy(boolean improveSubsumptionHierarchy) {
 		this.improveSubsumptionHierarchy = improveSubsumptionHierarchy;
-	}
-
-	public boolean isUseAllConstructor() {
-		return useAllConstructor;
-	}
-
-	public void setUseAllConstructor(boolean useAllConstructor) {
-		this.useAllConstructor = useAllConstructor;
-	}
-
-	public boolean isUseExistsConstructor() {
-		return useExistsConstructor;
-	}
-
-	public void setUseExistsConstructor(boolean useExistsConstructor) {
-		this.useExistsConstructor = useExistsConstructor;
-	}
-
-	public boolean isUseHasValueConstructor() {
-		return useHasValueConstructor;
-	}
-
-	public void setUseHasValueConstructor(boolean useHasValueConstructor) {
-		this.useHasValueConstructor = useHasValueConstructor;
-	}
-
-	public int getValueFrequencyThreshold() {
-		return valueFrequencyThreshold;
-	}
-
-	public void setValueFrequencyThreshold(int valueFrequencyThreshold) {
-		this.valueFrequencyThreshold = valueFrequencyThreshold;
-	}
-
-	public boolean isUseCardinalityRestrictions() {
-		return useCardinalityRestrictions;
-	}
-
-	public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
-		this.useCardinalityRestrictions = useCardinalityRestrictions;
-	}
-
-	public boolean isUseNegation() {
-		return useNegation;
-	}
-
-	public void setUseNegation(boolean useNegation) {
-		this.useNegation = useNegation;
-	}
-
-	public boolean isUseBooleanDatatypes() {
-		return useBooleanDatatypes;
-	}
-
-	public void setUseBooleanDatatypes(boolean useBooleanDatatypes) {
-		this.useBooleanDatatypes = useBooleanDatatypes;
-	}
-
-	public boolean isUseDoubleDatatypes() {
-		return useDoubleDatatypes;
-	}
-
-	public void setUseDoubleDatatypes(boolean useDoubleDatatypes) {
-		this.useDoubleDatatypes = useDoubleDatatypes;
 	}
 
 	public double getNoisePercentage() {
