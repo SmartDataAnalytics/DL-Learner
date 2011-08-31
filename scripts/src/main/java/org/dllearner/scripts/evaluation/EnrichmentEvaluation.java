@@ -123,6 +123,7 @@ import org.dllearner.utilities.owl.DLLearnerAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
+import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
@@ -181,7 +182,7 @@ public class EnrichmentEvaluation {
 //	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 
 	// can be used to only evaluate a part of DBpedia
-	private int maxObjectProperties = 20;
+	private int maxObjectProperties = 0;
 	private int maxDataProperties = 0;
 	private int maxClasses = 0;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
@@ -206,7 +207,7 @@ public class EnrichmentEvaluation {
 		prefixes.put("yago", "http://dbpedia.org/class/");
 		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
+//		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
@@ -233,7 +234,7 @@ public class EnrichmentEvaluation {
 		
 		
 		initDBConnection();
-		loadDBpediaOntology();
+		loadCurrentDBpediaOntology2();
 	}
 
 	private void initDBConnection() {
@@ -248,6 +249,9 @@ public class EnrichmentEvaluation {
 			Class.forName("com.mysql.jdbc.Driver");
 			String url = "jdbc:mysql://" + dbServer + "/" + dbName;
 			conn = DriverManager.getConnection(url, dbUser, dbPass);
+			
+			ps = conn.prepareStatement("INSERT INTO evaluation ("
+					+ "entity, algorithm, axiom, score, runtime_ms, entailed ) " + "VALUES(?,?,?,?,?,?)");
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -271,8 +275,6 @@ public class EnrichmentEvaluation {
 					+ "entity VARCHAR(200), algorithm VARCHAR(100), axiom VARCHAR(500), score DOUBLE, runtime_ms INT(20), entailed BOOLEAN)");
 			s.close();
 			
-			ps = conn.prepareStatement("INSERT INTO evaluation ("
-					+ "entity, algorithm, axiom, score, runtime_ms, entailed ) " + "VALUES(?,?,?,?,?,?)");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -308,7 +310,7 @@ public class EnrichmentEvaluation {
 //		evaluateObjectProperties(ks);
 //		
 //		Thread.sleep(20000);
-//		
+		
 //		evaluateDataProperties(ks);
 //		
 //		Thread.sleep(20000);
@@ -1006,6 +1008,8 @@ public class EnrichmentEvaluation {
 	private boolean isEntailed(EvaluatedAxiom evalAxiom){
 		OWLAxiom axiom = OWLAPIConverter.getOWLAPIAxiom(evalAxiom.getAxiom());
 		boolean entailed = reasoner.isEntailed(axiom);
+//		System.out.println(evalAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes));
+//		System.out.println(entailed);
 		return entailed;
 	}
 	
@@ -1049,21 +1053,41 @@ public class EnrichmentEvaluation {
 			offset += limit;
 		}
 		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			model.write(baos, "RDF/XML");
-			ByteArrayInputStream bs = new ByteArrayInputStream(baos.toByteArray());
-			dbPediaOntology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(bs);
+			dbPediaOntology = convert(model);
 			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbPediaOntology);
 			reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+			System.out.println(reasoner.getSuperClasses(
+					factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Actor")), false).getFlattened());
 		} catch (TimeOutException e) {
 			e.printStackTrace();
 		} catch (InconsistentOntologyException e) {
 			e.printStackTrace();
 		} catch (ReasonerInterruptedException e) {
 			e.printStackTrace();
+		} 
+	}
+	
+	private void loadCurrentDBpediaOntology2(){
+		System.out.println("Loading schema ...");
+		SPARQLReasoner r = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
+		dbPediaOntology = convert(r.loadSchema());
+		System.out.println("Preparing reasoner ...");
+		reasoner = new Reasoner(dbPediaOntology);
+//		 reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbPediaOntology);
+		 reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+	}
+	
+	private OWLOntology convert(Model model){
+		OWLOntology ontology = null;
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			model.write(baos, "RDF/XML");
+			ByteArrayInputStream bs = new ByteArrayInputStream(baos.toByteArray());
+			ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(bs);
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
+		return ontology;
 	}
 
 	public static void main(String[] args) throws Exception
