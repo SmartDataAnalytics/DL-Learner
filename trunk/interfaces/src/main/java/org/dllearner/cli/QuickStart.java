@@ -131,9 +131,10 @@ public class QuickStart {
 							if(cmd.length()==0){
 								writeit(one);
 								if(!query) {
-									Start.main(new String[] { one });
+
+									CLI.main(new String[] { one });
 								}else {
-									Start.main(new String[] {"-q",one});
+									CLI.main(new String[] {"-q",one});
 								}
 								return;
 							}else {break;}
@@ -160,9 +161,9 @@ public class QuickStart {
 
 			// DLLearner.main(new String[] { Selected });
 			if(!query) {
-				Start.main(new String[] { selected });
+				CLI.main(new String[] { selected });
 			}else {
-				Start.main(new String[] {"-q",selected});
+				CLI.main(new String[] {"-q",selected});
 			}
 
 		} catch (Exception e) {
