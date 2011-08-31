@@ -30,6 +30,7 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.utilities.Helper;
 
 /**
  * 
@@ -63,7 +64,7 @@ public class GeneralMatcher {
 //		ComponentManager cm = ComponentManager.getInstance();
 		SparqlEndpointKS ks = new SparqlEndpointKS(sparqlEndpoint2);
 		PosOnlyLP lp = new PosOnlyLP();	
-		lp.getConfigurator().setPositiveExamples(positiveExamples);
+		lp.setPositiveExamples(Helper.getIndividualSet(positiveExamples));
 		QTL qtl = new QTL(lp, ks);
 		qtl.init();
 		qtl.start();

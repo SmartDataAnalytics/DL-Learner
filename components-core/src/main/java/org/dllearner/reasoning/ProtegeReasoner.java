@@ -36,11 +36,10 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.configurators.ProtegeReasonerConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.Axiom;
@@ -123,8 +122,6 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 	
 	private ReasonerProgressMonitor progressMonitor;
 	
-	private ProtegeReasonerConfigurator configurator;
-	
 	private Set<OWLOntology> loadedOntologies;
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
@@ -165,10 +162,10 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 	
 	// references to OWL API ontologies
 	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
+	private boolean defaultNegation = true;
 
 	public ProtegeReasoner(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
-		this.configurator = new ProtegeReasonerConfigurator(this);
 	}
 	
 	public ProtegeReasoner(Set<AbstractKnowledgeSource> sources, OWLReasoner reasoner) {
@@ -193,10 +190,6 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 	@Override
 	public void releaseKB() {
 		reasoner.dispose();
-	}
-
-	public ProtegeReasonerConfigurator getConfigurator() {
-		return configurator;
 	}
 	
 	/**
@@ -375,7 +368,7 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 		for (NamedClass atomicConcept : atomicConcepts) {
 			SortedSet<Individual> pos = getIndividualsWithPellet(atomicConcept);
 			classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
-			if (configurator.getDefaultNegation()) {
+			if (defaultNegation) {
 				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
 			} else {
 				Negation negatedAtomicConcept = new Negation(atomicConcept);
@@ -539,7 +532,7 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 				return classInstancesNeg.get((NamedClass) child).contains(individual);
 			} else {
 				// default negation
-				if(configurator.getDefaultNegation()) {
+				if(defaultNegation ) {
 					return !hasTypeImpl(child, individual);
 				} else {
 					logger.debug("Converting description to negation normal form in fast instance check (should be avoided if possible).");

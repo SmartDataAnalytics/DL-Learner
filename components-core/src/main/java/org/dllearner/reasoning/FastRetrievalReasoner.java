@@ -29,7 +29,6 @@ import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.configurators.FastRetrievalReasonerConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.Description;
@@ -48,12 +47,6 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  *
  */
 public class FastRetrievalReasoner extends AbstractReasonerComponent {
-
-	private FastRetrievalReasonerConfigurator configurator;
-
-	public FastRetrievalReasonerConfigurator getConfigurator(){
-		return configurator;
-	}
 	
 	FlatABox abox;
 	FastRetrieval fastRetrieval;
@@ -65,7 +58,6 @@ public class FastRetrievalReasoner extends AbstractReasonerComponent {
 	
 	public FastRetrievalReasoner(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
-		this.configurator = new FastRetrievalReasonerConfigurator(this);
 		
 		rc = new OWLAPIReasoner(sources);
 		try {
@@ -89,7 +81,6 @@ public class FastRetrievalReasoner extends AbstractReasonerComponent {
 	
 	public FastRetrievalReasoner(FlatABox abox) {
 		super(null);
-		this.configurator = new FastRetrievalReasonerConfigurator(this);
 		this.abox = abox;
 		fastRetrieval = new FastRetrieval(abox);
 

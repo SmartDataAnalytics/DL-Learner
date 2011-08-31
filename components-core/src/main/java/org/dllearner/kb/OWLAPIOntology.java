@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.configurators.OWLAPIOntologyConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.KB;
@@ -37,12 +36,6 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 public class OWLAPIOntology extends AbstractKnowledgeSource {
-
-	private OWLAPIOntologyConfigurator configurator;
-
-	public OWLAPIOntologyConfigurator getConfigurator(){
-		return configurator;
-	}
 	
 	private OWLOntology ontology;
 	private Set<OWLOntology> ontologies;
@@ -62,7 +55,6 @@ public class OWLAPIOntology extends AbstractKnowledgeSource {
 		prop = ontology.getObjectPropertiesInSignature();
 		dataProp = ontology.getDataPropertiesInSignature();
 		individuals = ontology.getIndividualsInSignature();
-		this.configurator = new OWLAPIOntologyConfigurator(this);
 	}
 	
 	public static String getName() {

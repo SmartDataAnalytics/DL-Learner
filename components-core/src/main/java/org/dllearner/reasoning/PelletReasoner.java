@@ -40,11 +40,10 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.configurators.PelletReasonerConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.Axiom;
@@ -136,8 +135,6 @@ public class PelletReasoner extends AbstractReasonerComponent {
 	// the data factory is used to generate OWL API objects
 	private OWLDataFactory factory;
 	
-	private PelletReasonerConfigurator configurator;
-	
 	private Set<OWLOntology> loadedOntologies;
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
@@ -178,10 +175,10 @@ public class PelletReasoner extends AbstractReasonerComponent {
 	
 	// references to OWL API ontologies
 	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
+	private boolean defaultNegation = true;
 
 	public PelletReasoner(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
-		this.configurator = new PelletReasonerConfigurator(this);
 	}
 	
 	public void loadOntologies() throws URISyntaxException, OWLOntologyCreationException {
@@ -368,7 +365,7 @@ public class PelletReasoner extends AbstractReasonerComponent {
 			SortedSet<Individual> pos = getIndividualsWithPellet(atomicConcept);
 			classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
 
-			if (configurator.getDefaultNegation()) {
+			if (defaultNegation) {
 				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
 			} else {
 				// Pellet needs approximately infinite time to answer
@@ -423,10 +420,6 @@ public class PelletReasoner extends AbstractReasonerComponent {
 		classifier.dispose();
 	}
 
-	public PelletReasonerConfigurator getConfigurator() {
-		return configurator;
-	}
-	
 	/**
 	 * @return The options of this component.
 	 */
@@ -747,7 +740,7 @@ public class PelletReasoner extends AbstractReasonerComponent {
 				return classInstancesNeg.get((NamedClass) child).contains(individual);
 			} else {
 				// default negation
-				if(configurator.getDefaultNegation()) {
+				if(defaultNegation) {
 					return !hasTypeImpl(child, individual);
 				} else {
 					logger.debug("Converting description to negation normal form in fast instance check (should be avoided if possible).");

@@ -24,10 +24,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.PosNegLPStrictConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -54,15 +53,9 @@ public class PosNegLPStrict extends PosNegLP {
 	private static final double defaultErrorPenalty = 3;
 	private double errorPenalty = defaultErrorPenalty;
 	
-	private PosNegLPStrictConfigurator configurator;
-
-	public PosNegLPStrictConfigurator getConfigurator(){
-		return configurator;
-	}
 	
 	public PosNegLPStrict(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
-		this.configurator = new PosNegLPStrictConfigurator(this);
 	}
 	
 	/* (non-Javadoc)

@@ -50,10 +50,12 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.options.fuzzydll.FuzzyExample;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard;
 import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
 import org.dllearner.refinementoperators.FuzzyRhoDRDown;
+import org.dllearner.utilities.Helper;
 
 /**
  * A script, which learns definitions / super classes of classes in the DBpedia ontology.
@@ -89,12 +91,12 @@ public class FuzzyDLLTest_Trains_noFuzzyIndividuals {
 		//
 		// fuzzy examples
 		//
-		SortedSet<Object> fuzzyExamples = new TreeSet<Object>();
+		SortedSet<FuzzyIndividual> fuzzyExamples = new TreeSet<FuzzyIndividual>();
 		for (int i=0; i<posEx.length; i++) {
-			fuzzyExamples.add(new FuzzyExample(posEx[i],1.0));
+			fuzzyExamples.add(new FuzzyIndividual(posEx[i],1.0));
 		}
 		for (int i=0; i<negEx.length; i++) {
-			fuzzyExamples.add(new FuzzyExample(negEx[i],0.0));
+			fuzzyExamples.add(new FuzzyIndividual(negEx[i],0.0));
 		}
 		
 		ComponentManager cm = ComponentManager.getInstance();
@@ -105,15 +107,15 @@ public class FuzzyDLLTest_Trains_noFuzzyIndividuals {
 
 //		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 		FuzzyOWLAPIReasoner rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
-		rc.getConfigurator().setReasonerType("fuzzydl");
+//		rc.getConfigurator().setReasonerType("fuzzydl");
 		rc.init();
 		// System.out.println(rc.getClassHierarchy());
 		
 		FuzzyPosNegLPStandard lp = cm.learningProblem(FuzzyPosNegLPStandard.class, rc);
 		//PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
-		lp.getConfigurator().setPositiveExamples(positiveExamples);
-		lp.getConfigurator().setNegativeExamples(negativeExamples);
-		lp.getConfigurator().setFuzzyExamples(fuzzyExamples);
+		lp.setPositiveExamples(Helper.getIndividualSet(positiveExamples));
+		lp.setNegativeExamples(Helper.getIndividualSet(negativeExamples));
+		lp.setFuzzyExamples(fuzzyExamples);
 		lp.init();
 		
 		FuzzyCELOE fc = cm.learningAlgorithm(FuzzyCELOE.class, lp, rc);

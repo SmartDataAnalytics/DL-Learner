@@ -85,6 +85,10 @@ public abstract class FuzzyPosNegLP extends AbstractLearningProblem {
 		ONECHECK
 	};
 	
+	public FuzzyPosNegLP() {
+		
+	}
+	
 	public FuzzyPosNegLP(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
 	}
@@ -176,6 +180,14 @@ public abstract class FuzzyPosNegLP extends AbstractLearningProblem {
 
 	public double getPercentPerLengthUnit() {
 		return percentPerLengthUnit;
+	}
+
+	public SortedSet<FuzzyIndividual> getFuzzyExamples() {
+		return fuzzyExamples;
+	}
+
+	public void setFuzzyExamples(SortedSet<FuzzyIndividual> fuzzyExamples) {
+		this.fuzzyExamples = fuzzyExamples;
 	}
 	
 }

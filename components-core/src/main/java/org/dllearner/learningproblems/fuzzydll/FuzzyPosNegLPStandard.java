@@ -19,11 +19,15 @@
 
 package org.dllearner.learningproblems.fuzzydll;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.configurators.FuzzyPosNegLPStandardConfigurator;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.fuzzydll.FuzzyUnsupportedCodeException;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigOption;
@@ -35,9 +39,9 @@ import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.Heuristics;
+import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.learningproblems.ScoreTwoValued;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.utilities.Helper;
 
 /**
@@ -55,8 +59,6 @@ import org.dllearner.utilities.Helper;
  */
 public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	
-	private FuzzyPosNegLPStandardConfigurator configurator;
-	
 	// approximation and F-measure
 	// (taken from class learning => super class instances corresponds to negative examples
 	// and class instances to positive examples)
@@ -69,29 +71,29 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 
 	private int errorIndex = 0;
 	
-	public FuzzyPosNegLPStandardConfigurator getConfigurator() {
-		return configurator;
+	private String accuracyMethod;
+	
+	public FuzzyPosNegLPStandard() {
+		
 	}
-
+	
 	public FuzzyPosNegLPStandard(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
-		this.configurator = new FuzzyPosNegLPStandardConfigurator(this);
 	}
 
 	public FuzzyPosNegLPStandard(AbstractReasonerComponent reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
 		super(reasoningService);
 		this.positiveExamples = positiveExamples;
 		this.negativeExamples = negativeExamples;
-		this.configurator = new FuzzyPosNegLPStandardConfigurator(this);
 	}
 	
 	@Override
 	public void init() {
 		super.init();
-		useApproximations = configurator.getUseApproximations();
-		approxDelta = configurator.getApproxAccuracy();
+//		useApproximations = configurator.getUseApproximations();
+//		approxDelta = configurator.getApproxAccuracy();
 		
-		String accM = configurator.getAccuracyMethod();
+		String accM = getAccuracyMethod();
 		if(accM.equals("standard")) {
 			heuristic = HeuristicType.AMEASURE;
 		} else if(accM.equals("fmeasure")) {
@@ -781,6 +783,38 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 
 	private double getFMeasure(double recall, double precision) {
 		return 2 * precision * recall / (precision + recall);
+	}
+
+	public double getApproxDelta() {
+		return approxDelta;
+	}
+
+	public void setApproxDelta(double approxDelta) {
+		this.approxDelta = approxDelta;
+	}
+
+	public boolean isUseApproximations() {
+		return useApproximations;
+	}
+
+	public void setUseApproximations(boolean useApproximations) {
+		this.useApproximations = useApproximations;
+	}
+
+	public HeuristicType getHeuristic() {
+		return heuristic;
+	}
+
+	public void setHeuristic(HeuristicType heuristic) {
+		this.heuristic = heuristic;
+	}
+
+	public String getAccuracyMethod() {
+		return accuracyMethod;
+	}
+
+	public void setAccuracyMethod(String accuracyMethod) {
+		this.accuracyMethod = accuracyMethod;
 	}	
 	
 }

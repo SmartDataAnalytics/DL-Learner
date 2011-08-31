@@ -24,16 +24,16 @@ import java.net.URL;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.configurators.OWLFileConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
@@ -52,6 +52,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+
 import com.clarkparsia.modularity.IncrementalClassifier;
 import com.clarkparsia.modularity.PelletIncremantalReasonerFactory;
 
@@ -120,7 +121,7 @@ public class OWLAPIReasonerIncremental {
 		String url = "http://morpheus.cs.umbc.edu/aks1/ontosem.owl";
 		// create reasoner
 		ComponentManager cm = ComponentManager.getInstance();
-		AbstractKnowledgeSource ks = OWLFileConfigurator.getOWLFile(new URL(url));
+		AbstractKnowledgeSource ks = new OWLFile(new URL(url));
 		OWLAPIReasoner reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 		ks.init();
 		reasoner.init();

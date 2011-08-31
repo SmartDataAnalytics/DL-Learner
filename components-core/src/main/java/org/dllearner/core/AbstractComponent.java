@@ -22,7 +22,6 @@ package org.dllearner.core;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.DoubleConfigOption;
