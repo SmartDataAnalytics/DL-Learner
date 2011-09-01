@@ -662,6 +662,8 @@ public class Enrichment {
 		parser.acceptsAll(asList("t", "threshold"),
 				"Confidence threshold for suggestions. Set it to a value between 0 and 1.").withOptionalArg() 
 				.ofType(Double.class).defaultsTo(0.7);
+		parser.acceptsAll(asList("i", "inference"),
+				"Specifies whether to use inference. If yes, the schema will be loaded into a reasoner and used for computing the scores.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
 
 		// parse options and display a message for the user in case of problems
 		OptionSet options = null;
@@ -704,6 +706,7 @@ public class Enrichment {
 			
 			if(!options.hasArgument("endpoint")) {
 				System.out.println("Please specify a SPARQL endpoint (using the -e option).");
+				System.exit(0);
 			}
 			
 			boolean verbose = (Boolean) options.valueOf("v");
