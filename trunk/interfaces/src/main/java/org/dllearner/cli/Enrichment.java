@@ -723,33 +723,37 @@ public class Enrichment {
 			// print output in correct format
 			if(options.has("f")) {
 				// TODO: handle other formats
+				List<AlgorithmRun> runs = e.getAlgorithmRuns();
+				List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
+				for(AlgorithmRun run : runs) {
+					axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
+				}
+				Model model = e.getModel(axioms);
 				if(options.valueOf("f").equals("turtle")) {
-					List<AlgorithmRun> runs = e.getAlgorithmRuns();
-					List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
-					for(AlgorithmRun run : runs) {
-						axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
-					}
-					Model model = e.getModel(axioms);
-					for(Statement st : model.listStatements().toList()){
-						System.out.println("--------------------");
-//						System.out.println(st);
-						if(st.getSubject().isResource()){
-							System.out.println(st.getSubject());
-						}
-						System.out.println(st.getPredicate());
-						if(st.getObject().isResource()){
-							
-						}
-						System.out.println(st.getObject());
-					}
 					if(options.has("o")) {
-						model.write(new FileOutputStream(f));
+						model.write(new FileOutputStream(f), "TURTLE");
 					} else {
 						System.out.println("ENRICHMENT[");
-						model.write(System.out);
+						model.write(System.out, "N-TRIPLES");
 						System.out.println("]");
 					}
-				}
+				} else if(options.valueOf("f").equals("rdf")){
+					if(options.has("o")) {
+						model.write(new FileOutputStream(f), "RDF/XML");
+					} else {
+						System.out.println("ENRICHMENT[");
+						model.write(System.out, "N-TRIPLES");
+						System.out.println("]");
+					}
+				} else if(options.valueOf("f").equals("n-triples")){
+					if(options.has("o")) {
+						model.write(new FileOutputStream(f), "N-TRIPLES");
+					} else {
+						System.out.println("ENRICHMENT[");
+						model.write(System.out, "N-TRIPLES");
+						System.out.println("]");
+					}
+				} 
 			}
 			
 		}
