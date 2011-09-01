@@ -172,7 +172,7 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 	
 	public static void main(String[] args) throws Exception{
 		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/numberOfSuites"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/hometown"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();

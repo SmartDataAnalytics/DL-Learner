@@ -214,10 +214,11 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
+	
 	public static void main(String[] args) throws Exception{
-		SimpleSubclassLearner l = new SimpleSubclassLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveOpenLink()));
+		SimpleSubclassLearner l = new SimpleSubclassLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
 		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 10);
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Criminal"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Mountain"));
 		l.init();
 		l.start();
 		

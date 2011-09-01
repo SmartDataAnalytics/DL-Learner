@@ -138,7 +138,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	
 	public static void main(String[] args) throws Exception{
 		SymmetricObjectPropertyAxiomLearner l = new SymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/sisterStation"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/similar"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();

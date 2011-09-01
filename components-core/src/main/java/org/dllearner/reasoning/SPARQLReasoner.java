@@ -31,15 +31,13 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.aksw.commons.sparql.api.cache.core.QueryExecutionFactoryCache;
-import org.aksw.commons.sparql.api.cache.extra.Cache;
 import org.aksw.commons.sparql.api.cache.extra.CacheCoreH2;
 import org.aksw.commons.sparql.api.cache.extra.CacheImpl;
-import org.aksw.commons.sparql.api.cache.extra.CacheResource;
 import org.aksw.commons.sparql.api.core.QueryExecutionFactory;
 import org.aksw.commons.sparql.api.http.QueryExecutionFactoryHttp;
 import org.aksw.commons.sparql.api.pagination.core.QueryExecutionFactoryPaginated;
+import org.aksw.commons.util.strings.StringUtils;
 import org.dllearner.core.IndividualReasoner;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.SchemaReasoner;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
@@ -55,17 +53,14 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
-import org.semanticweb.owlapi.model.AxiomType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.clarkparsia.owlapiv3.XSD;
-import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -139,24 +134,44 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#disjointWith> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#disjointWith> ?o}";
 		model.add(loadIncrementally(query));
 		//load domain axioms
-		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#domain> ?o} WHERE {?s <http://www.w3.org/2000/01/rdf-schema#domain> ?o}";
+		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#domain> ?o. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty> } " +
+				"WHERE {?s <http://www.w3.org/2000/01/rdf-schema#domain> ?o.?s a <http://www.w3.org/2002/07/owl#ObjectProperty>}";
+		model.add(loadIncrementally(query));
+		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#domain> ?o. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>} " +
+				"WHERE {?s <http://www.w3.org/2000/01/rdf-schema#domain> ?o. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
 		model.add(loadIncrementally(query));
 		//load range axioms
-		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#range> ?o} WHERE {?s <http://www.w3.org/2000/01/rdf-schema#range> ?o}";
+		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#range> ?o. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty>} " +
+				"WHERE {?s <http://www.w3.org/2000/01/rdf-schema#range> ?o. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty>}";
+		model.add(loadIncrementally(query));
+		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#range> ?o. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>} " +
+				"WHERE {?s <http://www.w3.org/2000/01/rdf-schema#range> ?o. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
 		model.add(loadIncrementally(query));
 		//load property hierarchy
-		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?o} WHERE {?s <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?o}";
+		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?o. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty>} " +
+				"WHERE {?s <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?o. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty>}";
 		model.add(loadIncrementally(query));
-		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#equivalentProperty> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#equivalentProperty> ?o}";
+		query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?o. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>} " +
+		"WHERE {?s <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?o. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
 		model.add(loadIncrementally(query));
-		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o}";
+		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#equivalentProperty> ?o. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty>} " +
+				"WHERE {?s <http://www.w3.org/2002/07/owl#equivalentProperty> ?o. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty>}";
+		model.add(loadIncrementally(query));
+		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#equivalentProperty> ?o. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>} " +
+				"WHERE {?s <http://www.w3.org/2002/07/owl#equivalentProperty> ?o. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
+		model.add(loadIncrementally(query));
+		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty>} " +
+				"WHERE {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty>}";
+		model.add(loadIncrementally(query));
+		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>} " +
+				"WHERE {?s <http://www.w3.org/2002/07/owl#propertyDisjointWith> ?o. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
 		model.add(loadIncrementally(query));
 		//load inverse relation
 		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#inverseOf> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#inverseOf> ?o}";
 		model.add(loadIncrementally(query));
 		//load property characteristics
 		Set<Resource> propertyCharacteristics = new HashSet<Resource>();
-		propertyCharacteristics.add(OWL.FunctionalProperty);
+//		propertyCharacteristics.add(OWL.FunctionalProperty);
 		propertyCharacteristics.add(OWL.InverseFunctionalProperty);
 		propertyCharacteristics.add(OWL.SymmetricProperty);
 		propertyCharacteristics.add(OWL.TransitiveProperty);
@@ -168,25 +183,35 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			query = "CONSTRUCT {?s a <%s>} WHERE {?s a <%s>}".replaceAll("%s", propChar.getURI());
 			model.add(loadIncrementally(query));
 		}
+		//for functional properties we have to distinguish between data and object properties, 
+		//i.e. we have to keep the property type information, otherwise conversion to OWLAPI ontology makes something curious
+		query = "CONSTRUCT {?s a <%s>. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty>} WHERE {?s a <%s>.?s a <http://www.w3.org/2002/07/owl#ObjectProperty>}".
+		replaceAll("%s", OWL.FunctionalProperty.getURI());
+		model.add(loadIncrementally(query));
+		query = "CONSTRUCT {?s a <%s>. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>} WHERE {?s a <%s>.?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>}".
+		replaceAll("%s", OWL.FunctionalProperty.getURI());
+		model.add(loadIncrementally(query));
+		
 		
 		return model;
 	}
 	
 	private Model loadIncrementally(String query){
-//		try {
+		System.out.println(StringUtils.md5Hash(query));
+		try {
 			QueryExecutionFactory f = new QueryExecutionFactoryHttp(ks.getEndpoint().getURL().toString(), ks.getEndpoint().getDefaultGraphURIs());
-//			f = new QueryExecutionFactoryCache(f, new CacheImpl(CacheCoreH2.create("cache", 60 * 24 *5)));
-			System.out.println("SPARQLReasoner.loadIncrementally needs to be rewritten for aksw-commons 0.1");
-			System.exit(0);
+			f = new QueryExecutionFactoryCache(f, new CacheImpl(CacheCoreH2.create("cache", 60 * 24 *5)));
+//			System.out.println("SPARQLReasoner.loadIncrementally needs to be rewritten for aksw-commons 0.1");
+//			System.exit(0);
 			f = new QueryExecutionFactoryPaginated(f, 1000);
 			Model model = f.createQueryExecution(query).execConstruct();
 			return model;
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//		return null;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
