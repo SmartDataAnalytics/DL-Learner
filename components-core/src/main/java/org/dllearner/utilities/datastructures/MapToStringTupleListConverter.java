@@ -1,4 +1,4 @@
-package org.dllearner.core.converter;
+package org.dllearner.utilities.datastructures;
 
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.springframework.core.convert.converter.Converter;
