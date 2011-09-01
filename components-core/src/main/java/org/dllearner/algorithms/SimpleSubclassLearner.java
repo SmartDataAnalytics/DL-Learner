@@ -128,8 +128,9 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		
 		Map<Individual, SortedSet<NamedClass>> ind2Types = new HashMap<Individual, SortedSet<NamedClass>>();
 		int limit = 1000;
-		while(!terminationCriteriaSatisfied()){
-			addIndividualsWithTypes(ind2Types, limit, fetchedRows);
+		boolean repeat = true;
+		while(!terminationCriteriaSatisfied() && repeat){
+			repeat = addIndividualsWithTypes(ind2Types, limit, fetchedRows);
 			createEvaluatedDescriptions(ind2Types);
 			fetchedRows += 1000;
 		}
@@ -154,9 +155,9 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		this.maxFetchedRows = maxFetchedRows;
 	}
 	
-	private void addIndividualsWithTypes(Map<Individual, SortedSet<NamedClass>> ind2Types, int limit, int offset){
+	private boolean addIndividualsWithTypes(Map<Individual, SortedSet<NamedClass>> ind2Types, int limit, int offset){
 //		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
-		
+		boolean notEmpty = false;
 		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}", classToDescribe.getName(), limit, offset);
 		
 		ResultSet rs = executeSelectQuery(query);
@@ -174,8 +175,9 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 				ind2Types.put(ind, types);
 			}
 			types.add(newType);
+			notEmpty = true;
 		}
-		
+		return notEmpty;
 	}
 	
 	private void createEvaluatedDescriptions(Map<Individual, SortedSet<NamedClass>> individual2Types){
@@ -218,7 +220,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	public static void main(String[] args) throws Exception{
 		SimpleSubclassLearner l = new SimpleSubclassLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
 		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 10);
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Mountain"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Ginkgo"));
 		l.init();
 		l.start();
 		
