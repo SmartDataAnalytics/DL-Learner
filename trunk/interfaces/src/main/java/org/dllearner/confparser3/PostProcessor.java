@@ -63,7 +63,7 @@ public class PostProcessor {
                     }
 
                 } else if(valueObject instanceof Map) {
-                	throw new Error("Map post processing not implemented yet");
+                	valueObject = processStringMap(prefixes, (Map)valueObject);
                 } else if(valueObject instanceof Collection){
                     processStringCollection(prefixes, (Collection<?>) valueObject);
                 } else if(valueObject instanceof Boolean || valueObject instanceof Integer || valueObject instanceof Double) {
@@ -74,10 +74,38 @@ public class PostProcessor {
 
 				option.setValueObject(valueObject);
 			}
-		}
-	}
+        }
+    }
 
-    private void processStringCollection(Map<String,String> prefixes, Collection valueObject) {
+
+    private Map processStringMap(Map<String, String> prefixes, Map inputMap) {
+
+        Map newMap = new HashMap();
+
+        /** This does the values */
+        for (Object keyObject : inputMap.keySet()) {
+            Object key = keyObject;
+            Object value = inputMap.get(key);
+
+            if (keyObject instanceof String) {
+                String keyString = (String) keyObject;
+                if (value instanceof String) {
+                    String valueString = (String) value;
+                    for (String prefix : prefixes.keySet()) {
+                        value = valueString.replaceAll(prefix + ":", prefixes.get(prefix));
+                        key = keyString.replaceAll(prefix + ":", prefixes.get(prefix));
+
+                    }
+                }
+            }
+            newMap.put(key, value);
+        }
+
+       return newMap;
+
+    }
+
+    private void processStringCollection(Map<String, String> prefixes, Collection valueObject) {
         Map<String, String> oldNewStringValues = new HashMap<String, String>();
         Iterator itr = valueObject.iterator();
         while (itr.hasNext()) {
@@ -85,7 +113,7 @@ public class PostProcessor {
                 Object nextObject = itr.next();
                 if (nextObject instanceof String) {
                     String oldValue = (String) nextObject;
-                    String newValue = oldValue.replaceAll( prefix + ":", prefixes.get(prefix));
+                    String newValue = oldValue.replaceAll(prefix + ":", prefixes.get(prefix));
                     oldNewStringValues.put(oldValue, newValue);
                 }
             }
