@@ -24,7 +24,7 @@
           class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
-                <bean class="org.dllearner.core.converter.MapToStringTupleListConverter"/>
+                <bean class="org.dllearner.utilities.datastructures.MapToStringTupleListConverter"/>
             </set>
         </property>
     </bean>
