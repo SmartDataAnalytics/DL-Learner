@@ -89,20 +89,27 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		}
 		
 		//get fraction of instances s with <s p s> 
-		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?reflexiv WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?o1.FILTER(?s=?o)}}";
+		query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
+		int total = 0;
 		while(rs.hasNext()){
 			qs = rs.next();
-			int all = qs.getLiteral("all").getInt();
-			int reflexive = qs.getLiteral("reflexiv").getInt();
-			if(all > 0){
-				double frac = reflexive / (double)all;
-				currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe),
-						computeScore(all, reflexive)));
-			}
+			total = qs.getLiteral("total").getInt();
+		}
+		query = "SELECT (COUNT(?s) AS ?reflexive) WHERE {?s <%s> ?s.}";
+		query = query.replace("%s", propertyToDescribe.getURI().toString());
+		rs = executeSelectQuery(query);
+		int reflexive = 0;
+		while(rs.hasNext()){
+			qs = rs.next();
+			reflexive = qs.getLiteral("reflexive").getInt();
 			
+		}
+		if(total > 0){
+			currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe),
+					computeScore(total, reflexive)));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -115,7 +122,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	
 	public static void main(String[] args) throws Exception{
 		ReflexiveObjectPropertyAxiomLearner l = new ReflexiveObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/league"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/affiliation"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();
