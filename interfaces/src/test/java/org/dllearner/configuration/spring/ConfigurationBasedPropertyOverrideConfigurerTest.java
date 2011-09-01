@@ -72,6 +72,7 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         Assert.assertEquals(thirdBean.getIntValue(), (Integer) 3);
         TestBean fourthBean = thirdBean.getComponent();
         validateFourthBean(fourthBean);
+        Assert.assertTrue(thirdBean.getMapValue().get("http://localhost/foo#f").equals("http://localhost/foo#g"));
     }
 
     private void validateFirstBean(TestBean testBean) {
