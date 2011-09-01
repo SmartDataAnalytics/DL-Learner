@@ -43,6 +43,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -217,7 +219,7 @@ public class EnrichmentEvaluation {
 		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
 
 		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
+//		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
 		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
 		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
 		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
@@ -486,7 +488,7 @@ public class EnrichmentEvaluation {
 					boolean timeout = false;
 					String algName;
 					if(algorithmClass == CELOE.class){
-						algName = CELOE.class.getSimpleName();
+						algName = CELOE.class.getAnnotation(ComponentAnn.class).name();
 						System.out.println("Applying " + algName + " on " + cls + " ... ");
 						learnedAxioms = applyCELOE(ks, cls, false);
 					} else {
@@ -839,9 +841,16 @@ public class EnrichmentEvaluation {
 				file.createNewFile();
 			}
 			out = new BufferedWriter(new FileWriter(file));
-			for(Entry<String, Double> entry : axiomsWithAccurracy.entrySet()){
+			
+			//sort by values and write only the first 100
+			int i = 0;
+			for(Entry<String, Double> entry : sortByValues(axiomsWithAccurracy)){
+				i++;
 				out.write(entry.getKey() + " (" + round(entry.getValue())*100 + "%)");
 				out.newLine();
+				if(i == 100){
+					break;
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -888,6 +897,18 @@ public class EnrichmentEvaluation {
 		}
 	}
 	
+	protected <K, V extends Comparable<V>> List<Entry<K, V>> sortByValues(Map<K, V> map){
+		List<Entry<K, V>> entries = new ArrayList<Entry<K, V>>(map.entrySet());
+        Collections.sort(entries, new Comparator<Entry<K, V>>() {
+
+			@Override
+			public int compare(Entry<K, V> o1, Entry<K, V> o2) {
+				return o2.getValue().compareTo(o1.getValue());
+			}
+		});
+        return entries;
+	}
+	
 	private Map<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> getAxiomTypesWithLearningAlgorithms(){
 		Map<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> axiomType2Algorithm = new LinkedHashMap<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>>();
 		axiomType2Algorithm.put(AxiomType.SUBCLASS_OF, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{SimpleSubclassLearner.class, CELOE.class}));
@@ -899,7 +920,7 @@ public class EnrichmentEvaluation {
 		axiomType2Algorithm.put(AxiomType.OBJECT_PROPERTY_DOMAIN, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{ObjectPropertyDomainAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.OBJECT_PROPERTY_RANGE, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{ObjectPropertyRangeAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.TRANSITIVE_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{TransitiveObjectPropertyAxiomLearner.class}));
-		axiomType2Algorithm.put(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{FunctionalDataPropertyAxiomLearner.class}));
+		axiomType2Algorithm.put(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{FunctionalObjectPropertyAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{InverseFunctionalObjectPropertyAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.SYMMETRIC_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{SymmetricObjectPropertyAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.REFLEXIVE_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{ReflexiveObjectPropertyAxiomLearner.class}));
