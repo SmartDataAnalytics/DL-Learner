@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -247,9 +248,12 @@ public class Enrichment {
 		SPARQLTasks st = new SPARQLTasks(se);
 		
 		if(resource == null) {
+			System.out.println("TEST");
+			
 			// loop over all entities and call appropriate algorithms
 			Set<NamedClass> classes = st.getAllClasses();
 			for(NamedClass nc : classes) {
+				System.out.println(nc);
 				runClassLearningAlgorithms(ks, nc);				
 			}
 			Set<ObjectProperty> objectProperties = st.getAllObjectProperties();			
@@ -262,13 +266,13 @@ public class Enrichment {
 			}
 		} else {
 			if(resource instanceof ObjectProperty) {
-				System.out.println(resource + " appears to be an object property. Running appropriate algorithms.");
+				System.out.println(resource + " appears to be an object property. Running appropriate algorithms.\n");
 				runObjectPropertyAlgorithms(ks, (ObjectProperty) resource);
 			} else if(resource instanceof DatatypeProperty) {
-				System.out.println(resource + " appears to be a data property. Running appropriate algorithms.");
+				System.out.println(resource + " appears to be a data property. Running appropriate algorithms.\n");
 				runDataPropertyAlgorithms(ks, (DatatypeProperty) resource);
 			} else if(resource instanceof NamedClass) {
-				System.out.println(resource + " appears to be a class. Running appropriate algorithms.");
+				System.out.println(resource + " appears to be a class. Running appropriate algorithms.\n");
 				runClassLearningAlgorithms(ks, (NamedClass) resource);				
 			} else {
 				throw new Error("The type " + resource.getClass() + " of resource " + resource + " cannot be handled by this enrichment tool.");
@@ -278,7 +282,7 @@ public class Enrichment {
 	
 	@SuppressWarnings("unchecked")
 	private void runClassLearningAlgorithms(SparqlEndpointKS ks, NamedClass nc) throws ComponentInitException {
-		System.out.println(resource + " appears to be a class. Running appropriate algorithms.");
+//		System.out.println("Running algorithms for class " + nc);
 		for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
 			if(algorithmClass == CELOE.class) {
 				applyCELOE(ks, nc, false);
@@ -290,12 +294,14 @@ public class Enrichment {
 	}
 	
 	private void runObjectPropertyAlgorithms(SparqlEndpointKS ks, ObjectProperty property) throws ComponentInitException {
+//		System.out.println("Running algorithms for object property " + property);
 		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
 			applyLearningAlgorithm(algorithmClass, ks, property);
 		}		
 	}
 	
 	private void runDataPropertyAlgorithms(SparqlEndpointKS ks, DatatypeProperty property) throws ComponentInitException {
+//		System.out.println("Running algorithms for data property " + property);
 		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
 			applyLearningAlgorithm(algorithmClass, ks, property);
 		}		
@@ -435,7 +441,7 @@ public class Enrichment {
 	private String prettyPrint(List<EvaluatedAxiom> learnedAxioms) {
 		String str = "suggested axioms and their score in percent:\n";
 		if(learnedAxioms.isEmpty()) {
-			return "  no axiom suggested";
+			return "  no axiom suggested\n";
 		} else {
 			for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
 				str += " " + prettyPrint(learnedAxiom) + "\n";
@@ -590,7 +596,7 @@ public class Enrichment {
 		try {
 			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms));
 //			String s = new org.aksw.commons.owlapi.StringConverter(ontology).toStringAsRDFXML();System.out.println(s);
-			String s = new org.aksw.commons.owlapi.StringConverter(ontology).toStringAsTurtle();System.out.println(s);
+			String s = new org.aksw.commons.owlapi.StringConverter(ontology).toStringAsTurtle(); //System.out.println(s);
 			ByteArrayInputStream bs = new ByteArrayInputStream(s.getBytes());
 	        model.read(bs, "", "TURTLE");
 		} catch (OWLOntologyCreationException e) {
@@ -646,7 +652,7 @@ public class Enrichment {
 		
 		OptionParser parser = new OptionParser();
 		parser.acceptsAll(asList("h", "?", "help"), "Show help.");
-		parser.acceptsAll(asList("v", "verbose"), "Verbosity level.").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
+//		parser.acceptsAll(asList("v", "verbose"), "Verbosity level.").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
 		parser.acceptsAll(asList("e", "endpoint"), "SPARQL endpoint URL to be used.")
 				.withRequiredArg().ofType(URL.class);
 		parser.acceptsAll(asList("g", "graph"),
@@ -656,8 +662,9 @@ public class Enrichment {
 				"The resource for which enrichment axioms should be suggested.").withOptionalArg().ofType(URI.class);
 		parser.acceptsAll(asList("o", "output"), "Specify a file where the output can be written.")
 				.withOptionalArg().ofType(File.class);
+		// TODO: other interestig formats: html, manchester, sparul
 		parser.acceptsAll(asList("f", "format"),
-				"Format of the generated output (plain, html, rdf/xml, turtle, manchester, sparul).").withOptionalArg()
+				"Format of the generated output (plain, rdf/xml, turtle, n-triples).").withOptionalArg()
 				.ofType(String.class).defaultsTo("plain");
 		parser.acceptsAll(asList("t", "threshold"),
 				"Confidence threshold for suggestions. Set it to a value between 0 and 1.").withOptionalArg() 
@@ -709,20 +716,25 @@ public class Enrichment {
 				System.exit(0);
 			}
 			
-			boolean verbose = (Boolean) options.valueOf("v");
+//			boolean verbose = (Boolean) options.valueOf("v");
 			double threshold = (Double) options.valueOf("t");
-			
-			Enrichment e = new Enrichment(se, resource, threshold, verbose);
-			e.start();
-
-			SparqlEndpointKS ks = new SparqlEndpointKS(se);
 			
 			// TODO: some handling for inaccessible files or overwriting existing files
 			File f = (File) options.valueOf("o");
 			
+			// if plain and file option is given, redirect System.out to a file
+			if(options.has("o") && (!options.has("f") || options.valueOf("f").equals("plain"))) {
+				 PrintStream printStream = new PrintStream(new FileOutputStream(f));
+				 System.setOut(printStream);
+			}			
+			
+			Enrichment e = new Enrichment(se, resource, threshold, false);
+			e.start();
+
+			SparqlEndpointKS ks = new SparqlEndpointKS(se);
+			
 			// print output in correct format
 			if(options.has("f")) {
-				// TODO: handle other formats
 				List<AlgorithmRun> runs = e.getAlgorithmRuns();
 				List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
 				for(AlgorithmRun run : runs) {
@@ -737,7 +749,7 @@ public class Enrichment {
 						model.write(System.out, "TURTLE");
 						System.out.println("]");
 					}
-				} else if(options.valueOf("f").equals("rdf")){
+				} else if(options.valueOf("f").equals("rdf/xml")){
 					if(options.has("o")) {
 						model.write(new FileOutputStream(f), "RDF/XML");
 					} else {
