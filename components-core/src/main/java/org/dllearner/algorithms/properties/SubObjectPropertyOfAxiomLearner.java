@@ -32,9 +32,11 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,6 +155,15 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 	
 	private long getRemainingMaxExecutionTime(){
 		return (maxExecutionTimeInSeconds == 0) ? 0 : Math.max(1, (maxExecutionTimeInSeconds * 1000)-(System.currentTimeMillis()-startTime));
+	}
+	
+	public static void main(String[] args) throws Exception{
+		SubObjectPropertyOfAxiomLearner l = new SubObjectPropertyOfAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveOpenLink()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/writer"));
+		l.setMaxExecutionTimeInSeconds(10);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
 	
 }

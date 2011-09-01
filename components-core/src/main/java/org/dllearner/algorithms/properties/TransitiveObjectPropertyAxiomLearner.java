@@ -89,20 +89,41 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		}
 		
 		//get fraction of instances s where for a chain <s p o> <o p o1> exists also <s p o1> 
-		query = "SELECT (COUNT(?o)) AS ?all ,(COUNT(?o2)) AS ?transitive WHERE {?s <%s> ?o. ?o <%s> ?o1. OPTIONAL{?s <%s> ?o1. ?s <%s> ?o2}}";
+//		query = "SELECT (COUNT(?o)) AS ?all ,(COUNT(?o2)) AS ?transitive WHERE {?s <%s> ?o. ?o <%s> ?o1. OPTIONAL{?s <%s> ?o1. ?s <%s> ?o2}}";
+//		query = query.replace("%s", propertyToDescribe.getURI().toString());
+//		ResultSet rs = executeSelectQuery(query);
+//		QuerySolution qs;
+//		while(rs.hasNext()){
+//			qs = rs.next();
+//			int all = qs.getLiteral("all").getInt();
+//			int transitive = qs.getLiteral("transitive").getInt();
+//			if(all > 0){
+//				currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe),
+//						computeScore(all, transitive)));
+//			}
+//			
+//		}
+		query = "SELECT (COUNT(?o) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
+		int total = 0;
 		while(rs.hasNext()){
 			qs = rs.next();
-			int all = qs.getLiteral("all").getInt();
-			int transitive = qs.getLiteral("transitive").getInt();
-			if(all > 0){
-				double frac = transitive / (double)all;
-				currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe),
-						computeScore(all, transitive)));
-			}
-			
+			total = qs.getLiteral("total").getInt();
+		}
+		query = "SELECT (COUNT(?o) AS ?transitive) WHERE {?s <%s> ?o. ?o <%s> ?o1. ?s <%s> ?o1.}";
+		query = query.replace("%s", propertyToDescribe.getURI().toString());
+		rs = executeSelectQuery(query);
+		int transitive = 0;
+		while(rs.hasNext()){
+			qs = rs.next();
+			transitive = qs.getLiteral("transitive").getInt();
+		}
+		
+		if(total > 0){
+			currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe),
+					computeScore(total, transitive)));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -116,7 +137,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	public static void main(String[] args) throws Exception{
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		TransitiveObjectPropertyAxiomLearner l = new TransitiveObjectPropertyAxiomLearner(ks);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/influencedBy"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/subregion"));
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(1));

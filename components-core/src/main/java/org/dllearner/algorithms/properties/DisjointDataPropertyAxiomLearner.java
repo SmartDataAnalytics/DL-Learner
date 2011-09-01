@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
@@ -93,7 +94,7 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		//get properties and how often they occur
 				int limit = 1000;
 				int offset = 0;
-				String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?s ?p ?o." +
+				String queryTemplate = "SELECT ?p (COUNT(?s) as ?count) WHERE {?s ?p ?o." +
 				"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
 				"}";
 				String query;
@@ -102,9 +103,10 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 				Integer oldCnt;
 				boolean repeat = true;
 				
+				ResultSet rs = null;
 				while(!terminationCriteriaSatisfied() && repeat){
 					query = String.format(queryTemplate, propertyToDescribe, limit, offset);
-					ResultSet rs = executeSelectQuery(query);
+					rs = executeSelectQuery(query);
 					QuerySolution qs;
 					repeat = false;
 					while(rs.hasNext()){
@@ -164,9 +166,9 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 	}
 	
 	public static void main(String[] args) throws Exception{
-		DisjointDataPropertyAxiomLearner l = new DisjointDataPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/maximumBoatLength"));
-		l.setMaxExecutionTimeInSeconds(0);
+		DisjointDataPropertyAxiomLearner l = new DisjointDataPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/position"));
+		l.setMaxExecutionTimeInSeconds(20);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
