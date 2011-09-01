@@ -40,6 +40,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -167,6 +168,15 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 			types.add(newType);
 		}
 		return cnt;
+	}
+	
+	public static void main(String[] args) throws Exception{
+		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/numberOfSuites"));
+		l.setMaxExecutionTimeInSeconds(10);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
 	
 }

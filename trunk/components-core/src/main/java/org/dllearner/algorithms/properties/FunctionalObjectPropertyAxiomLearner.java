@@ -31,6 +31,7 @@ import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +89,7 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		}
 		
 		//get number of instances of s with <s p o> 
-		query = String.format("SELECT (COUNT(DISTINCT ?s)) AS ?all WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
+		query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		int all = 1;
@@ -97,7 +98,7 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			all = qs.getLiteral("all").getInt();
 		}
 		//get number of instances of s with <s p o> <s p o1> where o != o1
-		query = "SELECT (COUNT(DISTINCT ?s)) AS ?notfunctional WHERE {?s <%s> ?o. ?s <%s> ?o1. FILTER(?o != ?o1) }";
+		query = "SELECT (COUNT(DISTINCT ?s) AS ?notfunctional) WHERE {?s <%s> ?o. ?s <%s> ?o1. FILTER(?o != ?o1) }";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
 		int notFunctional = 1;
@@ -116,6 +117,15 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
 		return currentlyBestAxioms;
+	}
+	
+	public static void main(String[] args) throws Exception{
+		FunctionalObjectPropertyAxiomLearner l = new FunctionalObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/league"));
+		l.setMaxExecutionTimeInSeconds(10);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
 	
 }

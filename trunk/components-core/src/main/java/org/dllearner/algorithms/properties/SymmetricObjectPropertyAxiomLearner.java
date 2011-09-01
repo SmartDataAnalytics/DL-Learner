@@ -31,6 +31,7 @@ import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,20 +89,43 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		}
 		
 		//get fraction of instances s with <s p o> also exists <o p s> 
-		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?symmetric WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?s. ?o <%s> ?o1}}";
+//		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?symmetric WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?s. ?o <%s> ?o1}}";
+//		query = query.replace("%s", propertyToDescribe.getURI().toString());
+//		ResultSet rs = executeSelectQuery(query);
+//		QuerySolution qs;
+//		while(rs.hasNext()){
+//			qs = rs.next();
+//			int all = qs.getLiteral("all").getInt();
+//			int symmetric = qs.getLiteral("symmetric").getInt();
+//			if(all > 0){
+//				double frac = symmetric / (double)all;
+//				currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
+//						computeScore(all, symmetric)));
+//			}
+//			
+//		}
+		query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
+		int total = 0;
 		while(rs.hasNext()){
 			qs = rs.next();
-			int all = qs.getLiteral("all").getInt();
-			int symmetric = qs.getLiteral("symmetric").getInt();
-			if(all > 0){
-				double frac = symmetric / (double)all;
-				currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
-						computeScore(all, symmetric)));
-			}
-			
+			total = qs.getLiteral("total").getInt();
+		}
+		query = "SELECT (COUNT(?s) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s}";
+		query = query.replace("%s", propertyToDescribe.getURI().toString());
+		rs = executeSelectQuery(query);
+		int symmetric = 0;
+		while(rs.hasNext()){
+			qs = rs.next();
+			symmetric = qs.getLiteral("symmetric").getInt();
+		}
+		
+		
+		if(total > 0){
+			currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
+					computeScore(total, symmetric)));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
@@ -110,6 +134,15 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
 		return currentlyBestAxioms;
+	}
+	
+	public static void main(String[] args) throws Exception{
+		SymmetricObjectPropertyAxiomLearner l = new SymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/sisterStation"));
+		l.setMaxExecutionTimeInSeconds(10);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
 
 }

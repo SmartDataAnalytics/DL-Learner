@@ -29,9 +29,11 @@ import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.InverseFunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.slf4j.Logger;
@@ -100,7 +102,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 			all = qs.getLiteral("all").getInt();
 		}
 		//get number of instances of s with <s p o> <s p o1> where o != o1
-		query = "SELECT (COUNT(DISTINCT ?s) AS ?noninversefunctional) WHERE {?s1 <%s> ?o. ?s2 <%s> ?o. FILTER(?s1 != ?s2) }";
+		query = "SELECT (COUNT(DISTINCT ?s1) AS ?noninversefunctional) WHERE {?s1 <%s> ?o. ?s2 <%s> ?o. FILTER(?s1 != ?s2) }";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
 		int notInverseFunctional = 1;
@@ -119,6 +121,16 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
 		return currentlyBestAxioms;
+	}
+	
+	public static void main(String[] args) throws Exception{
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		InverseFunctionalObjectPropertyAxiomLearner l = new InverseFunctionalObjectPropertyAxiomLearner(ks);
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/starring"));
+		l.setMaxExecutionTimeInSeconds(10);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(1));
 	}
 	
 }

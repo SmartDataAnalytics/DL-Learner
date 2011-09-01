@@ -35,6 +35,7 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.SubDatatypePropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,6 +116,8 @@ public class SubDataPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorith
 				qs.getLiteral("count").getInt();
 				repeat = true;
 			}
+			close();
+			System.out.println(repeat);
 			if(!result.isEmpty()){
 				currentlyBestAxioms = buildAxioms(result);
 				offset += 1000;
@@ -153,6 +156,15 @@ public class SubDataPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorith
 	
 	private long getRemainingMaxExecutionTime(){
 		return (maxExecutionTimeInSeconds == 0) ? 0 : Math.max(1, (maxExecutionTimeInSeconds * 1000)-(System.currentTimeMillis()-startTime));
+	}
+	
+	public static void main(String[] args) throws Exception{
+		SubDataPropertyOfAxiomLearner l = new SubDataPropertyOfAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/number"));
+		l.setMaxExecutionTimeInSeconds(1000000);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
 	
 }

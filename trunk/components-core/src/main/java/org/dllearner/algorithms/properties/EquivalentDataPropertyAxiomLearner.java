@@ -34,7 +34,9 @@ import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.EquivalentDatatypePropertiesAxiom;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,6 +152,15 @@ public class EquivalentDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		
 		property2Count.put(propertyToDescribe, all);
 		return axioms;
+	}
+	
+	public static void main(String[] args) throws Exception{
+		EquivalentDataPropertyAxiomLearner l = new EquivalentDataPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/birthDate"));
+		l.setMaxExecutionTimeInSeconds(100);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
 
 }

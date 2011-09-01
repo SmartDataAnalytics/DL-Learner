@@ -38,7 +38,9 @@ import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,16 +153,30 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		int cnt = 0;
 		while(rs.hasNext()){
 			cnt++;
+			newType = null;
 			qs = rs.next();
 			ind = new Individual(qs.getResource("ind").getURI());
-			newType = new Datatype(qs.getResource("datatype").getURI());
-			types = ind2Datatypes.get(ind);
-			if(types == null){
-				types = new TreeSet<Datatype>();
-				ind2Datatypes.put(ind, types);
+			if(qs.getResource("datatype") != null){
+				newType = new Datatype(qs.getResource("datatype").getURI());
+				types = ind2Datatypes.get(ind);
+				if(types == null){
+					types = new TreeSet<Datatype>();
+					ind2Datatypes.put(ind, types);
+				}
+				types.add(newType);
 			}
-			types.add(newType);
+			
 		}
 		return cnt;
+	}
+	
+	public static void main(String[] args) throws Exception{
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		DataPropertyRangeAxiomLearner l = new DataPropertyRangeAxiomLearner(ks);
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/background"));
+		l.setMaxExecutionTimeInSeconds(10);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(1));
 	}
 }
