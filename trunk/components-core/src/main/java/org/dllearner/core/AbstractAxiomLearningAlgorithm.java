@@ -54,6 +54,8 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 	protected SparqlEndpointKS ks;
 	protected SPARQLReasoner reasoner;
 	
+	ExtendedQueryEngineHTTP queryExecution;
+	
 	public int getMaxExecutionTimeInSeconds() {
 		return maxExecutionTimeInSeconds;
 	}
@@ -116,7 +118,7 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 	
 	protected ResultSet executeSelectQuery(String query) {
 		logger.info("Sending query\n{} ...", query);
-		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(),
+		queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(),
 				query);
 		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 		queryExecution.setDefaultGraphURIs(ks.getEndpoint().getDefaultGraphURIs());
@@ -125,6 +127,10 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 		ResultSet resultSet = queryExecution.execSelect();
 		
 		return resultSet;
+	}
+	
+	protected void close() {
+		queryExecution.close();
 	}
 	
 	protected boolean executeAskQuery(String query){
@@ -156,9 +162,12 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
 		
 		double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
+	
 		double confidence = confidenceInterval[1] - confidenceInterval[0];
 		
 		return new AxiomScore(accuracy, confidence);
 	}
+	
+	
 
 }

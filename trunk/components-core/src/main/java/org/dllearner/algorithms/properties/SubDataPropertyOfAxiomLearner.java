@@ -116,8 +116,7 @@ public class SubDataPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorith
 				qs.getLiteral("count").getInt();
 				repeat = true;
 			}
-			close();
-			System.out.println(repeat);
+			
 			if(!result.isEmpty()){
 				currentlyBestAxioms = buildAxioms(result);
 				offset += 1000;

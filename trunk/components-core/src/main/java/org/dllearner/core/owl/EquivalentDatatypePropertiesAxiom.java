@@ -48,11 +48,11 @@ public class EquivalentDatatypePropertiesAxiom extends PropertyAxiom {
 	}
 		
 	public String toString(String baseURI, Map<String,String> prefixes) {
-		return "EquivalentObjectProperties(" + equivRole.toString(baseURI, prefixes) + "," + role.toString(baseURI, prefixes) + ")";
+		return "EquivalentDataProperties(" + equivRole.toString(baseURI, prefixes) + "," + role.toString(baseURI, prefixes) + ")";
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return "EquivalentObjectProperties(" + equivRole.toKBSyntaxString(baseURI, prefixes) + "," + role.toKBSyntaxString(baseURI, prefixes) + ")";
+		return "EquivalentDataProperties(" + equivRole.toKBSyntaxString(baseURI, prefixes) + "," + role.toKBSyntaxString(baseURI, prefixes) + ")";
 	}
 	
 	@Override
