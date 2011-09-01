@@ -181,6 +181,10 @@ public class Enrichment {
 	// max. execution time for each learner for each entity
 	private int maxExecutionTimeInSeconds = 10;
 
+	// restrict tested number of entities per type (only for testing purposes);
+	// should be set to 0 in production mode
+	private int maxEntitiesPerType = 0;
+	
 	// number of axioms which will be learned/considered (only applies to
 	// some learners)
 	private int nrOfAxiomsToLearn = 10;	
@@ -252,17 +256,31 @@ public class Enrichment {
 			
 			// loop over all entities and call appropriate algorithms
 			Set<NamedClass> classes = st.getAllClasses();
+			int entities = 0;
 			for(NamedClass nc : classes) {
-				System.out.println(nc);
-				runClassLearningAlgorithms(ks, nc);				
+				runClassLearningAlgorithms(ks, nc);		
+				entities++;
+				if(entities > maxEntitiesPerType) {
+					break;
+				}
 			}
+			entities = 0;
 			Set<ObjectProperty> objectProperties = st.getAllObjectProperties();			
 			for(ObjectProperty property : objectProperties) {
-				runObjectPropertyAlgorithms(ks, property);				
+				runObjectPropertyAlgorithms(ks, property);	
+				entities++;
+				if(entities > maxEntitiesPerType) {
+					break;
+				}				
 			}
+			entities = 0;
 			Set<DatatypeProperty> dataProperties = st.getAllDataProperties();
 			for(DatatypeProperty property : dataProperties) {
-				runDataPropertyAlgorithms(ks, property);		
+				runDataPropertyAlgorithms(ks, property);
+				entities++;
+				if(entities > maxEntitiesPerType) {
+					break;
+				}				
 			}
 		} else {
 			if(resource instanceof ObjectProperty) {
