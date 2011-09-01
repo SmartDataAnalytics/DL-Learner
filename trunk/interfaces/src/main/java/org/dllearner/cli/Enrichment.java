@@ -734,7 +734,7 @@ public class Enrichment {
 						model.write(new FileOutputStream(f), "TURTLE");
 					} else {
 						System.out.println("ENRICHMENT[");
-						model.write(System.out, "N-TRIPLES");
+						model.write(System.out, "TURTLE");
 						System.out.println("]");
 					}
 				} else if(options.valueOf("f").equals("rdf")){
@@ -742,7 +742,7 @@ public class Enrichment {
 						model.write(new FileOutputStream(f), "RDF/XML");
 					} else {
 						System.out.println("ENRICHMENT[");
-						model.write(System.out, "N-TRIPLES");
+						model.write(System.out, "RDF/XML");
 						System.out.println("]");
 					}
 				} else if(options.valueOf("f").equals("n-triples")){
