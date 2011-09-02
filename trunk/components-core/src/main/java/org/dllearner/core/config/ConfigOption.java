@@ -53,6 +53,7 @@ public @interface ConfigOption {
      * 
      * @return
      */
+    @Deprecated
     Class<? extends PropertyEditor> propertyEditorClass() default PropertyEditor.class;
     
     /**

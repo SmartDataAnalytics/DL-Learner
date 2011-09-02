@@ -62,7 +62,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	private static Logger logger = Logger.getLogger(ClassLearningProblem.class);
     private long nanoStartTime;
-	private static int maxExecutionTimeInSeconds = 10;
+	private int maxExecutionTimeInSeconds = 10;
 	
 	// TODO: config option
 	private NamedClass classToDescribe;
@@ -857,12 +857,12 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		return equivalence ? getReasoner().isEquivalentClass(description, classToDescribe) : getReasoner().isSuperClassOf(description, classToDescribe);
 	}
 
-	public static int getMaxExecutionTimeInSeconds() {
+	public int getMaxExecutionTimeInSeconds() {
 		return maxExecutionTimeInSeconds;
 	}
 
-	public static void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-		ClassLearningProblem.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
 	public boolean isEquivalence() {

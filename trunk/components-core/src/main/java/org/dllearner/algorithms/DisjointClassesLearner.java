@@ -179,6 +179,11 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	}
 
 	@Override
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
+		return getCurrentlyBestEvaluatedAxioms(currentlyBestEvaluatedDescriptions.size());
+	}	
+	
+	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
 		Set<Description> descriptions;
