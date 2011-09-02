@@ -47,7 +47,7 @@
 							</platforms>
 							<programs>
 								<program>
-									<mainClass>org.dllearner.cli.Start</mainClass>
+									<mainClass>org.dllearner.cli.CLI</mainClass>
 									<name>cli</name>
 								</program>
 								<program>
