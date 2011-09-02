@@ -254,8 +254,7 @@ public class Enrichment {
 		SPARQLTasks st = new SPARQLTasks(se);
 		
 		if(resource == null) {
-			System.out.println("TEST");
-			
+
 			// loop over all entities and call appropriate algorithms
 			Set<NamedClass> classes = st.getAllClasses();
 			int entities = 0;

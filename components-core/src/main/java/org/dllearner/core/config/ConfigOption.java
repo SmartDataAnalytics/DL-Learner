@@ -20,8 +20,10 @@
 package org.dllearner.core.config;
 
 import java.beans.PropertyEditor;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
@@ -32,6 +34,7 @@ import java.lang.annotation.RetentionPolicy;
  * @author Lorenz Bühmann
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
 public @interface ConfigOption {
 
     /**
@@ -49,7 +52,9 @@ public @interface ConfigOption {
     /**
      * An implementation of the Property Editor to use.
      * 
-     * TODO: This might not be needed in the future.
+     * @deprecated We currently do not encourage specifying the
+     * property editor, because they might not be needed if we find a way
+     * of auto-detecting appropriate editors.
      * 
      * @return
      */
@@ -57,7 +62,9 @@ public @interface ConfigOption {
     Class<? extends PropertyEditor> propertyEditorClass() default PropertyEditor.class;
     
     /**
-     * Returns whether this option is required for initializing the component. 
+     * Returns whether this option is required for initializing the component.
+     * 
+     * Maybe soon deprecated: Please put @Required in the corresponding set method in addition.
      * @return True if the option is required and false otherwise.
      */
     boolean required() default false;

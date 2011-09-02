@@ -163,6 +163,23 @@ public class ConfigHelper {
 		return options;
 	}
 	
+	/**
+	 * Returns all config options for the given component.
+	 * @param component
+	 * @return
+	 */
+	public static Map<ConfigOption,Class<?>> getConfigOptionTypes(Class<? extends Component> component){
+		Map<ConfigOption,Class<?>> optionTypes = new HashMap<ConfigOption,Class<?>>();
+		Field[] fields = component.getDeclaredFields();
+		for(Field f : fields){
+        	ConfigOption option = f.getAnnotation(ConfigOption.class);
+        	if(option != null){
+        		optionTypes.put(option, f.getType());
+        	}
+        }
+		return optionTypes;
+	}	
+	
 	/*
 	 * returns the declared fields for the class and its superclass.
 	 */

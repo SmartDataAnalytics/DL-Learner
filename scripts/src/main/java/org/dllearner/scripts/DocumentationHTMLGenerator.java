@@ -70,7 +70,10 @@ public class DocumentationHTMLGenerator {
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('ReasonerComponent')\">ReasonerComponent</a></li>");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('LearningProblem')\">LearningProblem</a></li>");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('LearningAlgorithm')\">LearningAlgorithm</a>");
-		sb.append("<ul><li><a href=\"#\" onClick=\"showOnlyCat('AxiomLearningAlgorithm')\">AxiomLearningAlgorithm</a></li></ul></li>");
+		sb.append("<ul><li><a href=\"#\" onClick=\"showOnlyCat('AxiomLearningAlgorithm')\">AxiomLearningAlgorithm</a></li>");
+		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('ClassExpressionLearningAlgorithm')\">ClassExpressionLearningAlgorithm</a></li></ul></li>");
+		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('RefinementOperator')\">RefinementOperator</a></li>");
+		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('OtherComponent')\">other</a></li>");
 		sb.append("</ul>");
 		
 		// general explanations
@@ -100,13 +103,14 @@ public class DocumentationHTMLGenerator {
 			sb.append("</p>");
 			
 			// generate table for configuration options
-			List<ConfigOption> options = ConfigHelper.getConfigOptions(comp);
+			Map<ConfigOption,Class<?>> options = ConfigHelper.getConfigOptionTypes(comp);
 			if(options.isEmpty()) {
 				sb.append("This component does not have configuration options.");
 			} else {
 			sb.append("<table id=\"hor-minimalist-a\"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>\n");
-			for(ConfigOption option : options) {
-				sb.append("<tr><td>" + option.name() + "</td><td>" + option.description() + "</td><td> " + getOptionType(option) + "</td><td>" + option.defaultValue() + "</td><td> " + option.required() + "</td></tr>\n");
+			for(Entry<ConfigOption,Class<?>> entry : options.entrySet()) {
+				ConfigOption option = entry.getKey();
+				sb.append("<tr><td>" + option.name() + "</td><td>" + option.description() + "</td><td> " + entry.getValue().getSimpleName() + "</td><td>" + option.defaultValue() + "</td><td> " + option.required() + "</td></tr>\n");
 			}
 			sb.append("</tbody></table>\n");
 			}
@@ -147,10 +151,10 @@ public class DocumentationHTMLGenerator {
 	
 	// this is a hack, because we just assume that every PropertyEditor is named 
 	// as TypeEditor (e.g. ObjectPropertyEditor); however that hack does not too much harm here
-	private static String getOptionType(ConfigOption option) {
-		String name = option.propertyEditorClass().getSimpleName();
-		return name.substring(0, name.length()-6);
-	}	
+//	private static String getOptionType(ConfigOption option) {
+//		String name = option.propertyEditorClass().getSimpleName();
+//		return name.substring(0, name.length()-6);
+//	}	
 	
 	private static String getCoreTypes(Class<? extends Component> comp) {
 		List<Class<? extends Component>> types = AnnComponentManager.getCoreComponentTypes(comp);
@@ -158,7 +162,12 @@ public class DocumentationHTMLGenerator {
 		for(Class<?extends Component> type : types) {
 			str += " " + type.getSimpleName();
 		}
-		return str.substring(1);
+		// not every component belongs to one of the core types
+		if(str.length()==0) {
+			return "OtherComponent";
+		} else {
+			return str.substring(1);
+		}
 	}
 		
 	public static void main(String[] args) {

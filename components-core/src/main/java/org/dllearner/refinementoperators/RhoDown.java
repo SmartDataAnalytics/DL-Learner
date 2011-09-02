@@ -30,6 +30,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.ObjectAllRestriction;
@@ -678,6 +679,12 @@ public class RhoDown extends RefinementOperatorAdapter {
 			}
 		}
 		return retSet;
+	}
+
+	@Override
+	public void init() throws ComponentInitException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

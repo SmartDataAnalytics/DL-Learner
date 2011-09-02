@@ -35,6 +35,7 @@ import org.dllearner.algorithms.el.ELDescriptionEdge;
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -292,6 +293,12 @@ public class ELDown extends RefinementOperatorAdapter {
 		}
 		
 		return i;
+	}
+
+	@Override
+	public void init() throws ComponentInitException {
+		// TODO Auto-generated method stub
+		
 	}
 	
 //	private void computeMg(Description index) {

@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
@@ -236,6 +237,12 @@ public class PsiUp extends RefinementOperatorAdapter {
 	public Set<Description> refine(Description concept, int maxLength,
 			List<Description> knownRefinements) {
 		throw new RuntimeException();
+	}
+
+	@Override
+	public void init() throws ComponentInitException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
