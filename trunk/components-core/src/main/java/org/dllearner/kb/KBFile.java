@@ -46,16 +46,18 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
  * @author Jens Lehmann
  *
  */
-@ComponentAnn(name = "KB file", shortName = "kbfile", version = 0.8)
+@ComponentAnn(name = "KB File", shortName = "kbfile", version = 0.8)
 public class KBFile extends AbstractKnowledgeSource {
 
 	private static Logger logger = Logger.getLogger(KBFile.class);
 	
 	private KB kb;
 
-	@ConfigOption(name = "url", description = "URL pointer to the KB file", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
+	@ConfigOption(name = "url", description = "URL pointer to the KB file")
     private String url;
     private String baseDir;
+    @ConfigOption(name = "fileName", description = "relative or absolute path to KB file")
+    private String fileName;
 
 	/**
 	 * Default constructor (needed for reflection in ComponentManager).
@@ -159,4 +161,12 @@ public class KBFile extends AbstractKnowledgeSource {
     public void setBaseDir(String baseDir) {
         this.baseDir = baseDir;
     }
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 }
