@@ -42,6 +42,7 @@ import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
 import org.dllearner.algorithms.el.TreeAndRoleSet;
 import org.dllearner.algorithms.el.TreeAndRoleSetComparator;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -601,6 +602,12 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void init() throws ComponentInitException {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

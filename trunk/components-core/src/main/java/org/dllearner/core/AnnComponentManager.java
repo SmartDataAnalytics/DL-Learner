@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
+import org.dllearner.refinementoperators.RefinementOperator;
 
 /**
  * Component manager for the new (as of 2011) annotation based configuration 
@@ -241,14 +242,20 @@ public class AnnComponentManager {
 		if(LearningAlgorithm.class.isAssignableFrom(component)) {
 			types.add(LearningAlgorithm.class);
 		}
+		if(AxiomLearningAlgorithm.class.isAssignableFrom(component)) {
+			types.add(AxiomLearningAlgorithm.class);
+		}
+		if(ClassExpressionLearningAlgorithm.class.isAssignableFrom(component)) {
+			types.add(ClassExpressionLearningAlgorithm.class);
+		}	
 		if(LearningProblem.class.isAssignableFrom(component)) {
 			types.add(LearningProblem.class);
 		}
 		if(ReasonerComponent.class.isAssignableFrom(component)) {
 			types.add(ReasonerComponent.class);
 		}
-		if(AxiomLearningAlgorithm.class.isAssignableFrom(component)) {
-			types.add(AxiomLearningAlgorithm.class);
+		if(RefinementOperator.class.isAssignableFrom(component)) {
+			types.add(RefinementOperator.class);
 		}
 		return types;
 	}

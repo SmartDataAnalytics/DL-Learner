@@ -22,6 +22,7 @@ package org.dllearner.refinementoperators;
 import java.util.List;
 import java.util.Set;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.owl.Description;
 
 /**
@@ -34,7 +35,7 @@ import org.dllearner.core.owl.Description;
  * @author Jens Lehmann
  *
  */
-public interface RefinementOperator {
+public interface RefinementOperator extends Component {
 
 	/**
 	 * Standard refinement operation.

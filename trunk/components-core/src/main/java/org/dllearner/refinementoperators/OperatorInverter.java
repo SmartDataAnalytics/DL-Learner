@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -91,6 +92,12 @@ public class OperatorInverter implements RefinementOperator {
 			negatedDescription = ConceptTransformation.transformToNegationNormalForm(negatedDescription);
 		}
 		return negatedDescription;
+	}
+
+	@Override
+	public void init() throws ComponentInitException {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
