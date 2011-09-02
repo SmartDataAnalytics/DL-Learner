@@ -6,13 +6,13 @@
 
 	<fileSets>
 		<fileSet>
-			<directory>${project.build.directory}/dl-learner-dist/dl-learner-${release.name}/lib
+			<directory>${project.build.directory}/dl-learner-dist/lib
 			</directory>
 			<outputDirectory>lib</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>${project.build.directory}/dl-learner-dist/bin</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>/bin</outputDirectory>
 			<includes>
 				<include>
 					*.bat
@@ -21,7 +21,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>${project.build.directory}/dl-learner-dist/bin</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>/bin</outputDirectory>
 			<excludes>
 				<exclude>
 					*.bat
