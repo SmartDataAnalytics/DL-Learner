@@ -6,23 +6,24 @@ britishPrimeMinisters.conf          UNTESTED
 DBpediaYAGOWomanInPolitics.conf     DONE  
 govtrack.conf                       errors  The examples below are not contained in the knowledge base (check spelling and prefixes)
 moosique.conf                       DONE                    
-scrobble.conf                       errors
+scrobble.conf                       errors  The examples below are not contained in the knowledge base (check spelling and prefixes)
 
 DBpediaOntology:
 Actor.conf                        UNTESTED
 
 difference:
-DBPediaSKOS_kohl_vs_angela.conf 
-DifferenceDBPediaYAGO_angela_vs_hillary.conf                    DONE
-DifferenceDBPediaYAGO_angela_vs_hillary_ignoredConcepts.conf
-DifferenceDBPediaYAGO_hillary_vs_angela.conf
-DifferenceDBPediaYAGO_hillary_vs_angela_ignoredConcepts.conf
+DBpediaSKOS_kohl_vs_angela.conf                                 UNTESTED
+DifferenceDBpediaYAGO_angela_vs_hillary.conf                    DONE
+DifferenceDBpediaYAGO_angela_vs_hillary_ignoredConcepts.conf    DONE
+DifferenceDBpediaYAGO_hillary_vs_angela.conf                    DONE
+DifferenceDBpediaYAGO_hillary_vs_angela_ignoredConcepts.conf    DONE
 
 hierarchy:
-Hierarchy0DBPediaYAGOChanBrit_monarch.conf
-Hierarchy1DBPediaYAGOChanBrit_pred_Knight.conf
+Hierarchy1DBpediaYAGOChancellor_property_Knight.conf         UNTESTED
+Hierarchy1DBPediaYAGOChanBrit_pred_Knight.conf              UNTESTED
 
 navigation:
-Navigation0DBPediaYAGOAristotle.conf
-Navigation1DBPediaYAGOAristotle.conf
-Navigation2DBPediaYAGOAristotle.conf
+NavigationDBpediaYAGOGreekPhilosophers_3_negatives.conf     UNTESTED
+NavigationDBpediaYAGOGreekPhilosophers_4_negatives.conf     UNTESTED
+NavigationDBpediaYAGOGreekPhilosophers_5_negatives.conf     UNTESTED
+    
