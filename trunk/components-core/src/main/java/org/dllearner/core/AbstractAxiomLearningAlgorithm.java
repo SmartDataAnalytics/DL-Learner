@@ -64,6 +64,14 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
+	public SPARQLReasoner getReasoner() {
+		return reasoner;
+	}
+
+	public void setReasoner(SPARQLReasoner reasoner) {
+		this.reasoner = reasoner;
+	}
+
 	@Override
 	public void start() {
 	}

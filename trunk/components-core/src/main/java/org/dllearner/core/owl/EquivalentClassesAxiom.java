@@ -69,6 +69,6 @@ public class EquivalentClassesAxiom extends TerminologicalAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "EQ_CLASSES_AXIOM NOT IMPLEMENTED";
+		return concept1.toManchesterSyntaxString(baseURI, prefixes) + " EquivalentTo: " + concept2.toManchesterSyntaxString(baseURI, prefixes);
 	}	
 }
