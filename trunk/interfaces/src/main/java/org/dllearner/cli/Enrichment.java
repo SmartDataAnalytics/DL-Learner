@@ -608,6 +608,7 @@ public class Enrichment {
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
+		model.setNsPrefix("enr", "http://www.dl-learner.org/enrichment.owl#");
 		return model;
 	}	
 	
