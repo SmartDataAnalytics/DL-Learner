@@ -43,6 +43,10 @@ public class EnrichmentVocabulary {
 	
 	public static final OWLClass Suggestion = factory.getOWLClass(IRI.create(NS + "Suggestion"));
 	
+	public static final OWLClass AddSuggestion = factory.getOWLClass(IRI.create(NS + "AddSuggestion"));
+	
+	public static final OWLClass DeleteSuggestion = factory.getOWLClass(IRI.create(NS + "DeleteSuggestion"));
+	
 	public static final OWLClass Parameter = factory.getOWLClass(IRI.create(NS + "Parameter"));
 	
 	public static final OWLClass Creation = factory.getOWLClass(IRI.create(NS + "Creation"));
