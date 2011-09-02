@@ -20,9 +20,11 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -145,6 +147,10 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
         super(sources);
     }
 
+    public FastInstanceChecker(AbstractKnowledgeSource... sources) {
+        super(new HashSet<AbstractKnowledgeSource>(Arrays.asList(sources)));
+    }
+    
     /**
 	 * @return The name of this component.
 	 */

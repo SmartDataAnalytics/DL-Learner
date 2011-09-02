@@ -351,9 +351,7 @@ public class Enrichment {
 		
 		System.out.println("done (" + negExStr.size()+ ")");
 		
-        ComponentManager cm = ComponentManager.getInstance();
-
-        SparqlKnowledgeSource ks2 = cm.knowledgeSource(SparqlKnowledgeSource.class);
+        SparqlKnowledgeSource ks2 = new SparqlKnowledgeSource(); 
         ks2.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
         ks2.setUrl(ks.getEndpoint().getURL());
         ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
@@ -366,11 +364,11 @@ public class Enrichment {
         ks2.init();
         System.out.println("done");
 
-        AbstractReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks2);
+        AbstractReasonerComponent rc = new FastInstanceChecker(ks2);
         rc.init();
 
         // TODO: super class learning
-        ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, rc);
+        ClassLearningProblem lp = new ClassLearningProblem(rc);
 //        lp.setPositiveExamples(posExamples);
 //        lp.setNegativeExamples(negExamples);
 //        try {
@@ -386,12 +384,7 @@ public class Enrichment {
         lp.setMaxExecutionTimeInSeconds(10);
         lp.init();
 
-        CELOE la = null;
-		try {
-			la = cm.learningAlgorithm(CELOE.class, lp, rc);
-		} catch (LearningProblemUnsupportedException e) {
-			e.printStackTrace();
-		}
+        CELOE la = new CELOE(lp, rc);
 //        CELOEConfigurator cc = la.getConfigurator();
         la.setMaxExecutionTimeInSeconds(10);
         la.setNoisePercentage(25);
@@ -414,8 +407,7 @@ public class Enrichment {
         	evaluatedAxioms.add(new EvaluatedAxiom(axiom, score)); 
         }
         
-        algorithmRuns.add(new AlgorithmRun(CELOE.class, evaluatedAxioms, ConfigHelper.getConfigOptionValuesString(la)));
-        cm.freeAllComponents();		
+        algorithmRuns.add(new AlgorithmRun(CELOE.class, evaluatedAxioms, ConfigHelper.getConfigOptionValuesString(la)));	
 		return evaluatedAxioms;
 	}
 	

@@ -77,6 +77,11 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	}
 
 	@Override
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
+		return getCurrentlyBestEvaluatedAxioms(currentlyBestEvaluatedDescriptions.size());
+	}	
+	
+	@Override
 	public List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions) {
 		List<Description> bestDescriptions = new ArrayList<Description>();
 		for(EvaluatedDescription evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)){

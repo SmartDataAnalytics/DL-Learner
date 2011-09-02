@@ -44,7 +44,7 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  * @author Lorenz Bühmann
  * @author Jens Lehmann
  */
-public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements AxiomLearningAlgorithm{
+public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent implements AxiomLearningAlgorithm{
 	
 	private static final Logger logger = LoggerFactory.getLogger(AbstractAxiomLearningAlgorithm.class);
 	
@@ -89,11 +89,6 @@ public class AbstractAxiomLearningAlgorithm extends AbstractComponent implements
 			bestAxioms.add(evAx.getAxiom());
 		}
 		return bestAxioms;
-	}
-
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return null;
 	}
 
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
