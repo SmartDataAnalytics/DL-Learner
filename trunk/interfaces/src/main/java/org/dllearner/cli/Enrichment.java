@@ -77,7 +77,6 @@ import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
@@ -128,7 +127,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  * Command Line Interface for Enrichment.
@@ -199,6 +197,10 @@ public class Enrichment {
 	private List<AlgorithmRun> algorithmRuns;
 	
 	private CommonPrefixMap prefixes = new CommonPrefixMap();
+	
+	// cache for SparqKnowledgeSource
+	SparqlKnowledgeSource ksCached;
+	AbstractReasonerComponent rcCached;
 	
 	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, boolean verbose) {
 		this.se = se;
@@ -303,8 +305,8 @@ public class Enrichment {
 //		System.out.println("Running algorithms for class " + nc);
 		for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
 			if(algorithmClass == CELOE.class) {
-				applyCELOE(ks, nc, false);
-				applyCELOE(ks, nc, true);
+				applyCELOE(ks, nc, false, false);
+				applyCELOE(ks, nc, true, true);
 			} else {
 				applyLearningAlgorithm((Class<AxiomLearningAlgorithm>)algorithmClass, ks, nc);
 			}
@@ -325,73 +327,67 @@ public class Enrichment {
 		}		
 	}	
 	
-	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, NamedClass nc, boolean equivalence) throws ComponentInitException {
-//		SPARQLTasks st = new SPARQLTasks(se);
-		
+	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, NamedClass nc, boolean equivalence, boolean reuseKnowledgeSource) throws ComponentInitException {
+
 		// get instances of class as positive examples
 		SPARQLReasoner sr = new SPARQLReasoner(ks);
 		SortedSet<Individual> posExamples = sr.getIndividuals(nc, 20);
 		SortedSet<String> posExStr = Helper.getStringSet(posExamples);
 		
-		// get negative examples via various strategies
-//		AutomaticNegativeExampleFinderSPARQL finder = new AutomaticNegativeExampleFinderSPARQL(posExStr, st, null);
-//		finder.makeNegativeExamplesFromNearbyClasses(posExStr, 50);
-//		finder.makeNegativeExamplesFromParallelClasses(posExStr, 50);
-//		finder.makeNegativeExamplesFromRelatedInstances(posExStr, "http://dbpedia.org/resource/");
-//		finder.makeNegativeExamplesFromSuperClasses(resource.getName(), 50);
-//		finder.makeNegativeExamplesFromRandomInstances();
-//		SortedSet<String> negExStr = finder.getNegativeExamples(50, false);
 		// use own implementation of negative example finder
+		long startTime = System.currentTimeMillis();
 		System.out.print("finding negatives ... ");
 		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
 		SortedSet<String> negExStr = finder.getNegativeExamples(nc.getName(), posExStr);
 		negExStr = SetManipulation.fuzzyShrink(negExStr, 20);
 		SortedSet<Individual> negExamples = Helper.getIndividualSet(negExStr);
 		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
+		long runTime = System.currentTimeMillis() - startTime;
+		System.out.println("done (" + negExStr.size()+ " examples fround in " + runTime + " ms)");
 		
-		System.out.println("done (" + negExStr.size()+ ")");
-		
-        SparqlKnowledgeSource ks2 = new SparqlKnowledgeSource(); 
-        ks2.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
-        ks2.setUrl(ks.getEndpoint().getURL());
-        ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
-        ks2.setUseLits(false);
-        ks2.setUseCacheDatabase(true);
-        ks2.setRecursionDepth(2);
-        ks2.setCloseAfterRecursion(true);
-//        ks2.getConfigurator().setSaveExtractedFragment(true);
-        System.out.println("getting fragment ... ");
-        ks2.init();
-        System.out.println("done");
+        SparqlKnowledgeSource ks2;
+        AbstractReasonerComponent rc;
+        if(reuseKnowledgeSource) {
+        	ks2 = ksCached;
+        	rc = rcCached;
+        	System.out.println("re-using previously generated knowledge base fragment");
+        } else {
+            ks2 = new SparqlKnowledgeSource(); 
+            ks2.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
+            ks2.setUrl(ks.getEndpoint().getURL());
+            ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
+            ks2.setUseLits(false);
+            ks2.setUseCacheDatabase(true);
+            ks2.setRecursionDepth(2);
+            ks2.setCloseAfterRecursion(true);
+            startTime = System.currentTimeMillis();
+            System.out.print("getting knowledge base fragment ... ");
+            ks2.init();
+            runTime = System.currentTimeMillis() - startTime;
+            System.out.println("done in " + runTime + " ms");    
+            rc = new FastInstanceChecker(ks2);
+            rc.init();
+            ksCached = ks2;
+            rcCached = rc;
+        }
 
-        AbstractReasonerComponent rc = new FastInstanceChecker(ks2);
-        rc.init();
-
-        // TODO: super class learning
         ClassLearningProblem lp = new ClassLearningProblem(rc);
-//        lp.setPositiveExamples(posExamples);
-//        lp.setNegativeExamples(negExamples);
-//        try {
-			lp.setClassToDescribe(nc);
-//		} catch (MalformedURLException e1) {
-//			e1.printStackTrace();
-//		}
-//        lp.setType("equivalence");
-        lp.setEquivalence(true);
-//        lp.setAccuracyMethod("fmeasure");
+		lp.setClassToDescribe(nc);
+        lp.setEquivalence(equivalence);
         lp.setHeuristic(HeuristicType.FMEASURE);
         lp.setUseApproximations(false);
         lp.setMaxExecutionTimeInSeconds(10);
         lp.init();
 
         CELOE la = new CELOE(lp, rc);
-//        CELOEConfigurator cc = la.getConfigurator();
         la.setMaxExecutionTimeInSeconds(10);
         la.setNoisePercentage(25);
         la.init();
-        System.out.print("running CELOE (for " + (equivalence ? "EquivalentClasses" : "SubClasses)") + "... ");
+        startTime = System.currentTimeMillis();
+        System.out.print("running CELOE (for " + (equivalence ? "equivalent classes" : "sub classes") + ") ... ");
         la.start();
-        System.out.println("done");		
+        runTime = System.currentTimeMillis() - startTime;
+        System.out.println("done in " + runTime + " ms");	
 
         // convert the result to axioms (to make it compatible with the other algorithms)
         List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
@@ -440,7 +436,7 @@ public class Enrichment {
 			}						
 		}
 		long runtime = System.currentTimeMillis() - startTime;
-		System.out.println("done in " + runtime + "ms");
+		System.out.println("done in " + runtime + " ms");
 		List<EvaluatedAxiom> learnedAxioms = learner
 				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn, threshold);
 		System.out.println(prettyPrint(learnedAxioms));	
@@ -464,8 +460,8 @@ public class Enrichment {
 	private String prettyPrint(EvaluatedAxiom axiom) {
 		double acc = axiom.getScore().getAccuracy() * 100;
 		String accs = df.format(acc);
-		if(acc<10d) { accs = " " + accs; }
-		if(acc<100d) { accs = " " + accs; }
+		if(accs.length()==3) { accs = "  " + accs; }
+		if(accs.length()==4) { accs = " " + accs; }
 		String str =  accs + "%\t" + axiom.getAxiom().toManchesterSyntaxString(null, prefixes);
 		return str;
 	}
