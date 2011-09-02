@@ -24,6 +24,8 @@ import java.util.HashMap;
 /**
  * Can be used as base for a prefix map.
  * 
+ * TODO: We might implement a version of this class, which is synchronised with prefix.cc.
+ * 
  * @author Jens Lehmann
  *
  */
@@ -32,8 +34,11 @@ public class CommonPrefixMap extends HashMap<String,String> {
 	private static final long serialVersionUID = 5434065917532534702L;
 
 	public CommonPrefixMap() {
+		put("dbpedia","http://dbpedia.org/resource/");
 		put("dbp","http://dbpedia.org/property/");
 		put("dbo","http://dbpedia.org/ontology/");
+		put("yago","http://dbpedia.org/class/yago/");
+		put("gml","http://www.opengis.net/gml/");
 	}
 	
 }
