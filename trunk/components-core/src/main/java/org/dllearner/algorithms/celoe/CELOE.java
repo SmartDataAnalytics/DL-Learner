@@ -167,7 +167,8 @@ public class CELOE extends AbstractCELA {
 
 	private int maxClassDescriptionTests = 0;
 
-	private int maxExecutionTimeInSeconds = 100;
+	@org.dllearner.core.config.ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
+	private int maxExecutionTimeInSeconds = 10;
 
 	private boolean terminateOnNoiseReached = false;
 	

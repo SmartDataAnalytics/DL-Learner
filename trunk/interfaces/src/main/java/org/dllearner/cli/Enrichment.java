@@ -143,9 +143,9 @@ public class Enrichment {
 		// since otherwise we run into memory problems for full enrichment
 		private Class<? extends LearningAlgorithm> algorithm;
 		private List<EvaluatedAxiom> axioms;
-		private Map<ConfigOption,String> parameters;
+		private Map<ConfigOption,Object> parameters;
 
-		public AlgorithmRun(Class<? extends LearningAlgorithm> algorithm, List<EvaluatedAxiom> axioms, Map<ConfigOption,String> parameters) {
+		public AlgorithmRun(Class<? extends LearningAlgorithm> algorithm, List<EvaluatedAxiom> axioms, Map<ConfigOption,Object> parameters) {
 			this.algorithm = algorithm;
 			this.axioms = axioms;
 			this.parameters = parameters;
@@ -159,7 +159,7 @@ public class Enrichment {
 			return axioms;
 		}		
 		
-		public Map<ConfigOption, String> getParameters() {
+		public Map<ConfigOption, Object> getParameters() {
 			return parameters;
 		}		
 	}
@@ -403,7 +403,7 @@ public class Enrichment {
         }
         System.out.println(prettyPrint(learnedAxioms));	
         
-        algorithmRuns.add(new AlgorithmRun(CELOE.class, learnedAxioms, ConfigHelper.getConfigOptionValuesString(la)));	
+        algorithmRuns.add(new AlgorithmRun(CELOE.class, learnedAxioms, ConfigHelper.getConfigOptionValues(la)));	
 		return learnedAxioms;
 	}
 	
@@ -440,7 +440,7 @@ public class Enrichment {
 				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn, threshold);
 		System.out.println(prettyPrint(learnedAxioms));	
 		
-		algorithmRuns.add(new AlgorithmRun(learner.getClass(), learnedAxioms, ConfigHelper.getConfigOptionValuesString(learner)));
+		algorithmRuns.add(new AlgorithmRun(learner.getClass(), learnedAxioms, ConfigHelper.getConfigOptionValues(learner)));
 		return learnedAxioms;
 	}
 	
@@ -468,11 +468,11 @@ public class Enrichment {
 	/*
 	 * Generates list of OWL axioms.
 	 */
-	private List<OWLAxiom> toRDF(List<EvaluatedAxiom> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,String> parameters, SparqlEndpointKS ks){
+	private List<OWLAxiom> toRDF(List<EvaluatedAxiom> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,Object> parameters, SparqlEndpointKS ks){
 		return toRDF(evalAxioms, algorithm, parameters, ks, null);
 	}
 	
-	private List<OWLAxiom> toRDF(List<EvaluatedAxiom> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,String> parameters, SparqlEndpointKS ks, String defaultNamespace){
+	private List<OWLAxiom> toRDF(List<EvaluatedAxiom> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,Object> parameters, SparqlEndpointKS ks, String defaultNamespace){
 		if(defaultNamespace == null || defaultNamespace.isEmpty()){
 			defaultNamespace = DEFAULT_NS;
 		}
@@ -513,13 +513,13 @@ public class Enrichment {
 		axioms.add(ax);
 		//add Parameters to algorithm run instance
 		OWLIndividual paramInd;
-		for(Entry<ConfigOption, String> entry : parameters.entrySet()){
+		for(Entry<ConfigOption, Object> entry : parameters.entrySet()){
 			paramInd = f.getOWLNamedIndividual(IRI.create(generateId()));
 			ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.Parameter, paramInd);
 			axioms.add(ax);
 			ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.parameterName, paramInd, entry.getKey().name());
 			axioms.add(ax);
-			ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.parameterValue, paramInd, entry.getValue());
+			ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.parameterValue, paramInd, entry.getValue().toString());
 			axioms.add(ax);
 		}
 		//add used input to algorithm run instance

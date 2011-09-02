@@ -31,6 +31,8 @@ import java.util.Map;
 
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.core.Component;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 
 public class ConfigHelper {
 	
@@ -97,6 +99,7 @@ public class ConfigHelper {
 	 * @param component The component to analyse.
 	 * @return All config options of the component with their respective value.
 	 */
+	@Deprecated
 	public static Map<ConfigOption,String> getConfigOptionValuesString(Component component) {
 		Map<ConfigOption,String> optionValues = new HashMap<ConfigOption,String>();
 		List<Field> fields = getAllFields(component);//getConfigOptions(component).getClass().getDeclaredFields();
@@ -133,11 +136,18 @@ public class ConfigHelper {
 			ConfigOption option = field.getAnnotation(ConfigOption.class);
 			if(option != null) {
 				try {
-					optionValues.put(option, field.get(component));
+					// we invoke the public getter instead of accessing a private field (may cause problem with SecurityManagers)
+					// use Spring BeanUtils TODO: might be unnecessarily slow because we already have the field?
+					Object value = BeanUtils.getPropertyDescriptor(component.getClass(), field.getName()).getReadMethod().invoke(component);
+					optionValues.put(option, value);
 				} catch (IllegalArgumentException e1) {
 					e1.printStackTrace();
 				} catch (IllegalAccessException e1) {
 					e1.printStackTrace();
+				} catch (BeansException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
 				}
 			}
 		}
