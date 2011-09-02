@@ -37,10 +37,11 @@
 						</executions>
 						<configuration>
 							<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
-							<repoPath>dl-learner-${release.name}/lib</repoPath>
-							<repositoryName>dl-learner-${release.name}/lib</repositoryName>
+							<repoPath>lib</repoPath>
+							<repositoryName>lib</repositoryName>
 							<extraJvmArguments>-Xms256m -Xmx1024m</extraJvmArguments>
 							<installArtifacts>false</installArtifacts>
+							<configurationDirectory>/</configurationDirectory>
 							<platforms>
 								<platform>windows</platform>
 								<platform>unix</platform>
