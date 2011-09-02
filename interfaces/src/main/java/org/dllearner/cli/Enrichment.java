@@ -389,13 +389,13 @@ public class Enrichment {
         la.setMaxExecutionTimeInSeconds(10);
         la.setNoisePercentage(25);
         la.init();
-        System.out.print("running CELOE ... ");
+        System.out.print("running CELOE (for " + (equivalence ? "EquivalentClasses" : "SubClasses)") + "... ");
         la.start();
         System.out.println("done");		
 
         // convert the result to axioms (to make it compatible with the other algorithms)
         List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
-        List<EvaluatedAxiom> evaluatedAxioms = new LinkedList<EvaluatedAxiom>();
+        List<EvaluatedAxiom> learnedAxioms = new LinkedList<EvaluatedAxiom>();
         for(EvaluatedDescription learnedDescription : learnedDescriptions) {
         	Axiom axiom;
         	if(equivalence) {
@@ -404,11 +404,12 @@ public class Enrichment {
         		axiom = new SubClassAxiom(nc, learnedDescription.getDescription());
         	}
         	Score score = lp.computeScore(learnedDescription.getDescription());
-        	evaluatedAxioms.add(new EvaluatedAxiom(axiom, score)); 
+        	learnedAxioms.add(new EvaluatedAxiom(axiom, score)); 
         }
+        System.out.println(prettyPrint(learnedAxioms));	
         
-        algorithmRuns.add(new AlgorithmRun(CELOE.class, evaluatedAxioms, ConfigHelper.getConfigOptionValuesString(la)));	
-		return evaluatedAxioms;
+        algorithmRuns.add(new AlgorithmRun(CELOE.class, learnedAxioms, ConfigHelper.getConfigOptionValuesString(la)));	
+		return learnedAxioms;
 	}
 	
 	private List<EvaluatedAxiom> applyLearningAlgorithm(Class<? extends AxiomLearningAlgorithm> algorithmClass, SparqlEndpointKS ks, Entity entity) throws ComponentInitException {
