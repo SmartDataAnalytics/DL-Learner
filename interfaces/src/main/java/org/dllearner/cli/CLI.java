@@ -24,10 +24,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.xmlbeans.XmlObject;
 import org.dllearner.Info;
-import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
@@ -52,6 +55,7 @@ import org.springframework.core.io.Resource;
 public class CLI {
 
 	private static Logger logger = Logger.getLogger(CLI.class);
+	private static Logger rootLogger = Logger.getRootLogger();
 	
 	private boolean writeSpringConfiguration = false;
 
@@ -80,7 +84,14 @@ public class CLI {
 	 */
 	public static void main(String[] args) throws ParseException, IOException, ReasoningMethodUnsupportedException {
 		
-		System.out.println("DL-Learner " + Info.build + " [TODO: read pom.version and put it here (make sure that the code for getting the version also works in the release build!)] command line interface");
+		Layout layout = new PatternLayout();
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		rootLogger.removeAllAppenders();
+		rootLogger.addAppender(consoleAppender);
+		rootLogger.setLevel(Level.INFO);
+		
+//		System.out.println("DL-Learner " + Info.build + " [TODO: read pom.version and put it here (make sure that the code for getting the version also works in the release build!)] command line interface");
+		System.out.println("DL-Learner command line interface");
 		
 		// currently, CLI has exactly one parameter - the conf file
 		if(args.length == 0) {
