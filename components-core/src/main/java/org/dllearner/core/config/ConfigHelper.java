@@ -99,7 +99,7 @@ public class ConfigHelper {
 	 */
 	public static Map<ConfigOption,String> getConfigOptionValuesString(Component component) {
 		Map<ConfigOption,String> optionValues = new HashMap<ConfigOption,String>();
-		Field[] fields = getConfigOptions(component).getClass().getDeclaredFields();
+		List<Field> fields = getAllFields(component);//getConfigOptions(component).getClass().getDeclaredFields();
 		for(Field field : fields) {
 			ConfigOption option = field.getAnnotation(ConfigOption.class);
 			if(option != null) {
@@ -128,7 +128,7 @@ public class ConfigHelper {
 	 */
 	public static Map<ConfigOption,Object> getConfigOptionValues(Component component) {
 		Map<ConfigOption,Object> optionValues = new HashMap<ConfigOption,Object>();
-		Field[] fields = getConfigOptions(component).getClass().getDeclaredFields();
+		List<Field> fields = getAllFields(component);
 		for(Field field : fields) {
 			ConfigOption option = field.getAnnotation(ConfigOption.class);
 			if(option != null) {
@@ -205,6 +205,7 @@ public class ConfigHelper {
 		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(null);
 		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", "11");
 		System.out.println(l.getMaxExecutionTimeInSeconds());
+		System.out.println(ConfigHelper.getConfigOptionValues(l));
 	}
 
 }
