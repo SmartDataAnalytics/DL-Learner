@@ -49,10 +49,10 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	@ConfigOption(name = "url", required=true, propertyEditorClass = URLEditor.class)
 	private URL url;
 	
-	@ConfigOption(name = "url", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
+	@ConfigOption(name = "defaultGraphs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
 	private List<String> defaultGraphURIs = new LinkedList<String>();
 	
-	@ConfigOption(name = "url", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
+	@ConfigOption(name = "namedGraphs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
 	private List<String> namedGraphURIs = new LinkedList<String>();
 	
 	public SparqlEndpointKS() {
