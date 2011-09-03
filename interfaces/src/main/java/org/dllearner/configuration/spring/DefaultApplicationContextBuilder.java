@@ -1,5 +1,10 @@
 package org.dllearner.configuration.spring;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.dllearner.configuration.IConfiguration;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -7,10 +12,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,7 +37,12 @@ public class DefaultApplicationContextBuilder implements ApplicationContextBuild
         String[] springConfigurationFiles = new String[allSpringConfigFiles.size()];
         int ctr = 0;
         for (Resource springConfigurationLocation : allSpringConfigFiles) {
-           springConfigurationFiles[ctr] = springConfigurationLocation.getFile().toURI().toString();
+//           springConfigurationFiles[ctr] = springConfigurationLocation.getFile().toURI().toString();//this works not if packaged as jar file
+        	 try {
+				springConfigurationFiles[ctr] = springConfigurationLocation.getURL().toURI().toString();
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
            ctr++;
         }
         context = new ClassPathXmlApplicationContext(springConfigurationFiles, false);
