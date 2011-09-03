@@ -36,6 +36,7 @@
 							</execution>
 						</executions>
 						<configuration>
+                            <repositoryLayout>flat</repositoryLayout>
 							<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
 							<repoPath>lib</repoPath>
 							<repositoryName>lib</repositoryName>
@@ -86,10 +87,10 @@
 						<version>1.1</version>
 						<configuration>
 							<settings>
-								<!-- all tex main documents in this folder (including subfolders) 
+								<!-- all tex main documents in this folder (including subfolders)
 									will be processed -->
 								<texDirectory>${basedir}/doc/manual</texDirectory>
-								<!-- the generated artifacts will be copied to this folder relative 
+								<!-- the generated artifacts will be copied to this folder relative
 									to ${project.reporting.outputDirectory} -->
 								<outputDirectory>.</outputDirectory>
 								<!-- the working directory, for temporary files and LaTeX processing -->
