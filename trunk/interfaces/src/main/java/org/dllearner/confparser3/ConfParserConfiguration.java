@@ -79,7 +79,7 @@ public class ConfParserConfiguration implements IConfiguration {
             result = Class.forName(value);
         } catch (ClassNotFoundException e) {
         	// if all methods fail, throw an exception
-            throw new RuntimeException("Problem getting class type for bean: " + beanName + " - trying to instantiate class: " + value);
+            throw new RuntimeException("Problem getting class type for bean: " + beanName + " - trying to instantiate class: " + value,e);
         }
         return result;
     }
