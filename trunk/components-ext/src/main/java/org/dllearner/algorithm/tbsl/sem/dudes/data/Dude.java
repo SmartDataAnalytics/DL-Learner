@@ -12,6 +12,7 @@ import org.dllearner.algorithm.tbsl.sem.util.DominanceConstraint;
 import org.dllearner.algorithm.tbsl.sem.util.Label;
 import org.dllearner.algorithm.tbsl.sem.util.SemanticRepresentation;
 import org.dllearner.algorithm.tbsl.sem.util.Type;
+import org.dllearner.algorithm.tbsl.sparql.BasicSlot;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 
 public class Dude implements SemanticRepresentation{
@@ -221,6 +222,7 @@ public class Dude implements SemanticRepresentation{
 		List<Argument> args = new ArrayList<Argument>();
 		List<DominanceConstraint> dcs = new ArrayList<DominanceConstraint>();
 		List<Slot> ls = new ArrayList<Slot>();
+		List<BasicSlot> lbs = new ArrayList<BasicSlot>();
 		
 		for (DRS component : components) {
 			cs.add(component.clone());

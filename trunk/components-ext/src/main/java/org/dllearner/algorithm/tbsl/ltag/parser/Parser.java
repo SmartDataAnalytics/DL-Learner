@@ -15,6 +15,7 @@ public class Parser {
 	public boolean USE_LESS_MEMORY = false;
 	public boolean SHOW_GRAMMAR = false;
 	public boolean SHOW_LEXICAL_COVERAGE = false;
+	public String MODE = "BASIC"; // MODE ::= BASIC | LEIPZIG
 
 	private String[] input;
 	private List<DerivationTree> derivationTrees = new ArrayList<DerivationTree>();
@@ -53,7 +54,7 @@ public class Parser {
 		 * times, a tree for each token is added. Both trees need to have
 		 * different treeIDs for the parser to work correctly.
 		 */
-		parseGrammar = GrammarFilter.filter(taggeduserinput,grammar,temporaryEntries);
+		parseGrammar = GrammarFilter.filter(taggeduserinput,grammar,temporaryEntries,MODE);
 
 		String inputNoTags = "";		
 		for (String s : taggeduserinput.split(" ")) {

@@ -11,6 +11,9 @@ public class PatternMatchingTest {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
+		System.out.println("NewYork(U.S.State)".replace("(U.S.State)","").replaceAll("[A-Z]"," $0"));
+		System.out.println("99.0".replaceAll("\\..+\\z",""));
+		
 		String nep = "World";
 		String s = "is/VBZ there/RB a/DT video/NN game/NN called/VBN Battle/NNP Chess/NNP";
 		

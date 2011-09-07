@@ -1,41 +1,44 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Aggregate;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_OrderBy;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Term;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Value;
+
 public class SPARQL_Term extends SPARQL_Value {
 	
 	SPARQL_OrderBy orderBy = SPARQL_OrderBy.NONE;
 	SPARQL_Aggregate aggregate = SPARQL_Aggregate.NONE;
-	SPARQL_Term as = null;
+	boolean isURI = false; 
+	String alias;
 	
 	public SPARQL_Term(String name) {
 		super(name);
 		this.name = name.replace("?","").replace("!","");
+		alias = name;
 	}
-	public SPARQL_Term(String name,boolean b) {
+	public SPARQL_Term(String name, boolean uri) {
 		super(name);
 		this.name = name.replace("?","").replace("!","");
-		setIsVariable(b);
+		isURI = uri;
+		alias = name;
 	}
 	
 	public SPARQL_Term(String name, SPARQL_Aggregate aggregate) {
 		super(name);
 		this.aggregate = aggregate;
+		alias = name;
 	}
-	public SPARQL_Term(String name, SPARQL_Aggregate aggregate,boolean b,SPARQL_Term t) {
+	public SPARQL_Term(String name, SPARQL_Aggregate aggregate, String as) {
 		super(name);
 		this.aggregate = aggregate;
-		setIsVariable(b);
-		as = t;
+		alias = as;
 	}
 	
-	public SPARQL_Term(String name, SPARQL_OrderBy orderBy) {
+	public SPARQL_Term(String name, SPARQL_OrderBy ob) {
 		super(name);
-		this.orderBy = orderBy;
-	}
-	public SPARQL_Term(String name, SPARQL_OrderBy orderBy,boolean b,SPARQL_Term t) {
-		super(name);
-		this.orderBy = orderBy;
-		setIsVariable(b);
-		as = t;
+		orderBy = ob;
+		alias = name;
 	}
 	
 	@Override
@@ -50,8 +53,8 @@ public class SPARQL_Term extends SPARQL_Value {
 		return orderBy;
 	}
 
-	public void setOrderBy(SPARQL_OrderBy orderBy) {
-		this.orderBy = orderBy;
+	public void setOrderBy(SPARQL_OrderBy ob) {
+		orderBy = ob;
 	}
 
 	public SPARQL_Aggregate getAggregate() {
@@ -64,35 +67,29 @@ public class SPARQL_Term extends SPARQL_Value {
 	
 	public boolean isString()
 	{
-		return name.startsWith("'");
+		return name.startsWith("'") || name.matches("\\d+");
 	}
 
 	@Override
 	public String toString() {
+//		System.err.println("SPARQL_Term: name="+name+",alias="+alias+",agg="+aggregate+",orderBy="+orderBy); // DEBUG
 		if (aggregate != SPARQL_Aggregate.NONE) {
-			if (as != null) {
-				return aggregate+"(?"+name.toLowerCase()+") AS " + as.toString();
-			}
-			else {
+			if (alias != null && !alias.equals(name))
+				return aggregate+"(?"+name.toLowerCase()+") AS ?" + alias;
+			else 
 				return aggregate+"(?"+name.toLowerCase()+")";
-			}
 		}
 		if (orderBy != SPARQL_OrderBy.NONE) {
-			String n;
-			if (as != null) { n = as.name; } else { n = name; }
 			if (orderBy == SPARQL_OrderBy.ASC)
-				return "ASC(?"+n.toLowerCase()+")";
-			else
-				return "DESC(?"+n.toLowerCase()+")";
+				return "ASC(?"+alias.toLowerCase()+")"; 
+			else 
+				return "DESC(?"+alias.toLowerCase()+")";
 		}
-		if (isVariable() && !isString()) {
-			return "?"+name.toLowerCase();
-		}
-		else {
+		if (isString() || isURI) {
 			return name;
 		}
+		else return "?"+name.toLowerCase();
 	}
-	
 	
 
 }

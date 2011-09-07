@@ -13,17 +13,21 @@ public class Preprocessor {
 
 	static final String[] genericReplacements = { "\"", "", "'", "", "[!?.,;]", "" };
 	static final String[] englishReplacements = { "don't", "do not", "doesn't", "does not" };
+	static boolean USE_NER;
+	static NER ner;
 	
-	static NER ner = new LingPipeNER(true);//not case sensitive best solution?
-	
-	public Preprocessor() {
+	public Preprocessor(boolean n) {
+		USE_NER = n;
+		if (USE_NER) {
+			ner = new LingPipeNER(true); //not case sensitive best solution?
+		}
 	}
 	
-	public static String normalize(String s) {
+	public String normalize(String s) {
 		return normalize(s, new String[0]);
 	}
 
-	public static String normalize(String s, String... repl) {
+	public String normalize(String s, String... repl) {
 
 		if (repl.length % 2 != 0 || genericReplacements.length % 2 != 0 || englishReplacements.length % 2 != 0) {
 			throw new IllegalArgumentException();
@@ -41,7 +45,7 @@ public class Preprocessor {
 		return s;
 	}
 	
-	public static String condense(String taggedstring) {
+	public String condense(String taggedstring) {
 		
 		/* condense: 
 		 * x/RBR adj/JJ > adj/JJR, x/RBS adj/JJ > adj/JJS, x/WRB adj/JJ > x/JJH
@@ -187,7 +191,7 @@ public class Preprocessor {
 		return condensedstring;
 	}
 
-	public static String condenseNominals(String s) {
+	public String condenseNominals(String s) {
 		
 		String flat = s;
 		
@@ -216,7 +220,7 @@ public class Preprocessor {
 		return flat;
 	}
 	
-	public static String findNEs(String tagged,String untagged) {
+	public String findNEs(String tagged,String untagged) {
 		
 		String out = tagged;
 		

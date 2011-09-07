@@ -86,8 +86,8 @@
 	the least || (DET DET:'the' DET:'least') || <y, l1, e, [ l1:[ | l2:[ y | ] THELEAST y l3:[|] ] ], [], [],[]>
 
 	// COUNT
-	more than || (DP DET:'more' DET:'than' NUM[num] NP[np]) || <x,l1,<<e,t>,t>,[ l1:[ c | count(y,c), greater(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
-	less than || (DP DET:'less' DET:'than' NUM[num] NP[np]) || <x,l1,<<e,t>,t>,[ l1:[ c | count(y,c), less(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
+	more than || (DP DET:'more' DET:'than' NUM[num] NP[np]) || <x,l1,<<e,t>,t>,[ l1:[ y,c | count(y,c), greater(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]> ;; <x,l1,<<e,t>,t>,[ l1:[ y | greater(y,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
+	less than || (DP DET:'less' DET:'than' NUM[num] NP[np]) || <x,l1,<<e,t>,t>,[ l1:[ y,c | count(y,c), less(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]> ;; <x,l1,<<e,t>,t>,[ l1:[ y | less(y,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
 
 	// HOW
 	how || (DP DET:'how' ADJ[adj]) || <x,l1,<<e,t>,t>,[ l1:[?x|] ],[ (x,l2,adj,<e,t>) ],[l2=l1],[]>
