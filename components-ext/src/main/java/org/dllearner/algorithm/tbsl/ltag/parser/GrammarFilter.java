@@ -10,6 +10,7 @@ import org.dllearner.algorithm.tbsl.ltag.data.LTAG_Tree_Constructor;
 import org.dllearner.algorithm.tbsl.ltag.data.TreeNode;
 import org.dllearner.algorithm.tbsl.ltag.reader.ParseException;
 import org.dllearner.algorithm.tbsl.sem.util.Pair;
+import org.dllearner.algorithm.tbsl.templator.BasicSlotBuilder;
 import org.dllearner.algorithm.tbsl.templator.SlotBuilder;
 
 /**
@@ -29,13 +30,14 @@ class GrammarFilter {
 	static List<Integer> usedInts = new ArrayList<Integer>();
 	static ArrayList<String> doubles = new ArrayList<String>();
 	
-	static ParseGrammar filter(String taggedinput,LTAGLexicon grammar,List<Integer> temps) {
+	static ParseGrammar filter(String taggedinput,LTAGLexicon grammar,List<Integer> temps, String mode) {
 		
 		// DISAM: CLEAR 
 		usedInts = new ArrayList<Integer>();
 		doubles = new ArrayList<String>();
 		
 		SlotBuilder slotbuilder = new SlotBuilder();
+		BasicSlotBuilder basicslotbuilder = new BasicSlotBuilder();
 		
 		List<String> input = getWordList(taggedinput.trim());
 		input.add(0,"#");  // This is important. Don't mess with the parser!
@@ -235,7 +237,16 @@ class GrammarFilter {
 		}	
 		System.out.println("build slot for: " + buildSlotFor + "\n");
 			
-		List<String[]> entries = slotbuilder.build(taggedinput,buildSlotFor);
+		List<String[]> entries;
+		if (mode.equals("LEIPZIG")) {
+			entries = slotbuilder.build(taggedinput,buildSlotFor);
+		}
+		else if (mode.equals("BASIC")) {
+			entries = basicslotbuilder.build(taggedinput,buildSlotFor);
+		}
+		else { // should never happen!
+			entries = new ArrayList<String[]>();
+		}
 				
 		try {	
 				for (String[] entry : entries) {

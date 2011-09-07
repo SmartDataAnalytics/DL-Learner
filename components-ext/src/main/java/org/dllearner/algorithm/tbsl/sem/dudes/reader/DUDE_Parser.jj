@@ -62,7 +62,7 @@ Dude DUDE() :
   List<DRS> drs_list = null;
   List<DominanceConstraint> constraints = null;
   List<Argument> arg_list = null;
-  List<Slot> slots = null; 
+  List<Slot> slots = null;
 }
 {
    "<" referent = dr() ","  label=<LABEL> "," type=Type()  "," "["  (drs_list=DRS_List())? "]"  "," "[" (arg_list = Arg_List())? "]"
