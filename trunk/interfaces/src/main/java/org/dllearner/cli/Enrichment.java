@@ -73,6 +73,7 @@ import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
+import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
@@ -189,6 +190,9 @@ public class Enrichment {
 	private int nrOfAxiomsToLearn = 10;	
 	private double threshold = 0.7;
 	
+	private boolean useInference;
+	private SPARQLReasoner reasoner;
+	
 	// lists of algorithms to apply
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
@@ -203,11 +207,12 @@ public class Enrichment {
 	SparqlKnowledgeSource ksCached;
 	AbstractReasonerComponent rcCached;
 	
-	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, boolean verbose) {
+	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, boolean useInference, boolean verbose) {
 		this.se = se;
 		this.resource = resource;
 		this.verbose = verbose;
 		this.threshold = threshold;
+		this.useInference = useInference;
 		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
 		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
@@ -250,6 +255,14 @@ public class Enrichment {
 		// instantiate SPARQL endpoint wrapper component
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
 		ks.init();
+		
+		if(useInference){
+			reasoner = new SPARQLReasoner(ks);
+			System.out.print("Precomputing subsumption hierarchy ... ");
+			long startTime = System.currentTimeMillis();
+			reasoner.prepareSubsumptionHierarchy();
+			System.out.println("done in " + (System.currentTimeMillis() - startTime) + " ms");
+		}
 		
 		// common helper objects
 		SPARQLTasks st = new SPARQLTasks(se);
@@ -424,16 +437,20 @@ public class Enrichment {
 		ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 				maxExecutionTimeInSeconds);
 		learner.init();
+		if(reasoner != null){
+			((AbstractAxiomLearningAlgorithm)learner).setReasoner(reasoner);
+		}
 		String algName = AnnComponentManager.getName(learner);
 		System.out.print("Applying " + algName + " on " + entity + " ... ");
 		long startTime = System.currentTimeMillis();
 		try {
 			learner.start();
 		} catch (Exception e) {
-			e.printStackTrace();
 			if(e.getCause() instanceof SocketTimeoutException){
 				System.out.println("Query timed out (endpoint possibly too slow).");
-			}						
+			} else {
+				e.printStackTrace();
+			}
 		}
 		long runtime = System.currentTimeMillis() - startTime;
 		System.out.println("done in " + runtime + " ms");
@@ -727,6 +744,7 @@ public class Enrichment {
 				System.exit(0);
 			}
 			
+			boolean useInference = (Boolean) options.valueOf("i");
 //			boolean verbose = (Boolean) options.valueOf("v");
 			double threshold = (Double) options.valueOf("t");
 			
@@ -739,7 +757,7 @@ public class Enrichment {
 				 System.setOut(printStream);
 			}			
 			
-			Enrichment e = new Enrichment(se, resource, threshold, false);
+			Enrichment e = new Enrichment(se, resource, threshold, useInference, false);
 			e.start();
 
 			SparqlEndpointKS ks = new SparqlEndpointKS(se);

@@ -78,6 +78,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
 	
 	private SparqlEndpointKS ks;
+	private ClassHierarchy hierarchy;
 	
 	public SPARQLReasoner(SparqlEndpointKS ks) {
 		this.ks = ks;
@@ -120,7 +121,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			subsumptionHierarchyUp.put(atom, tmp);
 		}		
 		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
-		return new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
+		hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
+		return hierarchy;
 	}
 	
 	public Model loadSchema(){
