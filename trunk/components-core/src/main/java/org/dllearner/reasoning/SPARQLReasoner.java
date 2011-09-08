@@ -37,8 +37,11 @@ import org.aksw.commons.sparql.api.core.QueryExecutionFactory;
 import org.aksw.commons.sparql.api.http.QueryExecutionFactoryHttp;
 import org.aksw.commons.sparql.api.pagination.core.QueryExecutionFactoryPaginated;
 import org.aksw.commons.util.strings.StringUtils;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.IndividualReasoner;
 import org.dllearner.core.SchemaReasoner;
+import org.dllearner.core.config.BooleanEditor;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
@@ -53,12 +56,15 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -73,15 +79,26 @@ import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+@ComponentAnn(name = "SPARQL Reasoner", shortName = "spr", version = 0.1)
 public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
 	
+	@ConfigOption(name = "useCache", description = "Whether to use a DB cache", defaultValue = "true", required = false, propertyEditorClass = BooleanEditor.class)
+	private boolean useCache = true;
+	
+	private ExtractionDBCache cache;
+	
 	private SparqlEndpointKS ks;
 	private ClassHierarchy hierarchy;
 	
+	
 	public SPARQLReasoner(SparqlEndpointKS ks) {
 		this.ks = ks;
+		
+		if(useCache){
+			cache = new ExtractionDBCache("cache");
+		}
 	}
 	
 	public final ClassHierarchy prepareSubsumptionHierarchy() {
@@ -779,14 +796,19 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	
 	private ResultSet executeSelectQuery(String query){
 		logger.info("Sending query \n {}", query);
-		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
-		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
-			queryExecution.addDefaultGraph(dgu);
+		ResultSet resultset = null;
+		if(useCache){
+			resultset = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(ks.getEndpoint(), query));
+		} else {
+			QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+			for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
+				queryExecution.addDefaultGraph(dgu);
+			}
+			for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
+				queryExecution.addNamedGraph(ngu);
+			}			
+			resultset = queryExecution.execSelect();
 		}
-		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
-			queryExecution.addNamedGraph(ngu);
-		}			
-		ResultSet resultset = queryExecution.execSelect();
 		return resultset;
 	}
 	
