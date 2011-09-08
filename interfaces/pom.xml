@@ -258,6 +258,11 @@
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>spring-xmlbeans-3.0</artifactId>
+            <version>1.0</version>
+        </dependency>
 	</dependencies>
 
 
