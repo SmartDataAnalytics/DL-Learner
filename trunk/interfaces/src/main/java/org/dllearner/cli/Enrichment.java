@@ -106,6 +106,7 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.CommonPrefixMap;
 import org.dllearner.utilities.EnrichmentVocabulary;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.PrefixCCMap;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
@@ -201,7 +202,7 @@ public class Enrichment {
 	// list of generated axioms while script is running
 	private List<AlgorithmRun> algorithmRuns;
 	
-	private CommonPrefixMap prefixes = new CommonPrefixMap();
+//	private CommonPrefixMap prefixes = new CommonPrefixMap();
 	
 	// cache for SparqKnowledgeSource
 	SparqlKnowledgeSource ksCached;
@@ -479,7 +480,7 @@ public class Enrichment {
 		String accs = df.format(acc);
 		if(accs.length()==3) { accs = "  " + accs; }
 		if(accs.length()==4) { accs = " " + accs; }
-		String str =  accs + "%\t" + axiom.getAxiom().toManchesterSyntaxString(null, prefixes);
+		String str =  accs + "%\t" + axiom.getAxiom().toManchesterSyntaxString(null, PrefixCCMap.getInstance());
 		return str;
 	}
 	
