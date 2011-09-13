@@ -10,7 +10,7 @@ public class BasicQueryTemplate
 
 	Set<SPARQL_Term> selTerms; // SELECT ?x ?y
 	Set<SPARQL_Prefix> prefixes;
-	Set<String> conditions;
+	Set<Path> conditions;
 	Set<SPARQL_Term> orderBy;
 	Set<SPARQL_Filter> filter;
 	SPARQL_QueryType qt = SPARQL_QueryType.SELECT;
@@ -24,7 +24,7 @@ public class BasicQueryTemplate
 		super();
 		selTerms   = new HashSet<SPARQL_Term>();
 		prefixes   = new HashSet<SPARQL_Prefix>();
-		conditions = new HashSet<String>();
+		conditions = new HashSet<Path>();
 		orderBy    = new HashSet<SPARQL_Term>();
 		filter     = new HashSet<SPARQL_Filter>();
 		slots      = new ArrayList<Slot>();
@@ -34,8 +34,8 @@ public class BasicQueryTemplate
 		slots.add(s);
 	}
 	
-	public void addConditions(String s) {
-		conditions.add(s);
+	public void addConditions(Path p) {
+		conditions.add(p);
 	}
 	
 	@Override
@@ -61,8 +61,8 @@ public class BasicQueryTemplate
 
 		retVal += "WHERE {\n";
 		
-		for (String s : conditions) {
-			retVal += "\t" + s + "\n";
+		for (Path p : conditions) {
+			retVal += "\t" + p.toString() + "\n";
 		}
 
 		for (SPARQL_Filter f : filter)

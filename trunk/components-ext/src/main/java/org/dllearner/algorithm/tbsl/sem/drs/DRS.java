@@ -151,8 +151,7 @@ public class DRS implements SemanticRepresentation {
 	}
 
 
-	public Set<DiscourseReferent> getDRs() { 
-		
+	public Set<DiscourseReferent> getDRs() { 		
 		return m_DiscourseReferents;
 	}
 	
@@ -163,6 +162,18 @@ public class DRS implements SemanticRepresentation {
 		for (DiscourseReferent referent : m_DiscourseReferents) {
 			if (referent.isMarked()) {
 				result.add(referent);
+			}
+		}
+		return result;
+	}
+	
+	public Set<DiscourseReferent> collectDRs() {
+		Set<DiscourseReferent> result = new HashSet<DiscourseReferent>();
+		result.addAll(m_DiscourseReferents);
+		for (DRS_Condition c : m_DRS_Conditions) {
+			if (c.isComplexCondition()) {
+				result.addAll(((Complex_DRS_Condition) c).m_Restrictor.collectDRs());
+				result.addAll(((Complex_DRS_Condition) c).m_Scope.collectDRs());
 			}
 		}
 		return result;

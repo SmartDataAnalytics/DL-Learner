@@ -270,15 +270,20 @@ public class Dude implements SemanticRepresentation{
 		for (String var : variables) {
 			
 			String freshbase;
-			if (var.charAt(0) == '?') {
-				freshbase = "?";
+			String varbase;
+			if (var.charAt(0) == '?') { 
+				freshbase = "?"; 
+				varbase = ""+var.charAt(1); 
 			}
-			else {
+			else { 
 				freshbase = "";
+				varbase = ""+var.charAt(0);
 			}
-			String fresh = freshbase + "v0";
-			for (int i = 0; (allVariables.contains("v"+i) || allVariables.contains("?v"+i)); i++) {	
-				fresh = freshbase + "v"+ (i+1);
+
+			String fresh = freshbase + varbase + "0"; 
+
+			for (int i = 0; (allVariables.contains(varbase+i) || allVariables.contains("?"+varbase+i)); i++) {	
+				fresh = freshbase + varbase + (i+1);
 			}			
 			allVariables.add(fresh);
 			dude.replaceReferent(var,fresh);
