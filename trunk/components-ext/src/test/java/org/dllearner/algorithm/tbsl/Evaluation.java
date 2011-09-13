@@ -26,6 +26,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.aksw.commons.jena.ExtendedQueryEngineHTTP;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
@@ -37,7 +38,9 @@ import org.dllearner.algorithm.tbsl.sparql.Query;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.util.LatexWriter;
+import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,6 +50,7 @@ import org.xml.sax.SAXException;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.sse.builders.BuilderExpr.Build;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -67,6 +71,8 @@ public class Evaluation{
 	
 	private int testID = -1;
 	private Map<String, String> prefixMap;
+	
+	private ExtractionDBCache cache = new ExtractionDBCache("cache");
 	
 	public Evaluation(File ... evaluationFiles) throws FileNotFoundException, IOException{
 		for(File file : evaluationFiles){
@@ -93,6 +99,7 @@ public class Evaluation{
 		
 		String endpointURL = props.getProperty("endpointURL", "http://live.dbpedia.org/sparql");
 		String defaultGraphURI = props.getProperty("defaultGraphURI", "http://live.dbpedia.org");
+		endpoint = new SparqlEndpoint(new URL(endpointURL), Collections.singletonList(defaultGraphURI), Collections.<String>emptyList());
 		// TODO: use aksw-commons-sparql instead of sparql-scala
 //		this.endpoint = new CachingSparqlEndpoint(new HttpSparqlEndpoint(endpointURL, defaultGraphURI), "cache");
 		try {
@@ -180,12 +187,12 @@ public class Evaluation{
 		Set<String> resources = new HashSet<String>();
 		
 		// TODO: use aksw-commons-sparql instead of sparql-scala
-//		ResultSet rs = endpoint.executeSelect(query);
-//		QuerySolution qs;
-//		while(rs.hasNext()){
-//			qs = rs.next();
-//			resources.add(qs.getResource("uri").getURI());
-//		}
+		ResultSet rs = executeSelect(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			resources.add(qs.getResource("uri").getURI());
+		}
 		
 		return resources;
 	}
@@ -195,15 +202,14 @@ public class Evaluation{
 		Object answer = null;
 		
 		// TODO: use aksw-commons-sparql instead of sparql-scala
-		/*
 		if(query.contains("ASK")){
-			answer = endpoint.executeAsk(query);
+			answer = executeAsk(query);
 		}  else {
 			answer = new HashSet<String>();
 			if(!query.contains("LIMIT")){
 				query = query + " LIMIT 500";
 			}System.out.println(query);
-			ResultSet rs = endpoint.executeSelect(query);
+			ResultSet rs = executeSelect(query);
 			String variable;
 			if(rs.getResultVars().size() == 1){
 				variable = rs.getResultVars().get(0);
@@ -226,8 +232,23 @@ public class Evaluation{
 			}
 		}
 		logger.debug("Answer: " + answer);
-		*/
+		
 		return answer;
+	}
+	
+	private ResultSet executeSelect(String query){
+		return SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+	}
+	
+	private Boolean executeAsk(String query){
+		QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+		for (String dgu : endpoint.getDefaultGraphURIs()) {
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : endpoint.getNamedGraphURIs()) {
+			queryExecution.addNamedGraph(ngu);
+		}			
+		return queryExecution.execAsk();
 	}
 	
 	public void setEndpoint(SparqlEndpoint endpoint){
@@ -695,14 +716,14 @@ public class Evaluation{
 		
 		File file = new File(Evaluation.class.getClassLoader().getResource(args[0]).getPath());
 		
-		System.out.println(Evaluation.extractEntities("SELECT DISTINCT ?uri ?string WHERE {" +
-				"?uri rdf:type onto:Person ." +
-				"?uri onto:birthPlace ?city ." +
-				"?city rdfs:label 'Heraklion'@en" +
-				"OPTIONAL {?uri rdfs:label ?string . " +
-				"FILTER (lang(?string) = 'en') }" +
-				"}}")
-		);
+//		System.out.println(Evaluation.extractEntities("SELECT DISTINCT ?uri ?string WHERE {" +
+//				"?uri rdf:type onto:Person ." +
+//				"?uri onto:birthPlace ?city ." +
+//				"?city rdfs:label 'Heraklion'@en" +
+//				"OPTIONAL {?uri rdfs:label ?string . " +
+//				"FILTER (lang(?string) = 'en') }" +
+//				"}}")
+//		);
 		
 		Evaluation eval = new Evaluation(file);
 		eval.run();
