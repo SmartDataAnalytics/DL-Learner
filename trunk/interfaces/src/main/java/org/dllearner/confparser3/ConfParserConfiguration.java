@@ -1,5 +1,6 @@
 package org.dllearner.confparser3;
 
+import org.apache.commons.collections15.BidiMap;
 import org.dllearner.cli.ConfFileOption2;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.IConfigurationProperty;
@@ -9,6 +10,7 @@ import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by IntelliJ IDEA.
@@ -64,15 +66,20 @@ public class ConfParserConfiguration implements IConfiguration {
         Class<?> result = null;
 
         String value = (String) option.getValue();
-        // first option: use long name of @ComponentAnn annotation
-        Class<? extends Component> classFromName = AnnComponentManager.getInstance().getComponentsNamed().getKey(value);
-        if(classFromName != null) {
-        	return classFromName;
+        // first option: use long name of @ComponentAnn annotation (case insensitive)
+        BidiMap<Class<? extends Component>, String> componentsNamed = AnnComponentManager.getInstance().getComponentsNamed();
+        for(Entry<Class<? extends Component>, String> entry : componentsNamed.entrySet()) {
+        	if(entry.getValue().equalsIgnoreCase(value)) {
+        		return entry.getKey();
+        	}
         }
-        // second option: use short name of @ComponentAnn annotation
-        Class<? extends Component> classFromShortName = AnnComponentManager.getInstance().getComponentsNamedShort().getKey(value);
-        if(classFromShortName != null) {
-        	return classFromShortName;
+        // second option: use short name of @ComponentAnn annotation 
+        // by convention, short names should always be lower case, but we still do it case insensitive
+        BidiMap<Class<? extends Component>, String> componentsNamedShort = AnnComponentManager.getInstance().getComponentsNamedShort();
+        for(Entry<Class<? extends Component>, String> entry : componentsNamedShort.entrySet()) {
+        	if(entry.getValue().equalsIgnoreCase(value)) {
+        		return entry.getKey();
+        	}
         }
         // third option: use specified class name
         try {
