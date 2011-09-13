@@ -13,6 +13,7 @@ import org.dllearner.algorithm.tbsl.sem.drs.DiscourseReferent;
 import org.dllearner.algorithm.tbsl.sem.drs.Negated_DRS;
 import org.dllearner.algorithm.tbsl.sem.drs.Simple_DRS_Condition;
 import org.dllearner.algorithm.tbsl.sparql.BasicQueryTemplate;
+import org.dllearner.algorithm.tbsl.sparql.Path;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Aggregate;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Filter;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_OrderBy;
@@ -69,7 +70,7 @@ public class DRS2BasicSPARQL_Converter {
             }
         }
         
-        for (DiscourseReferent referent : drs.getDRs()) {
+        for (DiscourseReferent referent : drs.collectDRs()) {
             if (referent.isMarked()) {
             	SPARQL_Term term = new SPARQL_Term(referent.toString().replace("?",""));
             	term.setIsVariable(true);
@@ -177,17 +178,31 @@ public class DRS2BasicSPARQL_Converter {
             SPARQL_Property prop = new SPARQL_Property(predicate);
             prop.setIsVariable(true);
             
-            boolean noliteral = true; 
+            boolean literal = false; 
             if (simple.getArguments().size() > 1 && simple.getArguments().get(1).getValue().matches("\\d+")) {
-            	noliteral = false;
+            	literal = true;
             }
 
-            if (predicate.equals("p")) {
-            	query.addConditions(simple.toString());
+            if (predicate.equals("of")) {
+            	if (simple.getArguments().size() == 2) {
+            		Path p = new Path();
+            		p.setStart(simple.getArguments().get(1).getValue());
+            		p.setTarget(simple.getArguments().get(0).getValue());
+            		query.addConditions(p);
+            	}
+            }
+            if (predicate.startsWith("p")) {
+            	if (simple.getArguments().size() == 2) {
+            		Path p = new Path();
+            		p.setStart(simple.getArguments().get(0).getValue());
+            		p.setVia(simple.getPredicate());
+            		p.setTarget(simple.getArguments().get(1).getValue());
+            		query.addConditions(p);
+            	}
             }
             else if (predicate.equals("count")) {
             	// COUNT(?x) AS ?c
-            	if (noliteral) {
+            	if (!literal) {
             		query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, simple.getArguments().get(1).getValue()));
             		return query;
             	}
@@ -208,28 +223,28 @@ public class DRS2BasicSPARQL_Converter {
             	query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),noliteral),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.GT)));
                 return query;
             } else if (predicate.equals("greaterorequal")) {
             	query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),noliteral),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.GTEQ)));
                 return query;
             } else if (predicate.equals("less")) {
             	query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),noliteral),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.LT)));
                 return query;
             } else if (predicate.equals("lessorequal")) {
             	query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),noliteral),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.LTEQ)));
                 return query;
             } else if (predicate.equals("maximum")) {
@@ -256,7 +271,7 @@ public class DRS2BasicSPARQL_Converter {
             	query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),noliteral),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.EQ)));
                 return query;
             }

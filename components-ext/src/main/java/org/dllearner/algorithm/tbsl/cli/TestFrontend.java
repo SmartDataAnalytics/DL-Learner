@@ -18,9 +18,6 @@ public class TestFrontend {
 
     public static void main(String[] args) {
 
-    	Templator templator = new Templator();
-    	BasicTemplator btemplator = new BasicTemplator();
-  
         System.out.println("======= SPARQL Templator =================");
         System.out.println("Running in " + MODE + " mode.");
         System.out.println("\nType ':q' to quit.");
@@ -33,12 +30,14 @@ public class TestFrontend {
             }
             
             if (MODE.equals("BASIC")) {
+            	BasicTemplator btemplator = new BasicTemplator();
             	Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(s);
             	for (BasicQueryTemplate temp : querytemps) {
             		System.out.println(temp.toString());
             	}
             }
             else if (MODE.equals("LEIPZG")) {
+            	Templator templator = new Templator();
             	Set<Template> temps = templator.buildTemplates(s);           
             	for (Template temp : temps) {
             		System.out.println(temp.toString());
