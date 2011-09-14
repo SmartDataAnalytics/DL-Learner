@@ -10,6 +10,7 @@ public class Slot {
 	String token;
 	SlotType type;
 	List<String> words;
+	String postag;
 	
 	public Slot(String a,List<String> ws) {
 		anchor = a;
@@ -17,13 +18,19 @@ public class Slot {
 		type = SlotType.UNSPEC; 
 		words = ws;
 		replaceUnderscores();
+		postag = "";
 	}
 	public Slot(String a,SlotType t,List<String> ws) {
 		anchor = a;
 		token = "";
 		type = t;
 		words = ws;
-		replaceUnderscores();
+		replaceUnderscores(); 
+		postag = "";
+	}
+	
+	public void setPOStag(String s) {
+		postag = s;
 	}
 	
 	public void setSlotType(SlotType st) {

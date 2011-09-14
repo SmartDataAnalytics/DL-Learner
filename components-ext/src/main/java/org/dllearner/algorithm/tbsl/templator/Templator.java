@@ -3,6 +3,7 @@ package org.dllearner.algorithm.tbsl.templator;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import org.dllearner.algorithm.tbsl.ltag.parser.LTAG_Lexicon_Constructor;
 import org.dllearner.algorithm.tbsl.ltag.parser.Parser;
 import org.dllearner.algorithm.tbsl.ltag.parser.Preprocessor;
 import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.sem.drs.DRS;
 import org.dllearner.algorithm.tbsl.sem.drs.UDRS;
@@ -31,10 +33,17 @@ public class Templator {
 	Parser p;
 	Preprocessor pp;
 	
+	WordNet wordnet;
+	LingPipeLemmatizer lem = new LingPipeLemmatizer();
+	
+    DUDE2UDRS_Converter d2u = new DUDE2UDRS_Converter();
+    DRS2SPARQL_Converter d2s = new DRS2SPARQL_Converter();
+	
 	boolean ONE_SCOPE_ONLY = true;
 	boolean UNTAGGED_INPUT = true;
 	
 	public Templator() {
+		
 		List<InputStream> grammarFiles = new ArrayList<InputStream>();
 		for(int i = 0; i < GRAMMAR_FILES.length; i++){
 			grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
@@ -52,6 +61,8 @@ public class Templator {
 	    p.MODE = "LEIPZIG";
 	    
 	    pp = new Preprocessor(true);
+	    
+		wordnet = new WordNet();
 	}
 	
 	public void setUNTAGGED_INPUT(boolean b) {
@@ -60,8 +71,6 @@ public class Templator {
 
 	public Set<Template> buildTemplates(String s) {
 		
-        DUDE2UDRS_Converter d2u = new DUDE2UDRS_Converter();
-        DRS2SPARQL_Converter d2s = new DRS2SPARQL_Converter();
 		boolean clearAgain = true;
         
 		String tagged;
@@ -93,6 +102,13 @@ public class Templator {
         }
         }
 
+        // build pairs <String,POStag> from tagged
+        Hashtable<String,String> postable = new Hashtable<String,String>();
+        for (String st : newtagged.split(" ")) {
+			postable.put(st.substring(0,st.indexOf("/")),st.substring(st.indexOf("/")+1));;
+		}
+        //
+        
         Set<DRS> drses = new HashSet<DRS>();
         Set<Template> templates = new HashSet<Template>();
         
@@ -119,6 +135,37 @@ public class Templator {
                 		
                 		try {
                 			Template temp = d2s.convert(drs,slots);
+                			
+                			// find WordNet synonyms
+            				List<String> newwords;
+            				String word; 
+            				String pos;
+                			for (Slot slot : temp.getSlots()) {
+                				if (!slot.getWords().isEmpty()) {
+                					
+                					word = slot.getWords().get(0);
+                					pos = postable.get(word.replace(" ","_"));
+                					List<String> strings = wordnet.getAttributes(word);
+                					
+                					newwords = new ArrayList<String>();
+                					newwords.add(word);
+                					newwords.addAll(strings);
+                					if (strings.isEmpty()) {
+                						newwords.addAll(wordnet.getBestSynonyms(word,pos));
+                					} else {
+	                					for (String att : strings) {
+	                						newwords.addAll(wordnet.getBestSynonyms(att,pos));
+	                					}
+                					}
+                					if (newwords.isEmpty()) {
+                						newwords.add(slot.getWords().get(0));
+                					}
+                					// stem = lem.stem(slot.getWords().get(0)); newwords.add(stem);
+                					slot.setWords(newwords);
+                				}
+                			}
+                			// 
+                			
                 			templates.add(temp);
                 		} catch (java.lang.ClassCastException e) {
                 			continue;
