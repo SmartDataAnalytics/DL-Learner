@@ -53,7 +53,7 @@ public class SlotBuilder {
 				List<String> words = new ArrayList<String>();
 				words.add(token); 
 				if (!pos.equals("NNP") && !pos.equals("NNPS") && !pos.equals("JJNN")) {
-					words.addAll(wordnet.getBestSynonyms(token));
+//					words.addAll(wordnet.getBestSynonyms(token));
 				}
 				
 				String tokenfluent = token.replaceAll(" ","").replaceAll("_","");
@@ -175,15 +175,15 @@ public class SlotBuilder {
 				else {
 					slot    = "SLOT_" + token + "/PROPERTY/" + token; 
 					symslot = "SLOT_" + token + "/SYMPROPERTY/" + token; 
-					List<String> preds = wordnet.getAttributes(token);
-					for (Iterator<String> i = preds.iterator(); i.hasNext();) {
-						slot += i.next();
-						symslot += i.next();
-						if (i.hasNext()) {
-							slot += "^";
-							symslot += "^";
-						}
-					} 
+//					List<String> preds = wordnet.getAttributes(token);
+//					for (Iterator<String> i = preds.iterator(); i.hasNext();) {
+//						slot += i.next();
+//						symslot += i.next();
+//						if (i.hasNext()) {
+//							slot += "^";
+//							symslot += "^";
+//						}
+//					} 
 				}
 				if (pos.equals("PASSIVE")) {
 					String[] passEntry1 = {token,
@@ -283,13 +283,13 @@ public class SlotBuilder {
 			else if (equalsOneOf(pos,adjective)) {
 				
 				String slot = "SLOT_" + token + "/PROPERTY/" + token;
-				List<String> preds = wordnet.getAttributes(token);
-				for (Iterator<String> i = preds.iterator(); i.hasNext();) {
-					slot += i.next();
-					if (i.hasNext()) {
-						slot += "^";
-					}
-				}
+//				List<String> preds = wordnet.getAttributes(token);
+//				for (Iterator<String> i = preds.iterator(); i.hasNext();) {
+//					slot += i.next();
+//					if (i.hasNext()) {
+//						slot += "^";
+//					}
+//				}
 				/* ADJECTIVE */
 				if (pos.equals("JJ")) {
 					String[] adjEntry = {token,

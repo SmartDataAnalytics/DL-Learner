@@ -14,7 +14,7 @@ import org.dllearner.algorithm.tbsl.templator.Templator;
 public class TestFrontend {
 	
 	// MODE ::= BASIC | LEIPZIG
-	static String MODE = "BASIC";  
+	static String MODE = "LEIPZIG";  
 
     public static void main(String[] args) {
 
@@ -22,6 +22,9 @@ public class TestFrontend {
         System.out.println("Running in " + MODE + " mode.");
         System.out.println("\nType ':q' to quit.");
 
+    	BasicTemplator btemplator = new BasicTemplator();
+    	Templator templator = new Templator();
+        
         while (true) {
             String s = getStringFromUser("input > ").trim(); 
             
@@ -30,14 +33,12 @@ public class TestFrontend {
             }
             
             if (MODE.equals("BASIC")) {
-            	BasicTemplator btemplator = new BasicTemplator();
             	Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(s);
             	for (BasicQueryTemplate temp : querytemps) {
             		System.out.println(temp.toString());
             	}
             }
-            else if (MODE.equals("LEIPZG")) {
-            	Templator templator = new Templator();
+            else if (MODE.equals("LEIPZIG")) {
             	Set<Template> temps = templator.buildTemplates(s);           
             	for (Template temp : temps) {
             		System.out.println(temp.toString());
