@@ -17,9 +17,9 @@ public class WordNetTest {
 		WordNet wordnet = new WordNet();
 		
 		System.out.println(wordnet.getAttributes("bigger"));
-		System.out.println(wordnet.getBestSynonyms("city","NN"));
+		System.out.println(wordnet.getBestSynonyms("city"));
 		System.out.println(wordnet.getAttributes("biggest"));
-		System.out.println(wordnet.getBestSynonyms("biggest","JJR"));
+		System.out.println(wordnet.getBestSynonyms("biggest"));
 		System.out.println(wordnet.getAttributes("city"));
 	}
 
