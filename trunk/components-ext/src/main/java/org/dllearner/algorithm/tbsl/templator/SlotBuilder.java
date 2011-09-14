@@ -10,15 +10,12 @@ import org.dllearner.algorithm.tbsl.sem.util.Pair;
 
 public class SlotBuilder {
 	
-	private WordNet wordnet;
 	private String[] noun = {"NN","NNS","NNP","NNPS","NPREP","JJNN","JJNPREP"};
 	private String[] adjective = {"JJ","JJR","JJS","JJH"};
 	private String[] verb = {"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN","GERUNDIN","VPREP","WHEN","WHERE"};
 	private String[] preps = {"IN","TO"};
 	
 	public SlotBuilder() {
-		
-		wordnet = new WordNet();
 	}
 	
 	/**

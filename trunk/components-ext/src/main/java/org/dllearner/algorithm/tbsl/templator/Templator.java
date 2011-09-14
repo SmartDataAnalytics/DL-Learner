@@ -7,6 +7,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
+import net.didion.jwnl.data.POS;
+
 import org.dllearner.algorithm.tbsl.converter.DRS2SPARQL_Converter;
 import org.dllearner.algorithm.tbsl.converter.DUDE2UDRS_Converter;
 import org.dllearner.algorithm.tbsl.ltag.parser.LTAGLexicon;
@@ -16,6 +18,7 @@ import org.dllearner.algorithm.tbsl.ltag.parser.Preprocessor;
 import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.sem.drs.DRS;
 import org.dllearner.algorithm.tbsl.sem.drs.UDRS;
 import org.dllearner.algorithm.tbsl.sem.dudes.data.Dude;
@@ -26,6 +29,10 @@ import org.dllearner.algorithm.tbsl.sparql.Template;
 public class Templator {
 	
 	String[] GRAMMAR_FILES = {"tbsl/lexicon/english.lex"};
+	
+	private String[] noun = {"NN","NNS","NNP","NNPS","NPREP","JJNN","JJNPREP"};
+	private String[] adjective = {"JJ","JJR","JJS","JJH"};
+	private String[] verb = {"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN","GERUNDIN","VPREP","WHEN","WHERE"};
 	
 	PartOfSpeechTagger tagger;
 	LTAGLexicon g;
@@ -145,25 +152,34 @@ public class Templator {
                 					
                 					word = slot.getWords().get(0);
                 					pos = postable.get(word.replace(" ","_"));
-                					List<String> strings = wordnet.getAttributes(word);
+                					
+                					POS wordnetpos = null;
+                					if (equalsOneOf(pos,noun)) {
+                						wordnetpos = POS.NOUN;
+                					}
+                					else if (equalsOneOf(pos,adjective)) {
+                						wordnetpos = POS.ADJECTIVE;
+                					}
+                					else if (equalsOneOf(pos,verb)) {
+                						wordnetpos = POS.VERB;
+                					}
+                					
+                					List<String> strings = new ArrayList<String>();
+                					if (wordnetpos.equals(POS.ADJECTIVE)) {
+                						strings = wordnet.getAttributes(word);
+                					}
                 					
                 					newwords = new HashSet<String>();
                 					newwords.add(word);
-                					newwords.addAll(strings);
+                					newwords.addAll(strings);            					
                 					
-                					if (strings.isEmpty()) {
-                						for (String base : wordnet.getBaseFormCandidates(word,pos)) {
-                							newwords.addAll(wordnet.getBestSynonyms(word));
-                						}
-                					} else {
-	                					for (String att : strings) {
-	                						newwords.addAll(wordnet.getBestSynonyms(att));
-	                					}
+               						newwords.addAll(wordnet.getBestSynonyms(wordnetpos,word));
+                					for (String att : strings) {
+	                					newwords.addAll(wordnet.getBestSynonyms(wordnetpos,att));
                 					}
                 					if (newwords.isEmpty()) {
                 						newwords.add(slot.getWords().get(0));
                 					}
-                					// stem = lem.stem(slot.getWords().get(0)); newwords.add(stem);
                 					List<String> newwordslist = new ArrayList<String>();
                 					newwordslist.addAll(newwords);
                 					slot.setWords(newwordslist);
@@ -193,6 +209,15 @@ public class Templator {
 
 		for (DRS d : drses) {
 			if (d.equalsModuloRenaming(drs)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean equalsOneOf(String string,String[] strings) {
+		for (String s : strings) {
+			if (string.equals(s)) {
 				return true;
 			}
 		}

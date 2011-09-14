@@ -13,7 +13,7 @@ import net.didion.jwnl.dictionary.Dictionary;
 
 public class WordNet {
 	
-	private Dictionary dict;
+	private Dictionary dict;	
 	
 	public WordNet() {
 		try {
@@ -52,7 +52,7 @@ public class WordNet {
 		List<String> result = new ArrayList<String>();
 		
 		try {
-			IndexWord iw = dict.getIndexWord(POS.ADJECTIVE, s);
+			IndexWord iw = dict.getIndexWord(POS.ADJECTIVE, s);			
 			if(iw != null){
 				Synset[] synsets = iw.getSenses();
 				Word[] words = synsets[0].getWords();
