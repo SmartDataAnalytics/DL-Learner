@@ -23,10 +23,8 @@ public class WordNet {
 		database = WordNetDatabase.getFileInstance();
 	}
 	
-	public Set<String> getBestSynonyms(String s,String pos) {
-		
-		Set<String> synonyms = new HashSet<String>();
-		
+	public String[] getBaseFormCandidates(String s,String pos) {
+	
 		SynsetType type = null;
 		if (equalsOneOf(pos,noun)) {
 			type = SynsetType.NOUN;
@@ -52,14 +50,19 @@ public class WordNet {
 			basecandidates[0] = s;
 		}
 		
-		for (String b : basecandidates) {
-			Synset[] synsets = database.getSynsets(b);
-			if (synsets.length != 0) {
-				String[] candidates = synsets[0].getWordForms();
-				for (String c : candidates) {
-					if (!c.equals(b) && !c.contains(" ") && synonyms.size() < 4) {
-						synonyms.add(c);
-					}
+		return basecandidates;
+	}
+	
+	public Set<String> getBestSynonyms(String s) {
+		
+		Set<String> synonyms = new HashSet<String>();
+		
+		Synset[] synsets = database.getSynsets(s);
+		if (synsets.length != 0) {
+			String[] candidates = synsets[0].getWordForms();
+			for (String c : candidates) {
+				if (!c.equals(s) && !c.contains(" ") && synonyms.size() < 4) {
+					synonyms.add(c);
 				}
 			}
 		}
