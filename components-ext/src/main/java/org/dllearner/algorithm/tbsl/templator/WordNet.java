@@ -19,7 +19,7 @@ public class WordNet {
 	private String[] preps = {"IN","TO"};
 	
 	public WordNet() {
-		System.setProperty("wordnet.database.dir", System.getProperty("user.dir") + "/src/main/resources/tbsl/dict/");
+//		System.setProperty("wordnet.database.dir", System.getProperty("user.dir") + "/src/main/resources/tbsl/dict/");
 		database = WordNetDatabase.getFileInstance();
 	}
 	
