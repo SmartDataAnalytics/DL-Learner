@@ -231,9 +231,9 @@ public class DRS2SPARQL_Converter {
             SPARQL_Property prop = new SPARQL_Property(predicate);
             prop.setIsVariable(true);
             
-            boolean noliteral = true; 
+            boolean literal = false; 
             if (simple.getArguments().size() > 1 && simple.getArguments().get(1).getValue().matches("\\d+")) {
-            	noliteral = false;
+            	literal = true;
             }
 
             if (predicate.equals("count")) {
@@ -247,28 +247,28 @@ public class DRS2SPARQL_Converter {
                 query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),true),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),noliteral),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.GT)));
                 return query;
             } else if (predicate.equals("greaterorequal")) {
                 query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),true),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),noliteral),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.GTEQ)));
                 return query;
             } else if (predicate.equals("less")) {
                 query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),true),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),noliteral),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.LT)));
                 return query;
             } else if (predicate.equals("lessorequal")) {
                 query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),true),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),noliteral),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.LTEQ)));
                 return query;
             } else if (predicate.equals("maximum")) {
@@ -285,19 +285,19 @@ public class DRS2SPARQL_Converter {
                 query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),true),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),noliteral),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.EQ)));
                 return query;
             }
             
             if (arity == 1) {
-            	SPARQL_Term term = new SPARQL_Term(simple.getArguments().get(0).getValue(),true);
+            	SPARQL_Term term = new SPARQL_Term(simple.getArguments().get(0).getValue(),false);
             	query.addCondition(new SPARQL_Triple(term,new SPARQL_Property("type",new SPARQL_Prefix("rdf","")),prop));
             }
             else if (arity == 2) {
             	String arg1 = simple.getArguments().get(0).getValue();
             	String arg2 = simple.getArguments().get(1).getValue();
-            	query.addCondition(new SPARQL_Triple(new SPARQL_Term(arg1,true),prop,new SPARQL_Term(arg2,true)));
+            	query.addCondition(new SPARQL_Triple(new SPARQL_Term(arg1,false),prop,new SPARQL_Term(arg2,false)));
             }
             else if (arity > 2) {
             	// TODO
