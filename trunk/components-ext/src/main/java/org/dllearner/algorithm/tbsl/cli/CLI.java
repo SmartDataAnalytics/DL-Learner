@@ -1,4 +1,4 @@
-package org.dllearner.algorithm.tbsl;
+package org.dllearner.algorithm.tbsl.cli;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
