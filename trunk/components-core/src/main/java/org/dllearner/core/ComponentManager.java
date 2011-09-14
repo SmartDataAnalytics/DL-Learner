@@ -111,7 +111,7 @@ public final class ComponentManager {
             "org.dllearner.reasoning.PelletReasoner",
 //learning problems
             "org.dllearner.learningproblems.PosNegLPStandard",
-            "org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard", // added by Josue
+            "org.dllearner.learningproblems.FuzzyPosNegLPStandard", // added by Josue
             "org.dllearner.learningproblems.PosNegLPStrict",
             "org.dllearner.learningproblems.PosOnlyLP",
             "org.dllearner.learningproblems.ClassLearningProblem",
