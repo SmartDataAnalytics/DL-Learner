@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -739,15 +740,17 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
-		String question = "Give me all cities in Canada.";
+//		String question = "Give me all cities in Canada.";
+		
+		String question = "Give me all soccer clubs in Premier League?";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 				Collections.<String>singletonList(""), Collections.<String>emptyList());
 		learner.setEndpoint(endpoint);
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();
-		System.out.println(learner.getBestSPARQLQuery());
-		System.out.println(learner.getTemplates().iterator().next().getLexicalAnswerType());
+		System.out.println("Learned query:\n" + learner.getBestSPARQLQuery());
+		System.out.println("Lexical answer type is: " + learner.getTemplates().iterator().next().getLexicalAnswerType());
 
 	}
 
