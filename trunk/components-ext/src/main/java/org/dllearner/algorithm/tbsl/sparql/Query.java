@@ -68,10 +68,14 @@ public class Query
 		for(SPARQL_Triple condition : query.getConditions()){
 			SPARQL_Term variable = new SPARQL_Term(condition.getVariable().getName());
 			variable.setIsVariable(condition.getVariable().isVariable());
+			variable.setIsURI(condition.getVariable().isURI);
 			SPARQL_Property property = new SPARQL_Property(condition.getProperty().getName());
 			property.setIsVariable(condition.getProperty().isVariable());
 			property.setPrefix(condition.getProperty().getPrefix());
-			SPARQL_Value value = new SPARQL_Term(condition.getValue().getName());
+			SPARQL_Term value = new SPARQL_Term(condition.getValue().getName());
+			if(condition.getValue() instanceof SPARQL_Term){
+				value.setIsURI(((SPARQL_Term)condition.getValue()).isURI);
+			}
 			value.setIsVariable(condition.getValue().isVariable());
 			SPARQL_Triple newCondition = new SPARQL_Triple(variable, property, value);
 			conditions.add(newCondition);
@@ -357,8 +361,8 @@ public class Query
 	}
 	
 	public void replaceVarWithPrefixedURI(String var, String uri){
-		SPARQL_Value subject;
-		SPARQL_Value property;
+		SPARQL_Term subject;
+		SPARQL_Property property;
 		SPARQL_Value object;
 		
 		for(SPARQL_Triple triple : conditions){
@@ -369,6 +373,7 @@ public class Query
 				if(subject.getName().equals(var)){
 					subject.setName(uri);
 					subject.setIsVariable(false);
+					subject.setIsURI(true);
 				}
 			}
 			if(property.isVariable()){
@@ -381,6 +386,9 @@ public class Query
 				if(object.getName().equals(var)){
 					object.setName(uri);
 					object.setIsVariable(false);
+					if(object instanceof SPARQL_Term){
+						((SPARQL_Term) object).setIsURI(true);
+					}
 				}
 			}
 			

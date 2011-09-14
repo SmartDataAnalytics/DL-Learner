@@ -291,13 +291,13 @@ public class DRS2SPARQL_Converter {
             }
             
             if (arity == 1) {
-            	SPARQL_Term term = new SPARQL_Term(simple.getArguments().get(0).getValue(),false);
+            	SPARQL_Term term = new SPARQL_Term(simple.getArguments().get(0).getValue(),false);term.setIsVariable(true);
             	query.addCondition(new SPARQL_Triple(term,new SPARQL_Property("type",new SPARQL_Prefix("rdf","")),prop));
             }
             else if (arity == 2) {
-            	String arg1 = simple.getArguments().get(0).getValue();
-            	String arg2 = simple.getArguments().get(1).getValue();
-            	query.addCondition(new SPARQL_Triple(new SPARQL_Term(arg1,false),prop,new SPARQL_Term(arg2,false)));
+            	String arg1 = simple.getArguments().get(0).getValue();SPARQL_Term term1 = new SPARQL_Term(arg1,false);term1.setIsVariable(true);
+            	String arg2 = simple.getArguments().get(1).getValue();SPARQL_Term term2 = new SPARQL_Term(arg2,false);term2.setIsVariable(true);
+            	query.addCondition(new SPARQL_Triple(term1, prop, term2));
             }
             else if (arity > 2) {
             	// TODO
