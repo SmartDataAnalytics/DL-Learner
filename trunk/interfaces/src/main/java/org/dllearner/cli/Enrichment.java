@@ -36,7 +36,6 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +45,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
@@ -103,7 +103,6 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.CommonPrefixMap;
 import org.dllearner.utilities.EnrichmentVocabulary;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.PrefixCCMap;
@@ -130,6 +129,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
 /**
  * Command Line Interface for Enrichment.
@@ -242,17 +242,8 @@ public class Enrichment {
 		algorithmRuns = new LinkedList<AlgorithmRun>();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
-		
-		// sanity check that endpoint/graph returns at least one triple
-		String query = "SELECT * WHERE {?s ?p ?o} LIMIT 1";
-		SparqlQuery sq = new SparqlQuery(query, se);
-		ResultSet q = sq.send();
-		while (q.hasNext()) {
-			q.next();
-		}
-				
+						
 		// instantiate SPARQL endpoint wrapper component
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
 		ks.init();
@@ -721,15 +712,46 @@ public class Enrichment {
 			System.out.println();
 			System.out.println(addHelp);
 			// main script
-		} else {			
-			// create SPARQL endpoint object
-			URL endpoint = (URL) options.valueOf("endpoint");
-			URI graph = (URI) options.valueOf("graph");
+		} else {	
+			// check that endpoint was specified
+			if(!options.hasArgument("endpoint")) {
+				System.out.println("Please specify a SPARQL endpoint (using the -e option).");
+				System.exit(0);
+			}			
+					
+			// create SPARQL endpoint object (check that indeed a URL was given)
+			URL endpoint = null;
+			try {
+				endpoint = (URL) options.valueOf("endpoint");
+			} catch(OptionException e) {
+				System.out.println("The specified endpoint appears not be a proper URL.");
+				System.exit(0);
+			}
+			URI graph = null;
+			try {
+				graph = (URI) options.valueOf("graph");
+			} catch(OptionException e) {
+				System.out.println("The specified graph appears not be a proper URL.");
+				System.exit(0);
+			}				
 			LinkedList<String> defaultGraphURIs = new LinkedList<String>();
 			if(graph != null) {
 				defaultGraphURIs.add(graph.toString());
 			}
 			SparqlEndpoint se = new SparqlEndpoint(endpoint, defaultGraphURIs, new LinkedList<String>());
+			
+			// sanity check that endpoint/graph returns at least one triple
+			String query = "SELECT * WHERE {?s ?p ?o} LIMIT 1";
+			SparqlQuery sq = new SparqlQuery(query, se);
+			try {
+				ResultSet q = sq.send();
+				while (q.hasNext()) {
+					q.next();
+				}
+			} catch(QueryExceptionHTTP e) {
+				System.out.println("Endpoint not reachable (check spelling).");
+				System.exit(0);
+			}
 			
 			// map resource to correct type
 			Entity resource = null;
@@ -738,11 +760,6 @@ public class Enrichment {
 				if(resource == null) {
 					throw new IllegalArgumentException("Could not determine the type (class, object property or data property) of input resource " + options.valueOf("resource"));
 				}
-			}
-			
-			if(!options.hasArgument("endpoint")) {
-				System.out.println("Please specify a SPARQL endpoint (using the -e option).");
-				System.exit(0);
 			}
 			
 			boolean useInference = (Boolean) options.valueOf("i");
