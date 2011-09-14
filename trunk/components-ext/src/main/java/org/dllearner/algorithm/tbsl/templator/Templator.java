@@ -137,7 +137,7 @@ public class Templator {
                 			Template temp = d2s.convert(drs,slots);
                 			
                 			// find WordNet synonyms
-            				List<String> newwords;
+            				Set<String> newwords;
             				String word; 
             				String pos;
                 			for (Slot slot : temp.getSlots()) {
@@ -147,21 +147,26 @@ public class Templator {
                 					pos = postable.get(word.replace(" ","_"));
                 					List<String> strings = wordnet.getAttributes(word);
                 					
-                					newwords = new ArrayList<String>();
+                					newwords = new HashSet<String>();
                 					newwords.add(word);
                 					newwords.addAll(strings);
+                					
                 					if (strings.isEmpty()) {
-                						newwords.addAll(wordnet.getBestSynonyms(word,pos));
+                						for (String base : wordnet.getBaseFormCandidates(word,pos)) {
+                							newwords.addAll(wordnet.getBestSynonyms(word));
+                						}
                 					} else {
 	                					for (String att : strings) {
-	                						newwords.addAll(wordnet.getBestSynonyms(att,pos));
+	                						newwords.addAll(wordnet.getBestSynonyms(att));
 	                					}
                 					}
                 					if (newwords.isEmpty()) {
                 						newwords.add(slot.getWords().get(0));
                 					}
                 					// stem = lem.stem(slot.getWords().get(0)); newwords.add(stem);
-                					slot.setWords(newwords);
+                					List<String> newwordslist = new ArrayList<String>();
+                					newwordslist.addAll(newwords);
+                					slot.setWords(newwordslist);
                 				}
                 			}
                 			// 
