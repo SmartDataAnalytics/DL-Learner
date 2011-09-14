@@ -1010,6 +1010,9 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	// policy: returned sets are clones, i.e. can be modified
 	// (of course we only have to clone the leafs of a class description tree)
 	if (description instanceof NamedClass) {
+		if(((NamedClass) description).getName().equals("http://www.w3.org/2002/07/owl#Nothing")){
+			return new TreeSet<Individual>();
+		}
 		return (TreeSet<Individual>) classInstancesPos.get((NamedClass) description).clone();
 	} else if (description instanceof Negation) {
 		if(description.getChild(0) instanceof NamedClass) {
