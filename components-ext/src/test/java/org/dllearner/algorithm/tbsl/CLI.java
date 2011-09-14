@@ -40,7 +40,12 @@ public class CLI {
 				learner.setQuestion(question);
 				try {
 					learner.learnSPARQLQueries();
-					System.out.println(learner.getBestSPARQLQuery());
+					String learnedQuery = learner.getBestSPARQLQuery();
+					if(learnedQuery != null){
+						System.out.println("Learned query:\n" + learnedQuery);
+					} else {
+						System.out.println("Could not learn a SPARQL query.");
+					}
 				} catch (NoTemplateFoundException e) {
 					System.out.println("Sorry, could not generate a template.");
 				}
