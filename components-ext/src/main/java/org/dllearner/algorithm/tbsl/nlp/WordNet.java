@@ -17,7 +17,7 @@ public class WordNet {
 	
 	public WordNet() {
 		try {
-			JWNL.initialize(WordNet.class.getClassLoader().getResourceAsStream("tbsl/wordnet_properties.xml"));
+			JWNL.initialize(this.getClass().getClassLoader().getResourceAsStream("tbsl/wordnet_properties.xml"));
 			dict = Dictionary.getInstance();
 		} catch (JWNLException e) {
 			e.printStackTrace();
@@ -69,6 +69,10 @@ public class WordNet {
 		}
 		
 		return result;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(new WordNet().getBestSynonyms(POS.VERB, "learn"));
 	}
 
 }
