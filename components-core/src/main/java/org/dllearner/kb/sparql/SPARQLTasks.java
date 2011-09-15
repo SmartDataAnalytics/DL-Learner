@@ -629,6 +629,51 @@ public class SPARQLTasks {
 		}
 	}
 	
+	// tries to detect the type of the resource
+	public Entity guessResourceType(String resource, boolean byTriples) {
+		SortedSet<String> types = retrieveObjectsForSubjectAndRole(resource, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", 10000);
+//		System.out.println(types);
+		if(types.contains("http://www.w3.org/2002/07/owl#ObjectProperty")) {
+			return new ObjectProperty(resource);
+		} else if(types.contains("http://www.w3.org/2002/07/owl#DatatypeProperty")) {
+			return new DatatypeProperty(resource);
+		} else if(types.contains("http://www.w3.org/2002/07/owl#Class")) {
+			return new NamedClass(resource);
+		} else {
+			if(byTriples){
+				String queryString = String.format("ASK {?s a <%s>}", resource);
+				SparqlQuery sq = new SparqlQuery(queryString, sparqlEndpoint);
+				boolean isClass = sq.sendAsk();
+				if(isClass){
+					return new NamedClass(resource);
+				} else {
+					queryString = String.format("SELECT ?o WHERE {?s <%s> ?o.} LIMIT 10", resource);
+					sq = new SparqlQuery(queryString, sparqlEndpoint);
+					ResultSet rs = sq.send();
+					QuerySolution qs = null;
+					boolean isDataProperty = false;
+					boolean isObjectProperty = false;
+					while(rs.hasNext()){
+						qs = rs.next();
+						if(qs.get("o").isLiteral()){
+							isDataProperty = true;
+						} else if(qs.get("o").isResource()){
+							isObjectProperty = true;
+						}
+						
+					}
+					if(isDataProperty && !isObjectProperty){
+						return new DatatypeProperty(resource);
+					} else if(!isDataProperty && isObjectProperty){
+						return new ObjectProperty(resource);
+					}
+				}
+			}
+			
+			return null;
+		}
+	}
+	
 	public Set<ObjectProperty> getAllObjectProperties() {
 		Set<ObjectProperty> properties = new TreeSet<ObjectProperty>();
 		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:ObjectProperty}";
@@ -655,12 +700,15 @@ public class SPARQLTasks {
 	
 	public Set<NamedClass> getAllClasses() {
 		Set<NamedClass> classes = new TreeSet<NamedClass>();
-		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?c WHERE {?c a owl:Class}";
+		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?c WHERE {?c a owl:Class} LIMIT 1000";
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
 		ResultSet q = sq.send();
 		while (q.hasNext()) {
 			QuerySolution qs = q.next();
-			classes.add(new NamedClass(qs.getResource("c").getURI()));
+			if(qs.getResource("c").isURIResource()){
+				classes.add(new NamedClass(qs.getResource("c").getURI()));
+			}
+			
 		}
 		return classes;
 	}	
