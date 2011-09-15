@@ -19,7 +19,6 @@
 
 package org.dllearner.reasoning;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,9 +29,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.aksw.commons.sparql.api.cache.core.QueryExecutionFactoryCache;
-import org.aksw.commons.sparql.api.cache.extra.CacheCoreH2;
-import org.aksw.commons.sparql.api.cache.extra.CacheImpl;
 import org.aksw.commons.sparql.api.core.QueryExecutionFactory;
 import org.aksw.commons.sparql.api.http.QueryExecutionFactoryHttp;
 import org.aksw.commons.sparql.api.pagination.core.QueryExecutionFactoryPaginated;
@@ -64,7 +60,6 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -72,7 +67,6 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
@@ -632,8 +626,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 
 	@Override
 	public ClassHierarchy getClassHierarchy() {
-		// TODO Auto-generated method stub
-		return null;
+		return hierarchy;
 	}
 
 	@Override
@@ -812,6 +805,14 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		return resultset;
 	}
 	
+	/**
+	 * Returns TRUE if the class hierarchy was computed before.
+	 * @return
+	 */
+	public boolean isPrepared(){
+		return hierarchy != null;
+	}
+	
 	private boolean executeAskQuery(String query){
 		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
 		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
@@ -841,10 +842,13 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		SPARQLReasoner r = new SPARQLReasoner(ks);
 		long startTime = System.currentTimeMillis();
-		Model schema = r.loadSchema();
-		for(Statement st : schema.listStatements().toList()){
-			System.out.println(st);
-		}
+		ClassHierarchy h = r.prepareSubsumptionHierarchy();
+		System.out.println(h.getSuperClasses(new NamedClass("http://dbpedia.org/ontology/PoloLeague")));
+		System.out.println(h.toString(false));
+//		Model schema = r.loadSchema();
+//		for(Statement st : schema.listStatements().toList()){
+//			System.out.println(st);
+//		}
 		System.out.println("Time needed: " + (System.currentTimeMillis()-startTime) + "ms");
 		
 	}

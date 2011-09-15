@@ -143,7 +143,7 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 	
 	
 	private int addIndividualsWithTypes(Map<Individual, SortedSet<Datatype>> ind2Datatypes, int limit, int offset){
-		String query = String.format("SELECT ?ind, (DATATYPE(?val) AS ?datatype) WHERE {?ind <%s> ?val.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
+		String query = String.format("SELECT ?ind (DATATYPE(?val) AS ?datatype) WHERE {?ind <%s> ?val.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
 		
 		ResultSet rs = executeSelectQuery(query);
 		Individual ind;
