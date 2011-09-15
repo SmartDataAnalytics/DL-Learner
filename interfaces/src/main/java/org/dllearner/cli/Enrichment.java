@@ -734,7 +734,14 @@ public class Enrichment {
 			} catch(OptionException e) {
 				System.out.println("The specified graph appears not be a proper URL.");
 				System.exit(0);
-			}				
+			}
+			URI resourceURI = null;
+			try {
+				resourceURI = (URI) options.valueOf("resource");
+			} catch(OptionException e) {
+				System.out.println("The specified resource appears not be a proper URI.");
+				System.exit(0);
+			}
 			LinkedList<String> defaultGraphURIs = new LinkedList<String>();
 			if(graph != null) {
 				defaultGraphURIs.add(graph.toString());
@@ -757,7 +764,7 @@ public class Enrichment {
 			// map resource to correct type
 			Entity resource = null;
 			if(options.valueOf("resource") != null) {
-				resource = new SPARQLTasks(se).guessResourceType(((URI)options.valueOf("resource")).toString(), true);
+				resource = new SPARQLTasks(se).guessResourceType(resourceURI.toString(), true);
 				if(resource == null) {
 					throw new IllegalArgumentException("Could not determine the type (class, object property or data property) of input resource " + options.valueOf("resource"));
 				}
