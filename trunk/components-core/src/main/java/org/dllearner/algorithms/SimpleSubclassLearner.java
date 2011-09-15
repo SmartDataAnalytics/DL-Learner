@@ -164,7 +164,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 //		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
 		boolean notEmpty = false;
 		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}", classToDescribe.getName(), limit, offset);
-		
+//		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
 		ResultSet rs = executeSelectQuery(query);
 		Individual ind;
 		NamedClass newType;
@@ -225,7 +225,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	public static void main(String[] args) throws Exception{
 		SimpleSubclassLearner l = new SimpleSubclassLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
 		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 10);
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Ginkgo"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Bridge"));
 		l.init();
 		l.start();
 		
