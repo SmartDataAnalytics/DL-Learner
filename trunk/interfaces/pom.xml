@@ -15,7 +15,7 @@
 	</parent>
 
 	<properties>
-		<release.name>1.0-alpha-1</release.name>
+		<release.name>1.0-alpha-2</release.name>
 	</properties>
 
 	<profiles>
