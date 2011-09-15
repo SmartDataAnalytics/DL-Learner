@@ -365,6 +365,7 @@ public class Enrichment {
             ks2.setUseCacheDatabase(true);
             ks2.setRecursionDepth(2);
             ks2.setCloseAfterRecursion(true);
+            ks2.setSaveExtractedFragment(true);
             startTime = System.currentTimeMillis();
             System.out.print("getting knowledge base fragment ... ");
             ks2.init();
@@ -756,7 +757,7 @@ public class Enrichment {
 			// map resource to correct type
 			Entity resource = null;
 			if(options.valueOf("resource") != null) {
-				resource = new SPARQLTasks(se).guessResourceType(((URI)options.valueOf("resource")).toString());
+				resource = new SPARQLTasks(se).guessResourceType(((URI)options.valueOf("resource")).toString(), true);
 				if(resource == null) {
 					throw new IllegalArgumentException("Could not determine the type (class, object property or data property) of input resource " + options.valueOf("resource"));
 				}
