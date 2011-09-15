@@ -78,7 +78,9 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 
 	@Override
 	public void init() throws ComponentInitException {
-		reasoner = new SPARQLReasoner(ks);
+		if(reasoner == null){
+			reasoner = new SPARQLReasoner(ks);
+		}
 	}
 
 	@Override

@@ -88,7 +88,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		}
 		
 		//get number of instances of s with <s p o> 
-		query = String.format("SELECT (COUNT(DISTINCT ?s)) AS ?all WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
+		query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		int all = 1;
@@ -97,7 +97,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 			all = qs.getLiteral("all").getInt();
 		}
 		//get number of instances of s with <s p o> <s p o1> where o != o1
-		query = "SELECT (COUNT(DISTINCT ?s)) AS ?notfunctional WHERE {?s <%s> ?o. ?s <%s> ?o1. FILTER(?o != ?o1) }";
+		query = "SELECT (COUNT(DISTINCT ?s) AS ?notfunctional) WHERE {?s <%s> ?o. ?s <%s> ?o1. FILTER(?o != ?o1) }";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
 		int notFunctional = 1;

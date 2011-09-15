@@ -90,7 +90,7 @@ public class SubDataPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorith
 		//get properties and how often they occur
 		int limit = 1000;
 		int offset = 0;
-		String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?s ?p ?o." +
+		String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?p a <http://www.w3.org/2002/07/owl#DatatypeProperty>. ?s ?p ?o. " +
 		"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
 		"}";
 		String query;
@@ -159,8 +159,8 @@ public class SubDataPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorith
 	
 	public static void main(String[] args) throws Exception{
 		SubDataPropertyOfAxiomLearner l = new SubDataPropertyOfAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/number"));
-		l.setMaxExecutionTimeInSeconds(1000000);
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/purpose"));
+		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));

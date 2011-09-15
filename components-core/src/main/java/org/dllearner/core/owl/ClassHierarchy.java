@@ -297,4 +297,13 @@ public class ClassHierarchy {
 		
 		return new ClassHierarchy(subsumptionHierarchyUpNew, subsumptionHierarchyDownNew);
 	}
+	
+	/**
+	 * Checks whether the description is contained in the hierarchy.
+	 * @param description
+	 * @return
+	 */
+	public boolean contains(Description description){
+		return subsumptionHierarchyUp.containsKey(description);
+	}
 }

@@ -172,7 +172,7 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	
 	public static void main(String[] args) throws Exception{
 		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/academicAdvisor"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/vicePrimeMinister"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();
