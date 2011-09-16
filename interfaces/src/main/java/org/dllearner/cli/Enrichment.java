@@ -21,10 +21,12 @@ package org.dllearner.cli;
 
 import static java.util.Arrays.asList;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
@@ -83,6 +85,7 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.config.ConfigOption;
@@ -110,7 +113,12 @@ import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
+import org.dllearner.utilities.owl.DLLearnerAxiomConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.io.SystemOutDocumentTarget;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -183,8 +191,8 @@ public class Enrichment {
 	private int maxExecutionTimeInSeconds = 10;
 
 	// restrict tested number of entities per type (only for testing purposes);
-	// should be set to 0 in production mode
-	private int maxEntitiesPerType = 0;
+	// should be set to -1 in production mode
+	private int maxEntitiesPerType = -1;
 	
 	// number of axioms which will be learned/considered (only applies to
 	// some learners)
@@ -207,6 +215,8 @@ public class Enrichment {
 	// cache for SparqKnowledgeSource
 	SparqlKnowledgeSource ksCached;
 	AbstractReasonerComponent rcCached;
+	
+	private Set<OWLAxiom> learnedOWLAxioms;
 	
 	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, boolean useInference, boolean verbose) {
 		this.se = se;
@@ -240,6 +250,8 @@ public class Enrichment {
 		classAlgorithms.add(CELOE.class);		
 		
 		algorithmRuns = new LinkedList<AlgorithmRun>();
+		
+		learnedOWLAxioms = new HashSet<OWLAxiom>();
 	}
 	
 	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
@@ -247,6 +259,13 @@ public class Enrichment {
 		// instantiate SPARQL endpoint wrapper component
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
 		ks.init();
+		
+		// common helper objects
+		SPARQLTasks st = new SPARQLTasks(se);
+		
+		//check if endpoint supports SPARQL 1.1
+		boolean supportsSPARQL_1_1 = st.supportsSPARQL_1_1();
+		ks.setSupportsSPARQL_1_1(supportsSPARQL_1_1);
 		
 		if(useInference){
 			reasoner = new SPARQLReasoner(ks);
@@ -256,9 +275,6 @@ public class Enrichment {
 			System.out.println("done in " + (System.currentTimeMillis() - startTime) + " ms");
 		}
 		
-		// common helper objects
-		SPARQLTasks st = new SPARQLTasks(se);
-		
 		if(resource == null) {
 
 			// loop over all entities and call appropriate algorithms
@@ -267,16 +283,16 @@ public class Enrichment {
 			for(NamedClass nc : classes) {
 				runClassLearningAlgorithms(ks, nc);		
 				entities++;
-				if(entities > maxEntitiesPerType) {
+				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
 					break;
-				}
+				}	
 			}
 			entities = 0;
 			Set<ObjectProperty> objectProperties = st.getAllObjectProperties();			
 			for(ObjectProperty property : objectProperties) {
 				runObjectPropertyAlgorithms(ks, property);	
 				entities++;
-				if(entities > maxEntitiesPerType) {
+				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
 					break;
 				}				
 			}
@@ -285,9 +301,9 @@ public class Enrichment {
 			for(DatatypeProperty property : dataProperties) {
 				runDataPropertyAlgorithms(ks, property);
 				entities++;
-				if(entities > maxEntitiesPerType) {
+				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
 					break;
-				}				
+				}					
 			}
 		} else {
 			if(resource instanceof ObjectProperty) {
@@ -449,7 +465,11 @@ public class Enrichment {
 		System.out.println("done in " + runtime + " ms");
 		List<EvaluatedAxiom> learnedAxioms = learner
 				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn, threshold);
-		System.out.println(prettyPrint(learnedAxioms));	
+		System.out.println(prettyPrint(learnedAxioms));
+		
+		for(EvaluatedAxiom evAx : learnedAxioms){
+			learnedOWLAxioms.add(OWLAPIAxiomConvertVisitor.convertAxiom(evAx.getAxiom()));
+		}
 		
 		algorithmRuns.add(new AlgorithmRun(learner.getClass(), learnedAxioms, ConfigHelper.getConfigOptionValues(learner)));
 		return learnedAxioms;
@@ -626,6 +646,18 @@ public class Enrichment {
 		return model;
 	}	
 	
+	private OWLOntology getGeneratedOntology(){
+		OWLOntology ontology = null;
+		try {
+			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			ontology = man.createOntology(learnedOWLAxioms);
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ontology;
+	}
+	
 	/*
 	 * Write axioms in Turtle syntax.
 	 */
@@ -692,7 +724,8 @@ public class Enrichment {
 				.ofType(Double.class).defaultsTo(0.7);
 		parser.acceptsAll(asList("i", "inference"),
 				"Specifies whether to use inference. If yes, the schema will be loaded into a reasoner and used for computing the scores.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
-
+		parser.acceptsAll(asList("s", "serialize"), "Specify a file where the ontology with all axioms can be written.")
+		.withRequiredArg().ofType(File.class);
 		// parse options and display a message for the user in case of problems
 		OptionSet options = null;
 		try {
@@ -822,6 +855,18 @@ public class Enrichment {
 					}
 				} 
 			}
+			//serialize ontology
+			if(options.has("s")){
+				File file = (File)options.valueOf("s");
+				try {
+					OWLOntology ontology = e.getGeneratedOntology();
+					OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+					OWLManager.createOWLOntologyManager().saveOntology(ontology, new RDFXMLOntologyFormat(), os);
+				} catch (OWLOntologyStorageException e1) {
+					throw new Error("Could not save ontology.");
+				}
+			}
+			
 			
 		}
 
