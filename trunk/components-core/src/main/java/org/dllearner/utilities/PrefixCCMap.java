@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -26,8 +28,10 @@ public class PrefixCCMap extends HashMap<String, String>{
 	}
 	
 	private void fillMap() {
+		InputStream is = null;
 		try {
-			BufferedReader bufRdr = new BufferedReader(new FileReader(new File(this.getClass().getClassLoader().getResource(LOCAL_FILE).getPath())));
+			is = this.getClass().getClassLoader().getResourceAsStream(LOCAL_FILE);
+			BufferedReader bufRdr = new BufferedReader(new InputStreamReader(is));
 			String line = null;
 			String key = null;
 			String value = null;
@@ -44,6 +48,14 @@ public class PrefixCCMap extends HashMap<String, String>{
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			if(is != null){
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
