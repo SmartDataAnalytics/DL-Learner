@@ -29,6 +29,8 @@ import java.util.Map.Entry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.Description;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
@@ -158,6 +160,38 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			@Override
 			public int compare(Entry<K, V> o1, Entry<K, V> o2) {
 				return o2.getValue().compareTo(o1.getValue());
+			}
+		});
+        return entries;
+	}
+	
+	protected List<Entry<Description, Integer>> sortByValues(Map<Description, Integer> map, final boolean useHierachy){
+		List<Entry<Description, Integer>> entries = new ArrayList<Entry<Description, Integer>>(map.entrySet());
+		final ClassHierarchy hierarchy = reasoner.getClassHierarchy();
+        Collections.sort(entries, new Comparator<Entry<Description, Integer>>() {
+
+			@Override
+			public int compare(Entry<Description, Integer> o1, Entry<Description, Integer> o2) {
+				int ret = o2.getValue().compareTo(o1.getValue());
+				//if the score is the same, than we optionally also take into account the subsumption hierarchy
+				if(ret == 0 && useHierachy){
+					if(hierarchy != null){
+						if(hierarchy.contains(o1.getKey()) && hierarchy.contains(o2.getKey())){
+							if(hierarchy.isSubclassOf(o1.getKey(), o2.getKey())){
+								ret = -1;
+							} else if(hierarchy.isSubclassOf(o2.getKey(), o1.getKey())){
+								ret = 1;
+							} else {
+								//we use the depth in the class hierarchy as third ranking property
+//								int depth1 = hierarchy.getDepth2Root(o1.getKey());
+//								int depth2 = hierarchy.getDepth2Root(o2.getKey());
+//								ret = depth1 - depth2;
+							}
+						}
+					}
+				}
+				
+				return ret; 
 			}
 		});
         return entries;

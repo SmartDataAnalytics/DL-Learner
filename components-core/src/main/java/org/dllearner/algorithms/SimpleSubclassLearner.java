@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -45,6 +46,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,7 +133,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		}
 		
 		
-		Map<Individual, SortedSet<NamedClass>> ind2Types = new HashMap<Individual, SortedSet<NamedClass>>();
+		Map<Individual, SortedSet<Description>> ind2Types = new HashMap<Individual, SortedSet<Description>>();
 		int limit = 1000;
 		boolean repeat = true;
 		while(!terminationCriteriaSatisfied() && repeat){
@@ -160,37 +162,46 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		this.maxFetchedRows = maxFetchedRows;
 	}
 	
-	private boolean addIndividualsWithTypes(Map<Individual, SortedSet<NamedClass>> ind2Types, int limit, int offset){
+	private boolean addIndividualsWithTypes(Map<Individual, SortedSet<Description>> ind2Types, int limit, int offset){
 //		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
 		boolean notEmpty = false;
 		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}", classToDescribe.getName(), limit, offset);
 //		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
 		ResultSet rs = executeSelectQuery(query);
 		Individual ind;
-		NamedClass newType;
+		Description newType;
 		QuerySolution qs;
-		SortedSet<NamedClass> types;
+		SortedSet<Description> types;
 		while(rs.hasNext()){
 			qs = rs.next();
 			ind = new Individual(qs.getResource("ind").getURI());
 			newType = new NamedClass(qs.getResource("type").getURI());
 			types = ind2Types.get(ind);
 			if(types == null){
-				types = new TreeSet<NamedClass>();
+				types = new TreeSet<Description>();
 				ind2Types.put(ind, types);
 			}
 			types.add(newType);
+			Set<Description> superClasses;
+			if(reasoner.isPrepared()){
+				if(reasoner.getClassHierarchy().contains(newType)){
+					superClasses = reasoner.getClassHierarchy().getSuperClasses(newType);
+					types.addAll(superClasses);
+				}
+				
+			}
+			
 			notEmpty = true;
 		}
 		return notEmpty;
 	}
 	
-	private void createEvaluatedDescriptions(Map<Individual, SortedSet<NamedClass>> individual2Types){
+	private void createEvaluatedDescriptions(Map<Individual, SortedSet<Description>> individual2Types){
 		currentlyBestEvaluatedDescriptions.clear();
 		
-		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
-		for(Entry<Individual, SortedSet<NamedClass>> entry : individual2Types.entrySet()){
-			for(NamedClass nc : entry.getValue()){
+		Map<Description, Integer> result = new HashMap<Description, Integer>();
+		for(Entry<Individual, SortedSet<Description>> entry : individual2Types.entrySet()){
+			for(Description nc : entry.getValue()){
 				Integer cnt = result.get(nc);
 				if(cnt == null){
 					cnt = Integer.valueOf(1);
@@ -207,7 +218,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		
 		EvaluatedDescription evalDesc;
 		int total = individual2Types.keySet().size();
-		for(Entry<NamedClass, Integer> entry : sortByValues(result)){
+		for(Entry<Description, Integer> entry : sortByValues(result, true)){
 			evalDesc = new EvaluatedDescription(entry.getKey(),
 					computeScore(total, entry.getValue()));
 			currentlyBestEvaluatedDescriptions.add(evalDesc);
@@ -223,7 +234,14 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	
 	
 	public static void main(String[] args) throws Exception{
-		SimpleSubclassLearner l = new SimpleSubclassLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveOpenLink());
+		
+		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
+		reasoner.prepareSubsumptionHierarchy();
+		
+		SimpleSubclassLearner l = new SimpleSubclassLearner(ks);
+		l.setReasoner(reasoner);
+		
 		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 10);
 		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Bridge"));
 		l.init();
