@@ -43,6 +43,7 @@ import org.springframework.beans.propertyeditors.URLEditor;
 public class SparqlEndpointKS implements KnowledgeSource {
 
 	private SparqlEndpoint endpoint;
+	private boolean supportsSPARQL_1_1 = false;
 
 	// TODO: turn those into config options
 	
@@ -96,6 +97,14 @@ public class SparqlEndpointKS implements KnowledgeSource {
 
 	public void setNamedGraphURIs(List<String> namedGraphURIs) {
 		this.namedGraphURIs = namedGraphURIs;
+	}
+
+	public boolean supportsSPARQL_1_1() {
+		return supportsSPARQL_1_1;
+	}
+
+	public void setSupportsSPARQL_1_1(boolean supportsSPARQL_1_1) {
+		this.supportsSPARQL_1_1 = supportsSPARQL_1_1;
 	}	
 	
 }

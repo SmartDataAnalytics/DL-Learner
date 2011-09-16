@@ -713,6 +713,18 @@ public class SPARQLTasks {
 		return classes;
 	}	
 	
+	public boolean supportsSPARQL_1_1(){
+		String query = "SELECT * WHERE {?s ?p ?o. {SELECT * WHERE {?s ?p ?o.} LIMIT 1} } LIMIT 1";
+		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
+		try {
+			sq.send();
+			return true;
+		} catch (Exception e) {
+			System.out.println("Endpoint doesn't seem to support SPARQL 1.1 .");
+		}
+		return false;
+	}
+	
 }
 
 /*
