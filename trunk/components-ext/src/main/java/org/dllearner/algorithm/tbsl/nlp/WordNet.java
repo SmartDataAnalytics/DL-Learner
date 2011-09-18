@@ -1,14 +1,18 @@
 package org.dllearner.algorithm.tbsl.nlp;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import net.didion.jwnl.JWNL;
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.POS;
+import net.didion.jwnl.data.PointerUtils;
 import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.data.Word;
+import net.didion.jwnl.data.list.PointerTargetNode;
+import net.didion.jwnl.data.list.PointerTargetNodeList;
 import net.didion.jwnl.dictionary.Dictionary;
 
 public class WordNet {
@@ -73,6 +77,64 @@ public class WordNet {
 	
 	public static void main(String[] args) {
 		System.out.println(new WordNet().getBestSynonyms(POS.VERB, "learn"));
+	}
+	
+	/**
+	 * Funktion returns a List of Hypo and Hypernyms of a given string 
+	 * @param s Word for which you want to get Hypo and Hypersyms
+	 * @return List of Hypo and Hypernyms
+	 * @throws JWNLException
+	 */
+	public List<String> getRelatedNouns(String s) throws JWNLException {
+		List<String> result = new ArrayList<String>();
+		IndexWord word = dict.getIndexWord(POS.NOUN,s);
+		
+		Synset sense = word.getSense(1);
+		
+		PointerTargetNodeList relatedListHypernyms = null;
+		PointerTargetNodeList relatedListHyponyms = null;
+		try {
+			relatedListHypernyms = PointerUtils.getInstance().getDirectHypernyms(sense);
+		} catch (JWNLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			relatedListHyponyms = PointerUtils.getInstance().getDirectHyponyms(sense);
+		} catch (JWNLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Iterator i = relatedListHypernyms.iterator();
+		while (i.hasNext()) {
+		  PointerTargetNode related = (PointerTargetNode) i.next();
+		  Synset s1 = related.getSynset();
+		  String tmp=(s1.toString()).replace(s1.getGloss(), "");
+		  tmp=tmp.replace(" -- ()]","");
+		  tmp=tmp.replaceAll("[0-9]","");
+		  tmp=tmp.replace("[Synset: [Offset: ","");
+		  tmp=tmp.replace("] [POS: noun] Words: ","");
+		//its possible, that there is more than one word in a line from wordnet
+		  String[] array_tmp=tmp.split(",");
+		  for(String z : array_tmp) result.add(z.replace(" ", ""));
+		}
+		
+		Iterator j = relatedListHyponyms.iterator();
+		while (j.hasNext()) {
+		  PointerTargetNode related = (PointerTargetNode) j.next();
+		  Synset s1 = related.getSynset();
+		  String tmp=(s1.toString()).replace(s1.getGloss(), "");
+		  tmp=tmp.replace(" -- ()]","");
+		  tmp=tmp.replaceAll("[0-9]","");
+		  tmp=tmp.replace("[Synset: [Offset: ","");
+		  tmp=tmp.replace("] [POS: noun] Words: ","");
+		//its possible, that there is more than one word in a line from wordnet
+		  String[] array_tmp=tmp.split(",");
+		  for(String z : array_tmp) result.add(z.replace(" ", ""));
+		}
+		
+		return result;
 	}
 
 }
