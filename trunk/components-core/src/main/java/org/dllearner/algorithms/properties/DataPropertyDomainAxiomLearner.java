@@ -21,6 +21,7 @@ package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +43,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,8 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 	private List<EvaluatedAxiom> currentlyBestAxioms;
 	private long startTime;
 	private int fetchedRows;
+	
+	private Set<Description> existingDomains;
 	
 	public DataPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -88,9 +92,22 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		//get existing domains
-		Description existingDomain = reasoner.getDomain(propertyToDescribe);
-		logger.info("Existing domain: " + existingDomain);
+		
+		if(returnOnlyNewAxioms){
+			existingDomains = new HashSet<Description>();
+			//get existing domains
+			Description existingDomain = reasoner.getDomain(propertyToDescribe);
+			existingDomains.add(existingDomain);
+			logger.info("Existing domain: " + existingDomain);
+			if(reasoner.isPrepared()){
+				if(reasoner.getClassHierarchy().contains(existingDomain)){
+					for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
+						existingDomains.add(sup);
+						logger.info("Existing domain(inferred): " + sup);
+					}
+				}
+			}
+		}
 		
 		//get subjects with types
 		Map<Individual, SortedSet<Description>> individual2Types = new HashMap<Individual, SortedSet<Description>>();
@@ -133,6 +150,11 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		
 		//omit owl:Thing
 		result.remove(new NamedClass(Thing.instance.getURI()));
+		if(returnOnlyNewAxioms){
+			for(Description domain : existingDomains){
+				result.remove(domain);
+			}
+		}
 		
 		EvaluatedAxiom evalAxiom;
 		int total = individual2Types.keySet().size();
@@ -180,9 +202,16 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 	}
 	
 	public static void main(String[] args) throws Exception{
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		
+		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
+		reasoner.prepareSubsumptionHierarchy();
+		
 		DataPropertyDomainAxiomLearner l = new DataPropertyDomainAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/AutomobileEngine/height"));
-		l.setMaxExecutionTimeInSeconds(0);
+		l.setReasoner(reasoner);
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/birthDate"));
+		l.setMaxExecutionTimeInSeconds(10);
+		l.setReturnOnlyNewAxioms(true);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));

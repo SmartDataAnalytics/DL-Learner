@@ -21,6 +21,7 @@ package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +43,7 @@ import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,8 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	private List<EvaluatedAxiom> currentlyBestAxioms;
 	private long startTime;
 	private int fetchedRows;
+	
+	private Set<Description> existingRanges;
 	
 	public ObjectPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -88,9 +92,23 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		//get existing range
-		Description existingRange = reasoner.getRange(propertyToDescribe);
-		logger.debug("Existing range: " + existingRange);
+		
+		if(returnOnlyNewAxioms){
+			existingRanges = new HashSet<Description>();
+			//get existing ranges
+			Description existingRange = reasoner.getRange(propertyToDescribe);
+			existingRanges.add(existingRange);
+			logger.info("Existing range: " + existingRange);
+			if(reasoner.isPrepared()){
+				if(reasoner.getClassHierarchy().contains(existingRange)){
+					for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingRange)){
+						existingRanges.add(sup);
+						logger.info("Existing range(inferred): " + sup);
+					}
+				}
+				
+			}
+		}
 		
 		//get objects with types
 		Map<Individual, SortedSet<Description>> individual2Types = new HashMap<Individual, SortedSet<Description>>();
@@ -133,6 +151,11 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 		
 		//omit owl:Thing
 		result.remove(new NamedClass(Thing.instance.getURI()));
+		if(returnOnlyNewAxioms){
+			for(Description range : existingRanges){
+				result.remove(range);
+			}
+		}
 		
 		EvaluatedAxiom evalAxiom;
 		int total = individual2Types.keySet().size();
@@ -180,11 +203,19 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	}
 	
 	public static void main(String[] args) throws Exception{
-		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/vicePrimeMinister"));
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		
+		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
+		reasoner.prepareSubsumptionHierarchy();
+		
+		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(ks);
+		l.setReasoner(reasoner);
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/author"));
 		l.setMaxExecutionTimeInSeconds(10);
+		l.setReturnOnlyNewAxioms(true);
 		l.init();
 		l.start();
+		
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
 
