@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.Axiom;
@@ -52,9 +53,12 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="", propertyEditorClass=IntegerEditor.class)
 	protected int maxExecutionTimeInSeconds = 10;
+	@ConfigOption(name="returnOnlyNewAxioms", defaultValue="false", description="", propertyEditorClass=BooleanEditor.class)
+	protected boolean returnOnlyNewAxioms;
 	
 	protected SparqlEndpointKS ks;
 	protected SPARQLReasoner reasoner;
+	
 	
 	ExtendedQueryEngineHTTP queryExecution;
 	
@@ -72,6 +76,14 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 
 	public void setReasoner(SPARQLReasoner reasoner) {
 		this.reasoner = reasoner;
+	}
+
+	public boolean isReturnOnlyNewAxioms() {
+		return returnOnlyNewAxioms;
+	}
+
+	public void setReturnOnlyNewAxioms(boolean returnOnlyNewAxioms) {
+		this.returnOnlyNewAxioms = returnOnlyNewAxioms;
 	}
 
 	@Override
