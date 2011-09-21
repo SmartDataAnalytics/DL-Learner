@@ -21,6 +21,7 @@ package org.dllearner.utilities.owl;
 
 import static org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor.getOWLClassExpression;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -377,7 +378,7 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.TerminologicalAxiomVisitor#visit(org.dllearner.core.owl.DisjointClassesAxiom)
 	 */
 	public void visit(DisjointClassesAxiom axiom) {
-		Set<Description> descriptions = axiom.getDescriptions();
+		Collection<Description> descriptions = axiom.getDescriptions();
 		Set<OWLClassExpression> owlAPIDescriptions = new HashSet<OWLClassExpression>();
 		for(Description description : descriptions)
 			owlAPIDescriptions.add(getOWLClassExpression(description));
