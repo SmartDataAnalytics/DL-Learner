@@ -356,4 +356,21 @@ public class ClassHierarchy {
 		}
 		return depth;
 	}
+	
+	public SortedSet<Description> getMostGeneralClasses(){
+		SortedSet<Description> generalClasses = new TreeSet<Description>(conceptComparator);
+		boolean add = false;
+		SortedSet<Description> superClasses;
+		for(Description sub : getSubClasses(Thing.instance)){
+			superClasses = getSuperClasses(sub);
+			superClasses = new TreeSet<Description>(conceptComparator);superClasses.remove(Thing.instance);
+			if(superClasses.isEmpty()){
+				add = true;
+			}
+			if(add){
+				generalClasses.add(sub);
+			}
+		}
+		return generalClasses;
+	}
 }

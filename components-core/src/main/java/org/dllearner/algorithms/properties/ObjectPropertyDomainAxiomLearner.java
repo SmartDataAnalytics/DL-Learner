@@ -208,6 +208,8 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
 		reasoner.prepareSubsumptionHierarchy();
+		System.out.println(reasoner.getClassHierarchy().getSubClasses(Thing.instance).size());
+		
 		
 		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(ks);
 		l.setReasoner(reasoner);

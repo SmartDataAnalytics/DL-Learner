@@ -19,6 +19,7 @@
 
 package org.dllearner.core.owl;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -33,9 +34,9 @@ public class DisjointClassesAxiom extends TerminologicalAxiom {
 	 * 
 	 */
 	private static final long serialVersionUID = 7788863077013583508L;
-	private Set<Description> descriptions;
+	private Collection<Description> descriptions;
 	
-	public DisjointClassesAxiom(Set<Description> descriptions) {
+	public DisjointClassesAxiom(Collection<Description> descriptions) {
 		this.descriptions = descriptions;
 	}
 
@@ -94,7 +95,7 @@ public class DisjointClassesAxiom extends TerminologicalAxiom {
 	/**
 	 * @return the descriptions
 	 */
-	public Set<Description> getDescriptions() {
+	public Collection<Description> getDescriptions() {
 		return descriptions;
 	}
 

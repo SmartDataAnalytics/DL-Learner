@@ -21,11 +21,11 @@ package org.dllearner.algorithms;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
@@ -186,9 +186,9 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
-		Set<Description> descriptions;
+		List<Description> descriptions;
 		for(EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)){
-			descriptions = new HashSet<Description>();
+			descriptions = new ArrayList<Description>();
 			descriptions.add(classToDescribe);
 			descriptions.add(ed.getDescription());
 			axioms.add(new EvaluatedAxiom(new DisjointClassesAxiom(descriptions), new AxiomScore(ed.getAccuracy())));
@@ -209,6 +209,9 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		
 		EvaluatedDescription evalDesc;
 		//firstly, create disjoint classexpressions which not occur and give score of 1
+		if(reasoner.isPrepared()){
+			SortedSet<Description> mostGeneralClasses = reasoner.getClassHierarchy().getMostGeneralClasses();
+		}
 		for(NamedClass cls : completeDisjointclasses){
 			evalDesc = new EvaluatedDescription(cls, new AxiomScore(1));
 			evalDescs.add(evalDesc);

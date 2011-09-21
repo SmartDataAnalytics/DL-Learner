@@ -106,13 +106,13 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 
 		// parents/children of top ...
 		SortedSet<Description> tmp = getSubClasses(Thing.instance);
-		subsumptionHierarchyUp.put(Thing.instance, new TreeSet<Description>());
+		subsumptionHierarchyUp.put(Thing.instance, new TreeSet<Description>(conceptComparator));
 		subsumptionHierarchyDown.put(Thing.instance, tmp);
 
 		// ... bottom ...
 		tmp = getSuperClasses(Nothing.instance);
 		subsumptionHierarchyUp.put(Nothing.instance, tmp);
-		subsumptionHierarchyDown.put(Nothing.instance, new TreeSet<Description>());
+		subsumptionHierarchyDown.put(Nothing.instance, new TreeSet<Description>(conceptComparator));
 		
 		// ... and named classes
 		Set<NamedClass> atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
@@ -811,6 +811,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	 */
 	public boolean isPrepared(){
 		return hierarchy != null;
+	}
+	
+	public void setCache(ExtractionDBCache cache) {
+		this.cache = cache;
 	}
 	
 	private boolean executeAskQuery(String query){
