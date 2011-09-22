@@ -1,0 +1,6 @@
+../interfaces-jar-with-dependencies.jar /usr/share/dllearner
+../dllearner-gui.desktop /usr/share/applications
+../dllearner-cli dllearner-cli.desktop /usr/share/applications
+../dllearner_small.png /usr/share/pixmaps
+../dllearner-CLI.sh /usr/share/dllearner
+../dllearner-GUI.sh /usr/share/dllearner

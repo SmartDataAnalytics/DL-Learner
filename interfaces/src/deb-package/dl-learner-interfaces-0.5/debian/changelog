@@ -1,0 +1,11 @@
+dl-learner-interfaces (0.5-2) lod2; urgency=low
+
+  * Added start scripts for the interfaces 
+
+ -- Christian Kötteritzsch (Der Student) <christiankoetteritzsch@yahoo.de>  Thu, 14 Jul 2011 12:36:41 +0200
+
+dl-learner-interfaces (0.5-1) lod2; urgency=low
+
+  * Initial Release.
+
+ -- Christian Kötteritzsch (Der Student) <christiankoetteritzsch@yahoo.de>  Thu, 07 Jul 2011 20:16:12 +0200

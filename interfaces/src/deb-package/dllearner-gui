@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=DL-Learner GUI Start
+Name[­de­]=DL-Learner GUI Start
+Comment=This is the start button for the DL-Learner GUI interface
+Comment[­de­]=Das ist die Startdatei für das DL-Learner GUI Interface
+Exec=/usr/share/dllearner/dllearner-gui.sh
+Icon=dllearner_small
+Terminal=true
+Type=Application
+Categories=Development;
+StartupNotify=false
