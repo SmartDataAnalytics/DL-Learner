@@ -1,0 +1,15 @@
+Source: dl-learner-interfaces
+Section: misc
+Priority: extra
+Maintainer: Jens Lehmann <lehmann@informatik.uni-leipzig.de>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.9.1
+Homepage: http://dl-learner.org 
+#Vcs-Git: git://git.debian.org/collab-maint/dl-learner-interfaces.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/dl-learner-interfaces.git;a=summary
+
+Package: dl-learner-interfaces
+Architecture: all
+Depends: openjdk-6-jre | sun-java6-jre, dl-learner-components-core
+Description: This package provides interfaces to use DL-Learner:
+ a commandline interface, a graphical user interface and a web service. You can start them using the commands dl-learner-cli, dl-learner-gui and dl-learner-ws. 
