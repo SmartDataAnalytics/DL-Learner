@@ -90,13 +90,19 @@ public class SparqlQuery {
 	 * 
 	 */
 	public ResultSetRewindable send() {
+		return send(true);
+	}
+	
+	public ResultSetRewindable send(boolean writeLog) {
 		isRunning = true;
 
 		String service = sparqlEndpoint.getURL().toString();
 
-		writeToSparqlLog("***********\nNew Query:");
-		SparqlQuery.writeToSparqlLog("wget -S -O - '\n" + sparqlEndpoint.getHTTPRequest());
-		writeToSparqlLog(sparqlQueryString);
+		if(writeLog){
+			writeToSparqlLog("***********\nNew Query:");
+			SparqlQuery.writeToSparqlLog("wget -S -O - '\n" + sparqlEndpoint.getHTTPRequest());
+			writeToSparqlLog(sparqlQueryString);
+		}
 
 		queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
 
@@ -120,7 +126,9 @@ public class SparqlQuery {
 		} catch (HTTPException e) {
 			logger.debug("HTTPException in SparqlQuery\n" + e.toString());
 			logger.debug("query was " + sparqlQueryString);
-			writeToSparqlLog("ERROR: HTTPException occured" + e.toString());
+			if(writeLog){
+				writeToSparqlLog("ERROR: HTTPException occured" + e.toString());
+			}
 			isRunning = false;
 			throw e;
 		// TODO: RuntimeException is very general; is it possible to catch more specific exceptions?
@@ -132,7 +140,9 @@ public class SparqlQuery {
 				logger.debug("query was (max. 300 chars displayed) "
 						+ sparqlQueryString.substring(0, length - 1).replaceAll("\n", " "));
 			}
-			writeToSparqlLog("ERROR: HTTPException occured: " + e.toString());
+			if(writeLog){
+				writeToSparqlLog("ERROR: HTTPException occured: " + e.toString());
+			}
 			isRunning = false;
 			throw e;
 		}

@@ -543,7 +543,7 @@ public class SPARQLTasks {
 			
 			SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
 			//SimpleClock sc = new SimpleClock();
-			sq.send();
+			sq.send(false);
 			//sc.printAndSet("querysend");
 			jsonString = sq.getJson();
 			
@@ -649,7 +649,7 @@ public class SPARQLTasks {
 				} else {
 					queryString = String.format("SELECT ?o WHERE {?s <%s> ?o.} LIMIT 10", resource);
 					sq = new SparqlQuery(queryString, sparqlEndpoint);
-					ResultSet rs = sq.send();
+					ResultSet rs = sq.send(false);
 					QuerySolution qs = null;
 					boolean isDataProperty = false;
 					boolean isObjectProperty = false;
@@ -678,7 +678,7 @@ public class SPARQLTasks {
 		Set<ObjectProperty> properties = new TreeSet<ObjectProperty>();
 		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:ObjectProperty}";
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
-		ResultSet q = sq.send();
+		ResultSet q = sq.send(false);
 		while (q.hasNext()) {
 			QuerySolution qs = q.next();
 			properties.add(new ObjectProperty(qs.getResource("p").getURI()));
@@ -690,7 +690,7 @@ public class SPARQLTasks {
 		Set<DatatypeProperty> properties = new TreeSet<DatatypeProperty>();
 		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:DatatypeProperty}";
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
-		ResultSet q = sq.send();
+		ResultSet q = sq.send(false);
 		while (q.hasNext()) {
 			QuerySolution qs = q.next();
 			properties.add(new DatatypeProperty(qs.getResource("p").getURI()));
@@ -702,7 +702,7 @@ public class SPARQLTasks {
 		Set<NamedClass> classes = new TreeSet<NamedClass>();
 		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?c WHERE {?c a owl:Class} LIMIT 1000";
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
-		ResultSet q = sq.send();
+		ResultSet q = sq.send(false);
 		while (q.hasNext()) {
 			QuerySolution qs = q.next();
 			if(qs.getResource("c").isURIResource()){
@@ -717,7 +717,7 @@ public class SPARQLTasks {
 		String query = "SELECT * WHERE {?s ?p ?o. {SELECT * WHERE {?s ?p ?o.} LIMIT 1} } LIMIT 1";
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
 		try {
-			sq.send();
+			sq.send(false);
 			return true;
 		} catch (Exception e) {
 			System.out.println("Endpoint doesn't seem to support SPARQL 1.1 .");
