@@ -39,6 +39,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -63,8 +64,6 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	private List<EvaluatedAxiom> currentlyBestAxioms;
 	private long startTime;
 	private int fetchedRows;
-	
-	private Set<Description> existingRanges;
 	
 	public ObjectPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -93,20 +92,20 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
-		if(returnOnlyNewAxioms){
-			existingRanges = new HashSet<Description>();
+		if(reasoner.isPrepared()){
 			//get existing ranges
-			Description existingRange = reasoner.getRange(propertyToDescribe);
-			existingRanges.add(existingRange);
-			logger.info("Existing range: " + existingRange);
-			if(reasoner.isPrepared()){
-				if(reasoner.getClassHierarchy().contains(existingRange)){
-					for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingRange)){
-						existingRanges.add(sup);
-						logger.info("Existing range(inferred): " + sup);
+			Description existingDomain = reasoner.getRange(propertyToDescribe);
+			if(existingDomain != null){
+				existingAxioms.add(new ObjectPropertyRangeAxiom(propertyToDescribe, existingDomain));
+				if(reasoner.isPrepared()){
+					if(reasoner.getClassHierarchy().contains(existingDomain)){
+						for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
+							existingAxioms.add(new ObjectPropertyRangeAxiom(propertyToDescribe, existingDomain));
+							logger.info("Existing range(inferred): " + sup);
+						}
 					}
+					
 				}
-				
 			}
 		}
 		
@@ -151,17 +150,15 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 		
 		//omit owl:Thing
 		result.remove(new NamedClass(Thing.instance.getURI()));
-		if(returnOnlyNewAxioms){
-			for(Description range : existingRanges){
-				result.remove(range);
-			}
-		}
 		
 		EvaluatedAxiom evalAxiom;
 		int total = individual2Types.keySet().size();
 		for(Entry<Description, Integer> entry : sortByValues(result)){
 			evalAxiom = new EvaluatedAxiom(new ObjectPropertyRangeAxiom(propertyToDescribe, entry.getKey()),
 					computeScore(total, entry.getValue()));
+			if(existingAxioms.contains(evalAxiom.getAxiom())){
+				evalAxiom.setAsserted(true);
+			}
 			axioms.add(evalAxiom);
 		}
 		

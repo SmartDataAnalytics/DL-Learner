@@ -85,6 +85,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.ReflexiveProperty.getURI());
 		boolean declaredAsReflexive = executeAskQuery(query);
 		if(declaredAsReflexive) {
+			existingAxioms.add(new ReflexiveObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as reflexive in knowledge base.");
 		}
 		
@@ -109,7 +110,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		}
 		if(total > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe),
-					computeScore(total, reflexive)));
+					computeScore(total, reflexive), declaredAsReflexive));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));

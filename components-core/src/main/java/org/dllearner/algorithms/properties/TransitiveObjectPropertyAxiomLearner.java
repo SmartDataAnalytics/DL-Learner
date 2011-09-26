@@ -85,6 +85,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.TransitiveProperty.getURI());
 		boolean declaredAsTransitive = executeAskQuery(query);
 		if(declaredAsTransitive) {
+			existingAxioms.add(new TransitiveObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as transitive in knowledge base.");
 		}
 		
@@ -123,7 +124,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		
 		if(total > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe),
-					computeScore(total, transitive)));
+					computeScore(total, transitive), declaredAsTransitive));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));

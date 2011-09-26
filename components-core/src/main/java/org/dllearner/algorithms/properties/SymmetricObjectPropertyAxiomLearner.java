@@ -85,6 +85,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.SymmetricProperty.getURI());
 		boolean declaredAsSymmetric = executeAskQuery(query);
 		if(declaredAsSymmetric) {
+			existingAxioms.add(new SymmetricObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as symmetric in knowledge base.");
 		}
 		
@@ -125,7 +126,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		
 		if(total > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
-					computeScore(total, symmetric)));
+					computeScore(total, symmetric), declaredAsSymmetric));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));

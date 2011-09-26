@@ -90,7 +90,7 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
-		if(returnOnlyNewAxioms){
+		if(reasoner.isPrepared()){
 			//get existing domains
 			Description existingDomain = reasoner.getDomain(propertyToDescribe);
 			if(existingDomain != null){
@@ -154,6 +154,9 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		for(Entry<Description, Integer> entry : sortByValues(result)){
 			evalAxiom = new EvaluatedAxiom(new ObjectPropertyDomainAxiom(propertyToDescribe, entry.getKey()),
 					computeScore(total, entry.getValue()));
+			if(existingAxioms.contains(evalAxiom.getAxiom())){
+				evalAxiom.setAsserted(true);
+			}
 			axioms.add(evalAxiom);
 		}
 		

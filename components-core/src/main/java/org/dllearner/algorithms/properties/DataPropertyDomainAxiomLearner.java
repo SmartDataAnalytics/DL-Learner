@@ -154,6 +154,9 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		for(Entry<Description, Integer> entry : sortByValues(result)){
 			evalAxiom = new EvaluatedAxiom(new DatatypePropertyDomainAxiom(propertyToDescribe, entry.getKey()),
 					computeScore(total, entry.getValue()));
+			if(existingAxioms.contains(evalAxiom.getAxiom())){
+				evalAxiom.setAsserted(true);
+			}
 			axioms.add(evalAxiom);
 		}
 		

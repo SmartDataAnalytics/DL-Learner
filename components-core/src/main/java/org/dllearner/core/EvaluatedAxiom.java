@@ -55,6 +55,12 @@ public class EvaluatedAxiom {
 		this.axiom = axiom;
 		this.score = score;
 	}
+	
+	public EvaluatedAxiom(Axiom axiom, Score score, boolean asserted) {
+		this.axiom = axiom;
+		this.score = score;
+		this.asserted = asserted;
+	}
 
 	public Axiom getAxiom() {
 		return axiom;

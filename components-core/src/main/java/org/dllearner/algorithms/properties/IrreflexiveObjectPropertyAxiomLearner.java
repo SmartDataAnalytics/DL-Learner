@@ -81,10 +81,11 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
-		//check if property is already declared as reflexive in knowledge base
+		//check if property is already declared as irreflexive in knowledge base
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.IrreflexiveProperty.getURI());
-		boolean declaredAsReflexive = executeAskQuery(query);
-		if(declaredAsReflexive) {
+		boolean declaredAsIrreflexive = executeAskQuery(query);
+		if(declaredAsIrreflexive) {
+			existingAxioms.add(new IrreflexiveObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as irreflexive in knowledge base.");
 		}
 
@@ -111,7 +112,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		
 		if(all > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new IrreflexiveObjectPropertyAxiom(propertyToDescribe),
-					computeScore(all, irreflexive)));
+					computeScore(all, irreflexive), declaredAsIrreflexive));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
