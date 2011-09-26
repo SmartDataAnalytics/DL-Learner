@@ -80,10 +80,11 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
-		//check if property is already declared as symmetric in knowledge base
+		//check if property is already declared as functional in knowledge base
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.FunctionalProperty.getURI());
 		boolean declaredAsFunctional = executeAskQuery(query);
 		if(declaredAsFunctional) {
+			existingAxioms.add(new FunctionalDatatypePropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as functional in knowledge base.");
 		}
 		
@@ -107,7 +108,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		}
 		if(all > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalDatatypePropertyAxiom(propertyToDescribe),
-					computeScore(all, all - notFunctional)));
+					computeScore(all, all - notFunctional), declaredAsFunctional));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));

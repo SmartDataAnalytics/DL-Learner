@@ -85,6 +85,7 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.FunctionalProperty.getURI());
 		boolean declaredAsFunctional = executeAskQuery(query);
 		if(declaredAsFunctional) {
+			existingAxioms.add(new FunctionalObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as functional in knowledge base.");
 		}
 		
@@ -108,7 +109,7 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		}
 		if(all > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new FunctionalObjectPropertyAxiom(propertyToDescribe),
-					computeScore(all, all - notFunctional)));
+					computeScore(all, all - notFunctional), declaredAsFunctional));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));

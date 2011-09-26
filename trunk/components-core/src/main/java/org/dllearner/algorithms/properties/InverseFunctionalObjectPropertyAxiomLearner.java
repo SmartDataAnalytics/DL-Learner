@@ -87,8 +87,9 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 		
 		//check if property is already declared as symmetric in knowledge base
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.InverseFunctionalProperty.getURI());
-		boolean declaredAsFunctional = executeAskQuery(query);
-		if(declaredAsFunctional) {
+		boolean declaredAsInverseFunctional = executeAskQuery(query);
+		if(declaredAsInverseFunctional) {
+			existingAxioms.add(new InverseFunctionalObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as functional in knowledge base.");
 		}
 		
@@ -112,7 +113,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 		}
 		if(all > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new InverseFunctionalObjectPropertyAxiom(propertyToDescribe),
-					computeScore(all, all - notInverseFunctional)));
+					computeScore(all, all - notInverseFunctional), declaredAsInverseFunctional));
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
