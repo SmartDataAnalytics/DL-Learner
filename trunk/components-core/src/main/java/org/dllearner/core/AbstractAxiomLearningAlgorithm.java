@@ -24,7 +24,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
@@ -37,6 +40,7 @@ import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.owl.AxiomComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +62,12 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	protected SparqlEndpointKS ks;
 	protected SPARQLReasoner reasoner;
+	
+	protected SortedSet<Axiom> existingAxioms;
+	
+	public AbstractAxiomLearningAlgorithm() {
+		existingAxioms = new TreeSet<Axiom>(new AxiomComparator());
+	}
 	
 	
 	ExtendedQueryEngineHTTP queryExecution;
@@ -128,7 +138,13 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		
 		for(EvaluatedAxiom evAx : currentlyBestEvAxioms){
 			if(evAx.getScore().getAccuracy() >= accuracyThreshold && returnList.size() < nrOfAxioms){
-				returnList.add(evAx);
+				if(returnOnlyNewAxioms){
+					if(!existingAxioms.contains(evAx.getAxiom())){
+						returnList.add(evAx);
+					}
+				} else {
+					returnList.add(evAx);
+				}
 			}
 		}
 		

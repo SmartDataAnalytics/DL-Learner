@@ -21,7 +21,6 @@ package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,7 +34,6 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -65,8 +63,6 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 	private long startTime;
 	private int fetchedRows;
 	
-	private Set<Description> existingDomains;
-	
 	public ObjectPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
@@ -95,19 +91,19 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
 		if(returnOnlyNewAxioms){
-			existingDomains = new HashSet<Description>();
 			//get existing domains
 			Description existingDomain = reasoner.getDomain(propertyToDescribe);
-			existingDomains.add(existingDomain);
-			logger.info("Existing domain: " + existingDomain);
-			if(reasoner.isPrepared()){
-				if(reasoner.getClassHierarchy().contains(existingDomain)){
-					for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
-						existingDomains.add(sup);
-						logger.info("Existing domain(inferred): " + sup);
+			if(existingDomain != null){
+				existingAxioms.add(new ObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
+				if(reasoner.isPrepared()){
+					if(reasoner.getClassHierarchy().contains(existingDomain)){
+						for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
+							existingAxioms.add(new ObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
+							logger.info("Existing domain(inferred): " + sup);
+						}
 					}
+					
 				}
-				
 			}
 		}
 		
@@ -152,11 +148,6 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		
 		//omit owl:Thing
 		result.remove(new NamedClass(Thing.instance.getURI()));
-		if(returnOnlyNewAxioms){
-			for(Description domain : existingDomains){
-				result.remove(domain);
-			}
-		}
 		
 		EvaluatedAxiom evalAxiom;
 		int total = individual2Types.keySet().size();

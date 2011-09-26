@@ -21,11 +21,10 @@ package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -64,8 +63,6 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 	private long startTime;
 	private int fetchedRows;
 	
-	private Set<Description> existingDomains;
-	
 	public DataPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
@@ -94,17 +91,18 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
 		if(returnOnlyNewAxioms){
-			existingDomains = new HashSet<Description>();
 			//get existing domains
 			Description existingDomain = reasoner.getDomain(propertyToDescribe);
-			existingDomains.add(existingDomain);
-			logger.info("Existing domain: " + existingDomain);
-			if(reasoner.isPrepared()){
-				if(reasoner.getClassHierarchy().contains(existingDomain)){
-					for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
-						existingDomains.add(sup);
-						logger.info("Existing domain(inferred): " + sup);
+			if(existingDomain != null){
+				existingAxioms.add(new DatatypePropertyDomainAxiom(propertyToDescribe, existingDomain));
+				if(reasoner.isPrepared()){
+					if(reasoner.getClassHierarchy().contains(existingDomain)){
+						for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
+							existingAxioms.add(new DatatypePropertyDomainAxiom(propertyToDescribe, existingDomain));
+							logger.info("Existing domain(inferred): " + sup);
+						}
 					}
+					
 				}
 			}
 		}
@@ -150,11 +148,6 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		
 		//omit owl:Thing
 		result.remove(new NamedClass(Thing.instance.getURI()));
-		if(returnOnlyNewAxioms){
-			for(Description domain : existingDomains){
-				result.remove(domain);
-			}
-		}
 		
 		EvaluatedAxiom evalAxiom;
 		int total = individual2Types.keySet().size();
