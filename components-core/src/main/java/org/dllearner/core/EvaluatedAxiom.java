@@ -49,6 +49,8 @@ public class EvaluatedAxiom {
 	private Axiom axiom;
 	private Score score;
 	
+	private boolean asserted = false;
+	
 	public EvaluatedAxiom(Axiom axiom, Score score) {
 		this.axiom = axiom;
 		this.score = score;
@@ -62,6 +64,14 @@ public class EvaluatedAxiom {
 		return score;
 	}
 	
+	public boolean isAsserted() {
+		return asserted;
+	}
+
+	public void setAsserted(boolean asserted) {
+		this.asserted = asserted;
+	}
+
 	@Override
 	public String toString() {
 		return axiom + "(" + score.getAccuracy()+ ")";
