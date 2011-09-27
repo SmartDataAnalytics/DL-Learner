@@ -41,6 +41,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +90,10 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		//get existing range
 		DataRange existingRange = reasoner.getRange(propertyToDescribe);
-		logger.debug("Existing range: " + existingRange);
+		if(existingRange != null){
+			existingAxioms.add(new DatatypePropertyRangeAxiom(propertyToDescribe, existingRange));
+			logger.debug("Existing range: " + existingRange);
+		}
 		
 		//get objects with datatypes
 		Map<Individual, SortedSet<Datatype>> individual2Datatypes = new HashMap<Individual, SortedSet<Datatype>>();
@@ -135,6 +139,9 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		for(Entry<Datatype, Integer> entry : sortByValues(result)){
 			evalAxiom = new EvaluatedAxiom(new DatatypePropertyRangeAxiom(propertyToDescribe, entry.getKey()),
 					computeScore(total, entry.getValue()));
+			if(existingAxioms.contains(evalAxiom.getAxiom())){
+				evalAxiom.setAsserted(true);
+			}
 			axioms.add(evalAxiom);
 		}
 		
@@ -172,9 +179,15 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 	
 	public static void main(String[] args) throws Exception{
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		
+		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
+		reasoner.prepareSubsumptionHierarchy();
+		
 		DataPropertyRangeAxiomLearner l = new DataPropertyRangeAxiomLearner(ks);
-		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/background"));
+		l.setReasoner(reasoner);
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/topSpeed"));
 		l.setMaxExecutionTimeInSeconds(10);
+		l.setReturnOnlyNewAxioms(true);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(1));
