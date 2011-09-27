@@ -41,6 +41,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
+import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
@@ -570,8 +571,20 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 
 	@Override
 	public DataRange getRange(DatatypeProperty datatypeProperty) {
-		// TODO Auto-generated method stub
-		return null;
+		String query = String.format("SELECT ?range WHERE {" +
+				"<%s> <%s> ?range. FILTER(isIRI(?range))" +
+				"}", 
+				datatypeProperty.getName(), RDFS.range.getURI());
+		
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		DataRange range = null;
+		while(rs.hasNext()){
+			qs = rs.next();
+			range = new Datatype(qs.getResource("range").getURI());
+			
+		}
+		return range;
 	}
 
 	@Override
