@@ -34,9 +34,13 @@ public class SPARQL_Triple {
 	public void reverse(){
 		SPARQL_Term newVariable = new SPARQL_Term(this.value.getName());
 		newVariable.setIsVariable(this.value.isVariable());
+		if(value instanceof SPARQL_Term){
+			newVariable.setIsURI(((SPARQL_Term)value).isURI);
+		}
 		
-		SPARQL_Value newValue = new SPARQL_Value(this.variable.getName());
+		SPARQL_Term newValue = new SPARQL_Term(this.variable.getName());
 		newValue.setIsVariable(this.variable.isVariable());
+		newValue.setIsURI(variable.isURI);
 		
 		this.variable = newVariable;
 		this.value = newValue;
