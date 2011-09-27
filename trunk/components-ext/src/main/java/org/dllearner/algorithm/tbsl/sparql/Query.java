@@ -53,6 +53,7 @@ public class Query
 		for(SPARQL_Term term : query.getSelTerms()){
 			SPARQL_Term newTerm = new SPARQL_Term(term.getName());
 			newTerm.setIsVariable(term.isVariable());
+			newTerm.setIsURI(newTerm.isURI);
 			newTerm.setAggregate(term.getAggregate());
 			newTerm.setOrderBy(term.getOrderBy());
 			selTerms.add(newTerm);
@@ -329,8 +330,8 @@ public class Query
 	}
 	
 	public void replaceVarWithURI(String var, String uri){
-		SPARQL_Value subject;
-		SPARQL_Value property;
+		SPARQL_Term subject;
+		SPARQL_Property property;
 		SPARQL_Value object;
 		uri = "<" + uri + ">";
 		
@@ -342,6 +343,7 @@ public class Query
 				if(subject.getName().equals(var)){
 					subject.setName(uri);
 					subject.setIsVariable(false);
+					subject.setIsURI(true);
 				}
 			}
 			if(property.isVariable()){
@@ -354,6 +356,9 @@ public class Query
 				if(object.getName().equals(var)){
 					object.setName(uri);
 					object.setIsVariable(false);
+					if(object instanceof SPARQL_Term){
+						((SPARQL_Term) object).setIsURI(true);
+					}
 				}
 			}
 			
