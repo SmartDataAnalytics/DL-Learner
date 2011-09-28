@@ -22,6 +22,12 @@ public class SolrSearch implements Search{
 	private int hitsPerPage = 10;
 	private int lastTotalHits = 0;
 	
+	private String searchField;
+	
+	public SolrSearch() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public SolrSearch(String solrServerURL){
 		try {
 			server = new CommonsHttpSolrServer(solrServerURL);
@@ -30,22 +36,36 @@ public class SolrSearch implements Search{
 			e.printStackTrace();
 		}
 	}
-
-	@Override
-	public List<String> getResources(String queryString) {
-		return getResources(queryString, 0);
+	
+	public SolrSearch(String solrServerURL, String searchField){
+		this(solrServerURL);
+		this.searchField = searchField;
 	}
 
 	@Override
-	public List<String> getResources(String queryString, int offset) {
+	public List<String> getResources(String queryString) {
+		return getResources(queryString, hitsPerPage);
+	}
+	
+	@Override
+	public List<String> getResources(String queryString, int limit) {
+		return getResources(queryString, limit, 0);
+	}
+
+	@Override
+	public List<String> getResources(String queryString, int limit, int offset) {
 		List<String> resources = new ArrayList<String>();
 		QueryResponse response;
 		try {
-			ModifiableSolrParams params = new ModifiableSolrParams();
-			params.set("q", queryString);
-			params.set("rows", hitsPerPage);
-			params.set("start", offset);
-			response = server.query(params);
+		SolrQuery q = new SolrQuery((searchField != null) ? searchField  + ":" + queryString : queryString);
+		q.setStart(offset);
+		q.setRows(limit);
+		response = server.query(q);
+//			ModifiableSolrParams params = new ModifiableSolrParams();
+//			params.set("q", queryString);
+//			params.set("rows", hitsPerPage);
+//			params.set("start", offset);
+//			response = server.query(params);
 			
 			SolrDocumentList docList = response.getResults();
 			lastTotalHits = (int) docList.getNumFound();

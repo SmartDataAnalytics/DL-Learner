@@ -82,6 +82,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private SolrSearch resource_index;
 	private SolrSearch class_index;
 	private SolrSearch property_index;
+	private SolrSearch boa_pattern_property_index;
 	private ModelGenerator modelGenenerator;
 	private Templator templateGenerator;
 	
@@ -127,13 +128,22 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private void init(Options options){
 		String resourcesIndexUrl = options.fetch("solr.resources.url");
-		resource_index = new SolrSearch(resourcesIndexUrl);
+		String resourcesIndexSearchField = options.fetch("solr.resources.searchfield");
+		resource_index = new SolrSearch(resourcesIndexUrl, resourcesIndexSearchField);
 		
 		String classesIndexUrl = options.fetch("solr.classes.url");
-		class_index = new SolrSearch(classesIndexUrl);
+		String classesIndexSearchField = options.fetch("solr.classes.searchfield");
+		class_index = new SolrSearch(classesIndexUrl, classesIndexSearchField);
 		
 		String propertiesIndexUrl = options.fetch("solr.properties.url");
-		property_index = new SolrSearch(propertiesIndexUrl);
+		String propertiesIndexSearchField = options.fetch("solr.properties.searchfield");
+		property_index = new SolrSearch(propertiesIndexUrl, propertiesIndexSearchField);
+		
+		String boaPatternIndexUrl = options.fetch("solr.boa.properties.url");
+		String boaPatternIndexSearchField = options.fetch("solr.boa.properties.searchfield");
+		boa_pattern_property_index = new SolrSearch(boaPatternIndexUrl, boaPatternIndexSearchField);
+		
+		int maxIndexResults = Integer.parseInt(options.fetch("solr.query.limit"), 10);
 		
 		maxQueryExecutionTimeInSeconds = Integer.parseInt(options.get("sparql.query.maxExecutionTimeInSeconds", "20"));
 		cache.setMaxExecutionTimeInSeconds(maxQueryExecutionTimeInSeconds);
@@ -493,21 +503,47 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		if(slot.getSlotType() == SlotType.RESOURCE){
 			words = slot.getWords();
 		} else {
-			words = pruneList(slot.getWords());//getLemmatizedWords(slot.getWords());
+//			words = pruneList(slot.getWords());//getLemmatizedWords(slot.getWords());
+			words = pruneList(slot.getWords());
 		}
 		
-		for(String word : words){
-			tmp = new TreeSet<String>(new StringSimilarityComparator(word));
-			uris = uriCache.get(word);
-			if(uris == null){
-//				uris = index.getResources("label:\"" + word + "\"~0.7");
-				uris = index.getResources("label:" + word + "~0.5");
-				uriCache.put(word, uris);
+		if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
+			for(String word : words){
+				tmp = new TreeSet<String>(new StringSimilarityComparator(word));
+				uris = uriCache.get(word);
+				index = boa_pattern_property_index;
+				if(uris == null){
+					uris = index.getResources(word);
+					uriCache.put(word, uris);
+				}
+				index = property_index;
+				if(uris.size() < 10){
+					uris.addAll(index.getResources(word));
+				}
+				if(uris.size() < 10){
+					uris.addAll(index.getResources("" + word + "~0.8"));
+				}
+				tmp.addAll(uris);
+				sortedURIs.addAll(tmp);
+				tmp.clear();
 			}
-			tmp.addAll(uris);
-			sortedURIs.addAll(tmp);
-			tmp.clear();
+		} else {
+			for(String word : words){
+				tmp = new TreeSet<String>(new StringSimilarityComparator(word));
+				uris = uriCache.get(word);
+				if(uris == null){
+					uris = index.getResources(word);
+					uriCache.put(word, uris);
+				}
+				if(uris.size() < 10){
+					uris.addAll(index.getResources("" + word + "~0.7"));
+				}
+				tmp.addAll(uris);
+				sortedURIs.addAll(tmp);
+				tmp.clear();
+			}
 		}
+		
 		slot2URI.put(slot, sortedURIs);
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
@@ -521,7 +557,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			boolean smallest = true;
 			for(String w2 : words){
 				if(!w1.equals(w2)){
-					if(w2.contains(w1)){
+					if(w1.contains(w2)){
 						smallest = false;
 						break;
 					}
@@ -546,7 +582,6 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				pruned.add(word);
 			} else {
 				String lemWord = lemmatizer.stem(word);
-				new LingPipeLemmatizer().stem(word);
 				if(!pruned.contains(lemWord)){
 					pruned.add(lemWord);
 				}
@@ -742,7 +777,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 //		String question = "Give me all cities in Canada.";
 		
-		String question = "Give me all soccer clubs in Premier League?";
+		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 				Collections.<String>singletonList(""), Collections.<String>emptyList());
