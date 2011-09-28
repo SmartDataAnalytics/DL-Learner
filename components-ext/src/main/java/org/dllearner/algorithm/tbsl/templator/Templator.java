@@ -16,6 +16,7 @@ import org.dllearner.algorithm.tbsl.ltag.parser.LTAG_Lexicon_Constructor;
 import org.dllearner.algorithm.tbsl.ltag.parser.Parser;
 import org.dllearner.algorithm.tbsl.ltag.parser.Preprocessor;
 import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
@@ -173,8 +174,8 @@ public class Templator {
                 					newwords.add(word);
                 					newwords.addAll(strings);            					
                 					
-               						newwords.addAll(wordnet.getBestSynonyms(wordnetpos,word));
-                					for (String att : strings) {
+               						newwords.addAll(wordnet.getBestSynonyms(wordnetpos,getLemmatizedWord(word)));
+                					for (String att : getLemmatizedWords(strings)) {
 	                					newwords.addAll(wordnet.getBestSynonyms(wordnetpos,att));
                 					}
                 					if (newwords.isEmpty()) {
@@ -204,6 +205,24 @@ public class Templator {
         
         return templates;
     }
+	
+	private List<String> getLemmatizedWords(List<String> words){
+		List<String> stemmed = new ArrayList<String>();
+		for(String word : words){
+			//currently only stem single words
+			if(word.contains(" ")){
+				stemmed.add(word);
+			} else {
+				stemmed.add(getLemmatizedWord(word));
+			}
+			
+		}
+		return stemmed;
+	}
+	
+	private String getLemmatizedWord(String word){
+		return lem.stem(word);
+	}
 	
 	private boolean containsModuloRenaming(Set<DRS> drses, DRS drs) {
 

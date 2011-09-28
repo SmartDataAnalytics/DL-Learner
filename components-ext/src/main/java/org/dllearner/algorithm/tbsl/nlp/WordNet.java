@@ -34,6 +34,7 @@ public class WordNet {
 		
 		try {
 			IndexWord iw = dict.getIndexWord(pos, s);//dict.getMorphologicalProcessor().lookupBaseForm(pos, s)
+//			IndexWord iw = dict.getMorphologicalProcessor().lookupBaseForm(pos, s);
 			if(iw != null){
 				Synset[] synsets = iw.getSenses();
 				Word[] words = synsets[0].getWords();
