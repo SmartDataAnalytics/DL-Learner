@@ -28,12 +28,14 @@ public class ThresholdSlidingSolrSearch extends SolrSearch {
 		
 		double threshold = 1;
 		
-		while(resources.size() < limit){
-			resources.addAll(getResources(queryString + "~" + threshold, limit - resources.size()));
-			threshold -= step;
-			if(threshold < minThreshold){
-				break;
+		String queryWithThreshold = queryString;
+		while(resources.size() < limit && threshold >= minThreshold){
+			if(threshold < 1){
+				queryWithThreshold = queryString + "~" + threshold;
 			}
+			System.out.println(queryWithThreshold);
+			resources.addAll(findResources(queryWithThreshold, limit - resources.size(), 0));
+			threshold -= step;
 		}
 		
 		

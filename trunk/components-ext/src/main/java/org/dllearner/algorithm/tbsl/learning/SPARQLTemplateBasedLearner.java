@@ -26,7 +26,9 @@ import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
 import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
+import org.dllearner.algorithm.tbsl.search.HierarchicalSolrSearch;
 import org.dllearner.algorithm.tbsl.search.SolrSearch;
+import org.dllearner.algorithm.tbsl.search.ThresholdSlidingSolrSearch;
 import org.dllearner.algorithm.tbsl.sparql.Query;
 import org.dllearner.algorithm.tbsl.sparql.RatedQuery;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Prefix;
@@ -129,19 +131,21 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private void init(Options options){
 		String resourcesIndexUrl = options.fetch("solr.resources.url");
 		String resourcesIndexSearchField = options.fetch("solr.resources.searchfield");
-		resource_index = new SolrSearch(resourcesIndexUrl, resourcesIndexSearchField);
+		resource_index = new ThresholdSlidingSolrSearch(resourcesIndexUrl, resourcesIndexSearchField, 1.0, 0.1);
 		
 		String classesIndexUrl = options.fetch("solr.classes.url");
 		String classesIndexSearchField = options.fetch("solr.classes.searchfield");
-		class_index = new SolrSearch(classesIndexUrl, classesIndexSearchField);
+		class_index = new ThresholdSlidingSolrSearch(classesIndexUrl, classesIndexSearchField, 1.0, 0.1);
 		
 		String propertiesIndexUrl = options.fetch("solr.properties.url");
 		String propertiesIndexSearchField = options.fetch("solr.properties.searchfield");
-		property_index = new SolrSearch(propertiesIndexUrl, propertiesIndexSearchField);
+		SolrSearch labelBasedPropertyIndex = new SolrSearch(propertiesIndexUrl, propertiesIndexSearchField);
 		
 		String boaPatternIndexUrl = options.fetch("solr.boa.properties.url");
 		String boaPatternIndexSearchField = options.fetch("solr.boa.properties.searchfield");
-		boa_pattern_property_index = new SolrSearch(boaPatternIndexUrl, boaPatternIndexSearchField);
+		SolrSearch patternBasedPropertyIndex = new SolrSearch(boaPatternIndexUrl, boaPatternIndexSearchField);
+		
+		property_index = new HierarchicalSolrSearch(patternBasedPropertyIndex, labelBasedPropertyIndex);
 		
 		int maxIndexResults = Integer.parseInt(options.fetch("solr.query.limit"), 10);
 		
@@ -507,41 +511,18 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			words = pruneList(slot.getWords());
 		}
 		
-		if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
-			for(String word : words){
-				tmp = new TreeSet<String>(new StringSimilarityComparator(word));
-				uris = uriCache.get(word);
-				index = boa_pattern_property_index;
-				if(uris == null){
-					uris = index.getResources(word);
-					uriCache.put(word, uris);
-				}
-				index = property_index;
-				if(uris.size() < 10){
-					uris.addAll(index.getResources(word));
-				}
-				if(uris.size() < 10){
-					uris.addAll(index.getResources("" + word + "~0.8"));
-				}
-				tmp.addAll(uris);
-				sortedURIs.addAll(tmp);
-				tmp.clear();
+		for(String word : words){
+			tmp = new TreeSet<String>(new StringSimilarityComparator(word));
+			uris = uriCache.get(word);
+			
+			if(uris == null){
+				uris = index.getResources(word, 5);
+				uriCache.put(word, uris);
 			}
-		} else {
-			for(String word : words){
-				tmp = new TreeSet<String>(new StringSimilarityComparator(word));
-				uris = uriCache.get(word);
-				if(uris == null){
-					uris = index.getResources(word);
-					uriCache.put(word, uris);
-				}
-				if(uris.size() < 10){
-					uris.addAll(index.getResources("" + word + "~0.7"));
-				}
-				tmp.addAll(uris);
-				sortedURIs.addAll(tmp);
-				tmp.clear();
-			}
+		
+			tmp.addAll(uris);
+			sortedURIs.addAll(tmp);
+			tmp.clear();
 		}
 		
 		slot2URI.put(slot, sortedURIs);

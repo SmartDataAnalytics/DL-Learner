@@ -54,6 +54,10 @@ public class SolrSearch implements Search{
 
 	@Override
 	public List<String> getResources(String queryString, int limit, int offset) {
+		return findResources(queryString, limit, offset);
+	}
+	
+	protected List<String> findResources(String queryString, int limit, int offset){
 		List<String> resources = new ArrayList<String>();
 		QueryResponse response;
 		try {
