@@ -33,7 +33,7 @@ public class ThresholdSlidingSolrSearch extends SolrSearch {
 			if(threshold < 1){
 				queryWithThreshold = queryString + "~" + threshold;
 			}
-			System.out.println(queryWithThreshold);
+			
 			resources.addAll(findResources(queryWithThreshold, limit - resources.size(), 0));
 			threshold -= step;
 		}
