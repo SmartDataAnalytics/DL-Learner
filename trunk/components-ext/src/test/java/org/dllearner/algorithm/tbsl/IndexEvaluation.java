@@ -286,17 +286,17 @@ public class IndexEvaluation {
 				templates = templateGenerator.buildTemplates(question);
 				if(!templates.isEmpty()){
 					targetEntities = extractEntities(targetQuery);
-					logger.info("Target entities:\n" + targetEntities);
+					logger.info("Target entities:" + targetEntities);
 					
 					
 					SortedSet<Slot> slots = new TreeSet<Slot>(new Comparator<Slot>() {
 
 						@Override
 						public int compare(Slot o1, Slot o2) {
-							if(o1.getToken().equals(o2.getToken()) && o1.getSlotType()==o2.getSlotType()){
+							if(o1.getToken().equals(o2.getToken()) && o1.getSlotType().equals(o2.getSlotType())){
 								return 0;
 							} else {
-								return o1.getToken().compareTo(o2.getToken());
+								return -1;
 							}
 						}
 					});
@@ -338,7 +338,7 @@ public class IndexEvaluation {
 	
 	public static void main(String[] args) throws IOException {
 		Logger.getRootLogger().removeAllAppenders();
-		Logger.getRootLogger().addAppender(new FileAppender(new SimpleLayout(), "log/index_eval.txt"));
+		Logger.getRootLogger().addAppender(new FileAppender(new SimpleLayout(), "log/index_eval.txt", false));
 		Logger.getLogger(IndexEvaluation.class).setLevel(Level.INFO);
 		if(args.length == 0){
 			System.out.println("Usage: IndexEvaluation <file>");
