@@ -88,8 +88,9 @@ public class Query
 			newTerm.setIsVariable(order.isVariable());
 			newTerm.setAggregate(order.getAggregate());
 			newTerm.setOrderBy(order.getOrderBy());
-			selTerms.add(newTerm);
+			orderBy.add(newTerm);
 		}
+		this.orderBy = orderBy;
 		//TODO add copy for filters
 		Set<SPARQL_Filter> filters = new HashSet<SPARQL_Filter>();
 		for(SPARQL_Filter filter : query.getFilters()){
@@ -99,7 +100,6 @@ public class Query
 		}
 		this.filter = filters;
 		
-		this.orderBy = orderBy;
 		this.limit = query.getLimit();
 		this.offset = query.getOffset();
 	}

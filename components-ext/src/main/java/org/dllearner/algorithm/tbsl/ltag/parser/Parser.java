@@ -3,12 +3,15 @@ package org.dllearner.algorithm.tbsl.ltag.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithm.tbsl.ltag.data.TreeNode;
 import org.dllearner.algorithm.tbsl.sem.dudes.data.Dude;
 import org.dllearner.algorithm.tbsl.sem.dudes.reader.ParseException;
 import org.dllearner.algorithm.tbsl.sem.util.Pair;
 
 public class Parser {
+	
+	private static final Logger logger = Logger.getLogger(Parser.class);
 
 	public boolean CONSTRUCT_SEMANTICS = false;
 	public boolean USE_DPS_AS_INITTREES = false;
@@ -66,11 +69,11 @@ public class Parser {
 		
 		
 		if (SHOW_GRAMMAR) {
-			System.out.println(parseGrammar);
+			logger.trace(parseGrammar);
 		}
 		if (SHOW_LEXICAL_COVERAGE) {
-			System.out.println("# OF TREES FOUND: " + parseGrammar.size());
-			System.out.println("# OF INPUT TOKENS: " + n);
+			logger.trace("# OF TREES FOUND: " + parseGrammar.size());
+			logger.trace("# OF INPUT TOKENS: " + n);
 		}
 
 		List<Pair<TreeNode, Short>> initTrees = parseGrammar.getInitTrees();
@@ -81,7 +84,7 @@ public class Parser {
 			internalParse(parseGrammar.getDPInitTrees(), n);
 		}
 
-		System.out.println("Constructed " + derivationTrees.size() + " derivation trees.\n");
+		logger.trace("Constructed " + derivationTrees.size() + " derivation trees.\n");
 		return derivationTrees;
 
 	}

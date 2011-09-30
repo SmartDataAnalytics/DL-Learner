@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithm.tbsl.ltag.data.Category;
 import org.dllearner.algorithm.tbsl.ltag.data.LTAG_Tree_Constructor;
 import org.dllearner.algorithm.tbsl.ltag.data.TreeNode;
@@ -24,6 +25,8 @@ import org.dllearner.algorithm.tbsl.templator.SlotBuilder;
  * anchor "a b .+ c".
  */
 class GrammarFilter {
+	
+	private static final Logger logger = Logger.getLogger(GrammarFilter.class);
 
 	final static String[] NAMED_Strings = {"named", "called"};
 	// DISAM
@@ -188,7 +191,7 @@ class GrammarFilter {
 			start++;
 		}
 		
-		System.out.println("\ncovered tokens: " + coveredTokens);
+		logger.trace("\ncovered tokens: " + coveredTokens);
 
 		/* construct slots for all unknown tokens */
 		
@@ -208,7 +211,7 @@ class GrammarFilter {
 				}
 			}
 		}
-		System.out.println("unknown words:  " + unknownWords);
+		logger.trace("unknown words:  " + unknownWords);
 		
 		List<Pair<String,String>> buildSlotFor = new ArrayList<Pair<String,String>>();
 		
@@ -235,7 +238,7 @@ class GrammarFilter {
 				System.out.println("Oh no, " + s + " has no POS tag!");
 			}
 		}	
-		System.out.println("build slot for: " + buildSlotFor + "\n");
+		logger.trace("build slot for: " + buildSlotFor + "\n");
 			
 		List<String[]> entries;
 		if (mode.equals("LEIPZIG")) {

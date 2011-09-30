@@ -9,6 +9,7 @@ import java.util.Set;
 
 import net.didion.jwnl.data.POS;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithm.tbsl.converter.DRS2SPARQL_Converter;
 import org.dllearner.algorithm.tbsl.converter.DUDE2UDRS_Converter;
 import org.dllearner.algorithm.tbsl.ltag.parser.LTAGLexicon;
@@ -28,6 +29,8 @@ import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 
 public class Templator {
+	
+	private static final Logger logger = Logger.getLogger(Templator.class);
 	
 	String[] GRAMMAR_FILES = {"tbsl/lexicon/english.lex"};
 	
@@ -85,7 +88,7 @@ public class Templator {
 		if (UNTAGGED_INPUT) {		
 			s = pp.normalize(s);
 			tagged = tagger.tag(s);
-			System.out.println("Tagged input: " + tagged);
+			logger.trace("Tagged input: " + tagged);
 		}
 		else {
 			tagged = s;
@@ -93,20 +96,20 @@ public class Templator {
 		
 		String newtagged = pp.condenseNominals(pp.findNEs(tagged,s));
 		newtagged = pp.condense(newtagged);
-		System.out.println("Preprocessed: " + newtagged); 
+		logger.trace("Preprocessed: " + newtagged); 
         
         p.parse(newtagged,g);
         
         if (p.getDerivationTrees().isEmpty()) {
             p.clear(g,p.getTemps());
             clearAgain = false;
-            System.out.println("[Templator.java] '" + s + "' could not be parsed.");
+            logger.error("[Templator.java] '" + s + "' could not be parsed.");
         }
         else {
         try {
         	p.buildDerivedTrees(g);
         } catch (ParseException e) {
-            System.err.println("[Templator.java] ParseException at '" + e.getMessage() + "'");
+            logger.error("[Templator.java] ParseException at '" + e.getMessage() + "'", e);
         }
         }
 
@@ -145,7 +148,7 @@ public class Templator {
                 			Template temp = d2s.convert(drs,slots);
                 			
                 			// find WordNet synonyms
-            				Set<String> newwords;
+            				List<String> newwords;
             				String word; 
             				String pos;
                 			for (Slot slot : temp.getSlots()) {
@@ -170,7 +173,7 @@ public class Templator {
                 						strings = wordnet.getAttributes(word);
                 					}
                 					
-                					newwords = new HashSet<String>();
+                					newwords = new ArrayList<String>();
                 					newwords.add(word);
                 					newwords.addAll(strings);            					
                 					
