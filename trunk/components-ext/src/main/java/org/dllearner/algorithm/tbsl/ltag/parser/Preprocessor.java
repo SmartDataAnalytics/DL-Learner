@@ -6,10 +6,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeNER;
 import org.dllearner.algorithm.tbsl.nlp.NER;
+import org.dllearner.algorithm.tbsl.templator.Templator;
 
 public class Preprocessor {
+	
+	private static final Logger logger = Logger.getLogger(Preprocessor.class);
 
 	static final String[] genericReplacements = { "\"", "", "'", "", "[!?.,;]", "" };
 	static final String[] englishReplacements = { "don't", "do not", "doesn't", "does not" };
@@ -80,57 +84,57 @@ public class Preprocessor {
 		
 		m = compAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/JJR");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJR");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJR");
 		}
 		m = superAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/JJS");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJS");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJS");
 		}
 		m = howAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/JJH");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJH");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJH");
 		}
 		m = nprepPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/NPREP");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/NPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/NPREP");
 		}
 		m = didPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by \"\"");
+			logger.trace("Replacing " + m.group(1) + " by \"\"");
 			condensedstring = condensedstring.replaceFirst(m.group(1),"");
 		}
 		m = prepfrontPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by \"\"");
+			logger.trace("Replacing " + m.group(1) + " by \"\"");
 			condensedstring = condensedstring.replaceFirst(m.group(1),"");
 		}
 		m = passivePattern1a.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(6)+"/PASSIVE");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(6)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(6)+"/PASSIVE");
 		}
 		m = passivePattern1b.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(6)+m.group(7)+"/PASSIVE");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(6)+m.group(7)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(6) + m.group(7)+"/PASSIVE");
 		}
 		m = passivePattern2a.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(7)+"/PASSIVE");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+"/PASSIVE");
 		}
 		m = pseudopassPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(7)+"/VPREP");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+"/VPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+"/VPREP");
 		}
 		m = pseudopwhPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(7)+m.group(8)+"/VPREP");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+m.group(8)+"/VPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+" "+m.group(8)+"/VPREP");
 		}
 		m = saveIsThere.matcher(condensedstring);
@@ -139,52 +143,52 @@ public class Preprocessor {
 		}
 		m = passivePattern2b.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(7)+"/PASSIVE");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+"/PASSIVE");
 		}
 		m = passpartPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/PASSPART");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/PASSPART");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/PASSPART");
 		}
 		m = vpassPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/VPASS");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/VPASS");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/VPASS");
 		}
 		m = vpassinPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/VPASSIN");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/VPASSIN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/VPASSIN");
 		}
 		m = gerundinPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/GERUNDIN");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/GERUNDIN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/GERUNDIN");
 		}
 		m = vprepPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"/VPREP");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/VPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/VPREP");
 		}
 		m = whenPattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHEN");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHEN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2) + m.group(3)+"/WHEN");
 		}
 		m = wherePattern.matcher(condensedstring);
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHERE");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHERE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2) + m.group(3)+"/WHERE");
 		}
 		m = adjnounPattern.matcher(condensedstring); 
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNN");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNN");
 		}
 		m = adjnprepPattern.matcher(condensedstring); 
 		while (m.find()) {
-			System.out.println("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNPREP");
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNPREP");
 		}
 		
@@ -232,7 +236,7 @@ public class Preprocessor {
 		List<String> namedentities = ner.getNamedEntitites(untagged);
 		List<String> usefulnamedentities = new ArrayList<String>();
 		
-		System.out.println("Proposed NEs: " + namedentities);
+		logger.trace("Proposed NEs: " + namedentities);
 		
 		// keep only longest matches (e.g. keep 'World of Warcraft' and forget about 'Warcraft') 
 		// containing at least one upper case letter (in order to filter out errors like 'software')
@@ -250,7 +254,7 @@ public class Preprocessor {
 			}
 		}
 		
-		System.out.println("Accepted NEs: " + usefulnamedentities);
+		logger.trace("Accepted NEs: " + usefulnamedentities);
 		
 		// replace POS tags accordingly
 		for (String ne : usefulnamedentities) {
