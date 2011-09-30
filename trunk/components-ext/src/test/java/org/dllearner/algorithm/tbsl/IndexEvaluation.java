@@ -204,7 +204,6 @@ public class IndexEvaluation {
 	}
 	
 	private List<String> getCandidateURIsSortedBySimilarity(Slot slot){
-		logger.info("Generating URI candidates for " + slot.getWords() + "...");
 		List<String> sortedURIs = new ArrayList<String>();
 		//get the appropriate index based on slot type
 		SolrSearch index = getIndexBySlotType(slot);
@@ -230,7 +229,7 @@ public class IndexEvaluation {
 			tmp.clear();
 		}
 		
-		logger.info("URIs: " + sortedURIs);
+		logger.info(slot.getToken() + "(" + slot.getSlotType() + ")" + "-->" + sortedURIs);
 		return sortedURIs;
 	}
 	
@@ -250,7 +249,7 @@ public class IndexEvaluation {
 				prunedList.add(w1);
 			}
 		}
-		logger.info("Pruned list: " + prunedList);
+		logger.trace("Pruned list: " + prunedList);
 //		return getLemmatizedWords(words);
 		return prunedList;
 	}
@@ -279,8 +278,9 @@ public class IndexEvaluation {
 				targetQuery = id2Query.get(entry.getKey());
 				targetQuery = targetQuery.replace("onto:", "dbo:").replace("res:", "dbr:").replace("prop:", "dbp:");
 				
+				logger.info("####################################################");
 				logger.info(question);
-				logger.info(targetQuery);
+//				logger.info(targetQuery);
 				
 				
 				templates = templateGenerator.buildTemplates(question);
@@ -331,6 +331,7 @@ public class IndexEvaluation {
 				
 			} catch (Exception e) {
 				e.printStackTrace();
+				logger.error("Error");
 			}
 			
 		}
