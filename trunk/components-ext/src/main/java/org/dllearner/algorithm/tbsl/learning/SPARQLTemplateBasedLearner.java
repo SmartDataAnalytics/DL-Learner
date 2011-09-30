@@ -1,17 +1,12 @@
 package org.dllearner.algorithm.tbsl.learning;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +32,7 @@ import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Prefixes;
-import org.dllearner.algorithm.tbsl.util.Similarity;
+import org.dllearner.algorithm.tbsl.util.StringSimilarityComparator;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.Oracle;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
@@ -53,9 +48,6 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -575,29 +567,6 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return pruned;
 	}
 	
-	class StringSimilarityComparator implements Comparator<String>{
-		private String s;
-		
-		public StringSimilarityComparator(String s) {
-			this.s = s;
-		}
-		
-		@Override
-		public int compare(String s1, String s2) {
-			
-			double sim1 = Similarity.getSimilarity(s, s1);
-			double sim2 = Similarity.getSimilarity(s, s2);
-			
-			if(sim1 < sim2){
-				return 1;
-			} else if(sim1 > sim2){
-				return -1;
-			} else {
-				return s1.compareTo(s2);
-			}
-		}
-		
-	}
 	
 	private SolrSearch getIndexBySlotType(Slot slot){
 		SolrSearch index = null;
@@ -756,9 +725,9 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
-//		String question = "Give me all cities in Canada.";
+		String question = "Give me the highest mountain in Germany";
 		
-		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
+//		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 				Collections.<String>singletonList(""), Collections.<String>emptyList());
