@@ -20,22 +20,16 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.InverseFunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.Heuristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,13 +44,6 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
-	
-	private List<EvaluatedAxiom> currentlyBestAxioms;
-	private long startTime;
-	private int fetchedRows;
-	
 
 	public InverseFunctionalObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -68,14 +55,6 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 
 	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
-	}
-	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
 	}
 	
 	@Override
@@ -117,11 +96,6 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
-	}
-
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
 	}
 	
 	public static void main(String[] args) throws Exception{

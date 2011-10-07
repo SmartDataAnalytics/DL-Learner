@@ -20,14 +20,12 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DataPropertyEditor;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.FunctionalDatatypePropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -45,13 +43,6 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
 	private DatatypeProperty propertyToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
-	
-	private List<EvaluatedAxiom> currentlyBestAxioms;
-	private long startTime;
-	private int fetchedRows;
-	
 
 	public FunctionalDataPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -63,14 +54,6 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 
 	public void setPropertyToDescribe(DatatypeProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
-	}
-	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
 	}
 	
 	@Override
@@ -112,10 +95,5 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
-	}
-
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
 	}
 }

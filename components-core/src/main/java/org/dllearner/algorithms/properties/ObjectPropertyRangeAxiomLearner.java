@@ -21,11 +21,10 @@ package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -33,13 +32,11 @@ import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -58,12 +55,6 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
-	
-	private List<EvaluatedAxiom> currentlyBestAxioms;
-	private long startTime;
-	private int fetchedRows;
 	
 	public ObjectPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -75,14 +66,6 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 
 	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
-	}
-	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
 	}
 
 	@Override
@@ -120,17 +103,6 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 			repeat = (ret == limit);
 		}
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
-	}
-
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
-	}
-
-	private boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
 	private List<EvaluatedAxiom> buildEvaluatedAxioms(Map<Individual, SortedSet<Description>> individual2Types){

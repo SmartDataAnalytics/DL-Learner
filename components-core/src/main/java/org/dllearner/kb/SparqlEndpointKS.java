@@ -28,6 +28,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ListStringEditor;
+import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.springframework.beans.propertyeditors.URLEditor;
 
@@ -69,6 +70,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		if(endpoint == null) {
 			endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
 		}
+		supportsSPARQL_1_1 = new SPARQLTasks(endpoint).supportsSPARQL_1_1();
 	}
 	
 	public SparqlEndpoint getEndpoint() {

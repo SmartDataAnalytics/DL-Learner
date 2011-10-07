@@ -30,9 +30,7 @@ import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -50,13 +48,6 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
-	
-	private List<EvaluatedAxiom> currentlyBestAxioms;
-	private long startTime;
-	private int fetchedRows;
-	
 	
 	public SubObjectPropertyOfAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -68,14 +59,6 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 
 	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
-	}
-	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
 	}
 
 	@Override
@@ -125,17 +108,6 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
-
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
-	}
-
-	private boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
-	}
 	
 	private List<EvaluatedAxiom> buildAxioms(Map<ObjectProperty, Integer> property2Count){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
@@ -151,10 +123,6 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 		
 		property2Count.put(propertyToDescribe, total);
 		return axioms;
-	}
-	
-	private long getRemainingMaxExecutionTime(){
-		return (maxExecutionTimeInSeconds == 0) ? 0 : Math.max(1, (maxExecutionTimeInSeconds * 1000)-(System.currentTimeMillis()-startTime));
 	}
 	
 	public static void main(String[] args) throws Exception{
