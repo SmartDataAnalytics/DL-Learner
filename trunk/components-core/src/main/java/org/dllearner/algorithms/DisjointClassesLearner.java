@@ -34,7 +34,6 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.NamedClassEditor;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
@@ -65,23 +64,11 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	
 	@ConfigOption(name="classToDescribe", description="", propertyEditorClass=NamedClassEditor.class)
 	private NamedClass classToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
 	
 	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
-	private long startTime;
-	private int fetchedRows;
 	
 	public DisjointClassesLearner(SparqlEndpointKS ks){
 		this.ks = ks;
-	}
-	
-	public int getMaxExecutionTimeInSeconds() {
-		return maxExecutionTimeInSeconds;
-	}
-
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
 	public NamedClass getClassToDescribe() {
@@ -90,14 +77,6 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 
 	public void setClassToDescribe(NamedClass classToDescribe) {
 		this.classToDescribe = classToDescribe;
-	}
-	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
 	}
 
 	@Override
@@ -226,12 +205,6 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		
 		class2Count.put(classToDescribe, all);
 		return evalDescs;
-	}
-	
-	private boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
 	public static void main(String[] args) throws Exception{

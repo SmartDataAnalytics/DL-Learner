@@ -31,7 +31,6 @@ import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.DisjointObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
@@ -51,12 +50,6 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
-	
-	private List<EvaluatedAxiom> currentlyBestAxioms;
-	private long startTime;
-	private int fetchedRows;
 	
 	public DisjointObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -68,14 +61,6 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 
 	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
-	}
-	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
 	}
 
 	@Override
@@ -128,11 +113,6 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
-	
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
-	}
 
 	private List<EvaluatedAxiom> buildAxioms(Map<ObjectProperty, Integer> property2Count, Set<ObjectProperty> allProperties){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
@@ -160,12 +140,6 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		
 		property2Count.put(propertyToDescribe, all);
 		return axioms;
-	}
-	
-	private boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
 	

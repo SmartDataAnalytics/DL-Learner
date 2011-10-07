@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -35,7 +35,6 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.NamedClassEditor;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
@@ -67,12 +66,8 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	
 	@ConfigOption(name="classToDescribe", required=true, description="", propertyEditorClass=NamedClassEditor.class)
 	private NamedClass classToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
 	
 	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
-	private long startTime;
-	private int fetchedRows;
 	
 	public SimpleSubclassLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
@@ -154,14 +149,6 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		this.classToDescribe = classToDescribe;
 	}
 	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
-	}
-	
 	private boolean addIndividualsWithTypes(Map<Individual, SortedSet<Description>> ind2Types, int limit, int offset){
 //		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
 		boolean notEmpty = false;
@@ -225,13 +212,6 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		}
 		
 	}
-	
-	private boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
-	}
-	
 	
 	public static void main(String[] args) throws Exception{
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveOpenLink());

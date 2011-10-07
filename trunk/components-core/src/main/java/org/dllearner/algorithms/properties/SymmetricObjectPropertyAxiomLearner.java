@@ -19,15 +19,17 @@
 
 package org.dllearner.algorithms.properties;
 
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
+import org.aksw.commons.collections.multimaps.BiHashMultimap;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -46,13 +48,6 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
-	
-	private List<EvaluatedAxiom> currentlyBestAxioms;
-	private long startTime;
-	private int fetchedRows;
-	
 
 	public SymmetricObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -64,14 +59,6 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 
 	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
-	}
-	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
 	}
 	
 	@Override
@@ -89,23 +76,51 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			logger.info("Property is already declared as symmetric in knowledge base.");
 		}
 		
-		//get fraction of instances s with <s p o> also exists <o p s> 
-//		query = "SELECT (COUNT(?s)) AS ?all ,(COUNT(?o1)) AS ?symmetric WHERE {?s <%s> ?o. OPTIONAL{?o <%s> ?s. ?o <%s> ?o1}}";
-//		query = query.replace("%s", propertyToDescribe.getURI().toString());
-//		ResultSet rs = executeSelectQuery(query);
-//		QuerySolution qs;
-//		while(rs.hasNext()){
-//			qs = rs.next();
-//			int all = qs.getLiteral("all").getInt();
-//			int symmetric = qs.getLiteral("symmetric").getInt();
-//			if(all > 0){
-//				double frac = symmetric / (double)all;
-//				currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
-//						computeScore(all, symmetric)));
-//			}
-//			
-//		}
-		query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+		if(ks.supportsSPARQL_1_1()){
+			runSPARQL1_1_Mode();
+		} else {
+			runSPARQL1_0_Mode();
+		}
+		
+		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	}
+	
+	private void runSPARQL1_0_Mode(){
+		BiHashMultimap<Individual, Individual> individualsMap = new BiHashMultimap<Individual, Individual>();
+		boolean repeat = true;
+		int limit = 1000;
+		while(!terminationCriteriaSatisfied() && repeat){
+			String query = String.format("SELECT DISTINCT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d", propertyToDescribe.getURI().toString(), limit, fetchedRows);
+			ResultSet rs = executeSelectQuery(query);
+			QuerySolution qs;
+			Individual s;
+			Individual o;
+			int cnt = 0;
+			while(rs.hasNext()){
+				qs = rs.next();
+				s = new Individual(qs.getResource("s").getURI());
+				o = new Individual(qs.getResource("o").getURI());
+				individualsMap.put(s, o);
+				cnt++;
+			}
+			int total = individualsMap.size();
+			int symmetric = 0;
+			
+			for(java.util.Map.Entry<Individual, Individual> e : individualsMap.entries()){
+				if(individualsMap.getInverse().containsEntry(e.getKey(), e.getValue())){
+					symmetric++;
+				}
+			}
+			
+			currentlyBestAxioms = Collections.singletonList(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
+			computeScore(total, symmetric)));
+			fetchedRows += limit;
+			repeat = (cnt == limit);
+		}
+	}
+	
+	private void runSPARQL1_1_Mode(){
+		String query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -126,20 +141,14 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		
 		if(total > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
-					computeScore(total, symmetric), declaredAsSymmetric));
+					computeScore(total, symmetric)));
 		}
 		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
-	}
-
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SymmetricObjectPropertyAxiomLearner l = new SymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/similar"));
+		SymmetricObjectPropertyAxiomLearner l = new SymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(new URL("http://factforge.net/sparql"))));//.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/industry"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();

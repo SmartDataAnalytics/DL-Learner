@@ -32,13 +32,11 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DataPropertyEditor;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -55,12 +53,6 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
 	private DatatypeProperty propertyToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
-	
-	private List<EvaluatedAxiom> currentlyBestAxioms;
-	private long startTime;
-	private int fetchedRows;
 	
 	public DataPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -74,14 +66,6 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
-	}
-
 	@Override
 	public void start() {
 		logger.info("Start learning...");
@@ -108,17 +92,6 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
-	}
-
-	private boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
-	}
-	
 	private List<EvaluatedAxiom> buildEvaluatedAxioms(Map<Individual, SortedSet<Datatype>> individual2Types){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
 		Map<Datatype, Integer> result = new HashMap<Datatype, Integer>();

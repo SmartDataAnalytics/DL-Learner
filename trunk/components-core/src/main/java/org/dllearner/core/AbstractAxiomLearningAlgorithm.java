@@ -24,10 +24,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
@@ -44,6 +43,7 @@ import org.dllearner.utilities.owl.AxiomComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
@@ -59,11 +59,17 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	protected int maxExecutionTimeInSeconds = 10;
 	@ConfigOption(name="returnOnlyNewAxioms", defaultValue="false", description="", propertyEditorClass=BooleanEditor.class)
 	protected boolean returnOnlyNewAxioms;
+	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
+	protected int maxFetchedRows;
 	
 	protected SparqlEndpointKS ks;
 	protected SPARQLReasoner reasoner;
 	
+	protected List<EvaluatedAxiom> currentlyBestAxioms;
 	protected SortedSet<Axiom> existingAxioms;
+	protected int fetchedRows;
+	
+	protected long startTime;
 	
 	public AbstractAxiomLearningAlgorithm() {
 		existingAxioms = new TreeSet<Axiom>(new AxiomComparator());
@@ -95,6 +101,14 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	public void setReturnOnlyNewAxioms(boolean returnOnlyNewAxioms) {
 		this.returnOnlyNewAxioms = returnOnlyNewAxioms;
 	}
+	
+	public int getMaxFetchedRows() {
+		return maxFetchedRows;
+	}
+
+	public void setMaxFetchedRows(int maxFetchedRows) {
+		this.maxFetchedRows = maxFetchedRows;
+	}
 
 	@Override
 	public void start() {
@@ -102,6 +116,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 
 	@Override
 	public void init() throws ComponentInitException {
+		ks.init();
 		if(reasoner == null){
 			reasoner = new SPARQLReasoner(ks);
 		}
@@ -123,6 +138,10 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			bestAxioms.add(evAx.getAxiom());
 		}
 		return bestAxioms;
+	}
+	
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
+		return currentlyBestAxioms;
 	}
 
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
@@ -177,6 +196,13 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
 			queryExecution.addNamedGraph(ngu);
 		}			
+//		ResultSet rs = queryExecution.execSelect();
+//		boolean result = false;
+//		QuerySolution qs;
+//		if(rs.hasNext()){
+//			qs = rs.next();
+//			result = qs.get(qs.varNames().next()).asLiteral().getBoolean();
+//		}
 		boolean result = queryExecution.execAsk();
 		return result;
 	}
@@ -191,6 +217,12 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			}
 		});
         return entries;
+	}
+	
+	protected boolean terminationCriteriaSatisfied(){
+		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
+		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
+		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
 	protected List<Entry<Description, Integer>> sortByValues(Map<Description, Integer> map, final boolean useHierachy){

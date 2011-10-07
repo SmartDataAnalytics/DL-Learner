@@ -20,13 +20,12 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
@@ -46,13 +45,6 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
-	
-	private List<EvaluatedAxiom> currentlyBestAxioms;
-	private long startTime;
-	private int fetchedRows;
-	
 
 	public TransitiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -64,14 +56,6 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 
 	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
-	}
-	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
 	}
 	
 	@Override
@@ -89,22 +73,23 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			logger.info("Property is already declared as transitive in knowledge base.");
 		}
 		
-		//get fraction of instances s where for a chain <s p o> <o p o1> exists also <s p o1> 
-//		query = "SELECT (COUNT(?o)) AS ?all ,(COUNT(?o2)) AS ?transitive WHERE {?s <%s> ?o. ?o <%s> ?o1. OPTIONAL{?s <%s> ?o1. ?s <%s> ?o2}}";
-//		query = query.replace("%s", propertyToDescribe.getURI().toString());
-//		ResultSet rs = executeSelectQuery(query);
-//		QuerySolution qs;
-//		while(rs.hasNext()){
-//			qs = rs.next();
-//			int all = qs.getLiteral("all").getInt();
-//			int transitive = qs.getLiteral("transitive").getInt();
-//			if(all > 0){
-//				currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe),
-//						computeScore(all, transitive)));
-//			}
-//			
-//		}
-		query = "SELECT (COUNT(?o) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1.}";
+
+		if(ks.supportsSPARQL_1_1()){
+			runSPARQL1_1_Mode();
+		} else {
+			runSPARQL1_0_Mode();
+		}
+		
+		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	}
+	
+
+	private void runSPARQL1_0_Mode(){
+		currentlyBestAxioms = Collections.emptyList();
+	}
+	
+	private void runSPARQL1_1_Mode(){
+		String query = "SELECT (COUNT(?o) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -124,15 +109,9 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		
 		if(total > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe),
-					computeScore(total, transitive), declaredAsTransitive));
+					computeScore(total, transitive)));
 		}
 		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
-	}
-
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
 	}
 	
 	public static void main(String[] args) throws Exception{

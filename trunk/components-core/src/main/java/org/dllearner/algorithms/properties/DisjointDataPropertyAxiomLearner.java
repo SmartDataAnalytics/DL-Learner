@@ -26,13 +26,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Level;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DataPropertyEditor;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DisjointDatatypePropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -52,12 +50,6 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
 	private DatatypeProperty propertyToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
-	
-	private List<EvaluatedAxiom> currentlyBestAxioms;
-	private long startTime;
-	private int fetchedRows;
 	
 	public DisjointDataPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -71,14 +63,6 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
-	}
-
 	@Override
 	public void start() {
 		logger.info("Start learning...");
@@ -157,12 +141,6 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		
 		property2Count.put(propertyToDescribe, all);
 		return axioms;
-	}
-	
-	private boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
 	public static void main(String[] args) throws Exception{

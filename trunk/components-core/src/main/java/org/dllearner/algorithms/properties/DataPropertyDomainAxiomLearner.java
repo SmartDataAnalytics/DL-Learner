@@ -33,7 +33,6 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DataPropertyEditor;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyDomainAxiom;
 import org.dllearner.core.owl.Description;
@@ -56,12 +55,6 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
 	private DatatypeProperty propertyToDescribe;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
-	private int maxFetchedRows = 0;
-	
-	private List<EvaluatedAxiom> currentlyBestAxioms;
-	private long startTime;
-	private int fetchedRows;
 	
 	public DataPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -75,14 +68,6 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
-	public int getMaxFetchedRows() {
-		return maxFetchedRows;
-	}
-
-	public void setMaxFetchedRows(int maxFetchedRows) {
-		this.maxFetchedRows = maxFetchedRows;
-	}
-
 	@Override
 	public void start() {
 		logger.info("Start learning...");
@@ -120,17 +105,6 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 
-	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
-	}
-
-	private boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
-	}
-	
 	private List<EvaluatedAxiom> buildEvaluatedAxioms(Map<Individual, SortedSet<Description>> individual2Types){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
 		Map<Description, Integer> result = new HashMap<Description, Integer>();
@@ -177,21 +151,23 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		while(rs.hasNext()){
 			cnt++;
 			qs = rs.next();
-			ind = new Individual(qs.getResource("ind").getURI());
-			newType = new NamedClass(qs.getResource("type").getURI());
-			types = ind2Types.get(ind);
-			if(types == null){
-				types = new TreeSet<Description>();
-				ind2Types.put(ind, types);
-			}
-			types.add(newType);
-			Set<Description> superClasses;
-			if(reasoner.isPrepared()){
-				if(reasoner.getClassHierarchy().contains(newType)){
-					superClasses = reasoner.getClassHierarchy().getSuperClasses(newType);
-					types.addAll(superClasses);
+			if(qs.get("type").isURIResource()){
+				ind = new Individual(qs.getResource("ind").getURI());
+				newType = new NamedClass(qs.getResource("type").getURI());
+				types = ind2Types.get(ind);
+				if(types == null){
+					types = new TreeSet<Description>();
+					ind2Types.put(ind, types);
 				}
-				
+				types.add(newType);
+				Set<Description> superClasses;
+				if(reasoner.isPrepared()){
+					if(reasoner.getClassHierarchy().contains(newType)){
+						superClasses = reasoner.getClassHierarchy().getSuperClasses(newType);
+						types.addAll(superClasses);
+					}
+					
+				}
 			}
 		}
 		return cnt;
