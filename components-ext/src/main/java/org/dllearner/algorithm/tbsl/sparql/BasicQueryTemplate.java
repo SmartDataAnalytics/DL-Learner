@@ -125,6 +125,10 @@ public class BasicQueryTemplate
 	public Set<SPARQL_Filter> getFilters(){
 		return filter;
 	}
+	
+	public Set<Path> getConditions() {
+		return conditions;
+	}
 
 	public void setPrefixes(Set<SPARQL_Prefix> prefixes)
 	{
