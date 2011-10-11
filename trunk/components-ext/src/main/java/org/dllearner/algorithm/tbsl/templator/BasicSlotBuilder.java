@@ -89,13 +89,13 @@ public class BasicSlotBuilder {
 				else if (pos.equals("NPREP")) {
 					String[] dpEntry1 = {token,
 							"(DP (NP " + treetoken + " DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x), of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slot + "]>"}; 
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slot + "]>"}; 
 					String[] dpEntry2 = {token,
 							"(DP DET[det] (NP " + treetoken + " DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ | SLOT_" + tokenfluent + "(x), of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slot + "]>"};
+							"<x,l1,<<e,t>,t>,[ l1:[ | SLOT_" + tokenfluent + "(x,y) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slot + "]>"};
 					String[] npEntry = {token,
 							"(NP " + treetoken + " DP[pobj])",
-							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x), of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slot + "]>"};
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slot + "]>"};
 					result.add(dpEntry1);
 					result.add(dpEntry2);
 					result.add(npEntry);

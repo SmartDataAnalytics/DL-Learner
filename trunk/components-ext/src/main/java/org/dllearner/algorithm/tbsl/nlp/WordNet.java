@@ -17,7 +17,7 @@ import net.didion.jwnl.dictionary.Dictionary;
 
 public class WordNet {
 	
-	private Dictionary dict;	
+	public Dictionary dict;	
 	
 	public WordNet() {
 		try {
