@@ -29,6 +29,7 @@
 						<exclude>org/dllearner/test/*</exclude>
 						<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
 						<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>
+						<exclude>org/dllearner/test/junit/DisjointClassesLearningTest.java</exclude>
 						<!--This line excludes inner classes -->
 						<exclude>**/*$*</exclude>
 					</excludes>
@@ -131,7 +132,7 @@
 					<splitindex>true</splitindex>
 					<stylesheetfile>src/etc/javadoc.css</stylesheetfile>
 					<use>true</use>
-					<version>true</version>#
+					<version>true</version>
 					<linksource>true</linksource>
 					<bottom>&lt;img style='float:right' src='http://sflogo.sourceforge.net/sflogo.php?group_id=203619&amp;type=1' width='88' height='31' border='0' alt='SourceForge.net Logo' /&gt; DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007-2011 Jens Lehmann</bottom>
 					<encoding>ISO-8859-1</encoding>
@@ -148,6 +149,7 @@
 		<dependency>
 			<groupId>org.aksw.commons</groupId>
 			<artifactId>sparql</artifactId>
+			<version>0.2-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-api</artifactId>
@@ -289,5 +291,9 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
         </dependency>
+        <dependency>
+				<groupId>org.aksw.commons</groupId>
+				<artifactId>collections</artifactId>
+			</dependency>
 	</dependencies>
 </project>
