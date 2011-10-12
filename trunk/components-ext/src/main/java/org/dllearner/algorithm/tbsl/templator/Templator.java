@@ -116,7 +116,7 @@ public class Templator {
         // build pairs <String,POStag> from tagged
         Hashtable<String,String> postable = new Hashtable<String,String>();
         for (String st : newtagged.split(" ")) {
-			postable.put(st.substring(0,st.indexOf("/")),st.substring(st.indexOf("/")+1));;
+			postable.put(st.substring(0,st.indexOf("/")).toLowerCase(),st.substring(st.indexOf("/")+1));;
 		}
         //
         
@@ -136,11 +136,11 @@ public class Templator {
                 	
                 	if (!containsModuloRenaming(drses,drs)) {
 //                    	// DEBUG
-//                		System.out.println(dude);
-//                		System.out.println(drs);
-//                		for (Slot sl : slots) {
-//                			System.out.println(sl.toString());
-//                		}
+                		System.out.println(dude);
+                		System.out.println(drs);
+                		for (Slot sl : slots) {
+                			System.out.println(sl.toString());
+                		}
 //                		//
                 		drses.add(drs);
                 		
@@ -155,21 +155,23 @@ public class Templator {
                 				if (!slot.getWords().isEmpty()) {
                 					
                 					word = slot.getWords().get(0);
-                					pos = postable.get(word.replace(" ","_"));
+                					pos = postable.get(word.toLowerCase().replace(" ","_"));
                 					
                 					POS wordnetpos = null;
-                					if (equalsOneOf(pos,noun)) {
-                						wordnetpos = POS.NOUN;
-                					}
-                					else if (equalsOneOf(pos,adjective)) {
-                						wordnetpos = POS.ADJECTIVE;
-                					}
-                					else if (equalsOneOf(pos,verb)) {
-                						wordnetpos = POS.VERB;
-                					}
+                					if (pos != null) {
+	                					if (equalsOneOf(pos,noun)) {
+	                						wordnetpos = POS.NOUN;
+	                					}
+	                					else if (equalsOneOf(pos,adjective)) {
+	                						wordnetpos = POS.ADJECTIVE;
+	                					}
+	                					else if (equalsOneOf(pos,verb)) {
+	                						wordnetpos = POS.VERB;
+	                					}
+	                				}
                 					
                 					List<String> strings = new ArrayList<String>();
-                					if (wordnetpos.equals(POS.ADJECTIVE)) {
+                					if (wordnetpos != null && wordnetpos.equals(POS.ADJECTIVE)) {
                 						strings = wordnet.getAttributes(word);
                 					}
                 					
@@ -177,9 +179,11 @@ public class Templator {
                 					newwords.add(word);
                 					newwords.addAll(strings);            					
                 					
-               						newwords.addAll(wordnet.getBestSynonyms(wordnetpos,getLemmatizedWord(word)));
-                					for (String att : getLemmatizedWords(strings)) {
-	                					newwords.addAll(wordnet.getBestSynonyms(wordnetpos,att));
+                					if (wordnetpos != null) {
+                						newwords.addAll(wordnet.getBestSynonyms(wordnetpos,getLemmatizedWord(word)));
+	                					for (String att : getLemmatizedWords(strings)) {
+		                					newwords.addAll(wordnet.getBestSynonyms(wordnetpos,att));
+	                					}
                 					}
                 					if (newwords.isEmpty()) {
                 						newwords.add(slot.getWords().get(0));

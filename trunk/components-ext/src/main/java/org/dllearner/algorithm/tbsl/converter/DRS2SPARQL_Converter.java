@@ -246,38 +246,38 @@ public class DRS2SPARQL_Converter {
             } else if (predicate.equals("greater")) {
                 query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
-                        new SPARQL_Term(simple.getArguments().get(0).getValue(),true),
+                        new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.GT)));
                 return query;
             } else if (predicate.equals("greaterorequal")) {
                 query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
-                        new SPARQL_Term(simple.getArguments().get(0).getValue(),true),
+                        new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.GTEQ)));
                 return query;
             } else if (predicate.equals("less")) {
                 query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
-                        new SPARQL_Term(simple.getArguments().get(0).getValue(),true),
+                        new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.LT)));
                 return query;
             } else if (predicate.equals("lessorequal")) {
                 query.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
-                        new SPARQL_Term(simple.getArguments().get(0).getValue(),true),
+                        new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.LTEQ)));
                 return query;
             } else if (predicate.equals("maximum")) {
-                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(),true));
+                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(),false));
                 query.addOrderBy(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_OrderBy.DESC));
                 query.setLimit(1);
                 return query;
             } else if (predicate.equals("minimum")) {
-                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(),true));
+                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(),false));
                 query.addOrderBy(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_OrderBy.ASC));
                 query.setLimit(1);
                 return query;
