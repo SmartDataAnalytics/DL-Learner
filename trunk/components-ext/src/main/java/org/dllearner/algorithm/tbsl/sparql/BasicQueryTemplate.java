@@ -207,10 +207,6 @@ public class BasicQueryTemplate
 		return offset;
 	}
 
-	public List<Slot> getSlots()
-	{
-		return slots;
-	}
 	
 	public void setOffset(int offset)
 	{
