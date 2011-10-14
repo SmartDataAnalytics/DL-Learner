@@ -71,6 +71,14 @@ public class OWLFile extends AbstractKnowledgeSource {
 		this.url = url;
 	}
 
+	public OWLFile(String filename) {
+		try {
+			url = new File(filename).toURI().toURL();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		URLConfigOption urlOption = new URLConfigOption("url", "URL pointing to the OWL file", null, true, true);

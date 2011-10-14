@@ -58,13 +58,57 @@ public class CLI {
 	private static Logger rootLogger = Logger.getRootLogger();
 	
 	private boolean writeSpringConfiguration = false;
+	private ApplicationContext context;
+	
+	public CLI(File file) throws IOException{
+		Resource confFile = new FileSystemResource(file);
+		
+		List<Resource> springConfigResources = new ArrayList<Resource>();
 
-	public CLI(){
+        //DL-Learner Configuration Object
+        IConfiguration configuration = new ConfParserConfiguration(confFile);
 
+        ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
+        context =  builder.buildApplicationContext(configuration,springConfigResources);
+        
+        // a lot of debugging stuff
+//        FastInstanceChecker fi = context.getBean("reasoner", FastInstanceChecker.class);
+//        System.out.println(fi.getClassHierarchy());
+//        NamedClass male = new NamedClass("http://localhost/foo#male");
+//        System.out.println(fi.getIndividuals(new NamedClass("http://localhost/foo#male")));
+//        System.out.println(fi.getIndividuals().size());
+//        System.out.println("has type: " + fi.hasTypeImpl(male, new Individual("http://localhost/foo#bernd")));
+//        
+//        PosNegLPStandard lp = context.getBean("lp", PosNegLPStandard.class);
+//        System.out.println(lp.getPositiveExamples());
+//        System.out.println(lp.getNegativeExamples());
+//        System.out.println(lp.getAccuracy(new NamedClass("http://localhost/foo#male")));
+    
+        // get a CLI bean if it exists
+        CLI cli = null;
+        if(context.getBeansOfType(CLI.class).size()>0) {
+        	System.out.println();
+        	cli = context.getBean(CLI.class);
+        	SpringConfigurationXMLBeanConverter converter = new SpringConfigurationXMLBeanConverter();
+        	XmlObject xml = converter.convert(configuration);
+        	String springFilename = file.getCanonicalPath().replace(".conf", ".xml");
+        	File springFile = new File(springFilename);
+        	if(springFile.exists()) {
+        		logger.warn("Cannot write Spring configuration, because " + springFilename + " already exists.");
+        	} else {
+        		Files.createFile(springFile, xml.toString());
+        	}
+//        	SpringConfigurationXMLBeanConverter converter;
+        }
+        
+        // start algorithm in conf file
+//        LearningAlgorithm algorithm = context.getBean("alg",LearningAlgorithm.class);
+//        algorithm.start();
     }
 
-    public void run(ApplicationContext context, String algorithmBeanName){
-        AbstractCELA algorithm = context.getBean(algorithmBeanName, AbstractCELA.class);
+    public void run() { // ApplicationContext context, String algorithmBeanName){
+    	LearningAlgorithm algorithm = context.getBean(LearningAlgorithm.class);
+//        LearningAlgorithm algorithm = context.getBean(algorithmBeanName, LearningAlgorithm.class);
         algorithm.start();
     }
 
@@ -101,54 +145,17 @@ public class CLI {
 		
 		// read file and print and print a message if it does not exist
 		File file = new File(args[args.length - 1]);
-		Resource confFile = new FileSystemResource(args[args.length - 1]);
 		if(!file.exists()) {
 			System.out.println("File \"" + file + "\" does not exist.");
 			System.exit(0);			
 		}
 		
-        List<Resource> springConfigResources = new ArrayList<Resource>();
+        CLI cli = new CLI(file);
+        cli.run();
+	}
 
-        //DL-Learner Configuration Object
-        IConfiguration configuration = new ConfParserConfiguration(confFile);
-
-        ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-        ApplicationContext  context =  builder.buildApplicationContext(configuration,springConfigResources);
-        
-        // a lot of debugging stuff
-//        FastInstanceChecker fi = context.getBean("reasoner", FastInstanceChecker.class);
-//        System.out.println(fi.getClassHierarchy());
-//        NamedClass male = new NamedClass("http://localhost/foo#male");
-//        System.out.println(fi.getIndividuals(new NamedClass("http://localhost/foo#male")));
-//        System.out.println(fi.getIndividuals().size());
-//        System.out.println("has type: " + fi.hasTypeImpl(male, new Individual("http://localhost/foo#bernd")));
-//        
-//        PosNegLPStandard lp = context.getBean("lp", PosNegLPStandard.class);
-//        System.out.println(lp.getPositiveExamples());
-//        System.out.println(lp.getNegativeExamples());
-//        System.out.println(lp.getAccuracy(new NamedClass("http://localhost/foo#male")));
-    
-        // get a CLI bean if it exists
-        CLI cli = null;
-        if(context.getBeansOfType(CLI.class).size()>0) {
-        	System.out.println();
-        	cli = context.getBean(CLI.class);
-        	SpringConfigurationXMLBeanConverter converter = new SpringConfigurationXMLBeanConverter();
-        	XmlObject xml = converter.convert(configuration);
-        	String springFilename = file.getCanonicalPath().replace(".conf", ".xml");
-        	File springFile = new File(springFilename);
-        	if(springFile.exists()) {
-        		logger.warn("Cannot write Spring configuration, because " + springFilename + " already exists.");
-        	} else {
-        		Files.createFile(springFile, xml.toString());
-        	}
-//        	SpringConfigurationXMLBeanConverter converter;
-        }
-        
-        // start algorithm in conf file
-        LearningAlgorithm algorithm = context.getBean("alg",LearningAlgorithm.class);
-        algorithm.start();
-        
+	public ApplicationContext getContext() {
+		return context;
 	}
 
 }

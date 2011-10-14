@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2011, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -29,18 +29,16 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.ocel.OCEL;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 
 import com.jamonapi.MonitorFactory;
@@ -72,22 +70,22 @@ public class Sample {
 		logger.setLevel(Level.DEBUG);
 
 		// OWL file containing background knowledge
-		String owlFile = "examples/trains/trains.owl";
+		String owlFile = "../examples/trains/trains.owl";
 
 		// examples
-		SortedSet<String> posExamples = new TreeSet<String>();
-		posExamples.add("http://example.com/foo#east1");
-		posExamples.add("http://example.com/foo#east2");
-		posExamples.add("http://example.com/foo#east3");
-		posExamples.add("http://example.com/foo#east4");
-		posExamples.add("http://example.com/foo#east5");
+		SortedSet<Individual> posExamples = new TreeSet<Individual>();
+		posExamples.add(new Individual("http://example.com/foo#east1"));
+		posExamples.add(new Individual("http://example.com/foo#east2"));
+		posExamples.add(new Individual("http://example.com/foo#east3"));
+		posExamples.add(new Individual("http://example.com/foo#east4"));
+		posExamples.add(new Individual("http://example.com/foo#east5"));
 
-		SortedSet<String> negExamples = new TreeSet<String>();
-		negExamples.add("http://example.com/foo#west6");
-		negExamples.add("http://example.com/foo#west7");
-		negExamples.add("http://example.com/foo#west8");
-		negExamples.add("http://example.com/foo#west9");
-		negExamples.add("http://example.com/foo#west10");
+		SortedSet<Individual> negExamples = new TreeSet<Individual>();
+		negExamples.add(new Individual("http://example.com/foo#west6"));
+		negExamples.add(new Individual("http://example.com/foo#west7"));
+		negExamples.add(new Individual("http://example.com/foo#west8"));
+		negExamples.add(new Individual("http://example.com/foo#west9"));
+		negExamples.add(new Individual("http://example.com/foo#west10"));
 
 		List<? extends EvaluatedDescription> results = learn(owlFile, posExamples, negExamples, 5);
 		int x = 0;
@@ -103,51 +101,50 @@ public class Sample {
 		Files.createFile(new File("log/jamon_sample.html"), MonitorFactory.getReport());
 	}
 
-	public static List<? extends EvaluatedDescription> learn(String owlFile, SortedSet<String> posExamples,
-			SortedSet<String> negExamples, int maxNrOfResults) throws ComponentInitException,
+	public static List<? extends EvaluatedDescription> learn(String owlFile, SortedSet<Individual> posExamples,
+			SortedSet<Individual> negExamples, int maxNrOfResults) throws ComponentInitException,
 			LearningProblemUnsupportedException {
 
 		logger.info("Start Learning with");
 		logger.info("positive examples: \t" + posExamples.size());
 		logger.info("negative examples: \t" + negExamples.size());
 
-		// the component manager is the central object to create
-		// and configure components
-		ComponentManager cm = ComponentManager.getInstance();
-
-		// knowledge source
-		//KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
-		
-		String fileURL = new File(owlFile).toURI().toString();
-		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		cm.applyConfigEntry(ks, "url", fileURL);
-		
-		
-		// reasoner
-		AbstractReasonerComponent r = cm.reasoner(FastInstanceChecker.class, ks);
-
-		// learning problem
-		AbstractLearningProblem lp = cm.learningProblem(PosNegLPStandard.class, r);
-		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
-		cm.applyConfigEntry(lp, "negativeExamples", negExamples);
-
-		// learning algorithm
-		AbstractCELA la = cm.learningAlgorithm(OCEL.class, lp, r);
-		cm.applyConfigEntry(la, "useAllConstructor", false);
-		cm.applyConfigEntry(la, "useExistsConstructor", true);
-		cm.applyConfigEntry(la, "useCardinalityRestrictions", false);
-		cm.applyConfigEntry(la, "useNegation", false);
-		cm.applyConfigEntry(la, "writeSearchTree", false);
-		cm.applyConfigEntry(la, "searchTreeFile", "log/searchTree.txt");
-		cm.applyConfigEntry(la, "replaceSearchTree", true);
-		cm.applyConfigEntry(la, "noisePercentage", 0.0);
-
-		// all components need to be initialised before they can be used
+		// use the specified OWL file
+		OWLFile ks = new OWLFile(owlFile);
 		ks.init();
-		r.init();	
+		
+		// load file into reasoner
+		FastInstanceChecker r = new FastInstanceChecker();
+		r.setSources(ks);
+		r.init();
+		
+		// configure learning problem
+		PosNegLPStandard lp = new PosNegLPStandard();
+		lp.setReasoner(r);
+		lp.setPositiveExamples(posExamples);
+		lp.setNegativeExamples(negExamples);
 		lp.init();
+		
+		// configure target language
+		RhoDRDown rho = new RhoDRDown();
+		rho.setReasoner(r);
+		rho.setUseAllConstructor(false);
+		rho.setUseExistsConstructor(true);
+		rho.setUseNegation(false);
+		rho.setUseCardinalityRestrictions(false);
+		rho.init();
+		
+		// configure learning algorithm
+		CELOE la = new CELOE();
+		la.setReasoner(r);
+		la.setLearningProblem(lp);
+		la.setWriteSearchTree(false);
+		la.setSearchTreeFile("log/searchTree.txt");
+		la.setReplaceSearchTree(true);
+		la.setNoisePercentage(20.0);
+		la.setMaxExecutionTimeInSeconds(2);
 		la.init();
-
+		
 		// start learning algorithm
 		logger.debug("start learning");
 		la.start();
