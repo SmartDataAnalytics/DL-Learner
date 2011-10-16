@@ -63,7 +63,7 @@ public class exploration_main {
 		System.out.println("Entity1 done");*/
 		System.out.println("Done with indexing\n");
 		System.out.println("Start generating Wordnet Dictionary");
-		SparqlObject sparql = new SparqlObject();
+		SparqlObject sparql = new SparqlObject(hm);
 		System.out.println("Generating Wordnet Dictionary Done");
 		long stopInitTime = System.currentTimeMillis();
 		System.out.println("Time for Initialising "+(stopInitTime-startInitTime)+" ms");
@@ -97,7 +97,7 @@ public class exploration_main {
 				    		anzahl++;
 				    		//get each line and send it to the parser
 				    		s=s.replace("?","");
-				    		sparql.create_Sparql_query(s.toLowerCase(),hm);
+				    		sparql.create_Sparql_query(s.toLowerCase());
 				    }
 				    long timeNow = System.currentTimeMillis();
 				    long diff = timeNow-startTime;
@@ -112,7 +112,7 @@ public class exploration_main {
 	            	for (BasicQueryTemplate temp : querytemps) {
 	            		System.out.println(temp.toString());
 	            	}*/
-					sparql.create_Sparql_query(line.toLowerCase(),hm);
+					sparql.create_Sparql_query(line.toLowerCase());
 					long endTime= System.currentTimeMillis();
 					System.out.println("\n The complete answering of the Question took "+(endTime-startTime)+" ms");
 				}
