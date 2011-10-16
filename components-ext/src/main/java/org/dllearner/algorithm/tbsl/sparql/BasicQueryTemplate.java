@@ -213,6 +213,10 @@ public class BasicQueryTemplate
 		this.offset = offset;
 	}
 
+	public List<Slot> getSlots(){
+		return slots;
+	}
+
 	public SPARQL_QueryType getQt()
 	{
 		return qt;
