@@ -18,7 +18,7 @@ public class Parser {
 	public boolean USE_LESS_MEMORY = false;
 	public boolean SHOW_GRAMMAR = false;
 	public boolean SHOW_LEXICAL_COVERAGE = false;
-	public String MODE = "BASIC"; // MODE ::= BASIC | LEIPZIG
+	public String MODE = "BASIC"; // MODE ::= BASIC | LEIPZIG (set by Templator and BasicTemplator)
 
 	private String[] input;
 	private List<DerivationTree> derivationTrees = new ArrayList<DerivationTree>();
