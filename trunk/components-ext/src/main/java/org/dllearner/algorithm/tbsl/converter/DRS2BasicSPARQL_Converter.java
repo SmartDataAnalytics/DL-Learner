@@ -28,11 +28,11 @@ import org.dllearner.algorithm.tbsl.sparql.Slot;
 public class DRS2BasicSPARQL_Converter {
 
     List<Slot> slots;
-    BasicQueryTemplate query;
+//    BasicQueryTemplate query;
     List<Integer> usedInts;
 
     public DRS2BasicSPARQL_Converter() {
-    	query = new BasicQueryTemplate();
+ //   	query = new BasicQueryTemplate();
     	usedInts = new ArrayList<Integer>();
     }
     
@@ -49,23 +49,23 @@ public class DRS2BasicSPARQL_Converter {
 
     public BasicQueryTemplate convert(DRS drs,List<Slot> ls) {
         
-        query = new BasicQueryTemplate();
+ //       query = new BasicQueryTemplate();
         slots = ls;
         
         return convert(drs, new BasicQueryTemplate(), false);
     }
 
-    private BasicQueryTemplate convert(DRS drs, BasicQueryTemplate query, boolean negate) {
+    private BasicQueryTemplate convert(DRS drs, BasicQueryTemplate temp, boolean negate) {
     	
         redundantEqualRenaming(drs); 
             
         for (DRS_Condition condition : drs.getConditions()) {
-            convertCondition(condition,query);
+            convertCondition(condition,temp);
             if (negate) {
-            	for (SPARQL_Term term : query.getSelTerms()) {
+            	for (SPARQL_Term term : temp.getSelTerms()) {
             		SPARQL_Filter f = new SPARQL_Filter();
                     f.addNotBound(term);
-                    query.addFilter(f);
+                    temp.addFilter(f);
             	}
             }
         }
@@ -74,30 +74,30 @@ public class DRS2BasicSPARQL_Converter {
             if (referent.isMarked()) {
             	SPARQL_Term term = new SPARQL_Term(referent.toString().replace("?",""));
             	term.setIsVariable(true);
-            	query.addSelTerm(term);
+            	temp.addSelTerm(term);
             }
             if (referent.isNonexistential()) {
             	SPARQL_Term term = new SPARQL_Term(referent.getValue());
             	term.setIsVariable(true);
             	SPARQL_Filter f = new SPARQL_Filter();
             	f.addNotBound(term);
-            	query.addFilter(f);
+            	temp.addFilter(f);
             }
             for (Slot s : slots) {
         		if (s.getAnchor().equals(referent.getValue())) {
-        			query.addSlot(s);
+        			temp.addSlot(s); // query
         			break;
         		}
         	}
         }
         
-        if (query.getSelTerms().size() == 0)
-        	query.setQt(SPARQL_QueryType.ASK);
+        if (temp.getSelTerms().size() == 0)
+        	temp.setQt(SPARQL_QueryType.ASK);
 
-        return query;
+        return temp;
     }
 
-    private BasicQueryTemplate convertCondition(DRS_Condition condition, BasicQueryTemplate query) {
+    private BasicQueryTemplate convertCondition(DRS_Condition condition, BasicQueryTemplate temp) {
 
     	if (condition.isComplexCondition()) {
 
@@ -109,10 +109,10 @@ public class DRS2BasicSPARQL_Converter {
 
             // call recursively
             for (DRS_Condition cond : restrictor.getConditions()) {
-                query = convertCondition(cond, query);
+                temp = convertCondition(cond,temp);
             }
             for (DRS_Condition cond : scope.getConditions()) {
-                query = convertCondition(cond, query);
+                temp = convertCondition(cond,temp);
             }
             // add the quantifier at last
             DiscourseReferent ref = complex.getReferent();
@@ -121,7 +121,7 @@ public class DRS2BasicSPARQL_Converter {
 
             switch (quant) {
                 case HOWMANY:
-                    query.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT));
+                    temp.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT));
                     break;
                 case EVERY:
                     // probably save to ignore // TODO unless in cases like "which actor starred in every movie by spielberg?"
@@ -130,7 +130,7 @@ public class DRS2BasicSPARQL_Converter {
                 case NO:
                     SPARQL_Filter f = new SPARQL_Filter();
                     f.addNotBound(new SPARQL_Term(sref));
-                    query.addFilter(f);
+                    temp.addFilter(f);
                     break;
                 case FEW: //
                     break;
@@ -142,20 +142,20 @@ public class DRS2BasicSPARQL_Converter {
                     break;
                 case THELEAST:
                 	fresh = "c"+createFresh();
-                    query.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT,fresh));
-                    query.addOrderBy(new SPARQL_Term(fresh, SPARQL_OrderBy.ASC));
-                    query.setLimit(1);
+                    temp.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT,fresh));
+                    temp.addOrderBy(new SPARQL_Term(fresh, SPARQL_OrderBy.ASC));
+                    temp.setLimit(1);
                     break;
                 case THEMOST:
                 	fresh = "c"+createFresh();
-                    query.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT,fresh));
-                    query.addOrderBy(new SPARQL_Term(fresh, SPARQL_OrderBy.DESC));
-                    query.setLimit(1);
+                    temp.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT,fresh));
+                    temp.addOrderBy(new SPARQL_Term(fresh, SPARQL_OrderBy.DESC));
+                    temp.setLimit(1);
                     break;
             }
         } else if (condition.isNegatedCondition()) {
             Negated_DRS neg = (Negated_DRS) condition;
-            query = convert(neg.getDRS(), query, true);
+            temp = convert(neg.getDRS(), temp, true);
 
         } else {
             Simple_DRS_Condition simple = (Simple_DRS_Condition) condition;
@@ -164,9 +164,15 @@ public class DRS2BasicSPARQL_Converter {
             if (predicate.startsWith("SLOT")) {
             	for (Slot s : slots) {
             		if (s.getAnchor().equals(predicate)) {
-            			s.setToken(predicate);
-            			predicate = "p" + createFresh();
-           				s.setAnchor(simple.getArguments().get(0).getValue());
+            			if (simple.getArguments().size() > 1) {
+	            			s.setToken(predicate);
+	            			predicate = "p" + createFresh();
+	           				s.setAnchor(predicate); 
+	           				temp.addSlot(s);
+            			}
+            			else if (simple.getArguments().size() == 1) {
+            				s.setAnchor(simple.getArguments().get(0).getValue());
+            			} 
             			break;
             		}
             		else if (s.getToken().equals(predicate)) {
@@ -188,95 +194,95 @@ public class DRS2BasicSPARQL_Converter {
             		Path p = new Path();
             		p.setStart(simple.getArguments().get(1).getValue());
             		p.setTarget(simple.getArguments().get(0).getValue());
-            		query.addConditions(p);
+            		temp.addConditions(p);
             	}
             }
             if (predicate.startsWith("p")) {
             	if (simple.getArguments().size() == 2) {
             		Path p = new Path();
             		p.setStart(simple.getArguments().get(0).getValue());
-            		p.setVia(simple.getPredicate());
+            		p.setVia(predicate);
             		p.setTarget(simple.getArguments().get(1).getValue());
-            		query.addConditions(p);
+            		temp.addConditions(p);
             	}
             }
             else if (predicate.equals("count")) {
             	// COUNT(?x) AS ?c
             	if (!literal) {
-            		query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, simple.getArguments().get(1).getValue()));
-            		return query;
+            		temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, simple.getArguments().get(1).getValue()));
+            		return temp;
             	}
             	else {
             		String fresh = "c"+createFresh();
-            		query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, fresh));
-            		query.addFilter(new SPARQL_Filter(
+            		temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, fresh));
+            		temp.addFilter(new SPARQL_Filter(
             				new SPARQL_Pair(
             				new SPARQL_Term(fresh),
             				new SPARQL_Term(simple.getArguments().get(1).getValue(),true),
             				SPARQL_PairType.EQ)));
-            		return query;
+            		return temp;
             	}
             } else if (predicate.equals("sum")) {
-                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(1).getValue(), SPARQL_Aggregate.SUM));
-                return query;
+                temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(1).getValue(), SPARQL_Aggregate.SUM));
+                return temp;
             } else if (predicate.equals("greater")) {
-            	query.addFilter(new SPARQL_Filter(
+            	temp.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.GT)));
-                return query;
+                return temp;
             } else if (predicate.equals("greaterorequal")) {
-            	query.addFilter(new SPARQL_Filter(
+            	temp.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.GTEQ)));
-                return query;
+                return temp;
             } else if (predicate.equals("less")) {
-            	query.addFilter(new SPARQL_Filter(
+            	temp.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.LT)));
-                return query;
+                return temp;
             } else if (predicate.equals("lessorequal")) {
-            	query.addFilter(new SPARQL_Filter(
+            	temp.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.LTEQ)));
-                return query;
+                return temp;
             } else if (predicate.equals("maximum")) {
-                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue()));
-                query.addOrderBy(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_OrderBy.DESC));
-                query.setLimit(1);                
-                return query;
+                temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue()));
+                temp.addOrderBy(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_OrderBy.DESC));
+                temp.setLimit(1);                
+                return temp;
             } else if (predicate.equals("minimum")) {
-                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue()));
-                query.addOrderBy(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_OrderBy.ASC));
-                query.setLimit(1);  
-                return query;
+                temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue()));
+                temp.addOrderBy(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_OrderBy.ASC));
+                temp.setLimit(1);  
+                return temp;
             } else if (predicate.equals("countmaximum")) {
-                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, "c"));
-                query.addOrderBy(new SPARQL_Term("c", SPARQL_OrderBy.DESC)); 
-                query.setLimit(1);
-            	return query;
+                temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, "c"));
+                temp.addOrderBy(new SPARQL_Term("c", SPARQL_OrderBy.DESC)); 
+                temp.setLimit(1);
+            	return temp;
             } else if (predicate.equals("countminimum")) {
-                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, "c"));
-                query.addOrderBy(new SPARQL_Term("c", SPARQL_OrderBy.DESC));
-                query.setLimit(1);
-            	return query;
+                temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, "c"));
+                temp.addOrderBy(new SPARQL_Term("c", SPARQL_OrderBy.DESC));
+                temp.setLimit(1);
+            	return temp;
             } else if (predicate.equals("equal")) {
-            	query.addFilter(new SPARQL_Filter(
+            	temp.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.EQ)));
-                return query;
+                return temp;
             }
         }
-        return query;
+        return temp;
     }
 
 
@@ -291,24 +297,40 @@ public class DRS2BasicSPARQL_Converter {
         
         DiscourseReferent firstArg;
         DiscourseReferent secondArg;
+        boolean firstIsURI;
+        boolean secondIsURI;
         
         for (Simple_DRS_Condition c : equalsConditions) {
-        	
+        
         	firstArg = c.getArguments().get(0);
             secondArg = c.getArguments().get(1);
+            firstIsURI = isUri(firstArg.getValue());
+            secondIsURI = isUri(secondArg.getValue());
 
-            boolean oneArgIsInt = firstArg.getValue().matches("\\d+") || secondArg.getValue().matches("\\d+");
+            boolean oneArgIsInt = firstArg.toString().matches("[0..9]") || secondArg.toString().matches("[0..9]");
 
             drs.removeCondition(c);
-            if (!oneArgIsInt) {
+            if (firstIsURI) {
+                drs.replaceEqualRef(secondArg, firstArg, false);
+                for (Slot s : slots) {
+                	if (s.getAnchor().equals(secondArg.getValue())) {
+                		s.setAnchor(firstArg.getValue());
+                	}
+                }
+            } else if (secondIsURI) {
                 drs.replaceEqualRef(firstArg, secondArg, false);
-            } else {
-            	drs.replaceEqualRef(firstArg, secondArg, true);
-            }
-            for (Slot s : slots) {
-             	if (s.getAnchor().equals(firstArg.getValue())) {
-               		s.setAnchor(secondArg.getValue());
-               	}
+                for (Slot s : slots) {
+                	if (s.getAnchor().equals(firstArg.getValue())) {
+                		s.setAnchor(secondArg.getValue());
+                	}
+                }
+            } else if (!oneArgIsInt) {
+                drs.replaceEqualRef(firstArg, secondArg, false);
+                for (Slot s : slots) {
+                	if (s.getAnchor().equals(firstArg.getValue())) {
+                		s.setAnchor(secondArg.getValue());
+                	}
+                }
             }
         }
         
@@ -322,6 +344,10 @@ public class DRS2BasicSPARQL_Converter {
         for (Simple_DRS_Condition c : equalEqualsConditions) {
         	drs.removeCondition(c);
         }
+    }
+
+    private boolean isUri(String arg) {
+        return false; // TODO
     }
     
 	private int createFresh() {
