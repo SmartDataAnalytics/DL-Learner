@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="file://something/something">
+    <ns0:imports xmlns:ns0="http://www.w3.org/2002/07/owl#" rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="file://something/something">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+</rdf:RDF>
