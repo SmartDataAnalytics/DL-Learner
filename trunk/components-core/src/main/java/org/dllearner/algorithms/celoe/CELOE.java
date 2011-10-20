@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.sound.midi.SysexMessage;
+
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
@@ -271,6 +273,8 @@ public class CELOE extends AbstractCELA {
 			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
 			((RhoDRDown)operator).setReasoner(reasoner);
 			((RhoDRDown)operator).init();
+		} else {
+			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
 		}
 //		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
@@ -444,7 +448,8 @@ public class CELOE extends AbstractCELA {
 //			for(Description refinement : refinements) {
 //				System.out.println("refinement: " + refinement);
 //			}
-//			if(loop > 10) {
+//			if(loop % 100 == 0) {
+//				System.out.println(getMinimumHorizontalExpansion() + " - " + getMaximumHorizontalExpansion());
 //				System.exit(0);
 //			}
 			
