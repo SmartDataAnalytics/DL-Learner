@@ -1,0 +1,7 @@
+The apple was eaten.
+The apple has been eaten.
+The apple was eaten and cleaned.
+
+The eaten apple was clean.
+The apple ate the apple.
+The boy will eat the apple.
