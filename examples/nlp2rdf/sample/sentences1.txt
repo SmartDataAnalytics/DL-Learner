@@ -1,0 +1,7 @@
+The apple is eaten.
+The apple has been eaten.
+The apple was eaten.
+
+The boy eats the cake.
+The boy will eat the cake.
+The boy has eaten the cake.
