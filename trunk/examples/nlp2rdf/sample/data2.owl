@@ -1,15 +1,15 @@
 <rdf:RDF
     xmlns:j.0="http://purl.org/olia/stanford.owl#"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:j.2="http://nlp2rdf.lod2.eu/schema/string/"
     xmlns:j.1="http://purl.org/olia/penn-syntax.owl#"
-    xmlns:j.3="http://purl.org/olia/system.owl#"
+    xmlns:string="http://nlp2rdf.lod2.eu/schema/string/"
+    xmlns:j.2="http://purl.org/olia/system.owl#"
     xmlns:ns0="http://www.w3.org/2002/07/owl#"
-    xmlns:j.4="http://nlp2rdf.lod2.eu/schema/sso/"
-    xmlns:j.5="http://purl.org/olia/olia.owl#"
+    xmlns:sso="http://nlp2rdf.lod2.eu/schema/sso/"
+    xmlns:j.3="http://purl.org/olia/olia.owl#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-    xmlns:j.6="http://purl.org/olia/penn.owl#"
-    xmlns:j.7="http://purl.org/olia/olia-top.owl#"
+    xmlns:j.4="http://purl.org/olia/penn.owl#"
+    xmlns:j.5="http://purl.org/olia/olia-top.owl#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
   <ns0:Ontology rdf:about="file://something/something">
     <ns0:imports rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/"/>
@@ -224,7 +224,7 @@ Word classes, etc., are then modelled as indirect children of UnitOfAnnotation. 
   <ns0:Class rdf:about="http://purl.org/olia/olia-top.owl#SyntacticFeature">
     <rdfs:subClassOf rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
     <rdfs:subClassOf>
-      <ns0:ObjectProperty rdf:about="http://purl.org/olia/system.owl#Feature"/>
+      <ns0:Class rdf:about="http://purl.org/olia/system.owl#Feature"/>
     </rdfs:subClassOf>
   </ns0:Class>
   <ns0:Class rdf:about="http://purl.org/olia/penn-syntax.owl#SyntaxTag">
@@ -312,6 +312,10 @@ Subjunctive: We suggested that he do/VB it.</rdfs:comment>
 		(http://www.sil.org/linguistics/GlossaryOfLinguisticTerms/WhatIsAnAdjective.htm  18.9.06)
 	</rdfs:comment>
     <rdfs:subClassOf rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
+  </ns0:Class>
+  <ns0:Class rdf:about="http://purl.org/olia/system.owl#Feature">
+    <rdfs:subClassOf rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
+    <rdfs:comment>UnitsOfAnnotation and Relations can be described in a more detailed way by the features that are attached to them, e.g., case, number, or aspect. Features are, however, not subject to further annotations (by means of hasFeature), they are thus disjoint from Relations and UnitsOfAnnotation.</rdfs:comment>
   </ns0:Class>
   <ns0:Class rdf:about="http://purl.org/olia/penn.owl#CommonNoun">
     <rdfs:subClassOf rdf:resource="http://purl.org/olia/olia.owl#CommonNoun"/>
@@ -493,11 +497,7 @@ S â ´ Simple declarative clause, i.e. one that is not introduced by a (
       <ns0:ObjectProperty rdf:about="http://purl.org/olia/stanford.owl#Dependent"/>
     </rdfs:subPropertyOf>
   </ns0:ObjectProperty>
-  <ns0:ObjectProperty rdf:about="http://purl.org/olia/stanford.owl#DependencyLabel">
-    <rdfs:subPropertyOf>
-      <ns0:ObjectProperty rdf:about="http://purl.org/olia/system.owl#Feature"/>
-    </rdfs:subPropertyOf>
-  </ns0:ObjectProperty>
+  <ns0:ObjectProperty rdf:about="http://purl.org/olia/stanford.owl#DependencyLabel"/>
   <ns0:ObjectProperty rdf:about="http://purl.org/olia/stanford.owl#DirectObject">
     <rdfs:subPropertyOf>
       <ns0:ObjectProperty rdf:about="http://purl.org/olia/stanford.owl#Object"/>
@@ -522,11 +522,6 @@ S â ´ Simple declarative clause, i.e. one that is not introduced by a (
   </ns0:ObjectProperty>
   <ns0:ObjectProperty rdf:about="http://purl.org/olia/stanford.owl#NominalSubject">
     <rdfs:subPropertyOf rdf:resource="http://purl.org/olia/stanford.owl#Subject"/>
-  </ns0:ObjectProperty>
-  <ns0:ObjectProperty rdf:about="http://purl.org/olia/system.owl#Feature">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdfs:subClassOf rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-    <rdfs:comment>UnitsOfAnnotation and Relations can be described in a more detailed way by the features that are attached to them, e.g., case, number, or aspect. Features are, however, not subject to further annotations (by means of hasFeature), they are thus disjoint from Relations and UnitsOfAnnotation.</rdfs:comment>
   </ns0:ObjectProperty>
   <ns0:ObjectProperty rdf:about="http://purl.org/olia/stanford.owl#Complement">
     <rdfs:subPropertyOf>
@@ -568,260 +563,285 @@ S â ´ Simple declarative clause, i.e. one that is not introduced by a (
   <ns0:ObjectProperty rdf:about="http://purl.org/olia/stanford.owl#amod">
     <rdfs:subPropertyOf rdf:resource="http://purl.org/olia/stanford.owl#AdjectivalModifier"/>
   </ns0:ObjectProperty>
-  <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_0_161_The+apple+was+eaten.">
+  <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_0_161_The+apple+was+eaten.">
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/Document"/>
-    <j.2:sourceString>The apple was eaten.
+    <string:sourceString>The apple was eaten.
 The apple has been eaten.
 The apple was eaten and cleaned.
 
 The eaten apple was clean.
 The apple ate the apple.
 The boy will eat the apple.
-</j.2:sourceString>
-  </j.2:OffsetBasedString>
-  <j.4:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_126_131_apple">
+</string:sourceString>
+  </string:OffsetBasedString>
+  <sso:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_126_131_apple">
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Noun"/>
     <j.0:det>
-      <j.7:MorphosyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_122_125_the">
-        <j.4:posTag>DT</j.4:posTag>
+      <j.5:MorphosyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_122_125_the">
+        <sso:posTag>DT</sso:posTag>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Determiner"/>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-        <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_126_131_apple"/>
-        <j.4:lemma>the</j.4:lemma>
+        <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_126_131_apple"/>
+        <sso:lemma>the</sso:lemma>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#PronounOrDeterminer"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Determiner"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
-        <j.2:anchorOf>the</j.2:anchorOf>
-      </j.7:MorphosyntacticCategory>
+        <string:anchorOf>the</string:anchorOf>
+        <sso:oliaLink>
+          <ns0:Thing rdf:about="http://purl.org/olia/penn.owl#DT"/>
+        </sso:oliaLink>
+      </j.5:MorphosyntacticCategory>
     </j.0:det>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Noun"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-    <j.4:nextWord>
-      <j.4:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_131_132_.">
+    <sso:nextWord>
+      <sso:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_131_132_.">
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-        <j.4:posTag>.</j.4:posTag>
-        <j.4:lemma>.</j.4:lemma>
-        <j.2:anchorOf>.</j.2:anchorOf>
-      </j.4:Word>
-    </j.4:nextWord>
+        <sso:posTag>.</sso:posTag>
+        <sso:lemma>.</sso:lemma>
+        <string:anchorOf>.</string:anchorOf>
+      </sso:Word>
+    </sso:nextWord>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-    <j.4:lemma>apple</j.4:lemma>
+    <sso:lemma>apple</sso:lemma>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#CommonNoun"/>
-    <j.2:anchorOf>apple</j.2:anchorOf>
+    <string:anchorOf>apple</string:anchorOf>
+    <sso:oliaLink>
+      <ns0:Thing rdf:about="http://purl.org/olia/penn.owl#NN"/>
+    </sso:oliaLink>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#CommonNoun"/>
-    <j.4:posTag>NN</j.4:posTag>
+    <sso:posTag>NN</sso:posTag>
     <j.0:Determiner rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_122_125_the"/>
-  </j.4:Word>
-  <j.4:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple">
-    <j.4:lemma>apple</j.4:lemma>
+  </sso:Word>
+  <sso:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple">
+    <sso:lemma>apple</sso:lemma>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-    <j.2:anchorOf>apple</j.2:anchorOf>
+    <string:anchorOf>apple</string:anchorOf>
     <j.0:det>
-      <j.6:Determiner rdf:about="http://nlp2rdf.lod2.eu/nif/offset_47_50_The">
+      <j.4:Determiner rdf:about="http://nlp2rdf.lod2.eu/nif/offset_47_50_The">
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-        <j.4:lemma>the</j.4:lemma>
+        <sso:lemma>the</sso:lemma>
+        <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#DT"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#PronounOrDeterminer"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-        <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple"/>
+        <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Determiner"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
-        <j.2:anchorOf>The</j.2:anchorOf>
+        <string:anchorOf>The</string:anchorOf>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-        <j.4:posTag>DT</j.4:posTag>
-      </j.6:Determiner>
+        <sso:posTag>DT</sso:posTag>
+      </j.4:Determiner>
     </j.0:det>
     <j.0:Determiner rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_47_50_The"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#CommonNoun"/>
-    <j.4:nextWord>
-      <j.7:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_57_60_was">
-        <j.4:lemma>be</j.4:lemma>
-        <j.2:anchorOf>was</j.2:anchorOf>
+    <sso:nextWord>
+      <j.5:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_57_60_was">
+        <sso:lemma>be</sso:lemma>
+        <string:anchorOf>was</string:anchorOf>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-        <j.4:posTag>VBD</j.4:posTag>
+        <sso:oliaLink>
+          <ns0:Thing rdf:about="http://purl.org/olia/penn.owl#VBD"/>
+        </sso:oliaLink>
+        <sso:posTag>VBD</sso:posTag>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#BePastTense"/>
-        <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-        <j.4:nextWord>
-          <j.3:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_61_66_eaten">
+        <sso:nextWord>
+          <j.2:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_61_66_eaten">
             <j.0:nsubjpass rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
             <j.0:PassiveAuxiliary rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_57_60_was"/>
+            <sso:oliaLink>
+              <ns0:Thing rdf:about="http://purl.org/olia/penn.owl#VBN"/>
+            </sso:oliaLink>
             <j.0:auxpass rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_57_60_was"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
             <j.0:PassiveNominalSubject rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple"/>
-            <j.4:nextWord>
-              <j.5:Conjunction rdf:about="http://nlp2rdf.lod2.eu/nif/offset_67_70_and">
-                <j.2:anchorOf>and</j.2:anchorOf>
+            <sso:posTag>VBN</sso:posTag>
+            <sso:nextWord>
+              <j.3:Conjunction rdf:about="http://nlp2rdf.lod2.eu/nif/offset_67_70_and">
+                <string:anchorOf>and</string:anchorOf>
                 <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#CoordinatingConjunction"/>
-                <j.4:nextWord>
-                  <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_71_78_cleaned">
-                    <j.2:anchorOf>cleaned</j.2:anchorOf>
+                <sso:nextWord>
+                  <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_71_78_cleaned">
+                    <string:anchorOf>cleaned</string:anchorOf>
                     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
-                    <rdf:type rdf:resource="http://purl.org/olia/olia.owl#NonFiniteVerb"/>
                     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-                    <j.4:posTag>VBN</j.4:posTag>
+                    <rdf:type rdf:resource="http://purl.org/olia/olia.owl#NonFiniteVerb"/>
+                    <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#VBN"/>
+                    <sso:posTag>VBN</sso:posTag>
                     <j.0:nsubjpass rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple"/>
                     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#PastParticiple"/>
                     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Participle"/>
-                    <j.4:nextWord>
-                      <j.4:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_78_79_.">
+                    <sso:nextWord>
+                      <sso:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_78_79_.">
                         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-                        <j.4:posTag>.</j.4:posTag>
-                        <j.4:lemma>.</j.4:lemma>
-                        <j.2:anchorOf>.</j.2:anchorOf>
-                      </j.4:Word>
-                    </j.4:nextWord>
+                        <sso:posTag>.</sso:posTag>
+                        <sso:lemma>.</sso:lemma>
+                        <string:anchorOf>.</string:anchorOf>
+                      </sso:Word>
+                    </sso:nextWord>
                     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
                     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
                     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
                     <j.0:PassiveNominalSubject rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple"/>
-                    <j.4:lemma>clean</j.4:lemma>
+                    <sso:lemma>clean</sso:lemma>
                     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
                     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-                  </j.2:OffsetBasedString>
-                </j.4:nextWord>
+                  </string:OffsetBasedString>
+                </sso:nextWord>
                 <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
+                <sso:oliaLink>
+                  <ns0:Thing rdf:about="http://purl.org/olia/penn.owl#CC"/>
+                </sso:oliaLink>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Conjunction"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#CoordinatingConjunction"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
-                <j.4:lemma>and</j.4:lemma>
-                <j.4:posTag>CC</j.4:posTag>
-              </j.5:Conjunction>
-            </j.4:nextWord>
-            <j.4:posTag>VBN</j.4:posTag>
+                <sso:lemma>and</sso:lemma>
+                <sso:posTag>CC</sso:posTag>
+              </j.3:Conjunction>
+            </sso:nextWord>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#PastParticiple"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#NonFiniteVerb"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
-            <j.2:anchorOf>eaten</j.2:anchorOf>
+            <string:anchorOf>eaten</string:anchorOf>
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Participle"/>
-            <j.4:lemma>eat</j.4:lemma>
-          </j.3:LinguisticAnnotation>
-        </j.4:nextWord>
-      </j.7:LinguisticConcept>
-    </j.4:nextWord>
+            <sso:lemma>eat</sso:lemma>
+          </j.2:LinguisticAnnotation>
+        </sso:nextWord>
+        <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
+      </j.5:LinguisticConcept>
+    </sso:nextWord>
+    <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#NN"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Noun"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#CommonNoun"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Noun"/>
-    <j.4:posTag>NN</j.4:posTag>
-  </j.4:Word>
-  <j.7:MorphosyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_150_153_the">
-    <j.4:nextWord>
-      <j.6:Tag rdf:about="http://nlp2rdf.lod2.eu/nif/offset_154_159_apple">
-        <j.4:lemma>apple</j.4:lemma>
-        <j.4:posTag>NN</j.4:posTag>
+    <sso:posTag>NN</sso:posTag>
+  </sso:Word>
+  <j.5:MorphosyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_150_153_the">
+    <sso:nextWord>
+      <j.4:Tag rdf:about="http://nlp2rdf.lod2.eu/nif/offset_154_159_apple">
+        <sso:lemma>apple</sso:lemma>
+        <sso:posTag>NN</sso:posTag>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
+        <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#NN"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#CommonNoun"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Noun"/>
         <j.0:Determiner rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_150_153_the"/>
-        <j.4:nextWord>
-          <j.4:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_159_160_.">
+        <sso:nextWord>
+          <sso:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_159_160_.">
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-            <j.4:posTag>.</j.4:posTag>
-            <j.4:lemma>.</j.4:lemma>
-            <j.2:anchorOf>.</j.2:anchorOf>
-          </j.4:Word>
-        </j.4:nextWord>
+            <sso:posTag>.</sso:posTag>
+            <sso:lemma>.</sso:lemma>
+            <string:anchorOf>.</string:anchorOf>
+          </sso:Word>
+        </sso:nextWord>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#CommonNoun"/>
-        <j.2:anchorOf>apple</j.2:anchorOf>
+        <string:anchorOf>apple</string:anchorOf>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
         <j.0:det rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_150_153_the"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Noun"/>
-      </j.6:Tag>
-    </j.4:nextWord>
+      </j.4:Tag>
+    </sso:nextWord>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
-    <j.4:posTag>DT</j.4:posTag>
+    <sso:posTag>DT</sso:posTag>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#PronounOrDeterminer"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Determiner"/>
-    <j.4:lemma>the</j.4:lemma>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Determiner"/>
-    <j.2:anchorOf>the</j.2:anchorOf>
-  </j.7:MorphosyntacticCategory>
-  <j.4:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_35_39_been">
+    <sso:lemma>the</sso:lemma>
+    <string:anchorOf>the</string:anchorOf>
+    <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#DT"/>
+  </j.5:MorphosyntacticCategory>
+  <sso:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_35_39_been">
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#PastParticiple"/>
-    <j.4:nextWord>
-      <j.3:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_40_45_eaten">
+    <sso:nextWord>
+      <j.2:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_40_45_eaten">
         <j.0:PassiveNominalSubject>
-          <j.6:CommonNoun rdf:about="http://nlp2rdf.lod2.eu/nif/offset_25_30_apple">
+          <j.4:CommonNoun rdf:about="http://nlp2rdf.lod2.eu/nif/offset_25_30_apple">
             <j.0:Determiner>
-              <j.6:Tag rdf:about="http://nlp2rdf.lod2.eu/nif/offset_21_24_The">
-                <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_25_30_apple"/>
+              <j.4:Tag rdf:about="http://nlp2rdf.lod2.eu/nif/offset_21_24_The">
+                <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_25_30_apple"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Determiner"/>
-                <j.4:lemma>the</j.4:lemma>
+                <sso:lemma>the</sso:lemma>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#PronounOrDeterminer"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-                <j.4:posTag>DT</j.4:posTag>
-                <j.2:anchorOf>The</j.2:anchorOf>
+                <sso:posTag>DT</sso:posTag>
+                <string:anchorOf>The</string:anchorOf>
+                <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#DT"/>
                 <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Determiner"/>
-              </j.6:Tag>
+              </j.4:Tag>
             </j.0:Determiner>
-            <j.4:nextWord>
-              <j.7:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_31_34_has">
-                <j.4:lemma>have</j.4:lemma>
+            <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#NN"/>
+            <sso:nextWord>
+              <j.5:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_31_34_has">
+                <sso:oliaLink>
+                  <ns0:Thing rdf:about="http://purl.org/olia/penn.owl#VBZ"/>
+                </sso:oliaLink>
+                <sso:lemma>have</sso:lemma>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
-                <j.2:anchorOf>has</j.2:anchorOf>
+                <string:anchorOf>has</string:anchorOf>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
                 <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-                <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_35_39_been"/>
-                <j.4:posTag>VBZ</j.4:posTag>
+                <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_35_39_been"/>
+                <sso:posTag>VBZ</sso:posTag>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#BePresentTense"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
-              </j.7:LinguisticConcept>
-            </j.4:nextWord>
+              </j.5:LinguisticConcept>
+            </sso:nextWord>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Noun"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Noun"/>
-            <j.4:lemma>apple</j.4:lemma>
+            <sso:lemma>apple</sso:lemma>
             <j.0:det rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_21_24_The"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#CommonNoun"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
             <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
-            <j.2:anchorOf>apple</j.2:anchorOf>
+            <string:anchorOf>apple</string:anchorOf>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-            <j.4:posTag>NN</j.4:posTag>
+            <sso:posTag>NN</sso:posTag>
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-          </j.6:CommonNoun>
+          </j.4:CommonNoun>
         </j.0:PassiveNominalSubject>
         <j.0:nsubjpass rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_25_30_apple"/>
-        <j.2:anchorOf>eaten</j.2:anchorOf>
+        <string:anchorOf>eaten</string:anchorOf>
         <j.0:auxpass rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_35_39_been"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
@@ -829,107 +849,113 @@ The boy will eat the apple.
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#NonFiniteVerb"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_40_45_eaten"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_40_45_eaten"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Participle"/>
         <j.0:aux rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_31_34_has"/>
+        <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#VBN"/>
         <j.0:PassiveAuxiliary rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_35_39_been"/>
-        <j.4:nextWord>
-          <j.4:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_45_46_.">
+        <sso:nextWord>
+          <sso:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_45_46_.">
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-            <j.4:posTag>.</j.4:posTag>
-            <j.4:lemma>.</j.4:lemma>
-            <j.2:anchorOf>.</j.2:anchorOf>
-          </j.4:Word>
-        </j.4:nextWord>
+            <sso:posTag>.</sso:posTag>
+            <sso:lemma>.</sso:lemma>
+            <string:anchorOf>.</string:anchorOf>
+          </sso:Word>
+        </sso:nextWord>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#PastParticiple"/>
-        <j.4:posTag>VBN</j.4:posTag>
+        <sso:posTag>VBN</sso:posTag>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
         <j.0:Auxiliary rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_31_34_has"/>
-        <j.4:lemma>eat</j.4:lemma>
+        <sso:lemma>eat</sso:lemma>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
-      </j.3:LinguisticAnnotation>
-    </j.4:nextWord>
+      </j.2:LinguisticAnnotation>
+    </sso:nextWord>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Participle"/>
-    <j.2:anchorOf>been</j.2:anchorOf>
+    <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#VBN"/>
+    <string:anchorOf>been</string:anchorOf>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#NonFiniteVerb"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-    <j.4:lemma>be</j.4:lemma>
+    <sso:lemma>be</sso:lemma>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
-    <j.4:posTag>VBN</j.4:posTag>
+    <sso:posTag>VBN</sso:posTag>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-  </j.4:Word>
-  <j.7:MorphosyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_0_3_The">
-    <j.4:lemma>the</j.4:lemma>
+  </sso:Word>
+  <j.5:MorphosyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_0_3_The">
+    <sso:lemma>the</sso:lemma>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Determiner"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Determiner"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-    <j.4:posTag>DT</j.4:posTag>
-    <j.2:anchorOf>The</j.2:anchorOf>
+    <sso:posTag>DT</sso:posTag>
+    <string:anchorOf>The</string:anchorOf>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#PronounOrDeterminer"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-    <j.4:nextWord>
-      <j.3:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_4_9_apple">
-        <j.4:posTag>NN</j.4:posTag>
-        <j.2:anchorOf>apple</j.2:anchorOf>
+    <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#DT"/>
+    <sso:nextWord>
+      <j.2:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_4_9_apple">
+        <sso:posTag>NN</sso:posTag>
+        <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#NN"/>
+        <string:anchorOf>apple</string:anchorOf>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-        <j.4:nextWord>
-          <j.6:Tag rdf:about="http://nlp2rdf.lod2.eu/nif/offset_10_13_was">
-            <j.4:lemma>be</j.4:lemma>
+        <sso:nextWord>
+          <j.4:Tag rdf:about="http://nlp2rdf.lod2.eu/nif/offset_10_13_was">
+            <sso:lemma>be</sso:lemma>
             <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-            <j.4:nextWord>
-              <j.7:MorphosyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten">
-                <j.4:posTag>VBN</j.4:posTag>
-                <j.4:lemma>eat</j.4:lemma>
+            <sso:nextWord>
+              <j.5:MorphosyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten">
+                <sso:posTag>VBN</sso:posTag>
+                <sso:lemma>eat</sso:lemma>
                 <j.0:PassiveNominalSubject rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_4_9_apple"/>
                 <j.0:auxpass rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_10_13_was"/>
-                <j.4:nextWord>
-                  <j.4:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_19_20_.">
+                <sso:nextWord>
+                  <sso:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_19_20_.">
                     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-                    <j.4:posTag>.</j.4:posTag>
-                    <j.4:lemma>.</j.4:lemma>
-                    <j.2:anchorOf>.</j.2:anchorOf>
-                  </j.4:Word>
-                </j.4:nextWord>
+                    <sso:posTag>.</sso:posTag>
+                    <sso:lemma>.</sso:lemma>
+                    <string:anchorOf>.</string:anchorOf>
+                  </sso:Word>
+                </sso:nextWord>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
                 <j.0:nsubjpass rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_4_9_apple"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-                <j.2:anchorOf>eaten</j.2:anchorOf>
+                <string:anchorOf>eaten</string:anchorOf>
                 <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
                 <j.0:PassiveAuxiliary rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_10_13_was"/>
+                <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#VBN"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#NonFiniteVerb"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#PastParticiple"/>
-                <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten"/>
+                <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Participle"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-              </j.7:MorphosyntacticCategory>
-            </j.4:nextWord>
+              </j.5:MorphosyntacticCategory>
+            </sso:nextWord>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
-            <j.2:anchorOf>was</j.2:anchorOf>
+            <string:anchorOf>was</string:anchorOf>
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
-            <j.4:posTag>VBD</j.4:posTag>
+            <sso:posTag>VBD</sso:posTag>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#BePastTense"/>
-          </j.6:Tag>
-        </j.4:nextWord>
+            <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#VBD"/>
+          </j.4:Tag>
+        </sso:nextWord>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
         <j.0:Determiner rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_0_3_The"/>
-        <j.4:lemma>apple</j.4:lemma>
+        <sso:lemma>apple</sso:lemma>
         <j.0:det rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_0_3_The"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Noun"/>
@@ -937,98 +963,106 @@ The boy will eat the apple.
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#CommonNoun"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Noun"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-      </j.3:LinguisticAnnotation>
-    </j.4:nextWord>
-  </j.7:MorphosyntacticCategory>
-  <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_112_117_apple">
+      </j.2:LinguisticAnnotation>
+    </sso:nextWord>
+  </j.5:MorphosyntacticCategory>
+  <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_112_117_apple">
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#CommonNoun"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Noun"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#CommonNoun"/>
-    <j.4:nextWord>
-      <j.6:Tag rdf:about="http://nlp2rdf.lod2.eu/nif/offset_118_121_ate">
+    <sso:nextWord>
+      <j.4:Tag rdf:about="http://nlp2rdf.lod2.eu/nif/offset_118_121_ate">
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#BePastTense"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
+        <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#VBD"/>
         <j.0:NominalSubject rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_112_117_apple"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
         <j.0:DirectObject rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_126_131_apple"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
         <j.0:dobj rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_126_131_apple"/>
-        <j.4:posTag>VBD</j.4:posTag>
-        <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_122_125_the"/>
-        <j.4:lemma>eat</j.4:lemma>
-        <j.2:anchorOf>ate</j.2:anchorOf>
+        <sso:posTag>VBD</sso:posTag>
+        <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_122_125_the"/>
+        <sso:lemma>eat</sso:lemma>
+        <string:anchorOf>ate</string:anchorOf>
         <j.0:nsubj rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_112_117_apple"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
-      </j.6:Tag>
-    </j.4:nextWord>
+      </j.4:Tag>
+    </sso:nextWord>
     <j.0:det>
-      <j.7:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_108_111_The">
-        <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_112_117_apple"/>
-        <j.2:anchorOf>The</j.2:anchorOf>
-        <j.4:lemma>the</j.4:lemma>
+      <j.5:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_108_111_The">
+        <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_112_117_apple"/>
+        <string:anchorOf>The</string:anchorOf>
+        <sso:lemma>the</sso:lemma>
+        <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#DT"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Determiner"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-        <j.4:posTag>DT</j.4:posTag>
+        <sso:posTag>DT</sso:posTag>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#PronounOrDeterminer"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Determiner"/>
-      </j.7:LinguisticConcept>
+      </j.5:LinguisticConcept>
     </j.0:det>
-    <j.4:lemma>apple</j.4:lemma>
-    <j.4:posTag>NN</j.4:posTag>
+    <sso:lemma>apple</sso:lemma>
+    <sso:posTag>NN</sso:posTag>
     <j.0:Determiner rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_108_111_The"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Noun"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-    <j.2:anchorOf>apple</j.2:anchorOf>
+    <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#NN"/>
+    <string:anchorOf>apple</string:anchorOf>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-  </j.2:OffsetBasedString>
-  <j.7:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_141_145_will">
-    <j.4:lemma>will</j.4:lemma>
+  </string:OffsetBasedString>
+  <j.5:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_141_145_will">
+    <sso:lemma>will</sso:lemma>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#ModalVerb"/>
-    <j.2:anchorOf>will</j.2:anchorOf>
-    <j.4:posTag>MD</j.4:posTag>
-    <j.4:nextWord>
-      <j.3:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_146_149_eat">
+    <string:anchorOf>will</string:anchorOf>
+    <sso:posTag>MD</sso:posTag>
+    <sso:nextWord>
+      <j.2:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_146_149_eat">
         <j.0:DirectObject rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_154_159_apple"/>
-        <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <j.0:dobj rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_154_159_apple"/>
-        <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_150_153_the"/>
-        <j.4:lemma>eat</j.4:lemma>
+        <sso:lemma>eat</sso:lemma>
+        <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_150_153_the"/>
+        <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
+        <sso:oliaLink>
+          <ns0:Thing rdf:about="http://purl.org/olia/penn.owl#VB"/>
+        </sso:oliaLink>
         <j.0:nsubj>
-          <j.7:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_137_140_boy">
-            <j.2:anchorOf>boy</j.2:anchorOf>
+          <j.5:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_137_140_boy">
+            <string:anchorOf>boy</string:anchorOf>
             <j.0:Determiner>
-              <j.3:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_133_136_The">
+              <j.2:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_133_136_The">
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#PronounOrDeterminer"/>
-                <j.4:posTag>DT</j.4:posTag>
+                <sso:posTag>DT</sso:posTag>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Determiner"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-                <j.4:lemma>the</j.4:lemma>
-                <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_137_140_boy"/>
+                <sso:lemma>the</sso:lemma>
+                <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_137_140_boy"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-                <j.2:anchorOf>The</j.2:anchorOf>
+                <string:anchorOf>The</string:anchorOf>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Determiner"/>
-              </j.3:LinguisticAnnotation>
+                <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#DT"/>
+              </j.2:LinguisticAnnotation>
             </j.0:Determiner>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-            <j.4:lemma>boy</j.4:lemma>
+            <sso:lemma>boy</sso:lemma>
             <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-            <j.4:posTag>NN</j.4:posTag>
+            <sso:posTag>NN</sso:posTag>
+            <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#NN"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#CommonNoun"/>
-            <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_141_145_will"/>
+            <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_141_145_will"/>
             <j.0:det rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_133_136_The"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#CommonNoun"/>
@@ -1036,10 +1070,10 @@ The boy will eat the apple.
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Noun"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Noun"/>
-          </j.7:LinguisticConcept>
+          </j.5:LinguisticConcept>
         </j.0:nsubj>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-        <j.2:anchorOf>eat</j.2:anchorOf>
+        <string:anchorOf>eat</string:anchorOf>
         <j.0:NominalSubject rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_137_140_boy"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
@@ -1048,87 +1082,93 @@ The boy will eat the apple.
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
         <j.0:Auxiliary rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_141_145_will"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-        <j.4:posTag>VB</j.4:posTag>
-      </j.3:LinguisticAnnotation>
-    </j.4:nextWord>
+        <sso:posTag>VB</sso:posTag>
+      </j.2:LinguisticAnnotation>
+    </sso:nextWord>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#ModalVerb"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
+    <sso:oliaLink>
+      <ns0:Thing rdf:about="http://purl.org/olia/penn.owl#MD"/>
+    </sso:oliaLink>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#AuxiliaryVerb"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-  </j.7:LinguisticConcept>
-  <j.5:Adjective rdf:about="http://nlp2rdf.lod2.eu/nif/offset_101_106_clean">
-    <j.4:nextWord>
-      <j.4:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_106_107_.">
+  </j.5:LinguisticConcept>
+  <j.3:Adjective rdf:about="http://nlp2rdf.lod2.eu/nif/offset_101_106_clean">
+    <sso:nextWord>
+      <sso:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_106_107_.">
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-        <j.4:posTag>.</j.4:posTag>
-        <j.4:lemma>.</j.4:lemma>
-        <j.2:anchorOf>.</j.2:anchorOf>
-      </j.4:Word>
-    </j.4:nextWord>
+        <sso:posTag>.</sso:posTag>
+        <sso:lemma>.</sso:lemma>
+        <string:anchorOf>.</string:anchorOf>
+      </sso:Word>
+    </sso:nextWord>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-    <j.4:posTag>JJ</j.4:posTag>
+    <sso:posTag>JJ</sso:posTag>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
-    <j.4:lemma>clean</j.4:lemma>
+    <sso:lemma>clean</sso:lemma>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-    <j.2:anchorOf>clean</j.2:anchorOf>
+    <string:anchorOf>clean</string:anchorOf>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
     <j.0:nsubj>
-      <j.4:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_91_96_apple">
-        <j.4:lemma>apple</j.4:lemma>
+      <sso:Word rdf:about="http://nlp2rdf.lod2.eu/nif/offset_91_96_apple">
+        <sso:lemma>apple</sso:lemma>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Noun"/>
-        <j.2:anchorOf>apple</j.2:anchorOf>
+        <string:anchorOf>apple</string:anchorOf>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Noun"/>
         <j.0:det>
-          <j.7:MorphosyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_81_84_The">
-            <j.4:nextWord>
-              <j.3:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_85_90_eaten">
-                <j.2:anchorOf>eaten</j.2:anchorOf>
+          <j.5:MorphosyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_81_84_The">
+            <sso:nextWord>
+              <j.2:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_85_90_eaten">
+                <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#VBN"/>
+                <string:anchorOf>eaten</string:anchorOf>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#PastParticiple"/>
-                <j.4:lemma>eat</j.4:lemma>
+                <sso:lemma>eat</sso:lemma>
                 <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#MorphosyntacticCategory"/>
-                <j.4:posTag>VBN</j.4:posTag>
+                <sso:posTag>VBN</sso:posTag>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#NonFiniteVerb"/>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
-                <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_91_96_apple"/>
+                <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_91_96_apple"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
                 <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Participle"/>
                 <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
-              </j.3:LinguisticAnnotation>
-            </j.4:nextWord>
-            <j.2:anchorOf>The</j.2:anchorOf>
-            <j.4:lemma>the</j.4:lemma>
+              </j.2:LinguisticAnnotation>
+            </sso:nextWord>
+            <string:anchorOf>The</string:anchorOf>
+            <sso:lemma>the</sso:lemma>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
+            <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#DT"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-            <j.4:posTag>DT</j.4:posTag>
+            <sso:posTag>DT</sso:posTag>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Determiner"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#PronounOrDeterminer"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Determiner"/>
             <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-          </j.7:MorphosyntacticCategory>
+          </j.5:MorphosyntacticCategory>
         </j.0:det>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#CommonNoun"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
         <j.0:amod rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_85_90_eaten"/>
         <j.0:AdjectivalModifier rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_85_90_eaten"/>
         <j.0:Determiner rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_81_84_The"/>
-        <j.4:posTag>NN</j.4:posTag>
-        <j.4:nextWord>
-          <j.7:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_97_100_was">
-            <j.4:posTag>VBD</j.4:posTag>
-            <j.2:anchorOf>was</j.2:anchorOf>
+        <sso:posTag>NN</sso:posTag>
+        <sso:nextWord>
+          <j.5:LinguisticConcept rdf:about="http://nlp2rdf.lod2.eu/nif/offset_97_100_was">
+            <sso:posTag>VBD</sso:posTag>
+            <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#VBD"/>
+            <string:anchorOf>was</string:anchorOf>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Verb"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Tag"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
@@ -1137,60 +1177,64 @@ The boy will eat the apple.
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Verb"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn.owl#BePastTense"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-            <j.4:lemma>be</j.4:lemma>
-            <j.4:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_101_106_clean"/>
-          </j.7:LinguisticConcept>
-        </j.4:nextWord>
+            <sso:lemma>be</sso:lemma>
+            <sso:nextWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_101_106_clean"/>
+          </j.5:LinguisticConcept>
+        </sso:nextWord>
+        <sso:oliaLink rdf:resource="http://purl.org/olia/penn.owl#NN"/>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#CommonNoun"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-      </j.4:Word>
+      </sso:Word>
     </j.0:nsubj>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_101_106_clean"/>
+    <sso:oliaLink>
+      <ns0:Thing rdf:about="http://purl.org/olia/penn.owl#JJ"/>
+    </sso:oliaLink>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_101_106_clean"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
     <j.0:Copula rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_97_100_was"/>
     <j.0:NominalSubject rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_91_96_apple"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn.owl#Adjective"/>
     <j.0:cop rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_97_100_was"/>
-  </j.5:Adjective>
-  <j.7:SyntacticFeature rdf:about="http://nlp2rdf.lod2.eu/nif/offset_21_46_The+apple+has+been+e">
+  </j.3:Adjective>
+  <j.5:SyntacticFeature rdf:about="http://nlp2rdf.lod2.eu/nif/offset_21_46_The+apple+has+been+e">
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Clause"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_25_30_apple"/>
-    <j.4:child>
-      <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_21_30_The+apple">
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_25_30_apple"/>
+    <sso:child>
+      <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_21_30_The+apple">
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-        <j.2:anchorOf>The apple</j.2:anchorOf>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_21_24_The"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_25_30_apple"/>
-      </j.2:OffsetBasedString>
-    </j.4:child>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_21_24_The"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_31_34_has"/>
+        <string:anchorOf>The apple</string:anchorOf>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_21_24_The"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_25_30_apple"/>
+      </string:OffsetBasedString>
+    </sso:child>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_21_24_The"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_31_34_has"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SimpleDeclarativeClause"/>
-    <j.4:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_21_24_The"/>
+    <sso:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_21_24_The"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#DeclarativeSentence"/>
-    <j.2:anchorOf>The apple has been eaten.</j.2:anchorOf>
+    <string:anchorOf>The apple has been eaten.</string:anchorOf>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#Feature"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_35_39_been"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_35_39_been"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Clause"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#UnitOfAnnotation"/>
-    <j.4:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_45_46_."/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_21_46_The+apple+has+been+e"/>
+    <sso:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_45_46_."/>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_21_46_The+apple+has+been+e"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SentenceTypeFeature"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_40_45_eaten"/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_45_46_."/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_40_45_eaten"/>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_45_46_."/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-    <j.4:child>
-      <j.3:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_31_45_has+been+eaten">
-        <j.2:anchorOf>has been eaten</j.2:anchorOf>
-        <j.4:child>
+    <sso:child>
+      <j.2:LinguisticAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_31_45_has+been+eaten">
+        <string:anchorOf>has been eaten</string:anchorOf>
+        <sso:child>
           <j.1:SyntaxTag rdf:about="http://nlp2rdf.lod2.eu/nif/offset_35_45_been+eaten">
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Phrase"/>
@@ -1201,18 +1245,18 @@ The boy will eat the apple.
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#VerbPhrase"/>
             <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-            <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_40_45_eaten"/>
-            <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_35_39_been"/>
+            <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_40_45_eaten"/>
+            <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_35_39_been"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Phrase"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-            <j.2:anchorOf>been eaten</j.2:anchorOf>
+            <string:anchorOf>been eaten</string:anchorOf>
           </j.1:SyntaxTag>
-        </j.4:child>
+        </sso:child>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#VerbPhrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_31_34_has"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_31_34_has"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#UnitOfAnnotation"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#VerbPhrase"/>
@@ -1220,125 +1264,125 @@ The boy will eat the apple.
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Phrase"/>
-      </j.3:LinguisticAnnotation>
-    </j.4:child>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_45_46_."/>
+      </j.2:LinguisticAnnotation>
+    </sso:child>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_45_46_."/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
-  </j.7:SyntacticFeature>
-  <j.7:SyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_0_20_The+apple+was+eaten.">
-    <j.4:child>
-      <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_0_9_The+apple">
+  </j.5:SyntacticFeature>
+  <j.5:SyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_0_20_The+apple+was+eaten.">
+    <sso:child>
+      <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_0_9_The+apple">
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-        <j.2:anchorOf>The apple</j.2:anchorOf>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_0_3_The"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_4_9_apple"/>
-      </j.2:OffsetBasedString>
-    </j.4:child>
+        <string:anchorOf>The apple</string:anchorOf>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_0_3_The"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_4_9_apple"/>
+      </string:OffsetBasedString>
+    </sso:child>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SentenceTypeFeature"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_0_3_The"/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_0_20_The+apple+was+eaten."/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_0_3_The"/>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_0_20_The+apple+was+eaten."/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#UnitOfAnnotation"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_19_20_."/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_4_9_apple"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_19_20_."/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_4_9_apple"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
-    <j.2:anchorOf>The apple was eaten.</j.2:anchorOf>
+    <string:anchorOf>The apple was eaten.</string:anchorOf>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Clause"/>
-    <j.4:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_19_20_."/>
+    <sso:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_19_20_."/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#DeclarativeSentence"/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_19_20_."/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten"/>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_19_20_."/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_10_13_was"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_10_13_was"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SimpleDeclarativeClause"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-    <j.4:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_0_3_The"/>
-    <j.4:child>
-      <j.7:Constituent rdf:about="http://nlp2rdf.lod2.eu/nif/offset_10_19_was+eaten">
+    <sso:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_0_3_The"/>
+    <sso:child>
+      <j.5:Constituent rdf:about="http://nlp2rdf.lod2.eu/nif/offset_10_19_was+eaten">
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#UnitOfAnnotation"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#VerbPhrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#VerbPhrase"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_10_13_was"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_10_13_was"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-        <j.2:anchorOf>was eaten</j.2:anchorOf>
+        <string:anchorOf>was eaten</string:anchorOf>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Phrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Phrase"/>
-      </j.7:Constituent>
-    </j.4:child>
+      </j.5:Constituent>
+    </sso:child>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Clause"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticFeature"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#Feature"/>
-  </j.7:SyntacticCategory>
-  <j.5:DeclarativeSentence rdf:about="http://nlp2rdf.lod2.eu/nif/offset_81_107_The+eaten+apple+was+">
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_106_107_."/>
+  </j.5:SyntacticCategory>
+  <j.3:DeclarativeSentence rdf:about="http://nlp2rdf.lod2.eu/nif/offset_81_107_The+eaten+apple+was+">
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_106_107_."/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
-    <j.4:child>
-      <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_81_96_The+eaten+apple">
+    <sso:child>
+      <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_81_96_The+eaten+apple">
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-        <j.2:anchorOf>The eaten apple</j.2:anchorOf>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_81_84_The"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_85_90_eaten"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_91_96_apple"/>
-      </j.2:OffsetBasedString>
-    </j.4:child>
+        <string:anchorOf>The eaten apple</string:anchorOf>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_81_84_The"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_85_90_eaten"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_91_96_apple"/>
+      </string:OffsetBasedString>
+    </sso:child>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Clause"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Clause"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
-    <j.4:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_106_107_."/>
-    <j.4:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_81_84_The"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_91_96_apple"/>
+    <sso:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_106_107_."/>
+    <sso:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_81_84_The"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_91_96_apple"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_85_90_eaten"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_81_84_The"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_106_107_."/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_85_90_eaten"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_81_84_The"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_106_107_."/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#UnitOfAnnotation"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#Feature"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SimpleDeclarativeClause"/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_81_107_The+eaten+apple+was+"/>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_81_107_The+eaten+apple+was+"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticFeature"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SentenceTypeFeature"/>
-    <j.2:anchorOf>The eaten apple was clean.</j.2:anchorOf>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_101_106_clean"/>
-    <j.4:child>
-      <j.7:Constituent rdf:about="http://nlp2rdf.lod2.eu/nif/offset_97_106_was+clean">
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_97_100_was"/>
+    <string:anchorOf>The eaten apple was clean.</string:anchorOf>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_101_106_clean"/>
+    <sso:child>
+      <j.5:Constituent rdf:about="http://nlp2rdf.lod2.eu/nif/offset_97_106_was+clean">
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_97_100_was"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Phrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Phrase"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_101_106_clean"/>
-        <j.2:anchorOf>was clean</j.2:anchorOf>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_101_106_clean"/>
+        <string:anchorOf>was clean</string:anchorOf>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#VerbPhrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#UnitOfAnnotation"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#VerbPhrase"/>
-      </j.7:Constituent>
-    </j.4:child>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_97_100_was"/>
-  </j.5:DeclarativeSentence>
-  <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_108_132_The+apple+ate+the+ap">
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_122_125_the"/>
-    <j.4:child>
-      <j.3:UnitOfAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_118_131_ate+the+apple">
-        <j.2:anchorOf>ate the apple</j.2:anchorOf>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_118_121_ate"/>
+      </j.5:Constituent>
+    </sso:child>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_97_100_was"/>
+  </j.3:DeclarativeSentence>
+  <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_108_132_The+apple+ate+the+ap">
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_122_125_the"/>
+    <sso:child>
+      <j.2:UnitOfAnnotation rdf:about="http://nlp2rdf.lod2.eu/nif/offset_118_131_ate+the+apple">
+        <string:anchorOf>ate the apple</string:anchorOf>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_118_121_ate"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#VerbPhrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Phrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
@@ -1349,54 +1393,54 @@ The boy will eat the apple.
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Phrase"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
-        <j.4:child>
-          <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_122_131_the+apple">
+        <sso:child>
+          <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_122_131_the+apple">
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-            <j.2:anchorOf>the apple</j.2:anchorOf>
-            <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_122_125_the"/>
-            <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_126_131_apple"/>
-          </j.2:OffsetBasedString>
-        </j.4:child>
+            <string:anchorOf>the apple</string:anchorOf>
+            <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_122_125_the"/>
+            <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_126_131_apple"/>
+          </string:OffsetBasedString>
+        </sso:child>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#VerbPhrase"/>
-      </j.3:UnitOfAnnotation>
-    </j.4:child>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_126_131_apple"/>
+      </j.2:UnitOfAnnotation>
+    </sso:child>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_126_131_apple"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Clause"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#UnitOfAnnotation"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Clause"/>
-    <j.2:anchorOf>The apple ate the apple.</j.2:anchorOf>
+    <string:anchorOf>The apple ate the apple.</string:anchorOf>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#Feature"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SimpleDeclarativeClause"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_131_132_."/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_131_132_."/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_108_132_The+apple+ate+the+ap"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_131_132_."/>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_131_132_."/>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_108_132_The+apple+ate+the+ap"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_108_111_The"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_108_111_The"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticFeature"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SentenceTypeFeature"/>
-    <j.4:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_108_111_The"/>
-    <j.4:child>
-      <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_108_117_The+apple">
+    <sso:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_108_111_The"/>
+    <sso:child>
+      <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_108_117_The+apple">
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-        <j.2:anchorOf>The apple</j.2:anchorOf>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_108_111_The"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_112_117_apple"/>
-      </j.2:OffsetBasedString>
-    </j.4:child>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_118_121_ate"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_112_117_apple"/>
+        <string:anchorOf>The apple</string:anchorOf>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_108_111_The"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_112_117_apple"/>
+      </string:OffsetBasedString>
+    </sso:child>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_118_121_ate"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_112_117_apple"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#DeclarativeSentence"/>
-    <j.4:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_131_132_."/>
-  </j.2:OffsetBasedString>
-  <j.4:Sentence rdf:about="http://nlp2rdf.lod2.eu/nif/offset_47_79_The+apple+was+eaten+">
-    <j.4:child>
-      <j.7:SyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_57_78_was+eaten+and+cleane">
+    <sso:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_131_132_."/>
+  </string:OffsetBasedString>
+  <sso:Sentence rdf:about="http://nlp2rdf.lod2.eu/nif/offset_47_79_The+apple+was+eaten+">
+    <sso:child>
+      <j.5:SyntacticCategory rdf:about="http://nlp2rdf.lod2.eu/nif/offset_57_78_was+eaten+and+cleane">
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Phrase"/>
@@ -1406,42 +1450,42 @@ The boy will eat the apple.
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#VerbPhrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Phrase"/>
-        <j.4:child>
-          <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_61_78_eaten+and+cleaned">
+        <sso:child>
+          <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_61_78_eaten+and+cleaned">
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-            <j.2:anchorOf>eaten and cleaned</j.2:anchorOf>
-            <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_61_66_eaten"/>
-            <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_67_70_and"/>
-            <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_71_78_cleaned"/>
-          </j.2:OffsetBasedString>
-        </j.4:child>
+            <string:anchorOf>eaten and cleaned</string:anchorOf>
+            <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_61_66_eaten"/>
+            <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_67_70_and"/>
+            <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_71_78_cleaned"/>
+          </string:OffsetBasedString>
+        </sso:child>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_57_60_was"/>
-        <j.2:anchorOf>was eaten and cleaned</j.2:anchorOf>
-      </j.7:SyntacticCategory>
-    </j.4:child>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_57_60_was"/>
+        <string:anchorOf>was eaten and cleaned</string:anchorOf>
+      </j.5:SyntacticCategory>
+    </sso:child>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_57_60_was"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_57_60_was"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Clause"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_71_78_cleaned"/>
-    <j.4:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_47_50_The"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_71_78_cleaned"/>
+    <sso:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_47_50_The"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SentenceTypeFeature"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticFeature"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_78_79_."/>
-    <j.2:anchorOf>The apple was eaten and cleaned.</j.2:anchorOf>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_78_79_."/>
+    <string:anchorOf>The apple was eaten and cleaned.</string:anchorOf>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#DeclarativeSentence"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_67_70_and"/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_78_79_."/>
-    <j.4:child>
-      <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_47_56_The+apple">
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_67_70_and"/>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_78_79_."/>
+    <sso:child>
+      <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_47_56_The+apple">
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-        <j.2:anchorOf>The apple</j.2:anchorOf>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_47_50_The"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple"/>
-      </j.2:OffsetBasedString>
-    </j.4:child>
+        <string:anchorOf>The apple</string:anchorOf>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_47_50_The"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple"/>
+      </string:OffsetBasedString>
+    </sso:child>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Clause"/>
@@ -1449,46 +1493,46 @@ The boy will eat the apple.
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SimpleDeclarativeClause"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-    <j.4:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_78_79_."/>
+    <sso:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_78_79_."/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#Feature"/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_47_79_The+apple+was+eaten+"/>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_47_79_The+apple+was+eaten+"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_47_50_The"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_61_66_eaten"/>
-  </j.4:Sentence>
-  <j.4:Sentence rdf:about="http://nlp2rdf.lod2.eu/nif/offset_133_160_The+boy+will+eat+the">
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_51_56_apple"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_47_50_The"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_61_66_eaten"/>
+  </sso:Sentence>
+  <sso:Sentence rdf:about="http://nlp2rdf.lod2.eu/nif/offset_133_160_The+boy+will+eat+the">
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Clause"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
-    <j.2:anchorOf>The boy will eat the apple.</j.2:anchorOf>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_154_159_apple"/>
-    <j.4:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_159_160_."/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_146_149_eat"/>
+    <string:anchorOf>The boy will eat the apple.</string:anchorOf>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_154_159_apple"/>
+    <sso:lastWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_159_160_."/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_146_149_eat"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_159_160_."/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_159_160_."/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#Feature"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#UnitOfAnnotation"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_141_145_will"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_141_145_will"/>
     <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Clause"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia.owl#DeclarativeSentence"/>
-    <j.4:child>
+    <sso:child>
       <j.1:VerbPhrase rdf:about="http://nlp2rdf.lod2.eu/nif/offset_141_159_will+eat+the+apple">
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#VerbPhrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia.owl#Phrase"/>
-        <j.4:child>
-          <j.5:Phrase rdf:about="http://nlp2rdf.lod2.eu/nif/offset_146_159_eat+the+apple">
-            <j.4:child>
-              <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_150_159_the+apple">
+        <sso:child>
+          <j.3:Phrase rdf:about="http://nlp2rdf.lod2.eu/nif/offset_146_159_eat+the+apple">
+            <sso:child>
+              <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_150_159_the+apple">
                 <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-                <j.2:anchorOf>the apple</j.2:anchorOf>
-                <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_150_153_the"/>
-                <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_154_159_apple"/>
-              </j.2:OffsetBasedString>
-            </j.4:child>
+                <string:anchorOf>the apple</string:anchorOf>
+                <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_150_153_the"/>
+                <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_154_159_apple"/>
+              </string:OffsetBasedString>
+            </sso:child>
             <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Phrase"/>
             <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
@@ -1496,44 +1540,44 @@ The boy will eat the apple.
             <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#VerbPhrase"/>
             <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
-            <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_146_149_eat"/>
+            <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_146_149_eat"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia.owl#VerbPhrase"/>
-            <j.2:anchorOf>eat the apple</j.2:anchorOf>
+            <string:anchorOf>eat the apple</string:anchorOf>
             <rdf:type rdf:resource="http://purl.org/olia/system.owl#UnitOfAnnotation"/>
             <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
             <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString"/>
-          </j.5:Phrase>
-        </j.4:child>
+          </j.3:Phrase>
+        </sso:child>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticCategory"/>
         <rdf:type rdf:resource="http://purl.org/olia/system.owl#UnitOfAnnotation"/>
         <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#Phrase"/>
-        <j.2:anchorOf>will eat the apple</j.2:anchorOf>
+        <string:anchorOf>will eat the apple</string:anchorOf>
         <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_141_145_will"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_141_145_will"/>
       </j.1:VerbPhrase>
-    </j.4:child>
+    </sso:child>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#Constituent"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_133_136_The"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_133_136_The"/>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SyntaxTag"/>
-    <j.4:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_133_136_The"/>
+    <sso:firstWord rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_133_136_The"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SentenceTypeFeature"/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_159_160_."/>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_159_160_."/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#SyntacticFeature"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_137_140_boy"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_137_140_boy"/>
     <rdf:type rdf:resource="http://purl.org/olia/olia-top.owl#LinguisticConcept"/>
-    <j.4:child>
-      <j.2:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_133_140_The+boy">
+    <sso:child>
+      <string:OffsetBasedString rdf:about="http://nlp2rdf.lod2.eu/nif/offset_133_140_The+boy">
         <rdf:type rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
-        <j.2:anchorOf>The boy</j.2:anchorOf>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_133_136_The"/>
-        <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_137_140_boy"/>
-      </j.2:OffsetBasedString>
-    </j.4:child>
+        <string:anchorOf>The boy</string:anchorOf>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_133_136_The"/>
+        <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_137_140_boy"/>
+      </string:OffsetBasedString>
+    </sso:child>
     <rdf:type rdf:resource="http://purl.org/olia/penn-syntax.owl#SimpleDeclarativeClause"/>
-    <j.4:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_150_153_the"/>
+    <sso:word rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_150_153_the"/>
     <rdf:type rdf:resource="http://purl.org/olia/system.owl#LinguisticAnnotation"/>
-    <j.4:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_133_160_The+boy+will+eat+the"/>
-  </j.4:Sentence>
+    <sso:child rdf:resource="http://nlp2rdf.lod2.eu/nif/offset_133_160_The+boy+will+eat+the"/>
+  </sso:Sentence>
 </rdf:RDF>
