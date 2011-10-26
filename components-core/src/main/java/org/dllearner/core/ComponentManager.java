@@ -338,7 +338,7 @@ public final class ComponentManager {
 	 * @param <T> Type of the config option.
 	 * @param component A component object.
 	 * @param entry The configuration entry to set.
-	 * @return True of the config entry could be applied succesfully, otherwise false.
+	 * @return True if the config entry could be applied succesfully, otherwise false.
 	 */
 	public <T> boolean applyConfigEntry(AbstractComponent component, ConfigEntry<T> entry) {
 		try {
