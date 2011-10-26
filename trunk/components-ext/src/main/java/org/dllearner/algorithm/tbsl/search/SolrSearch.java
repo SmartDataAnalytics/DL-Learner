@@ -41,6 +41,14 @@ public class SolrSearch implements Search{
 		this(solrServerURL);
 		this.searchField = searchField;
 	}
+	
+	public String getServerURL() {
+		return server.getBaseURL();
+	}
+	
+	public String getSearchField() {
+		return searchField;
+	}
 
 	@Override
 	public List<String> getResources(String queryString) {

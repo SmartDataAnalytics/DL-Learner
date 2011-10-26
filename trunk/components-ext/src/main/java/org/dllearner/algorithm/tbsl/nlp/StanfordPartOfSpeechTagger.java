@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import com.aliasi.tag.Tagging;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -28,6 +31,11 @@ public class StanfordPartOfSpeechTagger implements PartOfSpeechTagger{
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public String getName() {
+		return "Stanford POS Tagger";
 	}
 
 	@Override
@@ -52,6 +60,47 @@ public class StanfordPartOfSpeechTagger implements PartOfSpeechTagger{
 	@Override
 	public List<String> tagTopK(String sentence) {
 		return Collections.singletonList(tag(sentence));
+	}
+	
+	public List<String> getTags(String sentence){
+		List<String> tags = new ArrayList<String>();
+		
+		ArrayList<TaggedWord> tagged = new ArrayList<TaggedWord>(); 
+		
+		StringReader reader = new StringReader(sentence);
+		List<List<HasWord>> text = MaxentTagger.tokenizeText(reader);
+			
+		if (text.size() == 1) {
+			tagged = tagger.tagSentence(text.get(0));
+		}
+		
+		for(TaggedWord tW : tagged){
+			tags.add(tW.tag());
+		}
+		
+		return tags;
+	}
+	
+	@Override
+	public Tagging<String> getTagging(String sentence){
+		ArrayList<TaggedWord> tagged = new ArrayList<TaggedWord>(); 
+		
+		StringReader reader = new StringReader(sentence);
+		List<List<HasWord>> text = MaxentTagger.tokenizeText(reader);
+			
+		if (text.size() == 1) {
+			tagged = tagger.tagSentence(text.get(0));
+		}
+		
+		List<String> tokenList = new ArrayList<String>();
+		List<String> tagList = new ArrayList<String>();
+		
+		for(TaggedWord tW : tagged){
+			tokenList.add(tW.word());
+			tagList.add(tW.tag());
+		}
+		
+		return new Tagging<String>(tokenList, tagList);
 	}
 
 }

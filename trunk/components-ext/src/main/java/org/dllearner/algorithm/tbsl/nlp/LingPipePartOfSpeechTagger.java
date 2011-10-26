@@ -42,6 +42,11 @@ public class LingPipePartOfSpeechTagger implements PartOfSpeechTagger{
 	}
 	
 	@Override
+	public String getName() {
+		return "LingPipe POS Tagger";
+	}
+	
+	@Override
 	public String tag(String sentence) {
 		com.aliasi.tokenizer.Tokenizer tokenizer = IndoEuropeanTokenizerFactory.INSTANCE.tokenizer(sentence.toCharArray(), 0, sentence.length());
 //		Tokenizer tokenizer = TOKENIZER_FACTORY.tokenizer(cs,0,cs.length);
@@ -65,6 +70,17 @@ public class LingPipePartOfSpeechTagger implements PartOfSpeechTagger{
 			taggedSentences.add(taggingIter.next().toString());
 		}
 		return taggedSentences;
+	}
+	
+	@Override
+	public Tagging<String> getTagging(String sentence) {
+		com.aliasi.tokenizer.Tokenizer tokenizer = IndoEuropeanTokenizerFactory.INSTANCE.tokenizer(sentence.toCharArray(), 0, sentence.length());
+//		Tokenizer tokenizer = TOKENIZER_FACTORY.tokenizer(cs,0,cs.length);
+	    String[] tokens = tokenizer.tokenize();
+	    List<String> tokenList = Arrays.asList(tokens);
+		Tagging<String> tagging = tagger.tag(tokenList);
+		
+		return tagging;
 	}
 
 }

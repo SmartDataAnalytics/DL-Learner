@@ -39,10 +39,12 @@ public class Template {
 	}
 	
 	public List<String> getLexicalAnswerType(){
-		String variable = query.getAnswerTypeVariable();
-		for(Slot slot : slots){
-			if(slot.getAnchor().equals(variable)){
-				return slot.getWords();
+		if(query.getQt() == SPARQL_QueryType.SELECT){
+			String variable = query.getAnswerTypeVariable();
+			for(Slot slot : slots){
+				if(slot.getAnchor().equals(variable)){
+					return slot.getWords();
+				}
 			}
 		}
 		return null;

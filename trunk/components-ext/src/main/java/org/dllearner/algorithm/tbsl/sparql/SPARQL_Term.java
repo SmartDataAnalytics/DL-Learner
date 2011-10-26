@@ -73,6 +73,14 @@ public class SPARQL_Term extends SPARQL_Value {
 	public void setIsURI(boolean isURI){
 		this.isURI = isURI;
 	}
+	
+	public String getAlias() {
+		return alias;
+	}
+	
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
 
 	@Override
 	public String toString() {
