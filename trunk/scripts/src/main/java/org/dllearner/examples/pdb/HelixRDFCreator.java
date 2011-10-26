@@ -415,8 +415,8 @@ public class HelixRDFCreator {
 					"@ATTRIBUTE aromaticity NUMERIC\n" + // Aliphatic = 0; Aromatic = 1 
 					"@ATTRIBUTE hydrogen_bonding NUMERIC\n"; // Donor = 1; Donor/Acceptor = 0; Acceptor = -1 
 
-			for (int i = -8; i < 8; i++) {
-				attributes += "@ATTRIBUTE aa_position_" + i + " CLASS\n"; // amino acid at position $i from current amino acid
+			for (int i = -8; i <= 8; i++) {
+				attributes += "@ATTRIBUTE aa_position_" + i + " {A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y}\n"; // amino acid at position $i from current amino acid
 			}
 			attributes += "@ATTRIBUTE in_helix NUMERIC\n"; // Helix = 1 Other = 0
 					
