@@ -17,13 +17,9 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.owl.Description;
-import org.dllearner.reasoning.FastInstanceChecker;
+
 
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -31,8 +27,6 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
-
-import com.dumontierlab.pdb2rdf.model.PdbRdfModel;
 
 public class HelixRDFCreator {
 	
@@ -107,7 +101,6 @@ public class HelixRDFCreator {
 		 * load = true -> load alle .rdf, .conf and .arff Files that can be found within the directory dataDir
 		 * load = false -> don't load anything
 		 */
-		Boolean load = false;
 		Boolean dlLearn = true;
 		Boolean wekaLearn = true;
 		
