@@ -53,6 +53,8 @@ public class Templator {
 	boolean ONE_SCOPE_ONLY = true;
 	boolean UNTAGGED_INPUT = true;
 	
+	boolean USE_NER = false;
+	
 	public Templator() {
 		
 		List<InputStream> grammarFiles = new ArrayList<InputStream>();
@@ -71,13 +73,16 @@ public class Templator {
 	    p.CONSTRUCT_SEMANTICS = true;
 	    p.MODE = "LEIPZIG";
 	    
-	    pp = new Preprocessor(true);
+	    pp = new Preprocessor(USE_NER);
 	    
 		wordnet = new WordNet();
 	}
 	
 	public void setUNTAGGED_INPUT(boolean b) {
 		UNTAGGED_INPUT = b;
+	}
+	public void setUSE_NER(boolean b) {
+		USE_NER = b;
 	}
 
 	public Set<Template> buildTemplates(String s) {
@@ -95,7 +100,12 @@ public class Templator {
 			s = extractSentence(tagged);
 		}
 		
-		String newtagged = pp.condenseNominals(pp.findNEs(tagged,s));
+		String newtagged;
+		if (USE_NER) {
+			newtagged = pp.condenseNominals(pp.findNEs(tagged,s));
+		} 
+		else newtagged = pp.condenseNominals(tagged);
+		
 		newtagged = pp.condense(newtagged);
 		logger.trace("Preprocessed: " + newtagged); 
         
