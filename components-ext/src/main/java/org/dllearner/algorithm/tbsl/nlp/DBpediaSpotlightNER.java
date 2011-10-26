@@ -48,15 +48,17 @@ public class DBpediaSpotlightNER implements NER{
 			}
 			rd.close();
 			JSONObject json = new JSONObject(sb.toString());
-			JSONArray array = json.getJSONArray("Resources");
-			JSONObject entityObject;
-			for(int i = 0; i < array.length(); i++){
-				entityObject = array.getJSONObject(i);
-				System.out.println("Entity: " + entityObject.getString("@surfaceForm"));
-				System.out.println("DBpedia URI: " + entityObject.getString("@URI"));
-				System.out.println("Types: " + entityObject.getString("@types"));
-				namedEntities.add(entityObject.getString("@surfaceForm"));
-				
+			if(!json.isNull("Resources")){
+				JSONArray array = json.getJSONArray("Resources");
+				JSONObject entityObject;
+				for(int i = 0; i < array.length(); i++){
+					entityObject = array.getJSONObject(i);
+					System.out.println("Entity: " + entityObject.getString("@surfaceForm"));
+					System.out.println("DBpedia URI: " + entityObject.getString("@URI"));
+					System.out.println("Types: " + entityObject.getString("@types"));
+					namedEntities.add(entityObject.getString("@surfaceForm"));
+					
+				}
 			}
 			
 		} catch (MalformedURLException e) {

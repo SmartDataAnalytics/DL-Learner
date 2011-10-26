@@ -8,6 +8,9 @@ import net.didion.jwnl.JWNL;
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.POS;
+import net.didion.jwnl.data.Pointer;
+import net.didion.jwnl.data.PointerTarget;
+import net.didion.jwnl.data.PointerType;
 import net.didion.jwnl.data.PointerUtils;
 import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.data.Word;
@@ -52,6 +55,24 @@ public class WordNet {
 		return synonyms;
 	}
 	
+	public List<String> getSisterTerms(POS pos, String s){
+		List<String> sisterTerms = new ArrayList<String>();
+		
+		try {
+			IndexWord iw = dict.getIndexWord(pos, s);//dict.getMorphologicalProcessor().lookupBaseForm(pos, s)
+//			IndexWord iw = dict.getMorphologicalProcessor().lookupBaseForm(pos, s);
+			if(iw != null){
+				Synset[] synsets = iw.getSenses();System.out.println(synsets[0]);
+				PointerTarget[] pointerArr = synsets[0].getTargets();
+				System.out.println(pointerArr);
+			}
+			
+		} catch (JWNLException e) {
+			e.printStackTrace();
+		}
+		return sisterTerms;
+	}
+	
 	public List<String> getAttributes(String s) {
 		
 		List<String> result = new ArrayList<String>();
@@ -78,6 +99,7 @@ public class WordNet {
 	
 	public static void main(String[] args) {
 		System.out.println(new WordNet().getBestSynonyms(POS.VERB, "learn"));
+		System.out.println(new WordNet().getSisterTerms(POS.NOUN, "actress"));
 	}
 	
 	/**

@@ -16,10 +16,9 @@ import org.dllearner.algorithm.tbsl.ltag.parser.LTAGLexicon;
 import org.dllearner.algorithm.tbsl.ltag.parser.LTAG_Lexicon_Constructor;
 import org.dllearner.algorithm.tbsl.ltag.parser.Parser;
 import org.dllearner.algorithm.tbsl.ltag.parser.Preprocessor;
-import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
-import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.sem.drs.DRS;
 import org.dllearner.algorithm.tbsl.sem.drs.UDRS;
@@ -63,8 +62,8 @@ public class Templator {
 		
         g = LTAG_Constructor.construct(grammarFiles);
 
-//        tagger = new StanfordPartOfSpeechTagger();
-        tagger = new ApachePartOfSpeechTagger();
+        tagger = new StanfordPartOfSpeechTagger();
+//        tagger = new ApachePartOfSpeechTagger();
 		
 	    p = new Parser();
 	    p.SHOW_GRAMMAR = true;
@@ -93,6 +92,7 @@ public class Templator {
 		}
 		else {
 			tagged = s;
+			s = extractSentence(tagged);
 		}
 		
 		String newtagged = pp.condenseNominals(pp.findNEs(tagged,s));
@@ -137,11 +137,11 @@ public class Templator {
                 	
                 	if (!containsModuloRenaming(drses,drs)) {
 //                    	// DEBUG
-//                		System.out.println(dude);
-//                		System.out.println(drs);
-//                		for (Slot sl : slots) {
-//                			System.out.println(sl.toString());
-//                		}
+                		System.out.println(dude);
+                		System.out.println(drs);
+                		for (Slot sl : slots) {
+                			System.out.println(sl.toString());
+                		}
 //                		//
                 		drses.add(drs);
                 		
@@ -185,6 +185,9 @@ public class Templator {
 	                					for (String att : getLemmatizedWords(strings)) {
 		                					newwords.addAll(wordnet.getBestSynonyms(wordnetpos,att));
 	                					}
+                					}
+                					if(newwords.isEmpty()){
+                						
                 					}
                 					if (newwords.isEmpty()) {
                 						newwords.add(slot.getWords().get(0));
@@ -250,5 +253,23 @@ public class Templator {
 		}
 		return false;
 	}
+	
+	private String extractSentence(String taggedSentence){
+    	int pos = taggedSentence.indexOf("/");
+    	while(pos != -1){
+    		String first = taggedSentence.substring(0, pos);
+    		int endPos = taggedSentence.substring(pos).indexOf(" ");
+    		if(endPos == -1){
+    			endPos = taggedSentence.substring(pos).length();
+    		}
+    		String rest = taggedSentence.substring(pos + endPos);
+    		
+    		taggedSentence = first + rest;
+    		pos = taggedSentence.indexOf("/");
+    		
+    	}
+    	return taggedSentence;
+    	
+    }
 
 }

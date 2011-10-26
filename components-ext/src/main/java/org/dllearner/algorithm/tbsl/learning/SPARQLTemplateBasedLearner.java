@@ -27,6 +27,7 @@ import org.dllearner.algorithm.tbsl.search.ThresholdSlidingSolrSearch;
 import org.dllearner.algorithm.tbsl.sparql.Query;
 import org.dllearner.algorithm.tbsl.sparql.RatedQuery;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Prefix;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_QueryType;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
@@ -48,6 +49,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -67,7 +69,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private Ranking ranking;
 	private boolean useRemoteEndpointValidation;
 	private boolean stopIfQueryResultNotEmpty;
-	private int maxTestedQueriesPerTemplate;
+	private int maxTestedQueriesPerTemplate = 50;
 	private int maxQueryExecutionTimeInSeconds;
 	
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
@@ -88,7 +90,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private Map<String, List<String>> classesURICache;
 	private Map<String, List<String>> propertiesURICache;
 	
-	private Map<String, List<String>> learnedSPARQLQueries;
+	private Map<String, Object> learnedSPARQLQueries;
 	private Set<Template> templates;
 	private Collection<Query> sparqlQueryCandidates;
 	private Map<Template, Collection<? extends Query>> template2Queries;
@@ -120,6 +122,13 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		templateGenerator = new Templator();
 	}
 	
+	/*
+	 * Only for Evaluation useful.
+	 */
+	public void setUseIdealTagger(boolean value){
+		templateGenerator.setUNTAGGED_INPUT(!value);
+	}
+
 	private void init(Options options){
 		String resourcesIndexUrl = options.fetch("solr.resources.url");
 		String resourcesIndexSearchField = options.fetch("solr.resources.searchfield");
@@ -127,7 +136,13 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		
 		String classesIndexUrl = options.fetch("solr.classes.url");
 		String classesIndexSearchField = options.fetch("solr.classes.searchfield");
-		class_index = new ThresholdSlidingSolrSearch(classesIndexUrl, classesIndexSearchField, 1.0, 0.1);
+		SolrSearch dbpediaClassIndex = new SolrSearch(classesIndexUrl, classesIndexSearchField);
+		
+		String yagoClassesIndexUrl = options.fetch("solr.yago.classes.url");
+		String yagoClassesIndexSearchField = options.fetch("solr.yago.classes.searchfield");
+		SolrSearch yagoClassIndex = new SolrSearch(yagoClassesIndexUrl, yagoClassesIndexSearchField);
+		
+		class_index = new ThresholdSlidingSolrSearch(dbpediaClassIndex);// new HierarchicalSolrSearch(dbpediaClassIndex, yagoClassIndex);
 		
 		String propertiesIndexUrl = options.fetch("solr.properties.url");
 		String propertiesIndexSearchField = options.fetch("solr.properties.searchfield");
@@ -137,7 +152,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		String boaPatternIndexSearchField = options.fetch("solr.boa.properties.searchfield");
 		SolrSearch patternBasedPropertyIndex = new SolrSearch(boaPatternIndexUrl, boaPatternIndexSearchField);
 		
-		property_index = new HierarchicalSolrSearch(patternBasedPropertyIndex, labelBasedPropertyIndex);
+		//first BOA pattern then label based
+//		property_index = new HierarchicalSolrSearch(patternBasedPropertyIndex, labelBasedPropertyIndex);
+		
+		//first label based then BOA pattern
+		property_index = new HierarchicalSolrSearch(labelBasedPropertyIndex, patternBasedPropertyIndex);
 		
 		int maxIndexResults = Integer.parseInt(options.fetch("solr.query.limit"), 10);
 		
@@ -191,7 +210,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	
 	private void reset(){
-		learnedSPARQLQueries = new HashMap<String, List<String>>();
+		learnedSPARQLQueries = new HashMap<String, Object>();
 		resourcesURICache = new HashMap<String, List<String>>();
 		classesURICache = new HashMap<String, List<String>>();
 		propertiesURICache = new HashMap<String, List<String>>();
@@ -417,13 +436,13 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				SPARQL_Prefix prefix = null;
 				uriCandidates = getCandidateURIsSortedBySimilarity(slot);
 				for(String uri : uriCandidates){
-					for(Entry<String, String> uri2prefix : prefixMap.entrySet()){
-						if(uri.startsWith(uri2prefix.getKey())){
-							prefix = new SPARQL_Prefix(uri2prefix.getValue(), uri2prefix.getKey());
-							uri = uri.replace(uri2prefix.getKey(), uri2prefix.getValue() + ":");
-							break;
-						} 
-					}
+//					for(Entry<String, String> uri2prefix : prefixMap.entrySet()){
+//						if(uri.startsWith(uri2prefix.getKey())){
+//							prefix = new SPARQL_Prefix(uri2prefix.getValue(), uri2prefix.getKey());
+//							uri = uri.replace(uri2prefix.getKey(), uri2prefix.getValue() + ":");
+//							break;
+//						} 
+//					}
 					for(Query query : queries){
 						if(slot.getSlotType() == SlotType.SYMPROPERTY){
 							Query reversedQuery = new Query(query);
@@ -635,28 +654,55 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private void validateAgainstRemoteEndpoint(Collection<? extends Query> queries){
 		List<String> queryStrings = new ArrayList<String>();
+		SPARQL_QueryType queryType = SPARQL_QueryType.SELECT;
 		for(Query query : queries){
+			if(query.getQt() == SPARQL_QueryType.ASK){
+				queryType = SPARQL_QueryType.ASK;
+			} else if(query.getQt() == SPARQL_QueryType.SELECT){
+				queryType = SPARQL_QueryType.SELECT;
+			}
 			queryStrings.add(query.toString());
 		}
-		validateAgainstRemoteEndpoint(queryStrings);
+		validateAgainstRemoteEndpoint(queryStrings, queryType);
 	}
 	
-	private void validateAgainstRemoteEndpoint(List<String> queries){
+	private void validateAgainstRemoteEndpoint(List<String> queries, SPARQL_QueryType queryType){
 		logger.info("Testing candidate SPARQL queries on remote endpoint...");
 		mon.start();
-		for(String query : queries){
-			logger.info("Testing query:\n" + query);
-			List<String> results = getResultFromRemoteEndpoint(query);
-			if(!results.isEmpty()){
-				learnedSPARQLQueries.put(query, results);
-				if(stopIfQueryResultNotEmpty){
+		if(queryType == SPARQL_QueryType.SELECT){
+			for(String query : queries){
+				logger.info("Testing query:\n" + query);
+				List<String> results = getResultFromRemoteEndpoint(query);
+				if(!results.isEmpty()){
+					learnedSPARQLQueries.put(query, results);
+					if(stopIfQueryResultNotEmpty){
+						return;
+					}
+				}
+				logger.info("Result: " + results);
+			}
+		} else if(queryType == SPARQL_QueryType.ASK){
+			for(String query : queries){
+				logger.info("Testing query:\n" + query);
+				boolean result = executeAskQuery(query);
+				learnedSPARQLQueries.put(query, result);
+				if(stopIfQueryResultNotEmpty && result){
 					return;
 				}
+				logger.info("Result: " + result);
 			}
-			logger.info("Result: " + results);
 		}
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
+	}
+	
+	private boolean executeAskQuery(String query){
+		QueryEngineHTTP qe = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+		for(String uri : endpoint.getDefaultGraphURIs()){
+			qe.addDefaultGraph(uri);
+		}
+		boolean ret = qe.execAsk();
+		return ret;
 	}
 	
 	private void validateAgainstLocalModel(Collection<? extends Query> queries){
@@ -686,7 +732,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private List<String> getResultFromRemoteEndpoint(String query){
 		List<String> resources = new ArrayList<String>();
 		try {
-			ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query + " LIMIT 10"));
+			String queryString = query;
+			if(!query.contains("LIMIT") && !query.contains("ASK")){
+				queryString = query + " LIMIT 10";
+			}
+			ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, queryString));
 			QuerySolution qs;
 			String projectionVar;
 			while(rs.hasNext()){
@@ -724,8 +774,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-//		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
-		String question = "Give me all European Capitals!";
+		String question = "Who wrote the book The pillars of the Earth?";
 		
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();

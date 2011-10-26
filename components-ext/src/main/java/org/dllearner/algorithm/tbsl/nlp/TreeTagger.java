@@ -8,6 +8,8 @@ import org.annolab.tt4j.TokenHandler;
 import org.annolab.tt4j.TreeTaggerException;
 import org.annolab.tt4j.TreeTaggerWrapper;
 
+import com.aliasi.tag.Tagging;
+
 public class TreeTagger implements PartOfSpeechTagger {
 
 	TreeTaggerWrapper<String> tt;
@@ -39,6 +41,17 @@ public class TreeTagger implements PartOfSpeechTagger {
 		     tt.destroy();
 		}
 		return "";
+	}
+	
+	@Override
+	public String getName() {
+		return "Tree Tagger";
+	}
+	
+	@Override
+	public Tagging<String> getTagging(String sentence) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

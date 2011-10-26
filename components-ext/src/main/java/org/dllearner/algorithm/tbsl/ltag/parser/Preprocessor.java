@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithm.tbsl.nlp.DBpediaSpotlightNER;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeNER;
 import org.dllearner.algorithm.tbsl.nlp.NER;
 import org.dllearner.algorithm.tbsl.templator.Templator;
@@ -24,6 +25,7 @@ public class Preprocessor {
 		USE_NER = n;
 		if (USE_NER) {
 			ner = new LingPipeNER(true); //not case sensitive best solution?
+//			ner = new DBpediaSpotlightNER();
 		}
 	}
 	

@@ -49,6 +49,7 @@ public class Query
 	
 	//copy constructor
 	public Query(Query query){
+		this.qt = query.getQt();
 		Set<SPARQL_Term> selTerms = new HashSet<SPARQL_Term>();
 		for(SPARQL_Term term : query.getSelTerms()){
 			SPARQL_Term newTerm = new SPARQL_Term(term.getName());
@@ -56,6 +57,7 @@ public class Query
 			newTerm.setIsURI(newTerm.isURI);
 			newTerm.setAggregate(term.getAggregate());
 			newTerm.setOrderBy(term.getOrderBy());
+			newTerm.setAlias(term.getAlias());
 			selTerms.add(newTerm);
 		}
 		this.selTerms = selTerms;
