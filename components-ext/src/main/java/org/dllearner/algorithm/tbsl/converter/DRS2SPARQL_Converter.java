@@ -79,6 +79,9 @@ public class DRS2SPARQL_Converter {
         slots = ls;
         
         Query q = convert(drs, new Query(), false);
+        if (q == null) {
+        	return null;
+        }
         q.setPrefixes(prefixes);
         
         template.setQuery(q);
@@ -94,7 +97,9 @@ public class DRS2SPARQL_Converter {
     	
 //        System.out.println("--- DRS (before): " + drs); // DEBUG   	
         redundantEqualRenaming(drs); 
-        restructureEmpty(drs);
+        if (!restructureEmpty(drs)) {
+        	return null;
+        }
 //        System.out.println("--- DRS (after) : " + drs); // DEBUG
             
         for (DiscourseReferent referent : drs.getDRs()) {
@@ -379,7 +384,7 @@ public class DRS2SPARQL_Converter {
     }
     
 
-    private void restructureEmpty(DRS drs) {
+    private boolean restructureEmpty(DRS drs) {
     	
     	Set<Simple_DRS_Condition> emptyConditions = new HashSet<Simple_DRS_Condition>();
         for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
@@ -387,30 +392,63 @@ public class DRS2SPARQL_Converter {
         		emptyConditions.add(c);
         	}
         }
+        if (emptyConditions.isEmpty()) {
+        	return true;
+        }
         
+        boolean globalsuccess = false;
         for (Simple_DRS_Condition c : emptyConditions) {
         	String nounToExpand = c.getArguments().get(1).getValue();
+        	String fallbackNoun = c.getArguments().get(0).getValue();
+        	boolean success = false;
+        	loop: 
         	for (Simple_DRS_Condition sc : drs.getAllSimpleConditions()) {
         		if (sc.getArguments().size() == 1 && sc.getArguments().get(0).getValue().equals(nounToExpand)) {
-        			List<DiscourseReferent> newargs = new ArrayList<DiscourseReferent>();
-        			newargs.add(c.getArguments().get(0));
-        			newargs.add(sc.getArguments().get(0));
-        			sc.setArguments(newargs);
         			for (Slot s : slots) {
         				if (s.getAnchor().equals(sc.getPredicate())) {
-        					s.setSlotType(SlotType.PROPERTY); 
-        					break;
-        				}
+        					if (s.getSlotType().equals(SlotType.CLASS)) {
+        						s.setSlotType(SlotType.PROPERTY); 
+        						List<DiscourseReferent> newargs = new ArrayList<DiscourseReferent>();
+                    			newargs.add(c.getArguments().get(0));
+                    			newargs.add(sc.getArguments().get(0));
+                    			sc.setArguments(newargs);
+                    			success = true;
+                    			globalsuccess = true;
+                    			break loop;
+        					}
+        				}	
         			}
-        			break;
         		}
+        	}
+        	if (!success) { // do the same for fallbackNoun
+        		loop: 
+                for (Simple_DRS_Condition sc : drs.getAllSimpleConditions()) {
+                	if (sc.getArguments().size() == 1 && sc.getArguments().get(0).getValue().equals(fallbackNoun)) {
+                		for (Slot s : slots) {
+                			if (s.getAnchor().equals(sc.getPredicate())) {
+                				if (s.getSlotType().equals(SlotType.CLASS)) {
+                					s.setSlotType(SlotType.PROPERTY); 
+                					List<DiscourseReferent> newargs = new ArrayList<DiscourseReferent>();
+                           			newargs.add(c.getArguments().get(1));
+                           			newargs.add(sc.getArguments().get(0));
+                           			sc.setArguments(newargs);
+                           			success = true;
+                           			globalsuccess = true;
+                           			break loop;
+                				}
+                			}	
+                		}
+                	}
+                }
         	}
         }
         
-        for (Simple_DRS_Condition c : emptyConditions) {
-        	drs.removeCondition(c);
+        if (globalsuccess) {
+        	for (Simple_DRS_Condition c : emptyConditions) {
+        		drs.removeCondition(c);
+        	}
         }
-		
+        return globalsuccess;
 	}
 
     private boolean isUri(String arg) {

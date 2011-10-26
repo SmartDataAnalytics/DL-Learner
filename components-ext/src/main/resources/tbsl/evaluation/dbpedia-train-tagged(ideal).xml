@@ -2031,7 +2031,7 @@ http://www.youtube.com/tomhankschannel
 </answers>
 </question>
 <question id="37">
-<string>List/VB all/DT episodes/NNS of/IN the/DT first/JJ season/NN of/IN the/DT HBO/NNP television/NN series/NN The/DT Sopranos/NNPS</string>
+<string>List/VB all/DT episodes/NNS of/IN the/DT first/JJ season/NN of/IN the/DT HBO/NNP television/NN series/NN The/NNP Sopranos/NNPS</string>
 <query>
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
@@ -19886,7 +19886,7 @@ Dana Rosemary Scallon
 </answers>
 </question>
 <question id="33">
-<string>Which/WDT music/NN albums/NNS contain/VBP the/DT song/NN Last/JJ Christmas/NNP</string>
+<string>Which/WDT music/NN albums/NNS contain/VBP the/DT song/NN Last/NNP Christmas/NNP</string>
 <query>
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
@@ -26155,7 +26155,7 @@ Angela Merkel
 </answers>
 </question>
 <question id="39">
-<string>Who/WP wrote/VBD the/DT book/NN The/DT pillars/NNS of/IN the/DT Earth/NNP</string>
+<string>Who/WP wrote/VBD the/DT book/NN The/NNP pillars/NNP of/NNP the/NNP Earth/NNP</string>
 <query>
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;

@@ -97,7 +97,10 @@ public class SPARQL_Term extends SPARQL_Value {
 			else 
 				return "DESC(?"+alias.toLowerCase()+")";
 		}
-		if (isString() || isURI) {
+		if (isString()) {
+			return name.replaceAll("_"," ");
+		}
+		else if (isURI) {
 			return name;
 		}
 		else return "?"+name.toLowerCase();

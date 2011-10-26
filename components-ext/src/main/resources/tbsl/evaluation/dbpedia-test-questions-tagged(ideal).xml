@@ -3,7 +3,7 @@
 <string>Which/WDT presidents/NNS of/IN the/DT United/NNP States/NNPS had/VBD more/JJR than/IN three/CD children/NNS</string>
 </question>
 <question id="3">
-<string>Give/VB me/PRP the/DT official/JJ websites/NNS of/IN actors/NNS of/IN the/DT television/NN show/NN Charmed/VBN</string>
+<string>Give/VB me/PRP the/DT official/JJ websites/NNS of/IN actors/NNS of/IN the/DT television/NN show/NN Charmed/NNP</string>
 </question>
 <question id="37">
 <string>Who/WP is/VBZ the/DT daughter/NN of/IN Bill/NNP Clinton/NNP married/VBN to/TO</string>
