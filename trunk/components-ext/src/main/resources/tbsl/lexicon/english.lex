@@ -101,8 +101,11 @@
 	
 	has  || (S DP[subject] (VP V:'has' DP[object]))  || <x, l1, t, [ l1:[ | ], l2:[ | empty(x,y) ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
 	have || (S DP[subject] (VP V:'have' DP[object]))  || <x, l1, t, [ l1:[ | ], l2:[ | empty(x,y) ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
+	had  || (S DP[subject] (VP V:'had' DP[object]))  || <x, l1, t, [ l1:[ | ], l2:[ | empty(x,y) ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
 	
-	with || (NP NP* (PP P:'with' DP[dp])) || <x,l1,<e,t>,[ l1:[| empty(x,y) ] ],[(l2,y,dp,<<e,t>,t>)],[l2=l1],[]>
+//	with || (NP NP* (PP P:'with' DP[dp])) || <x,l1,<e,t>,[ l1:[| empty(x,y) ] ],[(l2,y,dp,<<e,t>,t>)],[l2=l1],[]>
+	
+	people || (NP N:'people') || <x,l1,<e,t>,[ l1:[|] ],[],[],[]>
 	
 
 // WH WORDS

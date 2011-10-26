@@ -106,7 +106,7 @@ class GrammarFilter {
 					
 					for (Pair<String,String> p : named) {
 						try {
-							TreeNode tree = c.construct(p.getFirst().replaceAll("_"," "));
+							TreeNode tree = c.construct(p.getFirst()); // .replaceAll("_"," ")
 							
 							int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(token,tree), Collections.singletonList(p.getSecond()));
 							add(parseG, tree, gid-1, localID);
@@ -277,7 +277,11 @@ class GrammarFilter {
 
 	private static List<Pair<String,String>> checkForNamedString(String token) {
 
-		String[] split = token.split(" ");
+		String[] split;
+		if (token.contains(" ")) {
+			split = token.split(" ");
+		} 
+		else split = token.split("_");
 		
 		if (split.length > 1 && split.length < 5) {
 			
@@ -292,6 +296,7 @@ class GrammarFilter {
 						semName += "_" + split[i];
 						rawNames += "DP:'" + split[i] + "' ";
 					}
+					
 					semName = semName.substring(1);
 					out.add(new Pair<String,String>("(NP NP* ADJ:'"+ w +"' " + rawNames + ")", "<x,l1,<e,t>,[ l1:[ | SLOT_title(x,'" + semName + "') ] ], [],[],[ SLOT_title/PROPERTY/title^name ]>"));
 					out.add(new Pair<String,String>("(DP DP* ADJ:'"+ w +"' " + rawNames + ")", "<x,l1,<<e,t>,t>,[ l1:[ | SLOT_title(x,'" + semName + "') ] ], [],[],[ SLOT_title/PROPERTY/title^name ]>"));
