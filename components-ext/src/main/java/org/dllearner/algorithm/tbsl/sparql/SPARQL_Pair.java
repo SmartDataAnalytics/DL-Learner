@@ -42,6 +42,8 @@ public class SPARQL_Pair
 			return "!BOUND(" + a + ")";
 		case NEQ:
 			return a + "!=" + b;
+		case REGEX:
+			return "regex(" + a + "," + b + ")";
 		}
 		return "";
 	}

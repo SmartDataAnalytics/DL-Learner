@@ -205,10 +205,14 @@ public class SlotBuilder {
 					result.add(passEntry);
 				}
 				else if (pos.equals("VPASSIN")) {
-					String[] passEntry = {token,
+					String[] passEntry1 = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
 							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>"};
-					result.add(passEntry);
+					String[] passEntry2 = {token,
+							"(S DP[dp] (VP V:'" + token + "' NUM[num]))",
+							"<x,l1,t,[ l1:[|], l4:[ y | SLOT_" + token + "(x,y), DATE(y,z) ] ],[(l2,x,dp,<<e,t>,t>),(l3,z,num,e)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>"};
+					result.add(passEntry1);
+					result.add(passEntry2);
 				}
 				else if (pos.equals("GERUNDIN")) {
 					String[] gerundinEntry1 = {token,

@@ -289,18 +289,26 @@ public class DRS2SPARQL_Converter {
                         SPARQL_PairType.EQ)));
                 return query;
             }
-            
-            if (arity == 1) {
-            	SPARQL_Term term = new SPARQL_Term(simple.getArguments().get(0).getValue(),false);term.setIsVariable(true);
-            	query.addCondition(new SPARQL_Triple(term,new SPARQL_Property("type",new SPARQL_Prefix("rdf","")),prop));
+            else if (predicate.equals("DATE")) {
+            	query.addFilter(new SPARQL_Filter(
+            			new SPARQL_Pair(
+                        new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
+                        new SPARQL_Term("'^"+simple.getArguments().get(1).getValue()+"'",true),
+                        SPARQL_PairType.REGEX)));
             }
-            else if (arity == 2) {
-            	String arg1 = simple.getArguments().get(0).getValue();SPARQL_Term term1 = new SPARQL_Term(arg1,false);term1.setIsVariable(true);
-            	String arg2 = simple.getArguments().get(1).getValue();SPARQL_Term term2 = new SPARQL_Term(arg2,false);term2.setIsVariable(true);
-            	query.addCondition(new SPARQL_Triple(term1, prop, term2));
-            }
-            else if (arity > 2) {
-            	// TODO
+            else {
+	            if (arity == 1) {
+	            	SPARQL_Term term = new SPARQL_Term(simple.getArguments().get(0).getValue(),false);term.setIsVariable(true);
+	            	query.addCondition(new SPARQL_Triple(term,new SPARQL_Property("type",new SPARQL_Prefix("rdf","")),prop));
+	            }
+	            else if (arity == 2) {
+	            	String arg1 = simple.getArguments().get(0).getValue();SPARQL_Term term1 = new SPARQL_Term(arg1,false);term1.setIsVariable(true);
+	            	String arg2 = simple.getArguments().get(1).getValue();SPARQL_Term term2 = new SPARQL_Term(arg2,false);term2.setIsVariable(true);
+	            	query.addCondition(new SPARQL_Triple(term1, prop, term2));
+	            }
+	            else if (arity > 2) {
+	            	// TODO
+	            }
             }
         }
         return query;
