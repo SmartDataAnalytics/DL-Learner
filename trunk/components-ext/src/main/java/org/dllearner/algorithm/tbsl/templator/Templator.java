@@ -26,6 +26,7 @@ import org.dllearner.algorithm.tbsl.sem.drs.UDRS;
 import org.dllearner.algorithm.tbsl.sem.dudes.data.Dude;
 import org.dllearner.algorithm.tbsl.sem.dudes.reader.ParseException;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
+import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 
 public class Templator {
@@ -179,7 +180,7 @@ public class Templator {
                 					newwords.add(word);
                 					newwords.addAll(strings);            					
                 					
-                					if (wordnetpos != null) {
+                					if (wordnetpos != null && !slot.getSlotType().equals(SlotType.RESOURCE)) {
                 						newwords.addAll(wordnet.getBestSynonyms(wordnetpos,getLemmatizedWord(word)));
 	                					for (String att : getLemmatizedWords(strings)) {
 		                					newwords.addAll(wordnet.getBestSynonyms(wordnetpos,att));
