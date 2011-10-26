@@ -24,6 +24,7 @@ import org.dllearner.algorithm.tbsl.sparql.SPARQL_QueryType;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Term;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Triple;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
+import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 
 
@@ -91,7 +92,10 @@ public class DRS2SPARQL_Converter {
 
     private Query convert(DRS drs, Query query, boolean negate) {
     	
+//        System.out.println("--- DRS (before): " + drs); // DEBUG   	
         redundantEqualRenaming(drs); 
+        restructureEmpty(drs);
+//        System.out.println("--- DRS (after) : " + drs); // DEBUG
             
         for (DiscourseReferent referent : drs.getDRs()) {
             if (referent.isMarked()) {
@@ -139,7 +143,7 @@ public class DRS2SPARQL_Converter {
         return query;
     }
 
-    private Query convertCondition(DRS_Condition condition, Query query) {
+	private Query convertCondition(DRS_Condition condition, Query query) {
         if (condition.isComplexCondition()) {
             if (!isSilent()) {
                 System.out.print("|complex:" + condition.toString());
@@ -272,7 +276,7 @@ public class DRS2SPARQL_Converter {
                         SPARQL_PairType.LTEQ)));
                 return query;
             } else if (predicate.equals("maximum")) {
-                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(),false));
+//                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(),false));
                 query.addOrderBy(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_OrderBy.DESC));
                 query.setLimit(1);
                 return query;
@@ -373,6 +377,41 @@ public class DRS2SPARQL_Converter {
         	drs.removeCondition(c);
         }
     }
+    
+
+    private void restructureEmpty(DRS drs) {
+    	
+    	Set<Simple_DRS_Condition> emptyConditions = new HashSet<Simple_DRS_Condition>();
+        for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
+        	if(c.getPredicate().equals("empty")) {
+        		emptyConditions.add(c);
+        	}
+        }
+        
+        for (Simple_DRS_Condition c : emptyConditions) {
+        	String nounToExpand = c.getArguments().get(1).getValue();
+        	for (Simple_DRS_Condition sc : drs.getAllSimpleConditions()) {
+        		if (sc.getArguments().size() == 1 && sc.getArguments().get(0).getValue().equals(nounToExpand)) {
+        			List<DiscourseReferent> newargs = new ArrayList<DiscourseReferent>();
+        			newargs.add(c.getArguments().get(0));
+        			newargs.add(sc.getArguments().get(0));
+        			sc.setArguments(newargs);
+        			for (Slot s : slots) {
+        				if (s.getAnchor().equals(sc.getPredicate())) {
+        					s.setSlotType(SlotType.PROPERTY); 
+        					break;
+        				}
+        			}
+        			break;
+        		}
+        	}
+        }
+        
+        for (Simple_DRS_Condition c : emptyConditions) {
+        	drs.removeCondition(c);
+        }
+		
+	}
 
     private boolean isUri(String arg) {
         return false; // TODO
