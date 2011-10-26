@@ -62,7 +62,7 @@ public class Preprocessor {
 		Matcher m;
 		
 		Pattern compAdjPattern    = Pattern.compile("(\\w+/RBR.(\\w+)/JJ)");
-		Pattern superAdjPattern   = Pattern.compile("(\\w+/RBS.(\\w+)/JJ)");
+//		Pattern superAdjPattern   = Pattern.compile("(\\w+/RBS.(\\w+)/JJ)"); // TODO "(the most) official languages" vs "the (most official) languages"
 		Pattern howAdjPattern     = Pattern.compile("(\\w+/WRB.(\\w+)(?<!many)/JJ)"); 
 		Pattern nprepPattern      = Pattern.compile("\\s((\\w+)/NNS?.of/IN)");
 		Pattern didPattern        = Pattern.compile("(?i)(\\s((did)|(do)|(does))/VB.?)\\s"); 
@@ -90,11 +90,11 @@ public class Preprocessor {
 			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJR");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJR");
 		}
-		m = superAdjPattern.matcher(condensedstring); 
-		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJS");
-			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJS");
-		}
+//		m = superAdjPattern.matcher(condensedstring); 
+//		while (m.find()) {
+//			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJS");
+//			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJS");
+//		}
 		m = howAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
 			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJH");
@@ -240,7 +240,6 @@ public class Preprocessor {
 				"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN",
 				"GERUNDIN","VPREP","WHEN","WHERE","IN","TO","DT"};
 		
-//		NER ner = new LingPipeNER();
 		List<String> namedentities = ner.getNamedEntitites(untagged);
 		List<String> usefulnamedentities = new ArrayList<String>();
 		

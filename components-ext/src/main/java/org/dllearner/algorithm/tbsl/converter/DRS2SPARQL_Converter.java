@@ -305,6 +305,13 @@ public class DRS2SPARQL_Converter {
                         new SPARQL_Term("'^"+simple.getArguments().get(1).getValue()+"'",true),
                         SPARQL_PairType.REGEX)));
             }
+            else if (predicate.equals("regex")) {
+            	query.addFilter(new SPARQL_Filter(
+            			new SPARQL_Pair(
+                        new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),true),
+                        SPARQL_PairType.REGEX)));
+            }
             else {
 	            if (arity == 1) {
 	            	SPARQL_Term term = new SPARQL_Term(simple.getArguments().get(0).getValue(),false);term.setIsVariable(true);
