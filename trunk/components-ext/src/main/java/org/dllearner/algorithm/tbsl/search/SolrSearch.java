@@ -3,8 +3,10 @@ package org.dllearner.algorithm.tbsl.search;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -90,29 +92,54 @@ public class SolrSearch implements Search{
 		return resources;
 	}
 	
-	public Map<String, Float> getResourcesWithScores(String queryString) {
-		return getResourcesWithScores(queryString, hitsPerPage);
-	}
-	
-	public Map<String, Float> getResourcesWithScores(String queryString, boolean sorted) {
-		return getResourcesWithScores(queryString, hitsPerPage);
-	}
-	
-	public Map<String, Float> getResourcesWithScores(String queryString, int limit) {
-		return getResourcesWithScores(queryString, limit, 0, false);
-	}
-	
-	public Map<String, Float> getResourcesWithScores(String queryString, int limit, boolean sorted) {
-		return getResourcesWithScores(queryString, limit, 0, sorted);
-	}
-	
-	public Map<String, Float> getResourcesWithScores(String queryString, int limit, int offset, boolean sorted) {
-		Map<String, Float> resource2ScoreMap = new HashMap<String, Float>();
+	protected SolrQueryResultSet findResourcesWithScores(String queryString, int limit, int offset, boolean sorted){
+		Set<SolrQueryResultItem> items = new HashSet<SolrQueryResultItem>();
 		
 		QueryResponse response;
 		try {
-			SolrQuery query = new SolrQuery();
-		    query.setQuery(queryString);
+			SolrQuery query = new SolrQuery((searchField != null) ? searchField  + ":" + queryString : queryString);
+		    query.setRows(limit);
+		    query.setStart(offset);
+		    query.addField("score");
+		    if(sorted){
+		    	 query.addSortField("score", SolrQuery.ORDER.desc);
+				    query.addSortField( "pagerank", SolrQuery.ORDER.desc );
+		    }
+			response = server.query(query);
+			SolrDocumentList docList = response.getResults();
+			lastTotalHits = (int) docList.getNumFound();
+			
+			for(SolrDocument d : docList){
+				items.add(new SolrQueryResultItem((String) d.get("label"), (String) d.get("uri"), (Float) d.get("score")));
+			}
+		} catch (SolrServerException e) {
+			e.printStackTrace();
+		}
+		return new SolrQueryResultSet(items);
+	}
+	
+	public SolrQueryResultSet getResourcesWithScores(String queryString) {
+		return getResourcesWithScores(queryString, hitsPerPage);
+	}
+	
+	public SolrQueryResultSet getResourcesWithScores(String queryString, boolean sorted) {
+		return getResourcesWithScores(queryString, hitsPerPage);
+	}
+	
+	public SolrQueryResultSet getResourcesWithScores(String queryString, int limit) {
+		return getResourcesWithScores(queryString, limit, 0, false);
+	}
+	
+	public SolrQueryResultSet getResourcesWithScores(String queryString, int limit, boolean sorted) {
+		return getResourcesWithScores(queryString, limit, 0, sorted);
+	}
+	
+	public SolrQueryResultSet getResourcesWithScores(String queryString, int limit, int offset, boolean sorted) {
+		Set<SolrQueryResultItem> items = new HashSet<SolrQueryResultItem>();
+		
+		QueryResponse response;
+		try {
+			SolrQuery query = new SolrQuery((searchField != null) ? searchField  + ":" + queryString : queryString);
 		    query.setRows(hitsPerPage);
 		    query.setStart(offset);
 		    query.addField("score");
@@ -123,13 +150,14 @@ public class SolrSearch implements Search{
 			response = server.query(query);
 			SolrDocumentList docList = response.getResults();
 			lastTotalHits = (int) docList.getNumFound();
+			
 			for(SolrDocument d : docList){
-				resource2ScoreMap.put((String) d.get("uri"), (Float) d.get("score"));
+				items.add(new SolrQueryResultItem((String) d.get("label"), (String) d.get("uri"), (Float) d.get("score")));
 			}
 		} catch (SolrServerException e) {
 			e.printStackTrace();
 		}
-		return resource2ScoreMap;
+		return new SolrQueryResultSet(items);
 	}
 
 	@Override
@@ -141,5 +169,5 @@ public class SolrSearch implements Search{
 	public void setHitsPerPage(int hitsPerPage) {
 		this.hitsPerPage = hitsPerPage;
 	}
-
+	
 }

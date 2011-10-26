@@ -24,8 +24,8 @@ public class Preprocessor {
 	public Preprocessor(boolean n) {
 		USE_NER = n;
 		if (USE_NER) {
-			ner = new LingPipeNER(true); //not case sensitive best solution?
-//			ner = new DBpediaSpotlightNER();
+//			ner = new LingPipeNER(true); //not case sensitive best solution?
+			ner = new DBpediaSpotlightNER();
 		}
 	}
 	

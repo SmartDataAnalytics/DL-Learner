@@ -97,7 +97,7 @@ public class Query
 		Set<SPARQL_Filter> filters = new HashSet<SPARQL_Filter>();
 		for(SPARQL_Filter filter : query.getFilters()){
 			for(SPARQL_Pair term : filter.getTerms()){
-				
+				filters.add(new SPARQL_Filter(term));
 			}
 		}
 		this.filter = filters;

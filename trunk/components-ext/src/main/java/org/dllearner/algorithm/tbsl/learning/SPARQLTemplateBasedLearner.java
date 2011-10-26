@@ -22,6 +22,8 @@ import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
 import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
 import org.dllearner.algorithm.tbsl.search.HierarchicalSolrSearch;
+import org.dllearner.algorithm.tbsl.search.SolrQueryResultItem;
+import org.dllearner.algorithm.tbsl.search.SolrQueryResultSet;
 import org.dllearner.algorithm.tbsl.search.SolrSearch;
 import org.dllearner.algorithm.tbsl.search.ThresholdSlidingSolrSearch;
 import org.dllearner.algorithm.tbsl.sparql.Query;
@@ -33,6 +35,7 @@ import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Prefixes;
+import org.dllearner.algorithm.tbsl.util.SolrQueryResultStringSimilarityComparator;
 import org.dllearner.algorithm.tbsl.util.StringSimilarityComparator;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.Oracle;
@@ -86,9 +89,9 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private Oracle oracle;
 	
-	private Map<String, List<String>> resourcesURICache;
-	private Map<String, List<String>> classesURICache;
-	private Map<String, List<String>> propertiesURICache;
+	private Map<String, SolrQueryResultSet> resourcesURICache;
+	private Map<String, SolrQueryResultSet> classesURICache;
+	private Map<String, SolrQueryResultSet> propertiesURICache;
 	
 	private Map<String, Object> learnedSPARQLQueries;
 	private Set<Template> templates;
@@ -211,9 +214,9 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private void reset(){
 		learnedSPARQLQueries = new HashMap<String, Object>();
-		resourcesURICache = new HashMap<String, List<String>>();
-		classesURICache = new HashMap<String, List<String>>();
-		propertiesURICache = new HashMap<String, List<String>>();
+		resourcesURICache = new HashMap<String, SolrQueryResultSet>();
+		classesURICache = new HashMap<String, SolrQueryResultSet>();
+		propertiesURICache = new HashMap<String, SolrQueryResultSet>();
 		template2Queries = new HashMap<Template, Collection<? extends Query>>();
 		slot2URI = new HashMap<Slot, List<String>>();
 	}
@@ -337,10 +340,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				Set<Query> tmp = new HashSet<Query>();
 				String var = slot.getAnchor();
 				List<String> words = slot.getWords();
-				for(Entry<String, Float> entry1 : getCandidateURIsWithScore(slot).entrySet()){
+				for(SolrQueryResultItem item : getCandidateURIsWithScore(slot).getItems()){
 					for(Query query : queries){
 						Query newQuery = new Query(query);
-						newQuery.replaceVarWithURI(var, entry1.getKey());
+						newQuery.replaceVarWithURI(var, item.getUri());
 						tmp.add(newQuery);
 					}
 				}
@@ -368,9 +371,9 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				Map<String, Float> tmp = new HashMap<String, Float>();
 				String var = slot.getAnchor();
 				List<String> words = slot.getWords();
-				for(Entry<String, Float> entry1 : getCandidateURIsWithScore(slot).entrySet()){
+				for(SolrQueryResultItem item : getCandidateURIsWithScore(slot).getItems()){
 					for(Entry<String, Float> entry2 : query2Score.entrySet()){
-						tmp.put(entry2.getKey().replace("?" + var, "<" + entry1.getKey() + ">"), Float.valueOf(entry1.getValue()+entry2.getValue()));
+						tmp.put(entry2.getKey().replace("?" + var, "<" + item.getUri() + ">"), item.getScore() + entry2.getValue());
 					}
 				}
 				if(!words.isEmpty()){
@@ -400,11 +403,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				Set<RatedQuery> tmp = new HashSet<RatedQuery>();
 				String var = slot.getAnchor();
 				List<String> words = slot.getWords();
-				for(Entry<String, Float> entry1 : getCandidateURIsWithScore(slot).entrySet()){
+				for(SolrQueryResultItem item : getCandidateURIsWithScore(slot).getItems()){
 					for(RatedQuery rQ : ratedQueries){
 						RatedQuery newRQ = new RatedQuery(rQ, rQ.getScore());
-						newRQ.replaceVarWithURI(var, entry1.getKey());
-						newRQ.setScore(newRQ.getScore()+entry1.getValue());
+						newRQ.replaceVarWithURI(var, item.getUri());
+						newRQ.setScore(newRQ.getScore() + item.getScore());
 						tmp.add(newRQ);
 					}
 				}
@@ -508,10 +511,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		//get the appropriate index based on slot type
 		SolrSearch index = getIndexBySlotType(slot);
 		//get the appropriate cache for URIs to avoid redundant queries to index
-		Map<String, List<String>> uriCache = getCacheBySlotType(slot);
+		Map<String, SolrQueryResultSet> uriCache = getCacheBySlotType(slot);
 		
-		SortedSet<String> tmp;
-		List<String> uris;
+		SortedSet<SolrQueryResultItem> tmp;
+		SolrQueryResultSet rs;
 		
 		//prune the word list only when slot type is not RESOURCE
 		List<String> words;
@@ -523,16 +526,18 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		}
 		
 		for(String word : words){
-			tmp = new TreeSet<String>(new StringSimilarityComparator(word));
-			uris = uriCache.get(word);
+			tmp = new TreeSet<SolrQueryResultItem>(new SolrQueryResultStringSimilarityComparator(word));
+			rs = uriCache.get(word);
 			
-			if(uris == null){
-				uris = index.getResources(word, 5);
-				uriCache.put(word, uris);
+			if(rs == null){
+				rs = index.getResourcesWithScores(word, 50);
+				uriCache.put(word, rs);
 			}
 		
-			tmp.addAll(uris);
-			sortedURIs.addAll(tmp);
+			tmp.addAll(rs.getItems());
+			for(SolrQueryResultItem item : tmp){
+				sortedURIs.add(item.getUri());
+			}
 			tmp.clear();
 		}
 		
@@ -600,8 +605,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return index;
 	}
 	
-	private Map<String, List<String>> getCacheBySlotType(Slot slot){
-		Map<String, List<String>> cache = null;
+	private Map<String, SolrQueryResultSet> getCacheBySlotType(Slot slot){
+		Map<String, SolrQueryResultSet> cache = null;
 		SlotType type = slot.getSlotType();
 		if(type == SlotType.CLASS){
 			cache = classesURICache;
@@ -613,7 +618,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return cache;
 	}
 	
-	private Map<String, Float> getCandidateURIsWithScore(Slot slot){
+	private SolrQueryResultSet getCandidateURIsWithScore(Slot slot){
 		logger.info("Generating candidate URIs for " + slot.getWords() + "...");
 		mon.start();
 		SolrSearch index = null;
@@ -627,13 +632,14 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			index = resource_index;
 			sorted = true;
 		}
+		SolrQueryResultSet resultSet = null;
 		for(String word : slot.getWords()){
-			uri2Score.putAll(index.getResourcesWithScores("label:" + word, sorted));
+			resultSet.add(index.getResourcesWithScores("label:" + word, sorted));
 		}
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
 		logger.info("Candidate URIs: " + uri2Score.keySet());
-		return uri2Score;
+		return resultSet;
 	}
 	
 	private List<Query> getNBestQueryCandidatesForTemplates(Map<Template, Collection<? extends Query>> template2Queries){
@@ -774,7 +780,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Who wrote the book The pillars of the Earth?";
+		String question = "Is Natalie Portman an actress?";
 		
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();

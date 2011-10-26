@@ -51,4 +51,23 @@ public class ThresholdSlidingSolrSearch extends SolrSearch {
 		return resources;
 	}
 	
+	@Override
+	public SolrQueryResultSet getResourcesWithScores(String queryString, int limit, int offset, boolean sorted) {
+		SolrQueryResultSet rs = new SolrQueryResultSet();
+		
+		double threshold = 1;
+		
+		String queryWithThreshold = queryString;
+		while(rs.getItems().size() < limit && threshold >= minThreshold){
+			if(threshold < 1){
+				queryWithThreshold = queryString + "~" + format.format(threshold);
+			}
+			
+			rs.add(findResourcesWithScores(queryWithThreshold, limit - rs.getItems().size(), 0, sorted));
+			threshold -= step;
+		}
+		
+		return rs;
+	}
+	
 }
