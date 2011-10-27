@@ -159,10 +159,10 @@ public class PDBDLLearner {
 		// configure target language
 		RhoDRDown rho = new RhoDRDown();
 		rho.setReasoner(r);
-		rho.setUseAllConstructor(false);
+		rho.setUseAllConstructor(true);
 		rho.setUseExistsConstructor(true);
-		rho.setUseNegation(false);
-		rho.setUseCardinalityRestrictions(false);
+		rho.setUseNegation(true);
+		rho.setUseCardinalityRestrictions(true);
 		rho.init();
 		
 		// configure learning algorithm
