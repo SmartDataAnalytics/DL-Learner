@@ -32,5 +32,14 @@ public class HierarchicalSolrSearch extends SolrSearch {
 		}
 		return resources;
 	}
+	
+	@Override
+	public SolrQueryResultSet getResourcesWithScores(String queryString, int limit, int offset, boolean sorted) {
+		SolrQueryResultSet rs = primarySearch.getResourcesWithScores(queryString, limit, offset, sorted);
+		if(rs.getItems().size() < limit){
+			rs.add(secondarySearch.getResourcesWithScores(queryString, limit-rs.getItems().size(), offset, sorted));
+		}
+		return rs;
+	}
 
 }

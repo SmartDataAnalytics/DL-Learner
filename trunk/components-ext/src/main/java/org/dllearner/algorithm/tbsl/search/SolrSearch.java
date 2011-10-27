@@ -25,23 +25,28 @@ public class SolrSearch implements Search{
 	private int lastTotalHits = 0;
 	
 	private String searchField;
+	private String labelField;
 	
 	public SolrSearch() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public SolrSearch(String solrServerURL){
+		this(solrServerURL, null, null);
+	}
+	
+	public SolrSearch(String solrServerURL, String searchField){
+		this(solrServerURL, searchField, null);
+	}
+	
+	public SolrSearch(String solrServerURL, String searchField, String labelField){
 		try {
 			server = new CommonsHttpSolrServer(solrServerURL);
 			server.setRequestWriter(new BinaryRequestWriter());
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public SolrSearch(String solrServerURL, String searchField){
-		this(solrServerURL);
 		this.searchField = searchField;
+		this.labelField = labelField;
 	}
 	
 	public String getServerURL() {
@@ -50,6 +55,14 @@ public class SolrSearch implements Search{
 	
 	public String getSearchField() {
 		return searchField;
+	}
+	
+	public void setLabelField(String labelField) {
+		this.labelField = labelField;
+	}
+	
+	public String getLabelField() {
+		return labelField;
 	}
 
 	@Override
@@ -110,7 +123,7 @@ public class SolrSearch implements Search{
 			lastTotalHits = (int) docList.getNumFound();
 			
 			for(SolrDocument d : docList){
-				items.add(new SolrQueryResultItem((String) d.get("label"), (String) d.get("uri"), (Float) d.get("score")));
+				items.add(new SolrQueryResultItem((String) d.get(labelField), (String) d.get("uri"), (Float) d.get("score")));
 			}
 		} catch (SolrServerException e) {
 			e.printStackTrace();
@@ -140,7 +153,7 @@ public class SolrSearch implements Search{
 		QueryResponse response;
 		try {
 			SolrQuery query = new SolrQuery((searchField != null) ? searchField  + ":" + queryString : queryString);
-		    query.setRows(hitsPerPage);
+		    query.setRows(limit);
 		    query.setStart(offset);
 		    query.addField("score");
 		    if(sorted){
@@ -152,7 +165,7 @@ public class SolrSearch implements Search{
 			lastTotalHits = (int) docList.getNumFound();
 			
 			for(SolrDocument d : docList){
-				items.add(new SolrQueryResultItem((String) d.get("label"), (String) d.get("uri"), (Float) d.get("score")));
+				items.add(new SolrQueryResultItem((String) d.get(labelField), (String) d.get("uri"), (Float) d.get("score")));
 			}
 		} catch (SolrServerException e) {
 			e.printStackTrace();

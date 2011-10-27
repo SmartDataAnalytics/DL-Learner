@@ -21,13 +21,17 @@ public class ThresholdSlidingSolrSearch extends SolrSearch {
 	}
 	
 	public ThresholdSlidingSolrSearch(String solrServerURL, String searchField, double minThreshold, double step) {
-		super(solrServerURL, searchField);
+		this(solrServerURL, searchField, null, minThreshold, step);
+	}
+	
+	public ThresholdSlidingSolrSearch(String solrServerURL, String searchField, String labelField, double minThreshold, double step) {
+		super(solrServerURL, searchField, labelField);
 		this.minThreshold = minThreshold;
 		this.step = step;
 	}
 	
 	public ThresholdSlidingSolrSearch(SolrSearch search){
-		super(search.getServerURL(), search.getSearchField());
+		super(search.getServerURL(), search.getSearchField(), search.getLabelField());
 	}
 	
 	
