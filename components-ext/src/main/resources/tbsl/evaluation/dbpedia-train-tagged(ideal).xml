@@ -2177,7 +2177,7 @@ Hal Roach
 </answers>
 </question>
 <question id="8">
-<string>Which/WDT people/NNS have/VBP as/IN their/PRP$ given/VBN name/NN Jimmy/NNP</string>
+<string>Which/WDT people/NNS have/VBP as/IN their/PRP given/VBN name/NN Jimmy/NNP</string>
 <query>
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;

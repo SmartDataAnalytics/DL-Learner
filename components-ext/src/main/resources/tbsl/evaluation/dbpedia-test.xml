@@ -1,0 +1,8335 @@
+<?xml version="1.0" ?>
+<dataset id="dbpedia-test">
+<question id="23">
+<string>
+Which presidents of the United States had more than three children?
+</string>
+<query>
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+	?uri rdf:type yago:PresidentsOfTheUnitedStates .
+        ?uri onto:child ?child .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+} HAVING (count(?child) &gt; 3)
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/John_Tyler
+</uri>
+<string>
+John Tyler
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ulysses_S._Grant
+</uri>
+<string>
+Ulysses S. Grant
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/John_Adams
+</uri>
+<string>
+John Adams
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Abraham_Lincoln
+</uri>
+<string>
+Abraham Lincoln
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Gerald_Ford
+</uri>
+<string>
+Gerald Ford
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Theodore_Roosevelt
+</uri>
+<string>
+Theodore Roosevelt
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ronald_Reagan
+</uri>
+<string>
+Ronald Reagan
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Franklin_D._Roosevelt
+</uri>
+<string>
+Franklin D. Roosevelt
+</string>
+</answer>
+</answers>
+</question>
+<question id="3">
+<string>
+Give me the official websites of actors of the television show Charmed.
+</string>
+<query>
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+SELECT DISTINCT ?uri
+WHERE
+{ 
+	?film rdf:type onto:TelevisionShow .
+        ?film rdfs:label 'Charmed'@en .
+        ?film onto:starring ?actors .
+        ?actors foaf:homepage ?uri .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://www.alyssa.com/
+</uri>
+</answer>
+<answer>
+<uri>
+http://www.briankrause.us/
+</uri>
+</answer>
+</answers>
+</question>
+<question id="37">
+<string>
+Who is the daughter of Bill Clinton married to?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+        res:Bill_Clinton onto:child ?child .
+        ?child dbpedia2:spouse ?string .
+        ?uri rdfs:label ?string .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Marc_Mezvinsky
+</uri>
+<string>
+Marc Mezvinsky
+</string>
+</answer>
+</answers>
+</question>
+<question id="43">
+<string>
+Which river does the Brooklyn Bridge cross?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{       
+        res:Brooklyn_Bridge dbpedia2:crosses ?string . 
+        ?uri dbpedia2:name ?string .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/East_River
+</uri>
+<string>
+East River
+</string>
+</answer>
+</answers>
+</question>
+<question id="21">
+<string>
+How many monarchical countries are there in Europe?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT COUNT(DISTINCT ?uri)
+WHERE 
+{
+	?uri rdf:type yago:EuropeanCountries .
+        ?uri onto:governmentType ?govern .
+        FILTER regex(?govern,'monarchy') .
+}
+</query>
+<answers>
+<answer>
+<number>
+9
+</number>
+</answer>
+</answers>
+</question>
+<question id="7">
+<string>
+Where did Abraham Lincoln die?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT DISTINCT ?uri ?string
+WHERE
+{ 
+        res:Abraham_Lincoln onto:deathPlace ?uri .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Washington,_D.C.
+</uri>
+<string>
+Washington, D.C.
+</string>
+</answer>
+</answers>
+</question>
+<question id="10">
+<string>
+Is the wife of President Obama called Michelle?
+</string>
+<query>
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+ASK
+WHERE 
+{
+        res:Barack_Obama onto:spouse ?spouse .
+        ?spouse rdfs:label ?name .
+        FILTER(regex(?name,'Michelle')) 
+}
+</query>
+<answers>
+<answer>
+<boolean>
+true
+</boolean>
+</answer>
+</answers>
+</question>
+<question id="28">
+<string>
+Which states of Germany are governed by the Social Democratic Party?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+SELECT DISTINCT ?uri ?string 
+WHERE
+{
+        ?uri rdf:type yago:StatesOfGermany .
+        ?uri onto:leaderParty res:Social_Democratic_Party_of_Germany .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Brandenburg
+</uri>
+<string>
+Brandenburg
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Mecklenburg-Vorpommern
+</uri>
+<string>
+Mecklenburg-Vorpommern
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Saxony-Anhalt
+</uri>
+<string>
+Saxony-Anhalt
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Thuringia
+</uri>
+<string>
+Thuringia
+</string>
+</answer>
+</answers>
+</question>
+<question id="39">
+<string>
+Which U.S. states possess gold minerals?
+</string>
+<query>
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+        ?uri rdf:type yago:StatesOfTheUnitedStates .
+        ?uri dbpedia2:mineral ?mineral .
+        FILTER (regex(?mineral,'Gold')) .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Alaska
+</uri>
+<string>
+Alaska
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/California
+</uri>
+<string>
+California
+</string>
+</answer>
+</answers>
+</question>
+<question id="50">
+<string>
+In which country does the Nile start?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT ?uri ?string
+WHERE 
+{       
+        res:Nile onto:sourceCountry ?uri .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Rwanda
+</uri>
+<string>
+Rwanda
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ethiopia
+</uri>
+<string>
+Ethiopia
+</string>
+</answer>
+</answers>
+</question>
+<question id="44">
+<string>
+Which locations have more than two caves?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{       
+        ?cave rdf:type onto:Cave . 
+        ?cave onto:location ?uri .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+} HAVING (count(?cave) &gt; 2)
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/England
+</uri>
+<string>
+England
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Alyn_Gorge
+</uri>
+<string>
+Alyn Gorge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/County_Clare
+</uri>
+<string>
+County Clare
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Charterhouse,_Somerset
+</uri>
+<string>
+Charterhouse, Somerset
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Castleton,_Derbyshire
+</uri>
+<string>
+Castleton, Derbyshire
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Republic_of_Ireland
+</uri>
+<string>
+Republic of Ireland
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Banwell
+</uri>
+<string>
+Banwell
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/United_States
+</uri>
+<string>
+United States
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Stoke_St_Michael
+</uri>
+<string>
+Stoke St Michael
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Deschutes_County,_Oregon
+</uri>
+<string>
+Deschutes County, Oregon
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Leck_Fell
+</uri>
+<string>
+Leck Fell
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Priddy
+</uri>
+<string>
+Priddy
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Burrington_Combe
+</uri>
+<string>
+Burrington Combe
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Germany
+</uri>
+<string>
+Germany
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/North_Yorkshire
+</uri>
+<string>
+North Yorkshire
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Wales
+</uri>
+<string>
+Wales
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Derbyshire
+</uri>
+<string>
+Derbyshire
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ingleborough
+</uri>
+<string>
+Ingleborough
+</string>
+</answer>
+</answers>
+</question>
+<question id="30">
+<string>
+Is proinsulin a protein?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+ASK
+WHERE 
+{
+	res:Proinsulin rdf:type onto:Protein .
+}
+</query>
+<answers>
+<answer>
+<boolean>
+true
+</boolean>
+</answer>
+</answers>
+</question>
+<question id="12">
+<string>
+Which classis does the Millepede belong to?
+</string>
+<query>
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT ?string
+WHERE
+{
+       res:Millipede dbpedia2:classis ?string .
+}
+</query>
+<answers>
+<answer>
+<string>
+Diplopoda
+</string>
+</answer>
+</answers>
+</question>
+<question id="49">
+<string>
+How tall is Claudia Schiffer?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+SELECT ?number
+WHERE 
+{       
+        res:Claudia_Schiffer onto:height ?number .      
+}
+</query>
+<answers>
+<answer>
+<string>
+1.8
+</string>
+</answer>
+</answers>
+</question>
+<question id="33">
+<string>
+Who created Goofy?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX prop: &lt;http://dbpedia.org/property/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+        res:Goofy prop:creator ?string .
+        ?uri prop:name ?string .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Art_Babbitt
+</uri>
+<string>
+Art Babbitt
+</string>
+</answer>
+</answers>
+</question>
+<question id="4">
+<string>
+Give me the capitals of all U.S. states.
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE
+{ 
+	?states rdf:type yago:StatesOfTheUnitedStates .
+        ?states onto:capital ?uri .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Juneau,_Alaska
+</uri>
+<string>
+Juneau, Alaska
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Montgomery,_Alabama
+</uri>
+<string>
+Montgomery, Alabama
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Little_Rock,_Arkansas
+</uri>
+<string>
+Little Rock, Arkansas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Phoenix,_Arizona
+</uri>
+<string>
+Phoenix, Arizona
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sacramento,_California
+</uri>
+<string>
+Sacramento, California
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Denver
+</uri>
+<string>
+Denver
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Dover,_Delaware
+</uri>
+<string>
+Dover, Delaware
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Honolulu
+</uri>
+<string>
+Honolulu
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Springfield,_Illinois
+</uri>
+<string>
+Springfield, Illinois
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Indianapolis
+</uri>
+<string>
+Indianapolis
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Topeka,_Kansas
+</uri>
+<string>
+Topeka, Kansas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Frankfort,_Kentucky
+</uri>
+<string>
+Frankfort, Kentucky
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Baton_Rouge,_Louisiana
+</uri>
+<string>
+Baton Rouge, Louisiana
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Lansing,_Michigan
+</uri>
+<string>
+Lansing, Michigan
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Saint_Paul,_Minnesota
+</uri>
+<string>
+Saint Paul, Minnesota
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Jefferson_City,_Missouri
+</uri>
+<string>
+Jefferson City, Missouri
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Helena,_Montana
+</uri>
+<string>
+Helena, Montana
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Carson_City,_Nevada
+</uri>
+<string>
+Carson City, Nevada
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Lincoln,_Nebraska
+</uri>
+<string>
+Lincoln, Nebraska
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Trenton,_New_Jersey
+</uri>
+<string>
+Trenton, New Jersey
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Santa_Fe,_New_Mexico
+</uri>
+<string>
+Santa Fe, New Mexico
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Bismarck,_North_Dakota
+</uri>
+<string>
+Bismarck, North Dakota
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Oklahoma_City
+</uri>
+<string>
+Oklahoma City
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Columbus,_Ohio
+</uri>
+<string>
+Columbus, Ohio
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Salem,_Oregon
+</uri>
+<string>
+Salem, Oregon
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Harrisburg,_Pennsylvania
+</uri>
+<string>
+Harrisburg, Pennsylvania
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Providence,_Rhode_Island
+</uri>
+<string>
+Providence, Rhode Island
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Pierre,_South_Dakota
+</uri>
+<string>
+Pierre, South Dakota
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Nashville,_Tennessee
+</uri>
+<string>
+Nashville, Tennessee
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Austin,_Texas
+</uri>
+<string>
+Austin, Texas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Salt_Lake_City
+</uri>
+<string>
+Salt Lake City
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Madison,_Wisconsin
+</uri>
+<string>
+Madison, Wisconsin
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Cheyenne,_Wyoming
+</uri>
+<string>
+Cheyenne, Wyoming
+</string>
+</answer>
+</answers>
+</question>
+<question id="18">
+<string>
+Give me all cities in New Jersey with more than 100000 inhabitants.
+</string>
+<query>
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+	?uri rdf:type onto:City .
+        ?uri dbpedia2:subdivisionName ?location .
+        FILTER (regex(?location, 'New Jersey')) .
+        ?uri dbpedia2:populationTotal ?inhabitants .
+        FILTER (?inhabitants &gt; 100000) .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Elizabeth,_New_Jersey
+</uri>
+<string>
+Elizabeth, New Jersey
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Paterson,_New_Jersey
+</uri>
+<string>
+Paterson, New Jersey
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Jersey_City,_New_Jersey
+</uri>
+<string>
+Jersey City, New Jersey
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Newark,_New_Jersey
+</uri>
+<string>
+Newark, New Jersey
+</string>
+</answer>
+</answers>
+</question>
+<question id="31">
+<string>
+Which museum exhibits The Scream by Munch?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT ?uri ?string
+WHERE 
+{
+	res:The_Scream dbpedia2:museum ?string .
+        OPTIONAL { ?uri rdfs:label ?string. }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/National_Gallery
+</uri>
+<string>
+National Gallery
+</string>
+</answer>
+</answers>
+</question>
+<question id="35">
+<string>
+Is Egypts largest city also its capital?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+ASK
+WHERE 
+{
+        res:Egypt onto:largestCity ?large .
+        res:Egypt onto:capital ?capital .
+        FILTER (?large = ?capital)
+}
+</query>
+<answers>
+<answer>
+<boolean>
+true
+</boolean>
+</answer>
+</answers>
+</question>
+<question id="27">
+<string>
+What is the revenue of IBM?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT ?number
+WHERE 
+{
+	res:IBM onto:revenue ?number .
+}
+</query>
+<answers>
+<answer>
+<string>
+1.0363E11
+</string>
+</answer>
+</answers>
+</question>
+<question id="38">
+<string>
+Which states border Utah?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+         {res:Kansas dbpedia2:north ?string.}
+         UNION
+         {res:Kansas dbpedia2:northeast ?string.}
+         UNION
+         {res:Kansas dbpedia2:south ?string.}
+         UNION
+         {res:Kansas dbpedia2:southeast ?string.}
+         UNION
+         {res:Kansas dbpedia2:east ?string.}
+         UNION
+         {res:Kansas dbpedia2:west ?string.}
+         OPTIONAL { ?uri rdf:type yago:StatesOfTheUnitedStates .
+                    ?uri dbpedia2:name ?string . }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Nebraska
+</uri>
+<string>
+Nebraska
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Oklahoma
+</uri>
+<string>
+Oklahoma
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Missouri
+</uri>
+<string>
+Missouri
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Colorado
+</uri>
+<string>
+Colorado
+</string>
+</answer>
+</answers>
+</question>
+<question id="13">
+<string>
+In which country is the Limerick Lake?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE
+{ 
+	res:Limerick_Lake onto:country ?uri .
+	OPTIONAL { ?uri rdfs:label ?string . FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Canada
+</uri>
+<string>
+Canada
+</string>
+</answer>
+</answers>
+</question>
+<question id="32">
+<string>
+Which television shows were created by Walt Disney?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+	?uri rdf:type onto:TelevisionShow .
+        ?uri onto:creator res:Walt_Disney .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/The_Mickey_Mouse_Club
+</uri>
+<string>
+The Mickey Mouse Club
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Walt_Disney_anthology_television_series
+</uri>
+<string>
+Walt Disney anthology television series
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/List_of_Jiminy_Cricket_educational_serials
+</uri>
+<string>
+List of Jiminy Cricket educational serials
+</string>
+</answer>
+</answers>
+</question>
+<question id="45">
+<string>
+Which mountain is the highest after the Annapurna?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT ?uri ?string
+WHERE 
+{       
+        res:Annapurna onto:elevation ?elev .
+        ?uri rdf:type onto:Mountain . 
+        ?uri onto:elevation ?all .
+        FILTER (?all &lt; ?elev) .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') } 
+} ORDER BY DESC(?all) LIMIT 1
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Gasherbrum_I
+</uri>
+<string>
+Gasherbrum I
+</string>
+</answer>
+</answers>
+</question>
+<question id="29">
+<string>
+In which films directed by Garry Marshall was Julia Roberts starring?
+</string>
+<query>
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+	?uri rdf:type onto:Film .
+        ?uri onto:starring res:Julia_Roberts .
+        ?uri onto:director res:Garry_Marshall .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Pretty_Woman
+</uri>
+<string>
+Pretty Woman
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Runaway_Bride_%281999_film%29
+</uri>
+<string>
+Runaway Bride (1999 film)
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Valentine%27s_Day_%28film%29
+</uri>
+<string>
+Valentine's Day (film)
+</string>
+</answer>
+</answers>
+</question>
+<question id="42">
+<string>
+Which bridges are of the same type as the Manhattan Bridge?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{       
+        ?uri rdf:type onto:Bridge .
+        ?uri dbpedia2:design ?design .
+        res:Manhattan_Bridge dbpedia2:design ?manha . 
+        FILTER (regex(?design, ?manha)).
+        FILTER (?uri != res:Manhattan_Bridge) . 
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ambassador_Bridge
+</uri>
+<string>
+Ambassador Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Clifton_Suspension_Bridge
+</uri>
+<string>
+Clifton Suspension Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Forth_Road_Bridge
+</uri>
+<string>
+Forth Road Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Great_Belt_Fixed_Link
+</uri>
+<string>
+Great Belt Fixed Link
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Hammersmith_Bridge
+</uri>
+<string>
+Hammersmith Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Mackinac_Bridge
+</uri>
+<string>
+Mackinac Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Throgs_Neck_Bridge
+</uri>
+<string>
+Throgs Neck Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Akashi_Kaiky%C5%8D_Bridge
+</uri>
+<string>
+Akashi Kaikyō Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Walter_Taylor_Bridge
+</uri>
+<string>
+Walter Taylor Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/George_Washington_Bridge
+</uri>
+<string>
+George Washington Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Verrazano-Narrows_Bridge
+</uri>
+<string>
+Verrazano-Narrows Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Robert_F._Kennedy_Bridge
+</uri>
+<string>
+Robert F. Kennedy Bridge
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/St._Johns_Bridge
+</uri>
+<string>
+St. Johns Bridge
+</string>
+</answer>
+</answers>
+</question>
+<question id="14">
+<string>
+Was U.S. president Jackson involved in a war?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+ASK
+WHERE 
+{
+	?uri rdf:type yago:PresidentsOfTheUnitedStates .
+        ?uri dbpedia2:name ?name .
+        FILTER (regex(?name, 'Jackson')) .
+        OPTIONAL {?uri onto:battle ?battle .}
+        FILTER BOUND(?battle).        
+}
+</query>
+<answers>
+<answer>
+<boolean>
+true
+</boolean>
+</answer>
+</answers>
+</question>
+<question id="20">
+<string>
+Which European countries are a constitutional monarchy?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+	?uri rdf:type yago:EuropeanCountries .
+        ?uri onto:governmentType res:Constitutional_monarchy .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Liechtenstein
+</uri>
+<string>
+Liechtenstein
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Luxembourg
+</uri>
+<string>
+Luxembourg
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/United_Kingdom
+</uri>
+<string>
+United Kingdom
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Denmark
+</uri>
+<string>
+Denmark
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Norway
+</uri>
+<string>
+Norway
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Belgium
+</uri>
+<string>
+Belgium
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Spain
+</uri>
+<string>
+Spain
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sweden
+</uri>
+<string>
+Sweden
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Monaco
+</uri>
+<string>
+Monaco
+</string>
+</answer>
+</answers>
+</question>
+<question id="40">
+<string>
+Who is the author of WikiLeaks?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+SELECT ?uri ?string
+WHERE 
+{
+        res:WikiLeaks onto:author ?uri .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Julian_Assange
+</uri>
+<string>
+Julian Assange
+</string>
+</answer>
+</answers>
+</question>
+<question id="17">
+<string>
+Which state of the United States of America has the highest density?
+</string>
+<query>
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+SELECT ?uri ?string
+WHERE 
+{
+	?uri rdf:type yago:StatesOfTheUnitedStates .
+        ?uri dbpedia2:densityrank ?density
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+} ORDER BY ASC(?density) LIMIT 1
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/New_Jersey
+</uri>
+<string>
+New Jersey
+</string>
+</answer>
+</answers>
+</question>
+<question id="19">
+<string>
+What is the currency of the Czech Republic?
+</string>
+<query>
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT ?uri ?string
+WHERE 
+{
+	res:Czech_Republic dbpedia2:currency ?string .
+        ?uri rdfs:label ?string .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Czech_koruna
+</uri>
+<string>
+Czech koruna
+</string>
+</answer>
+</answers>
+</question>
+<question id="22">
+<string>
+Which countries in the European Union adopted the Euro?
+</string>
+<query>
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+	?uri rdf:type yago:EuropeanUnionMemberStates .
+        { ?uri dbpedia2:currency res:Euro . } 
+        UNION 
+        { ?uri dbpedia2:currencyCode ?code . FILTER regex(?code,'EUR') }
+        OPTIONAL { ?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/France
+</uri>
+<string>
+France
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Cyprus
+</uri>
+<string>
+Cyprus
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Portugal
+</uri>
+<string>
+Portugal
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Malta
+</uri>
+<string>
+Malta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Slovenia
+</uri>
+<string>
+Slovenia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Luxembourg
+</uri>
+<string>
+Luxembourg
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Estonia
+</uri>
+<string>
+Estonia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Germany
+</uri>
+<string>
+Germany
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Greece
+</uri>
+<string>
+Greece
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Italy
+</uri>
+<string>
+Italy
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Finland
+</uri>
+<string>
+Finland
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Belgium
+</uri>
+<string>
+Belgium
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Spain
+</uri>
+<string>
+Spain
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Austria
+</uri>
+<string>
+Austria
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Republic_of_Ireland
+</uri>
+<string>
+Republic of Ireland
+</string>
+</answer>
+</answers>
+</question>
+<question id="11">
+<string>
+What is the area code of Berlin?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT ?string
+WHERE 
+{
+	res:Berlin onto:areaCode ?string .
+}
+</query>
+<answers>
+<answer>
+<number>
+030
+</number>
+</answer>
+</answers>
+</question>
+<question id="9">
+<string>
+Which countries have more than two official languages?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT DISTINCT ?uri ?string
+WHERE
+{ 
+	?uri  rdf:type onto:Country  .
+        ?uri onto:officialLanguage ?language .
+	OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+} HAVING (count(?language) &gt; 2)
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Western_Sahara
+</uri>
+<string>
+Western Sahara
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Luxembourg
+</uri>
+<string>
+Luxembourg
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Bonaire
+</uri>
+<string>
+Bonaire
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Somaliland
+</uri>
+<string>
+Somaliland
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/New_Zealand
+</uri>
+<string>
+New Zealand
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Vojvodina
+</uri>
+<string>
+Vojvodina
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Singapore
+</uri>
+<string>
+Singapore
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Bosnia_and_Herzegovina
+</uri>
+<string>
+Bosnia and Herzegovina
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Belgium
+</uri>
+<string>
+Belgium
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Fiji
+</uri>
+<string>
+Fiji
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Equatorial_Guinea
+</uri>
+<string>
+Equatorial Guinea
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Monaco
+</uri>
+<string>
+Monaco
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Frisia
+</uri>
+<string>
+Frisia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Grande_Comore
+</uri>
+<string>
+Grande Comore
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Kingdom_of_Denmark
+</uri>
+<string>
+Kingdom of Denmark
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Seneca_Nation_of_New_York
+</uri>
+<string>
+Seneca Nation of New York
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/East_Timor
+</uri>
+<string>
+East Timor
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Dominica
+</uri>
+<string>
+Dominica
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Czech_Republic
+</uri>
+<string>
+Czech Republic
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Papua_New_Guinea
+</uri>
+<string>
+Papua New Guinea
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Northern_Ireland
+</uri>
+<string>
+Northern Ireland
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Switzerland
+</uri>
+<string>
+Switzerland
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Kingdom_of_the_Netherlands
+</uri>
+<string>
+Kingdom of the Netherlands
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/South_Ossetia
+</uri>
+<string>
+South Ossetia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Rodrigues
+</uri>
+<string>
+Rodrigues
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Bolivia
+</uri>
+<string>
+Bolivia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Moh%C3%A9li
+</uri>
+<string>
+Mohéli
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Eritrea
+</uri>
+<string>
+Eritrea
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Rigsf%C3%A6llesskabet
+</uri>
+<string>
+Rigsfællesskabet
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Republika_Srpska
+</uri>
+<string>
+Republika Srpska
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Rwanda
+</uri>
+<string>
+Rwanda
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Madagascar
+</uri>
+<string>
+Madagascar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Transnistria
+</uri>
+<string>
+Transnistria
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Seychelles
+</uri>
+<string>
+Seychelles
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Vanuatu
+</uri>
+<string>
+Vanuatu
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Federation_of_Bosnia_and_Herzegovina
+</uri>
+<string>
+Federation of Bosnia and Herzegovina
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Northern_Mariana_Islands
+</uri>
+<string>
+Northern Mariana Islands
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Anjouan
+</uri>
+<string>
+Anjouan
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Niger
+</uri>
+<string>
+Niger
+</string>
+</answer>
+</answers>
+</question>
+<question id="16">
+<string>
+Who is the owner of Universal Studios?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT ?uri ?string
+WHERE 
+{
+	res:Universal_Studios onto:owner ?uri .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/General_Electric
+</uri>
+<string>
+General Electric
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Vivendi
+</uri>
+<string>
+Vivendi
+</string>
+</answer>
+</answers>
+</question>
+<question id="34">
+<string>
+Through which countries does the Yenisei river flow?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+        res:Yenisei_River dbpedia2:country ?string .
+        OPTIONAL { ?uri dbpedia2:commonName ?name . }
+        FILTER regex(?name,?string) .
+        OPTIONAL { ?uri dbpedia2:dateEnd ?date . }
+        FILTER (!BOUND(?date))
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Russia
+</uri>
+<string>
+Russia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Mongolia
+</uri>
+<string>
+Mongolia
+</string>
+</answer>
+</answers>
+</question>
+<question id="48">
+<string>
+When did Germany join the EU?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+SELECT ?date
+WHERE 
+{       
+        res:Germany dbpedia2:accessioneudate ?date .      
+}
+</query>
+<answers>
+<answer>
+<date>
+1957-03-25
+</date>
+</answer>
+</answers>
+</question>
+<question id="36">
+<string>
+Which monarchs of the United Kingdom were married to a German?
+</string>
+<query>
+PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+        ?uri rdf:type yago:MonarchsOfTheUnitedKingdom .
+        { ?uri onto:spouse ?spouse . } UNION { ?spouse onto:spouse ?uri . }
+        ?spouse onto:birthPlace res:Germany.
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/George_III_of_the_United_Kingdom
+</uri>
+<string>
+George III of the United Kingdom
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/William_IV_of_the_United_Kingdom
+</uri>
+<string>
+William IV of the United Kingdom
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Victoria_of_the_United_Kingdom
+</uri>
+<string>
+Victoria of the United Kingdom
+</string>
+</answer>
+</answers>
+</question>
+<question id="8">
+<string>
+When was the Battle of Gettysburg?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+SELECT ?string
+WHERE
+{ 
+       res:Battle_of_Gettysburg onto:date ?string .
+}
+</query>
+<answers>
+<answer>
+<date>
+1863-07-03
+</date>
+</answer>
+</answers>
+</question>
+<question id="24">
+<string>
+What is the highest mountain in Germany?
+</string>
+<query>
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+SELECT ?uri ?string
+WHERE 
+{
+	?uri rdf:type onto:Mountain .
+        ?uri onto:elevation ?elevation .
+        ?uri onto:locatedInArea ?area .
+        FILTER (regex(?area,'Germany')) .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+} ORDER BY DESC(?elevation) LIMIT 1
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Zugspitze
+</uri>
+<string>
+Zugspitze
+</string>
+</answer>
+</answers>
+</question>
+<question id="26">
+<string>
+Give me all soccer clubs in Spain.
+</string>
+<query>
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX prop: &lt;http://dbpedia.org/property/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE 
+{
+	?uri rdf:type onto:SoccerClub .
+        { ?uri onto:ground ?ground . }
+        UNION 
+        { ?uri prop:ground ?ground . }
+        FILTER (regex(?ground, 'Spain')) .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Defence_Force
+</uri>
+<string>
+Defence Force
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/San_Juan_Jabloteh
+</uri>
+<string>
+San Juan Jabloteh
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/St._Ann%27s_Rangers
+</uri>
+<string>
+St. Ann's Rangers
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Everton_F.C._%28Port_of_Spain%29
+</uri>
+<string>
+Everton F.C. (Port of Spain)
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Alcoyano
+</uri>
+<string>
+CD Alcoyano
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Cerro_de_Reyes_Badajoz_Atl%C3%A9tico
+</uri>
+<string>
+AD Cerro de Reyes Badajoz Atlético
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AE_Prat
+</uri>
+<string>
+AE Prat
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Alcorc%C3%B3n
+</uri>
+<string>
+AD Alcorcón
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Ceuta
+</uri>
+<string>
+AD Ceuta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Mar_Menor-San_Javier
+</uri>
+<string>
+AD Mar Menor-San Javier
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Parla
+</uri>
+<string>
+AD Parla
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Universidad_de_Oviedo
+</uri>
+<string>
+AD Universidad de Oviedo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Albacete_Balompi%C3%A9
+</uri>
+<string>
+Albacete Balompié
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Algeciras_BM
+</uri>
+<string>
+Algeciras BM
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Alicante_CF
+</uri>
+<string>
+Alicante CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Algeciras_CF
+</uri>
+<string>
+Algeciras CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Amurrio_Club
+</uri>
+<string>
+Amurrio Club
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Andorra_CF
+</uri>
+<string>
+Andorra CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Arenas_CD
+</uri>
+<string>
+Arenas CD
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Arosa_SC
+</uri>
+<string>
+Arosa SC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Arenas_Club_de_Getxo
+</uri>
+<string>
+Arenas Club de Getxo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Sanluque%C3%B1o_CF
+</uri>
+<string>
+Atlético Sanluqueño CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Arteixo
+</uri>
+<string>
+Atlético Arteixo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Madrid_B
+</uri>
+<string>
+Atlético Madrid B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Madrid
+</uri>
+<string>
+Atlético Madrid
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/BM_Altea
+</uri>
+<string>
+BM Altea
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Autos_Lobelle_de_Santiago_FS
+</uri>
+<string>
+Autos Lobelle de Santiago FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/BM_Ciudad_de_Almer%C3%ADa
+</uri>
+<string>
+BM Ciudad de Almería
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Berganti%C3%B1os_FC
+</uri>
+<string>
+Bergantiños FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Bilbao_Athletic
+</uri>
+<string>
+Bilbao Athletic
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Burjassot_CF
+</uri>
+<string>
+Burjassot CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_Pinto
+</uri>
+<string>
+CA Pinto
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CB_Ademar_Le%C3%B3n
+</uri>
+<string>
+CB Ademar León
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CB_Cantabria
+</uri>
+<string>
+CB Cantabria
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Alfaro
+</uri>
+<string>
+CD Alfaro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Aurrer%C3%A1_de_Vitoria
+</uri>
+<string>
+CD Aurrerá de Vitoria
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Bidasoa
+</uri>
+<string>
+CD Bidasoa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Calahorra
+</uri>
+<string>
+CD Calahorra
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Cieza
+</uri>
+<string>
+CD Cieza
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Constancia
+</uri>
+<string>
+CD Constancia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_D%C3%ADter_Zafra
+</uri>
+<string>
+CD Díter Zafra
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Izarra
+</uri>
+<string>
+CD Izarra
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Legan%C3%A9s
+</uri>
+<string>
+CD Leganés
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Logro%C3%B1%C3%A9s
+</uri>
+<string>
+CD Logroñés
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Manacor
+</uri>
+<string>
+CD Manacor
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Mosconia
+</uri>
+<string>
+CD Mosconia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_M%C3%B3stoles
+</uri>
+<string>
+CD Móstoles
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Oberena
+</uri>
+<string>
+CD Oberena
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Onda
+</uri>
+<string>
+CD Onda
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Ourense
+</uri>
+<string>
+CD Ourense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_San_Isidro
+</uri>
+<string>
+CD San Isidro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Santurtzi
+</uri>
+<string>
+CD Santurtzi
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Toledo
+</uri>
+<string>
+CD Toledo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Tudelano
+</uri>
+<string>
+CD Tudelano
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Victoria
+</uri>
+<string>
+CD Victoria
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Villanueva
+</uri>
+<string>
+CD Villanueva
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_L%27Hospitalet
+</uri>
+<string>
+CE L'Hospitalet
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_Premi%C3%A0
+</uri>
+<string>
+CE Premià
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Balaguer
+</uri>
+<string>
+CF Balaguer
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Extremadura
+</uri>
+<string>
+CF Extremadura
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Gav%C3%A0
+</uri>
+<string>
+CF Gavà
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Igualada
+</uri>
+<string>
+CF Igualada
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Palencia
+</uri>
+<string>
+CF Palencia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Reus_Deportiu
+</uri>
+<string>
+CF Reus Deportiu
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Villanovense
+</uri>
+<string>
+CF Villanovense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Granada_74
+</uri>
+<string>
+CP Granada 74
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Villarrobledo
+</uri>
+<string>
+CP Villarrobledo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CAI_BM_Arag%C3%B3n
+</uri>
+<string>
+CAI BM Aragón
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CB_Cangas
+</uri>
+<string>
+CB Cangas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Alcal%C3%A1
+</uri>
+<string>
+CD Alcalá
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Arnedo
+</uri>
+<string>
+CD Arnedo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Banyoles
+</uri>
+<string>
+CD Banyoles
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Baza
+</uri>
+<string>
+CD Baza
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Blanes
+</uri>
+<string>
+CD Blanes
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Castell%C3%B3n
+</uri>
+<string>
+CD Castellón
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Eldense
+</uri>
+<string>
+CD Eldense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Lal%C3%ADn
+</uri>
+<string>
+CD Lalín
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Mirand%C3%A9s
+</uri>
+<string>
+CD Mirandés
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_M%C3%A1laga
+</uri>
+<string>
+CD Málaga
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Numancia
+</uri>
+<string>
+CD Numancia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Ol%C3%ADmpic_de_X%C3%A0tiva
+</uri>
+<string>
+CD Olímpic de Xàtiva
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Orientaci%C3%B3n_Mar%C3%ADtima
+</uri>
+<string>
+CD Orientación Marítima
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Teruel
+</uri>
+<string>
+CD Teruel
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Tropez%C3%B3n
+</uri>
+<string>
+CD Tropezón
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_Europa
+</uri>
+<string>
+CE Europa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_Manresa
+</uri>
+<string>
+CE Manresa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Fuenlabrada
+</uri>
+<string>
+CF Fuenlabrada
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Peralada
+</uri>
+<string>
+CF Peralada
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Sporting_Mahon%C3%A9s
+</uri>
+<string>
+CF Sporting Mahonés
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CV_Las_Palmas
+</uri>
+<string>
+CV Las Palmas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_Osasuna
+</uri>
+<string>
+CA Osasuna
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CDA_Navalcarnero
+</uri>
+<string>
+CDA Navalcarnero
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Badajoz
+</uri>
+<string>
+CD Badajoz
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Baskonia
+</uri>
+<string>
+CD Baskonia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Bin%C3%A9far
+</uri>
+<string>
+CD Binéfar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Cobe%C3%B1a
+</uri>
+<string>
+CD Cobeña
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Covadonga
+</uri>
+<string>
+CD Covadonga
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Don_Benito
+</uri>
+<string>
+CD Don Benito
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Elgoibar
+</uri>
+<string>
+CD Elgoibar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Guijuelo
+</uri>
+<string>
+CD Guijuelo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Lealtad
+</uri>
+<string>
+CD Lealtad
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Linares
+</uri>
+<string>
+CD Linares
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Lugo
+</uri>
+<string>
+CD Lugo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_San_Fernando
+</uri>
+<string>
+CD San Fernando
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Tenerife
+</uri>
+<string>
+CD Tenerife
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Vigo_FS
+</uri>
+<string>
+CD Vigo FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_Matar%C3%B3
+</uri>
+<string>
+CE Mataró
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Badalona
+</uri>
+<string>
+CF Badalona
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Rayo_Majadahonda
+</uri>
+<string>
+CF Rayo Majadahonda
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CM_Peralta
+</uri>
+<string>
+CM Peralta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Cacere%C3%B1o
+</uri>
+<string>
+CP Cacereño
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Caja_Segovia_FS
+</uri>
+<string>
+Caja Segovia FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Castillo_CF
+</uri>
+<string>
+Castillo CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Carnicer_Torrej%C3%B3n_FS
+</uri>
+<string>
+Carnicer Torrejón FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Catarroja_CF
+</uri>
+<string>
+Catarroja CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Caudal_Deportivo
+</uri>
+<string>
+Caudal Deportivo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Club_Siero
+</uri>
+<string>
+Club Siero
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Club_Portugalete
+</uri>
+<string>
+Club Portugalete
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Cultural_y_Deportiva_Leonesa
+</uri>
+<string>
+Cultural y Deportiva Leonesa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/C%C3%A1diz_CF
+</uri>
+<string>
+Cádiz CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/C%C3%B3rdoba_CF
+</uri>
+<string>
+Córdoba CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Daimiel_CF
+</uri>
+<string>
+Daimiel CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Deportivo_Alav%C3%A9s
+</uri>
+<string>
+Deportivo Alavés
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Dos_Hermanas_CF
+</uri>
+<string>
+Dos Hermanas CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FC_Barcelona_C
+</uri>
+<string>
+FC Barcelona C
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FC_Cartagena
+</uri>
+<string>
+FC Cartagena
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FC_Benavent
+</uri>
+<string>
+FC Benavent
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FS_Cartagena
+</uri>
+<string>
+FS Cartagena
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FC_Barcelona_B
+</uri>
+<string>
+FC Barcelona B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FC_Barcelona_Futsal
+</uri>
+<string>
+FC Barcelona Futsal
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FC_L%27Escala
+</uri>
+<string>
+FC L'Escala
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FC_Santboi%C3%A0
+</uri>
+<string>
+FC Santboià
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FC_Torrevieja
+</uri>
+<string>
+FC Torrevieja
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FS_Baix_Maestrat
+</uri>
+<string>
+FS Baix Maestrat
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FS_M%C3%B3stoles
+</uri>
+<string>
+FS Móstoles
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Getafe_CF
+</uri>
+<string>
+Getafe CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Gimn%C3%A1stica_Segoviana_CF
+</uri>
+<string>
+Gimnástica Segoviana CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Gernika_Club
+</uri>
+<string>
+Gernika Club
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Granada_74_CF
+</uri>
+<string>
+Granada 74 CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Granada_CF
+</uri>
+<string>
+Granada CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Granada_Atl%C3%A9tico_CF
+</uri>
+<string>
+Granada Atlético CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/HC_Liceo_La_Coru%C3%B1a
+</uri>
+<string>
+HC Liceo La Coruña
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Haro_Deportivo
+</uri>
+<string>
+Haro Deportivo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/H%C3%A9rcules_CF
+</uri>
+<string>
+Hércules CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Intervi%C3%BA_FS
+</uri>
+<string>
+Interviú FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Jerez_CF
+</uri>
+<string>
+Jerez CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Jerez_Industrial_CF
+</uri>
+<string>
+Jerez Industrial CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Leis_26_Pontevedra_FS
+</uri>
+<string>
+Leis 26 Pontevedra FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Logro%C3%B1%C3%A9s_CF
+</uri>
+<string>
+Logroñés CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Lorca_Deportiva_CF
+</uri>
+<string>
+Lorca Deportiva CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Lucena_CF
+</uri>
+<string>
+Lucena CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Mazarr%C3%B3n_CF
+</uri>
+<string>
+Mazarrón CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Moralo_CP
+</uri>
+<string>
+Moralo CP
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Motril_CF
+</uri>
+<string>
+Motril CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/M%C3%A9rida_UD
+</uri>
+<string>
+Mérida UD
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/M%C3%A1laga_CF
+</uri>
+<string>
+Málaga CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Novelda_CF
+</uri>
+<string>
+Novelda CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ontinyent_CF
+</uri>
+<string>
+Ontinyent CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Orihuela_CF
+</uri>
+<string>
+Orihuela CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Palam%C3%B3s_CF
+</uri>
+<string>
+Palamós CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/PD_Santa_Eulalia
+</uri>
+<string>
+PD Santa Eulalia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Pe%C3%B1a_Sport_FC
+</uri>
+<string>
+Peña Sport FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Playas_de_Castell%C3%B3n_FS
+</uri>
+<string>
+Playas de Castellón FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Polideportivo_Ejido
+</uri>
+<string>
+Polideportivo Ejido
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/RCD_Espanyol_B
+</uri>
+<string>
+RCD Espanyol B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/RCD_Espanyol
+</uri>
+<string>
+RCD Espanyol
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/RCD_Mallorca
+</uri>
+<string>
+RCD Mallorca
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/RSD_Alcal%C3%A1
+</uri>
+<string>
+RSD Alcalá
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Racing_Club_Portuense
+</uri>
+<string>
+Racing Club Portuense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Racing_de_Santander
+</uri>
+<string>
+Racing de Santander
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Madrid_C
+</uri>
+<string>
+Real Madrid C
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Oviedo
+</uri>
+<string>
+Real Oviedo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Valladolid
+</uri>
+<string>
+Real Valladolid
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_%C3%81vila_CF
+</uri>
+<string>
+Real Ávila CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Recreativo_de_Huelva
+</uri>
+<string>
+Recreativo de Huelva
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Balomp%C3%A9dica_Linense
+</uri>
+<string>
+Real Balompédica Linense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Madrid_Castilla
+</uri>
+<string>
+Real Madrid Castilla
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Sociedad
+</uri>
+<string>
+Real Sociedad
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Rayo_Vallecano
+</uri>
+<string>
+Rayo Vallecano
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Avil%C3%A9s_Industrial
+</uri>
+<string>
+Real Avilés Industrial
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Ja%C3%A9n
+</uri>
+<string>
+Real Jaén
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Sociedad_B
+</uri>
+<string>
+Real Sociedad B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Uni%C3%B3n
+</uri>
+<string>
+Real Unión
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ribadesella_CF
+</uri>
+<string>
+Ribadesella CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Eibar
+</uri>
+<string>
+SD Eibar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Huesca
+</uri>
+<string>
+SD Huesca
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Laredo
+</uri>
+<string>
+SD Laredo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Negreira
+</uri>
+<string>
+SD Negreira
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Teucro
+</uri>
+<string>
+SD Teucro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Beasain
+</uri>
+<string>
+SD Beasain
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Indautxu
+</uri>
+<string>
+SD Indautxu
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Noja
+</uri>
+<string>
+SD Noja
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Ponferradina
+</uri>
+<string>
+SD Ponferradina
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SCD_Durango
+</uri>
+<string>
+SCD Durango
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Hullera_Vasco-Leonesa
+</uri>
+<string>
+SD Hullera Vasco-Leonesa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Lemona
+</uri>
+<string>
+SD Lemona
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Octavio_Vigo
+</uri>
+<string>
+SD Octavio Vigo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Sporting_Sada
+</uri>
+<string>
+SD Sporting Sada
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Santo%C3%B1a_CF
+</uri>
+<string>
+Santoña CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sestao_River_Club
+</uri>
+<string>
+Sestao River Club
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sevilla_FC
+</uri>
+<string>
+Sevilla FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sevilla_Atl%C3%A9tico
+</uri>
+<string>
+Sevilla Atlético
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sporting_de_Gij%C3%B3n
+</uri>
+<string>
+Sporting de Gijón
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Talavera_CF
+</uri>
+<string>
+Talavera CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Terrassa_FC
+</uri>
+<string>
+Terrassa FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Tomelloso_CF
+</uri>
+<string>
+Tomelloso CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Tolosa_CF
+</uri>
+<string>
+Tolosa CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Torredonjimeno_CF
+</uri>
+<string>
+Torredonjimeno CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UDC_Chantrea
+</uri>
+<string>
+UDC Chantrea
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Fuerteventura
+</uri>
+<string>
+UD Fuerteventura
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Lanzarote
+</uri>
+<string>
+UD Lanzarote
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Los_Palacios
+</uri>
+<string>
+UD Los Palacios
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Vecindario
+</uri>
+<string>
+UD Vecindario
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Barbastro
+</uri>
+<string>
+UD Barbastro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Guadalajara_FS
+</uri>
+<string>
+UD Guadalajara FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Horadada
+</uri>
+<string>
+UD Horadada
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Las_Palmas
+</uri>
+<string>
+UD Las Palmas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Marbella
+</uri>
+<string>
+UD Marbella
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Salamanca
+</uri>
+<string>
+UD Salamanca
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Villa_de_Santa_Br%C3%ADgida
+</uri>
+<string>
+UD Villa de Santa Brígida
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UE_Lleida
+</uri>
+<string>
+UE Lleida
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UB_Conquense
+</uri>
+<string>
+UB Conquense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Almansa
+</uri>
+<string>
+UD Almansa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Alzira
+</uri>
+<string>
+UD Alzira
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Fraga
+</uri>
+<string>
+UD Fraga
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_G%C3%A1ldar
+</uri>
+<string>
+UD Gáldar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Melilla
+</uri>
+<string>
+UD Melilla
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Poblense
+</uri>
+<string>
+UD Poblense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_P%C3%A1jara_Playas_de_Jand%C3%ADa
+</uri>
+<string>
+UD Pájara Playas de Jandía
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_San_Sebasti%C3%A1n_de_los_Reyes
+</uri>
+<string>
+UD San Sebastián de los Reyes
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UE_Figueres
+</uri>
+<string>
+UE Figueres
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UE_Sant_Andreu
+</uri>
+<string>
+UE Sant Andreu
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UE_T%C3%A0rrega
+</uri>
+<string>
+UE Tàrrega
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UP_Langreo
+</uri>
+<string>
+UP Langreo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UP_Plasencia
+</uri>
+<string>
+UP Plasencia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Universidad_de_Las_Palmas_CF
+</uri>
+<string>
+Universidad de Las Palmas CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Utebo_FC
+</uri>
+<string>
+Utebo FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Valencia_FS
+</uri>
+<string>
+Valencia FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Villajoyosa_CF
+</uri>
+<string>
+Villajoyosa CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Villarreal_CF
+</uri>
+<string>
+Villarreal CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/V%C3%A9lez_CF
+</uri>
+<string>
+Vélez CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Xerez_CD
+</uri>
+<string>
+Xerez CD
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Xerez_CD_B
+</uri>
+<string>
+Xerez CD B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Zalla_UC
+</uri>
+<string>
+Zalla UC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Zamora_CF
+</uri>
+<string>
+Zamora CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/%C3%81guilas_CF
+</uri>
+<string>
+Águilas CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/%C3%89cija_Balompi%C3%A9
+</uri>
+<string>
+Écija Balompié
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Cass%C3%A0
+</uri>
+<string>
+UD Cassà
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Astorga_FC
+</uri>
+<string>
+Atlético Astorga FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Alicante_CF_B
+</uri>
+<string>
+Alicante CF B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Pe%C3%B1a_Azagresa
+</uri>
+<string>
+CD Peña Azagresa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Jacetano
+</uri>
+<string>
+CF Jacetano
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Tegueste
+</uri>
+<string>
+UD Tegueste
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Jerez_FS
+</uri>
+<string>
+Jerez FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Cartagena_FC
+</uri>
+<string>
+Cartagena FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UC_Ceares
+</uri>
+<string>
+UC Ceares
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Ribamont%C3%A1n_al_Mar
+</uri>
+<string>
+CF Ribamontán al Mar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_D%C3%A9nia
+</uri>
+<string>
+CD Dénia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Aoiz
+</uri>
+<string>
+CD Aoiz
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Binissalem
+</uri>
+<string>
+CD Binissalem
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UE_Llagostera
+</uri>
+<string>
+UE Llagostera
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Barco
+</uri>
+<string>
+CD Barco
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Pobla_de_Mafumet_CF
+</uri>
+<string>
+Pobla de Mafumet CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_O_Val
+</uri>
+<string>
+SD O Val
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Alquer%C3%ADas
+</uri>
+<string>
+CD Alquerías
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Cultural_y_Deportiva_Leonesa_B
+</uri>
+<string>
+Cultural y Deportiva Leonesa B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Velarde_CF
+</uri>
+<string>
+Velarde CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Barbad%C3%A1s
+</uri>
+<string>
+UD Barbadás
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sevilla_FC_C
+</uri>
+<string>
+Sevilla FC C
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Villa_de_Santa_Br%C3%ADgida_B
+</uri>
+<string>
+UD Villa de Santa Brígida B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Club_Ol%C3%ADmpico_de_Totana
+</uri>
+<string>
+Club Olímpico de Totana
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Oviedo_Vetusta
+</uri>
+<string>
+Real Oviedo Vetusta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_Cirbonero
+</uri>
+<string>
+CA Cirbonero
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Meiras_CF
+</uri>
+<string>
+Meiras CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Agoncillo
+</uri>
+<string>
+CD Agoncillo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Zarramonza
+</uri>
+<string>
+CD Zarramonza
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Lorca_Atl%C3%A9tico_CF
+</uri>
+<string>
+Lorca Atlético CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Cebrere%C3%B1a
+</uri>
+<string>
+CD Cebrereña
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Costa_C%C3%A1lida_CF
+</uri>
+<string>
+Costa Cálida CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Yag%C3%BCe_CF
+</uri>
+<string>
+Yagüe CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Mairena
+</uri>
+<string>
+CD Mairena
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Getxo
+</uri>
+<string>
+CD Getxo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Villegas
+</uri>
+<string>
+CD Villegas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Moratalla_CF
+</uri>
+<string>
+Moratalla CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Barreda_Balompi%C3%A9
+</uri>
+<string>
+SD Barreda Balompié
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Hurac%C3%A1n
+</uri>
+<string>
+AD Huracán
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Castro_FC
+</uri>
+<string>
+Castro FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Sari%C3%B1ena
+</uri>
+<string>
+CD Sariñena
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Rayo_Vallecano_Femenino
+</uri>
+<string>
+Rayo Vallecano Femenino
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ruta_Leonesa_FS
+</uri>
+<string>
+Ruta Leonesa FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ciudad_de_Plasencia_CF
+</uri>
+<string>
+Ciudad de Plasencia CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Tarazona
+</uri>
+<string>
+Atlético Tarazona
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Cobeja
+</uri>
+<string>
+CD Cobeja
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Deportivo_Alav%C3%A9s_B
+</uri>
+<string>
+Deportivo Alavés B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Valencia_CF_Mestalla
+</uri>
+<string>
+Valencia CF Mestalla
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Humanes
+</uri>
+<string>
+CD Humanes
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_Deva
+</uri>
+<string>
+CA Deva
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Olivenza
+</uri>
+<string>
+CP Olivenza
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Amorebieta
+</uri>
+<string>
+SD Amorebieta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Benidorm_CF
+</uri>
+<string>
+Benidorm CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Coslada
+</uri>
+<string>
+CD Coslada
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Manchego_CF
+</uri>
+<string>
+Manchego CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/RCD_Mallorca_B
+</uri>
+<string>
+RCD Mallorca B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Soledad
+</uri>
+<string>
+CD Soledad
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Xerez_FC
+</uri>
+<string>
+Xerez FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Arguinegu%C3%ADn
+</uri>
+<string>
+CD Arguineguín
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Sanvicente%C3%B1o
+</uri>
+<string>
+CP Sanvicenteño
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Aluvi%C3%B3n
+</uri>
+<string>
+CD Aluvión
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Gand%C3%ADa
+</uri>
+<string>
+CF Gandía
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/R%C3%ADas_Baixas_FS
+</uri>
+<string>
+Rías Baixas FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Colmenar_de_Oreja
+</uri>
+<string>
+CD Colmenar de Oreja
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Lorca_Deportiva_CF_B
+</uri>
+<string>
+Lorca Deportiva CF B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Leioa
+</uri>
+<string>
+SD Leioa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Mule%C3%B1o_CF
+</uri>
+<string>
+Muleño CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Super_Sego_FS
+</uri>
+<string>
+AD Super Sego FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Club_San_Ignacio
+</uri>
+<string>
+Club San Ignacio
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Piedrabuena
+</uri>
+<string>
+CD Piedrabuena
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Almaz%C3%A1n
+</uri>
+<string>
+SD Almazán
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Miguelturre%C3%B1o
+</uri>
+<string>
+CD Miguelturreño
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Roquetas
+</uri>
+<string>
+CD Roquetas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Huarte
+</uri>
+<string>
+CD Huarte
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/ACD_Ciudad_de_C%C3%A1ceres
+</uri>
+<string>
+ACD Ciudad de Cáceres
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Apurtuarte_Club
+</uri>
+<string>
+Apurtuarte Club
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_San_Lorenzo
+</uri>
+<string>
+UD San Lorenzo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Mancha_Real
+</uri>
+<string>
+Atlético Mancha Real
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/DAV_Santa_Ana
+</uri>
+<string>
+DAV Santa Ana
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Trival_Valderas
+</uri>
+<string>
+CF Trival Valderas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/EC_Granollers
+</uri>
+<string>
+EC Granollers
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Atl%C3%A9tico_Albericia
+</uri>
+<string>
+SD Atlético Albericia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Lagunak
+</uri>
+<string>
+SD Lagunak
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Internacional_de_Madrid_CF
+</uri>
+<string>
+Internacional de Madrid CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Tauste
+</uri>
+<string>
+CD Tauste
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Puertollano
+</uri>
+<string>
+CD Puertollano
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Norma_San_Leonardo
+</uri>
+<string>
+CF Norma San Leonardo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Tenisca
+</uri>
+<string>
+SD Tenisca
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Tijarafe
+</uri>
+<string>
+UD Tijarafe
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Avil%C3%A9s_CF
+</uri>
+<string>
+Real Avilés CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Crevillente_Deportivo
+</uri>
+<string>
+Crevillente Deportivo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Caravaca_CF
+</uri>
+<string>
+Caravaca CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Arandina_CF
+</uri>
+<string>
+Arandina CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Barbate_CF
+</uri>
+<string>
+Barbate CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Las_Palas
+</uri>
+<string>
+AD Las Palas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Club_Ciclista_de_San_Sebasti%C3%A1n
+</uri>
+<string>
+Club Ciclista de San Sebastián
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Giner_Torrero
+</uri>
+<string>
+CD Giner Torrero
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Eibar_B
+</uri>
+<string>
+SD Eibar B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Mondariz_FC
+</uri>
+<string>
+Mondariz FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_Antoniano
+</uri>
+<string>
+CA Antoniano
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Villarreal_CF_C
+</uri>
+<string>
+Villarreal CF C
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Cartaya
+</uri>
+<string>
+AD Cartaya
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Marsanz_FS
+</uri>
+<string>
+Marsanz FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Arenteiro
+</uri>
+<string>
+CD Arenteiro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Mensajero
+</uri>
+<string>
+CD Mensajero
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UE_Cornell%C3%A0
+</uri>
+<string>
+UE Cornellà
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Pu%C3%A7ol
+</uri>
+<string>
+UD Puçol
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Mutilvera
+</uri>
+<string>
+UD Mutilvera
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_River_Ega
+</uri>
+<string>
+CD River Ega
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/C%C3%B3rdoba_CF_B
+</uri>
+<string>
+Córdoba CF B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_San_Roque_de_Lepe
+</uri>
+<string>
+CD San Roque de Lepe
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Las_Palmas_Atl%C3%A9tico
+</uri>
+<string>
+UD Las Palmas Atlético
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Siete_Villas
+</uri>
+<string>
+CD Siete Villas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Uni%C3%B3n_Criptanense
+</uri>
+<string>
+CD Unión Criptanense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Alhaurino
+</uri>
+<string>
+CD Alhaurino
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Somozas
+</uri>
+<string>
+UD Somozas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_J%C3%A1vea
+</uri>
+<string>
+CD Jávea
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Idoya
+</uri>
+<string>
+CD Idoya
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Colonia_Moscard%C3%B3
+</uri>
+<string>
+CD Colonia Moscardó
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Loeches
+</uri>
+<string>
+CD Loeches
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SCR_Casino_del_Real
+</uri>
+<string>
+SCR Casino del Real
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Tenerife_B
+</uri>
+<string>
+CD Tenerife B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Gimn%C3%A1stico_FC
+</uri>
+<string>
+Gimnástico FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Anguiano
+</uri>
+<string>
+CD Anguiano
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ourense_FS
+</uri>
+<string>
+Ourense FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Illescas
+</uri>
+<string>
+CD Illescas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Marchamalo
+</uri>
+<string>
+CD Marchamalo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Atl%C3%A9tico_Ciudad
+</uri>
+<string>
+CF Atlético Ciudad
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_Alaior
+</uri>
+<string>
+CE Alaior
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Calasancio
+</uri>
+<string>
+CP Calasancio
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Beniel
+</uri>
+<string>
+CD Beniel
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AF_Calahorra
+</uri>
+<string>
+AF Calahorra
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/ED_L%C3%A1ncara
+</uri>
+<string>
+ED Láncara
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Torrellano_CF
+</uri>
+<string>
+Torrellano CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Zaragoza_B
+</uri>
+<string>
+Real Zaragoza B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Almer%C3%ADa_B
+</uri>
+<string>
+UD Almería B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Marino
+</uri>
+<string>
+CD Marino
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Las_Rozas_Boadilla
+</uri>
+<string>
+UD Las Rozas Boadilla
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FC_Puente_Tocinos
+</uri>
+<string>
+FC Puente Tocinos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Club_Deportivo_Atl%C3%A9tico_Baleares
+</uri>
+<string>
+Club Deportivo Atlético Baleares
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Uni%C3%B3n_Estepona_CF
+</uri>
+<string>
+Unión Estepona CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/RCD_Carabanchel
+</uri>
+<string>
+RCD Carabanchel
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Tede%C3%B3n_EF
+</uri>
+<string>
+CD Tedeón EF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Aranjuez_CF
+</uri>
+<string>
+Real Aranjuez CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Orihuela_Deportiva_CF
+</uri>
+<string>
+Orihuela Deportiva CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Cenicero
+</uri>
+<string>
+CD Cenicero
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Pinto_FS
+</uri>
+<string>
+Pinto FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Elche_CF_Ilicitano
+</uri>
+<string>
+Elche CF Ilicitano
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Villaviciosa_de_Od%C3%B3n
+</uri>
+<string>
+AD Villaviciosa de Odón
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Cala_d%27Or
+</uri>
+<string>
+CD Cala d'Or
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Santa_Eugenia
+</uri>
+<string>
+CD Santa Eugenia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Plus_Ultra
+</uri>
+<string>
+CD Plus Ultra
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Boadilla_FS
+</uri>
+<string>
+Atlético Boadilla FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Murcia_Deportivo_CF
+</uri>
+<string>
+Murcia Deportivo CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Gimn%C3%A1stica_de_Torrelavega
+</uri>
+<string>
+Gimnástica de Torrelavega
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_El_%C3%81lamo
+</uri>
+<string>
+CD El Álamo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Estradense
+</uri>
+<string>
+CD Estradense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Los_Llanos
+</uri>
+<string>
+UD Los Llanos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Getafe_Deportivo
+</uri>
+<string>
+Getafe Deportivo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Imperio_de_Albolote
+</uri>
+<string>
+CD Imperio de Albolote
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Brunete
+</uri>
+<string>
+CD Brunete
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Meng%C3%ADbar_CF
+</uri>
+<string>
+Mengíbar CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_Candeleda
+</uri>
+<string>
+CA Candeleda
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/N%C3%A1xara_CD
+</uri>
+<string>
+Náxara CD
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ver%C3%ADn_CF
+</uri>
+<string>
+Verín CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Aguilar
+</uri>
+<string>
+CD Aguilar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Iru%C3%B1a
+</uri>
+<string>
+CD Iruña
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Carranque
+</uri>
+<string>
+CD Carranque
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SP_Castiblanco
+</uri>
+<string>
+SP Castiblanco
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Sala_10
+</uri>
+<string>
+AD Sala 10
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Lagun_Onak
+</uri>
+<string>
+CD Lagun Onak
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Guarnizo
+</uri>
+<string>
+CD Guarnizo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_River_Ebro
+</uri>
+<string>
+CA River Ebro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Logro%C3%B1o
+</uri>
+<string>
+CD Logroño
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Gal%C3%A1ctico_Pegaso
+</uri>
+<string>
+Galáctico Pegaso
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Ourense_B
+</uri>
+<string>
+CD Ourense B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Comarca_de_N%C3%ADjar
+</uri>
+<string>
+CD Comarca de Níjar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/C%C3%A1diz_CF_B
+</uri>
+<string>
+Cádiz CF B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Malpartida
+</uri>
+<string>
+CP Malpartida
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ayamonte_CF
+</uri>
+<string>
+Ayamonte CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Betanzos_CF
+</uri>
+<string>
+Betanzos CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Socu%C3%A9llamos
+</uri>
+<string>
+UD Socuéllamos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Selaya_FC
+</uri>
+<string>
+Selaya FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Santa_F%C3%A9
+</uri>
+<string>
+CD Santa Fé
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Polideportivo_Ejido_B
+</uri>
+<string>
+Polideportivo Ejido B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Marino_de_Luanco
+</uri>
+<string>
+Marino de Luanco
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Lumbreras
+</uri>
+<string>
+CD Lumbreras
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_San_Fernando_de_Henares
+</uri>
+<string>
+CD San Fernando de Henares
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Ciudad_de_V%C3%ADcar
+</uri>
+<string>
+CD Ciudad de Vícar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/H%C3%A9rcules_CF_B
+</uri>
+<string>
+Hércules CF B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Ensidesa
+</uri>
+<string>
+CD Ensidesa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_Osasuna_B
+</uri>
+<string>
+CA Osasuna B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/O%27Parrulo_FS
+</uri>
+<string>
+O'Parrulo FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Berceo
+</uri>
+<string>
+CD Berceo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Realejos
+</uri>
+<string>
+UD Realejos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_Sabadell_FC
+</uri>
+<string>
+CE Sabadell FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FS_Zamora
+</uri>
+<string>
+FS Zamora
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Sabi%C3%B1%C3%A1nigo
+</uri>
+<string>
+AD Sabiñánigo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Aretxabaleta
+</uri>
+<string>
+UD Aretxabaleta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Cand%C3%A1s_CF
+</uri>
+<string>
+Candás CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Calasparra_FC
+</uri>
+<string>
+Calasparra FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Ronda
+</uri>
+<string>
+CD Ronda
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AE_Manacor
+</uri>
+<string>
+AE Manacor
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Solares_SD
+</uri>
+<string>
+Solares SD
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Bezana
+</uri>
+<string>
+CD Bezana
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Colonia_Ofigevi
+</uri>
+<string>
+CD Colonia Ofigevi
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Ebro
+</uri>
+<string>
+CD Ebro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Santa_Pola_CF
+</uri>
+<string>
+Santa Pola CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Sagrada_Cena
+</uri>
+<string>
+AD Sagrada Cena
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Amanecer
+</uri>
+<string>
+CP Amanecer
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Trujillo
+</uri>
+<string>
+CF Trujillo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_La_Granja
+</uri>
+<string>
+CD La Granja
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Meng%C3%ADbar
+</uri>
+<string>
+CD Mengíbar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Badajoz
+</uri>
+<string>
+UD Badajoz
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Castell%C3%B3n_B
+</uri>
+<string>
+CD Castellón B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Ibiza-Eivissa
+</uri>
+<string>
+UD Ibiza-Eivissa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Casar_de_C%C3%A1ceres
+</uri>
+<string>
+CF Casar de Cáceres
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Esquivias_CF
+</uri>
+<string>
+Atlético Esquivias CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Ceut%C3%AD_Atl%C3%A9tico
+</uri>
+<string>
+AD Ceutí Atlético
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Villalonga_FC
+</uri>
+<string>
+Villalonga FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Yeclano_Deportivo
+</uri>
+<string>
+Yeclano Deportivo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Masnou
+</uri>
+<string>
+CD Masnou
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Moa%C3%B1a
+</uri>
+<string>
+CD Moaña
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Astur_CF
+</uri>
+<string>
+Astur CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Rayo_Cantabria
+</uri>
+<string>
+SD Rayo Cantabria
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UM_Escobedo
+</uri>
+<string>
+UM Escobedo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Gandar%C3%ADo_Sanse
+</uri>
+<string>
+CF Gandarío Sanse
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Iberia_SC
+</uri>
+<string>
+Iberia SC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_Pulpile%C3%B1o
+</uri>
+<string>
+CA Pulpileño
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Mendi
+</uri>
+<string>
+CD Mendi
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Guadalajara_%28Spain%29
+</uri>
+<string>
+CD Guadalajara (Spain)
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ciudad_de_Lorca_CF
+</uri>
+<string>
+Ciudad de Lorca CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Numancia_B
+</uri>
+<string>
+CD Numancia B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_La_Muela
+</uri>
+<string>
+CD La Muela
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Extremadura_UD
+</uri>
+<string>
+Extremadura UD
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Orellana
+</uri>
+<string>
+CD Orellana
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Villanueva_CF
+</uri>
+<string>
+Villanueva CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CCD_Alberite
+</uri>
+<string>
+CCD Alberite
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Salvatierra
+</uri>
+<string>
+SD Salvatierra
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Reoc%C3%ADn
+</uri>
+<string>
+SD Reocín
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SE_Eivissa-Ibiza_B
+</uri>
+<string>
+SE Eivissa-Ibiza B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AE_Guixols
+</uri>
+<string>
+AE Guixols
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Nacional_de_Madrid
+</uri>
+<string>
+CD Nacional de Madrid
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AgD_Ceuta
+</uri>
+<string>
+AgD Ceuta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Castilla-La_Mancha_FS
+</uri>
+<string>
+Castilla-La Mancha FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Betis_San_Isidro-Progreso
+</uri>
+<string>
+CD Betis San Isidro-Progreso
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Ciudad_de_Santiago
+</uri>
+<string>
+SD Ciudad de Santiago
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Getafe_CF_B
+</uri>
+<string>
+Getafe CF B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Villarreal_CF_B
+</uri>
+<string>
+Villarreal CF B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Pinatar_CF
+</uri>
+<string>
+Pinatar CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Juventud_Barrio_del_Cristo
+</uri>
+<string>
+UD Juventud Barrio del Cristo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_%C3%8Dscar
+</uri>
+<string>
+CD Íscar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sporting_Villanueva_Promesas
+</uri>
+<string>
+Sporting Villanueva Promesas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Tuilla
+</uri>
+<string>
+CD Tuilla
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Azuqueca
+</uri>
+<string>
+CD Azuqueca
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Antequera_CF
+</uri>
+<string>
+Antequera CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SR_Villaverde_Boetticher_CF
+</uri>
+<string>
+SR Villaverde Boetticher CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Gij%C3%B3n_Industrial
+</uri>
+<string>
+UD Gijón Industrial
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Torrej%C3%B3n_CF
+</uri>
+<string>
+AD Torrejón CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Fundaci%C3%B3n_Logro%C3%B1%C3%A9s
+</uri>
+<string>
+AD Fundación Logroñés
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SDC_Galicia_Mugardos
+</uri>
+<string>
+SDC Galicia Mugardos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Maspalomas_FS
+</uri>
+<string>
+Maspalomas FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Andratx
+</uri>
+<string>
+CD Andratx
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Retuerto_Sport
+</uri>
+<string>
+SD Retuerto Sport
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Santa_Marta
+</uri>
+<string>
+CD Santa Marta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Vallecas_CF
+</uri>
+<string>
+Vallecas CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Santa_Comba_CF
+</uri>
+<string>
+Santa Comba CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CFJ_Mollerussa
+</uri>
+<string>
+CFJ Mollerussa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UC_La_Estrella
+</uri>
+<string>
+UC La Estrella
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_La_Nuc%C3%ADa
+</uri>
+<string>
+CF La Nucía
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Pozo_Estrecho
+</uri>
+<string>
+CD Pozo Estrecho
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Uni%C3%B3n_Tres_Cantos_FS
+</uri>
+<string>
+Unión Tres Cantos FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Condal_Club
+</uri>
+<string>
+Condal Club
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_As_Pontes
+</uri>
+<string>
+CD As Pontes
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ribarroja_CF
+</uri>
+<string>
+Ribarroja CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Santa_Marta
+</uri>
+<string>
+UD Santa Marta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SRD_Vimenor_CF
+</uri>
+<string>
+SRD Vimenor CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Malague%C3%B1o
+</uri>
+<string>
+Atlético Malagueño
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/ACD_San_Marcial
+</uri>
+<string>
+ACD San Marcial
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Montu%C3%AFri
+</uri>
+<string>
+CD Montuïri
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Viveiro_CF
+</uri>
+<string>
+Viveiro CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/La_Roda_CF
+</uri>
+<string>
+La Roda CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Valdemoro
+</uri>
+<string>
+Atlético Valdemoro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Colloto
+</uri>
+<string>
+SD Colloto
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Legan%C3%A9s_B
+</uri>
+<string>
+CD Leganés B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Nar%C3%B3n_BP
+</uri>
+<string>
+Narón BP
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Ciempozuelos
+</uri>
+<string>
+CD Ciempozuelos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Pego_CF
+</uri>
+<string>
+Pego CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Figueruelas
+</uri>
+<string>
+CF Figueruelas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Fuencarral
+</uri>
+<string>
+CD Fuencarral
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Chantada
+</uri>
+<string>
+SD Chantada
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Murchante_FC
+</uri>
+<string>
+Murchante FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FS_Marfil_Santa_Coloma
+</uri>
+<string>
+FS Marfil Santa Coloma
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Fortuna
+</uri>
+<string>
+CD Fortuna
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Cuarte_Industrial
+</uri>
+<string>
+CD Cuarte Industrial
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Eg%C3%BC%C3%A9s
+</uri>
+<string>
+CD Egüés
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Mora_CF
+</uri>
+<string>
+Mora CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Becerril
+</uri>
+<string>
+CD Becerril
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Torrellano_Illice_CF
+</uri>
+<string>
+Torrellano Illice CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Xota_FS
+</uri>
+<string>
+Xota FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Amposta
+</uri>
+<string>
+CF Amposta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UE_Sants
+</uri>
+<string>
+UE Sants
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/R%C3%A1pido_de_Bouzas
+</uri>
+<string>
+Rápido de Bouzas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Bala_Azul
+</uri>
+<string>
+CD Bala Azul
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Torpedo_66
+</uri>
+<string>
+AD Torpedo 66
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Laguna
+</uri>
+<string>
+AD Laguna
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/C%C3%A9ltiga_FC
+</uri>
+<string>
+Céltiga FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Gimn%C3%A1stico_Alc%C3%A1zar
+</uri>
+<string>
+CF Gimnástico Alcázar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/ED_Moratalaz
+</uri>
+<string>
+ED Moratalaz
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Chiclana_CF
+</uri>
+<string>
+Chiclana CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Praviano
+</uri>
+<string>
+CD Praviano
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ordizia_KE
+</uri>
+<string>
+Ordizia KE
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_Bembibre
+</uri>
+<string>
+CA Bembibre
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_Campos
+</uri>
+<string>
+CE Campos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Valdivia
+</uri>
+<string>
+CP Valdivia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Aviaci%C3%B3n
+</uri>
+<string>
+CD Aviación
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Madrid_C
+</uri>
+<string>
+Atlético Madrid C
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Las_Zocas
+</uri>
+<string>
+UD Las Zocas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Logro%C3%B1%C3%A9s
+</uri>
+<string>
+UD Logroñés
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Textil_Escudo
+</uri>
+<string>
+SD Textil Escudo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Vera_de_Almer%C3%ADa
+</uri>
+<string>
+CD Vera de Almería
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Salmantino
+</uri>
+<string>
+CD Salmantino
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Burriana
+</uri>
+<string>
+CD Burriana
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Adra
+</uri>
+<string>
+AD Adra
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Pe%C3%B1arroya_CF
+</uri>
+<string>
+Peñarroya CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CCD_Cerceda
+</uri>
+<string>
+CCD Cerceda
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Oyonesa
+</uri>
+<string>
+SD Oyonesa
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Valdelacalzada
+</uri>
+<string>
+CD Valdelacalzada
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Santomera_CF
+</uri>
+<string>
+Santomera CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_Art%C3%A0
+</uri>
+<string>
+CE Artà
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Llanes
+</uri>
+<string>
+CD Llanes
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Monz%C3%B3n
+</uri>
+<string>
+Atlético Monzón
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/RCD_Espanyol_Femenino
+</uri>
+<string>
+RCD Espanyol Femenino
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Margaritense
+</uri>
+<string>
+CD Margaritense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Portonovo_SD
+</uri>
+<string>
+Portonovo SD
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Las_Rozas_CF
+</uri>
+<string>
+Las Rozas CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Lourdes
+</uri>
+<string>
+CD Lourdes
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Pozoblanco
+</uri>
+<string>
+CD Pozoblanco
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Actur_Pablo_Iglesias
+</uri>
+<string>
+CD Actur Pablo Iglesias
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Torrijos
+</uri>
+<string>
+CD Torrijos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CAV_Murcia_2005
+</uri>
+<string>
+CAV Murcia 2005
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Varea
+</uri>
+<string>
+CD Varea
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Luarca_CF
+</uri>
+<string>
+Luarca CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Jumilla_CF
+</uri>
+<string>
+Jumilla CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Puerto_Real_CF
+</uri>
+<string>
+Puerto Real CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UA_Horta
+</uri>
+<string>
+UA Horta
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Brea
+</uri>
+<string>
+CD Brea
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Coria_CF
+</uri>
+<string>
+Coria CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Vitoria
+</uri>
+<string>
+CD Vitoria
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Boiro
+</uri>
+<string>
+CD Boiro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Gij%C3%B3n_Hockey_Club
+</uri>
+<string>
+Gijón Hockey Club
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Almer%C3%ADa
+</uri>
+<string>
+CP Almería
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Quintanar_del_Rey
+</uri>
+<string>
+CD Quintanar del Rey
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/RCD_C%C3%B3rdoba
+</uri>
+<string>
+RCD Córdoba
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Logro%C3%B1%C3%A9s
+</uri>
+<string>
+SD Logroñés
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CF_Ardoi_FE
+</uri>
+<string>
+CF Ardoi FE
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/ElPozo_Murcia_FS
+</uri>
+<string>
+ElPozo Murcia FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sangonera_Atl%C3%A9tico_CF
+</uri>
+<string>
+Sangonera Atlético CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Navarro_CF
+</uri>
+<string>
+SD Navarro CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Quintanar
+</uri>
+<string>
+CD Quintanar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Monta%C3%B1eros_CF
+</uri>
+<string>
+Montañeros CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Talavera_FS
+</uri>
+<string>
+Talavera FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CFS_Bilbao
+</uri>
+<string>
+CFS Bilbao
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Coruxo_FC
+</uri>
+<string>
+Coruxo FC
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Albacete_Balompi%C3%A9_B
+</uri>
+<string>
+Albacete Balompié B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Hurac%C3%A1n_Z
+</uri>
+<string>
+CD Huracán Z
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Collerense
+</uri>
+<string>
+UD Collerense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Cudillero
+</uri>
+<string>
+CD Cudillero
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_%C3%93rdenes
+</uri>
+<string>
+SD Órdenes
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/FC_Cartagena-La_Uni%C3%B3n
+</uri>
+<string>
+FC Cartagena-La Unión
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Laracha_CF
+</uri>
+<string>
+Laracha CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Erandio_Club
+</uri>
+<string>
+SD Erandio Club
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Vic%C3%A1lvaro
+</uri>
+<string>
+CD Vicálvaro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_Mercadal
+</uri>
+<string>
+CE Mercadal
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CU_Collado_Villalba
+</uri>
+<string>
+CU Collado Villalba
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_San_Juan
+</uri>
+<string>
+AD San Juan
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Corralejo
+</uri>
+<string>
+CD Corralejo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Mar_Menor_CF
+</uri>
+<string>
+Mar Menor CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Ejea
+</uri>
+<string>
+SD Ejea
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Santa_Amalia
+</uri>
+<string>
+CD Santa Amalia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Hell%C3%ADn_Deportivo
+</uri>
+<string>
+Hellín Deportivo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Granadilla
+</uri>
+<string>
+Atlético Granadilla
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A8tic_de_Ciutadella
+</uri>
+<string>
+Atlètic de Ciutadella
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Astorga_FS
+</uri>
+<string>
+Astorga FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Murcia_Imperial
+</uri>
+<string>
+Real Murcia Imperial
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Club_Nal%C3%B3n
+</uri>
+<string>
+Club Nalón
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Valencia_CF_Femenino
+</uri>
+<string>
+Valencia CF Femenino
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Arenal
+</uri>
+<string>
+UD Arenal
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Mejorada_FS
+</uri>
+<string>
+Mejorada FS
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Zarautz_KE
+</uri>
+<string>
+Zarautz KE
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Orcasitas
+</uri>
+<string>
+AD Orcasitas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_San_Pedro
+</uri>
+<string>
+SD San Pedro
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Atl%C3%A9tico_Calatayud
+</uri>
+<string>
+Atlético Calatayud
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Loja_CD
+</uri>
+<string>
+Loja CD
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Pontejos
+</uri>
+<string>
+CD Pontejos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Miajadas
+</uri>
+<string>
+CD Miajadas
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Universidad_de_Las_Palmas_CF_B
+</uri>
+<string>
+Universidad de Las Palmas CF B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Athletic_Club_EFT
+</uri>
+<string>
+Athletic Club EFT
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sporting_de_Gij%C3%B3n_B
+</uri>
+<string>
+Sporting de Gijón B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Recreativo_de_Huelva_B
+</uri>
+<string>
+Recreativo de Huelva B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Ferriolense
+</uri>
+<string>
+CD Ferriolense
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CA_Marbella
+</uri>
+<string>
+CA Marbella
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UE_Vilaju%C3%AFga
+</uri>
+<string>
+UE Vilajuïga
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Alca%C3%B1iz_CF
+</uri>
+<string>
+Alcañiz CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Talavera
+</uri>
+<string>
+UD Talavera
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Teguise
+</uri>
+<string>
+CD Teguise
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SD_Buelna
+</uri>
+<string>
+SD Buelna
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CE_J%C3%BApiter
+</uri>
+<string>
+CE Júpiter
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Santany%C3%AD
+</uri>
+<string>
+CD Santanyí
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Racing_de_Santander_B
+</uri>
+<string>
+Racing de Santander B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Zuera
+</uri>
+<string>
+CD Zuera
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Utiel
+</uri>
+<string>
+CD Utiel
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Los_Barrios
+</uri>
+<string>
+UD Los Barrios
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Burguillos
+</uri>
+<string>
+CD Burguillos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_Chinato
+</uri>
+<string>
+CP Chinato
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Valladolid_B
+</uri>
+<string>
+Real Valladolid B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Club_Lemos
+</uri>
+<string>
+Club Lemos
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Zamudio_SD
+</uri>
+<string>
+Zamudio SD
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Alc%C3%BAdia
+</uri>
+<string>
+UD Alcúdia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Cay%C3%B3n
+</uri>
+<string>
+CD Cayón
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CD_Puerta_Bonita
+</uri>
+<string>
+CD Puerta Bonita
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/EF_Concepci%C3%B3n
+</uri>
+<string>
+EF Concepción
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/AD_Ferroviaria
+</uri>
+<string>
+AD Ferroviaria
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Pontevedra_CF
+</uri>
+<string>
+Pontevedra CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Pontevedra_CF_B
+</uri>
+<string>
+Pontevedra CF B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Levante_UD
+</uri>
+<string>
+Levante UD
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Levante_UD_B
+</uri>
+<string>
+Levante UD B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Levante_UD_Femenino
+</uri>
+<string>
+Levante UD Femenino
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CP_M%C3%A9rida
+</uri>
+<string>
+CP Mérida
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Imperio_de_M%C3%A9rida_CP
+</uri>
+<string>
+Imperio de Mérida CP
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Madrid_C.F.
+</uri>
+<string>
+Real Madrid C.F.
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Banks_O%27_Dee_F.C.
+</uri>
+<string>
+Banks O' Dee F.C.
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Burgos_CF
+</uri>
+<string>
+Burgos CF
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ciudad_de_Murcia
+</uri>
+<string>
+Ciudad de Murcia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/UD_Almer%C3%ADa
+</uri>
+<string>
+UD Almería
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Rayo_Vallecano_B
+</uri>
+<string>
+Rayo Vallecano B
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Real_Burgos_CF
+</uri>
+<string>
+Real Burgos CF
+</string>
+</answer>
+</answers>
+</question>
+<question id="5">
+<string>
+What are the official languages of the Philippines?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT DISTINCT ?uri ?string
+WHERE
+{ 
+        res:Philippines onto:officialLanguage ?uri .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/English_language
+</uri>
+<string>
+English language
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Filipino_language
+</uri>
+<string>
+Filipino language
+</string>
+</answer>
+</answers>
+</question>
+<question id="6">
+<string>
+Who is the mayor of New York City?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT ?uri ?string
+WHERE
+{ 
+        res:New_York_City onto:leaderName ?uri .
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Michael_Bloomberg
+</uri>
+<string>
+Michael Bloomberg
+</string>
+</answer>
+</answers>
+</question>
+<question id="41">
+<string>
+Who designed the Brooklyn Bridge?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+SELECT DISTINCT ?uri ?string 
+WHERE 
+{
+        res:Brooklyn_Bridge dbpedia2:designer ?string .
+        ?uri dbpedia2:name ?string .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/John_A._Roebling
+</uri>
+<string>
+John Augustus Roebling
+</string>
+</answer>
+</answers>
+</question>
+<question id="2">
+<string>
+Which telecommunications organizations are located in Belgium?
+</string>
+<query>
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT ?uri ?string
+WHERE
+{ 	
+	?uri  rdf:type onto:Organisation  .
+	?uri dbpedia2:industry ?indus .
+	{ ?uri onto:location res:Belgium. } 
+        UNION { ?uri dbpedia2:location res:Belgium. }
+        UNION { ?uri dbpedia2:locationCountry 'Belgium'@en . }
+        FILTER (regex(?indus, 'Telecommunication')) .
+	OPTIONAL {?uri rdfs:label ?string . FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Belgacom
+</uri>
+<string>
+Belgacom
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Mobistar
+</uri>
+<string>
+Mobistar
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Society_for_Worldwide_Interbank_Financial_Telecommunication
+</uri>
+<string>
+Society for Worldwide Interbank Financial Telecommunication
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/TV_Vlaanderen_Digitaal
+</uri>
+<string>
+TV Vlaanderen Digitaal
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Telenet_%28Belgium%29
+</uri>
+<string>
+Telenet (Belgium)
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Broadnet_Holdings_BV
+</uri>
+<string>
+Broadnet Holdings BV
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Aldi_Talk
+</uri>
+<string>
+Aldi Talk
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Simyo
+</uri>
+<string>
+Simyo
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/LycaMobile
+</uri>
+<string>
+LycaMobile
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Broadnet_Holdings_BV
+</uri>
+<string>
+Broadnet Holdings BV
+</string>
+</answer>
+</answers>
+</question>
+<question id="15">
+<string>
+What is the profession of Frank Herbert?
+</string>
+<query>
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT DISTINCT ?string
+WHERE 
+{
+	res:Frank_Herbert dbpedia2:occupation ?string .
+}
+</query>
+<answers>
+<answer>
+<string>
+Novelist
+</string>
+</answer>
+</answers>
+</question>
+<question id="46">
+<string>
+What is the highest place of Karakoram?
+</string>
+<query>
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT ?uri ?string
+WHERE 
+{       
+        res:Karakoram onto:highestPlace ?uri .  
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/K2
+</uri>
+<string>
+K2
+</string>
+</answer>
+</answers>
+</question>
+<question id="25">
+<string>
+Give me the homepage of Forbes.
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT DISTINCT ?uri
+WHERE 
+{
+	res:Forbes foaf:homepage ?uri .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://www.forbes.com
+</uri>
+</answer>
+</answers>
+</question>
+<question id="1">
+<string>
+Which companies are in the computer software industry?
+</string>
+<query>
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX dbpedia2: &lt;http://dbpedia.org/property/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+SELECT DISTINCT ?uri ?string
+WHERE
+{ 
+	?uri  rdf:type onto:Company  .
+        ?uri dbpedia2:industry ?indus .
+        FILTER regex(?indus,'Computer') .
+        FILTER regex(?indus,'software','i') .
+        OPTIONAL {?uri rdfs:label ?string . FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/List_of_IBM_products
+</uri>
+<string>
+List of IBM products
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Microsoft
+</uri>
+<string>
+Microsoft
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Nemein
+</uri>
+<string>
+Nemein
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Valve_Corporation
+</uri>
+<string>
+Valve Corporation
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Dell
+</uri>
+<string>
+Dell
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SAS_Institute_Inc.
+</uri>
+<string>
+SAS Institute Inc.
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Adobe_Systems
+</uri>
+<string>
+Adobe Systems
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Apple_Inc.
+</uri>
+<string>
+Apple Inc.
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Baan
+</uri>
+<string>
+Baan
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Borland
+</uri>
+<string>
+Borland
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Cerulean_Studios
+</uri>
+<string>
+Cerulean Studios
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Claris
+</uri>
+<string>
+Claris
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/CodeWeavers
+</uri>
+<string>
+CodeWeavers
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Cygnus_Solutions
+</uri>
+<string>
+Cygnus Solutions
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Digital_Research
+</uri>
+<string>
+Digital Research
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Fujitsu
+</uri>
+<string>
+Fujitsu
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Lotus_Software
+</uri>
+<string>
+Lotus Software
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Macromedia
+</uri>
+<string>
+Macromedia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/McAfee
+</uri>
+<string>
+McAfee
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/NeXT
+</uri>
+<string>
+NeXT
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Nokia
+</uri>
+<string>
+Nokia
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Novell
+</uri>
+<string>
+Novell
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Oracle_Corporation
+</uri>
+<string>
+Oracle Corporation
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Quest_Software
+</uri>
+<string>
+Quest Software
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Red_Hat
+</uri>
+<string>
+Red Hat
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/SAP_AG
+</uri>
+<string>
+SAP AG
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sleepycat_Software
+</uri>
+<string>
+Sleepycat Software
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Software_AG
+</uri>
+<string>
+Software AG
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sun_Microsystems
+</uri>
+<string>
+Sun Microsystems
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Sybase
+</uri>
+<string>
+Sybase
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Symantec
+</uri>
+<string>
+Symantec
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/VMware
+</uri>
+<string>
+VMware
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Silicon_Graphics
+</uri>
+<string>
+Silicon Graphics
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Palm,_Inc.
+</uri>
+<string>
+Palm, Inc.
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Yahoo%21
+</uri>
+<string>
+Yahoo!
+</string>
+</answer>
+<answer>
+<uri>
+http://dbpedia.org/resource/Ashton-Tate
+</uri>
+<string>
+Ashton-Tate
+</string>
+</answer>
+</answers>
+</question>
+<question id="47">
+<string>
+What did Bruce Carver die from?
+</string>
+<query>
+PREFIX res: &lt;http://dbpedia.org/resource/&gt;
+PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
+SELECT ?uri ?string
+WHERE 
+{       
+        res:Bruce_Carver onto:deathCause ?uri .     
+        OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://dbpedia.org/resource/Cancer
+</uri>
+<string>
+Cancer
+</string>
+</answer>
+</answers>
+</question>
+</dataset>
