@@ -1,8 +1,10 @@
 package org.dllearner.algorithm.tbsl;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +29,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.aksw.commons.jena.ExtendedQueryEngineHTTP;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
@@ -51,7 +53,6 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.sparql.sse.builders.BuilderExpr.Build;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -60,6 +61,7 @@ public class Evaluation{
 	
 	private static Logger logger = Logger.getLogger(Evaluation.class);
 	private static String PROPERTIES_PATH = "tbsl/evaluation/evaluation.properties";
+	private static final boolean USE_IDEAL_TAGGER = true;
 	
 	private SortedMap<Integer, String> id2Question = new TreeMap<Integer, String>();
 	private SortedMap<Integer, String> id2Query = new TreeMap<Integer, String>();
@@ -74,11 +76,13 @@ public class Evaluation{
 	
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
 	
+	
 	public Evaluation(File ... evaluationFiles) throws FileNotFoundException, IOException{
 		for(File file : evaluationFiles){
 			readQueries(file);
 		}
 		stbl = new SPARQLTemplateBasedLearner();
+		stbl.setUseIdealTagger(USE_IDEAL_TAGGER);
 		
 		init();
 		
@@ -133,6 +137,7 @@ public class Evaluation{
 			String question;
 			String query;
 			Set<String> answers;
+			
 			for(int i = 0; i < questionNodes.getLength(); i++){
 				Element questionNode = (Element) questionNodes.item(i);
 				//read question ID
@@ -163,6 +168,20 @@ public class Evaluation{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		StringBuilder sb = new StringBuilder();
+		for(Entry<Integer, String> e : id2Question.entrySet()){
+			sb.append(e.getKey()+ ": " + extractSentence(e.getValue()) + "\n");
+		}
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter("questions.txt"));
+			out.write(sb.toString());
+			out.close();
+			} 
+			catch (IOException e) 
+			{ 
+			System.out.println("Exception ");
+
+			}
 		logger.info("Done.");
 	}
 	
@@ -208,14 +227,16 @@ public class Evaluation{
 			answer = new HashSet<String>();
 			if(!query.contains("LIMIT")){
 				query = query + " LIMIT 500";
-			}System.out.println(query);
+			}
 			ResultSet rs = executeSelect(query);
+			
 			String variable;
 			if(rs.getResultVars().size() == 1){
 				variable = rs.getResultVars().get(0);
 			} else {
 				variable = targetVar;
 			}
+			variable = rs.getResultVars().get(0);
 			
 			QuerySolution qs;
 			RDFNode node;
@@ -290,7 +311,7 @@ public class Evaluation{
 		String errorCode = "";
 		LatexWriter latex = new LatexWriter();
 		int i = 0;
-		for(Entry<Integer, String> entry : id2Question.entrySet()){
+		for(Entry<Integer, String> entry : id2Question.entrySet()){if(entry.getKey()==50)continue;
 			if(testID != -1 && entry.getKey() != testID)continue;
 			try {
 				questionId = entry.getKey();
@@ -306,7 +327,7 @@ public class Evaluation{
 				
 				
 				//write new section for query
-				latex.beginSection(question);
+				latex.beginSection(extractSentence(question));
 				//write subsection for target
 				latex.beginSubsection("Target");
 				//write subsubsection for target query
@@ -367,6 +388,7 @@ public class Evaluation{
 					k++;
 				}
 				
+				
 				//get the URIs for each template slot
 				latex.beginSubsection("Covered entities");
 				Map<Slot, List<String>> slot2URIsMap = stbl.getSlot2URIs();
@@ -411,7 +433,13 @@ public class Evaluation{
 						for(String uri : slot2URI.getValue()){
 							uris.append(escapeString(getPrefixedURI(uri))).append(", ");
 						}
-						sb.append(slot2URI.getKey().getWords() + "[" + slot2URI.getKey().getSlotType() + "]").append(" & ").append(uris.toString()).append("\\\\\\hline\n");
+						StringBuilder slotWords = new StringBuilder();
+						slotWords.append("[");
+						for(String word : slot2URI.getKey().getWords()){
+							slotWords.append(escapeString(word)).append(", ");
+						}
+						slotWords.append("]");
+						sb.append(slotWords.toString() + "[" + slot2URI.getKey().getSlotType() + "]").append(" & ").append(uris.toString()).append("\\\\\\hline\n");
 					}
 				}
 				sb.append("\\end{tabular}\n");
@@ -427,17 +455,17 @@ public class Evaluation{
 					precision = computePrecision(targetAnswer, learnedAnswer);
 					recall = computeRecall(targetAnswer, learnedAnswer);
 				}
-				latex.addSummaryTableEntry(questionId, question, precision, recall, errorCode);
+				latex.addSummaryTableEntry(questionId, extractSentence(question), precision, recall, errorCode);
 				
 			} catch (NoTemplateFoundException e) {
 				e.printStackTrace();
 				logger.error("Template generation failed");
 				errorCode = "NT";
-				latex.addSummaryTableEntry(questionId, question, precision, recall, errorCode);
+				latex.addSummaryTableEntry(questionId, extractSentence(question), precision, recall, errorCode);
 			} catch(Exception e){
 				e.printStackTrace();
 				logger.error("ERROR");
-				latex.addSummaryTableEntry(questionId, question, precision, recall, errorCode);
+				latex.addSummaryTableEntry(questionId, extractSentence(question), precision, recall, errorCode);
 			}
 		}
 		latex.write("log/evaluation.tex");
@@ -639,7 +667,7 @@ public class Evaluation{
 			}
 		}
 		latex.endDocument();
-		latex.write("log/evaluation.tex");
+		latex.write("log/evaluation" + new Date().getHours() + "_" + new Date().getMinutes() + ".tex");
 	}
 
 	private String escapeAnswerString(Object learnedAnswer, Object targetAnswer){
@@ -695,6 +723,24 @@ public class Evaluation{
 		}
 		
 	}
+	
+	private String extractSentence(String taggedSentence){
+    	int pos = taggedSentence.indexOf("/");
+    	while(pos != -1){
+    		String first = taggedSentence.substring(0, pos);
+    		int endPos = taggedSentence.substring(pos).indexOf(" ");
+    		if(endPos == -1){
+    			endPos = taggedSentence.substring(pos).length();
+    		}
+    		String rest = taggedSentence.substring(pos + endPos);
+    		
+    		taggedSentence = first + rest;
+    		pos = taggedSentence.indexOf("/");
+    		
+    	}
+    	return taggedSentence;
+    	
+    }
 	/**
 	 * @param args
 	 * @throws IOException 
