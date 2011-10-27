@@ -68,6 +68,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private Monitor mon = MonitorFactory.getTimeMonitor("tbsl");
 	
 	private static final int RECURSION_DEPTH = 2;
+	private static final int MAX_URIS_PER_SLOT = 10;
 	
 	private Ranking ranking;
 	private boolean useRemoteEndpointValidation;
@@ -135,11 +136,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private void init(Options options){
 		String resourcesIndexUrl = options.fetch("solr.resources.url");
 		String resourcesIndexSearchField = options.fetch("solr.resources.searchfield");
-		resource_index = new ThresholdSlidingSolrSearch(resourcesIndexUrl, resourcesIndexSearchField, 1.0, 0.1);
+		resource_index = new ThresholdSlidingSolrSearch(resourcesIndexUrl, resourcesIndexSearchField, "label", 1.0, 0.1);
 		
 		String classesIndexUrl = options.fetch("solr.classes.url");
 		String classesIndexSearchField = options.fetch("solr.classes.searchfield");
-		SolrSearch dbpediaClassIndex = new SolrSearch(classesIndexUrl, classesIndexSearchField);
+		SolrSearch dbpediaClassIndex = new SolrSearch(classesIndexUrl, classesIndexSearchField, "label");
 		
 		String yagoClassesIndexUrl = options.fetch("solr.yago.classes.url");
 		String yagoClassesIndexSearchField = options.fetch("solr.yago.classes.searchfield");
@@ -149,11 +150,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		
 		String propertiesIndexUrl = options.fetch("solr.properties.url");
 		String propertiesIndexSearchField = options.fetch("solr.properties.searchfield");
-		SolrSearch labelBasedPropertyIndex = new SolrSearch(propertiesIndexUrl, propertiesIndexSearchField);
+		SolrSearch labelBasedPropertyIndex = new SolrSearch(propertiesIndexUrl, propertiesIndexSearchField, "label");
 		
 		String boaPatternIndexUrl = options.fetch("solr.boa.properties.url");
 		String boaPatternIndexSearchField = options.fetch("solr.boa.properties.searchfield");
-		SolrSearch patternBasedPropertyIndex = new SolrSearch(boaPatternIndexUrl, boaPatternIndexSearchField);
+		SolrSearch patternBasedPropertyIndex = new SolrSearch(boaPatternIndexUrl, boaPatternIndexSearchField, "nlr");
 		
 		//first BOA pattern then label based
 //		property_index = new HierarchicalSolrSearch(patternBasedPropertyIndex, labelBasedPropertyIndex);
@@ -535,10 +536,16 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			}
 		
 			tmp.addAll(rs.getItems());
+			int i = 0;
 			for(SolrQueryResultItem item : tmp){
 				sortedURIs.add(item.getUri());
+				if(i == MAX_URIS_PER_SLOT){
+					break;
+				}
+				i++;
 			}
 			tmp.clear();
+
 		}
 		
 		slot2URI.put(slot, sortedURIs);
@@ -735,7 +742,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		logger.info("Done in " + mon.getLastValue() + "ms.");
 	}
 	
-	private List<String> getResultFromRemoteEndpoint(String query){
+	private List<String> getResultFromRemoteEndpoint(String query){System.out.println(query);
 		List<String> resources = new ArrayList<String>();
 		try {
 			String queryString = query;
@@ -784,6 +791,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
+//		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
+//				Collections.<String>singletonList(""), Collections.<String>emptyList());
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 				Collections.<String>singletonList(""), Collections.<String>emptyList());
 		learner.setEndpoint(endpoint);
