@@ -147,11 +147,11 @@ public class Templator {
                 	
                 	if (!containsModuloRenaming(drses,drs)) {
 //                    	// DEBUG
-//                		System.out.println(dude);
-//                		System.out.println(drs);
-//                		for (Slot sl : slots) {
-//                			System.out.println(sl.toString());
-//                		}
+                		System.out.println(dude);
+                		System.out.println(drs);
+                		for (Slot sl : slots) {
+                			System.out.println(sl.toString());
+                		}
 //                		//
                 		drses.add(drs);
                 		
@@ -190,7 +190,7 @@ public class Templator {
                 					}
                 					
                 					newwords = new ArrayList<String>();
-                					newwords.add(word);
+                					newwords.addAll(slot.getWords());
                 					newwords.addAll(strings);            					
                 					
                 					if (wordnetpos != null && !slot.getSlotType().equals(SlotType.RESOURCE)) {

@@ -84,13 +84,13 @@
 <string>Which/WDT European/JJ countries/NNS are/VBP a/DT constitutional/JJ monarchy/NN</string>
 </question>
 <question id="40">
-<string>Who/WP is/VBZ the/DT author/NN of/IN WikiLeaks/NNS</string>
+<string>Who/WP is/VBZ the/DT author/NN of/IN WikiLeaks/NNP</string>
 </question>
 <question id="17">
 <string>Which/WDT state/NN of/IN the/DT United/NNP States/NNPS of/IN America/NNP has/VBZ the/DT highest/JJS density/NN</string>
 </question>
 <question id="19">
-<string>What/WP is/VBZ the/DT currency/NN of/IN the/DT Czech/JJ Republic/NNP</string>
+<string>What/WP is/VBZ the/DT currency/NN of/IN the/DT Czech/NNP Republic/NNP</string>
 </question>
 <question id="22">
 <string>Which/WDT countries/NNS in/IN the/DT European/NNP Union/NNP adopted/VBD the/DT Euro/NNP</string>
@@ -111,7 +111,7 @@
 <string>When/WRB did/VBD Germany/NNP join/VB the/DT EU/NNP</string>
 </question>
 <question id="36">
-<string>Which/WDT monarchs/NNS of/IN the/DT United/NNP Kingdom/NNP were/VBD married/VBN to/TO a/DT German/JJ</string>
+<string>Which/WDT monarchs/NNS of/IN the/DT United/NNP Kingdom/NNP were/VBD married/VBN to/TO a/DT German/NN</string>
 </question>
 <question id="8">
 <string>When/WRB was/VBD the/DT Battle/NNP of/IN Gettysburg/NNP</string>

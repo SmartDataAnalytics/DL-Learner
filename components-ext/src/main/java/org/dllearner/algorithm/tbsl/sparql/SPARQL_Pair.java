@@ -43,7 +43,7 @@ public class SPARQL_Pair
 		case NEQ:
 			return a + "!=" + b;
 		case REGEX:
-			return "regex(" + a + "," + b + ")";
+			return "regex(" + a + "," + b + ",'i')";
 		}
 		return "";
 	}

@@ -124,7 +124,7 @@ public class SlotBuilder {
 				else if (pos.equals("JJNPREP")) {
 					String jjtoken = token.substring(0,token.indexOf("_"));
 					String nntoken = token.substring(token.indexOf("_")+1);
-					String slotfluent = "SLOT_" + tokenfluent + "/CLASS/" + token;
+					String slotfluent = "SLOT_" + tokenfluent + "/PROPERTY/" + token;
 					String slotnn     = "SLOT_" + nntoken + "/PROPERTY/" + nntoken; 
 					String slotnnc    = "SLOT_" + nntoken + "/CLASS/" + nntoken;
 					String slotjj     = "SLOT_" + jjtoken + "/CLASS/" + jjtoken;
