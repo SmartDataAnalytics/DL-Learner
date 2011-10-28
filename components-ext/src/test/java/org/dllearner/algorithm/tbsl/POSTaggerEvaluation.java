@@ -5,24 +5,47 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.LingPipePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
+import org.nlp2rdf.ontology.olia.OLiAManager;
+import org.nlp2rdf.ontology.olia.OLiAOntology;
 
 import com.aliasi.corpus.ObjectHandler;
 import com.aliasi.corpus.StringParser;
 import com.aliasi.tag.Tagging;
 import com.aliasi.util.Strings;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.util.iterator.Filter;
 
 public class POSTaggerEvaluation extends StringParser<ObjectHandler<Tagging<String>>>{
 	
 	private List<PartOfSpeechTagger> taggers = Arrays.asList(new PartOfSpeechTagger[]{
 			new ApachePartOfSpeechTagger(), new StanfordPartOfSpeechTagger(), new LingPipePartOfSpeechTagger()});
 	
+	private OLiAManager m = new OLiAManager();
+    private OLiAOntology brown;
+    private OLiAOntology penn;
+    
+    private static final String OLIA_NS = "http://purl.org/olia/olia.owl";
+    
+    private Filter<OntClass> olia_filter = new Filter<OntClass>() {
+		@Override
+		public boolean accept(OntClass oc) {
+			return oc.getURI().startsWith(OLIA_NS);
+		}
+	};
+	
 	
 	public POSTaggerEvaluation() {
+    	brown = m.getOLiAOntology("http://purl.org/olia/brown-link.rdf");
+    	penn = m.getOLiAOntology("http://purl.org/olia/penn-link.rdf");
 	}
 	
 	public void run(File directory){
@@ -146,15 +169,45 @@ public class POSTaggerEvaluation extends StringParser<ObjectHandler<Tagging<Stri
             for(int i = 0; i < referenceTagging.tags().size(); i++){
             	referenceTag = referenceTagging.tags().get(i);
             	tag = tagging.tags().get(i);
-            	if(!referenceTag.equalsIgnoreCase(tag)){
-//            		System.out.println(referenceTag + "--" + tag);
-            		errorCnt++;
-            	}
+            	boolean matches = matchesOLiaClass(referenceTag, tag);
+            	System.out.println(matches);
             }
             if(errorCnt > 0){
             	System.out.println(tagging);
             }
         }
+    }
+    
+    /*
+     * Returns TRUE if in the OLia hierarchy is somewhere a common class.
+     */
+    private boolean matchesOLiaClass(String brownTag, String pennTag){
+    	Set<String> brownClasses = brown.getClassURIsForTag(brownTag.toUpperCase());
+    	Set<String> pennClasses = penn.getClassURIsForTag(pennTag);
+    	
+    	System.out.println(brownTag + "-BROWN:" + brownClasses);
+    	System.out.println(pennTag + "-PENN:" + pennClasses);
+    	
+    	OntModel brownModel = ModelFactory.createOntologyModel();
+    	OntModel pennModel = ModelFactory.createOntologyModel();
+    	
+    	for (String classUri : brownClasses) {
+    		brownModel.add(brown.getHierarchy(classUri));
+        }
+    	
+    	for (String classUri : pennClasses) {
+    		pennModel.add(penn.getHierarchy(classUri));
+        }
+    	
+    	for(OntClass oc1 : brownModel.listClasses().filterKeep(olia_filter).toList()){
+    		for(OntClass oc2 : pennModel.listClasses().filterKeep(olia_filter).toList()){
+    			if(oc1.equals(oc2)){
+    				return true;
+    			}
+    		}
+    	}
+    	
+    	return false;
     }
     
     public static void main(String[] args) {
