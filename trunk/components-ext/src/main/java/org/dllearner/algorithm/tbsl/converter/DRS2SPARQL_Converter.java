@@ -76,7 +76,7 @@ public class DRS2SPARQL_Converter {
         }
         
         template = new Template(new Query());
-        slots = ls;
+ //       slots = ls;
         
         Query q = convert(drs, new Query(), false);
         if (q == null) {
@@ -102,7 +102,7 @@ public class DRS2SPARQL_Converter {
         }
 //        System.out.println("--- DRS (after) : " + drs); // DEBUG
             
-        for (DiscourseReferent referent : drs.getDRs()) {
+        for (DiscourseReferent referent : drs.collectDRs()) {
             if (referent.isMarked()) {
             	SPARQL_Term term = new SPARQL_Term(referent.toString().replace("?",""));
             	term.setIsVariable(true);
@@ -115,9 +115,13 @@ public class DRS2SPARQL_Converter {
             	f.addNotBound(term);
             	query.addFilter(f);
             }
+            
+//            System.out.println("--- referent: " + referent.toString()); // DEBUG
             for (Slot s : slots) {
-        		if (s.getAnchor().equals(referent.toString())) {
-        			template.addSlot(s);
+//           	System.out.println("--- slot: " + s.toString()); // DEBUG
+        		if (s.getAnchor().equals(referent.getValue()) || s.getAnchor().equals(referent.toString())) {
+//        			System.out.println("    fits!"); // DEBUG
+       			template.addSlot(s);
         			break;
         		}
         	}

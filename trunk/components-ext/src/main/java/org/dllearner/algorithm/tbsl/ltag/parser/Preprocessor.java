@@ -70,8 +70,8 @@ public class Preprocessor {
 		Pattern passivePattern1a  = Pattern.compile("(((has)|(have)|(had))/VB[A-Z]?.been/VBN.(\\w+)/VBN.by/IN)");
 		Pattern passivePattern1b  = Pattern.compile("(\\s((has)|(have)|(had))/VB[A-Z]?(.+\\s)been/VBN\\s(\\w+)/VB(N|D))");
 		Pattern passivePattern2a  = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.(\\w+)/VBN.by/IN)");
-		Pattern pseudopassPattern = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.(\\w+)/VBN.\\w+/TO)");
-		Pattern pseudopwhPattern  = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.(.+)\\s(\\w+)/VB(N|D).\\w+/TO)");
+		Pattern pseudopassPattern = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.(\\w+)/VBN.\\w+/((TO)|(IN)))");
+		Pattern pseudopwhPattern  = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.(.+)\\s(\\w+)/VB(N|D).\\w+/((TO)|(IN)))");
 		Pattern saveIsThere       = Pattern.compile("((is)|(are))/(VB[A-Z]?).there/(RB)");
 		Pattern passivePattern2b  = Pattern.compile("(((is)|(are)|(was)|(were))/VB[A-Z]?.((.+)\\s\\w+)/VB(N|D))");
 		Pattern passpartPattern   = Pattern.compile("\\s((\\w+)/VBN.by/IN)");
