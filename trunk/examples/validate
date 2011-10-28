@@ -1,0 +1,9 @@
+
+
+for i in `find . | egrep '.owl$|.ttl|.nt$'`                                                                                                 
+do
+echo "********************************"
+echo $i
+echo "********************************"
+eyeball -assume owl -check $i
+done
