@@ -1,0 +1,794 @@
+********************************
+./carcinogenesis/carcinogenesis.owl
+********************************
+
+On statement:  :d307 :micronuc_f "false"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :micronuc_f
+
+On statement:  :d80 :hasBond :bond8829
+    predicate not declared in any schema: :hasBond
+
+On statement:  :d80 :cytogen_ca "true"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :cytogen_ca
+
+On statement:  :d279_1 :charge "-0.0050"^^http://www.w3.org/2001/XMLSchema#double
+    predicate not declared in any schema: :charge
+
+On statement:  :d274 :drosophila_rt "false"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :drosophila_rt
+
+On statement:  :d329 :salmonella_reduc "true"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :salmonella_reduc
+
+On statement:  :d307 :micronuc_m "false"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :micronuc_m
+
+On statement:  :d80 :hasAtom :d80_8
+    predicate not declared in any schema: :hasAtom
+
+On statement:  :bond7133 :inBond :d328a_15
+    predicate not declared in any schema: :inBond
+
+On statement:  :d80 :salmonella "true"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :salmonella
+
+On statement:  :d80 :cytogen_sce "false"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :cytogen_sce
+
+On statement:  :d80 :amesTestPositive "true"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :amesTestPositive
+
+On statement:  :d274 :chromex "true"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :chromex
+
+On statement:  :d274 :drosophila_slrl "true"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :drosophila_slrl
+
+On statement:  :d80 :salmonella_n "true"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :salmonella_n
+
+On statement:  :d43 :mouse_lymph "true"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :mouse_lymph
+
+On statement:  :d80 :isMutagenic "false"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :isMutagenic
+
+On statement:  :d274 :chromaberr "false"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :chromaberr
+
+On statement:  :d80 :hasStructure :six_ring-2874
+    predicate not declared in any schema: :hasStructure
+
+eye:multiplePrefixesForNamespace: "http://dl-learner.org/carcinogenesis#"
+    on prefix: ""
+    on prefix: "carcinogenesis"
+********************************
+./lymphography/lymphography.owl
+********************************
+********************************
+./tobiaswunner/lemon.owl
+********************************
+Exception in thread "main" com.hp.hpl.jena.rdf.model.ResourceRequiredException: "1"^^http://www.w3.org/2001/XMLSchema#nonNegativeInteger
+	at com.hp.hpl.jena.rdf.model.impl.ResourceImpl$1.wrap(ResourceImpl.java:29)
+	at com.hp.hpl.jena.enhanced.EnhNode.convertTo(EnhNode.java:142)
+	at com.hp.hpl.jena.enhanced.EnhNode.convertTo(EnhNode.java:22)
+	at com.hp.hpl.jena.enhanced.Polymorphic.asInternal(Polymorphic.java:54)
+	at com.hp.hpl.jena.enhanced.EnhNode.as(EnhNode.java:97)
+	at com.hp.hpl.jena.extras.tools.query.QueryVariable.resource(QueryVariable.java:70)
+	at com.hp.hpl.jena.eyeball.inspectors.ListInspector.findPotentialSuspecListTypes(ListInspector.java:156)
+	at com.hp.hpl.jena.eyeball.inspectors.ListInspector.findSuspecListTypes(ListInspector.java:124)
+	at com.hp.hpl.jena.eyeball.inspectors.ListInspector.inspectModel(ListInspector.java:83)
+	at com.hp.hpl.jena.eyeball.Inspector$InspectorSet.inspectModel(Inspector.java:130)
+	at com.hp.hpl.jena.eyeball.Eyeball.inspect(Eyeball.java:77)
+	at jena.eyeball.inspectAndReport(eyeball.java:318)
+	at jena.eyeball.checkOneModel(eyeball.java:308)
+	at jena.eyeball.run(eyeball.java:103)
+	at jena.eyeball.main(eyeball.java:43)
+	at jena.eyeball.main(eyeball.java:34)
+	at jena.eyeball.main(eyeball.java:31)
+********************************
+./tobiaswunner/corpus.ttl
+********************************
+
+On statement:  kb:ex2 rdf:type str:String
+    class not declared in any schema: str:String
+
+On statement:  kb:ex1 rdf:type str:Document
+    class not declared in any schema: str:Document
+
+eye:multiplePrefixesForNamespace: "http://nlp2rdf.lod2.eu/schema/sso/"
+    on prefix: "str"
+    on prefix: "sso"
+********************************
+./tobiaswunner/string.owl
+********************************
+
+On statement:  :beginIndex rdfs:Range xsd:int
+    not from schema: "http://www.w3.org/2000/01/rdf-schema#"
+    on resource: rdfs:Range
+
+On statement:  _:b1001 owl:hasSelf "true"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: owl:hasSelf
+
+On statement:  _:b1001 owl:hasSelf "true"^^http://www.w3.org/2001/XMLSchema#boolean
+    not from schema: "http://www.w3.org/2002/07/owl#"
+    on resource: owl:hasSelf
+
+On statement:  :beginIndex rdfs:Range xsd:int
+    predicate not declared in any schema: rdfs:Range
+********************************
+./tobiaswunner/sso.owl
+********************************
+
+eye:multiplePrefixesForNamespace: "http://nlp2rdf.lod2.eu/schema/sso/"
+    on prefix: ""
+    on prefix: "sso"
+********************************
+./mutagenesis/mutagenesis.owl
+********************************
+
+On statement:  :d73 :logp "2.68"^^http://www.w3.org/2001/XMLSchema#double
+    predicate not declared in any schema: :logp
+
+On statement:  :d73 :lumo "-0.648"^^http://www.w3.org/2001/XMLSchema#double
+    predicate not declared in any schema: :lumo
+
+On statement:  :d73 :act "-2.0"^^http://www.w3.org/2001/XMLSchema#double
+    predicate not declared in any schema: :act
+
+On statement:  :bond3668 rdf:type owl:NamedIndividual
+    not from schema: "http://www.w3.org/2002/07/owl#"
+    on resource: owl:NamedIndividual
+
+On statement:  :d137_21 :charge "0.142"^^http://www.w3.org/2001/XMLSchema#double
+    predicate not declared in any schema: :charge
+
+On statement:  :d73 :hasThreeOrMoreFusedRings "false"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :hasThreeOrMoreFusedRings
+
+On statement:  :d73 :hasAtom :d73_24
+    predicate not declared in any schema: :hasAtom
+
+On statement:  :d73 :hasFifeExamplesOfAcenthrylenes "false"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :hasFifeExamplesOfAcenthrylenes
+
+On statement:  :d73 :hasBond :bond4673
+    predicate not declared in any schema: :hasBond
+
+On statement:  :bond3668 rdf:type owl:NamedIndividual
+    class not declared in any schema: owl:NamedIndividual
+
+On statement:  :d73 :hasStructure :nitro-1291
+    predicate not declared in any schema: :hasStructure
+
+On statement:  :bond3668 :inBond :d43_5
+    predicate not declared in any schema: :inBond
+
+eye:multiplePrefixesForNamespace: "http://dl-learner.org/mutagenesis#"
+    on prefix: ""
+    on prefix: "mutagenesis"
+********************************
+./poker/pair50.owl
+********************************
+
+On statement:  a:card104 a:nextRank a:card101
+    predicate not declared in any schema: a:nextRank
+
+On statement:  a:card125 a:hasRank a:ace
+    predicate not declared in any schema: a:hasRank
+
+On statement:  a:card125 a:sameRank a:card129
+    predicate not declared in any schema: a:sameRank
+
+On statement:  a:card125 a:hasSuit a:diamonds
+    predicate not declared in any schema: a:hasSuit
+
+On statement:  a:card125 a:sameSuit a:card128
+    predicate not declared in any schema: a:sameSuit
+
+On statement:  a:hand43 a:hasCard a:card219
+    predicate not declared in any schema: a:hasCard
+********************************
+./poker/straight.owl
+********************************
+
+On statement:  a:card176 a:sameRank a:card179
+    predicate not declared in any schema: a:sameRank
+
+On statement:  a:hand51 a:hasCard a:card259
+    predicate not declared in any schema: a:hasCard
+
+On statement:  a:card248 a:nextRank a:card249
+    predicate not declared in any schema: a:nextRank
+
+On statement:  a:card152 a:hasSuit a:diamonds
+    predicate not declared in any schema: a:hasSuit
+
+On statement:  a:card152 a:hasRank a:queen
+    predicate not declared in any schema: a:hasRank
+
+On statement:  a:card152 a:sameSuit a:card154
+    predicate not declared in any schema: a:sameSuit
+********************************
+./nlp2rdf/sample/import.owl
+********************************
+
+eye:multiplePrefixesForNamespace: "http://www.w3.org/2002/07/owl#"
+    on prefix: "ns0"
+    on prefix: "owl"
+********************************
+./nlp2rdf/sample/data2.owl
+********************************
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_91_96_apple j.0:AdjectivalModifier http://nlp2rdf.lod2.eu/nif/offset_85_90_eaten
+    predicate not declared in any schema: j.0:AdjectivalModifier
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_133_160_The+boy+will+eat+the sso:lastWord http://nlp2rdf.lod2.eu/nif/offset_159_160_.
+    predicate not declared in any schema: sso:lastWord
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_133_160_The+boy+will+eat+the sso:child http://nlp2rdf.lod2.eu/nif/offset_141_159_will+eat+the+apple
+    predicate not declared in any schema: sso:child
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_91_96_apple j.0:amod http://nlp2rdf.lod2.eu/nif/offset_85_90_eaten
+    predicate not declared in any schema: j.0:amod
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten j.0:PassiveNominalSubject http://nlp2rdf.lod2.eu/nif/offset_4_9_apple
+    predicate not declared in any schema: j.0:PassiveNominalSubject
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_146_149_eat j.0:NominalSubject http://nlp2rdf.lod2.eu/nif/offset_137_140_boy
+    predicate not declared in any schema: j.0:NominalSubject
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_133_136_The sso:lemma "the"
+    predicate not declared in any schema: sso:lemma
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_133_136_The sso:oliaLink j.4:DT
+    predicate not declared in any schema: sso:oliaLink
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten j.0:nsubjpass http://nlp2rdf.lod2.eu/nif/offset_4_9_apple
+    predicate not declared in any schema: j.0:nsubjpass
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_133_160_The+boy+will+eat+the sso:firstWord http://nlp2rdf.lod2.eu/nif/offset_133_136_The
+    predicate not declared in any schema: sso:firstWord
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_146_149_eat j.0:aux http://nlp2rdf.lod2.eu/nif/offset_141_145_will
+    predicate not declared in any schema: j.0:aux
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten j.0:PassiveAuxiliary http://nlp2rdf.lod2.eu/nif/offset_10_13_was
+    predicate not declared in any schema: j.0:PassiveAuxiliary
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_133_160_The+boy+will+eat+the string:anchorOf "The boy will eat the apple."
+    predicate not declared in any schema: string:anchorOf
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_25_30_apple j.0:Determiner http://nlp2rdf.lod2.eu/nif/offset_21_24_The
+    predicate not declared in any schema: j.0:Determiner
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_146_149_eat j.0:DirectObject http://nlp2rdf.lod2.eu/nif/offset_154_159_apple
+    predicate not declared in any schema: j.0:DirectObject
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_101_106_clean j.0:Copula http://nlp2rdf.lod2.eu/nif/offset_97_100_was
+    predicate not declared in any schema: j.0:Copula
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_25_30_apple j.0:det http://nlp2rdf.lod2.eu/nif/offset_21_24_The
+    predicate not declared in any schema: j.0:det
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_146_149_eat j.0:nsubj http://nlp2rdf.lod2.eu/nif/offset_137_140_boy
+    predicate not declared in any schema: j.0:nsubj
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_133_136_The sso:posTag "DT"
+    predicate not declared in any schema: sso:posTag
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_14_19_eaten j.0:auxpass http://nlp2rdf.lod2.eu/nif/offset_10_13_was
+    predicate not declared in any schema: j.0:auxpass
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_133_136_The sso:nextWord http://nlp2rdf.lod2.eu/nif/offset_137_140_boy
+    predicate not declared in any schema: sso:nextWord
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_101_106_clean j.0:cop http://nlp2rdf.lod2.eu/nif/offset_97_100_was
+    predicate not declared in any schema: j.0:cop
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_0_161_The+apple+was+eaten. string:sourceString "The apple was eaten.
+The apple has been eaten.
+The apple was eaten and cleaned.
+
+The eaten apple was clean.
+The apple ate the apple.
+The boy will eat the apple.
+"
+    predicate not declared in any schema: string:sourceString
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_133_160_The+boy+will+eat+the sso:word http://nlp2rdf.lod2.eu/nif/offset_154_159_apple
+    predicate not declared in any schema: sso:word
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_146_149_eat j.0:Auxiliary http://nlp2rdf.lod2.eu/nif/offset_141_145_will
+    predicate not declared in any schema: j.0:Auxiliary
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_146_149_eat j.0:dobj http://nlp2rdf.lod2.eu/nif/offset_154_159_apple
+    predicate not declared in any schema: j.0:dobj
+
+Jena generated prefix found: "j.4"
+    for namespace: "http://purl.org/olia/penn.owl#"
+
+Jena generated prefix found: "j.5"
+    for namespace: "http://purl.org/olia/olia-top.owl#"
+
+eye:multiplePrefixesForNamespace: "http://www.w3.org/2002/07/owl#"
+    on prefix: "ns0"
+    on prefix: "owl"
+
+Jena generated prefix found: "j.0"
+    for namespace: "http://purl.org/olia/stanford.owl#"
+
+Jena generated prefix found: "j.2"
+    for namespace: "http://purl.org/olia/system.owl#"
+
+Jena generated prefix found: "j.3"
+    for namespace: "http://purl.org/olia/olia.owl#"
+
+Jena generated prefix found: "j.1"
+    for namespace: "http://purl.org/olia/penn-syntax.owl#"
+
+eye:multiplePrefixesForNamespace: "http://nlp2rdf.lod2.eu/schema/string/"
+    on prefix: "str"
+    on prefix: "string"
+********************************
+./nlp2rdf/sample/data1.owl
+********************************
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_104_107_eat j.0:aux http://nlp2rdf.lod2.eu/nif/offset_99_103_will
+    predicate not declared in any schema: j.0:aux
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th sso:word http://nlp2rdf.lod2.eu/nif/offset_144_145_.
+    predicate not declared in any schema: sso:word
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th sso:firstWord http://nlp2rdf.lod2.eu/nif/offset_118_121_The
+    predicate not declared in any schema: sso:firstWord
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_104_107_eat j.0:dobj http://nlp2rdf.lod2.eu/nif/offset_112_116_cake
+    predicate not declared in any schema: j.0:dobj
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten sso:lemma "eat"
+    predicate not declared in any schema: sso:lemma
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th sso:lastWord http://nlp2rdf.lod2.eu/nif/offset_144_145_.
+    predicate not declared in any schema: sso:lastWord
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten sso:oliaLink j.4:VBN
+    predicate not declared in any schema: sso:oliaLink
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_0_146_The+apple+is+eaten.%0A string:sourceString "The apple is eaten.
+The apple has been eaten.
+The apple was eaten.
+
+The boy eats the cake.
+The boy will eat the cake.
+The boy has eaten the cake.
+"
+    predicate not declared in any schema: string:sourceString
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten sso:nextWord http://nlp2rdf.lod2.eu/nif/offset_18_19_.
+    predicate not declared in any schema: sso:nextWord
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten sso:child http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten
+    predicate not declared in any schema: sso:child
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten j.0:PassiveAuxiliary http://nlp2rdf.lod2.eu/nif/offset_10_12_is
+    predicate not declared in any schema: j.0:PassiveAuxiliary
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten sso:posTag "VBN"
+    predicate not declared in any schema: sso:posTag
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_104_107_eat j.0:Auxiliary http://nlp2rdf.lod2.eu/nif/offset_99_103_will
+    predicate not declared in any schema: j.0:Auxiliary
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten j.0:auxpass http://nlp2rdf.lod2.eu/nif/offset_10_12_is
+    predicate not declared in any schema: j.0:auxpass
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten j.0:nsubjpass http://nlp2rdf.lod2.eu/nif/offset_4_9_apple
+    predicate not declared in any schema: j.0:nsubjpass
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten j.0:PassiveNominalSubject http://nlp2rdf.lod2.eu/nif/offset_4_9_apple
+    predicate not declared in any schema: j.0:PassiveNominalSubject
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_104_107_eat j.0:NominalSubject http://nlp2rdf.lod2.eu/nif/offset_95_98_boy
+    predicate not declared in any schema: j.0:NominalSubject
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_104_107_eat j.0:DirectObject http://nlp2rdf.lod2.eu/nif/offset_112_116_cake
+    predicate not declared in any schema: j.0:DirectObject
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_50_55_apple j.0:det http://nlp2rdf.lod2.eu/nif/offset_46_49_The
+    predicate not declared in any schema: j.0:det
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_50_55_apple j.0:Determiner http://nlp2rdf.lod2.eu/nif/offset_46_49_The
+    predicate not declared in any schema: j.0:Determiner
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_104_107_eat j.0:nsubj http://nlp2rdf.lod2.eu/nif/offset_95_98_boy
+    predicate not declared in any schema: j.0:nsubj
+
+On statement:  http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten string:anchorOf "eaten"
+    predicate not declared in any schema: string:anchorOf
+
+eye:multiplePrefixesForNamespace: "http://www.w3.org/2002/07/owl#"
+    on prefix: "ns0"
+    on prefix: "owl"
+
+Jena generated prefix found: "j.4"
+    for namespace: "http://purl.org/olia/penn.owl#"
+
+Jena generated prefix found: "j.0"
+    for namespace: "http://purl.org/olia/stanford.owl#"
+
+Jena generated prefix found: "j.2"
+    for namespace: "http://purl.org/olia/system.owl#"
+
+Jena generated prefix found: "j.1"
+    for namespace: "http://purl.org/olia/penn-syntax.owl#"
+
+eye:multiplePrefixesForNamespace: "http://nlp2rdf.lod2.eu/schema/string/"
+    on prefix: "str"
+    on prefix: "string"
+
+Jena generated prefix found: "j.5"
+    for namespace: "http://purl.org/olia/olia-top.owl#"
+
+Jena generated prefix found: "j.3"
+    for namespace: "http://purl.org/olia/olia.owl#"
+********************************
+./trains/trains2.owl
+********************************
+
+On statement:  _:b1001 owl:members _:b1002
+    predicate not declared in any schema: owl:members
+
+On statement:  :east5 :hasCar :car_53
+    predicate not declared in any schema: :hasCar
+
+On statement:  :car_51 :hasShape :rectangle
+    predicate not declared in any schema: :hasShape
+
+On statement:  _:b1001 rdf:type owl:AllDisjointClasses
+    not from schema: "http://www.w3.org/2002/07/owl#"
+    on resource: owl:AllDisjointClasses
+
+On statement:  :car_51 :load :triangle
+    predicate not declared in any schema: :load
+
+On statement:  :car_51 :wheels :two
+    predicate not declared in any schema: :wheels
+
+On statement:  _:b1001 owl:members _:b1002
+    not from schema: "http://www.w3.org/2002/07/owl#"
+    on resource: owl:members
+
+On statement:  :car_51 :loadCount :one
+    predicate not declared in any schema: :loadCount
+
+On statement:  _:b1001 rdf:type owl:AllDisjointClasses
+    class not declared in any schema: owl:AllDisjointClasses
+
+eye:multiplePrefixesForNamespace: "http://example.com/trains#"
+    on prefix: ""
+    on prefix: "trains"
+********************************
+./trains/trains.owl
+********************************
+
+On statement:  foo:car_94 foo:load foo:circle
+    predicate not declared in any schema: foo:load
+
+On statement:  foo:car_94 foo:wheels foo:two
+    predicate not declared in any schema: foo:wheels
+
+On statement:  foo:west10 foo:has_car foo:car_102
+    predicate not declared in any schema: foo:has_car
+
+On statement:  foo:u_shaped rdf:type foo:shape
+    class not declared in any schema: foo:shape
+
+On statement:  foo:car_94 foo:hasShape foo:u_shaped
+    predicate not declared in any schema: foo:hasShape
+
+On statement:  foo:car_94 foo:load_count foo:one
+    predicate not declared in any schema: foo:load_count
+********************************
+./moral_reasoner/moral_43instances.owl
+********************************
+********************************
+./moral_reasoner/moral.owl
+********************************
+********************************
+./moral_reasoner/moral_43instances_complex.owl
+********************************
+********************************
+./yinyang_examples/basicFamily.owl
+********************************
+
+On statement:  :Anna :hasSibling :NonnoLuigi
+    predicate not declared in any schema: :hasSibling
+
+On statement:  :Dino :hasParent :NonnaLina
+    predicate not declared in any schema: :hasParent
+
+On statement:  :Gianni :hasChild :Rosanna
+    predicate not declared in any schema: :hasChild
+********************************
+./corpus5/lemon.owl
+********************************
+Exception in thread "main" com.hp.hpl.jena.rdf.model.ResourceRequiredException: "1"^^http://www.w3.org/2001/XMLSchema#nonNegativeInteger
+	at com.hp.hpl.jena.rdf.model.impl.ResourceImpl$1.wrap(ResourceImpl.java:29)
+	at com.hp.hpl.jena.enhanced.EnhNode.convertTo(EnhNode.java:142)
+	at com.hp.hpl.jena.enhanced.EnhNode.convertTo(EnhNode.java:22)
+	at com.hp.hpl.jena.enhanced.Polymorphic.asInternal(Polymorphic.java:54)
+	at com.hp.hpl.jena.enhanced.EnhNode.as(EnhNode.java:97)
+	at com.hp.hpl.jena.extras.tools.query.QueryVariable.resource(QueryVariable.java:70)
+	at com.hp.hpl.jena.eyeball.inspectors.ListInspector.findPotentialSuspecListTypes(ListInspector.java:156)
+	at com.hp.hpl.jena.eyeball.inspectors.ListInspector.findSuspecListTypes(ListInspector.java:124)
+	at com.hp.hpl.jena.eyeball.inspectors.ListInspector.inspectModel(ListInspector.java:83)
+	at com.hp.hpl.jena.eyeball.Inspector$InspectorSet.inspectModel(Inspector.java:130)
+	at com.hp.hpl.jena.eyeball.Eyeball.inspect(Eyeball.java:77)
+	at jena.eyeball.inspectAndReport(eyeball.java:318)
+	at jena.eyeball.checkOneModel(eyeball.java:308)
+	at jena.eyeball.run(eyeball.java:103)
+	at jena.eyeball.main(eyeball.java:43)
+	at jena.eyeball.main(eyeball.java:34)
+	at jena.eyeball.main(eyeball.java:31)
+********************************
+./corpus5/corpus.ttl
+********************************
+
+On statement:  :Sense_Equity lemon:reference fin:Equity
+    predicate not declared in any schema: lemon:reference
+
+On statement:  :LE_FixedAssets rdf:type lemon:LexicalEntry
+    class not declared in any schema: lemon:LexicalEntry
+
+On statement:  :lexicon rdf:type lemon:Lexicon
+    class not declared in any schema: lemon:Lexicon
+
+On statement:  :mv100m_sen3 fin:Amount "100"^^http://www.w3.org/2001/XMLSchema#double
+    predicate not declared in any schema: fin:Amount
+
+On statement:  :mv100m_sen3 rdf:type fin:MonetaryValue
+    class not declared in any schema: fin:MonetaryValue
+
+On statement:  :lexicon lemon:entry :LE_Equity
+    predicate not declared in any schema: lemon:entry
+
+On statement:  :sen3 :annotation :mv100m_sen3
+    predicate not declared in any schema: :annotation
+
+On statement:  :Sense_Equity rdf:type lemon:LexicalSense
+    class not declared in any schema: lemon:LexicalSense
+********************************
+./semantic_bible/NTNcombined.owl
+********************************
+
+On statement:  :ManassehThePatriarch :siblingOf :Gad
+    predicate not declared in any schema: :siblingOf
+
+On statement:  :GaiusOfMacedonia :visitedPlace :Ephesus
+    predicate not declared in any schema: :visitedPlace
+
+On statement:  :Barak :name_en "Barak"^^http://www.w3.org/2001/XMLSchema#string
+    predicate not declared in any schema: :name_en
+
+On statement:  :Derbe :location :DerbeGeodata
+    predicate not declared in any schema: :location
+
+On statement:  :JohnOfTheSanhedrin :memberOf :Sanhedrin
+    predicate not declared in any schema: :memberOf
+
+On statement:  :Paul :hasEnemy :Felix
+    predicate not declared in any schema: :hasEnemy
+
+On statement:  :TribeOfBenjamin :member :SaulSonOfKish
+    predicate not declared in any schema: :member
+
+On statement:  :Clement :religiousBelief :Christianity
+    predicate not declared in any schema: :religiousBelief
+
+On statement:  :Ananias :hasAntagonist :SimonPeter
+    predicate not declared in any schema: :hasAntagonist
+
+On statement:  :AmphipolisGeodata :locationOf :Amphipolis
+    predicate not declared in any schema: :locationOf
+
+On statement:  :Athens :residentPlaceOf :Damaris
+    predicate not declared in any schema: :residentPlaceOf
+
+On statement:  :Roman :ethnicityOf :Cornelius
+    predicate not declared in any schema: :ethnicityOf
+
+On statement:  :PaphosGeodata :altitude 0
+    predicate not declared in any schema: :altitude
+
+On statement:  :HerodAntipas :enemyOf :Jesus
+    predicate not declared in any schema: :enemyOf
+
+On statement:  :Gamaliel :nativePlace :Israel
+    predicate not declared in any schema: :nativePlace
+
+On statement:  :Samaria :subregion :Sychar
+    predicate not declared in any schema: :subregion
+
+On statement:  :Isaac :hasOnlyGenealogyMention "false"^^http://www.w3.org/2001/XMLSchema#boolean
+    predicate not declared in any schema: :hasOnlyGenealogyMention
+
+On statement:  :GaiusOfMacedonia :possiblySamePersonAs :GaiusOfDerbe
+    predicate not declared in any schema: :possiblySamePersonAs
+
+On statement:  :Andrew :relativeOf :SimonTheZealot
+    predicate not declared in any schema: :relativeOf
+
+On statement:  :Bethphage :subregionOf :Judea
+    predicate not declared in any schema: :subregionOf
+
+On statement:  :Balak :description "king of Moab who hired Balaam"^^http://www.w3.org/2001/XMLSchema#string
+    predicate not declared in any schema: :description
+
+On statement:  :PaphosGeodata :longitude "32.42822722601693"^^http://www.w3.org/2001/XMLSchema#double
+    predicate not declared in any schema: :longitude
+
+On statement:  :Diotrephes :antagonistOf :JohnSonOfZebedee
+    predicate not declared in any schema: :antagonistOf
+
+On statement:  :Blastus :knows :HerodAgrippaI
+    predicate not declared in any schema: :knows
+
+On statement:  :Clement :collaboratesWith :Syntyche
+    predicate not declared in any schema: :collaboratesWith
+
+On statement:  :Isaac :spouseOf :Rebecca
+    predicate not declared in any schema: :spouseOf
+
+On statement:  :Damaris :residentPlace :Athens
+    predicate not declared in any schema: :residentPlace
+
+On statement:  :Derbe :nativePlaceOf :GaiusOfDerbe
+    predicate not declared in any schema: :nativePlaceOf
+
+On statement:  :PaphosGeodata :latitude "34.77011113075128"^^http://www.w3.org/2001/XMLSchema#double
+    predicate not declared in any schema: :latitude
+
+On statement:  :Jerusalem :visitedPlaceOf :Mary
+    predicate not declared in any schema: :visitedPlaceOf
+
+On statement:  :ManassehThePatriarch :childOf :Jacob
+    predicate not declared in any schema: :childOf
+
+On statement:  :Balak :ethnicity :Moabite
+    predicate not declared in any schema: :ethnicity
+
+On statement:  :Isaac :parentOf :Esau
+    predicate not declared in any schema: :parentOf
+
+On statement:  :Balak :occupation "king"^^http://www.w3.org/2001/XMLSchema#string
+    predicate not declared in any schema: :occupation
+********************************
+./father.owl
+********************************
+
+On statement:  :martin :hasChild :heinz
+    predicate not declared in any schema: :hasChild
+********************************
+./forte/forte_family.owl
+********************************
+
+On statement:  a:nero a:sibling a:janet
+    predicate not declared in any schema: a:sibling
+
+On statement:  a:alice a:married a:art
+    predicate not declared in any schema: a:married
+
+On statement:  a:nero a:parent a:ray
+    predicate not declared in any schema: a:parent
+********************************
+./family/uncle.owl
+********************************
+
+On statement:  a:alfred a:hasSibling a:maria
+    predicate not declared in any schema: a:hasSibling
+
+On statement:  a:alfred a:married a:katrin
+    predicate not declared in any schema: a:married
+
+On statement:  a:alfred a:hasChild a:hans
+    predicate not declared in any schema: a:hasChild
+********************************
+./family/father_oe.owl
+********************************
+
+On statement:  :martin :hasChild :heinz
+    predicate not declared in any schema: :hasChild
+
+eye:multiplePrefixesForNamespace: "http://example.com/father#"
+    on prefix: ""
+    on prefix: "father"
+********************************
+./family/father.owl
+********************************
+
+On statement:  :martin :hasChild :heinz
+    predicate not declared in any schema: :hasChild
+********************************
+./datatypes/string.owl
+********************************
+
+On statement:  :nt5 :noType "test"
+    predicate not declared in any schema: :noType
+
+On statement:  :tl5 :typedLiteral "test"^^http://www.w3.org/2001/XMLSchema#string
+    predicate not declared in any schema: :typedLiteral
+
+eye:multiplePrefixesForNamespace: "http://my.example.com/string#"
+    on prefix: ""
+    on prefix: "string"
+********************************
+./datatypes/double.owl
+********************************
+
+On statement:  :susan :height "1.86"^^http://www.w3.org/2001/XMLSchema#double
+    predicate not declared in any schema: :height
+
+eye:multiplePrefixesForNamespace: "http://dl-learner.org/examples/double#"
+    on prefix: ""
+    on prefix: "double"
+********************************
+./sparql/jamendo.owl
+********************************
+ERROR [main] (RDFDefaultErrorHandler.java:44) - file:./sparql/jamendo.owl(line 1 column 1): Content is not allowed in prolog.
+Exception in thread "main" com.hp.hpl.jena.shared.JenaException: org.xml.sax.SAXParseException: Content is not allowed in prolog.
+	at com.hp.hpl.jena.rdf.model.impl.RDFDefaultErrorHandler.fatalError(RDFDefaultErrorHandler.java:45)
+	at com.hp.hpl.jena.rdf.arp.impl.ARPSaxErrorHandler.fatalError(ARPSaxErrorHandler.java:35)
+	at com.hp.hpl.jena.rdf.arp.impl.XMLHandler.warning(XMLHandler.java:225)
+	at com.hp.hpl.jena.rdf.arp.impl.XMLHandler.fatalError(XMLHandler.java:255)
+	at org.apache.xerces.util.ErrorHandlerWrapper.fatalError(Unknown Source)
+	at org.apache.xerces.impl.XMLErrorReporter.reportError(Unknown Source)
+	at org.apache.xerces.impl.XMLErrorReporter.reportError(Unknown Source)
+	at org.apache.xerces.impl.XMLScanner.reportFatalError(Unknown Source)
+	at org.apache.xerces.impl.XMLDocumentScannerImpl$PrologDispatcher.dispatch(Unknown Source)
+	at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanDocument(Unknown Source)
+	at org.apache.xerces.parsers.DTDConfiguration.parse(Unknown Source)
+	at org.apache.xerces.parsers.DTDConfiguration.parse(Unknown Source)
+	at org.apache.xerces.parsers.XMLParser.parse(Unknown Source)
+	at org.apache.xerces.parsers.AbstractSAXParser.parse(Unknown Source)
+	at com.hp.hpl.jena.rdf.arp.impl.RDFXMLParser.parse(RDFXMLParser.java:107)
+	at com.hp.hpl.jena.rdf.arp.JenaReader.read(JenaReader.java:158)
+	at com.hp.hpl.jena.rdf.arp.JenaReader.read(JenaReader.java:145)
+	at com.hp.hpl.jena.rdf.arp.JenaReader.read(JenaReader.java:215)
+	at com.hp.hpl.jena.rdf.model.impl.ModelCom.read(ModelCom.java:226)
+	at com.hp.hpl.jena.util.FileManager.readModelWorker(FileManager.java:394)
+	at com.hp.hpl.jena.util.FileManager.loadModelWorker(FileManager.java:299)
+	at com.hp.hpl.jena.util.FileManager.loadModel(FileManager.java:250)
+	at com.hp.hpl.jena.eyeball.loaders.FileLoader.load(FileLoader.java:39)
+	at com.hp.hpl.jena.eyeball.loaders.JDBCSensitiveLoader.load(JDBCSensitiveLoader.java:42)
+	at com.hp.hpl.jena.eyeball.loaders.OntLoader.ontLoad(OntLoader.java:56)
+	at jena.eyeball.checkOneModel(eyeball.java:304)
+	at jena.eyeball.run(eyeball.java:103)
+	at jena.eyeball.main(eyeball.java:43)
+	at jena.eyeball.main(eyeball.java:34)
+	at jena.eyeball.main(eyeball.java:31)
+Caused by: org.xml.sax.SAXParseException: Content is not allowed in prolog.
+	at org.apache.xerces.util.ErrorHandlerWrapper.createSAXParseException(Unknown Source)
+	... 26 more
+********************************
+./arch/arch.owl
+********************************
+
+On statement:  :p5 :touches :p6
+    predicate not declared in any schema: :touches
+
+On statement:  :p7 :leftof :p8
+    predicate not declared in any schema: :leftof
+
+On statement:  :p8 :supports :d
+    predicate not declared in any schema: :supports
+
+On statement:  :c1 :hasParallelpipe :a
+    predicate not declared in any schema: :hasParallelpipe
+
+On statement:  :c1 :hasPillar :p1
+    predicate not declared in any schema: :hasPillar
+
+eye:multiplePrefixesForNamespace: "http://localhost/foo#"
+    on prefix: ""
+    on prefix: "foo"
