@@ -1,8 +1,13 @@
 package org.dllearner.algorithm.tbsl.exploration.Sparql;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,6 +20,7 @@ import net.didion.jwnl.JWNLException;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.sparql.BasicQueryTemplate;
 import org.dllearner.algorithm.tbsl.sparql.Path;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Filter;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Term;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.Template;
@@ -27,18 +33,15 @@ public class SparqlObject {
 	//global Variable dict
 	
 	//start counting with 0
-	static int iteration_deept=1;
+	static int explorationdepthwordnet=1;
+	static int iterationdepth =0;
+	static int numberofanswers=1;
 	static WordNet wordnet;
 	BasicTemplator btemplator;
 	Templator templator;
 	HashMap<String, String> hm;
 	
-	/*Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(line);
-	            	for (BasicQueryTemplate temp : querytemps) {
-	            		System.out.println(temp.toString());
-	            	}
-	            	
-	            	*/
+
 	//Konstruktor
 	public SparqlObject(HashMap<String, String> hm_new) throws MalformedURLException{
 		wordnet = new WordNet();
@@ -47,9 +50,233 @@ public class SparqlObject {
     	btemplator = new BasicTemplator();
     	templator = new Templator();
     	System.out.println("Loading SPARQL Templator Done\n");
+    	setExplorationdepthwordnet(1);
+    	setIterationdepth(0);
+    	setNumberofanswers(1);
+	}
+	
+	/*
+	 * #####################################
+	 * Getter and Setter Methods
+	 */
+	
+	public int getExplorationdepthwordnet() {
+		return explorationdepthwordnet;
 	}
 
+
+	public void setExplorationdepthwordnet(int explorationdepthwordnet) {
+		SparqlObject.explorationdepthwordnet = explorationdepthwordnet;
+	}
+
+
+	public int getIterationdepth() {
+		return iterationdepth;
+	}
+
+
+	public void setIterationdepth(int iterationdepth) {
+		SparqlObject.iterationdepth = iterationdepth;
+	}
+
+
+	public int getNumberofanswers() {
+		return numberofanswers;
+	}
+
+
+	public void setNumberofanswers(int numberofanswers) {
+		SparqlObject.numberofanswers = numberofanswers;
+	}
 	
+
+	/*
+	 * ##############################
+	 *
+	 */
+	/*
+	 * "Main" Method of this Class.
+	 * 
+	 */
+	 public void create_Sparql_query(String question) throws JWNLException, IOException{
+		 	//create_Sparql_query_new(string);
+			
+		ArrayList<String> lstquery = new ArrayList<String>();
+		lstquery=getQuery(question);
+		
+		//if(!lstquery.isEmpty()){
+			//for each querry
+			for(String query : lstquery){
+				
+				/*
+				 * #################################################################################################
+				 */
+				//only testfunction to save the generated queries in the tmp-folder
+				if(getIterationdepth()==-1){
+				    String tmp = new String();
+				    String s = null;
+				    BufferedReader in = null;
+	
+				    // Lies Textzeilen aus der Datei in einen Vector:
+				    try {
+				      in = new BufferedReader(
+				                          new InputStreamReader(
+				                          new FileInputStream( "/tmp/testresult.txt" ) ) );
+				      while( null != (s = in.readLine()) ) {
+				        tmp=tmp+"\n"+s;
+				      }
+				    } catch( FileNotFoundException ex ) {
+				    } catch( Exception ex ) {
+				      System.out.println( ex );
+				    } finally {
+				      if( in != null )
+						try {
+							in.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				    }
+				    
+				    String out=null;
+				    if (query=="" || query==" ") query="Could not parse";
+				    out=tmp + "\n" + question + ":\n"+query+"\n";
+				    
+				    BufferedWriter outfile = new BufferedWriter(
+	                          new OutputStreamWriter(
+	                          new FileOutputStream( "/tmp/testresult.txt" ) ) );
+	    
+				    outfile.write(out);
+				    outfile.close();
+					
+				}
+		
+				/*
+				 * #################################################################################################
+				 */				
+				//Iteration 0
+				if(getIterationdepth()==0){
+				    String tmp = new String();
+				    String s = null;
+				    BufferedReader in = null;
+	
+				    // Lies Textzeilen aus der Datei in einen Vector:
+				    try {
+				      in = new BufferedReader(
+				                          new InputStreamReader(
+				                          new FileInputStream( "/tmp/answer.txt" ) ) );
+				      while( null != (s = in.readLine()) ) {
+				        tmp=tmp+"\n"+s;
+				      }
+				    } catch( FileNotFoundException ex ) {
+				    } catch( Exception ex ) {
+				      System.out.println( ex );
+				    } finally {
+				      if( in != null )
+						try {
+							in.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				    }					
+					String answer;
+					answer=sendServerQuestionRequest(query);
+					//System.out.println(query);
+					System.out.println("Antwort: " + answer);
+				    String out=tmp + "\n" + question + ":\n"+answer+"\n";
+				    
+				    BufferedWriter outfile = new BufferedWriter(
+	                          new OutputStreamWriter(
+	                          new FileOutputStream( "/tmp/answer.txt" ) ) );
+	    
+				    outfile.write(out);
+				    outfile.close();				    
+				}
+				/*
+				 * #################################################################################################
+				 */				
+				//Iterration 1
+				if(getIterationdepth()==1){
+					
+				}
+				/*
+				 * #################################################################################################
+				 */				
+				//Iterration 2
+				if(getIterationdepth()==2){
+					
+				}
+			}
+		}
+		 
+		 // string=string.replaceAll("?", "");
+			 //create_Sparql_query_old(string);
+			 
+		// }
+
+	 /**
+	* Method gets a String and takes the information from the templator to creat a Sparql query.
+	* @param question question in natural language
+	* @return ArrayList of Sparql queries.
+	*/
+	private ArrayList<String> getQuery(String question) {
+		ArrayList<String> lstquery = new ArrayList<String>();
+	    Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(question);
+	     	for (BasicQueryTemplate temp : querytemps) {
+	     		
+	     		/*System.out.println("temp.getQt();" + temp.getQt());
+	    		System.out.println("temp.getSelTerms();" + temp.getSelTerms());
+	    		System.out.println("temp.getVariablesAsStringList();" + temp.getVariablesAsStringList());
+	    		System.out.println("temp.getConditions();" + temp.getConditions());
+	    		System.out.println("temp.getSlots();" + temp.getSlots());*/
+	    		
+	     		String query;
+	     		String selTerms ="";
+	     		for(SPARQL_Term terms :temp.getSelTerms()) selTerms=selTerms+(terms.toString())+" ";
+	     		
+	     		String conditions = "";
+	     		for(Path condition: temp.getConditions()) conditions=conditions+(condition.toString())+".";
+	     		
+	     		String filters="";
+	     		for(SPARQL_Filter tmp : temp.getFilters()) filters=filters+tmp+" ";
+	     		//System.out.println("\n");
+	     		System.out.println("\n");
+	        	query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" { "+  conditions.replace("--","") + "}"+filters;
+	        	
+	        	String[] slots= null;
+	    		for(Slot slot : temp.getSlots()){
+	    			
+	    			//hier muss dann noch die abfrage aus der hm raus, also das direkt die uri eingebettet wird.
+	    			String tmp= slot.toString();
+	    			tmp= tmp.replace("UNSPEC","");
+	    			tmp= tmp.replace("RESOURCE","");
+	    			tmp= tmp.replace("{","");
+	    			tmp= tmp.replace("}","");
+	    			tmp=tmp.replace("  ","");
+	    			//System.out.println(tmp);
+	    			//damit auch wirklich nur ?y und nicht ?y0 ersetzt wird, einfach nach "?y " suchen.
+	    			String[] array = tmp.split(":");
+	    			String replace;
+	    			if(array[0].length()<2)replace = "?"+array[0]+" ";
+	    			else replace="?"+array[0];
+	    			//System.out.println("replace: " + replace);
+	    			//hier dann den hm wert von array[1] eintragen
+	    			query=query.replace(replace, "<"+hm.get(array[1].toLowerCase())+">");
+	    			
+	    		}
+	    		//System.out.println("Query: "+query);
+	    		lstquery.add(query);
+	    		
+	     	}
+	     	
+	     	return lstquery;
+		}
+	
+	 
+	 
+	 
+	 
 	private void doIteration(String string1, String string2) throws JWNLException{
 		 long startTime = System.currentTimeMillis();
 
@@ -70,13 +297,13 @@ public class SparqlObject {
 			e.printStackTrace();
 		}
 		 
-		 System.out.println("Start Iterating Wordnet with "+string1+" and deept of "+iteration_deept);
+		 System.out.println("Start Iterating Wordnet with "+string1+" and deept of "+explorationdepthwordnet);
 		 ArrayList<String> semantics=new ArrayList<String>();
 		 ArrayList<String> tmp_semantics=new ArrayList<String>();
 		 ArrayList<String> result_SemanticsMatchProperties=new ArrayList<String>();
 		 semantics.add(string1);
 		 tmp_semantics=semantics;
-		 for(int i=0;i<=iteration_deept;i++){
+		 for(int i=0;i<=explorationdepthwordnet;i++){
 
 			 try {
 				tmp_semantics=getSemantics(tmp_semantics);
@@ -119,141 +346,8 @@ public class SparqlObject {
 		System.out.println("Getting Properties, Semantics and Answer from server took "+(endTime2-startTime) +" ms");
 	}
 	
+
 	
-
-	private void create_Sparql_query_new(String string) throws JWNLException{
-		String[] array_new=new String[4];
-		array_new=getyy0AndQuery(string);
-		if(!array_new[0].contains("error")){
-			 String result=null;
-			 
-			 //Version 1
-			 result=sendServerQuestionRequest(array_new[0]);
-			 if(result!="noanswer"){
-				// System.out.println("Version1");
-				 System.out.println(result); 
-			 }
-			 else{
-				 doIteration(array_new[3],array_new[2]);
-			 }
-			 //Version2
-			/* else{
-				 result=sendServerQuestionRequest(array_new[1]);
-				 if(result!="noanswer"){
-					 System.out.println("Version2");
-					 System.out.println(result); 
-				 }
-			 }*/
-		}
-		
-	}
-	 public void create_Sparql_query(String string) throws JWNLException{
-		 	//create_Sparql_query_new(string);
-			
-     	Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(string.toLowerCase());
-     	for (BasicQueryTemplate temp : querytemps) {
-     		
-     		System.out.println("temp.getQt();" + temp.getQt());
-    		System.out.println("temp.getSelTerms();" + temp.getSelTerms());
-    		System.out.println("temp.getVariablesAsStringList();" + temp.getVariablesAsStringList());
-    		System.out.println("temp.getConditions();" + temp.getConditions());
-    		System.out.println("temp.getSlots();" + temp.getSlots());
-    		
-     		String query;
-     		SPARQL_Term selTerms = null;
-     		for(SPARQL_Term terms :temp.getSelTerms()) selTerms=terms;
-     		
-     		Path conditions = null;
-     		for(Path condition: temp.getConditions()) conditions=condition;
-     		
-     		
-     		
-     		//System.out.println("\n");
-     		System.out.println("\n");
-        	query=temp.getQt().toString()+" "+selTerms.toString()+" { "+  conditions.toString().replace("--","") + "} ";
-        	
-        	String[] slots= null;
-    		for(Slot slot : temp.getSlots()){
-    			
-    			//hier muss dann noch die abfrage aus der hm raus, also das direkt die uri eingebettet wird.
-    			String tmp= slot.toString();
-    			tmp= tmp.replace("UNSPEC","");
-    			tmp= tmp.replace("RESOURCE","");
-    			tmp= tmp.replace("{","");
-    			tmp= tmp.replace("}","");
-    			tmp=tmp.replace("  ","");
-    			//System.out.println(tmp);
-    			//damit auch wirklich nur ?y und nicht ?y0 ersetzt wird, einfach nach "?y " suchen.
-    			String[] array = tmp.split(":");
-    			String replace;
-    			if(array[0].length()<2)replace = "?"+array[0]+" ";
-    			else replace="?"+array[0];
-    			//System.out.println("replace: " + replace);
-    			//hier dann den hm wert von array[1] eintragen
-    			query=query.replace(replace, "<"+hm.get(array[1])+">");
-    			
-    		}
-    		System.out.println(query);
-     	}
-		 // string=string.replaceAll("?", "");
-			 //create_Sparql_query_old(string);
-			 
-		 }
-
-
-
-
-	private String[] getyy0AndQuery(String string) {
-		String teststring="";
-		String[] return_array = new String[4];
-		Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(string);
-		for (BasicQueryTemplate temp : querytemps) {
-			teststring=temp.toString();
-			System.out.println(teststring);
-		}
-		teststring=teststring.replace("\n", "");
-		String[] array_tmp=teststring.split("\\}");
-		
-		//only for y and y0
-		String sparqlquery="";
-		String y="";
-		String y0="";
-		for(String i : array_tmp){
-			i=i.replace("	", "");
-			String[] tmp=null;
-			if(i.contains("SELECT")) sparqlquery=i.concat("}");
-			if(i.contains("y0")){ 
-				y0=i;
-				tmp=y0.split("\\{");
-				y0=tmp[1];}
-			if(i.contains("y")&& !i.contains("y0")){
-				y=i;
-				tmp=y.split("\\{");
-				y=tmp[1];
-			}
-		}
-		String uri1=hm.get(y0);
-		String uri2=hm.get(y);
-		if(uri1!=null && uri2!=null){
-			uri1=uri1.replace("Category:", "");
-			uri1=uri1.replace("category:", "");
-			uri2=uri2.replace("Category:", "");
-			uri2=uri2.replace("category:", "");
-			String anfrage1;
-			anfrage1="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>select ?x  where { <"+uri1+"> <"+uri2+"> ?x.}";
-			String anfrage2;
-			anfrage2="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>select ?x  where { <"+uri2+"> <"+uri1+"> ?x.}";
-			return_array[0]=anfrage1;
-			return_array[1]=anfrage2;
-			return_array[2]=y0;
-			return_array[3]=y;
-		}
-		else{
-			return_array[0]="error";
-		}
-		return return_array;
-		
-	}
 	
 		private static ArrayList<String> getSemantics (ArrayList<String> semantics) throws IOException, JWNLException {
 			ArrayList<String> result = new ArrayList<String>();
@@ -294,12 +388,11 @@ public class SparqlObject {
 	        		counter=counter+1;}
 	      } while (str != null);
 	      
-	      if(result.isEmpty()) System.out.println("HALOSHSS");
-	      //TODO:if counter = 5 or less, there is an empty answer from the Server! Still to Verify!
-	      if(counter<=5){
+	     //TODO:if counter = 5 or less, there is an empty answer from the Server! Still to Verify!
+	     /* if(counter<=5){
 	    	  System.out.println("Empty Answer from Server");  
 	    	  return "noanswer";
-	      }
+	      }*/
 	    } catch (MalformedURLException e) {
 	      System.out.println("Must enter a valid URL");
 	    } catch (IOException e) {
@@ -324,6 +417,7 @@ public class SparqlObject {
 		string=string.replace("    ","");
 		string=string.replace("</td>","");
 		string=string.replace("<td>","");
+		string=string.replace("<th>callret-0</th>", "");
 		return string;
 
 	}
