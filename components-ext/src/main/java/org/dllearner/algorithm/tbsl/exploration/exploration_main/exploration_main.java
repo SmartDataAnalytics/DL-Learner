@@ -69,18 +69,52 @@ public class exploration_main {
 		System.out.println("Time for Initialising "+(stopInitTime-startInitTime)+" ms");
 		
 		boolean schleife=true;
+		boolean doing = true;
 		while(schleife==true){
 			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 			String line;
+			doing = true;
 			try {
 				System.out.println("\n\n");
 				System.out.println("Please enter a Question:");
 				line = in.readLine();
-				if(line.contains("quit")){
+				if(line.contains(":q")){
 					schleife=false;
 					System.out.println("Bye!");
+					System.exit(0);
 				}
-				if(line.contains("text")&& schleife==true){
+				if(line.contains(":setIterationdepth")){
+					String[] tmp=line.split(" ");
+					int i_zahl = new Integer(tmp[1]).intValue();
+					if(tmp.length>=2) sparql.setIterationdepth(i_zahl);
+					doing = false;
+				}
+				if(line.contains(":getIterationdepth")){
+					System.out.println(sparql.getIterationdepth());
+					doing = false;
+				}
+				if(line.contains(":setExplorationdepthwordnet")){
+					String[] tmp=line.split(" ");
+					int i_zahl = new Integer(tmp[1]).intValue();
+					if(tmp.length>=2) sparql.setExplorationdepthwordnet(i_zahl);
+					doing = false;
+				}
+				if(line.contains(":getExplorationdepthwordnet")){
+					System.out.println(sparql.getExplorationdepthwordnet());
+					doing = false;
+				}
+				if(line.contains(":setNumberofanswer")){
+					String[] tmp=line.split(" ");
+					int i_zahl = new Integer(tmp[1]).intValue();
+					if(tmp.length>=2) sparql.setNumberofanswers(i_zahl);
+					doing = false;
+				}
+				if(line.contains(":getNumberofanswer")){
+					System.out.println(sparql.getNumberofanswers());
+					doing = false;
+				}
+
+				if(line.contains(":textfile")&& schleife==true){
 					TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 
 
@@ -96,8 +130,7 @@ public class exploration_main {
 				    		System.out.println(s);
 				    		anzahl++;
 				    		//get each line and send it to the parser
-				    		s=s.replace("?","");
-				    		sparql.create_Sparql_query(s.toLowerCase());
+				    		sparql.create_Sparql_query(s);
 				    }
 				    long timeNow = System.currentTimeMillis();
 				    long diff = timeNow-startTime;
@@ -105,14 +138,9 @@ public class exploration_main {
 				    System.out.println("Time for "+anzahl+" questions = "+diff+" ms.");
 				     
 				}
-				else if(schleife==true){
+				else if(schleife==true && doing ==true){
 					long startTime = System.currentTimeMillis();
-					line=line.replace("?","");
-	            /*	Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(line);
-	            	for (BasicQueryTemplate temp : querytemps) {
-	            		System.out.println(temp.toString());
-	            	}*/
-					sparql.create_Sparql_query(line.toLowerCase());
+					sparql.create_Sparql_query(line);
 					long endTime= System.currentTimeMillis();
 					System.out.println("\n The complete answering of the Question took "+(endTime-startTime)+" ms");
 				}
