@@ -62,6 +62,11 @@ public class SolrQueryResultItem {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return uri + "(label: " + label + ", score: " + score + ")";
+	}
 
 
 }
