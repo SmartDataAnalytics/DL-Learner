@@ -56,6 +56,7 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.ibm.icu.util.Calendar;
 
 public class Evaluation{
 	
@@ -300,7 +301,7 @@ public class Evaluation{
 	
 	public void run(){
 		int topN2Print = 10;
-		
+		int correctAnswers = 0;
 		
 		int questionId = -1;
 		String question = "";
@@ -311,7 +312,7 @@ public class Evaluation{
 		String errorCode = "";
 		LatexWriter latex = new LatexWriter();
 		int i = 0;
-		for(Entry<Integer, String> entry : id2Question.entrySet()){if(entry.getKey()==50)continue;
+		for(Entry<Integer, String> entry : id2Question.entrySet()){//if(entry.getKey()==50)continue;
 			if(testID != -1 && entry.getKey() != testID)continue;
 			try {
 				questionId = entry.getKey();
@@ -454,6 +455,9 @@ public class Evaluation{
 					latex.addText(escapeAnswerString(learnedAnswer, targetAnswer));
 					precision = computePrecision(targetAnswer, learnedAnswer);
 					recall = computeRecall(targetAnswer, learnedAnswer);
+					if(precision == 1 && recall == 1){
+						correctAnswers++;
+					}
 				}
 				latex.addSummaryTableEntry(questionId, extractSentence(question), precision, recall, errorCode);
 				
@@ -468,7 +472,8 @@ public class Evaluation{
 				latex.addSummaryTableEntry(questionId, extractSentence(question), precision, recall, errorCode);
 			}
 		}
-		latex.write("log/evaluation.tex");
+		
+		latex.write("log/evaluation_" + System.currentTimeMillis()+  ".tex", Calendar.getInstance().getTime().toString(), correctAnswers);
 	}
 	
 	public static List<String> extractEntities(String query){
@@ -667,7 +672,7 @@ public class Evaluation{
 			}
 		}
 		latex.endDocument();
-		latex.write("log/evaluation" + new Date().getHours() + "_" + new Date().getMinutes() + ".tex");
+		latex.write("log/evaluation_" + System.nanoTime() + ".tex", Calendar.getInstance().getTime().toString(), 0);
 	}
 
 	private String escapeAnswerString(Object learnedAnswer, Object targetAnswer){
