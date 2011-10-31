@@ -86,7 +86,7 @@
 	the least || (DET DET:'the' DET:'least') || <y, l1, e, [ l1:[ | l2:[ y | ] THELEAST y l3:[|] ] ], [], [],[]>
 
     // CHEAT!
-	highest || (NP ADJ:'highest' NP*) || <x, l1, e, [ l1:[ | maximum(a,x,x) ] ], [], [],[]> ;; <x, l1, e, [ l1:[ | SLOT_high(x), maximum(a,x,x) ] ],[],[],[ SLOT_high/PROPERTY/height^elevation ]>
+	highest || (NP ADJ:'highest' NP*) || <x, l1, e, [ l1:[ | maximum(a,x,x) ] ], [], [],[]> ;; <x, l1, e, [ l1:[ j | SLOT_high(x,j), maximum(a,j,j) ] ],[],[],[ SLOT_high/PROPERTY/height^elevation ]>
 
 	// COUNT
 	more than || (DP DET:'more' DET:'than' NUM[num] NP[np]) || <y,l1,<<e,t>,t>,[ l1:[ y,c | count(y,c), greater(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]> ;; <y,l1,<<e,t>,t>,[ l1:[ y | greater(y,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
@@ -158,7 +158,7 @@
 	there || (DP (NP EX:'there')) || <x,l1,<<e,t>,t>,[l1:[|]],[],[],[]>
 
 
-// ORDINAL NUMBERS (1-10)
+// NUMBERS (1-10)
 // ---------------------
 	
 	one   || (NP NUM:'one' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,1)]],[],[],[]>

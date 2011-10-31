@@ -227,18 +227,22 @@ public class Preprocessor {
 		m = nnpPattern.matcher(flat);
 		while (m.find()) {
 			flat = flat.replaceFirst(m.group(1),m.group(2) + "_" + m.group(3));
+			m = nnpPattern.matcher(flat);
 		}
 		m = nnpPattern.matcher(flat);
 		while (m.find()) {
 			flat = flat.replaceFirst(m.group(1),m.group(2) + "_" + m.group(3));
+			m = nnpPattern.matcher(flat);
 		}
 		m = nnPattern.matcher(flat);
 		while (m.find()) {
 			flat = flat.replaceFirst(m.group(1),m.group(2) + "_" + m.group(3));
+			m = nnPattern.matcher(flat);
 		}
 		m = nnnnpPattern.matcher(flat);
 		while (m.find()) {
 			flat = flat.replaceFirst(m.group(1),m.group(2) + "/JJ");
+			m = nnnnpPattern.matcher(flat);
 		}
 		
 		return flat;
