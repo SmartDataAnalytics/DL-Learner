@@ -63,7 +63,9 @@ public class Preprocessor {
 		
 		Pattern compAdjPattern    = Pattern.compile("(\\w+/RBR.(\\w+)/JJ)");
 //		Pattern superAdjPattern   = Pattern.compile("(\\w+/RBS.(\\w+)/JJ)"); // TODO "(the most) official languages" vs "the (most official) languages"
+		Pattern howManyPattern    = Pattern.compile("(how/WRB.many/JJ)"); 
 		Pattern howAdjPattern     = Pattern.compile("(\\w+/WRB.(\\w+)(?<!many)/JJ)"); 
+		Pattern thesameasPattern  = Pattern.compile("(the/DT.same/JJ.(\\w+)/NN.as/IN)");
 		Pattern nprepPattern      = Pattern.compile("\\s((\\w+)/NNS?.of/IN)");
 		Pattern didPattern        = Pattern.compile("(?i)(\\s((did)|(do)|(does))/VB.?)\\s"); 
 		Pattern prepfrontPattern  = Pattern.compile("(\\A\\w+/((TO)|(IN)).)\\w+/WDT"); // TODO (Nicht ganz sauber. Bei P-Stranding immer zwei Querys, hier nur eine.)
@@ -95,10 +97,20 @@ public class Preprocessor {
 //			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJS");
 //			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJS");
 //		}
+		m = howManyPattern.matcher(condensedstring); 
+		while (m.find()) {
+			logger.trace("Replacing " + m.group(1) + " by how/WLEX many/WLEX");
+			condensedstring = condensedstring.replaceFirst(m.group(1),"how/WLEX many/WLEX");
+		}
 		m = howAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
 			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJH");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJH");
+		}
+		m = thesameasPattern.matcher(condensedstring); 
+		while (m.find()) {
+			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/NNSAME");
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/NNSAME");
 		}
 		m = nprepPattern.matcher(condensedstring);
 		while (m.find()) {
