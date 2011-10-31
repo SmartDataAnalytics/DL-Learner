@@ -60,7 +60,7 @@
 <string>What/WP is/VBZ the/DT revenue/NN of/IN IBM/NNP</string>
 </question>
 <question id="38">
-<string>Which/WDT states/VBZ border/VBZ Utah/NNP</string>
+<string>Which/WDT states/NNS border/VBZ Utah/NNP</string>
 </question>
 <question id="13">
 <string>In/IN which/WDT country/NN is/VBZ the/DT Limerick/NNP Lake/NNP</string>

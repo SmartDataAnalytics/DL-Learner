@@ -10,7 +10,7 @@ import org.dllearner.algorithm.tbsl.sem.util.Pair;
 
 public class SlotBuilder {
 	
-	private String[] noun = {"NN","NNS","NNP","NNPS","NPREP","JJNN","JJNPREP"};
+	private String[] noun = {"NN","NNS","NNP","NNPS","NPREP","JJNN","JJNPREP","NNSAME"};
 	private String[] adjective = {"JJ","JJR","JJS","JJH"};
 	private String[] verb = {"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN","GERUNDIN","VPREP","WHEN","WHERE"};
 	private String[] preps = {"IN","TO"};
@@ -43,7 +43,7 @@ public class SlotBuilder {
 				else if (pos.equals("NNP") || pos.equals("NNPS")) {
 					type = "RESOURCE";
 				}
-				else if (pos.equals("NPREP")) {
+				else if (pos.equals("NPREP") || pos.equals("NNSAME")) {
 					type = "PROPERTY";
 				}
 				
@@ -168,6 +168,13 @@ public class SlotBuilder {
 //							"<x,l1,<e,t>,[ l1:[ | SLOT_" + nntoken + "(x), SLOT_" + jjtoken + "(x) ] ],[],[],[" + slotnn + "," + slotjj + "]>"};
 					result.add(npEntry);
 				}
+				else if (pos.equals("NNSAME")) {
+					String slot = "SLOT_" + token + "/" + type + "/" + token;
+					String[] nnentry = {token,
+						"(DP N:'" + token.toLowerCase() + "' DP[dp])",
+						"<x,l1,<<e,t>,t>, [ l1:[ z | SLOT_"+token+"(x,z), SLOT_"+token+"(y,z) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],["+slot+"]>" };
+					result.add(nnentry);
+				}
 						
 			}
 			/* VERBS */
@@ -189,40 +196,28 @@ public class SlotBuilder {
 				if (pos.equals("PASSIVE")) {
 					String[] passEntry1 = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
-							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>"};
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>" +
+									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
 					String[] passEntry2 = {token,
 							"(S DP[wh] (VP DP[dp] V:'" + token + "'))",
-							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,wh,<<e,t>,t>),(l3,y,dp,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>"};
-					String[] passEntry1empty = {token,
-							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
-							"<x,l1,t,[ l1:[|], l4:[ | empty(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
-					String[] passEntry2empty = {token,
-							"(S DP[wh] (VP DP[dp] V:'" + token + "'))",
-							"<x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,wh,<<e,t>,t>),(l3,y,dp,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,wh,<<e,t>,t>),(l3,y,dp,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>" +
+									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,wh,<<e,t>,t>),(l3,y,dp,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
 					result.add(passEntry1);
 					result.add(passEntry2);
-					result.add(passEntry1empty);
-					result.add(passEntry2empty);
 				}
 				else if (pos.equals("PASSPART")) {
 					String[] passpartEntry = {token,
 							"(NP NP* (VP V:'" + token + "' DP[dp]))",
-							"<x,l1,t,[ l1:[ | SLOT_" + token + "(y,x) ] ],[(l2,y,dp,<<e,t>,t>)],[ l2=l1 ],[]>"};
-					String[] passpartEntryEmpty = {token,
-							"(NP NP* (VP V:'" + token + "' DP[dp]))",
-							"<x,l1,t,[ l1:[ | empty(y,x) ] ],[(l2,y,dp,<<e,t>,t>)],[ l2=l1 ],[]>"};
+							"<x,l1,t,[ l1:[ | SLOT_" + token + "(y,x) ] ],[(l2,y,dp,<<e,t>,t>)],[ l2=l1 ],[" + symslot + "]>" +
+									" ;; <x,l1,t,[ l1:[ | empty(y,x) ] ],[(l2,y,dp,<<e,t>,t>)],[ l2=l1 ],[]>"};
 					result.add(passpartEntry);
-					result.add(passpartEntryEmpty);
 				}
 				else if (pos.equals("VPASS")) {
 					String[] passEntry = {token,
 							"(S DP[subj] (VP V:'" + token + "'))",
-							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>"};
-					String[] passEntryEmpty = {token,
-							"(S DP[subj] (VP V:'" + token + "'))",
-							"<x,l1,t,[ l1:[|], l4:[ | empty(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>" +
+									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
 					result.add(passEntry);
-					result.add(passEntryEmpty);
 				}
 				else if (pos.equals("VPASSIN")) {
 					String[] passEntry1 = {token,
@@ -237,68 +232,51 @@ public class SlotBuilder {
 				else if (pos.equals("GERUNDIN")) {
 					String[] gerundinEntry1 = {token,
 							"(NP NP* V:'" + token + "' DP[obj]))",
-							"<x,l1,t,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,obj,<<e,t>,t>)],[ l2=l1 ],[" + symslot + "]>"};
+							"<x,l1,t,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,obj,<<e,t>,t>)],[ l2=l1 ],[" + symslot + "]>" +
+									" ;; <x,l1,t,[ l1:[ | empty(x,y) ] ],[(l2,y,obj,<<e,t>,t>)],[ l2=l1 ],[]>"};
 					String[] gerundinEntry2 = {token,
 							"(ADJ V:'" + token + "' DP[obj]))",
-							"<x,l1,<e,t>,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,obj,<<e,t>,t>)],[ l2=l1 ],[" + symslot + "]>"};
-					String[] gerundinEntry1Empty = {token,
-							"(NP NP* V:'" + token + "' DP[obj]))",
-							"<x,l1,t,[ l1:[ | empty(x,y) ] ],[(l2,y,obj,<<e,t>,t>)],[ l2=l1 ],[]>"};
-					String[] gerundinEntry2Empty = {token,
-							"(ADJ V:'" + token + "' DP[obj]))",
-							"<x,l1,<e,t>,[ l1:[ | empty(x,y) ] ],[(l2,y,obj,<<e,t>,t>)],[ l2=l1 ],[]>"};
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,obj,<<e,t>,t>)],[ l2=l1 ],[" + symslot + "]>" +
+									" ;; <x,l1,<e,t>,[ l1:[ | empty(x,y) ] ],[(l2,y,obj,<<e,t>,t>)],[ l2=l1 ],[]>"};
 					result.add(gerundinEntry1);
 					result.add(gerundinEntry2);
-					result.add(gerundinEntry1Empty);
-					result.add(gerundinEntry2Empty);
 				}
 				else if (pos.equals("VPREP")) {
 					String[] passEntry = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
-							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>"};
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>" +
+									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
 					String[] whEntry = {token,
 							"(S DP[obj] (VP DP[subj] V:'" + token + "'))",
-							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>"};
-					String[] passEntryEmpty = {token,
-							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
-							"<x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
-					String[] whEntryEmpty = {token,
-							"(S DP[obj] (VP DP[subj] V:'" + token + "'))",
-							"<x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>" +
+									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
 					result.add(passEntry);
 					result.add(whEntry);
-					result.add(passEntryEmpty);
-					result.add(whEntryEmpty);
 				}
 				else if (pos.equals("VBD") || pos.equals("VBZ") || pos.equals("VBP")) {
 					String[] vEntry = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
-							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>"};
-					String[] vEntryEmpty = {token,
-							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
-							"<x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>" +
+									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
 					result.add(vEntry);
-					result.add(vEntryEmpty);
 				} 
 				else if (pos.equals("VB")) {
 					String[] whEntry = {token,
 							"(S DP[obj] (VP DP[subj] V:'" + token + "'))",
-							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>"};
-					String[] whEntryEmpty = {token,
-							"(S DP[obj] (VP DP[subj] V:'" + token + "'))",
-							"<x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>" +
+									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
 					result.add(whEntry);
-					result.add(whEntryEmpty);
 				} 
 				else if (pos.equals("VBG") || pos.equals("VBN")) {
 					String[] gerEntry = {token,
 							"(NP NP* (VP V:'" + token + "' DP[dp]))",
-							"<x,l1,t,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,dp,<<e,t>,t>)],[ l2=l1 ],[" + symslot + "]>"};
-					String[] gerEntryEmpty = {token,
-							"(NP NP* (VP V:'" + token + "' DP[dp]))",
-							"<x,l1,t,[ l1:[ | empty(x,y) ] ],[(l2,y,dp,<<e,t>,t>)],[ l2=l1 ],[]>"};
+							"<x,l1,t,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,dp,<<e,t>,t>)],[ l2=l1 ],[" + symslot + "]>" +
+									" ;; <x,l1,t,[ l1:[ | empty(x,y) ] ],[(l2,y,dp,<<e,t>,t>)],[ l2=l1 ],[]>"}; 
+					String[] wasGerEntry = {token,
+							"(S DP[comp] (VP V:'was' DP[subject] V:'" + token + "'))",
+							"<y,l1,t,[ l1:[ | SLOT_" + token + "(y,z) ] ],[(l2,y,comp,<<e,t>,t>), (l3,z,subject,<<e,t>,t>) ],[ l2=l1, l3=l1 ],[" + symslot + "]>"}; 
 					result.add(gerEntry);
-					result.add(gerEntryEmpty);
+					result.add(wasGerEntry);
 				}
 				else if (pos.equals("WHEN")) {
 					String dateSlot = "SLOT_" + token + "/PROPERTY/" + token + "Date";
@@ -347,8 +325,8 @@ public class SlotBuilder {
 					result.add(adjEntry);
 				}
 				if (pos.equals("JJH")) {
-					String[] howEntry = {"how "+token,
-							"(DP WH:'how' ADJ:'" + token.toLowerCase() + "')",
+					String[] howEntry = {token,
+							"(DP WH:'" + token.toLowerCase() + "')",
 							"<x,l1,<<e,t>,t>,[ l1:[ ?j,x | SLOT_" + token + "(x,j) ] ],[],[],["+slot+"]>"};
 					result.add(howEntry);
 				}
@@ -393,15 +371,17 @@ public class SlotBuilder {
 			}
 			/* PREPOSITIONS */
 			else if (equalsOneOf(pos,preps)) {
-				String slot = "SLOT_" + token + "/SYMPROPERTY/";
+				String slot = "SLOT_" + token + "/SYMPROPERTY/" + token;
 				String[] npAdjunct = {token,
 						"(NP NP* (PP P:'" + token.toLowerCase() + "' DP[pobj]))",
-						"<x,l1,<e,t>,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],["+slot+"]>"};
-				String[] npAdjunctEmpty = {token,
-						"(NP NP* (PP P:'" + token.toLowerCase() + "' DP[pobj]))",
-						"<x,l1,<e,t>,[ l1:[ | empty(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[]>"};
+						"<x,l1,<e,t>,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],["+slot+"]>" +
+								" ;; <x,l1,<e,t>,[ l1:[ | empty(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[]>"};
+				String[] vpAdjunct = {token,
+						"(VP VP* (PP P:'" + token.toLowerCase() + "' DP[pobj]))",
+						"<x,l1,t,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],["+slot+"]>" +
+								" ;; <x,l1,t,[ l1:[ | empty(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[]>"};
 				result.add(npAdjunct);
-				result.add(npAdjunctEmpty);
+				result.add(vpAdjunct);
 			}
 		}
 		

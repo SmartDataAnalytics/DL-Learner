@@ -29,7 +29,7 @@ class Scanner implements ParserOperation {
 				word_i = "";
 			}
 
-			if (t.getTerminal().equalsIgnoreCase(word_i)) {
+			if (t.getTerminal().equalsIgnoreCase(word_i) || t.getTerminal().matches(word_i + "\\d")) { // second disjunct: DISAM case
 
 				state.side = 'r';
 				state.pos = 'a';
