@@ -246,11 +246,15 @@ public class SlotBuilder {
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
 							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>" +
 									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
+					String[] passEntry2 = {token,
+							"(S DP[subj] (VP V:'" + token + "' NUM[num]))",
+							"<x,l1,t,[ l1:[|], l4:[ y | SLOT_" + token + "(x,y), DATE(y,z) ] ],[(l2,x,subj,<<e,t>,t>),(l3,z,num,e)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>"};
 					String[] whEntry = {token,
 							"(S DP[obj] (VP DP[subj] V:'" + token + "'))",
 							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + symslot + "]>" +
 									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
 					result.add(passEntry);
+					result.add(passEntry2);
 					result.add(whEntry);
 				}
 				else if (pos.equals("VBD") || pos.equals("VBZ") || pos.equals("VBP")) {
@@ -279,7 +283,7 @@ public class SlotBuilder {
 					result.add(wasGerEntry);
 				}
 				else if (pos.equals("WHEN")) {
-					String dateSlot = "SLOT_" + token + "/PROPERTY/" + token + "Date";
+					String dateSlot = "SLOT_" + token + "/PROPERTY/" + token +"^" + token + "_date";
 					String tokenSlot = "SLOT_" + token + "/PROPERTY/" + token;
 					String[] whenEntry1 = {token,
 							"(S DP[subj] (VP V:'" + token + "'))",
@@ -292,7 +296,7 @@ public class SlotBuilder {
 					result.add(whenEntry2);
 				}
 				else if (pos.equals("WHERE")) {
-					String placeSlot = "SLOT_" + token + "/PROPERTY/" + token + "Place";
+					String placeSlot = "SLOT_" + token + "/PROPERTY/" + token + "^" + token + "_place";
 					String tokenSlot = "SLOT_" + token + "/PROPERTY/" + token;
 					String[] whereEntry1 = {token,
 							"(S DP[subj] (VP V:'" + token + "'))",

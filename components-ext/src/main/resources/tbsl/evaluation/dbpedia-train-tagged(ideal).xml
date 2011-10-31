@@ -1958,7 +1958,7 @@ George H. W. Bush
 </answers>
 </question>
 <question id="10">
-<string>Who/WP was/VBD the/DT wife/NN of/IN President/NNP Lincoln/NNP</string>
+<string>Who/WP was/VBD the/DT wife/NN of/IN president/NN Lincoln/NNP</string>
 <query>
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
@@ -1985,7 +1985,7 @@ Mary Todd Lincoln
 </answers>
 </question>
 <question id="9">
-<string>Who/WP developed/VBD the/DT video/NN game/NN World/NN of/IN Warcraft/NNP</string>
+<string>Who/WP developed/VBD the/DT video/NN game/NN World/NNP of/NNP Warcraft/NNP</string>
 <query>
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
@@ -25473,7 +25473,7 @@ Suriname
 </answers>
 </question>
 <question id="17">
-<string>In/IN which/WDT programming/NN language/NN is/VBZ GIMP/RB written/VBN</string>
+<string>In/IN which/WDT programming/NN language/NN is/VBZ GIMP/NNP written/VBN</string>
 <query>
 PREFIX prop: &lt;http://dbpedia.org/property/&gt;
 PREFIX res: &lt;http://dbpedia.org/resource/&gt;
