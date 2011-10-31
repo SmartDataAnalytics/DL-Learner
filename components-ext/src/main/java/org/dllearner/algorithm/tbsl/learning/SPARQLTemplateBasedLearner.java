@@ -150,7 +150,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		
 		String propertiesIndexUrl = options.fetch("solr.properties.url");
 		String propertiesIndexSearchField = options.fetch("solr.properties.searchfield");
-		SolrSearch labelBasedPropertyIndex = new SolrSearch(propertiesIndexUrl, propertiesIndexSearchField, "label");
+		SolrSearch labelBasedPropertyIndex = new ThresholdSlidingSolrSearch(propertiesIndexUrl, propertiesIndexSearchField, "label", 1.0, 0.1);
 		
 		String boaPatternIndexUrl = options.fetch("solr.boa.properties.url");
 		String boaPatternIndexSearchField = options.fetch("solr.boa.properties.searchfield");
@@ -536,13 +536,15 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			}
 		
 			tmp.addAll(rs.getItems());
-			int i = 0;
+			
 			for(SolrQueryResultItem item : tmp){
-				sortedURIs.add(item.getUri());
-				if(i == MAX_URIS_PER_SLOT){
+				if(!sortedURIs.contains(item.getUri())){
+					sortedURIs.add(item.getUri());
+				}
+				if(sortedURIs.size() == MAX_URIS_PER_SLOT){
 					break;
 				}
-				i++;
+				
 			}
 			tmp.clear();
 
@@ -787,7 +789,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Is Natalie Portman an actress?";
+		String question = "Who developed the video game World of Warcraft?";
 		
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
