@@ -124,10 +124,12 @@ public class LatexWriter {
 		
 	}
 	
-	public void write(String file){
+	public void write(String file, String time, int correctAnswers){
 		endSummaryTable();
 		StringBuilder latex = new StringBuilder();
 		latex.append(loadPraeambel());
+		latex.append("\\subtitle{" + time + "}\n");
+		latex.append("\\author{Correct answers:" + correctAnswers + "}\n");
 		latex.append("\\begin{document}");
 		latex.append("\\maketitle\n");
 		latex.append("\\newpage\n");
