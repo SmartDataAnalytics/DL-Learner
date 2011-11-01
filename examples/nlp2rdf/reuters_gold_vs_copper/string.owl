@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sso="http://nlp2rdf.lod2.eu/schema/sso/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns="http://nlp2rdf.lod2.eu/schema/string/">
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/">
+    <rdfs:label>String Ontology</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/">
+    <rdfs:comment>The String Ontology is a vocabluary to describe Strings and builds the foundation for the NLP Interchange Format http://nlp2rdf.org/NIF-1.0 . It has a class :String and a property :anchorOf to anchor URIs in a given text and describe the relations between these String URIs.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid1">
+    <owl:onProperty rdf:resource="http://nlp2rdf.lod2.eu/schema/string/subString"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid1">
+    <owl:hasSelf rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</owl:hasSelf>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/String">
+    <rdfs:label>String</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/String">
+    <rdfs:comment>A string is a set of characters. It basically can be anything: a whole text, a sentence, a phrase, several words or parts of words. Axiom subStringTrans some Self was not supported by reasoner. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/String">
+    <owl:equivalentClass rdf:nodeID="genid1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/String">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/anchorOf">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/anchorOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/anchorOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/anchorOf">
+    <rdfs:comment>The string, which the uri is representing as an RDF Literal. This property is mandatory for every String.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/subString">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/subString">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/subString">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/subString">
+    <owl:inverseOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/superString"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/subString">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/subStringTrans"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/subStringTrans">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/subStringTrans">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/subStringTrans">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/subStringTrans">
+    <owl:inverseOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/superStringTrans"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/superString">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/superString">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/superString">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/superString">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/superStringTrans"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/superStringTrans">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/superStringTrans">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/superStringTrans">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/leftContext">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/leftContext">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/leftContext">
+    <rdfs:comment>The left context of the string. The length of the context is undefined. To fix the length subProperties can be used: e.g. :leftContext20 rdfs:subPropertyOf :leftContext gives the 20 characters to the left of the string. Using this property can increase the size of the produced RDF immensely. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/rightContext">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/rightContext">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/rightContext">
+    <rdfs:comment>The right context of the string. The length of the context is undefined. To fix the length subProperties can be used: e.g. :rightContext20 rdfs:subPropertyOf :rightContext gives the 20 characters to the right of the string. Using this property can increase the size of the produced RDF immensely. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/beginIndex">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/beginIndex">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/beginIndex">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/beginIndex">
+    <rdfs:comment>The index of the first character of the String relative to the document. This should be identical with the first number used in the offset URI recipe. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/endIndex">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/endIndex">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/endIndex">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/endIndex">
+    <rdfs:comment>The index of last character of the String relative to the document. This should be identical with the second number used in the offset URI recipe. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/Document">
+    <rdfs:comment>A document is a string that can be considered a closed unit content-wise. In NIF a document is given an URL that references the String of the document. Furthermore a document can have several sources. It can be a string, a HTML document, a PDF document, text file or any other arbitrary string. The uri denoting the actual document should be able to reproduce that document, i.e. either the string is directly included via the property sourceString or an url can be given that contains the string via the property sourceUrl. Depending on the feedback, this might also become the Graph URI or a subclass of owl:Ontology </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/Document">
+    <rdfs:subClassOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/Document">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/sourceUrl">
+    <rdfs:comment>The source url, which makes up the document. Annotators should ensure that the source text can be downloaded from the url and stays stable otherwise :sourceString should be used.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/sourceUrl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/sourceUrl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/sourceUrl">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/Document"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/sourceString">
+    <rdfs:comment>The source string, which makes up the document. Used to reproduce the original text. Takes priority over :sourceUrl . Not to be confused with :anchorOf</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/sourceString">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/sourceString">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/anchorOf"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/sourceString">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/sourceString">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/string/Document"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/ContextHashBasedString">
+    <rdfs:comment>The URI of this String was created with the URI Recipe Context-Hash, see http://aksw.org/Projects/NIF#context-hash-nif-uri-recipe.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/ContextHashBasedString">
+    <rdfs:subClassOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/ContextHashBasedString">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString">
+    <rdfs:comment>The URI of this String was created with the URI Recipe Context-Hash, see http://aksw.org/Projects/NIF#offset-nif-uri-recipe</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString">
+    <rdfs:subClassOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+</rdf:RDF>

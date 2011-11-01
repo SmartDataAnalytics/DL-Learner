@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sso="http://nlp2rdf.lod2.eu/schema/sso/" xmlns:str="http://nlp2rdf.lod2.eu/schema/string/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/">
+    <rdfs:label>Structured Sentence Ontology</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/">
+    <rdfs:comment>The Structured Sentence Ontology (SSO) is build upon the String Ontology and additionally provides classes for three basic units: Sentences, Phrases and Words. Properties such as nextWord and previousWord can be used to express the relations between these units. Furthermore several properties are provided for the most common annotations. 1. in the form of simple annotations for words, i.e. stem, lemma, statistics, which are all datatype properties. 2. In the form of properties, that link to other ontologies (olia, scms) </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/">
+    <owl:imports rdf:resource="http://nlp2rdf.lod2.eu/schema/string/"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Sentence">
+    <rdfs:label>Sentence</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Sentence">
+    <rdfs:comment>A string that can be considered a sentence. Sentences with only one word are typed as Word and Sentence and have no disjointness.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Sentence">
+    <rdfs:subClassOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Word">
+    <rdfs:label>Word</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Word">
+    <rdfs:comment>A string that can be considered a word or a punctuation mark, the sentence 'He enters the room.' for example  has 5 words. In general, the division into :Words is done by an NLP Tokenizer. Instances of this class should be a string, that is a 'meaningful' unit of characters. The class has not been named 'Token' as the NLP definition of 'Token' is more similar to our definition of :String .   </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Word">
+    <rdfs:subClassOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Word">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Phrase">
+    <rdfs:label>Phrase</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Phrase">
+    <rdfs:comment>A string that can be considered a phrase consists of at least 2 strings that are words. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Phrase">
+    <rdfs:subClassOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/String"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/Phrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/sentence">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/superString"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/sentence">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/sentence">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/word">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/word">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/subString"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/word">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/word">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/word">
+    <owl:inverseOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/firstWord">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/firstWord">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/firstWord">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/firstWord">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/firstWord">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/lastWord">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/lastWord">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/lastWord">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/lastWord">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/lastWord">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/child">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/subString"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/child">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/child">
+    <owl:inverseOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/parent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/child">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/parent">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/string/superString"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/parent">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Phrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/parent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWord">
+    <rdfs:comment>This property (and the others) can be used to traverse words, it can not be assumed that no gaps between words exist, i.e. string adjacency is not mandatory. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWord">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWord">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWord">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWord">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWord">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/nextWordTrans"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWord">
+    <owl:inverseOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/previousWord"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWordTrans">
+    <rdfs:comment>see :nextWord </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWordTrans">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWordTrans">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWordTrans">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextWordTrans">
+    <owl:inverseOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/previousWordTrans"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousWord">
+    <rdfs:comment>see :nextWord </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousWord">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/previousWordTrans"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousWord">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousWord">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousWord">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousWord">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousWordTrans">
+    <rdfs:comment>see :nextWord </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousWordTrans">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousWordTrans">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousWordTrans">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentence">
+    <rdfs:comment>This property (and the others) can be used to traverse :Sentences, it can not be assumed that no gaps between Sentences exist, i.e. string adjacency is not mandatory. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentence">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentence">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentence">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/nextSentenceTrans"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentence">
+    <owl:inverseOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/previousSentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentenceTrans">
+    <rdfs:comment>see :nextWord </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentenceTrans">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentenceTrans">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentenceTrans">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/nextSentenceTrans">
+    <owl:inverseOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/previousWordTrans"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousSentence">
+    <rdfs:comment>see :nextSentence </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousSentence">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/previousSentenceTrans"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousSentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousSentence">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousSentence">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousSentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousSentenceTrans">
+    <rdfs:comment>see :nextSentence </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousSentenceTrans">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousSentenceTrans">
+    <rdfs:range rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/previousSentenceTrans">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/stem">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/stem">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/stem">
+    <rdfs:comment>The stem of a Word. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/lemma">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/lemma">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/lemma">
+    <rdfs:comment>The lemma of a Word. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/posTag">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/posTag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/posTag">
+    <rdfs:comment>The pos tag of a Word. </rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/oliaLink">
+    <rdfs:domain rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/Word"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/oliaLink">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.lod2.eu/schema/sso/oliaLink">
+    <rdfs:comment>The link to the OLiA Annotation model. </rdfs:comment>
+  </rdf:Description>
+</rdf:RDF>
