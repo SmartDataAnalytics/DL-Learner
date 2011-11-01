@@ -26,6 +26,7 @@ import org.dllearner.algorithm.tbsl.search.SolrQueryResultItem;
 import org.dllearner.algorithm.tbsl.search.SolrQueryResultSet;
 import org.dllearner.algorithm.tbsl.search.SolrSearch;
 import org.dllearner.algorithm.tbsl.search.ThresholdSlidingSolrSearch;
+import org.dllearner.algorithm.tbsl.sparql.Allocation;
 import org.dllearner.algorithm.tbsl.sparql.Query;
 import org.dllearner.algorithm.tbsl.sparql.RatedQuery;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Prefix;
@@ -33,8 +34,10 @@ import org.dllearner.algorithm.tbsl.sparql.SPARQL_QueryType;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
+import org.dllearner.algorithm.tbsl.sparql.WeightedQuery;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Prefixes;
+import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.algorithm.tbsl.util.SolrQueryResultStringSimilarityComparator;
 import org.dllearner.algorithm.tbsl.util.StringSimilarityComparator;
 import org.dllearner.core.ComponentInitException;
@@ -238,9 +241,16 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			logger.info(t);
 		}
 		
-		//generate SPARQL query candidates, but select only a fixed number per template
-		template2Queries = getSPARQLQueryCandidates(templates, ranking);
-		sparqlQueryCandidates = getNBestQueryCandidatesForTemplates(template2Queries);
+//		//generate SPARQL query candidates, but select only a fixed number per template
+//		template2Queries = getSPARQLQueryCandidates(templates, ranking);
+//		sparqlQueryCandidates = getNBestQueryCandidatesForTemplates(template2Queries);
+		
+		//get the weighted query candidates
+		Set<WeightedQuery> weightedQueries = getWeightedSPARQLQueries(templates);
+		sparqlQueryCandidates = new ArrayList<Query>();
+		for(WeightedQuery wQ : weightedQueries){
+			sparqlQueryCandidates.add(wQ.getQuery());
+		}
 		
 		//test candidates
 		if(useRemoteEndpointValidation){ //on remote endpoint
@@ -326,6 +336,122 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			case NONE: return getSPARQLQueryCandidates(templates);
 			default: return null;
 		}
+	}
+	
+	private Set<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
+		double alpha = 0.7;
+		double beta = 1 - alpha;
+		Map<Slot, Set<Allocation>> slot2Allocations = new HashMap<Slot, Set<Allocation>>();
+		
+		Set<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
+		
+		Set<Allocation> allAllocations;
+		for(Template t : templates){
+			allAllocations = new HashSet<Allocation>();
+			for(Slot slot : t.getSlots()){
+				Set<Allocation> allocations = computeAllocation(slot);
+				allAllocations.addAll(allocations);
+				slot2Allocations.put(slot, allocations);
+			}
+			
+			int min = Integer.MAX_VALUE;
+			int max = Integer.MIN_VALUE;
+			for(Allocation a : allAllocations){
+				if(a.getInDegree() < min){
+					min = a.getInDegree();
+				}
+				if(a.getInDegree() > max){
+					max = a.getInDegree();
+				}
+			}
+			for(Allocation a : allAllocations){
+				double prominence = a.getInDegree()/(max-min);
+				a.setProminence(prominence);
+				
+				double score = alpha * a.getSimilarity() + beta * a.getProminence();
+				a.setScore(score);
+				
+			}
+//			System.out.println(allAllocations);
+			
+			Set<WeightedQuery> queries = new HashSet<WeightedQuery>();
+			Query cleanQuery = t.getQuery();
+			queries.add(new WeightedQuery(cleanQuery));
+			
+			Set<WeightedQuery> tmp = new HashSet<WeightedQuery>();
+			for(Slot slot : t.getSlots()){
+				for(Allocation a : slot2Allocations.get(slot)){
+					for(WeightedQuery query : queries){
+						if(slot.getSlotType() == SlotType.SYMPROPERTY){
+							Query reversedQuery = new Query(query.getQuery());
+							reversedQuery.getTriplesWithVar(slot.getAnchor()).iterator().next().reverse();
+							reversedQuery.replaceVarWithURI(slot.getAnchor(), a.getUri());
+							WeightedQuery w = new WeightedQuery(reversedQuery);
+							double newScore = query.getScore() + a.getScore();
+							w.setScore(newScore);
+							tmp.add(w);
+						}
+						Query q = new Query(query.getQuery());
+						q.replaceVarWithURI(slot.getAnchor(), a.getUri());
+						WeightedQuery w = new WeightedQuery(q);
+						double newScore = query.getScore() + a.getScore();
+						w.setScore(newScore);
+						tmp.add(w);
+					}
+				}
+				queries.clear();
+				queries.addAll(tmp);
+				tmp.clear();
+			}
+			for(WeightedQuery q : queries){
+				q.setScore(q.getScore()/t.getSlots().size());
+			}
+			allQueries.addAll(queries);
+		}
+		return allQueries;
+	}
+	
+	private Set<Allocation> computeAllocation(Slot slot){
+		Set<Allocation> allocations = new HashSet<Allocation>();
+		
+		SolrSearch index = getIndexBySlotType(slot);
+		
+		SolrQueryResultSet rs;
+		for(String word : slot.getWords()){
+			rs = index.getResourcesWithScores(word, 10);
+			
+			for(SolrQueryResultItem item : rs.getItems()){
+				int prominence = getProminenceValue(item.getUri(), slot.getSlotType());
+				double similarity = Similarity.getSimilarity(word, item.getLabel());
+				allocations.add(new Allocation(item.getUri(), prominence, similarity));
+			}
+			
+		}
+		
+		return allocations;
+	}
+	
+	private int getProminenceValue(String uri, SlotType type){
+		int cnt = 1;
+		String query = null;
+		if(type == SlotType.CLASS){
+			query = "SELECT COUNT(?s) WHERE {?s a <%s>}";
+		} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY){
+			query = "SELECT COUNT(*) WHERE {?s <%s> ?o}";
+		} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
+			query = "SELECT COUNT(*) WHERE {?s ?p <%s>}";
+		}
+		query = String.format(query, uri);
+		
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		QuerySolution qs;
+		String projectionVar;
+		while(rs.hasNext()){
+			qs = rs.next();
+			projectionVar = qs.varNames().next();
+			cnt = qs.get(projectionVar).asLiteral().getInt();
+		}
+		return cnt;
 	}
 	
 	private Map<Template, Collection<? extends Query>> getSPARQLQueryCandidates(Set<Template> templates){
@@ -483,11 +609,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return template2Queries;
 	}
 	
-	private Set<String> getCandidateURIs(Slot slot){
+	private SolrQueryResultSet getCandidateURIs(Slot slot, int limit){
 		logger.info("Generating candidate URIs for " + slot.getWords() + "...");
 		mon.start();
 		SolrSearch index = null;
-		Set<String> uris = new HashSet<String>();
 		if(slot.getSlotType() == SlotType.CLASS){
 			index = class_index;
 		} else if(slot.getSlotType() == SlotType.PROPERTY){
@@ -495,14 +620,13 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		} else if(slot.getSlotType() == SlotType.RESOURCE){
 			index = resource_index;
 		}
+		SolrQueryResultSet rs = new SolrQueryResultSet();
 		for(String word : slot.getWords()){
-			uris.addAll(index.getResources("label:" + word));
-			
+			rs.add(index.getResourcesWithScores(word, limit));
 		}
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
-		logger.info("Candidate URIs: " + uris);
-		return uris;
+		return rs;
 	}
 	
 	private List<String> getCandidateURIsSortedBySimilarity(Slot slot){
@@ -641,7 +765,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			index = resource_index;
 			sorted = true;
 		}
-		SolrQueryResultSet resultSet = null;
+		SolrQueryResultSet resultSet = new SolrQueryResultSet();
 		for(String word : slot.getWords()){
 			resultSet.add(index.getResourcesWithScores("label:" + word, sorted));
 		}
@@ -777,6 +901,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return resources;
 	}
 	
+	
+	
 
 	/**
 	 * @param args
@@ -789,7 +915,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Who developed the video game World of Warcraft?";
+		String question = "Give me all films produced by Hal Roach?";
 		
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
