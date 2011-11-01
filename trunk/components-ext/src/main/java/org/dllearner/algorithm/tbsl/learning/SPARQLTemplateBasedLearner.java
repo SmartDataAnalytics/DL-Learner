@@ -79,6 +79,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private int maxTestedQueriesPerTemplate = 50;
 	private int maxQueryExecutionTimeInSeconds;
 	
+	private int maxTestedQueries = 200;
+	
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
 	
@@ -248,8 +250,12 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		//get the weighted query candidates
 		Set<WeightedQuery> weightedQueries = getWeightedSPARQLQueries(templates);
 		sparqlQueryCandidates = new ArrayList<Query>();
+		int i = 0;
 		for(WeightedQuery wQ : weightedQueries){
 			sparqlQueryCandidates.add(wQ.getQuery());
+			if(i == maxTestedQueries){
+				break;
+			}
 		}
 		
 		//test candidates
