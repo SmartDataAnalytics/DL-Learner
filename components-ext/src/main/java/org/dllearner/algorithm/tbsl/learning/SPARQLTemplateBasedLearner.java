@@ -407,6 +407,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				q.setScore(q.getScore()/t.getSlots().size());
 			}
 			allQueries.addAll(queries);
+			List<Query> qList = new ArrayList<Query>();
+			for(WeightedQuery wQ : queries){
+				qList.add(wQ.getQuery());
+			}
+			template2Queries.put(t, qList);
 		}
 		return allQueries;
 	}
