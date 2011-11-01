@@ -256,6 +256,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			if(i == maxTestedQueries){
 				break;
 			}
+			i++;
 		}
 		
 		//test candidates
@@ -386,28 +387,31 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			
 			Set<WeightedQuery> tmp = new HashSet<WeightedQuery>();
 			for(Slot slot : t.getSlots()){
-				for(Allocation a : slot2Allocations.get(slot)){
-					for(WeightedQuery query : queries){
-						if(slot.getSlotType() == SlotType.SYMPROPERTY){
-							Query reversedQuery = new Query(query.getQuery());
-							reversedQuery.getTriplesWithVar(slot.getAnchor()).iterator().next().reverse();
-							reversedQuery.replaceVarWithURI(slot.getAnchor(), a.getUri());
-							WeightedQuery w = new WeightedQuery(reversedQuery);
+				if(!slot2Allocations.get(slot).isEmpty()){
+					for(Allocation a : slot2Allocations.get(slot)){
+						for(WeightedQuery query : queries){
+							if(slot.getSlotType() == SlotType.SYMPROPERTY){
+								Query reversedQuery = new Query(query.getQuery());
+								reversedQuery.getTriplesWithVar(slot.getAnchor()).iterator().next().reverse();
+								reversedQuery.replaceVarWithURI(slot.getAnchor(), a.getUri());
+								WeightedQuery w = new WeightedQuery(reversedQuery);
+								double newScore = query.getScore() + a.getScore();
+								w.setScore(newScore);
+								tmp.add(w);
+							}
+							Query q = new Query(query.getQuery());
+							q.replaceVarWithURI(slot.getAnchor(), a.getUri());
+							WeightedQuery w = new WeightedQuery(q);
 							double newScore = query.getScore() + a.getScore();
 							w.setScore(newScore);
 							tmp.add(w);
 						}
-						Query q = new Query(query.getQuery());
-						q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-						WeightedQuery w = new WeightedQuery(q);
-						double newScore = query.getScore() + a.getScore();
-						w.setScore(newScore);
-						tmp.add(w);
 					}
+					queries.clear();
+					queries.addAll(tmp);
+					tmp.clear();
 				}
-				queries.clear();
-				queries.addAll(tmp);
-				tmp.clear();
+				
 			}
 			for(WeightedQuery q : queries){
 				q.setScore(q.getScore()/t.getSlots().size());
@@ -464,6 +468,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		}
 		return cnt;
 	}
+	
 	
 	private Map<Template, Collection<? extends Query>> getSPARQLQueryCandidates(Set<Template> templates){
 		logger.info("Generating candidate SPARQL queries...");
@@ -926,10 +931,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-		String question = "Give me all films produced by Hal Roach?";
+//		String question = "In which programming language is GIMP written?";
+		String question = "Who/WP are/VBP the/DT presidents/NNS of/IN the/DT United/NNP States/NNPS";
 		
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
-		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
+		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();learner.setUseIdealTagger(true);
 //		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 //				Collections.<String>singletonList(""), Collections.<String>emptyList());
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
@@ -939,7 +945,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		learner.learnSPARQLQueries();
 		System.out.println("Learned query:\n" + learner.getBestSPARQLQuery());
 		System.out.println("Lexical answer type is: " + learner.getTemplates().iterator().next().getLexicalAnswerType());
-
+		
 	}
 
 	@Override
