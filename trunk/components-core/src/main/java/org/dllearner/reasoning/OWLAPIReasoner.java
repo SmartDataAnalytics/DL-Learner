@@ -147,6 +147,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         Set<OWLOntology> allImports = new HashSet<OWLOntology>();
         prefixes = new TreeMap<String, String>();
+        
+        Set<OWLImportsDeclaration> directImports = new HashSet<OWLImportsDeclaration>();
 
         for (AbstractKnowledgeSource source : sources) {
 
@@ -169,6 +171,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                     }
 
                     owlAPIOntologies.add(ontology);
+                    directImports.addAll(ontology.getImportsDeclarations());
                     try {
                         // imports includes the ontology itself
                         //FIXME this line throws the strange error
@@ -227,6 +230,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         }
         try {
             ontology = manager.createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
+            //we have to add all import declarations manually here, because this are no axioms
+            List<OWLOntologyChange> addImports = new ArrayList<OWLOntologyChange>();
+            for(OWLImportsDeclaration i : directImports){
+            	addImports.add(new AddImport(ontology, i));
+            }
+            manager.applyChanges(addImports);
         } catch (OWLOntologyCreationException e1) {
             e1.printStackTrace();
         }
@@ -251,8 +260,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             reasoner = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
         } else if (getReasonerTypeString().equals("pellet")) {
             // instantiate Pellet reasoner
-            reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology, conf);
-
+            reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(owlAPIOntologies.iterator().next(), conf);
             // change log level to WARN for Pellet, because otherwise log
             // output will be very large
             Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
