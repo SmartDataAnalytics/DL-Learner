@@ -145,6 +145,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 	private Map<NamedClass, Set<ObjectProperty>> appOP = new TreeMap<NamedClass, Set<ObjectProperty>>();
 	private Map<NamedClass, Set<DatatypeProperty>> appBD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
 	private Map<NamedClass, Set<DatatypeProperty>> appDD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
+	private Map<NamedClass, Set<DatatypeProperty>> appSD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
 	
 	// most general applicable properties
 	private Map<NamedClass,Set<ObjectProperty>> mgr = new TreeMap<NamedClass,Set<ObjectProperty>>();
@@ -838,6 +839,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 	
 	private void computeTopRefinements(int maxLength, NamedClass domain) {
 		long topComputationTimeStartNs = System.nanoTime();
+//		System.out.println("computing top refinements for " + domain + " up to length " + maxLength);		
 		
 		if(domain == null && m.size() == 0)
 			computeM();
@@ -957,6 +959,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 			topARefinementsLength.put(domain,maxLength);
 		
 		topComputationTimeNs += System.nanoTime() - topComputationTimeStartNs;
+		
+//		if(domain == null) {
+//			System.out.println("computed top refinements: " + topRefinementsCumulative.get(maxLength));
+//		} else {
+//			System.out.println("computed top refinements: " + topARefinementsCumulative.get(domain).get(maxLength));
+//		}		
 	}
 	
 	// compute M_\top
@@ -1045,6 +1053,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 			}			
 		}
 		m.put(4,m4);
+		
+//		System.out.println("m: " + m);
 		
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
@@ -1183,7 +1193,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		}
 		mA.get(nc).put(4,m4);
 		
-//		System.out.println(mA.get(nc));
+//		System.out.println("m for " + nc + ": " + mA.get(nc));
 		
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
@@ -1330,7 +1340,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 	
 	private void computeMgsdRecursive(NamedClass domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgsdTmp) {
 		for(DatatypeProperty prop : currProperties) {
-			if(appDD.get(domain).contains(prop))
+			if(appSD.get(domain).contains(prop))
 				mgsdTmp.add(prop);
 			else
 				computeMgsdRecursive(domain, reasoner.getSubProperties(prop), mgsdTmp);
@@ -1372,7 +1382,19 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 			if(!isDisjoint(domain,d))
 				applicableDDPs.add(role);
 		}
-		appDD.put(domain, applicableDDPs);			
+		appDD.put(domain, applicableDDPs);	
+		
+		// string datatype properties
+		Set<DatatypeProperty> mostGeneralSDPs = reasoner.getStringDatatypeProperties();
+		Set<DatatypeProperty> applicableSDPs = new TreeSet<DatatypeProperty>();
+		for(DatatypeProperty role : mostGeneralSDPs) {
+//			Description d = (NamedClass) rs.getDomain(role);
+			Description d = reasoner.getDomain(role);
+//			System.out.println("domain: " + d);
+			if(!isDisjoint(domain,d))
+				applicableSDPs.add(role);
+		}
+		appSD.put(domain, applicableSDPs);		
 	}
 	
 	// returns true of the intersection contains elements disjoint

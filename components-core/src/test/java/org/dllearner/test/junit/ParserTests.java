@@ -68,6 +68,8 @@ public class ParserTests {
 		"(<http://example.com/prop> some (<http://example.com/class1> and <http://example.com/class2>))",
 		// another nested expression
 		"(<http://nlp2rdf.lod2.eu/schema/string/Document> and (<http://nlp2rdf.lod2.eu/schema/string/subStringTrans> some <http://www.w3.org/2002/07/owl#Thing>))",
+		// a test with a single quoted string
+		"(<http://nlp2rdf.lod2.eu/schema/string/Document> and (<http://nlp2rdf.lod2.eu/schema/string/subStringTrans> some ( <http://nlp2rdf.lod2.eu/schema/sso/lemma> value 'copper')))"		
 		};
 		
 		// loop through all test cases
