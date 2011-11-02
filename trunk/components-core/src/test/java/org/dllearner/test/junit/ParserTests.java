@@ -53,9 +53,9 @@ public class ParserTests {
 		// simple URI
 		"<http://example.com/foo>",
 		// existential restriction
-		"<http://example.com/prop> some <http://example.com/class>",
+		"(<http://example.com/prop> some <http://example.com/class>)",
 		// universal restriction
-		"<http://example.com/prop> only <http://example.com/class>",
+		"(<http://example.com/prop> only <http://example.com/class>)",
 		// intersection
 		"(<http://example.com/class1> and <http://example.com/class2>)",
 		// disjunction
@@ -65,7 +65,9 @@ public class ParserTests {
 		// has value with string
 		"(<http://example.com/prop> value \"string\")",
 		// nested expression
-		"<http://example.com/prop> some (<http://example.com/class1> and <http://example.com/class2>)",
+		"(<http://example.com/prop> some (<http://example.com/class1> and <http://example.com/class2>))",
+		// another nested expression
+		"(<http://nlp2rdf.lod2.eu/schema/string/Document> and (<http://nlp2rdf.lod2.eu/schema/string/subStringTrans> some <http://www.w3.org/2002/07/owl#Thing>))",
 		};
 		
 		// loop through all test cases
