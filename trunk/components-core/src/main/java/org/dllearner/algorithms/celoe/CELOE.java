@@ -453,7 +453,7 @@ public class CELOE extends AbstractCELA {
 //			for(Description refinement : refinements) {
 //				System.out.println("refinement: " + refinement);
 //			}
-//			if(loop % 100 == 0) {
+//			if((loop+1) % 500 == 0) {
 //				System.out.println(getMinimumHorizontalExpansion() + " - " + getMaximumHorizontalExpansion());
 //				System.exit(0);
 //			}

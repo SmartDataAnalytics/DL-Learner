@@ -190,11 +190,6 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     finally { jj_save(5, xla); }
   }
 
-  private boolean jj_3R_3() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
   private boolean jj_3R_8() {
     if (jj_scan_token(21)) return true;
     if (jj_3R_2()) return true;
@@ -363,6 +358,11 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     if (jj_scan_token(ONLY)) return true;
     if (jj_3R_1()) return true;
     if (jj_scan_token(22)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_3() {
+    if (jj_scan_token(STRING)) return true;
     return false;
   }
 
