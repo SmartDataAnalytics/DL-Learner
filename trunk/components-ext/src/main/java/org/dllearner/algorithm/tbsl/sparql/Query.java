@@ -423,6 +423,28 @@ public class Query
 		}
 		return triples;
 	}
+	
+	public List<SPARQL_Triple> getRDFTypeTriples(){
+		List<SPARQL_Triple> triples = new ArrayList<SPARQL_Triple>();
+		
+		for(SPARQL_Triple triple : conditions){
+			if(triple.getProperty().equals("rdf:type")){
+				triples.add(triple);
+			}
+		}
+		return triples;
+	}
+	
+	public List<SPARQL_Triple> getRDFTypeTriples(String var){
+		List<SPARQL_Triple> triples = new ArrayList<SPARQL_Triple>();
+		
+		for(SPARQL_Triple triple : conditions){
+			if(triple.getProperty().toString().equals("rdf:type") && triple.getVariable().getName().equals(var)){
+				triples.add(triple);
+			}
+		}
+		return triples;
+	}
 
 	@Override
 	public int hashCode() {

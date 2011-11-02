@@ -33,7 +33,16 @@ public class WeightedQuery implements Comparable<WeightedQuery>{
 			return -1;
 		} else if(o.getScore() > this.score){
 			return 1;
-		} else return query.toString().compareTo(o.getQuery().toString());
+		} else {
+			int filter = Boolean.valueOf(query.getFilters().isEmpty()).compareTo(Boolean.valueOf(o.getQuery().getFilters().isEmpty()));
+			if(filter == 0){
+				return query.toString().compareTo(o.getQuery().toString());
+			} else {
+				return filter;
+			}
+		}
+			
+			
 	}
 	
 	@Override
