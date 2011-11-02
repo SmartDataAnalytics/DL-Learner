@@ -20,9 +20,9 @@
 package org.dllearner.test.junit;
 
 import org.dllearner.core.owl.Description;
+import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.owl.ManchesterOWLSyntaxParser;
 import org.junit.Test;
-import org.semanticweb.owlapi.expression.ParserException;
 
 /**
  * 
@@ -34,7 +34,7 @@ import org.semanticweb.owlapi.expression.ParserException;
 public class OWLAPITests {
 
 	@Test
-	public void testManchesterSyntaxParser() throws ParserException {
+	public void testManchesterSyntaxParser() throws ParseException {
 //		String s = "BIGPROP SOME smallclass";
 //		String s = "<http://test.de/prop> some <http://test.de/Class>";
 		String s = "<http://test.de/Class>";

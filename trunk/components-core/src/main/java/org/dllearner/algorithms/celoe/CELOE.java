@@ -49,6 +49,8 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.ClassLearningProblem;
@@ -262,7 +264,10 @@ public class CELOE extends AbstractCELA {
 		
 		minimizer = new DescriptionMinimizer(reasoner);
 		
-		startClass = Thing.instance;
+		// start at owl:Thing by default
+		if(startClass == null) {
+			startClass = Thing.instance;
+		}
 		
 //		singleSuggestionMode = configurator.getSingleSuggestionMode();
 		

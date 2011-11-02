@@ -24,6 +24,7 @@ import static org.junit.Assert.*;
 import org.dllearner.core.owl.Description;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.parser.KBParser;
+import org.dllearner.parser.ManchesterSyntaxParser;
 import org.dllearner.parser.ParseException;
 import org.junit.Test;
 
@@ -44,6 +45,36 @@ public class ParserTests {
 		System.out.println(d.toKBSyntaxString("http://localhost/foo#", null));
 		Description d2 = KBParser.parseConcept(d.toKBSyntaxString());
 		System.out.println(d2.toKBSyntaxString("http://localhost/foo#", null));	
+	}
+	
+	@Test
+	public void ManchesterParserTest() throws ParseException {
+		String[] tests = new String[] { 
+		// simple URI
+		"<http://example.com/foo>",
+		// existential restriction
+		"<http://example.com/prop> some <http://example.com/class>",
+		// universal restriction
+		"<http://example.com/prop> only <http://example.com/class>",
+		// intersection
+		"(<http://example.com/class1> and <http://example.com/class2>)",
+		// disjunction
+		"(<http://example.com/class1> or <http://example.com/class2>)",
+		// has value
+		"(<http://example.com/prop> value <http://example.com/ind>)",
+		// has value with string
+		"(<http://example.com/prop> value \"string\")",
+		// nested expression
+		"<http://example.com/prop> some (<http://example.com/class1> and <http://example.com/class2>)",
+		};
+		
+		// loop through all test cases
+		for(String test : tests) {
+			System.out.print(test + " --> ");
+			Description d = ManchesterSyntaxParser.parseClassExpression(test);
+			System.out.println(d.toManchesterSyntaxString(null, null));
+		}
+		
 	}
 	
 	@Test

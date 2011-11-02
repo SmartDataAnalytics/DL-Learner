@@ -22,6 +22,8 @@ package org.dllearner.utilities.owl;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.owl.Description;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
+import org.dllearner.parser.ManchesterSyntaxParser;
+import org.dllearner.parser.ParseException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -42,14 +44,16 @@ public class ManchesterOWLSyntaxParser {
 		return parser.parseClassExpression();
 	}
 	
-	public static Description getDescription(String manchesterSyntaxDescription) throws ParserException {
-		OWLClassExpression d = getOWLAPIDescription(manchesterSyntaxDescription);
-		return DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(d);
+	public static Description getDescription(String manchesterSyntaxDescription) throws ParseException {
+//		OWLClassExpression d = getOWLAPIDescription(manchesterSyntaxDescription);
+//		return DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(d);
+		return ManchesterSyntaxParser.parseClassExpression(manchesterSyntaxDescription);
 	}
+	
 
-	public static void main(String args[]) throws ParserException {
-		Description d = ManchesterOWLSyntaxParser.getDescription("hasP SOME A");
-		SparqlQueryDescriptionConvertVisitor.getSparqlQuery(d, 10, false, false);
-	}
+//	public static void main(String args[]) throws ParserException {
+//		Description d = ManchesterOWLSyntaxParser.getDescription("hasP SOME A");
+//		SparqlQueryDescriptionConvertVisitor.getSparqlQuery(d, 10, false, false);
+//	}
 	
 }
