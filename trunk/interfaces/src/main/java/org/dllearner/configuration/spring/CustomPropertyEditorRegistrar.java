@@ -1,5 +1,7 @@
 package org.dllearner.configuration.spring;
 
+import org.dllearner.core.config.ClassExpressionPropertyEditor;
+import org.dllearner.core.owl.Description;
 import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.beans.PropertyEditorRegistry;
 
@@ -17,6 +19,7 @@ public class CustomPropertyEditorRegistrar implements PropertyEditorRegistrar {
     @Override
     public void registerCustomEditors(PropertyEditorRegistry registry) {
         //Register any custom editors here.
-
+    	ClassExpressionPropertyEditor ce = new ClassExpressionPropertyEditor();
+    	registry.registerCustomEditor(Description.class, ce);
     }
 }
