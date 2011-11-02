@@ -200,6 +200,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
 		
 		reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
+		reasoner.setCache(cache);
 		reasoner.prepareSubsumptionHierarchy();
 	}
 	
@@ -358,6 +359,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		}
 	}
 	
+	/*
 	private Set<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
 		double alpha = 0.8;
 		double beta = 1 - alpha;
@@ -417,17 +419,20 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				if(!slot2Allocations.get(slot).isEmpty()){
 					for(Allocation a : slot2Allocations.get(slot)){
 						for(WeightedQuery query : queries){
-								Query reversedQuery = new Query(query.getQuery());
-								reversedQuery.getTriplesWithVar(slot.getAnchor()).iterator().next().reverse();
 								//check if the query is possible
 								if(slot.getSlotType() == SlotType.SYMPROPERTY){
+									Query reversedQuery = new Query(query.getQuery());
+									reversedQuery.getTriplesWithVar(slot.getAnchor()).iterator().next().reverse();
+									
 									boolean drop = false;
-									for(SPARQL_Triple triple : query.getQuery().getTriplesWithVar(slot.getAnchor())){
-										System.out.println(triple);
-										for(SPARQL_Triple typeTriple : query.getQuery().getRDFTypeTriples(triple.getValue().getName())){
-											System.out.println(typeTriple);
+									for(SPARQL_Triple triple : reversedQuery.getTriplesWithVar(slot.getAnchor())){
+										String objectVar = triple.getValue().getName();
+										String subjectVar = triple.getVariable().getName();
+//										System.out.println(triple);
+										for(SPARQL_Triple typeTriple : reversedQuery.getRDFTypeTriples(objectVar)){
+//											System.out.println(typeTriple);
 											Set<String> ranges = getRanges(a.getUri());
-											System.out.println(a);
+//											System.out.println(a);
 											if(!ranges.isEmpty()){
 												Set<String> allRanges = new HashSet<String>();
 												for(String range : ranges){
@@ -436,11 +441,35 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
 												Set<String> allTypes = getSuperClasses(typeURI);
 												allTypes.add(typeTriple.getValue().getName());
-												System.out.println("RANGES: " + ranges);
-												System.out.println("TYPES: " + allTypes);
+//												System.out.println("RANGES: " + ranges);
+//												System.out.println("TYPES: " + allTypes);
 												
 												if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
 													drop = true;
+												} else {
+													System.out.println("DROPPING: \n" + reversedQuery.toString());
+												}
+											}
+										}
+										for(SPARQL_Triple typeTriple : reversedQuery.getRDFTypeTriples(subjectVar)){
+//											System.out.println(typeTriple);
+											Set<String> domains = getDomains(a.getUri());
+//											System.out.println(a);
+											if(!domains.isEmpty()){
+												Set<String> allDomains = new HashSet<String>();
+												for(String domain : domains){
+													allDomains.addAll(getSuperClasses(domain));
+												}
+												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
+												Set<String> allTypes = getSuperClasses(typeURI);
+												allTypes.add(typeTriple.getValue().getName());
+//												System.out.println("DOMAINS: " + domains);
+//												System.out.println("TYPES: " + allTypes);
+												
+												if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
+													drop = true;
+												} else {
+													System.out.println("DROPPING: \n" + reversedQuery.toString());
 												}
 											}
 										}
@@ -454,21 +483,76 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 										tmp.add(w);
 									}
 								
-									
-								
-								
 							}
 								Query q = new Query(query.getQuery());
-								q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-								WeightedQuery w = new WeightedQuery(q);
-								double newScore = query.getScore() + a.getScore();
-								w.setScore(newScore);
-								tmp.add(w);
+								
+								boolean drop = false;
+								if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
+									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
+										String objectVar = triple.getValue().getName();
+										String subjectVar = triple.getVariable().getName();
+//										System.out.println(triple);
+										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(objectVar)){
+//											System.out.println(typeTriple);
+											Set<String> ranges = getRanges(a.getUri());
+//											System.out.println(a);
+											if(!ranges.isEmpty()){
+												Set<String> allRanges = new HashSet<String>();
+												for(String range : ranges){
+													allRanges.addAll(getSuperClasses(range));
+												}
+												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
+												Set<String> allTypes = getSuperClasses(typeURI);
+												allTypes.add(typeTriple.getValue().getName());
+//												System.out.println("RANGES: " + ranges);
+//												System.out.println("TYPES: " + allTypes);
+												
+												if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
+													drop = true;
+												} else {
+													System.out.println("DROPPING: \n" + q.toString());
+												}
+											}
+										}
+										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(subjectVar)){
+//											System.out.println(typeTriple);
+											Set<String> domains = getDomains(a.getUri());
+//											System.out.println(a);
+											if(!domains.isEmpty()){
+												Set<String> allDomains = new HashSet<String>();
+												for(String domain : domains){
+													allDomains.addAll(getSuperClasses(domain));
+												}
+												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
+												Set<String> allTypes = getSuperClasses(typeURI);
+												allTypes.add(typeTriple.getValue().getName());
+//												System.out.println("DOMAINS: " + domains);
+//												System.out.println("TYPES: " + allTypes);
+												
+												if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
+													drop = true;
+												} else {
+													System.out.println("DROPPING: \n" + q.toString());
+												}
+											}
+										}
+									}
+								}
+								
+								
+								if(!drop){
+									q.replaceVarWithURI(slot.getAnchor(), a.getUri());
+									WeightedQuery w = new WeightedQuery(q);
+									double newScore = query.getScore() + a.getScore();
+									w.setScore(newScore);
+									tmp.add(w);
+								}
+								
 							
 						}
 					}
 					queries.clear();
-					queries.addAll(tmp);
+					queries.addAll(tmp);System.out.println(tmp);
 					tmp.clear();
 				}
 				
@@ -478,7 +562,176 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			}
 			allQueries.addAll(queries);
 			List<Query> qList = new ArrayList<Query>();
-			for(WeightedQuery wQ : queries){
+			for(WeightedQuery wQ : queries){//System.err.println(wQ.getQuery());
+				qList.add(wQ.getQuery());
+			}
+			template2Queries.put(t, qList);
+		}
+		return allQueries;
+	}
+	*/
+	
+	private Set<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
+		double alpha = 0.8;
+		double beta = 1 - alpha;
+		Map<Slot, Set<Allocation>> slot2Allocations = new HashMap<Slot, Set<Allocation>>();
+		
+		Set<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
+		
+		Set<Allocation> allAllocations;
+		for(Template t : templates){
+			allAllocations = new HashSet<Allocation>();
+			
+			for(Slot slot : t.getSlots()){
+				Set<Allocation> allocations = computeAllocation(slot);
+				allAllocations.addAll(allocations);
+				slot2Allocations.put(slot, allocations);
+			}
+			
+			int min = Integer.MAX_VALUE;
+			int max = Integer.MIN_VALUE;
+			for(Allocation a : allAllocations){
+				if(a.getInDegree() < min){
+					min = a.getInDegree();
+				}
+				if(a.getInDegree() > max){
+					max = a.getInDegree();
+				}
+			}
+			for(Allocation a : allAllocations){
+				double prominence = a.getInDegree()/(max-min);
+				a.setProminence(prominence);
+				
+				double score = alpha * a.getSimilarity() + beta * a.getProminence();
+				a.setScore(score);
+				
+			}
+//			System.out.println(allAllocations);
+			
+			Set<WeightedQuery> queries = new HashSet<WeightedQuery>();
+			Query cleanQuery = t.getQuery();
+			queries.add(new WeightedQuery(cleanQuery));
+			
+			Set<WeightedQuery> tmp = new HashSet<WeightedQuery>();
+			List<Slot> sortedSlots = new ArrayList<Slot>();
+			Set<Slot> classSlots = new HashSet<Slot>();
+			for(Slot slot : t.getSlots()){
+				if(slot.getSlotType() == SlotType.CLASS){
+					sortedSlots.add(slot);
+					classSlots.add(slot);
+				}
+			}
+			for(Slot slot : t.getSlots()){
+				if(!sortedSlots.contains(slot)){
+					sortedSlots.add(slot);
+				}
+			}
+			//add for each SYMPROPERTY Slot the reversed query
+			for(Slot slot : sortedSlots){
+				for(WeightedQuery wQ : queries){
+					if(slot.getSlotType() == SlotType.SYMPROPERTY){
+						Query reversedQuery = new Query(wQ.getQuery());
+						reversedQuery.getTriplesWithVar(slot.getAnchor()).iterator().next().reverse();
+						tmp.add(new WeightedQuery(reversedQuery));
+					}
+					tmp.add(wQ);
+				}
+				queries.clear();
+				queries.addAll(tmp);
+				tmp.clear();
+			}
+			
+			for(Slot slot : sortedSlots){
+				if(!slot2Allocations.get(slot).isEmpty()){
+					for(Allocation a : slot2Allocations.get(slot)){
+						for(WeightedQuery query : queries){
+								Query q = new Query(query.getQuery());
+								
+								boolean drop = false;
+								if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
+									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
+										String objectVar = triple.getValue().getName();
+										String subjectVar = triple.getVariable().getName();
+//										System.out.println(triple);
+										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(objectVar)){
+//											System.out.println(typeTriple);
+											Set<String> ranges = getRanges(a.getUri());
+//											System.out.println(a);
+											if(!ranges.isEmpty()){
+												Set<String> allRanges = new HashSet<String>();
+												for(String range : ranges){
+													allRanges.addAll(getSuperClasses(range));
+												}
+												allRanges.addAll(ranges);
+												allRanges.remove("http://www.w3.org/2002/07/owl#Thing");
+												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
+												Set<String> allTypes = getSuperClasses(typeURI);
+												allTypes.add(typeTriple.getValue().getName());
+//												if(typeURI.equals("http://dbpedia.org/ontology/Film") && a.getUri().equals("http://dbpedia.org/ontology/starring")){
+//													System.out.println("RANGES: " + allRanges);
+//													System.out.println("TYPES: " + allTypes);
+//												}
+												
+												if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
+													drop = true;
+												} else {
+													System.out.println("DROPPING: \n" + q.toString());
+												}
+											}
+										}
+										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(subjectVar)){
+//											System.out.println(typeTriple);
+											Set<String> domains = getDomains(a.getUri());System.out.println(a.getUri() + ":" + domains);
+//											System.out.println(a);
+											if(!domains.isEmpty()){
+												Set<String> allDomains = new HashSet<String>();
+												for(String domain : domains){
+													allDomains.addAll(getSuperClasses(domain));
+												}
+												allDomains.addAll(domains);
+												allDomains.remove("http://www.w3.org/2002/07/owl#Thing");
+												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
+												Set<String> allTypes = getSuperClasses(typeURI);
+												allTypes.add(typeTriple.getValue().getName());
+//												if(typeURI.equals("http://dbpedia.org/ontology/Film") && a.getUri().equals("http://dbpedia.org/ontology/starring")){
+//													System.out.println("DOMAINS: " + allDomains);
+//													System.out.println("TYPES: " + allTypes);
+//												}
+												
+												if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
+													drop = true;
+												} else {
+													System.out.println("DROPPING: \n" + q.toString());
+												}
+											}
+										}
+									}
+								}
+								
+								
+								if(!drop){
+									q.replaceVarWithURI(slot.getAnchor(), a.getUri());
+									WeightedQuery w = new WeightedQuery(q);
+									double newScore = query.getScore() + a.getScore();
+									w.setScore(newScore);
+									tmp.add(w);
+								}
+								
+							
+						}
+					}
+					queries.clear();
+					queries.addAll(tmp);//System.out.println(tmp);
+					tmp.clear();
+				}
+				
+			}
+			for(WeightedQuery q : queries){
+				q.setScore(q.getScore()/t.getSlots().size());
+			}
+			allQueries.addAll(queries);
+			List<Query> qList = new ArrayList<Query>();
+			for(WeightedQuery wQ : queries){//System.err.println(wQ.getQuery());
 				qList.add(wQ.getQuery());
 			}
 			template2Queries.put(t, qList);
@@ -516,7 +769,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		
 		SolrQueryResultSet rs;
 		for(String word : slot.getWords()){
-			rs = index.getResourcesWithScores(word, 10);
+			rs = index.getResourcesWithScores(word, 3);
 			
 			for(SolrQueryResultItem item : rs.getItems()){
 				int prominence = getProminenceValue(item.getUri(), slot.getSlotType());
