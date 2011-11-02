@@ -42,7 +42,7 @@ public class ReasonerTest {
 	@Test
 	public void nlp2rdfTest() throws ComponentInitException {
 		// read file into reasoner
-		OWLFile file = new OWLFile("../examples/nlp2rdf/reuters_gold_vs_copper/positives.owl");
+		OWLFile file = new OWLFile("src/test/resources/nlp2rdf/positives.owl");
 		file.init();
 		FastInstanceChecker fic = new FastInstanceChecker();
 		fic.setSources(file);
@@ -55,13 +55,13 @@ public class ReasonerTest {
 		
 		Individual ind = new Individual("http://nlp2rdf.org/POS/2/offset_0_763_COPPER+STUDY+GROUP+C");
 		
+//		System.out.println();
+		
 		// there should be several subStringTrans relations 
 		assertFalse(fic.getRelatedIndividuals(ind, op).isEmpty());
 		// individual should be member of this expression (required to learn the correct concept)
 		assertTrue(fic.hasType(is, ind));
-		
-		// TODO: once this works, we need to make sure that "positives.owl" is in a "stable" directory 
-		
+			
 	}
 	
 }
