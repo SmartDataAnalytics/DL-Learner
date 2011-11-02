@@ -12,8 +12,8 @@
     xmlns:j.5="http://purl.org/olia/olia-top.owl#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
   <owl:Ontology rdf:about="file://something/positives">
-    <owl:imports rdf:resource="http://nlp2rdf.lod2.eu/schema/string/"/>
-    <owl:imports rdf:resource="http://nlp2rdf.lod2.eu/schema/sso/"/>
+    <owl:imports rdf:resource="string.owl"/>
+    <owl:imports rdf:resource="sso.owl"/>
   </owl:Ontology>
   <owl:Class rdf:about="http://purl.org/olia/olia.owl#Residual">
     <rdfs:comment>
