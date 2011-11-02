@@ -42,14 +42,18 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
         jj_consume_token(22);
          {if (true) return new Union(c1,c2);}
       } else if (jj_2_3(2147483647)) {
+        jj_consume_token(21);
         s = URI();
         jj_consume_token(SOME);
         c = ClassExpression();
+        jj_consume_token(22);
          {if (true) return new ObjectSomeRestriction(new ObjectProperty(s),c);}
       } else if (jj_2_4(2147483647)) {
+        jj_consume_token(21);
         s = URI();
         jj_consume_token(ONLY);
         c = ClassExpression();
+        jj_consume_token(22);
          {if (true) return new ObjectAllRestriction(new ObjectProperty(s),c);}
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -192,9 +196,11 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
   }
 
   private boolean jj_3R_8() {
+    if (jj_scan_token(21)) return true;
     if (jj_3R_2()) return true;
     if (jj_scan_token(SOME)) return true;
     if (jj_3R_1()) return true;
+    if (jj_scan_token(22)) return true;
     return false;
   }
 
@@ -291,6 +297,7 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
   }
 
   private boolean jj_3_4() {
+    if (jj_scan_token(21)) return true;
     if (jj_3R_2()) return true;
     if (jj_scan_token(ONLY)) return true;
     return false;
@@ -306,6 +313,7 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
   }
 
   private boolean jj_3_3() {
+    if (jj_scan_token(21)) return true;
     if (jj_3R_2()) return true;
     if (jj_scan_token(SOME)) return true;
     return false;
@@ -350,9 +358,11 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
   }
 
   private boolean jj_3R_9() {
+    if (jj_scan_token(21)) return true;
     if (jj_3R_2()) return true;
     if (jj_scan_token(ONLY)) return true;
     if (jj_3R_1()) return true;
+    if (jj_scan_token(22)) return true;
     return false;
   }
 

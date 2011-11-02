@@ -84,11 +84,11 @@ Description ClassExpression() :
   | LOOKAHEAD( "(" ClassExpression() <OR>)    
     "(" c1=ClassExpression() <OR> c2=ClassExpression() ")"
   	{return new Union(c1,c2);}
-  | LOOKAHEAD( URI() <SOME>) 
-    s=URI() <SOME> c=ClassExpression()
+  | LOOKAHEAD( "(" URI() <SOME>) 
+    "(" s=URI() <SOME> c=ClassExpression() ")"
   	{return new ObjectSomeRestriction(new ObjectProperty(s),c); } 
-  | LOOKAHEAD( URI() <ONLY>)
-    s=URI() <ONLY> c=ClassExpression()
+  | LOOKAHEAD( "(" URI() <ONLY>)
+    "(" s=URI() <ONLY> c=ClassExpression() ")"
 	{return new ObjectAllRestriction(new ObjectProperty(s),c); }	
   | <NOT> c=ClassExpression()
   	{return new Negation(c); }
