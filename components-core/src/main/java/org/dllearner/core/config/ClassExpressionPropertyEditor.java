@@ -7,6 +7,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
 
 import org.dllearner.core.owl.Description;
+import org.dllearner.parser.ManchesterSyntaxParser;
+import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.owl.ManchesterOWLSyntaxParser;
 import org.semanticweb.owlapi.expression.ParserException;
 
@@ -68,14 +70,12 @@ public class ClassExpressionPropertyEditor implements PropertyEditor {
 
 	@Override
 	public void setAsText(String arg0) throws IllegalArgumentException {
-		System.out.println(arg0);
 		// we assume that the start class string is given in Manchester syntax
 		try {
-			description = ManchesterOWLSyntaxParser.getDescription(arg0);
-		} catch (ParserException e) {
+			description = ManchesterSyntaxParser.parseClassExpression(arg0);
+		} catch (ParseException e) {
 			throw new IllegalArgumentException(e);
 		}
-		System.out.println(description);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class StringValueRestriction extends DatatypeValueRestriction {
 	
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return restrictedPropertyExpression.toString(baseURI, prefixes) + " value " +"\"" +value.toManchesterSyntaxString(baseURI, prefixes)+"\"";
+		return restrictedPropertyExpression.toString(baseURI, prefixes) + " value " + value.toManchesterSyntaxString(baseURI, prefixes);
 	}
 
 	@Override
