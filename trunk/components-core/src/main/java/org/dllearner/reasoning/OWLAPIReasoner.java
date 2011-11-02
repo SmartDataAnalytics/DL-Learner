@@ -260,7 +260,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             reasoner = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
         } else if (getReasonerTypeString().equals("pellet")) {
             // instantiate Pellet reasoner
-            reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(owlAPIOntologies.iterator().next(), conf);
+            reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology, conf);
             // change log level to WARN for Pellet, because otherwise log
             // output will be very large
             Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
