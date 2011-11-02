@@ -38,8 +38,10 @@ import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.confparser3.ParseException;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Files;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -57,59 +59,65 @@ public class CLI {
 	private static Logger logger = Logger.getLogger(CLI.class);
 	private static Logger rootLogger = Logger.getRootLogger();
 	
-	private boolean writeSpringConfiguration = false;
 	private ApplicationContext context;
+	private File confFile;
 	
-	public CLI(File file) throws IOException{
-		Resource confFile = new FileSystemResource(file);
+	// some CLI options
+	private boolean writeSpringConfiguration = false;
+	private boolean performCrossValidation = false;
+	private int nrOfFolds = 10;
+	
+	public CLI() {
 		
-		List<Resource> springConfigResources = new ArrayList<Resource>();
+	}
+	
+	public CLI(File confFile) {
+		this();
+		this.confFile = confFile;
+	}
+	
+    public void run() throws IOException { // ApplicationContext context, String algorithmBeanName){
+    	
+    	IConfiguration configuration = null;
+    	
+    	if(context == null) {
+    		Resource confFileR = new FileSystemResource(confFile);
+    		List<Resource> springConfigResources = new ArrayList<Resource>();
+            configuration = new ConfParserConfiguration(confFileR);
 
-        //DL-Learner Configuration Object
-        IConfiguration configuration = new ConfParserConfiguration(confFile);
-
-        ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-        context =  builder.buildApplicationContext(configuration,springConfigResources);
-        
-        // a lot of debugging stuff
-//        FastInstanceChecker fi = context.getBean("reasoner", FastInstanceChecker.class);
-//        System.out.println(fi.getClassHierarchy());
-//        NamedClass male = new NamedClass("http://localhost/foo#male");
-//        System.out.println(fi.getIndividuals(new NamedClass("http://localhost/foo#male")));
-//        System.out.println(fi.getIndividuals().size());
-//        System.out.println("has type: " + fi.hasTypeImpl(male, new Individual("http://localhost/foo#bernd")));
-//        
-//        PosNegLPStandard lp = context.getBean("lp", PosNegLPStandard.class);
-//        System.out.println(lp.getPositiveExamples());
-//        System.out.println(lp.getNegativeExamples());
-//        System.out.println(lp.getAccuracy(new NamedClass("http://localhost/foo#male")));
-    
-        // get a CLI bean if it exists
-        CLI cli = null;
-        if(context.getBeansOfType(CLI.class).size()>0) {
-        	System.out.println();
-        	cli = context.getBean(CLI.class);
+            ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
+            ApplicationContext context =  builder.buildApplicationContext(configuration,springConfigResources);	
+    	}
+		
+		if(writeSpringConfiguration) {
         	SpringConfigurationXMLBeanConverter converter = new SpringConfigurationXMLBeanConverter();
-        	XmlObject xml = converter.convert(configuration);
-        	String springFilename = file.getCanonicalPath().replace(".conf", ".xml");
+        	XmlObject xml;
+        	if(configuration == null) {
+        		Resource confFileR = new FileSystemResource(confFile);
+        		configuration = new ConfParserConfiguration(confFileR);
+        		xml = converter.convert(configuration);
+        	} else {
+        		xml = converter.convert(configuration);
+        	}
+        	String springFilename = confFile.getCanonicalPath().replace(".conf", ".xml");
         	File springFile = new File(springFilename);
         	if(springFile.exists()) {
         		logger.warn("Cannot write Spring configuration, because " + springFilename + " already exists.");
         	} else {
         		Files.createFile(springFile, xml.toString());
-        	}
-//        	SpringConfigurationXMLBeanConverter converter;
-        }
-        
-        // start algorithm in conf file
-//        LearningAlgorithm algorithm = context.getBean("alg",LearningAlgorithm.class);
-//        algorithm.start();
-    }
+        	}		
+		}    	
+    	
+		if(performCrossValidation) {
+			AbstractReasonerComponent rs = context.getBean(AbstractReasonerComponent.class);
+			PosNegLP lp = context.getBean(PosNegLP.class);
+			AbstractCELA la = context.getBean(AbstractCELA.class);
+			new CrossValidation(la,lp,rs,nrOfFolds,false);
+		} else {
+	    	LearningAlgorithm algorithm = context.getBean(LearningAlgorithm.class);
+	        algorithm.start();
+		}
 
-    public void run() { // ApplicationContext context, String algorithmBeanName){
-    	LearningAlgorithm algorithm = context.getBean(LearningAlgorithm.class);
-//        LearningAlgorithm algorithm = context.getBean(algorithmBeanName, LearningAlgorithm.class);
-        algorithm.start();
     }
 
     public boolean isWriteSpringConfiguration() {
@@ -150,12 +158,61 @@ public class CLI {
 			System.exit(0);			
 		}
 		
-        CLI cli = new CLI(file);
+		Resource confFile = new FileSystemResource(file);
+		
+		List<Resource> springConfigResources = new ArrayList<Resource>();
+
+        //DL-Learner Configuration Object
+        IConfiguration configuration = new ConfParserConfiguration(confFile);
+
+        ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
+        ApplicationContext context =  builder.buildApplicationContext(configuration,springConfigResources);		
+		
+		// TODO: later we could check which command line interface is specified in the conf file
+        // for now we just use the default one
+		
+        CLI cli;
+        if(context.containsBean("cli")) {
+        	cli = (CLI) context.getBean("cli");
+        } else {
+        	cli = new CLI();
+        }
+    	cli.setContext(context);
+    	cli.setConfFile(file);
         cli.run();
+                
+	}
+
+	public void setContext(ApplicationContext context) {
+		this.context = context;
 	}
 
 	public ApplicationContext getContext() {
 		return context;
+	}
+
+	public File getConfFile() {
+		return confFile;
+	}
+
+	public void setConfFile(File confFile) {
+		this.confFile = confFile;
+	}
+
+	public boolean isPerformCrossValidation() {
+		return performCrossValidation;
+	}
+
+	public void setPerformCrossValidation(boolean performCrossValiation) {
+		this.performCrossValidation = performCrossValiation;
+	}
+
+	public int getNrOfFolds() {
+		return nrOfFolds;
+	}
+
+	public void setNrOfFolds(int nrOfFolds) {
+		this.nrOfFolds = nrOfFolds;
 	}
 
 }
