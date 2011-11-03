@@ -4,25 +4,20 @@ package org.dllearner.algorithm.tbsl.sparql;
 public class Allocation {
 	
 	private String uri;
-	private int inDegree;
 	
 	private double similarity;
 	private double prominence;
 	
 	private double score;
 	
-	public Allocation(String uri, int inDegree, double similarity) {
+	public Allocation(String uri, int prominence, double similarity) {
 		this.uri = uri;
-		this.inDegree = inDegree;
+		this.prominence = prominence;
 		this.similarity = similarity;
 	}
 
 	public String getUri() {
 		return uri;
-	}
-
-	public int getInDegree() {
-		return inDegree;
 	}
 
 	public double getSimilarity() {
@@ -47,7 +42,7 @@ public class Allocation {
 
 	@Override
 	public String toString() {
-		return uri + "(similarity: " + similarity + "; prominence: " + inDegree + ")";
+		return uri + "(score: " + score + "; similarity: " + similarity + "; prominence: " + prominence + ")";
 	}
 
 	@Override

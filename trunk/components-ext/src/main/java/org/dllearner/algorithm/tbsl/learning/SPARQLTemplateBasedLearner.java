@@ -7,7 +7,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.collections.SetUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
@@ -42,7 +41,6 @@ import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Prefixes;
 import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.algorithm.tbsl.util.SolrQueryResultStringSimilarityComparator;
-import org.dllearner.algorithm.tbsl.util.StringSimilarityComparator;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.Oracle;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
@@ -63,6 +61,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -571,42 +570,53 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	*/
 	
-	private Set<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
+	private void normProminenceValues(Set<Allocation> allocations){
+		double min = 0;
+		double max = 0;
+		for(Allocation a : allocations){
+			if(a.getProminence() < min){
+				min = a.getProminence();
+			}
+			if(a.getProminence() > max){
+				max = a.getProminence();
+			}
+		}
+		for(Allocation a : allocations){
+			double prominence = a.getProminence()/(max-min);
+			a.setProminence(prominence);
+		}
+	}
+	
+	private void computeScore(Set<Allocation> allocations){
 		double alpha = 0.8;
 		double beta = 1 - alpha;
+		
+		for(Allocation a : allocations){
+			double score = alpha * a.getSimilarity() + beta * a.getProminence();
+			a.setScore(score);
+		}
+	}
+	
+	private Set<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
+		
 		Map<Slot, Set<Allocation>> slot2Allocations = new HashMap<Slot, Set<Allocation>>();
 		
 		Set<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
 		
-		Set<Allocation> allAllocations;
+		Set<Allocation> allocations;
 		for(Template t : templates){
-			allAllocations = new HashSet<Allocation>();
+			allocations = new HashSet<Allocation>();
 			
 			for(Slot slot : t.getSlots()){
-				Set<Allocation> allocations = computeAllocation(slot);
-				allAllocations.addAll(allocations);
+				allocations = computeAllocations(slot);
+				
+				normProminenceValues(allocations);
+				
+				computeScore(allocations);
+				
 				slot2Allocations.put(slot, allocations);
 			}
 			
-			int min = Integer.MAX_VALUE;
-			int max = Integer.MIN_VALUE;
-			for(Allocation a : allAllocations){
-				if(a.getInDegree() < min){
-					min = a.getInDegree();
-				}
-				if(a.getInDegree() > max){
-					max = a.getInDegree();
-				}
-			}
-			for(Allocation a : allAllocations){
-				double prominence = a.getInDegree()/(max-min);
-				a.setProminence(prominence);
-				
-				double score = alpha * a.getSimilarity() + beta * a.getProminence();
-				a.setScore(score);
-				
-			}
-//			System.out.println(allAllocations);
 			
 			Set<WeightedQuery> queries = new HashSet<WeightedQuery>();
 			Query cleanQuery = t.getQuery();
@@ -642,11 +652,13 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			}
 			
 			for(Slot slot : sortedSlots){
-				if(!slot2Allocations.get(slot).isEmpty()){
+				if(!slot2Allocations.get(slot).isEmpty()){System.out.println(slot2Allocations.get(slot));
 					for(Allocation a : slot2Allocations.get(slot)){
 						for(WeightedQuery query : queries){
 								Query q = new Query(query.getQuery());
-								
+								if(a.getUri().equals("http://dbpedia.org/ontology/developer") && q.toString().contains("/Organisation>")){
+									System.out.println("YES");
+								}
 								boolean drop = false;
 								if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
 									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
@@ -655,33 +667,38 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //										System.out.println(triple);
 										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(objectVar)){
 //											System.out.println(typeTriple);
-											Set<String> ranges = getRanges(a.getUri());
-//											System.out.println(a);
-											if(!ranges.isEmpty()){
-												Set<String> allRanges = new HashSet<String>();
-												for(String range : ranges){
-													allRanges.addAll(getSuperClasses(range));
+											if(isObjectProperty(a.getUri())){
+												Set<String> ranges = getRanges(a.getUri());
+//												System.out.println(a);
+												if(!ranges.isEmpty()){
+													Set<String> allRanges = new HashSet<String>();
+													for(String range : ranges){
+														allRanges.addAll(getSuperClasses(range));
+													}
+													allRanges.addAll(ranges);
+													allRanges.remove("http://www.w3.org/2002/07/owl#Thing");
+													String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
+													Set<String> allTypes = getSuperClasses(typeURI);
+													allTypes.add(typeTriple.getValue().getName());
+													if(typeURI.equals("http://dbpedia.org/ontology/Organisation") && a.getUri().equals("http://dbpedia.org/ontology/developer")){
+														System.out.println("RANGES: " + allRanges);
+														System.out.println("TYPES: " + allTypes);
+													}
+													
+													if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
+														drop = true;
+													} else {
+//														System.out.println("DROPPING: \n" + q.toString());
+													}
 												}
-												allRanges.addAll(ranges);
-												allRanges.remove("http://www.w3.org/2002/07/owl#Thing");
-												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
-												Set<String> allTypes = getSuperClasses(typeURI);
-												allTypes.add(typeTriple.getValue().getName());
-//												if(typeURI.equals("http://dbpedia.org/ontology/Actor") && a.getUri().equals("http://dbpedia.org/ontology/birthPlace")){
-//													System.out.println("RANGES: " + allRanges);
-//													System.out.println("TYPES: " + allTypes);
-//												}
-												
-												if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
-													drop = true;
-												} else {
-													System.out.println("DROPPING: \n" + q.toString());
-												}
+											} else {
+												drop = true;
 											}
+											
 										}
 										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(subjectVar)){
 //											System.out.println(typeTriple);
-											Set<String> domains = getDomains(a.getUri());System.out.println(a.getUri() + ":" + domains);
+											Set<String> domains = getDomains(a.getUri());
 //											System.out.println(a);
 											if(!domains.isEmpty()){
 												Set<String> allDomains = new HashSet<String>();
@@ -693,15 +710,15 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
 												Set<String> allTypes = getSuperClasses(typeURI);
 												allTypes.add(typeTriple.getValue().getName());
-//												if(typeURI.equals("http://dbpedia.org/ontology/Actor") && a.getUri().equals("http://dbpedia.org/ontology/birthPlace")){
-//													System.out.println("DOMAINS: " + allDomains);
-//													System.out.println("TYPES: " + allTypes);
-//												}
+												if(typeURI.equals("http://dbpedia.org/ontology/Organisation") && a.getUri().equals("http://dbpedia.org/ontology/developer")){
+													System.out.println("DOMAINS: " + allDomains);
+													System.out.println("TYPES: " + allTypes);
+												}
 												
 												if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
 													drop = true;
 												} else {
-													System.out.println("DROPPING: \n" + q.toString());
+//													System.out.println("DROPPING: \n" + q.toString());
 												}
 											}
 										}
@@ -762,15 +779,24 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 										}
  */
 	
-	private Set<Allocation> computeAllocation(Slot slot){
+	private Set<Allocation> computeAllocations(Slot slot){
 		Set<Allocation> allocations = new HashSet<Allocation>();
 		
 		SolrSearch index = getIndexBySlotType(slot);
 		
 		SolrQueryResultSet rs;
 		for(String word : slot.getWords()){
-			rs = index.getResourcesWithScores(word, 10);System.out.println(word + "->" + rs);
-			
+			rs = index.getResourcesWithScores(word, 10);
+			//for tests add the property URI with http://dbpedia.org/property/ namespace
+			Set<SolrQueryResultItem> tmp = new HashSet<SolrQueryResultItem>();
+			if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
+				for(SolrQueryResultItem i : rs.getItems()){
+					String uri = "http://dbpedia.org/property/" + i.getUri().substring(i.getUri().lastIndexOf("/")+1);
+					tmp.add(new SolrQueryResultItem(i.getLabel(), uri));
+				}
+			}
+			rs.addItems(tmp);
+//			System.out.println(word + "->" + rs);
 			for(SolrQueryResultItem item : rs.getItems()){
 				int prominence = getProminenceValue(item.getUri(), slot.getSlotType());
 				double similarity = Similarity.getSimilarity(word, item.getLabel());
@@ -1295,6 +1321,15 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return domains;
 	}
 	
+	private boolean isObjectProperty(String property){
+		String query = String.format("SELECT * WHERE {<%s> a <%s>}", property, OWL.ObjectProperty.getURI());
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		if(rs.hasNext()){
+			return true;
+		}
+		return false;
+	}
+	
 	private Set<String> getSuperClasses(String cls){
 		Set<String> superClasses = new HashSet<String>();
 		
@@ -1325,7 +1360,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		String question = "In which programming language is GIMP written?";
 //		String question = "Who/WP was/VBD the/DT wife/NN of/IN president/NN Lincoln/NNP";
 //		String question = "Who/WP produced/VBD the/DT most/JJS films/NNS";
-		String question = "Which/WDT actors/NNS were/VBD born/VBN in/IN Germany/NNP";
+		String question = "Which/WDT country/NN does/VBZ the/DT Airedale/NNP Terrier/NNP come/VBP from/IN";
+//		String question = "Which/WDT software/NN has/VBZ been/VBN developed/VBN by/IN organizations/NNS founded/VBN in/IN California/NNP";
 		
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();learner.setUseIdealTagger(true);
