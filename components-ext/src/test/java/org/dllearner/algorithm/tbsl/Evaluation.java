@@ -60,6 +60,9 @@ import com.ibm.icu.util.Calendar;
 
 public class Evaluation{
 	
+	List<Integer> yagoExclusions = Arrays.asList(new Integer[]{1,	3,	6,	11,	15,	22,	23,	46});
+	Map<Integer, String> evalCodes = new HashMap<Integer, String>();
+	
 	private static Logger logger = Logger.getLogger(Evaluation.class);
 	private static String PROPERTIES_PATH = "tbsl/evaluation/evaluation.properties";
 	private static final boolean USE_IDEAL_TAGGER = true;
@@ -95,6 +98,8 @@ public class Evaluation{
 		prefixMap.put("res", "http://dbpedia.org/resource/");
 		prefixMap.put("foaf", FOAF.getURI());
 		prefixMap.put("yago", "http://dbpedia.org/class/yago/");
+		
+		
 	}
 	
 	public void init() throws FileNotFoundException, IOException{
@@ -312,8 +317,8 @@ public class Evaluation{
 		String errorCode = "";
 		LatexWriter latex = new LatexWriter();
 		int i = 0;
-		for(Entry<Integer, String> entry : id2Question.entrySet()){//if(entry.getKey()==50)continue;
-			if(testID != -1 && entry.getKey() != testID)continue;
+		for(Entry<Integer, String> entry : id2Question.entrySet()){if(entry.getKey()==50)continue;
+			if((testID != -1 && entry.getKey() != testID) || (yagoExclusions.contains(entry.getKey())))continue;
 			try {
 				questionId = entry.getKey();
 				question = entry.getValue();
