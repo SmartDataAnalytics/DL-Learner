@@ -667,7 +667,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
 												Set<String> allTypes = getSuperClasses(typeURI);
 												allTypes.add(typeTriple.getValue().getName());
-//												if(typeURI.equals("http://dbpedia.org/ontology/Film") && a.getUri().equals("http://dbpedia.org/ontology/starring")){
+//												if(typeURI.equals("http://dbpedia.org/ontology/Actor") && a.getUri().equals("http://dbpedia.org/ontology/birthPlace")){
 //													System.out.println("RANGES: " + allRanges);
 //													System.out.println("TYPES: " + allTypes);
 //												}
@@ -693,7 +693,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
 												Set<String> allTypes = getSuperClasses(typeURI);
 												allTypes.add(typeTriple.getValue().getName());
-//												if(typeURI.equals("http://dbpedia.org/ontology/Film") && a.getUri().equals("http://dbpedia.org/ontology/starring")){
+//												if(typeURI.equals("http://dbpedia.org/ontology/Actor") && a.getUri().equals("http://dbpedia.org/ontology/birthPlace")){
 //													System.out.println("DOMAINS: " + allDomains);
 //													System.out.println("TYPES: " + allTypes);
 //												}
@@ -769,7 +769,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		
 		SolrQueryResultSet rs;
 		for(String word : slot.getWords()){
-			rs = index.getResourcesWithScores(word, 3);
+			rs = index.getResourcesWithScores(word, 10);System.out.println(word + "->" + rs);
 			
 			for(SolrQueryResultItem item : rs.getItems()){
 				int prominence = getProminenceValue(item.getUri(), slot.getSlotType());
@@ -1297,8 +1297,13 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	
 	private Set<String> getSuperClasses(String cls){
 		Set<String> superClasses = new HashSet<String>();
-		for(Description d : reasoner.getClassHierarchy().getSuperClasses(new NamedClass(cls))){
+		
+		for(Description d : reasoner.getClassHierarchy().getSuperClasses((new NamedClass(cls)))){
 			superClasses.add(((NamedClass)d).getName());
+			for(Description sup : reasoner.getClassHierarchy().getSuperClasses(d)){
+				superClasses.add(((NamedClass)sup).getName());
+			}
+			
 		}
 		return superClasses;
 	}
@@ -1319,8 +1324,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
 //		String question = "In which programming language is GIMP written?";
 //		String question = "Who/WP was/VBD the/DT wife/NN of/IN president/NN Lincoln/NNP";
-		String question = "Who/WP produced/VBD the/DT most/JJS films/NNS";
-//		String question = "Give/VB me/PRP all/DT soccer/NN clubs/NNS in/IN the/DT Premier/NNP League/NNP";
+//		String question = "Who/WP produced/VBD the/DT most/JJS films/NNS";
+		String question = "Which/WDT actors/NNS were/VBD born/VBN in/IN Germany/NNP";
 		
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();learner.setUseIdealTagger(true);

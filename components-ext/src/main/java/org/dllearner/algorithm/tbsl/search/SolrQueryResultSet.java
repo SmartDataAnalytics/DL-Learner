@@ -27,6 +27,9 @@ public class SolrQueryResultSet {
 		this.items.addAll(rs.getItems());
 	}
 	
-	
+	@Override
+	public String toString() {
+		return items.toString();
+	}
 
 }
