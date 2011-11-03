@@ -317,7 +317,7 @@ public class Evaluation{
 		String errorCode = "";
 		LatexWriter latex = new LatexWriter();
 		int i = 0;
-		for(Entry<Integer, String> entry : id2Question.entrySet()){if(entry.getKey()==50)continue;
+		for(Entry<Integer, String> entry : id2Question.entrySet()){//if(entry.getKey()==50)continue;
 			if((testID != -1 && entry.getKey() != testID) || (yagoExclusions.contains(entry.getKey())))continue;
 			try {
 				questionId = entry.getKey();
@@ -333,7 +333,7 @@ public class Evaluation{
 				
 				
 				//write new section for query
-				latex.beginSection(extractSentence(question));
+				latex.beginSection(extractSentence(question), questionId);
 				//write subsection for target
 				latex.beginSubsection("Target");
 				//write subsubsection for target query
@@ -616,7 +616,7 @@ public class Evaluation{
 				
 				
 				//write new section for query
-				latex.beginSection(question);
+				latex.beginSection(question, questionId);
 				//write subsection for target
 				latex.beginSubsection("Target");
 				//write subsubsection for target query

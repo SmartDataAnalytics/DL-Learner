@@ -61,8 +61,8 @@ public class LatexWriter {
 		sb.append("\\end{document}");
 	}
 	
-	public void beginSection(String title){
-		sb.append("\\section{").append(title).append("}").append("\\label{" + cnt++ + "}\n");
+	public void beginSection(String title, int id){
+		sb.append("\\section{").append(title).append("}").append("\\label{" + id + "}\n");
 	}
 	
 	public void beginSubsection(String title){
