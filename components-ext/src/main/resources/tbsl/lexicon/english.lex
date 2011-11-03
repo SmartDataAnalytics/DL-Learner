@@ -69,7 +69,6 @@
 	at least || (DP DET:'at' DET:'least' NUM[num] NP[noun]) || <y,l1,<<e,t>,t>,[l1:[ y,j |count(a,y,j), greaterorequal(j,x) ]],[(l2,y,noun,<e,t>),(l3,x,num,e)],[ l1=l2, l2=l3 ],[]>
 	at most || (DP DET:'at' DET:'most' NUM[num] NP[noun]) || <y,l1,<<e,t>,t>,[l1:[ y,j | count(a,y,j), smallerorequal(j,x) ]],[(l2,y,noun,<e,t>),(l3,x,num,e)],[ l1=l2, l2=l3 ],[]>
 	exactly || (DP DET:'exactly' NUM[num] NP[noun]) || <y,l1,<<e,t>,t>,[l1:[ y,j | count(y,j), equals(j,x) ]],[(l2,y,noun,<e,t>),(l3,x,num,e)],[ l1=l2, l2=l3 ],[]>
-	s || (DP DP* DET:'s' NP[noun]) || -
 	
 	other || (NP ADJ:'other' NP*) || <x,l1,<e,t>,[ l1:[ | ] ], [],[],[]>
 	total || (NP ADJ:'total' NP[np]) || <s,l1,<e,t>,[ l1:[ ?s | sum(a,x,s) ] ], [ (l2,x,np,<e,t>) ],[ l2=l1 ],[]>
@@ -86,7 +85,7 @@
 	the least || (DET DET:'the' DET:'least') || <y, l1, e, [ l1:[ | l2:[ y | ] THELEAST y l3:[|] ] ], [], [],[]>
 
     // CHEAT!
-	highest || (NP ADJ:'highest' NP*) || <x, l1, e, [ l1:[ | maximum(a,x,x) ] ], [], [],[]> ;; <x, l1, e, [ l1:[ j | SLOT_high(x,j), maximum(a,j,j) ] ],[],[],[ SLOT_high/PROPERTY/height^elevation ]>
+	highest || (NP ADJ:'highest' NP*) || <x, l1, e, [ l1:[ | maximum(x) ] ], [], [],[]> ;; <x, l1, e, [ l1:[ j | SLOT_high(x,j), maximum(j) ] ],[],[],[ SLOT_high/PROPERTY/height^elevation ]>
 
 	// COUNT
 	more than || (DP DET:'more' DET:'than' NUM[num] NP[np]) || <y,l1,<<e,t>,t>,[ l1:[ y,c | count(y,c), greater(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]> ;; <y,l1,<<e,t>,t>,[ l1:[ y | greater(y,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
