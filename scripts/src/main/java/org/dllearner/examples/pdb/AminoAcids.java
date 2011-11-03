@@ -90,6 +90,33 @@ public final class AminoAcids {
 		return resprint;
 	}
 	
+	public static HashMap<Resource, StringBuffer> getAminoAcidStringBufferMap(String init){
+		// put all amino acid resources and the their conf-files together
+		HashMap<Resource, StringBuffer> resourceString = new HashMap<Resource, StringBuffer>(30);
+		resourceString.put(ALA, new StringBuffer(init));
+		resourceString.put(CYS, new StringBuffer(init));
+		resourceString.put(ASP, new StringBuffer(init));
+		resourceString.put(GLU, new StringBuffer(init));
+		resourceString.put(PHE, new StringBuffer(init));
+		resourceString.put(GLY, new StringBuffer(init));
+		resourceString.put(HIS, new StringBuffer(init));
+		resourceString.put(ILE, new StringBuffer(init));
+		resourceString.put(LYS, new StringBuffer(init));
+		resourceString.put(LEU, new StringBuffer(init));
+		resourceString.put(MET, new StringBuffer(init));
+		resourceString.put(ASN, new StringBuffer(init));
+		resourceString.put(PRO, new StringBuffer(init));
+		resourceString.put(GLN, new StringBuffer(init));
+		resourceString.put(ARG, new StringBuffer(init));
+		resourceString.put(SER, new StringBuffer(init));
+		resourceString.put(THR, new StringBuffer(init));
+		resourceString.put(VAL, new StringBuffer(init));
+		resourceString.put(TRP, new StringBuffer(init));
+		resourceString.put(TYR, new StringBuffer(init));
+		resourceString.put(SEL, new StringBuffer(init));
+		return resourceString;
+	}
+	
 	public static HashMap<Resource, String> getAminoAcidArffAttributeMap(){
 		HashMap<Resource, String> resdata = new HashMap<Resource, String>(30); 
 		resdata.put(ALA, new String("2,0,0.5,?,?"));
