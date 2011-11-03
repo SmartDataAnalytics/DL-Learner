@@ -10,7 +10,7 @@ public class Allocation {
 	
 	private double score;
 	
-	public Allocation(String uri, int prominence, double similarity) {
+	public Allocation(String uri, double prominence, double similarity) {
 		this.uri = uri;
 		this.prominence = prominence;
 		this.similarity = similarity;

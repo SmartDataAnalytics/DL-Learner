@@ -595,6 +595,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			double score = alpha * a.getSimilarity() + beta * a.getProminence();
 			a.setScore(score);
 		}
+		
 	}
 	
 	private Set<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
@@ -615,6 +616,18 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				computeScore(allocations);
 				
 				slot2Allocations.put(slot, allocations);
+				
+				//for tests add the property URI with http://dbpedia.org/property/ namespace
+				Set<Allocation> tmp = new HashSet<Allocation>();
+				if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
+					for(Allocation a : allocations){
+						String uri = "http://dbpedia.org/property/" + a.getUri().substring(a.getUri().lastIndexOf("/")+1);
+						Allocation newA = new Allocation(uri, a.getSimilarity(), a.getProminence());
+						newA.setScore(a.getScore()-0.000001);
+						tmp.add(newA);
+					}
+				}
+				allocations.addAll(tmp);
 			}
 			
 			
@@ -787,15 +800,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		SolrQueryResultSet rs;
 		for(String word : slot.getWords()){
 			rs = index.getResourcesWithScores(word, 10);
-			//for tests add the property URI with http://dbpedia.org/property/ namespace
-			Set<SolrQueryResultItem> tmp = new HashSet<SolrQueryResultItem>();
-			if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
-				for(SolrQueryResultItem i : rs.getItems()){
-					String uri = "http://dbpedia.org/property/" + i.getUri().substring(i.getUri().lastIndexOf("/")+1);
-					tmp.add(new SolrQueryResultItem(i.getLabel(), uri));
-				}
-			}
-			rs.addItems(tmp);
+			
 //			System.out.println(word + "->" + rs);
 			for(SolrQueryResultItem item : rs.getItems()){
 				int prominence = getProminenceValue(item.getUri(), slot.getSlotType());
@@ -1359,9 +1364,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
 //		String question = "In which programming language is GIMP written?";
 //		String question = "Who/WP was/VBD the/DT wife/NN of/IN president/NN Lincoln/NNP";
-//		String question = "Who/WP produced/VBD the/DT most/JJS films/NNS";
-		String question = "Which/WDT country/NN does/VBZ the/DT Airedale/NNP Terrier/NNP come/VBP from/IN";
+		String question = "Who/WP produced/VBD the/DT most/JJS films/NNS";
+//		String question = "Which/WDT country/NN does/VBZ the/DT Airedale/NNP Terrier/NNP come/VBP from/IN";
 //		String question = "Which/WDT software/NN has/VBZ been/VBN developed/VBN by/IN organizations/NNS founded/VBN in/IN California/NNP";
+//		String question = "How/WRB many/JJ films/NNS did/VBD Leonardo/NNP DiCaprio/NNP star/VB in/IN";
 		
 //		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();learner.setUseIdealTagger(true);
