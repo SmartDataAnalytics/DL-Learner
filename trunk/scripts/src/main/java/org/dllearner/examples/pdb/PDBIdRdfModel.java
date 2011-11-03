@@ -37,7 +37,9 @@ public class PDBIdRdfModel {
 		this._protein = protein;
 		this._pdbIdModel = this.getPdbRdfModel();
 		this.getProtein().setSequence(extractSequence(_pdbIdModel));
+		System.out.println("Sequence: " + this.getProtein().getSequence());
 		this.getProtein().setSpecies(extractSpecies(_pdbIdModel));
+		System.out.println("Species: " + this.getProtein().getSpecies());
 		createPositivesAndNegatives();
 	}
 	
@@ -98,11 +100,12 @@ public class PDBIdRdfModel {
 			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
 			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 			"PREFIX fn: <http://www.w3.org/2005/xpath-functions#> " +
-			"CONSTRUCT {<http://bio2rdf.org/pdb:" + this.getProtein().getPdbID() + "/extraction/source/gene/organism> rdfs:label ?species. }" +
-    		"WHERE { ?x1 <http://purl.org/dc/terms/isPartOf> ?x2 ." +
-	    		" ?x1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x3 ." +
-	    		" ?x1 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x4 ." +
-				" ?x5 rdfs:label ?species FILTER (str(?x5) = fn:concat(str(?x2), '/extraction/source/gene/organism')) . }";
+			"CONSTRUCT { pdb:" + this.getProtein().getPdbID() + "/extraction/source/gene/organism rdfs:label ?species. }" +
+    		"WHERE { ?x1 dcterms:isPartOf ?x2 ." +
+	    		" ?x1 rdf:type> ?x3 ." +
+	    		" ?x1 pdb:isImmediatelyBefore ?x4 ." +
+				" ?x5 rdfs:label ?species " +
+				" FILTER (str(?x5) = fn:concat(str(?x2), '/extraction/source/gene/organism')) . }";
 		
 		// System.out.println(queryString);
 		
@@ -189,36 +192,37 @@ public class PDBIdRdfModel {
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 				"PREFIX fn: <http://www.w3.org/2005/xpath-functions#> " +
-				"CONSTRUCT { ?x1 <http://bio2rdf.org/pdb:beginsAt> ?x2 ." +
-	    		" ?x1 <http://bio2rdf.org/pdb:endsAt> ?x3 . " +
-	    		" ?x5 <http://purl.org/dc/terms/isPartOf> ?x4 . " +
-	    		" ?x5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x6 ." +
-	    		" ?x5 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x7 ." +
+				"CONSTRUCT { ?x1 pdb:beginsAt ?x2 ." +
+	    		" ?x1 pdb:endsAt ?x3 . " +
+	    		" ?x5 dcterms:isPartOf ?x4 . " +
+	    		" ?x5 rdf:type ?x6 ." +
+	    		" ?x5 pdb:isImmediatelyBefore ?x7 ." +
 	    		" ?organism rdfs:label ?organismName ." +
-	    		" ?seq <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://bio2rdf.org/pdb:PolymerSequence> ." +
+	    		" ?seq rdf:type pdb:PolymerSequence ." +
 	    		" ?seq pdb:hasValue ?sequence. } " +	    		
-	    		"WHERE { ?x1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://bio2rdf.org/pdb:Helix> ." +
-	    		" ?x1 <http://bio2rdf.org/pdb:beginsAt> ?x2 ." +
-	    		" ?x1 <http://bio2rdf.org/pdb:endsAt> ?x3 ." +
-	    		" ?x3 <http://purl.org/dc/terms/isPartOf> ?x4 ." +
-	    		" ?x4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://bio2rdf.org/pdb:Polypeptide(L)> ." +
-	    		" ?x5 <http://purl.org/dc/terms/isPartOf> ?x4 ." +
-	    		" ?x5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x6 .";
+	    		"WHERE { ?x1 rdf:type pdb:Helix ." +
+	    		" ?x1 pdb:beginsAt ?x2 ." +
+	    		" ?x1 pdb:endsAt ?x3 ." +
+	    		" ?x3 dcterms:isPartOf ?x4 ." +
+	    		" ?x4 rdf:type <http://bio2rdf.org/pdb:Polypeptide(L)> ." +
+	    		" ?x5 dcterms:isPartOf ?x4 ." +
+	    		" ?x5 rdf:type ?x6 .";
 		 if (chainID.length() == 1 && pdbID.length() == 4)
 			{
 				queryString +=
-						" ?x5 <http://bio2rdf.org/pdb:hasChainPosition> ?x8 ." +
-						" ?x8 <http://purl.org/dc/terms/isPartOf> <http://bio2rdf.org/pdb:" + 
+						" ?x5 pdb:hasChainPosition ?x8 ." +
+						" ?x8 dcterms:isPartOf pdb:" + 
 								pdbID.toUpperCase() +
 								"/chain_" + chainID.toUpperCase() + "> .";
 			}
 		 queryString +=
-				" ?organism rdfs:label ?organismName FILTER (str(?organism) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . " +
-	    		" ?seq <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://bio2rdf.org/pdb:PolymerSequence> . " +
+				" ?organism rdfs:label ?organismName " +
+				"FILTER (str(?organism) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . " +
+	    		" ?seq rdf:type pdb:PolymerSequence . " +
 	    		" ?seq pdb:hasValue ?sequence ." +
 	    		// with the Optional clause i get the information by which amino acid
 	    		// a amino acid is followed
-	    		" OPTIONAL { ?x5 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x7 . } .}";
+	    		" OPTIONAL { ?x5 pdb:isImmediatelyBefore ?x7 . } .}";
 		
 		System.out.println(queryString);
 		Query query = QueryFactory.create(queryString);

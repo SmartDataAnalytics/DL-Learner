@@ -101,16 +101,16 @@ public class HelixRDFCreator {
 		 * load = true -> load alle .rdf, .conf and .arff Files that can be found within the directory dataDir
 		 * load = false -> don't load anything
 		 */
-		Boolean dlLearn = true;
-		Boolean wekaLearn = true;
+		Boolean dlLearn = false;
+		Boolean wekaLearn = false;
 		
 		int dataSet = 5;
 
 		/*
 		 * data for test purpose
 		 */
-//		PdbProtein testProtein = new PdbProtein("1XFF");
-		PDBProtein testProtein = new PDBProtein("1XFF", "A");
+		PDBProtein testProtein = new PDBProtein("1XFF");
+//		PDBProtein testProtein = new PDBProtein("1LMB", "3");
 		
 		/*
 		 * create a training data set
@@ -233,14 +233,14 @@ public class HelixRDFCreator {
 				try {
 					String line =  protein.getPdbID() + "." + protein.getChainID()  + "." + protein.getSpecies() + "\n";
 					FileWriter out = new FileWriter(speciesProteins, true);
-					_logger.debug("Write " + line + "to file " + speciesProteins.getPath() + speciesProteins.getName());
+					_logger.debug("Write " + line + "to file " + speciesProteins.getPath());
 					out.write(line);
 					out.close();
 				} catch (FileNotFoundException e) {
-					_logger.error("Could not find file " + speciesProteins.getPath() + speciesProteins.getName());
+					_logger.error("Could not find file " + speciesProteins.getPath() );
 					e.printStackTrace();
 				} catch (IOException e) {
-					_logger.error("Something went wrong while trying to write to " + speciesProteins.getPath() + speciesProteins.getName());
+					_logger.error("Something went wrong while trying to write to " + speciesProteins.getPath() );
 					e.printStackTrace();
 				}
 			}
@@ -325,33 +325,53 @@ public class HelixRDFCreator {
 		try
     	{
 			PDBProtein protein = model.getProtein();
-			// the file with all amino acids
+
+			// the .conf file that contains all positives and negatives
 			String confFilePath = pdbDir + protein.getConfFileName();
 			PrintStream confFile = new PrintStream (new File(confFilePath));
-			// add import statements to confFile
-			String importStmt = new String("import(\"../AA_properties.owl\");\n" +
-					"import(\"" + protein.getRdfFileName() + "\");\n"); 
-			confFile.println(importStmt);
-			
-			HashMap<Resource, File> confFilePerResidue = AminoAcids.getAllConfFiles(pdbDir, protein.getConfFileName());
 
-			HashMap<Resource, PrintStream> resprint = AminoAcids.getAminoAcidPrintStreamMap(confFilePerResidue);
 			
-			Property type = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
+			// knowledge source definition
+			String ks = new String ("// knowledge source definition\n" + 
+					"ks.type = \"OWL File\"\n" +
+					"ks.fileName = \"AA_properties.owl\"\n" +
+					"\n" +
+					"ks.type = \"OWL File\"\n" + 
+					"ks.fileName = \"" + protein.getRdfFileName() + "\"\n");
+			// learning problem
+			StringBuffer lp = new StringBuffer ("// learning problem\n" +
+					"lp.type = \"posNegStandard\"" +
+					"\n" +
+					"lp.positiveExamples = { ");			
 			
-			// add import statements to <PDB ID>_<Amino Acid>.conf files
-			Iterator<Resource> keys = resprint.keySet().iterator();
-			while (keys.hasNext()){
-				resprint.get(keys.next()).println(importStmt);
+			// separate files that contain only positives and negatives of a distinct type
+			HashMap<Resource, File> confFilePerResidue = 
+				AminoAcids.getAllConfFiles(pdbDir, protein.getConfFileName());
+			HashMap<Resource, PrintStream> resprint = 
+				AminoAcids.getAminoAcidPrintStreamMap(confFilePerResidue);
+			HashMap<Resource, StringBuffer> resourceStringBuffer = 
+				AminoAcids.getAminoAcidStringBufferMap(lp.toString());
+			
+			// add knowledge source definition to <PDB ID>.conf files
+			confFile.println(ks);
+									
+			// add knowledge source definition to <PDB ID>_<Amino Acid>.conf files
+			Iterator<Resource> resources = resprint.keySet().iterator();
+			while (resources.hasNext()){
+				resprint.get(resources.next()).println(ks);
 			}
 
-			// add every amino acid in positive list to <PDB ID>.conf and its corresponding <PDB ID>_<Amino Acid>.conf
+			
 			ArrayList<Resource> positives = model.getPositives();
+
+			Property type = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
+
+			// add positive examples to <PDB ID>.conf and corresponding <PDB ID>_<Amino Acid>.conf files
 			for (int i = 0 ; i < positives.size() ; i++ ) {
-				confFile.println("+\"" + positives.get(i).getURI() + "\"");
+				lp.append("\"" + positives.get(i).getURI() + "\", ");
 				try{
 					Statement spo = model.getModel().getProperty(positives.get(i), type);
-					resprint.get(spo.getResource()).println("+\"" + positives.get(i).getURI() + "\"");
+					resourceStringBuffer.get(spo.getResource()).append("\"" + positives.get(i).getURI() + "\", ");
 				} catch (NullPointerException e) {
 					// What was the Object that probably caused the pain?
 					_logger.error("Object probably not in our HashMap: " +
@@ -360,13 +380,29 @@ public class HelixRDFCreator {
 				}
 			}
 			
+			if (lp.toString().contains(","))
+				lp.deleteCharAt(lp.lastIndexOf(","));
+			lp.append("}\n" +
+					"lp.negativeExamples = { ");
+			
+			resources = resourceStringBuffer.keySet().iterator();
+			while (resources.hasNext()){
+				Resource residue = resources.next();
+				if (resourceStringBuffer.get(residue).toString().contains(",")) 
+					resourceStringBuffer.get(residue).deleteCharAt(
+							resourceStringBuffer.get(residue).lastIndexOf(","));
+				resourceStringBuffer.get(residue).append("}\n" +
+						"lp.negativeExamples = { ");			
+			}
+			
+			
 			// add every amino acid in negative list to <PDB ID>.conf and its corresponding <PDB ID>_<Amino Acid>.conf
 			ArrayList<Resource> negatives = model.getNegatives();
 			for (int i = 0 ; i < negatives.size() ; i++ ) {
-				confFile.println("-\"" + negatives.get(i).getURI() + "\"");
+				lp.append("\"" + negatives.get(i).getURI() + "\", ");
 				try{
 					Statement spo = model.getModel().getProperty(negatives.get(i), type);
-					resprint.get(spo.getResource()).println("-\"" + negatives.get(i).getURI() + "\"");
+					resourceStringBuffer.get(spo.getResource()).append("\"" + negatives.get(i).getURI() + "\", ");
 				} catch (NullPointerException e) {
 					// What was the Object that probably caused the pain?
 					_logger.error("Object probably not in our HashMap: " +
@@ -374,7 +410,26 @@ public class HelixRDFCreator {
 					e.printStackTrace();
 				}
 			}
+			
+			// add learning problem to <PDB ID>.conf file
+			// and write learning problem to file
+			if (lp.toString().contains(","))
+				lp.deleteCharAt(lp.lastIndexOf(","));
+			lp.append("}\n");
+			confFile.println(lp);
 
+			// add learning problem to <PDB ID>_<Amino Acid>.conf files
+			// and write learning problem to file
+			resources = resourceStringBuffer.keySet().iterator();
+			while (resources.hasNext()){
+				Resource residue = resources.next();
+				if (resourceStringBuffer.get(residue).toString().contains(","))
+					resourceStringBuffer.get(residue).deleteCharAt(
+							resourceStringBuffer.get(residue).lastIndexOf(","));
+				resourceStringBuffer.get(residue).append("}\n");
+				resprint.get(residue).println(resourceStringBuffer.get(residue));
+			}
+			
 			// Important - free up resources used running the query
 			confFile.close();
 			
@@ -382,7 +437,6 @@ public class HelixRDFCreator {
 			while ( newkeys.hasNext() ){
 				resprint.get(newkeys.next()).close();
 			}
-			
     	}
     	catch (IOException e)
     	{
@@ -409,16 +463,16 @@ public class HelixRDFCreator {
 			 * ATTRIBUTES
 			 */
 			// Integer declaring Position in chain
-			String attributes = "@ATTRIBUTE hydrophob NUMERIC\n" + //  Hydrophilic = 0; Hydrophobic = 1; Very_hydrophobic = 2
+			StringBuffer attributes = new StringBuffer("@ATTRIBUTE hydrophob NUMERIC\n" + //  Hydrophilic = 0; Hydrophobic = 1; Very_hydrophobic = 2
 					"@ATTRIBUTE charge NUMERIC\n" + // Negative = -1; Neutral = 0; Positive = 1 
 					"@ATTRIBUTE size NUMERIC\n" + // Large = 2; Small = 1; Tiny = 0.5 
 					"@ATTRIBUTE aromaticity NUMERIC\n" + // Aliphatic = 0; Aromatic = 1 
-					"@ATTRIBUTE hydrogen_bonding NUMERIC\n"; // Donor = 1; Donor/Acceptor = 0; Acceptor = -1 
+					"@ATTRIBUTE hydrogen_bonding NUMERIC\n"); // Donor = 1; Donor/Acceptor = 0; Acceptor = -1 
 
 			for (int i = -8; i <= 8; i++) {
-				attributes += "@ATTRIBUTE aa_position_" + i + " {A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y}\n"; // amino acid at position $i from current amino acid
+				attributes.append("@ATTRIBUTE aa_position_" + i + " {A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y}\n"); // amino acid at position $i from current amino acid
 			}
-			attributes += "@ATTRIBUTE in_helix NUMERIC\n"; // Helix = 1 Other = 0
+			attributes.append("@ATTRIBUTE in_helix NUMERIC\n"); // Helix = 1 Other = 0
 					
 			_logger.debug(attributes);
 			out.println(attributes);
@@ -443,32 +497,32 @@ public class HelixRDFCreator {
 				Resource currentAA = firstAA;
 				Resource nextAA = firstAA;
 				
-				int i = 0;
-				String dataLine;
-				do {
-					dataLine = "";
+				
+				
+				for ( int i = 0; currentAA.hasProperty(iib); i++ ) {
+					StringBuffer dataLine = new StringBuffer("");
 					currentAA = nextAA;
 					
 					NodeIterator niter = model.getModel().listObjectsOfProperty(currentAA, type);
 					while (niter.hasNext()){
 						Resource key = niter.next().asResource();
 						if (resdata.containsKey(key)){
-							dataLine += resdata.get(key) +",";
+							dataLine.append( resdata.get(key) + "," );
 						}
 					}
 					
 					for (int j = (i - 8); j <= (i + 8) ; j++){
 						try {
-							dataLine += protein.getSequence().charAt(j) + ",";
+							dataLine.append( protein.getSequence().charAt(j) + "," );
 						} catch (IndexOutOfBoundsException e) {
-							dataLine += "?,";
+							dataLine.append( "?," );
 						}
 					}
 					
 					if (positives.contains(currentAA)){
-						dataLine += "1";
+						dataLine.append( "1" );
 					} else if (negatives.contains(currentAA)){
-						dataLine += "0";
+						dataLine.append( "0" );
 					}
 
 					
@@ -479,8 +533,7 @@ public class HelixRDFCreator {
 					}
 					_logger.info(dataLine);
 					out.println(dataLine);
-					i++;
-				} while (currentAA.hasProperty(iib)) ;
+				}
 			}
 		} catch (FileNotFoundException e){
 			e.printStackTrace();
