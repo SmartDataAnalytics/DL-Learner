@@ -5,10 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,6 +24,7 @@ import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
 import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
+import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.search.HierarchicalSolrSearch;
 import org.dllearner.algorithm.tbsl.search.SolrQueryResultItem;
 import org.dllearner.algorithm.tbsl.search.SolrQueryResultSet;
@@ -67,6 +70,10 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
+	
+	//for debugging
+	List<String> exclusions = Arrays.asList(new String[]{"http://dbpedia.org/ontology/GeopoliticalOrganisation", 
+	"http://dbpedia.org/ontology/Non-ProfitOrganisation"});
 	
 	enum Ranking{
 		LUCENE, SIMILARITY, NONE
@@ -138,6 +145,20 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
 		
 		templateGenerator = new Templator();
+	}
+	
+	public SPARQLTemplateBasedLearner(Options options, PartOfSpeechTagger tagger){
+		init(options);
+		
+		Set<String> predicateFilters = new HashSet<String>();
+		predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+		predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+		
+		prefixMap = Prefixes.getPrefixes();
+		
+		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
+		
+		templateGenerator = new Templator(tagger);
 	}
 	
 	/*
@@ -635,7 +656,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			Query cleanQuery = t.getQuery();
 			queries.add(new WeightedQuery(cleanQuery));
 			
-			Set<WeightedQuery> tmp = new HashSet<WeightedQuery>();
+			Set<WeightedQuery> tmp = new TreeSet<WeightedQuery>();
 			List<Slot> sortedSlots = new ArrayList<Slot>();
 			Set<Slot> classSlots = new HashSet<Slot>();
 			for(Slot slot : t.getSlots()){
@@ -669,8 +690,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 					for(Allocation a : slot2Allocations.get(slot)){
 						for(WeightedQuery query : queries){
 								Query q = new Query(query.getQuery());
-								if(a.getUri().equals("http://dbpedia.org/ontology/developer") && q.toString().contains("/Organisation>")){
-									System.out.println("YES");
+								if(a.getUri().equals("http://dbpedia.org/ontology/developer") && q.toString().contains("/Organisation>") && q.toString().contains("/Software>")){
+									System.out.println("YES:\n" + query);
 								}
 								boolean drop = false;
 								if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
@@ -701,7 +722,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 													if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
 														drop = true;
 													} else {
-//														System.out.println("DROPPING: \n" + q.toString());
+														if(typeURI.equals("http://dbpedia.org/ontology/Organisation") && a.getUri().equals("http://dbpedia.org/ontology/developer"))
+															System.out.println("DROPPING: \n" + q.toString());
 													}
 												}
 											} else {
@@ -731,7 +753,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 												if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
 													drop = true;
 												} else {
-//													System.out.println("DROPPING: \n" + q.toString());
+													if(typeURI.equals("http://dbpedia.org/ontology/Organisation") && a.getUri().equals("http://dbpedia.org/ontology/developer"))
+														System.out.println("DROPPING: \n" + q.toString());
 												}
 											}
 										}
@@ -800,6 +823,14 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		SolrQueryResultSet rs;
 		for(String word : slot.getWords()){
 			rs = index.getResourcesWithScores(word, 10);
+			
+			//debugging
+//			for(Iterator<SolrQueryResultItem> iter = rs.getItems().iterator();iter.hasNext();){
+//				SolrQueryResultItem item = iter.next();
+//				if(exclusions.contains(item.getUri())){
+//					iter.remove();
+//				}
+//			}
 			
 //			System.out.println(word + "->" + rs);
 			for(SolrQueryResultItem item : rs.getItems()){
@@ -1364,12 +1395,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
 //		String question = "In which programming language is GIMP written?";
 //		String question = "Who/WP was/VBD the/DT wife/NN of/IN president/NN Lincoln/NNP";
-		String question = "Who/WP produced/VBD the/DT most/JJS films/NNS";
+//		String question = "Who/WP produced/VBD the/DT most/JJS films/NNS";
 //		String question = "Which/WDT country/NN does/VBZ the/DT Airedale/NNP Terrier/NNP come/VBP from/IN";
-//		String question = "Which/WDT software/NN has/VBZ been/VBN developed/VBN by/IN organizations/NNS founded/VBN in/IN California/NNP";
+		String question = "Which/WDT software/NN has/VBZ been/VBN developed/VBN by/IN organizations/NNS founded/VBN in/IN California/NNP";
 //		String question = "How/WRB many/JJ films/NNS did/VBD Leonardo/NNP DiCaprio/NNP star/VB in/IN";
-		
-//		String question = "Give me all books written by authors influenced by Ernest Hemingway.";
+//		String question = "Which/WDT music/NN albums/NNS contain/VBP the/DT song/NN Last/NNP Christmas/NNP";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();learner.setUseIdealTagger(true);
 //		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 //				Collections.<String>singletonList(""), Collections.<String>emptyList());

@@ -41,6 +41,7 @@ public class Templator {
 	PartOfSpeechTagger tagger;
 	LTAGLexicon g;
 	LTAG_Lexicon_Constructor LTAG_Constructor = new LTAG_Lexicon_Constructor();
+
 	Parser p;
 	Preprocessor pp;
 	
@@ -53,9 +54,14 @@ public class Templator {
 	boolean ONE_SCOPE_ONLY = true;
 	boolean UNTAGGED_INPUT = true;
 	
-	boolean USE_NER = false;
+	boolean USE_NER = true;
 	
 	public Templator() {
+		this(new StanfordPartOfSpeechTagger());
+	}
+	
+	public Templator(final PartOfSpeechTagger tagger) {
+		this.tagger = tagger;
 		
 		List<InputStream> grammarFiles = new ArrayList<InputStream>();
 		for(int i = 0; i < GRAMMAR_FILES.length; i++){
@@ -64,8 +70,6 @@ public class Templator {
 		
         g = LTAG_Constructor.construct(grammarFiles);
 
-        tagger = new StanfordPartOfSpeechTagger();
-//        tagger = new ApachePartOfSpeechTagger();
 		
 	    p = new Parser();
 	    p.SHOW_GRAMMAR = true;
