@@ -1,7 +1,7 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
 
-public class Allocation {
+public class Allocation implements Comparable<Allocation>{
 	
 	private String uri;
 	
@@ -73,6 +73,17 @@ public class Allocation {
 		} else if (!uri.equals(other.uri))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Allocation o) {
+		if(o.getScore() < this.score){
+			return -1;
+		} else if(o.getScore() > this.score){
+			return 1;
+		} else {
+			return this.uri.compareTo(o.getUri());
+		}
 	}
 	
 	
