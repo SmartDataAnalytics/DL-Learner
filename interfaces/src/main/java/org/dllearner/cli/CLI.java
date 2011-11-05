@@ -86,7 +86,7 @@ public class CLI {
             configuration = new ConfParserConfiguration(confFileR);
 
             ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-            ApplicationContext context =  builder.buildApplicationContext(configuration,springConfigResources);	
+            context =  builder.buildApplicationContext(configuration,springConfigResources);	
     	}
 		
 		if(writeSpringConfiguration) {
