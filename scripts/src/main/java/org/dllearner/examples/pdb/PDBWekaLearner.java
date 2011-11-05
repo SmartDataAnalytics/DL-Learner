@@ -1,4 +1,9 @@
 package org.dllearner.examples.pdb;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.log4j.Logger;
 /*
 import java.io.File;
 import java.io.FileWriter;
