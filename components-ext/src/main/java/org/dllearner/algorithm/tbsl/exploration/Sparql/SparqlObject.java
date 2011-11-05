@@ -117,7 +117,7 @@ public class SparqlObject {
 				    String s = null;
 				    BufferedReader in = null;
 	
-				    // Lies Textzeilen aus der Datei in einen Vector:
+				    // Liest Textzeilen aus der Datei in einen Vector:
 				    try {
 				      in = new BufferedReader(
 				                          new InputStreamReader(
@@ -182,9 +182,9 @@ public class SparqlObject {
 				    }					
 					String answer;
 					answer=sendServerQuestionRequest(query);
-					//System.out.println(query);
+					System.out.println(query);
 					System.out.println("Antwort: " + answer);
-				    String out=tmp + "\n" + question + ":\n"+answer+"\n";
+				    String out=tmp + "\n" + "Question: "+question + "\n"+"Query: " + query +"\n Anwer: "+answer+"\n\n##############################";
 				    
 				    BufferedWriter outfile = new BufferedWriter(
 	                          new OutputStreamWriter(
@@ -242,8 +242,31 @@ public class SparqlObject {
 	     		for(SPARQL_Filter tmp : temp.getFilters()) filters=filters+tmp+" ";
 	     		//System.out.println("\n");
 	     		System.out.println("\n");
-	        	query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" { "+  conditions.replace("--","") + "}"+filters;
+	        	query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" WHERE { "+  conditions.replace("--","") + "}"+filters;
 	        	
+	        	String conditions_new = "";
+	     		for(Path condition: temp.getConditions()){
+		     		//make conditions up-side-down
+		     		String[] tmp_upside = condition.toString().split(" -- ");
+		     		String tmp_conditions_new="";
+		     		for(String con : tmp_upside) tmp_conditions_new = con +" "+tmp_conditions_new;
+		     		//remove all dots befor end
+		     		tmp_conditions_new=tmp_conditions_new.replace(".", "");
+		     		//at the end ein .
+		     		tmp_conditions_new = tmp_conditions_new + ".";
+		     		
+		     		//conditions_new=tmp_conditions_new;
+		     		
+	     			conditions_new=conditions_new + tmp_conditions_new;
+	     		}
+	     		
+
+	     		
+	     		System.out.println("Conditions: " + conditions);
+	     		System.out.println("Conditions_new: " + conditions_new);
+	     		
+	     		
+	        	String query_upside_down = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" WHERE { "+  conditions_new.replace("--","") + "}"+filters;
 	        	String[] slots= null;
 	    		for(Slot slot : temp.getSlots()){
 	    			
@@ -262,11 +285,24 @@ public class SparqlObject {
 	    			else replace="?"+array[0];
 	    			//System.out.println("replace: " + replace);
 	    			//hier dann den hm wert von array[1] eintragen
-	    			query=query.replace(replace, "<"+hm.get(array[1].toLowerCase())+">");
+	    			
+	    			String hm_result=hm.get(array[1].toLowerCase());
+	    		      try
+	    		      {
+	    		    	  if(hm_result.contains("Category:")) hm_result=hm_result.replace("Category:","");
+	    		        }
+	    		      catch ( Exception e )
+	    		      {
+	    		        //System.out.println( "Das war keine Zahl!" );
+	    		      }
+	    			
+	    			query=query.replace(replace, "<"+hm_result+">");
+	    			query_upside_down=query_upside_down.replace(replace, "<"+hm_result+">");
 	    			
 	    		}
 	    		//System.out.println("Query: "+query);
 	    		lstquery.add(query);
+	    		lstquery.add(query_upside_down);
 	    		
 	     	}
 	     	
@@ -418,6 +454,7 @@ public class SparqlObject {
 		string=string.replace("</td>","");
 		string=string.replace("<td>","");
 		string=string.replace("<th>callret-0</th>", "");
+		string=string.replace("<th>y</th>","");
 		return string;
 
 	}
