@@ -119,6 +119,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private Map<Template, Collection<? extends Query>> template2Queries;
 	private Map<Slot, List<String>> slot2URI;
 	
+	private Set<WeightedQuery> generatedQueries;
+	
 	private Map<String, String> prefixMap;
 	
 	private Lemmatizer lemmatizer = new LingPipeLemmatizer();// StanfordLemmatizer();
@@ -282,10 +284,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		sparqlQueryCandidates = getNBestQueryCandidatesForTemplates(template2Queries);
 		
 		//get the weighted query candidates
-		Set<WeightedQuery> weightedQueries = getWeightedSPARQLQueries(templates);
+		generatedQueries = getWeightedSPARQLQueries(templates);
 		sparqlQueryCandidates = new ArrayList<Query>();
 		int i = 0;
-		for(WeightedQuery wQ : weightedQueries){System.out.println(wQ);
+		for(WeightedQuery wQ : generatedQueries){System.out.println(wQ);
 			sparqlQueryCandidates.add(wQ.getQuery());
 			if(i == maxTestedQueries){
 				break;
@@ -300,6 +302,22 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			validateAgainstLocalModel(sparqlQueryCandidates);
 		}
 		
+	}
+	
+	public Set<WeightedQuery> getGeneratedQueries() {
+		return generatedQueries;
+	}
+	
+	public Set<WeightedQuery> getGeneratedQueries(int topN) {
+		Set<WeightedQuery> topNQueries = new TreeSet<WeightedQuery>();
+		int max = Math.min(topN, generatedQueries.size());
+		for(WeightedQuery wQ : generatedQueries){
+			topNQueries.add(wQ);
+			if(topNQueries.size() == max){
+				break;
+			}
+		}
+		return topNQueries;
 	}
 	
 	public List<String> getSPARQLQueries() throws NoTemplateFoundException{
@@ -1253,7 +1271,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				logger.info("Testing query:\n" + query);
 				boolean result = executeAskQuery(query);
 				learnedSPARQLQueries.put(query, result);
-				if(stopIfQueryResultNotEmpty && result){
+//				if(stopIfQueryResultNotEmpty && result){
+//					return;
+//				}
+				if(stopIfQueryResultNotEmpty){
 					return;
 				}
 				logger.info("Result: " + result);
@@ -1400,7 +1421,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		String question = "Who/WP was/VBD the/DT wife/NN of/IN president/NN Lincoln/NNP";
 //		String question = "Who/WP produced/VBD the/DT most/JJS films/NNS";
 //		String question = "Which/WDT country/NN does/VBZ the/DT Airedale/NNP Terrier/NNP come/VBP from/IN";
-		String question = "When/WRB was/VBD Capcom/NNP founded/VBD";
+//		String question = "When/WRB was/VBD Capcom/NNP founded/VBD";
+		String question = "Is/VBZ there/RB a/DT video/NN game/NN called/VBN Battle/NNP Chess/NNP";
 //		String question = "Which/WDT software/NN has/VBZ been/VBN developed/VBN by/IN organizations/NNS founded/VBN in/IN California/NNP";
 //		String question = "How/WRB many/JJ films/NNS did/VBD Leonardo/NNP DiCaprio/NNP star/VB in/IN";
 //		String question = "Which/WDT music/NN albums/NNS contain/VBP the/DT song/NN Last/NNP Christmas/NNP";
