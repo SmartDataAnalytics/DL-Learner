@@ -37,8 +37,10 @@ import org.apache.log4j.PatternLayout;
 import org.dllearner.algorithm.tbsl.learning.NoTemplateFoundException;
 import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner;
 import org.dllearner.algorithm.tbsl.sparql.Query;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Prefix;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.Template;
+import org.dllearner.algorithm.tbsl.sparql.WeightedQuery;
 import org.dllearner.algorithm.tbsl.util.LatexWriter;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -49,8 +51,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
@@ -369,31 +373,33 @@ public class Evaluation{
 				latex.endEnumeration();
 				
 				//get the generated SPARQL query candidates
-				Map<Template, Collection<? extends Query>> template2Queries = stbl.getTemplates2SPARQLQueries();
+				Set<WeightedQuery> generatedQueries = stbl.getGeneratedQueries(15);
 				
 				//write generated queries subsection
-				latex.beginSubsection("Top " + topN2Print + " generated queries per template");
-				int k = 1;
-				List<Query> queries;
-				for(Template t : templates){
-					latex.beginSubSubsection("Template " + k);
-					queries = new ArrayList<Query>(template2Queries.get(t));
-					if(!queries.isEmpty()){
-						latex.beginEnumeration();
-					}
-					//print top n queries to latex file
-					int max = Math.min(topN2Print, queries.size());
-					for(int j = 0; j < max; j++){
+				latex.beginSubsection("Top " + 15 + " generated queries");
+				if(!generatedQueries.isEmpty()){
+					latex.beginEnumeration();
+					for(WeightedQuery wQ : generatedQueries){
 						latex.beginEnumerationItem();
-						latex.addListing(queries.get(j).toString());
+						com.hp.hpl.jena.query.Query q = QueryFactory.create(wQ.getQuery().toString());
+						if(q.toString().contains("http://dbpedia.org/property/")){
+							q.setPrefix("dbp", "http://dbpedia.org/property/");
+						}
+						if(q.toString().contains("http://dbpedia.org/ontology/")){
+							q.setPrefix("dbo", "http://dbpedia.org/ontology/");
+						}
+						if(q.toString().contains("http://dbpedia.org/resource/")){
+							q.setPrefix("dbr", "http://dbpedia.org/resource/");
+						}
+						String queryString = q.toString();
+						String requestURL = new QueryEngineHTTP(endpoint.getURL().toString(), queryString).toString();
+//						System.out.println(requestURL);
+						queryString = queryString + "\n" + "Score(" + wQ.getScore() + ")";
+						latex.addListing(queryString);
 						latex.endEnumerationItem();
 					}
-					if(!queries.isEmpty()){
-						latex.endEnumeration();
-					}
-					k++;
+					latex.endEnumeration();
 				}
-				
 				
 				//get the URIs for each template slot
 				latex.beginSubsection("Covered entities");
