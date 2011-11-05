@@ -143,6 +143,8 @@ public class Query
 	public String toString()
 	{
 
+		String groupBy = null;
+		
 		String retVal = "";
 		for (SPARQL_Prefix prefix : prefixes)
 		{
@@ -153,9 +155,14 @@ public class Query
 		{
 			retVal += "\nSELECT ";
 
+			String lastSelectTerm = null;
 			for (SPARQL_Term term : selTerms)
 			{
 				retVal += term.toString() + " ";
+				if(selTerms.size() > 1 && term.toString().contains("COUNT")){
+					groupBy = lastSelectTerm;
+				}
+				lastSelectTerm = term.toString();
 			}
 		}
 		else retVal += "\nASK ";
@@ -175,6 +182,10 @@ public class Query
 		}
 
 		retVal += "}\n";
+		
+		if(groupBy != null){
+			retVal += "GROUP BY (" + groupBy + ")\n";
+		}
 
 		if (orderBy != null && !orderBy.isEmpty())
 		{

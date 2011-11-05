@@ -87,7 +87,7 @@ public class SPARQL_Term extends SPARQL_Value {
 //		System.err.println("SPARQL_Term: name="+name+",alias="+alias+",agg="+aggregate+",orderBy="+orderBy); // DEBUG
 		if (aggregate != SPARQL_Aggregate.NONE) {
 			if (alias != null && !alias.equals(name))
-				return aggregate+"(?"+name.toLowerCase()+") AS ?" + alias;
+				return "(" + aggregate+"(?"+name.toLowerCase()+") AS ?" + alias + ")";
 			else 
 				return aggregate+"(?"+name.toLowerCase()+")";
 		}
