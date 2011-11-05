@@ -381,7 +381,7 @@ public class Evaluation{
 					latex.beginEnumeration();
 					for(WeightedQuery wQ : generatedQueries){
 						latex.beginEnumerationItem();
-						com.hp.hpl.jena.query.Query q = QueryFactory.create(wQ.getQuery().toString());
+						com.hp.hpl.jena.query.Query q = QueryFactory.create(wQ.getQuery().toString(), Syntax.syntaxARQ);
 						if(q.toString().contains("http://dbpedia.org/property/")){
 							q.setPrefix("dbp", "http://dbpedia.org/property/");
 						}
