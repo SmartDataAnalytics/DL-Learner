@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
@@ -287,7 +286,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		generatedQueries = getWeightedSPARQLQueries(templates);
 		sparqlQueryCandidates = new ArrayList<Query>();
 		int i = 0;
-		for(WeightedQuery wQ : generatedQueries){System.out.println(wQ);
+		for(WeightedQuery wQ : generatedQueries){
+			System.out.println(wQ.explain());
 			sparqlQueryCandidates.add(wQ.getQuery());
 			if(i == maxTestedQueries){
 				break;
@@ -648,11 +648,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			allocations = new TreeSet<Allocation>();
 			
 			for(Slot slot : t.getSlots()){
-				allocations = computeAllocations(slot);
-				
-				normProminenceValues(allocations);
-				
-				computeScore(allocations);
+				allocations = computeAllocations(slot, 50);
 				
 				slot2Allocations.put(slot, allocations);
 				
@@ -788,6 +784,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 									WeightedQuery w = new WeightedQuery(q);
 									double newScore = query.getScore() + a.getScore();
 									w.setScore(newScore);
+									w.addAllocations(query.getAllocations());
+									w.addAllocation(a);
 									tmp.add(w);
 								}
 								
@@ -836,14 +834,19 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 										}
  */
 	
-	private Set<Allocation> computeAllocations(Slot slot){
-		Set<Allocation> allocations = new TreeSet<Allocation>();
+	private SortedSet<Allocation> computeAllocations(Slot slot){
+		SortedSet<Allocation> allocations = new TreeSet<Allocation>();
 		
 		SolrSearch index = getIndexBySlotType(slot);
 		
 		SolrQueryResultSet rs;
 		for(String word : slot.getWords()){
-			rs = index.getResourcesWithScores(word, 30);
+			if(slot.getSlotType() == SlotType.RESOURCE){
+				rs = index.getResourcesWithScores(word, 250);
+			} else {
+				rs = index.getResourcesWithScores(word, 30);
+			}
+			
 			
 			//debugging
 //			for(Iterator<SolrQueryResultItem> iter = rs.getItems().iterator();iter.hasNext();){
@@ -855,14 +858,66 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			
 			System.out.println(word + "->" + rs);
 			for(SolrQueryResultItem item : rs.getItems()){
-				int prominence = getProminenceValue(item.getUri(), slot.getSlotType());
 				double similarity = Similarity.getSimilarity(word, item.getLabel());
+				//get the labels of the redirects and compute the highest similarity
+				if(slot.getSlotType() == SlotType.RESOURCE){
+					Set<String> labels = getRedirectLabels(item.getUri());
+					for(String label : labels){
+						double tmp = Similarity.getSimilarity(word, label);
+						if(tmp > similarity){
+							similarity = tmp;
+						}
+					}
+				}
+				int prominence = getProminenceValue(item.getUri(), slot.getSlotType());
 				allocations.add(new Allocation(item.getUri(), prominence, similarity));
 			}
 			
 		}
 		
-		return allocations;
+		normProminenceValues(allocations);
+		
+		computeScore(allocations);
+		return new TreeSet<Allocation>(allocations);
+	}
+	
+	private Set<Allocation> computeAllocations(Slot slot, int limit){
+		SortedSet<Allocation> allocations = computeAllocations(slot);
+		
+		if(allocations.isEmpty()){
+			return allocations;
+		}
+		
+		ArrayList<Allocation> l = new ArrayList<Allocation>(allocations);
+		Collections.sort(l, new Comparator<Allocation>() {
+
+			@Override
+			public int compare(Allocation o1, Allocation o2) {
+				double dif = o1.getScore() - o2.getScore();
+				if(dif < 0){
+					return 1;
+				} else if(dif > 0){
+					return -1;
+				} else {
+					return o1.getUri().compareTo(o2.getUri());
+				}
+			}
+		});
+		
+		return new TreeSet<Allocation>(l.subList(0, Math.min(limit, allocations.size())));
+	}
+	
+	private Set<String> getRedirectLabels(String uri){
+		Set<String> labels = new HashSet<String>();
+		String query = String.format("SELECT ?label WHERE {?s <http://dbpedia.org/ontology/wikiPageRedirects> <%s>. ?s <%s> ?label.}", uri, RDFS.label.getURI());
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			labels.add(qs.getLiteral("label").getLexicalForm());
+			
+		}
+		return labels;
 	}
 	
 	private int getProminenceValue(String uri, SlotType type){
@@ -1417,15 +1472,17 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
-//		String question = "In which programming language is GIMP written?";
 //		String question = "Who/WP was/VBD the/DT wife/NN of/IN president/NN Lincoln/NNP";
 //		String question = "Who/WP produced/VBD the/DT most/JJS films/NNS";
 //		String question = "Which/WDT country/NN does/VBZ the/DT Airedale/NNP Terrier/NNP come/VBP from/IN";
 //		String question = "When/WRB was/VBD Capcom/NNP founded/VBD";
-		String question = "Is/VBZ there/RB a/DT video/NN game/NN called/VBN Battle/NNP Chess/NNP";
+//		String question = "Which/WDT organizations/NNS were/VBD founded/VBN in/IN 1950/CD";
+//		String question = "Is/VBZ there/RB a/DT video/NN game/NN called/VBN Battle/NNP Chess/NNP";
 //		String question = "Which/WDT software/NN has/VBZ been/VBN developed/VBN by/IN organizations/NNS founded/VBN in/IN California/NNP";
 //		String question = "How/WRB many/JJ films/NNS did/VBD Leonardo/NNP DiCaprio/NNP star/VB in/IN";
 //		String question = "Which/WDT music/NN albums/NNS contain/VBP the/DT song/NN Last/NNP Christmas/NNP";
+//		String question = "Which/WDT companies/NNS are/VBP located/VBN in/IN California/NNP USA/NNP";
+		String question = "Who/WP wrote/VBD the/DT book/NN The/NNP pillars/NNP of/NNP the/NNP Earth/NNP";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();learner.setUseIdealTagger(true);
 //		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 //				Collections.<String>singletonList(""), Collections.<String>emptyList());
