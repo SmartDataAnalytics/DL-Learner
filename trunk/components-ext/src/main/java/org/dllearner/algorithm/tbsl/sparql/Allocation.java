@@ -78,9 +78,9 @@ public class Allocation implements Comparable<Allocation>{
 	@Override
 	public int compareTo(Allocation o) {
 		if(o.getScore() < this.score){
-			return -1;
-		} else if(o.getScore() > this.score){
 			return 1;
+		} else if(o.getScore() > this.score){
+			return -1;
 		} else {
 			return this.uri.compareTo(o.getUri());
 		}
