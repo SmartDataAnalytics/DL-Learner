@@ -96,7 +96,7 @@ public class NLP2RDFEval {
 				PosNegLP lp = context.getBean(PosNegLP.class);
 				AbstractCELA la = context.getBean(AbstractCELA.class);
 				CrossValidation cv = new CrossValidation(la,lp,rs,nrOfFolds,false);
-				content += cv.getfMeasure().getMean();
+				content += Math.round(cv.getfMeasure().getMean())+",";
 			}
 			content += "\n";
 		}
