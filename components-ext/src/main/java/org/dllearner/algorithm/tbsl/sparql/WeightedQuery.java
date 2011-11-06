@@ -1,9 +1,14 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class WeightedQuery implements Comparable<WeightedQuery>{
 	
 	private double score;
 	private Query query;
+	
+	private Set<Allocation> allocations = new HashSet<Allocation>();
 	
 	public WeightedQuery(Query query, double score) {
 		super();
@@ -25,6 +30,18 @@ public class WeightedQuery implements Comparable<WeightedQuery>{
 
 	public Query getQuery() {
 		return query;
+	}
+	
+	public void addAllocation(Allocation a){
+		allocations.add(a);
+	}
+	
+	public void addAllocations(Set<Allocation> allocations){
+		this.allocations.addAll(allocations);
+	}
+	
+	public Set<Allocation> getAllocations() {
+		return allocations;
 	}
 
 	@Override
@@ -48,6 +65,16 @@ public class WeightedQuery implements Comparable<WeightedQuery>{
 	@Override
 	public String toString() {
 		return query.toString() + "\n(Score: " + score + ")";
+	}
+	
+	public String explain(){
+		String explanation = toString();
+		explanation += "\n[";
+		for(Allocation a : allocations){
+			explanation += a.toString() + "\n";
+		}
+		explanation += "]";
+		return explanation;
 	}
 	
 	
