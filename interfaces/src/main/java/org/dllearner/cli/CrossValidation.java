@@ -283,4 +283,12 @@ public class CrossValidation {
 		
 	}
 
+	public Stat getfMeasure() {
+		return fMeasure;
+	}
+
+	public Stat getfMeasureTraining() {
+		return fMeasureTraining;
+	}
+
 }
