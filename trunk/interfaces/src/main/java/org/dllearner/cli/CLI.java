@@ -60,6 +60,7 @@ public class CLI {
 	private static Logger rootLogger = Logger.getRootLogger();
 	
 	private ApplicationContext context;
+	private IConfiguration configuration;
 	private File confFile;
 	
 	// some CLI options
@@ -76,10 +77,9 @@ public class CLI {
 		this.confFile = confFile;
 	}
 	
-    public void run() throws IOException { // ApplicationContext context, String algorithmBeanName){
-    	
-    	IConfiguration configuration = null;
-    	
+	// separate init methods, because some scripts may want to just get the application
+	// context from a conf file without actually running it
+	public void init() throws IOException {    	
     	if(context == null) {
     		Resource confFileR = new FileSystemResource(confFile);
     		List<Resource> springConfigResources = new ArrayList<Resource>();
@@ -88,7 +88,10 @@ public class CLI {
             ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
             context =  builder.buildApplicationContext(configuration,springConfigResources);	
     	}
-		
+	}
+	
+    public void run() throws IOException {
+    	
 		if(writeSpringConfiguration) {
         	SpringConfigurationXMLBeanConverter converter = new SpringConfigurationXMLBeanConverter();
         	XmlObject xml;
