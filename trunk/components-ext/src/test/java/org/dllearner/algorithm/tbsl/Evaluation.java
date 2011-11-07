@@ -321,6 +321,7 @@ public class Evaluation{
 		String errorCode = "";
 		LatexWriter latex = new LatexWriter();
 		int i = 0;
+		int cnt = 0;
 		for(Entry<Integer, String> entry : id2Question.entrySet()){//if(entry.getKey()==50)continue;
 			if((testID != -1 && entry.getKey() != testID) || (yagoExclusions.contains(entry.getKey())))continue;
 			try {
@@ -361,6 +362,11 @@ public class Evaluation{
 				//get the used templates
 				List<Template> templates = new ArrayList<Template>(stbl.getTemplates());
 				
+				if(stbl.getLearnedPosition() == -1 || stbl.getLearnedPosition() > 10){
+					cnt++;
+				}
+				i++;
+				
 				//start output
 				//write templates subsection
 				latex.beginSubsection("Templates (" + templates.size() + ")");
@@ -392,8 +398,6 @@ public class Evaluation{
 							q.setPrefix("dbr", "http://dbpedia.org/resource/");
 						}
 						String queryString = q.toString();
-						String requestURL = new QueryEngineHTTP(endpoint.getURL().toString(), queryString).toString();
-//						System.out.println(requestURL);
 						queryString = queryString + "\n" + "Score(" + wQ.getScore() + ")";
 						latex.addListing(queryString);
 						latex.endEnumerationItem();
@@ -483,7 +487,7 @@ public class Evaluation{
 				latex.addSummaryTableEntry(questionId, extractSentence(question), precision, recall, errorCode);
 			}
 		}
-		
+		System.out.println(cnt + "/" + i);
 		latex.write("log/evaluation_" + System.currentTimeMillis()+  ".tex", Calendar.getInstance().getTime().toString(), correctAnswers);
 	}
 	
