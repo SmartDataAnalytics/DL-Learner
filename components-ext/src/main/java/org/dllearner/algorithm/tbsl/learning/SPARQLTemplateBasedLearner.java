@@ -105,6 +105,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	private Templator templateGenerator;
 	
 	private String question;
+	private int learnedPos = -1;
 	
 	private Oracle oracle;
 	
@@ -1305,7 +1306,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				if(!results.isEmpty()){
 					try{
 						int cnt = Integer.parseInt(results.get(0));
-						if(cnt > 0){
+						if(cnt > 0){learnedPos = queries.indexOf(query);
 							learnedSPARQLQueries.put(query, results);
 							if(stopIfQueryResultNotEmpty){
 								return;
@@ -1313,6 +1314,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 						}
 					} catch (NumberFormatException e){
 						learnedSPARQLQueries.put(query, results);
+						learnedPos = queries.indexOf(query);
 						if(stopIfQueryResultNotEmpty){
 							return;
 						}
@@ -1329,12 +1331,13 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //				if(stopIfQueryResultNotEmpty && result){
 //					return;
 //				}
-				if(stopIfQueryResultNotEmpty){
+				if(stopIfQueryResultNotEmpty){learnedPos = queries.indexOf(query);
 					return;
 				}
 				logger.info("Result: " + result);
 			}
 		}
+		
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
 	}
@@ -1398,6 +1401,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return resources;
 	}
 	
+	public int getLearnedPosition() {
+		return learnedPos+1;
+	}
+	
 	private List<String> getResultFromLocalModel(String query, Model model){
 		List<String> resources = new ArrayList<String>();
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
@@ -1411,29 +1418,36 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	
 	private Set<String> getDomains(String property){
+		String tmp = property;
+		if(property.startsWith("http://dbpedia.org/property/")){
+			tmp = "http://dbpedia.org/ontology" + property.substring(property.lastIndexOf("/"));
+		}
 		Set<String> domains = new HashSet<String>();
-		String query = String.format("SELECT ?domain WHERE {<%s> <%s> ?domain}", property, RDFS.domain.getURI());
+		String query = String.format("SELECT ?domain WHERE {<%s> <%s> ?domain}", tmp, RDFS.domain.getURI());
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
 			domains.add(qs.getResource("domain").getURI());
 		}
-		
 		return domains;
 	}
 	
 	private Set<String> getRanges(String property){
-		Set<String> domains = new HashSet<String>();
-		String query = String.format("SELECT ?range WHERE {<%s> <%s> ?range}", property, RDFS.range.getURI());
+		String tmp = property;
+		if(property.startsWith("http://dbpedia.org/property/")){
+			tmp = "http://dbpedia.org/ontology" + property.substring(property.lastIndexOf("/"));
+		}
+		Set<String> ranges = new HashSet<String>();
+		String query = String.format("SELECT ?range WHERE {<%s> <%s> ?range}", tmp, RDFS.range.getURI());
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			domains.add(qs.getResource("range").getURI());
+			ranges.add(qs.getResource("range").getURI());
 		}
 		
-		return domains;
+		return ranges;
 	}
 	
 	private boolean isObjectProperty(String property){
@@ -1479,10 +1493,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		String question = "Which/WDT organizations/NNS were/VBD founded/VBN in/IN 1950/CD";
 //		String question = "Is/VBZ there/RB a/DT video/NN game/NN called/VBN Battle/NNP Chess/NNP";
 //		String question = "Which/WDT software/NN has/VBZ been/VBN developed/VBN by/IN organizations/NNS founded/VBN in/IN California/NNP";
-//		String question = "How/WRB many/JJ films/NNS did/VBD Leonardo/NNP DiCaprio/NNP star/VB in/IN";
+		String question = "How/WRB many/JJ films/NNS did/VBD Leonardo/NNP DiCaprio/NNP star/VB in/IN";
 //		String question = "Which/WDT music/NN albums/NNS contain/VBP the/DT song/NN Last/NNP Christmas/NNP";
 //		String question = "Which/WDT companies/NNS are/VBP located/VBN in/IN California/NNP USA/NNP";
-		String question = "Who/WP wrote/VBD the/DT book/NN The/NNP pillars/NNP of/NNP the/NNP Earth/NNP";
+//		String question = "Who/WP wrote/VBD the/DT book/NN The/NNP pillars/NNP of/NNP the/NNP Earth/NNP";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();learner.setUseIdealTagger(true);
 //		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 //				Collections.<String>singletonList(""), Collections.<String>emptyList());
@@ -1493,6 +1507,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		learner.learnSPARQLQueries();
 		System.out.println("Learned query:\n" + learner.getBestSPARQLQuery());
 		System.out.println("Lexical answer type is: " + learner.getTemplates().iterator().next().getLexicalAnswerType());
+		System.out.println(learner.getLearnedPosition());
 		
 	}
 
