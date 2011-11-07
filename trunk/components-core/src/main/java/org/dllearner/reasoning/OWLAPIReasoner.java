@@ -779,7 +779,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             // take one element from the set and ignore the rest
             // (TODO: we need to make sure we always ignore the same concepts)
             OWLObjectPropertyExpression property = node.getRepresentativeElement();
-            roles.add(new ObjectProperty(property.asOWLObjectProperty().toStringID()));
+            if(!property.isAnonymous()) {
+            	roles.add(new ObjectProperty(property.asOWLObjectProperty().toStringID()));
+            }
         }
         roles.remove(new ObjectProperty(factory.getOWLTopObjectProperty().toStringID()));
         roles.remove(new ObjectProperty(factory.getOWLBottomObjectProperty().toStringID()));

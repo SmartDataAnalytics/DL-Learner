@@ -94,6 +94,7 @@ public class CELOE extends AbstractCELA {
 	
 	private RefinementOperator operator;
 	private DescriptionMinimizer minimizer;
+	private boolean useMinimizer = true;
 	
 	// all nodes in the search tree (used for selecting most promising node)
 	private TreeSet<OENode> nodes;
@@ -760,7 +761,12 @@ public class CELOE extends AbstractCELA {
 	private Description rewriteNode(OENode node) {
 		Description description = node.getDescription();
 		// minimize description (expensive!) - also performes some human friendly rewrites
-		Description niceDescription = minimizer.minimizeClone(description);
+		Description niceDescription;
+		if(useMinimizer) {
+			niceDescription = minimizer.minimizeClone(description);
+		} else {
+			niceDescription = description;
+		}
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		ConceptTransformation.replaceRange(niceDescription, reasoner);
 		return niceDescription;
@@ -987,6 +993,14 @@ public class CELOE extends AbstractCELA {
 
 	public void setReuseExistingDescription(boolean reuseExistingDescription) {
 		this.reuseExistingDescription = reuseExistingDescription;
+	}
+
+	public boolean isUseMinimizer() {
+		return useMinimizer;
+	}
+
+	public void setUseMinimizer(boolean useMinimizer) {
+		this.useMinimizer = useMinimizer;
 	}	
 	
 }
