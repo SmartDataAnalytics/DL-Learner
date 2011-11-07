@@ -1402,7 +1402,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	
 	public int getLearnedPosition() {
-		return learnedPos+1;
+		if(learnedPos >= 0){
+			return learnedPos+1;
+		}
+		return learnedPos;
 	}
 	
 	private List<String> getResultFromLocalModel(String query, Model model){
@@ -1493,10 +1496,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		String question = "Which/WDT organizations/NNS were/VBD founded/VBN in/IN 1950/CD";
 //		String question = "Is/VBZ there/RB a/DT video/NN game/NN called/VBN Battle/NNP Chess/NNP";
 //		String question = "Which/WDT software/NN has/VBZ been/VBN developed/VBN by/IN organizations/NNS founded/VBN in/IN California/NNP";
-		String question = "How/WRB many/JJ films/NNS did/VBD Leonardo/NNP DiCaprio/NNP star/VB in/IN";
+//		String question = "How/WRB many/JJ films/NNS did/VBD Leonardo/NNP DiCaprio/NNP star/VB in/IN";
 //		String question = "Which/WDT music/NN albums/NNS contain/VBP the/DT song/NN Last/NNP Christmas/NNP";
 //		String question = "Which/WDT companies/NNS are/VBP located/VBN in/IN California/NNP USA/NNP";
-//		String question = "Who/WP wrote/VBD the/DT book/NN The/NNP pillars/NNP of/NNP the/NNP Earth/NNP";
+		String question = "Who/WP wrote/VBD the/DT book/NN The/NNP pillars/NNP of/NNP the/NNP Earth/NNP";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();learner.setUseIdealTagger(true);
 //		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 //				Collections.<String>singletonList(""), Collections.<String>emptyList());
