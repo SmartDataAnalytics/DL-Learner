@@ -56,13 +56,17 @@ public class NLP2RDFEval {
 //			"../examples/nlp2rdf/learning_7_components/dbpedia_spotlight_plus/gas9_vs_nat-gas26.conf",
 //		};
 //		
-		String baseDir = "../examples/nlp2rdf/learning_7_components/";
+//		String baseDir = "../examples/nlp2rdf/learning_7_components/";
+		String baseDir = "../examples/nlp2rdf/learning_reduced/";
 		
 		String outputFile = "results.csv";
 		String content = "";
 		
+		// gate + spotlight plus; gate + snowball; standford + spotlight plus
 		String[] tools = new String[] {
-				"stanford", "opennlp", "gateannie", "dbpedia_spotlight", "dbpedia_spotlight_plus" //, "combined"
+				"gateannie_dbpedia_spotlight_plus", 
+				// "gateannie_snowball", zu langsam
+				"stanford_dbpedia_spotlight_plus", "stanford", "opennlp", "gateannie", "dbpedia_spotlight", "dbpedia_spotlight_plus", "snowball" 
 		};
 		
 		String topics[] = new String[] {
