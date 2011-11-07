@@ -14,9 +14,10 @@ public class NLP2RDFCLITest {
 
 	@Test
 	public void sampleTest() throws IOException {
-//		File f = new File("../examples/nlp2rdf/sample/sample1.conf");
-		File f = new File("../examples/nlp2rdf/learning_initial_6/dbpedia_spotlight_plus/copper17_vs_gold35.conf");
+		File f = new File("../examples/nlp2rdf/sample/sample1.conf");
+//		File f = new File("../examples/nlp2rdf/learning_initial_6/dbpedia_spotlight_plus/copper17_vs_gold35.conf");
 		CLI cli = new CLI(f);
+		cli.init();
 		cli.run();
 		ApplicationContext context = cli.getContext();
 		AbstractReasonerComponent rc = context.getBean(AbstractReasonerComponent.class);
