@@ -31,6 +31,15 @@ public class WordNet {
 		}
 	}
 	
+	public WordNet(String configPath) {
+		try {
+			JWNL.initialize(this.getClass().getClassLoader().getResourceAsStream(configPath));
+			dict = Dictionary.getInstance();
+		} catch (JWNLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public List<String> getBestSynonyms(POS pos, String s) {
 		
 		List<String> synonyms = new ArrayList<String>();
