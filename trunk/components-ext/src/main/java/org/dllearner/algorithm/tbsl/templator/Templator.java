@@ -54,14 +54,19 @@ public class Templator {
 	boolean ONE_SCOPE_ONLY = true;
 	boolean UNTAGGED_INPUT = true;
 	
-	boolean USE_NER = true;
+	boolean USE_NER = false;
 	
 	public Templator() {
-		this(new StanfordPartOfSpeechTagger());
+		this(new StanfordPartOfSpeechTagger(), new WordNet());
 	}
 	
 	public Templator(final PartOfSpeechTagger tagger) {
+		this(tagger, new WordNet());
+	}
+	
+	public Templator(final PartOfSpeechTagger tagger, WordNet wordnet) {
 		this.tagger = tagger;
+		this.wordnet = wordnet;
 		
 		List<InputStream> grammarFiles = new ArrayList<InputStream>();
 		for(int i = 0; i < GRAMMAR_FILES.length; i++){
@@ -78,8 +83,6 @@ public class Templator {
 	    p.MODE = "LEIPZIG";
 	    
 	    pp = new Preprocessor(USE_NER);
-	    
-		wordnet = new WordNet();
 	}
 	
 	public void setUNTAGGED_INPUT(boolean b) {

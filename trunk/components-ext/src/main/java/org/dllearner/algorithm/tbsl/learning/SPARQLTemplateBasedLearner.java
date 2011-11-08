@@ -24,6 +24,7 @@ import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
 import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.search.HierarchicalSolrSearch;
 import org.dllearner.algorithm.tbsl.search.SolrQueryResultItem;
 import org.dllearner.algorithm.tbsl.search.SolrQueryResultSet;
@@ -161,6 +162,20 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
 		
 		templateGenerator = new Templator(tagger);
+	}
+	
+	public SPARQLTemplateBasedLearner(Options options, PartOfSpeechTagger tagger, WordNet wordNet){
+		init(options);
+		
+		Set<String> predicateFilters = new HashSet<String>();
+		predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+		predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+		
+		prefixMap = Prefixes.getPrefixes();
+		
+		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
+		
+		templateGenerator = new Templator(tagger, wordNet);
 	}
 	
 	/*
@@ -870,7 +885,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 						}
 					}
 				}
-				int prominence = getProminenceValue(item.getUri(), slot.getSlotType());
+				double prominence = getProminenceValue(item.getUri(), slot.getSlotType());
 				allocations.add(new Allocation(item.getUri(), prominence, similarity));
 			}
 			
@@ -921,7 +936,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		return labels;
 	}
 	
-	private int getProminenceValue(String uri, SlotType type){
+	private double getProminenceValue(String uri, SlotType type){
 		int cnt = 1;
 		String query = null;
 		if(type == SlotType.CLASS){
@@ -941,6 +956,10 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			projectionVar = qs.varNames().next();
 			cnt = qs.get(projectionVar).asLiteral().getInt();
 		}
+//		if(cnt == 0){
+//			return 0;
+//		} 
+//		return Math.log(cnt);
 		return cnt;
 	}
 	
@@ -1395,7 +1414,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				}
 				
 			}
-		} catch (Exception e) {
+		} catch (Exception e) {e.printStackTrace();
 			logger.error("Query execution failed.", e);
 		}
 		return resources;
@@ -1499,7 +1518,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		String question = "How/WRB many/JJ films/NNS did/VBD Leonardo/NNP DiCaprio/NNP star/VB in/IN";
 //		String question = "Which/WDT music/NN albums/NNS contain/VBP the/DT song/NN Last/NNP Christmas/NNP";
 //		String question = "Which/WDT companies/NNS are/VBP located/VBN in/IN California/NNP USA/NNP";
-		String question = "Who/WP wrote/VBD the/DT book/NN The/NNP pillars/NNP of/NNP the/NNP Earth/NNP";
+//		String question = "Who/WP wrote/VBD the/DT book/NN The/NNP pillars/NNP of/NNP the/NNP Earth/NNP";
+		String question = "Who/WP is/VBZ called/VBN Dana/NNP";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();learner.setUseIdealTagger(true);
 //		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 //				Collections.<String>singletonList(""), Collections.<String>emptyList());
