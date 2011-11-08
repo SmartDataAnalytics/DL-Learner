@@ -24,6 +24,7 @@ import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
 import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.search.HierarchicalSolrSearch;
 import org.dllearner.algorithm.tbsl.search.SolrQueryResultItem;
@@ -137,34 +138,18 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	
 	public SPARQLTemplateBasedLearner(Options options){
-		init(options);
-		
-		Set<String> predicateFilters = new HashSet<String>();
-		predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
-		predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
-		
-		prefixMap = Prefixes.getPrefixes();
-		
-		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
-		
-		templateGenerator = new Templator();
+		this(options, new StanfordPartOfSpeechTagger());
 	}
 	
 	public SPARQLTemplateBasedLearner(Options options, PartOfSpeechTagger tagger){
-		init(options);
-		
-		Set<String> predicateFilters = new HashSet<String>();
-		predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
-		predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
-		
-		prefixMap = Prefixes.getPrefixes();
-		
-		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
-		
-		templateGenerator = new Templator(tagger);
+		this(options, tagger, new WordNet());
 	}
 	
 	public SPARQLTemplateBasedLearner(Options options, PartOfSpeechTagger tagger, WordNet wordNet){
+		this(options, tagger, wordNet, "cache");
+	}
+	
+	public SPARQLTemplateBasedLearner(Options options, PartOfSpeechTagger tagger, WordNet wordNet, String cacheDir){
 		init(options);
 		
 		Set<String> predicateFilters = new HashSet<String>();
@@ -176,6 +161,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
 		
 		templateGenerator = new Templator(tagger, wordNet);
+		cache = new ExtractionDBCache(cacheDir);
 	}
 	
 	/*
@@ -1519,8 +1505,8 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //		String question = "Which/WDT music/NN albums/NNS contain/VBP the/DT song/NN Last/NNP Christmas/NNP";
 //		String question = "Which/WDT companies/NNS are/VBP located/VBN in/IN California/NNP USA/NNP";
 //		String question = "Who/WP wrote/VBD the/DT book/NN The/NNP pillars/NNP of/NNP the/NNP Earth/NNP";
-		String question = "Who/WP is/VBZ called/VBN Dana/NNP";
-		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();learner.setUseIdealTagger(true);
+		String question = "Give me all books written by Dan Brown";
+		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();//learner.setUseIdealTagger(true);
 //		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
 //				Collections.<String>singletonList(""), Collections.<String>emptyList());
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
