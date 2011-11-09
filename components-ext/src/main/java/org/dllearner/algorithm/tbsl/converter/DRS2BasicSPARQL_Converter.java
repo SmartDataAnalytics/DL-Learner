@@ -23,6 +23,7 @@ import org.dllearner.algorithm.tbsl.sparql.SPARQL_Property;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_QueryType;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Term;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
+import org.dllearner.algorithm.tbsl.sparql.SlotType;
 
 
 public class DRS2BasicSPARQL_Converter {
@@ -56,8 +57,13 @@ public class DRS2BasicSPARQL_Converter {
     }
 
     private BasicQueryTemplate convert(DRS drs, BasicQueryTemplate temp, boolean negate) {
-    	
+        
+//      System.out.println("--- DRS (before): " + drs); // DEBUG   	
         redundantEqualRenaming(drs); 
+        if (!restructureEmpty(drs)) {
+        	return null;
+        }
+        System.out.println("--- DRS (after) : " + drs); // DEBUG
             
         for (DRS_Condition condition : drs.getConditions()) {
             convertCondition(condition,temp);
@@ -358,5 +364,72 @@ public class DRS2BasicSPARQL_Converter {
 		}
 		usedInts.add(fresh);
 		return fresh;
+	}
+	
+    private boolean restructureEmpty(DRS drs) {
+    	
+    	Set<Simple_DRS_Condition> emptyConditions = new HashSet<Simple_DRS_Condition>();
+        for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
+        	if(c.getPredicate().equals("empty")) {
+        		emptyConditions.add(c);
+        	}
+        }
+        if (emptyConditions.isEmpty()) {
+        	return true;
+        }
+        
+        boolean globalsuccess = false;
+        for (Simple_DRS_Condition c : emptyConditions) {
+        	String nounToExpand = c.getArguments().get(1).getValue();
+        	String fallbackNoun = c.getArguments().get(0).getValue();
+        	boolean success = false;
+        	loop: 
+        	for (Simple_DRS_Condition sc : drs.getAllSimpleConditions()) {
+        		if (sc.getArguments().size() == 1 && sc.getArguments().get(0).getValue().equals(nounToExpand)) {
+        			for (Slot s : slots) {
+        				if (s.getAnchor().equals(sc.getPredicate())) {
+        					if (s.getSlotType().equals(SlotType.CLASS) || s.getSlotType().equals(SlotType.UNSPEC)) {
+        						s.setSlotType(SlotType.PROPERTY); 
+        						List<DiscourseReferent> newargs = new ArrayList<DiscourseReferent>();
+                    			newargs.add(c.getArguments().get(0));
+                    			newargs.add(sc.getArguments().get(0));
+                    			sc.setArguments(newargs);
+                    			success = true;
+                    			globalsuccess = true;
+                    			break loop;
+        					}
+        				}	
+        			}
+        		}
+        	}
+        	if (!success) { // do the same for fallbackNoun
+        		loop: 
+                for (Simple_DRS_Condition sc : drs.getAllSimpleConditions()) {
+                	if (sc.getArguments().size() == 1 && sc.getArguments().get(0).getValue().equals(fallbackNoun)) {
+                		for (Slot s : slots) {
+                			if (s.getAnchor().equals(sc.getPredicate())) {
+                				if (s.getSlotType().equals(SlotType.CLASS) || s.getSlotType().equals(SlotType.UNSPEC)) {
+                					s.setSlotType(SlotType.PROPERTY); 
+                					List<DiscourseReferent> newargs = new ArrayList<DiscourseReferent>();
+                           			newargs.add(c.getArguments().get(1));
+                           			newargs.add(sc.getArguments().get(0));
+                           			sc.setArguments(newargs);
+                           			success = true;
+                           			globalsuccess = true;
+                           			break loop;
+                				}
+                			}	
+                		}
+                	}
+                }
+        	}
+        }
+        
+        if (globalsuccess) {
+        	for (Simple_DRS_Condition c : emptyConditions) {
+        		drs.removeCondition(c);
+        	}
+        }
+        return globalsuccess;
 	}
 }
