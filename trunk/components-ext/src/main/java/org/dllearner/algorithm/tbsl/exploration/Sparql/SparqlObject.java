@@ -294,6 +294,17 @@ public class SparqlObject {
 	
 								 try {
 									tmp_semantics=getSemantics(tmp_semantics);
+									if (tmp_semantics==null){
+										goOnAfterWordnet=false;
+										final_answer.add("Error in searching Wordnet\n");
+									}
+									else{
+									//each word only one time
+									 for(String k : tmp_semantics){
+										 if(!semantics.contains(k)) semantics.add(k);
+									 }
+									}
+									
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
 									//e.printStackTrace();
@@ -301,10 +312,6 @@ public class SparqlObject {
 									final_answer.add("Error in searching Wordnet\n");
 									
 								}
-								 //each word only one time
-								 for(String k : tmp_semantics){
-									 if(!semantics.contains(k)) semantics.add(k);
-								 }
 										 
 							 }
 							
@@ -584,6 +591,7 @@ public class SparqlObject {
 	
 		private static ArrayList<String> getSemantics (ArrayList<String> semantics) throws IOException, JWNLException {
 			ArrayList<String> result = new ArrayList<String>();
+			try{
 			for(String id :semantics){
 				List<String> array =wordnet.getRelatedNouns(id);
 				for(String i:array){
@@ -593,6 +601,9 @@ public class SparqlObject {
 					
 			}
 			return result;
+			} catch (Exception e) {
+				return null;
+			}
 		}
 		
 		
