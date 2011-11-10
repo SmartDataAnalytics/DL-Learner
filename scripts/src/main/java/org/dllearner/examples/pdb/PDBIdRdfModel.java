@@ -100,12 +100,11 @@ public class PDBIdRdfModel {
 			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
 			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 			"PREFIX fn: <http://www.w3.org/2005/xpath-functions#> " +
-			"CONSTRUCT { pdb:" + this.getProtein().getPdbID() + "/extraction/source/gene/organism rdfs:label ?species. }" +
+			"CONSTRUCT { <http://bio2rdf.org/pdb:" + this.getProtein().getPdbID() + "/extraction/source/gene/organism> rdfs:label ?species. }" +
     		"WHERE { ?x1 dcterms:isPartOf ?x2 ." +
-	    		" ?x1 rdf:type> ?x3 ." +
+	    		" ?x1 rdf:type ?x3 ." +
 	    		" ?x1 pdb:isImmediatelyBefore ?x4 ." +
-				" ?x5 rdfs:label ?species " +
-				" FILTER (str(?x5) = fn:concat(str(?x2), '/extraction/source/gene/organism')) . }";
+				" OPTIONAL { ?x5 rdfs:label ?species FILTER (str(?x5) = fn:concat(str(?x2), '/extraction/source/gene/organism')) . } . }";
 		
 		// System.out.println(queryString);
 		
@@ -151,7 +150,7 @@ public class PDBIdRdfModel {
 				NodeIterator niter = model.listObjectsOfProperty(nextRes, hasValue);
 				sequence = niter.next().toString();
 				
-				System.out.println(sequence);
+				System.out.println("Sequence: " + sequence);
 			}
 		}
     	return sequence;
@@ -206,23 +205,25 @@ public class PDBIdRdfModel {
 	    		" ?x3 dcterms:isPartOf ?x4 ." +
 	    		" ?x4 rdf:type <http://bio2rdf.org/pdb:Polypeptide(L)> ." +
 	    		" ?x5 dcterms:isPartOf ?x4 ." +
-	    		" ?x5 rdf:type ?x6 .";
+	    		" ?x5 rdf:type ?x6 ." +
+	    		" ?x5 pdb:hasChainPosition ?x8 . " +
+	    		" OPTIONAL { ?x5 pdb:isImmediatelyBefore ?x7 . } . ";
+		 
 		 if (chainID.length() == 1 && pdbID.length() == 4)
 			{
 				queryString +=
-						" ?x5 pdb:hasChainPosition ?x8 ." +
-						" ?x8 dcterms:isPartOf pdb:" + 
+						" ?x8 dcterms:isPartOf <http://bio2rdf.org/pdb:" + 
 								pdbID.toUpperCase() +
 								"/chain_" + chainID.toUpperCase() + "> .";
 			}
 		 queryString +=
-				" ?organism rdfs:label ?organismName " +
-				"FILTER (str(?organism) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . " +
+				" ?x4 pdb:hasPolymerSequence ?seq . " +
 	    		" ?seq rdf:type pdb:PolymerSequence . " +
-	    		" ?seq pdb:hasValue ?sequence ." +
+	    		" ?seq pdb:hasValue ?sequence . " +
 	    		// with the Optional clause i get the information by which amino acid
 	    		// a amino acid is followed
-	    		" OPTIONAL { ?x5 pdb:isImmediatelyBefore ?x7 . } .}";
+	    		" OPTIONAL { ?organism rdfs:label ?organismName " +
+	    			"FILTER (str(?organism) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . } . }";
 		
 		System.out.println(queryString);
 		Query query = QueryFactory.create(queryString);
@@ -324,6 +325,7 @@ public class PDBIdRdfModel {
 		while (riter.hasNext()) {
 			// Initialization of variables needed
 			Resource firstAA = riter.nextResource();
+			System.out.println("First AA: " + firstAA.getLocalName());
 			Resource currentAA  = firstAA;
 			Resource nextAA = firstAA;
 			boolean inHelix = false;
@@ -358,7 +360,16 @@ public class PDBIdRdfModel {
 			} while (currentAA.hasProperty(iib)) ;
 		}
 		_positives = pos;
+		System.out.println("+++ Positive set +++");
+		for (int i = 0; i < pos.size(); i++){
+			System.out.println("Das " + i + "te Element: " + pos.get(i).getLocalName());
+		}
+		
 		_negatives = neg;
+		System.out.println("+++ Negatvie set +++");
+		for (int i = 0; i < neg.size(); i++){
+			System.out.println("Das " + i + "te Element: " + neg.get(i).getLocalName());
+		}
 	}
 	
 	public void createFastaFile(String dir){
@@ -366,23 +377,24 @@ public class PDBIdRdfModel {
 			String fastaFilePath = dir + this.getProtein().getFastaFileName();
 			PrintStream out = new PrintStream (new File(fastaFilePath));
 			out.println(">" + this.getProtein().getPdbID() + "." + this.getProtein().getChainID() + "." + this.getProtein().getSpecies());
-			int seqLength = this.getProtein().getSequence().length();
+			String sequence = this.getProtein().getSequence();
+			int seqLength = sequence.length();
 			
 			if (seqLength > 80) {
 				// write sequence in 80 character blocks into file
 				int beginIndex = 0;
 				int endIndex = 80;
-				for (int i = 1;  endIndex <= seqLength; i++ ){
-					out.println(this.getProtein().getSequence().substring(beginIndex, endIndex));
-					if (seqLength - endIndex <= 80){
-						out.println(this.getProtein().getSequence().substring(endIndex, seqLength));
+				while ( endIndex <= seqLength ){
+					out.println(sequence.substring(beginIndex, endIndex));
+					if (seqLength - endIndex < 80){
+						out.println(sequence.substring(endIndex, seqLength));
 					}
 					beginIndex = endIndex;
-					endIndex += (i * 80);
+					endIndex += 80;
 				}
 				
 			} else {
-				out.println(this.getProtein().getSequence());
+				out.println(sequence);
 			}
 			out.close();
 		} catch (IOException e) {
