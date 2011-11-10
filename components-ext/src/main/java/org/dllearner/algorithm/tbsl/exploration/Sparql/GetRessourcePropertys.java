@@ -15,8 +15,12 @@ import org.dllearner.algorithm.tbsl.exploration.sax.MySaxParser;
 public class GetRessourcePropertys {
 	
 	public ArrayList<String> getPropertys(String element) throws IOException{
+		try{
 		sendServerPropertyRequest(element);
 		return do_parsing("answer_property");
+		} catch (Exception e){
+			return null;
+		}
 		
 			
 	}

@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.dllearner.algorithm.tbsl.exploration.Sparql.Levenshtein;
 import org.dllearner.algorithm.tbsl.exploration.sax.MySaxParser;
 
 

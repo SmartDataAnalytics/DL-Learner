@@ -17,6 +17,7 @@ import java.util.Set;
 
 import net.didion.jwnl.JWNLException;
 
+import org.dllearner.algorithm.tbsl.exploration.sax.ParseXmlHtml;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.sparql.BasicQueryTemplate;
 import org.dllearner.algorithm.tbsl.sparql.Path;
@@ -36,22 +37,26 @@ public class SparqlObject {
 	static int explorationdepthwordnet=1;
 	static int iterationdepth =0;
 	static int numberofanswers=1;
+	static double LvenstheinMin = 0.95;
 	static WordNet wordnet;
 	BasicTemplator btemplator;
 	Templator templator;
-	HashMap<String, String> hm;
+	private static HashMap<String, String> hm = new HashMap<String, String>();
 	
 
 	//Konstruktor
-	public SparqlObject(HashMap<String, String> hm_new) throws MalformedURLException{
+	public SparqlObject() throws MalformedURLException{
 		wordnet = new WordNet();
-		hm=hm_new;
+		//hm=hm_new;
+		hm=ParseXmlHtml.parse_xml("/home/swalter/workspace/qaldEntity2",hm);
+		hm=ParseXmlHtml.parse_xml("/home/swalter/workspace/qaldEntity1",hm);
 		System.out.println("Loading SPARQL Templator");
     	btemplator = new BasicTemplator();
     	templator = new Templator();
     	System.out.println("Loading SPARQL Templator Done\n");
     	setExplorationdepthwordnet(1);
-    	setIterationdepth(0);
+    	//eigentlich immer mit 0 initialisieren
+    	setIterationdepth(1);
     	setNumberofanswers(1);
 	}
 	
@@ -101,17 +106,23 @@ public class SparqlObject {
 	 public void create_Sparql_query(String question) throws JWNLException, IOException{
 		 	//create_Sparql_query_new(string);
 			
-		ArrayList<String> lstquery = new ArrayList<String>();
+		 ArrayList<ArrayList<String>> lstquery = new ArrayList<ArrayList<String>>();
+		long startParsingTime = System.currentTimeMillis();
 		lstquery=getQuery(question);
+		long endParsingTime = System.currentTimeMillis();
+		System.out.println("The Questionparsing took "+ (endParsingTime-startParsingTime)+ " ms");
+		ArrayList<String> final_answer = new ArrayList<String>();
 		
 		//if(!lstquery.isEmpty()){
 			//for each querry
-			for(String query : lstquery){
+			for(ArrayList<String> querylist : lstquery){
 				
 				/*
 				 * #################################################################################################
 				 */
 				//only testfunction to save the generated queries in the tmp-folder
+				String query="";
+				query=querylist.get(0).toString();
 				if(getIterationdepth()==-1){
 				    String tmp = new String();
 				    String s = null;
@@ -139,7 +150,7 @@ public class SparqlObject {
 				    }
 				    
 				    String out=null;
-				    if (query=="" || query==" ") query="Could not parse";
+				    if (query=="" || query==" "||query.length()==0) query="Could not parse";
 				    out=tmp + "\n" + question + ":\n"+query+"\n";
 				    
 				    BufferedWriter outfile = new BufferedWriter(
@@ -182,7 +193,9 @@ public class SparqlObject {
 				    }					
 					String answer;
 					answer=sendServerQuestionRequest(query);
-					System.out.println(query);
+					final_answer.add(answer);
+					/*System.out.println(query);
+					if (query=="" || query==" "||query.length()==0) answer="Could not parse";
 					System.out.println("Antwort: " + answer);
 				    String out=tmp + "\n" + "Question: "+question + "\n"+"Query: " + query +"\n Anwer: "+answer+"\n\n##############################";
 				    
@@ -191,13 +204,141 @@ public class SparqlObject {
 	                          new FileOutputStream( "/tmp/answer.txt" ) ) );
 	    
 				    outfile.write(out);
-				    outfile.close();				    
+				    outfile.close();	*/			    
 				}
 				/*
 				 * #################################################################################################
 				 */				
 				//Iterration 1
 				if(getIterationdepth()==1){
+					
+					//asking server
+					String answer;
+					answer=sendServerQuestionRequest(query);
+					
+					//if Emty answer, get properties an look up the right property with levensthein
+					if(answer.contains("EmtyAnswer")){
+						//TODO: get all information from the query
+						//TODO: maybe put the query + information in an array list of arraylist. each arraylist contains the query, the variables and the uris. Then iterate over the List and get the query for sending to server
+						String rescource="";
+						
+						//get the resource of the query. always the last Item in the array!
+						//Funktioniert!
+						String resource_tmp="";
+						int tmp_length=querylist.size();
+						resource_tmp=querylist.get(tmp_length-1);
+						String[] array_tmp = resource_tmp.split(":");
+						rescource=array_tmp[1];
+						
+								
+						//the property we are looking for is always the second last in the array!
+						//Funktioniert!
+						String property_to_compare_with="";
+						tmp_length=querylist.size();
+						//second last
+						property_to_compare_with=querylist.get(tmp_length-2);
+						array_tmp = property_to_compare_with.split(":");
+						property_to_compare_with=array_tmp[1];
+						//System.out.println("property_to_compare_with: "+property_to_compare_with);
+						
+						
+						 //contains uri AND string, every second is the string
+						//Funktioniert
+						 ArrayList<String> properties = new ArrayList<String>();
+						 GetRessourcePropertys property = new GetRessourcePropertys();
+						 Boolean goOnAfterProperty = true;
+						 try {
+							 //using uri now, not the string
+							properties=property.getPropertys(hm.get(rescource.toLowerCase()));
+							if (properties==null){
+								final_answer.add("Error in getting Properties\n");
+								goOnAfterProperty=false;
+							}
+							//System.out.println(properties);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							//e.printStackTrace();
+							final_answer.add("Error in getting Properties\n");
+							goOnAfterProperty=false;
+							
+						}
+						if(goOnAfterProperty==true){
+							 //property_to_compare_with mit der Liste der propertys vergleichen, und wenn der normalisierte Wert >= LvenstheinMin ist, einbauen und neue query erzeugen.
+							 Levenshtein levensthein = new Levenshtein();
+							 ArrayList<String> new_queries= new ArrayList<String>();
+							 for(int i =1; i<=properties.size()-2;i=i+2){
+								 //double tmp=levensthein.nld(property_to_compare_with.toLowerCase(), properties.get(i).toLowerCase());
+								 double tmp=levensthein.computeLevenshteinDistance(property_to_compare_with.toLowerCase(), properties.get(i).toLowerCase());
+								 //create new query
+								 //System.out.println(tmp);
+								 //if(tmp>=LvenstheinMin){
+							     if(tmp<=3.0){
+									 //System.out.println(tmp);
+									 //alte property uri mit neuer ersetzen:
+									 String query_tmp=query;
+									 query_tmp=query_tmp.replace(hm.get(property_to_compare_with.toLowerCase()),properties.get(i-1));
+									 //System.out.println("hm.get(property_to_compare_with.toLowerCase(): " + hm.get(property_to_compare_with.toLowerCase()));
+									 new_queries.add(query_tmp);
+								 }
+								 
+							 }
+							 
+							 System.out.println("Start Iterating Wordnet with "+property_to_compare_with+" and deept of "+explorationdepthwordnet);
+							 ArrayList<String> semantics=new ArrayList<String>();
+							 ArrayList<String> tmp_semantics=new ArrayList<String>();
+							 ArrayList<String> result_SemanticsMatchProperties=new ArrayList<String>();
+							 semantics.add(property_to_compare_with);
+							 tmp_semantics=semantics;
+							 Boolean goOnAfterWordnet = true;
+							 for(int i=0;i<=explorationdepthwordnet;i++){
+	
+								 try {
+									tmp_semantics=getSemantics(tmp_semantics);
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									//e.printStackTrace();
+									goOnAfterWordnet=false;
+									final_answer.add("Error in searching Wordnet\n");
+									
+								}
+								 //each word only one time
+								 for(String k : tmp_semantics){
+									 if(!semantics.contains(k)) semantics.add(k);
+								 }
+										 
+							 }
+							
+							 if(goOnAfterWordnet==true){
+								// ArrayList<String> new_queries= new ArrayList<String>();
+								
+								//TODO: Try, if it works, if you use only one loop: (b.lowerCase).contains(properties.get(h))
+								for(int h=1;h<properties.size()-2;h=h+2){
+									for(String b : semantics){
+										//System.out.println(properties.get(h));
+										//System.out.println(b);
+										if(properties.get(h).contains(b.toLowerCase())){
+											if(!result_SemanticsMatchProperties.contains(properties.get(h))){
+												//create new query
+											result_SemanticsMatchProperties.add(properties.get(h));
+											 String query_tmp=query;
+											 query_tmp=query_tmp.replace(hm.get(property_to_compare_with.toLowerCase()),properties.get(h-1));
+											 //System.out.println("hm.get(property_to_compare_with.toLowerCase(): " + hm.get(property_to_compare_with.toLowerCase()));
+											 new_queries.add(query_tmp);
+											}
+										}
+									}
+								}
+								 
+								for(String bla : new_queries){
+									String answer_tmp;
+									answer_tmp=sendServerQuestionRequest(bla);
+									if(!answer_tmp.contains("EmtyAnswer")){
+										final_answer.add(answer_tmp);
+									}
+								}
+							 }
+						}
+					}
 					
 				}
 				/*
@@ -208,6 +349,46 @@ public class SparqlObject {
 					
 				}
 			}
+			
+			BufferedReader in = null;
+			
+		    String tmp="";
+			// Lies Textzeilen aus der Datei in einen Vector:
+		    try {
+		      in = new BufferedReader(
+		                          new InputStreamReader(
+		                          new FileInputStream( "/tmp/answer" ) ) );
+		      String s;
+			while( null != (s = in.readLine()) ) {
+		        tmp=tmp+"\n"+s;
+		      }
+		    } catch( FileNotFoundException ex ) {
+		    } catch( Exception ex ) {
+		      System.out.println( ex );
+		    } finally {
+		      if( in != null )
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }	
+		    
+		    String out="";
+			for(String answer : final_answer){
+				
+			    out=out+ "\n"+answer+"\n";
+			    
+			}
+		    System.out.println(question);
+		    System.out.println(out);
+		    BufferedWriter outfile = new BufferedWriter(
+                      new OutputStreamWriter(
+                      new FileOutputStream( "/tmp/answer" ) ) );
+
+		    outfile.write(tmp+"\n"+question+" :\n"+out);
+		    outfile.close();
 		}
 		 
 		 // string=string.replaceAll("?", "");
@@ -220,8 +401,8 @@ public class SparqlObject {
 	* @param question question in natural language
 	* @return ArrayList of Sparql queries.
 	*/
-	private ArrayList<String> getQuery(String question) {
-		ArrayList<String> lstquery = new ArrayList<String>();
+	private ArrayList<ArrayList<String>> getQuery(String question) {
+		ArrayList<ArrayList<String>> lstquery = new ArrayList<ArrayList<String>>();
 	    Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(question);
 	     	for (BasicQueryTemplate temp : querytemps) {
 	     		
@@ -230,7 +411,8 @@ public class SparqlObject {
 	    		System.out.println("temp.getVariablesAsStringList();" + temp.getVariablesAsStringList());
 	    		System.out.println("temp.getConditions();" + temp.getConditions());
 	    		System.out.println("temp.getSlots();" + temp.getSlots());*/
-	    		
+	     		ArrayList<String> lstquerynew = new ArrayList<String>();
+	     		ArrayList<String> lstquerupsidedown = new ArrayList<String>();
 	     		String query;
 	     		String selTerms ="";
 	     		for(SPARQL_Term terms :temp.getSelTerms()) selTerms=selTerms+(terms.toString())+" ";
@@ -270,7 +452,6 @@ public class SparqlObject {
 	        	String[] slots= null;
 	    		for(Slot slot : temp.getSlots()){
 	    			
-	    			//hier muss dann noch die abfrage aus der hm raus, also das direkt die uri eingebettet wird.
 	    			String tmp= slot.toString();
 	    			tmp= tmp.replace("UNSPEC","");
 	    			tmp= tmp.replace("RESOURCE","");
@@ -300,9 +481,25 @@ public class SparqlObject {
 	    			query_upside_down=query_upside_down.replace(replace, "<"+hm_result+">");
 	    			
 	    		}
+	    		lstquerupsidedown.add(query_upside_down);
+	    		lstquerynew.add(query);
+	    		
+	    		//slots hinzufügen
+	    		for(Slot slot : temp.getSlots()){
+	    			String tmp= slot.toString();
+	    			tmp= tmp.replace("UNSPEC","");
+	    			tmp= tmp.replace("RESOURCE","");
+	    			tmp= tmp.replace("{","");
+	    			tmp= tmp.replace("}","");
+	    			tmp=tmp.replace("  ","");
+	    			lstquerupsidedown.add(tmp);
+		    		lstquerynew.add(tmp);
+	    		}
 	    		//System.out.println("Query: "+query);
-	    		lstquery.add(query);
-	    		lstquery.add(query_upside_down);
+	    		/*lstquery.add(query);
+	    		lstquery.add(query_upside_down);*/
+	    		lstquery.add(lstquerynew);
+	    		lstquery.add(lstquerupsidedown);
 	    		
 	     	}
 	     	
@@ -455,6 +652,9 @@ public class SparqlObject {
 		string=string.replace("<td>","");
 		string=string.replace("<th>callret-0</th>", "");
 		string=string.replace("<th>y</th>","");
+		while (string.contains("  ")) string=string.replace("  ","");
+		if (string.length()==0) string="EmtyAnswer";
+		//System.out.println("Stringlänge: "+string.length());
 		return string;
 
 	}
