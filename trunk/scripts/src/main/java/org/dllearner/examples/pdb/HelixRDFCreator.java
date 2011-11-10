@@ -109,8 +109,10 @@ public class HelixRDFCreator {
 		/*
 		 * data for test purpose
 		 */
-		PDBProtein testProtein = new PDBProtein("1XFF");
+		PDBProtein testProtein = new PDBProtein("1XFF","A");
 //		PDBProtein testProtein = new PDBProtein("1LMB", "3");
+//		PDBProtein testProtein = new PDBProtein("8ABP");
+
 		
 		/*
 		 * create a training data set
@@ -185,7 +187,8 @@ public class HelixRDFCreator {
 				trainmodel.removeStatementsWithPoperty(endsAt);
 				Resource residue = ResourceFactory.createResource("http://bio2rdf.org/pdb:Residue");
 				trainmodel.removeStatementsWithObject(residue);
-				
+				Property isPartOf = ResourceFactory.createProperty("http://purl.org/dc/terms/", "isPartOf");
+				trainmodel.removeStatementsWithPoperty(isPartOf);
 				/*
 				 * we add the information which amino acid is the fourth predecessor of which other amino acid 
 				 */
@@ -228,20 +231,23 @@ public class HelixRDFCreator {
 				 * proteins that originate from that particular species. If it already exists
 				 * we will append to it.
 				 */
-				File speciesProteins = new File(_dataDir + protein.getSpecies() + ".pos");
 				
-				try {
-					String line =  protein.getPdbID() + "." + protein.getChainID()  + "." + protein.getSpecies() + "\n";
-					FileWriter out = new FileWriter(speciesProteins, true);
-					_logger.debug("Write " + line + "to file " + speciesProteins.getPath());
-					out.write(line);
-					out.close();
-				} catch (FileNotFoundException e) {
-					_logger.error("Could not find file " + speciesProteins.getPath() );
-					e.printStackTrace();
-				} catch (IOException e) {
-					_logger.error("Something went wrong while trying to write to " + speciesProteins.getPath() );
-					e.printStackTrace();
+				if (protein.getSpecies() != ""){
+					File speciesProteins = new File(_dataDir + protein.getSpecies() + ".pos");
+					
+					try {
+						String line =  protein.getPdbID() + "." + protein.getChainID()  + "." + protein.getSpecies() + "\n";
+						FileWriter out = new FileWriter(speciesProteins, true);
+						_logger.debug("Write " + line + " to file " + speciesProteins.getPath());
+						out.write(line);
+						out.close();
+					} catch (FileNotFoundException e) {
+						_logger.error("Could not find file " + speciesProteins.getPath() + speciesProteins.getName());
+						e.printStackTrace();
+					} catch (IOException e) {
+						_logger.error("Something went wrong while trying to write to " + speciesProteins.getPath() + speciesProteins.getName());
+						e.printStackTrace();
+					}
 				}
 			}
 		}

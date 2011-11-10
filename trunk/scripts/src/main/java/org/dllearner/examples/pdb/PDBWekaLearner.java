@@ -1,11 +1,6 @@
 package org.dllearner.examples.pdb;
 
 import java.io.File;
-import java.io.IOException;
-
-import org.apache.log4j.Logger;
-/*
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
@@ -20,14 +15,14 @@ import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
-*/
+
 
 public class PDBWekaLearner {
 	
 	private static Logger logger = Logger.getRootLogger();
 	
 	public PDBWekaLearner (File arffFile) throws IOException{
-	/*	
+		
 		// create logger (configure this to your needs)
 		SimpleLayout layout = new SimpleLayout();
 		FileAppender fileAppender = new FileAppender(layout, "log/sample_log.txt", false);
@@ -75,6 +70,6 @@ public class PDBWekaLearner {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-		*/
+		
 	}
 }

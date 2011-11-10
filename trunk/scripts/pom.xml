@@ -64,5 +64,11 @@
 			<artifactId>commons-compress</artifactId>
 			<version>1.2</version>
 		</dependency>
+		<dependency>
+			<groupId>weka</groupId>
+			<artifactId>weka</artifactId>
+			<version>3.6.5</version>
+		</dependency>
+		
     </dependencies>
 </project>
