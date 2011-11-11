@@ -5,7 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.xml.sax.InputSource;
 
 import com.dumontierlab.pdb2rdf.model.PdbRdfModel;
@@ -27,13 +33,17 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 public class PDBIdRdfModel {
 
+	private static Logger _logger = Logger.getRootLogger();
+	
 	private PdbRdfModel _pdbIdModel = new PdbRdfModel();
 	private PdbRdfModel _removedFromModel = new PdbRdfModel();
 	private PDBProtein _protein = null ;
 	private ArrayList<Resource> _positives = null;
 	private ArrayList<Resource> _negatives = null;
+	private HashMap<Integer, Resource> _positionResource = null;
 	
-	public PDBIdRdfModel (PDBProtein protein){
+	public PDBIdRdfModel (PDBProtein protein) {
+		
 		this._protein = protein;
 		this._pdbIdModel = this.getPdbRdfModel();
 		this.getProtein().setSequence(extractSequence(_pdbIdModel));
@@ -41,6 +51,7 @@ public class PDBIdRdfModel {
 		this.getProtein().setSpecies(extractSpecies(_pdbIdModel));
 		System.out.println("Species: " + this.getProtein().getSpecies());
 		createPositivesAndNegatives();
+		_positionResource = createPositionResidueMap();
 	}
 	
 	public PdbRdfModel getModel(){
@@ -57,6 +68,10 @@ public class PDBIdRdfModel {
 	
 	public ArrayList<Resource> getNegatives(){
 		return _negatives;
+	}
+	
+	public HashMap<Integer, Resource> getPositionResource(){
+		return _positionResource;
 	}
 
 	private PdbRdfModel getPdbRdfModel() {
@@ -192,13 +207,15 @@ public class PDBIdRdfModel {
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 				"PREFIX fn: <http://www.w3.org/2005/xpath-functions#> " +
 				"CONSTRUCT { ?x1 pdb:beginsAt ?x2 ." +
-	    		" ?x1 pdb:endsAt ?x3 . " +
-	    		" ?x5 dcterms:isPartOf ?x4 . " +
+	    		" ?x1 pdb:endsAt ?x3 ." +
+	    		" ?x5 dcterms:isPartOf ?x4 ." +
 	    		" ?x5 rdf:type ?x6 ." +
 	    		" ?x5 pdb:isImmediatelyBefore ?x7 ." +
+	    		" ?x5 pdb:hasChainPosition ?x8 ." +
+	    		" ?x8 rdfs:label ?residuePosition ." +
 	    		" ?organism rdfs:label ?organismName ." +
 	    		" ?seq rdf:type pdb:PolymerSequence ." +
-	    		" ?seq pdb:hasValue ?sequence. } " +	    		
+	    		" ?seq pdb:hasValue ?sequence . } " +	    		
 	    		"WHERE { ?x1 rdf:type pdb:Helix ." +
 	    		" ?x1 pdb:beginsAt ?x2 ." +
 	    		" ?x1 pdb:endsAt ?x3 ." +
@@ -206,7 +223,9 @@ public class PDBIdRdfModel {
 	    		" ?x4 rdf:type <http://bio2rdf.org/pdb:Polypeptide(L)> ." +
 	    		" ?x5 dcterms:isPartOf ?x4 ." +
 	    		" ?x5 rdf:type ?x6 ." +
-	    		" ?x5 pdb:hasChainPosition ?x8 . " +
+	    		" ?x5 pdb:hasChainPosition ?x8 ." +
+	    		" ?x8 dcterms:isPartOf ?x4 ." +
+	    		" ?x8 rdfs:label ?residuePosition ." +
 	    		" OPTIONAL { ?x5 pdb:isImmediatelyBefore ?x7 . } . ";
 		 
 		 if (chainID.length() == 1 && pdbID.length() == 4)
@@ -254,6 +273,59 @@ public class PDBIdRdfModel {
     	qe.close();
     	ResIterator niter = construct.listSubjects();
     	return niter;
+	}
+	
+	private HashMap<Integer, Resource> createPositionResidueMap(){
+		
+		HashMap<Integer, Resource> posres = new HashMap<Integer, Resource>(150);
+		Property iib = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "isImmediatelyBefore");
+
+		ResIterator firstAAs = this.getFirstAA();
+		while ( firstAAs.hasNext()){
+			Resource firstAA = firstAAs.next();
+			Resource nextAA = firstAA;
+			Resource currentAA = firstAA;
+			do {
+				currentAA = nextAA;
+				posres.put(new Integer(this.getResiduePosition(currentAA)), currentAA);
+				nextAA = _pdbIdModel.getProperty(currentAA, iib).getResource();
+			} while (currentAA.hasProperty(iib));
+		}
+		
+		return posres;
+	}
+	
+	private int getResiduePosition(Resource res) {
+		Property hasChainPosition = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "hasChainPosition");
+		Property label = ResourceFactory.createProperty("http://www.w3.org/2000/01/rdf-schema#", "label");
+		ResourceFactory.createResource();
+		
+		NodeIterator residuePosition = _pdbIdModel.listObjectsOfProperty(res, hasChainPosition );
+		ArrayList<RDFNode> positionNodes = new ArrayList<RDFNode>();
+		ArrayList<String> positionLabels = new ArrayList<String>();
+		while ( residuePosition.hasNext() ) {
+			RDFNode positionNode = residuePosition.next();
+			positionNodes.add(positionNode);
+			NodeIterator positionLabelNodes = _pdbIdModel.listObjectsOfProperty( positionNode.asResource(), label );
+			while ( positionLabelNodes.hasNext() ) {
+				positionLabels.add(positionLabelNodes.next().toString());
+			}
+			
+		}
+		
+		
+		Integer position = null;
+		if ( positionNodes.size() == 1 && positionLabels.size() == 1 ) {
+			String positionLabel = positionLabels.get(0);
+			String a = new String( "Position " );
+			String b = new String( " on chain" );
+			position = Integer.parseInt(
+					positionLabel.substring(positionLabel.indexOf(a) + a.length(), positionLabel.indexOf(b)));
+		} else {
+			position = new Integer(0);
+			_logger.error("");
+		}
+		return position.intValue();
 	}
 	
 	public void addDistanceInfo(){
