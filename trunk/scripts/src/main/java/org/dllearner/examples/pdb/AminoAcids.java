@@ -117,29 +117,29 @@ public final class AminoAcids {
 		return resourceString;
 	}
 	
-	public static HashMap<Resource, String> getAminoAcidArffAttributeMap(){
-		HashMap<Resource, String> resdata = new HashMap<Resource, String>(30); 
-		resdata.put(ALA, new String("2,0,0.5,?,?"));
-		resdata.put(CYS, new String("1,0,1,?,0"));
-		resdata.put(ASP, new String("0,-1,1,?,-1"));
-		resdata.put(GLU, new String("0,-1,2,?,-1"));
-		resdata.put(PHE, new String("2,0,2,1,?"));
-		resdata.put(GLY, new String("2,0,0.5,?,?"));
-		resdata.put(HIS, new String("1,1,2,1,1"));
-		resdata.put(ILE, new String("2,0,2,0,?"));
-		resdata.put(LYS, new String("1,1,2,?,1"));
-		resdata.put(LEU, new String("2,0,2,0,?"));
-		resdata.put(MET, new String("2,0,2,?,?"));
-		resdata.put(ASN, new String("0,0,1,?,0"));
-		resdata.put(PRO, new String("?,0,1,?,?"));
-		resdata.put(GLN, new String("0,0,2,?,0"));
-		resdata.put(ARG, new String("0,1,2,?,1"));
-		resdata.put(SER, new String("0,0,0.5,?,0"));
-		resdata.put(THR, new String("1,0,1,?,0,"));
-		resdata.put(VAL, new String("2,0,1,0,?"));
-		resdata.put(TRP, new String("1,0,2,1,1"));
-		resdata.put(TYR, new String("1,0,2,1,0"));
-		resdata.put(SEL, new String("?,?,?,?,?"));
+	public static HashMap<String, String> getAminoAcidArffAttributeMap(){
+		HashMap<String, String> resdata = new HashMap<String, String>(30); 
+		resdata.put(new String("A"), new String("2,0,0.5,?,?"));
+		resdata.put(new String("C"), new String("1,0,1,?,0"));
+		resdata.put(new String("D"), new String("0,-1,1,?,-1"));
+		resdata.put(new String("E"), new String("0,-1,2,?,-1"));
+		resdata.put(new String("F"), new String("2,0,2,1,?"));
+		resdata.put(new String("G"), new String("2,0,0.5,?,?"));
+		resdata.put(new String("H"), new String("1,1,2,1,1"));
+		resdata.put(new String("I"), new String("2,0,2,0,?"));
+		resdata.put(new String("K"), new String("1,1,2,?,1"));
+		resdata.put(new String("L"), new String("2,0,2,0,?"));
+		resdata.put(new String("M"), new String("2,0,2,?,?"));
+		resdata.put(new String("N"), new String("0,0,1,?,0"));
+		resdata.put(new String("P"), new String("?,0,1,?,?"));
+		resdata.put(new String("Q"), new String("0,0,2,?,0"));
+		resdata.put(new String("R"), new String("0,1,2,?,1"));
+		resdata.put(new String("S"), new String("0,0,0.5,?,0"));
+		resdata.put(new String("T"), new String("1,0,1,?,0,"));
+		resdata.put(new String("V"), new String("2,0,1,0,?"));
+		resdata.put(new String("W"), new String("1,0,2,1,1"));
+		resdata.put(new String("Y"), new String("1,0,2,1,0"));
+		resdata.put(new String("U"), new String("?,?,?,?,?"));
 		
 		return resdata;
 	}

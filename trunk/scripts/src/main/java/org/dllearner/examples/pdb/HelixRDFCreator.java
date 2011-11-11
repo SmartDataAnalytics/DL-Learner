@@ -156,6 +156,7 @@ public class HelixRDFCreator {
 				
 				_logger.info("PDB ID: " + protein.getPdbID());
 				_logger.info("chain ID: " + protein.getChainID());
+				
 				trainmodel = new PDBIdRdfModel(protein);
 				
 				if (fasta){
@@ -491,13 +492,55 @@ public class HelixRDFCreator {
 			out.println(data);
 			
 			// HashMap containing information about the properties of every amino acid
-			HashMap<Resource, String> resdata = AminoAcids.getAminoAcidArffAttributeMap();
+			HashMap<String, String> resdata = AminoAcids.getAminoAcidArffAttributeMap();
 			ArrayList<Resource> positives = model.getPositives();
 			ArrayList<Resource> negatives = model.getNegatives();
 			Property type = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
 			Property iib = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "isImmediatelyBefore");
-	
+			String sequence = protein.getSequence();
+			HashMap<Integer, Resource> posRes = model.getPositionResource();
 			
+			for ( int i = 0; i < sequence.length(); i++) {
+				StringBuffer dataLine = new StringBuffer("");
+				String key = Character.toString( sequence.charAt(i) );
+
+				// add amino acid description to dataLine
+				if ( resdata.containsKey(key) ){
+					dataLine.append( resdata.get(key) + "," );
+				} else {
+					// 
+					dataLine.append( resdata.get("U") + "," );
+				}
+				
+				// add information about neighbouring amino acids to dataLine
+				for (int j = (i - 8); j <= (i + 8) ; j++){
+					try {
+						dataLine.append( protein.getSequence().charAt(j) + "," );
+					} catch (IndexOutOfBoundsException e) {
+						dataLine.append( "?," );
+					}
+				}
+				
+				// add information about positive or negative to dataLine
+				if (positives.contains( posRes.get( new Integer(i) ))){
+					dataLine.append( "1" );
+				} else if (negatives.contains( posRes.get( new Integer(i) ))){
+					dataLine.append( "0" );
+				} else {
+					dataLine.append( "?" );
+				}
+				
+				_logger.info(dataLine);
+				out.println(dataLine);
+				
+			}
+			
+		} catch (FileNotFoundException e){
+			e.printStackTrace();
+		}
+			
+			
+/*			// to be exchanged
 			while (firstAAs.hasNext()){
 				Resource firstAA = firstAAs.next();
 				Resource currentAA = firstAA;
@@ -529,6 +572,8 @@ public class HelixRDFCreator {
 						dataLine.append( "1" );
 					} else if (negatives.contains(currentAA)){
 						dataLine.append( "0" );
+					} else {
+						dataLine.append( "?" );
 					}
 
 					
@@ -537,12 +582,6 @@ public class HelixRDFCreator {
 					if (model.getModel().contains(currentAA, iib)){
 						nextAA = model.getModel().getProperty(currentAA, iib).getResource();
 					}
-					_logger.info(dataLine);
-					out.println(dataLine);
-				}
-			}
-		} catch (FileNotFoundException e){
-			e.printStackTrace();
-		}
+*/
 	}
 }
