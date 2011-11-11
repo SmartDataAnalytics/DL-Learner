@@ -55,6 +55,28 @@ public class SPARQLSampleDebugging {
 		return resources;
 	}
 	
+	private Set<String> extractSampleResourcesRandom(int size){
+		logger.info("Extracting " + sampleSize + "sample resources...");
+		long startTime = System.currentTimeMillis();
+		Set<String> resources = new HashSet<String>();
+		
+		String query = "SELECT COUNT(DISTINCT ?s) WHERE {?s a ?type}";
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		int max = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
+		
+		for(int i = 0; i < size; i++){
+			int random = (int)(Math.random() * max);
+			query = String.format("SELECT DISTINCT ?s WHERE {?s a ?type} LIMIT 1 OFFSET %d", random);
+			System.out.println(random);
+			rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+			resources.add(rs.next().getResource("s").getURI());System.out.println(resources);
+		}
+		
+		
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+		return resources;
+	}
+	
 	private OWLOntology extractSampleModule(Set<String> resources){
 		logger.info("Extracting sample module...");
 		long startTime = System.currentTimeMillis();
@@ -94,8 +116,8 @@ public class SPARQLSampleDebugging {
 		OWLOntology sample;
 		OWLOntology merged;
 		OWLReasoner reasoner;
-		for(int i = 0; i < 10; i++){
-			Set<String> resources = extractSampleResources(i * sampleSize);
+		for(int i = 0; i < 1; i++){
+			Set<String> resources = extractSampleResourcesRandom(sampleSize);
 			sample = extractSampleModule(resources);
 			
 			Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
