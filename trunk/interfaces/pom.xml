@@ -56,9 +56,9 @@
 									<mainClass>org.dllearner.cli.Enrichment</mainClass>
 									<name>enrichment</name>
 								</program>
-								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> 
-									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
-									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
+								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass>
+									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass>
+									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass>
 									<name>ws</name> </program> -->
 							</programs>
 						</configuration>
@@ -171,10 +171,10 @@
 					</requestLog>
 				</configuration>
 				<!--execution is used for testing -->
-				<!--executions> <execution> <id>start-jetty</id> <phase>pre-integration-test</phase> 
-					<goals> <goal>run</goal> </goals> <configuration> <scanIntervalSeconds>0</scanIntervalSeconds> 
-					<daemon>true</daemon> <stopKey>stopKey</stopKey> <stopPort>9999</stopPort> 
-					</configuration> </execution> <execution> <id>stop-jetty</id> <phase>post-integration-test</phase> 
+				<!--executions> <execution> <id>start-jetty</id> <phase>pre-integration-test</phase>
+					<goals> <goal>run</goal> </goals> <configuration> <scanIntervalSeconds>0</scanIntervalSeconds>
+					<daemon>true</daemon> <stopKey>stopKey</stopKey> <stopPort>9999</stopPort>
+					</configuration> </execution> <execution> <id>stop-jetty</id> <phase>post-integration-test</phase>
 					<goals> <goal>stop</goal> </goals> </execution> </executions -->
 			</plugin>
 
@@ -205,8 +205,8 @@
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-ext</artifactId>
-		</dependency>		
-		<!-- Added the dependency of the core tests so that they will be accessible 
+		</dependency>
+		<!-- Added the dependency of the core tests so that they will be accessible
 			from the tests in this component -->
 		<dependency>
 			<groupId>org.dllearner</groupId>
@@ -267,6 +267,45 @@
             <artifactId>spring-xmlbeans-3.0</artifactId>
             <version>1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.sf.jopt-simple</groupId>
+            <artifactId>jopt-simple</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+
+        <!--BEGIN Logging Dependencies-->
+
+        <!--This is the api jar, it's needed at compile time-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!--This is the bridge that ties calls to the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--Log4J dependency needed for the runtime as well as some specific compile time calls-->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!--END Logging Dependencies-->
+
 	</dependencies>
 
 

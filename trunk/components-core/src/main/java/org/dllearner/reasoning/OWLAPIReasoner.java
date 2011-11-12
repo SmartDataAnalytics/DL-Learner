@@ -147,7 +147,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         Set<OWLOntology> allImports = new HashSet<OWLOntology>();
         prefixes = new TreeMap<String, String>();
-        
+
         Set<OWLImportsDeclaration> directImports = new HashSet<OWLImportsDeclaration>();
 
         for (AbstractKnowledgeSource source : sources) {
@@ -202,9 +202,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                     }
 
                 } catch (OWLOntologyCreationException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 } catch (URISyntaxException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
                 // all other sources are converted to KB and then to an
                 // OWL API ontology
@@ -217,7 +217,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                 try {
                     ontology = manager.createOntology(ontologyURI);
                 } catch (OWLOntologyCreationException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
                 OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
                 owlAPIOntologies.add(ontology);
@@ -232,8 +232,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             ontology = manager.createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
             //we have to add all import declarations manually here, because this are no axioms
             List<OWLOntologyChange> addImports = new ArrayList<OWLOntologyChange>();
-            for(OWLImportsDeclaration i : directImports){
-            	addImports.add(new AddImport(ontology, i));
+            for (OWLImportsDeclaration i : directImports) {
+                addImports.add(new AddImport(ontology, i));
             }
             manager.applyChanges(addImports);
         } catch (OWLOntologyCreationException e1) {
@@ -252,7 +252,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             try {
                 reasoner = new FaCTPlusPlusReasonerFactory().createNonBufferingReasoner(ontology, conf);
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
             System.out.println("Using FaCT++.");
         } else if (getReasonerTypeString().equals("hermit")) {
@@ -340,7 +340,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         for (OWLNamedIndividual owlIndividual : owlIndividuals) {
             individuals.add(new Individual(owlIndividual.toStringID()));
         }
-        
+
         // remove top and bottom properties (for backwards compatibility)
 //		atomicRoles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
 //		atomicRoles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#topObjectProperty"));
@@ -779,8 +779,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             // take one element from the set and ignore the rest
             // (TODO: we need to make sure we always ignore the same concepts)
             OWLObjectPropertyExpression property = node.getRepresentativeElement();
-            if(!property.isAnonymous()) {
-            	roles.add(new ObjectProperty(property.asOWLObjectProperty().toStringID()));
+            if (!property.isAnonymous()) {
+                roles.add(new ObjectProperty(property.asOWLObjectProperty().toStringID()));
             }
         }
         roles.remove(new ObjectProperty(factory.getOWLTopObjectProperty().toStringID()));

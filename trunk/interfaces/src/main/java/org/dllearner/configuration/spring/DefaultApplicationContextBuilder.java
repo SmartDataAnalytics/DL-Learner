@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dllearner.configuration.IConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -22,6 +25,8 @@ import org.springframework.core.io.Resource;
  * Default implementation of the ApplicationContextBuilder
  */
 public class DefaultApplicationContextBuilder implements ApplicationContextBuilder{
+
+    private static Logger logger = LoggerFactory.getLogger(DefaultApplicationContextBuilder.class);
 
     @Override
     public ApplicationContext buildApplicationContext(IConfiguration configuration, List<Resource> springConfigurationLocations) throws IOException{
@@ -51,7 +56,15 @@ public class DefaultApplicationContextBuilder implements ApplicationContextBuild
         context.addBeanFactoryPostProcessor(beanDefinitionRegistryPostProcessor);
 
         //Instantiate and initialize the beans.
-        context.refresh();
+        try {
+            context.refresh();
+        } catch (BeanCreationException e) {
+            logger.error("There was a problem creating the bean named \"" + e.getBeanName() + "\" - Check your configuration file and try again.");
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            logger.error("There was a problem initializing the components...shutting down.");
+            throw new RuntimeException(e);
+        }
         return context;
     }
 }

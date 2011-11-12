@@ -20,7 +20,9 @@
 package org.dllearner.cli;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,12 +141,6 @@ public class CLI {
 	 */
 	public static void main(String[] args) throws ParseException, IOException, ReasoningMethodUnsupportedException {
 		
-		Layout layout = new PatternLayout();
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		rootLogger.removeAllAppenders();
-		rootLogger.addAppender(consoleAppender);
-		rootLogger.setLevel(Level.INFO);
-		
 //		System.out.println("DL-Learner " + Info.build + " [TODO: read pom.version and put it here (make sure that the code for getting the version also works in the release build!)] command line interface");
 		System.out.println("DL-Learner command line interface");
 		
@@ -168,23 +164,31 @@ public class CLI {
         //DL-Learner Configuration Object
         IConfiguration configuration = new ConfParserConfiguration(confFile);
 
-        ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-        ApplicationContext context =  builder.buildApplicationContext(configuration,springConfigResources);		
-		
-		// TODO: later we could check which command line interface is specified in the conf file
-        // for now we just use the default one
-		
-        CLI cli;
-        if(context.containsBean("cli")) {
-        	cli = (CLI) context.getBean("cli");
-        } else {
-        	cli = new CLI();
+        try {
+            ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
+            ApplicationContext context =  builder.buildApplicationContext(configuration,springConfigResources);
+
+            // TODO: later we could check which command line interface is specified in the conf file
+            // for now we just use the default one
+
+            CLI cli;
+            if(context.containsBean("cli")) {
+                cli = (CLI) context.getBean("cli");
+            } else {
+                cli = new CLI();
+            }
+            cli.setContext(context);
+            cli.setConfFile(file);
+            cli.run();
+        } catch (Exception e) {
+            String stacktraceFileName = "log/error.log";
+            logger.error("An Error Occurred During Processing.  Terminating DL-Learner...and writing stacktrace to: " + stacktraceFileName);
+            FileOutputStream fos = new FileOutputStream(stacktraceFileName);
+            PrintStream ps = new PrintStream(fos);
+            e.printStackTrace(ps);
         }
-    	cli.setContext(context);
-    	cli.setConfFile(file);
-        cli.run();
-                
-	}
+
+    }
 
 	public void setContext(ApplicationContext context) {
 		this.context = context;

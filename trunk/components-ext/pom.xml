@@ -52,18 +52,41 @@
             <groupId>org.aksw.commons</groupId>
             <artifactId>sparql</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-core</artifactId>
-            <version>3.3.0</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
+
+        <!--BEGIN Logging Dependencies-->
+
+        <!--This is the api jar, it's needed at compile time-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.6.0</version>
         </dependency>
+
+        <!--This is the bridge that ties calls to the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- This is the concrete implementation of the log4j framework - it is a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!--END Logging Dependencies-->
+
+
         <dependency>
             <groupId>edu.stanford</groupId>
             <artifactId>postagger</artifactId>
@@ -148,7 +171,6 @@
         <dependency>
             <groupId>org.nlp2rdf</groupId>
             <artifactId>nif</artifactId>
-            <version>1.1-SNAPSHOT</version>
         </dependency>
 
 
