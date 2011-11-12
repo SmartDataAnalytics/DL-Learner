@@ -511,6 +511,7 @@ public class CELOE extends AbstractCELA {
 			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
 		} else {
 			logger.info("Algorithm terminated successfully ("+expressionTests+" descriptions tested). "  + nodes.size() + " nodes in the search tree.\n");
+            logger.info(reasoner.toString());
 		}
 
 		if(singleSuggestionMode) {

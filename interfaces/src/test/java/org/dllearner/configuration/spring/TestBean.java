@@ -1,6 +1,7 @@
 package org.dllearner.configuration.spring;
 
 import org.dllearner.core.Component;
+import org.dllearner.core.ComponentAnn;
 
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +14,7 @@ import java.util.Set;
  *
  * Test Bean for testing that we can store all the types we need.
  */
+@ComponentAnn(version = 1,shortName ="tbc", name = "TestBean Component")
 public class TestBean implements Component{
 
     private String simpleValue;

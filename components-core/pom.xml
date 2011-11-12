@@ -277,11 +277,12 @@
 		</dependency>
 
 
+        <!-- This module is a library module, so it needs only to have the slf api dependency to enable logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.5.8</version>
 		</dependency>
+
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
