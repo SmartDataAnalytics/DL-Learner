@@ -70,6 +70,7 @@ public class AnnComponentManager {
             "org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner",
             "org.dllearner.algorithms.DisjointClassesLearner",
             "org.dllearner.algorithms.SimpleSubclassLearner",
+            "org.dllearner.algorithm.qtl.QTL",
             "org.dllearner.kb.KBFile",
             "org.dllearner.kb.OWLFile",
             "org.dllearner.kb.SparqlEndpointKS",
