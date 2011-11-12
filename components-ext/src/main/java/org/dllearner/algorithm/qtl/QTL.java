@@ -46,6 +46,7 @@ import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
@@ -60,6 +61,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -76,11 +78,12 @@ import com.hp.hpl.jena.util.iterator.Filter;
  *
  *
  */
+@ComponentAnn(name="query tree learner", shortName="qtl", version=0.8)
 public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorithm {
 	
 	private static final Logger logger = Logger.getLogger(QTL.class);
 	
-	private AbstractLearningProblem lp;
+	private AbstractLearningProblem learningProblem;
 	private SparqlEndpointKS endpointKS;
 //	private QTLConfigurator configurator;
 	
@@ -115,11 +118,15 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		return options;
 	}
 	
+	public QTL() {
+		
+	}
+	
 	public QTL(AbstractLearningProblem learningProblem, SparqlEndpointKS endpointKS) throws LearningProblemUnsupportedException{
 		if(!(learningProblem instanceof PosOnlyLP || learningProblem instanceof PosNegLP)){
 			throw new LearningProblemUnsupportedException(learningProblem.getClass(), getClass());
 		}
-		this.lp = learningProblem;
+		this.learningProblem = learningProblem;
 		this.endpointKS = endpointKS;
 		
 //		this.configurator = new QTLConfigurator(this);
@@ -307,11 +314,11 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	}
 
 	public void init() {
-		if(lp instanceof PosOnlyLP){
-			this.posExamples = convert(((PosOnlyLP)lp).getPositiveExamples());
-		} else if(lp instanceof PosNegLP){
-			this.posExamples = convert(((PosNegLP)lp).getPositiveExamples());
-			this.negExamples = convert(((PosNegLP)lp).getNegativeExamples());
+		if(learningProblem instanceof PosOnlyLP){
+			this.posExamples = convert(((PosOnlyLP)learningProblem).getPositiveExamples());
+		} else if(learningProblem instanceof PosNegLP){
+			this.posExamples = convert(((PosNegLP)learningProblem).getPositiveExamples());
+			this.negExamples = convert(((PosNegLP)learningProblem).getNegativeExamples());
 		}
 		endpoint = endpointKS.getEndpoint();
 		
@@ -352,6 +359,24 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		qtl.start();
 		String query = qtl.getBestSPARQLQuery();
 		System.out.println(query);
+	}
+
+	public AbstractLearningProblem getLearningProblem() {
+		return learningProblem;
+	}
+
+	@Autowired
+	public void setLearningProblem(AbstractLearningProblem learningProblem) {
+		this.learningProblem = learningProblem;
+	}
+
+	public SparqlEndpointKS getEndpointKS() {
+		return endpointKS;
+	}
+
+	@Autowired
+	public void setEndpointKS(SparqlEndpointKS endpointKS) {
+		this.endpointKS = endpointKS;
 	}
 
 	

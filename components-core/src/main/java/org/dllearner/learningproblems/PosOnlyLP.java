@@ -109,10 +109,14 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		// reasoning options (i.e. options are the same up to reversed example sets)
 //		definitionLP.init();
 		
-		individuals = new LinkedList<Individual>(getReasoner().getIndividuals());
+		Random rand = new Random(1);		
+		
+		if(getReasoner()!=null) {
+			individuals = new LinkedList<Individual>(getReasoner().getIndividuals());
+			Collections.shuffle(individuals, rand);			
+		}
+		
 		positiveExamplesShuffled = new LinkedList<Individual>(positiveExamples);
-		Random rand = new Random(1);
-		Collections.shuffle(individuals, rand);
 		Collections.shuffle(positiveExamplesShuffled, rand);
 	}
 	

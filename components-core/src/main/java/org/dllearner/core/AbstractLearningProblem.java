@@ -119,7 +119,7 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
         return reasoner;
     }
 
-    @Autowired
+    @Autowired(required=false)
     public void setReasoner(AbstractReasonerComponent reasoner) {
         this.reasoner = reasoner;
     }
