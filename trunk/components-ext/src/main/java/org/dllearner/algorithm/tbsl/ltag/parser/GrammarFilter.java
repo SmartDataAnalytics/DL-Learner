@@ -33,6 +33,8 @@ class GrammarFilter {
 	static List<Integer> usedInts = new ArrayList<Integer>();
 	static ArrayList<String> doubles = new ArrayList<String>();
 	
+	public static boolean VERBOSE = true;
+	
 	static ParseGrammar filter(String taggedinput,LTAGLexicon grammar,List<Integer> temps, String mode) {
 		
 		// DISAM: CLEAR 
@@ -191,7 +193,7 @@ class GrammarFilter {
 			start++;
 		}
 		
-		logger.trace("\ncovered tokens: " + coveredTokens);
+		if (VERBOSE) logger.trace("\ncovered tokens: " + coveredTokens);
 
 		/* construct slots for all unknown tokens */
 		
@@ -211,7 +213,7 @@ class GrammarFilter {
 				}
 			}
 		}
-		logger.trace("unknown words:  " + unknownWords);
+		if (VERBOSE) logger.trace("unknown words:  " + unknownWords);
 		
 		List<Pair<String,String>> buildSlotFor = new ArrayList<Pair<String,String>>();
 		
@@ -238,7 +240,7 @@ class GrammarFilter {
 				System.out.println("Oh no, " + s + " has no POS tag!");
 			}
 		}	
-		logger.trace("build slot for: " + buildSlotFor + "\n");
+		if (VERBOSE) logger.trace("build slot for: " + buildSlotFor + "\n");
 			
 		List<String[]> entries;
 		if (mode.equals("LEIPZIG")) {

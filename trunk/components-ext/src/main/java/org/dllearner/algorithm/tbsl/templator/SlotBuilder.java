@@ -34,8 +34,23 @@ public class SlotBuilder {
 			
 			String type = "UNSPEC";
 			
+			/* 's */
+			if (token.equals("'s")) {
+				String slot = "SLOT_of/SYMPROPERTY/of";
+				String[] npAdjunct = {token,
+						"(NP NP* PART:'s' NP[obj]))",
+						"<x,l1,<e,t>,[ l1:[ y | SLOT_of(x,y) ] ],[(l2,y,obj,<e,t>)],[l2=l1],["+slot+"]>" +
+								" ;; <x,l1,<e,t>,[ l1:[ y | empty(x,y) ] ],[(l2,y,obj,<e,t>)],[l2=l1],[]>"};
+				String[] dpAdjunct = {token,
+						"(DP DP* PART:'s' NP[obj]))",
+						"<x,l1,<<e,t>,t>,[ l1:[ y | SLOT_of(x,y) ] ],[(l2,y,obj,<e,t>)],[l2=l1],["+slot+"]>" +
+								" ;; <x,l1,<<e,t>,t>,[ l1:[ y | empty(x,y) ] ],[(l2,y,obj,<e,t>)],[l2=l1],[]>"};
+				result.add(npAdjunct);
+				result.add(dpAdjunct);
+			}
+			
 			/* NOUNS */
-			if (equalsOneOf(pos,noun)) {
+			else if (equalsOneOf(pos,noun)) {
 				
 				if (pos.equals("NN") || pos.equals("NNS")) {
 					type = "CLASS";

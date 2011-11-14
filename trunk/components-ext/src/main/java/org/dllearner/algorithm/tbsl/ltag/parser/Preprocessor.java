@@ -16,17 +16,23 @@ public class Preprocessor {
 	
 	private static final Logger logger = Logger.getLogger(Preprocessor.class);
 
-	static final String[] genericReplacements = { "\"", "", "'", "", "[!?.,;]", "" };
+	static final String[] genericReplacements = { "[!?.,;]", "" };
 	static final String[] englishReplacements = { "don't", "do not", "doesn't", "does not" };
 	static boolean USE_NER;
+	static boolean VERBOSE;
 	static NER ner;
 	
 	public Preprocessor(boolean n) {
 		USE_NER = n;
+		VERBOSE = true;
 		if (USE_NER) {
 //			ner = new LingPipeNER(true); //not case sensitive best solution?
 			ner = new DBpediaSpotlightNER();
 		}
+	}
+	
+	public void setVERBOSE(boolean b) {
+		VERBOSE = b;
 	}
 	
 	public String normalize(String s) {
@@ -58,7 +64,7 @@ public class Preprocessor {
 		 * nn/RBR of/IN > nn/NPREP
 		 * usw. 
 		 * */ 
-		String condensedstring = taggedstring;
+		String condensedstring = taggedstring.replaceAll("``/``","").replaceAll("''/''","").replaceAll("  "," ");
 		Matcher m;
 		
 		Pattern compAdjPattern    = Pattern.compile("(\\w+/RBR.(\\w+)/JJ)");
@@ -89,7 +95,7 @@ public class Preprocessor {
 		
 		m = compAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJR");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJR");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJR");
 		}
 //		m = superAdjPattern.matcher(condensedstring); 
@@ -99,57 +105,57 @@ public class Preprocessor {
 //		}
 		m = howManyPattern.matcher(condensedstring); 
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by how/WLEX many/WLEX");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by how/WLEX many/WLEX");
 			condensedstring = condensedstring.replaceFirst(m.group(1),"how/WLEX many/WLEX");
 		}
 		m = howAdjPattern.matcher(condensedstring); 
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJH");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/JJH");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/JJH");
 		}
 		m = thesameasPattern.matcher(condensedstring); 
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/NNSAME");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/NNSAME");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/NNSAME");
 		}
 		m = nprepPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/NPREP");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/NPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/NPREP");
 		}
 		m = didPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by \"\"");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by \"\"");
 			condensedstring = condensedstring.replaceFirst(m.group(1),"");
 		}
 		m = prepfrontPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by \"\"");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by \"\"");
 			condensedstring = condensedstring.replaceFirst(m.group(1),"");
 		}
 		m = passivePattern1a.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(6)+"/PASSIVE");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(6)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(6)+"/PASSIVE");
 		}
 		m = passivePattern1b.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(6)+m.group(7)+"/PASSIVE");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(6)+m.group(7)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(6) + m.group(7)+"/PASSIVE");
 		}
 		m = passivePattern2a.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+"/PASSIVE");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+"/PASSIVE");
 		}
 		m = pseudopassPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+"/VPREP");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+"/VPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+"/VPREP");
 		}
 		m = pseudopwhPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+m.group(8)+"/VPREP");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+m.group(8)+"/VPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+" "+m.group(8)+"/VPREP");
 		}
 		m = saveIsThere.matcher(condensedstring);
@@ -158,57 +164,57 @@ public class Preprocessor {
 		}
 		m = passivePattern2b.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+"/PASSIVE");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(7)+"/PASSIVE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(7)+"/PASSIVE");
 		}
 		m = passpartPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/PASSPART");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/PASSPART");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/PASSPART");
 		}
 		m = vpassPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/VPASS");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/VPASS");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/VPASS");
 		}
 		m = vpassinPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/VPASSIN");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/VPASSIN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/VPASSIN");
 		}
 		m = gerundinPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/GERUNDIN");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/GERUNDIN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/GERUNDIN");
 		}
 		m = vprepPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/VPREP");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"/VPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/VPREP");
 		}
 		m = whenPattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHEN");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHEN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2) + m.group(3)+"/WHEN");
 		}
 		m = wherePattern.matcher(condensedstring);
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHERE");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHERE");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2) + m.group(3)+"/WHERE");
 		}
 		m = adjsPattern.matcher(condensedstring); 
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJ");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJ");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJ");
 		}		
 		m = adjnounPattern.matcher(condensedstring); 
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNN");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNN");
 		}
 		m = adjnprepPattern.matcher(condensedstring); 
 		while (m.find()) {
-			logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNPREP");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNPREP");
 		}
 		
@@ -259,7 +265,7 @@ public class Preprocessor {
 		List<String> namedentities = ner.getNamedEntitites(untagged);
 		List<String> usefulnamedentities = new ArrayList<String>();
 		
-		logger.trace("Proposed NEs: " + namedentities);
+		if (VERBOSE) logger.trace("Proposed NEs: " + namedentities);
 		
 		// keep only longest matches (e.g. keep 'World of Warcraft' and forget about 'Warcraft') 
 		// containing at least one upper case letter (in order to filter out errors like 'software')
@@ -277,7 +283,7 @@ public class Preprocessor {
 			}
 		}
 		
-		logger.trace("Accepted NEs: " + usefulnamedentities);
+		if (VERBOSE) logger.trace("Accepted NEs: " + usefulnamedentities);
 		
 		// replace POS tags accordingly
 		for (String ne : usefulnamedentities) {
