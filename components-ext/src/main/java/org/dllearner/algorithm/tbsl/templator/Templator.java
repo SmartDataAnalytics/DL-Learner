@@ -53,8 +53,9 @@ public class Templator {
 	
 	boolean ONE_SCOPE_ONLY = true;
 	boolean UNTAGGED_INPUT = true;
-	
 	boolean USE_NER = false;
+	boolean USE_WORDNET = true;
+	boolean VERBOSE = true;
 	
 	public Templator() {
 		this(new StanfordPartOfSpeechTagger(), new WordNet());
@@ -74,7 +75,6 @@ public class Templator {
 		}
 		
         g = LTAG_Constructor.construct(grammarFiles);
-
 		
 	    p = new Parser();
 	    p.SHOW_GRAMMAR = true;
@@ -85,11 +85,40 @@ public class Templator {
 	    pp = new Preprocessor(USE_NER);
 	}
 	
+	public Templator(boolean b) {
+		this.tagger = new StanfordPartOfSpeechTagger();
+		this.USE_WORDNET = false;
+		VERBOSE = b;
+		
+		List<InputStream> grammarFiles = new ArrayList<InputStream>();
+		for(int i = 0; i < GRAMMAR_FILES.length; i++){
+			grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
+		}
+		
+        g = LTAG_Constructor.construct(grammarFiles);
+		
+	    p = new Parser();
+	    p.SHOW_GRAMMAR = false;
+	    p.VERBOSE = b;
+	    p.USE_DPS_AS_INITTREES = true;
+	    p.CONSTRUCT_SEMANTICS = true;
+	    p.MODE = "LEIPZIG";
+	    
+	    pp = new Preprocessor(USE_NER);
+	    pp.setVERBOSE(b);
+	}
+	
 	public void setUNTAGGED_INPUT(boolean b) {
 		UNTAGGED_INPUT = b;
 	}
 	public void setUSE_NER(boolean b) {
 		USE_NER = b;
+	}
+	public void setVERBOSE(boolean b) {
+		VERBOSE = b;
+	}
+	public void setGrammarFiles(String[] gf) {
+		GRAMMAR_FILES = gf;
 	}
 
 	public Set<Template> buildTemplates(String s) {
@@ -100,7 +129,7 @@ public class Templator {
 		if (UNTAGGED_INPUT) {		
 			s = pp.normalize(s);
 			tagged = tagger.tag(s);
-			logger.trace("Tagged input: " + tagged);
+			if (VERBOSE) logger.trace("Tagged input: " + tagged);
 		}
 		else {
 			tagged = s;
@@ -114,20 +143,20 @@ public class Templator {
 		else newtagged = pp.condenseNominals(tagged);
 		
 		newtagged = pp.condense(newtagged);
-		logger.trace("Preprocessed: " + newtagged); 
+		if (VERBOSE) logger.trace("Preprocessed: " + newtagged); 
         
         p.parse(newtagged,g);
         
         if (p.getDerivationTrees().isEmpty()) {
             p.clear(g,p.getTemps());
             clearAgain = false;
-            logger.error("[Templator.java] '" + s + "' could not be parsed.");
+            if (VERBOSE) logger.error("[Templator.java] '" + s + "' could not be parsed.");
         }
         else {
         try {
         	p.buildDerivedTrees(g);
         } catch (ParseException e) {
-            logger.error("[Templator.java] ParseException at '" + e.getMessage() + "'", e);
+        	if (VERBOSE) logger.error("[Templator.java] ParseException at '" + e.getMessage() + "'", e);
         }
         }
 
@@ -154,10 +183,12 @@ public class Templator {
                 	
                 	if (!containsModuloRenaming(drses,drs)) {
 //                    	// DEBUG
-                		System.out.println(dude);
-                		System.out.println(drs);
-                		for (Slot sl : slots) {
-                			System.out.println(sl.toString());
+                		if (VERBOSE) {
+	                		System.out.println(dude);
+	                		System.out.println(drs);
+	                		for (Slot sl : slots) {
+	                			System.out.println(sl.toString());
+	                		}
                 		}
 //                		//
                 		drses.add(drs);
@@ -168,54 +199,55 @@ public class Templator {
                 				continue;
                 			}
                 			
-                			// find WordNet synonyms
-            				List<String> newwords;
-            				String word; 
-            				String pos;
-                			for (Slot slot : temp.getSlots()) {
-                				if (!slot.getWords().isEmpty()) {
-                					
-                					word = slot.getWords().get(0);
-                					pos = postable.get(word.toLowerCase().replace(" ","_"));
-                					
-                					POS wordnetpos = null;
-                					if (pos != null) {
-	                					if (equalsOneOf(pos,noun)) {
-	                						wordnetpos = POS.NOUN;
+        					if (USE_WORDNET) { // find WordNet synonyms
+	            				List<String> newwords;
+	            				String word; 
+	            				String pos;
+	                			for (Slot slot : temp.getSlots()) {
+	                				if (!slot.getWords().isEmpty()) {
+	                					
+	                					word = slot.getWords().get(0);
+	                					pos = postable.get(word.toLowerCase().replace(" ","_"));
+	                					
+	                					POS wordnetpos = null;
+	                					if (pos != null) {
+		                					if (equalsOneOf(pos,noun)) {
+		                						wordnetpos = POS.NOUN;
+		                					}
+		                					else if (equalsOneOf(pos,adjective)) {
+		                						wordnetpos = POS.ADJECTIVE;
+		                					}
+		                					else if (equalsOneOf(pos,verb)) {
+		                						wordnetpos = POS.VERB;
+		                					}
+		                				}
+	                					
+	               						List<String> strings = new ArrayList<String>();
+	               						if (wordnetpos != null && wordnetpos.equals(POS.ADJECTIVE)) {
+	               							strings = wordnet.getAttributes(word);
+	               						}
+	                					
+	                					newwords = new ArrayList<String>();
+	                					newwords.addAll(slot.getWords());
+	                					newwords.addAll(strings);            					
+	                					
+	                					if (wordnetpos != null && !slot.getSlotType().equals(SlotType.RESOURCE)) {
+	                						newwords.addAll(wordnet.getBestSynonyms(wordnetpos,getLemmatizedWord(word)));
+		                					for (String att : getLemmatizedWords(strings)) {
+			                					newwords.addAll(wordnet.getBestSynonyms(wordnetpos,att));
+		                					}
 	                					}
-	                					else if (equalsOneOf(pos,adjective)) {
-	                						wordnetpos = POS.ADJECTIVE;
+	                					if(newwords.isEmpty()){
+	                						
 	                					}
-	                					else if (equalsOneOf(pos,verb)) {
-	                						wordnetpos = POS.VERB;
+	                					if (newwords.isEmpty()) {
+	                						newwords.add(slot.getWords().get(0));
 	                					}
+	                					List<String> newwordslist = new ArrayList<String>();
+	                					newwordslist.addAll(newwords);
+	                					slot.setWords(newwordslist);
 	                				}
-                					
-                					List<String> strings = new ArrayList<String>();
-                					if (wordnetpos != null && wordnetpos.equals(POS.ADJECTIVE)) {
-                						strings = wordnet.getAttributes(word);
-                					}
-                					
-                					newwords = new ArrayList<String>();
-                					newwords.addAll(slot.getWords());
-                					newwords.addAll(strings);            					
-                					
-                					if (wordnetpos != null && !slot.getSlotType().equals(SlotType.RESOURCE)) {
-                						newwords.addAll(wordnet.getBestSynonyms(wordnetpos,getLemmatizedWord(word)));
-	                					for (String att : getLemmatizedWords(strings)) {
-		                					newwords.addAll(wordnet.getBestSynonyms(wordnetpos,att));
-	                					}
-                					}
-                					if(newwords.isEmpty()){
-                						
-                					}
-                					if (newwords.isEmpty()) {
-                						newwords.add(slot.getWords().get(0));
-                					}
-                					List<String> newwordslist = new ArrayList<String>();
-                					newwordslist.addAll(newwords);
-                					slot.setWords(newwordslist);
-                				}
+	                			}
                 			}
                 			// 
                 			

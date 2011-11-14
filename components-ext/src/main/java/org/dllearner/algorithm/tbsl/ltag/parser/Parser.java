@@ -18,6 +18,7 @@ public class Parser {
 	public boolean USE_LESS_MEMORY = false;
 	public boolean SHOW_GRAMMAR = false;
 	public boolean SHOW_LEXICAL_COVERAGE = false;
+	public boolean VERBOSE = true;
 	public String MODE = "BASIC"; // MODE ::= BASIC | LEIPZIG (set by Templator and BasicTemplator)
 
 	private String[] input;
@@ -50,6 +51,8 @@ public class Parser {
 		derivedTrees.clear();
 		dudes.clear();
 		temporaryEntries.clear();
+		
+		if (!VERBOSE) GrammarFilter.VERBOSE = false;
 
 		/*
 		 * create a local copy of the grammar with own treeIDs. This is
@@ -64,7 +67,7 @@ public class Parser {
 			inputNoTags += s.substring(0,s.indexOf("/")) + " ";
 		}
 
-		this.input = ("# ".concat(inputNoTags.trim())).split(" ");
+		this.input = ("# ".concat(inputNoTags.replaceAll("'","").trim())).split(" ");
 		int n = this.input.length;
 		
 		
@@ -84,7 +87,7 @@ public class Parser {
 			internalParse(parseGrammar.getDPInitTrees(), n);
 		}
 
-		logger.trace("Constructed " + derivationTrees.size() + " derivation trees.\n");
+		if (VERBOSE) logger.trace("Constructed " + derivationTrees.size() + " derivation trees.\n");
 		return derivationTrees;
 
 	}
