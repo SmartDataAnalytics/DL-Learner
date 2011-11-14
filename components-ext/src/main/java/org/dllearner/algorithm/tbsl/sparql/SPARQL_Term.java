@@ -1,11 +1,14 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
+import java.io.Serializable;
+
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Aggregate;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_OrderBy;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Term;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Value;
 
-public class SPARQL_Term extends SPARQL_Value {
+public class SPARQL_Term extends SPARQL_Value{
+	
 	
 	SPARQL_OrderBy orderBy = SPARQL_OrderBy.NONE;
 	SPARQL_Aggregate aggregate = SPARQL_Aggregate.NONE;

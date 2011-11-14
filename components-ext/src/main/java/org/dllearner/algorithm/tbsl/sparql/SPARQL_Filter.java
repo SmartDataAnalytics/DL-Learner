@@ -1,11 +1,13 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SPARQL_Filter
+public class SPARQL_Filter implements Serializable
 {
-
+	private static final long serialVersionUID = -6243542586884540703L;
+	
 	private Set<SPARQL_Pair> terms = new HashSet<SPARQL_Pair>();
 	private boolean and = true;
 	

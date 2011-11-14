@@ -1,6 +1,10 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
-public class SPARQL_Prefix {
+import java.io.Serializable;
+
+public class SPARQL_Prefix implements Serializable{
+	
+	private static final long serialVersionUID = 1971250768286898228L;
 	
 	private String name;
 	private String url;
