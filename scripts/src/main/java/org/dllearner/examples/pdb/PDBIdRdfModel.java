@@ -22,6 +22,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -206,6 +207,7 @@ public class PDBIdRdfModel {
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 				"PREFIX fn: <http://www.w3.org/2005/xpath-functions#> " +
+				"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " +
 				"CONSTRUCT { ?x1 pdb:beginsAt ?x2 ." +
 	    		" ?x1 pdb:endsAt ?x3 ." +
 	    		" ?x5 dcterms:isPartOf ?x4 ." +
@@ -213,6 +215,7 @@ public class PDBIdRdfModel {
 	    		" ?x5 pdb:isImmediatelyBefore ?x7 ." +
 	    		" ?x5 pdb:hasChainPosition ?x8 ." +
 	    		" ?x8 rdfs:label ?residuePosition ." +
+	    		" ?x8 pdb:hasValue ?x9 ." +
 	    		" ?organism rdfs:label ?organismName ." +
 	    		" ?seq rdf:type pdb:PolymerSequence ." +
 	    		" ?seq pdb:hasValue ?sequence . } " +	    		
@@ -223,11 +226,12 @@ public class PDBIdRdfModel {
 	    		" ?x4 rdf:type <http://bio2rdf.org/pdb:Polypeptide(L)> ." +
 	    		" ?x5 dcterms:isPartOf ?x4 ." +
 	    		" ?x5 rdf:type ?x6 ." +
+	    		// with the optional clause i get the information by which amino acid
+	    		// a amino acid is followed
+	    		" OPTIONAL { ?x5 pdb:isImmediatelyBefore ?x7 . } . " +
 	    		" ?x5 pdb:hasChainPosition ?x8 ." +
-	    		" ?x8 dcterms:isPartOf ?x4 ." +
 	    		" ?x8 rdfs:label ?residuePosition ." +
-	    		" OPTIONAL { ?x5 pdb:isImmediatelyBefore ?x7 . } . ";
-		 
+	    		" ?x8 pdb:hasValue ?x9 Filter (xsd:int(?x9)) .";		 
 		 if (chainID.length() == 1 && pdbID.length() == 4)
 			{
 				queryString +=
@@ -239,8 +243,6 @@ public class PDBIdRdfModel {
 				" ?x4 pdb:hasPolymerSequence ?seq . " +
 	    		" ?seq rdf:type pdb:PolymerSequence . " +
 	    		" ?seq pdb:hasValue ?sequence . " +
-	    		// with the Optional clause i get the information by which amino acid
-	    		// a amino acid is followed
 	    		" OPTIONAL { ?organism rdfs:label ?organismName " +
 	    			"FILTER (str(?organism) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . } . }";
 		
@@ -283,13 +285,12 @@ public class PDBIdRdfModel {
 		ResIterator firstAAs = this.getFirstAA();
 		while ( firstAAs.hasNext()){
 			Resource firstAA = firstAAs.next();
-			Resource nextAA = firstAA;
 			Resource currentAA = firstAA;
-			do {
-				currentAA = nextAA;
+			posres.put(new Integer(this.getResiduePosition(currentAA)), currentAA);
+			while (currentAA.hasProperty(iib)) {
+				currentAA = _pdbIdModel.getProperty(currentAA, iib).getResource();
 				posres.put(new Integer(this.getResiduePosition(currentAA)), currentAA);
-				nextAA = _pdbIdModel.getProperty(currentAA, iib).getResource();
-			} while (currentAA.hasProperty(iib));
+			}
 		}
 		
 		return posres;
@@ -297,18 +298,18 @@ public class PDBIdRdfModel {
 	
 	private int getResiduePosition(Resource res) {
 		Property hasChainPosition = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "hasChainPosition");
-		Property label = ResourceFactory.createProperty("http://www.w3.org/2000/01/rdf-schema#", "label");
+		Property hasValue = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "hasValue");
 		ResourceFactory.createResource();
 		
 		NodeIterator residuePosition = _pdbIdModel.listObjectsOfProperty(res, hasChainPosition );
 		ArrayList<RDFNode> positionNodes = new ArrayList<RDFNode>();
-		ArrayList<String> positionLabels = new ArrayList<String>();
+		ArrayList<Integer> positionLabels = new ArrayList<Integer>();
 		while ( residuePosition.hasNext() ) {
 			RDFNode positionNode = residuePosition.next();
 			positionNodes.add(positionNode);
-			NodeIterator positionLabelNodes = _pdbIdModel.listObjectsOfProperty( positionNode.asResource(), label );
+			NodeIterator positionLabelNodes = _pdbIdModel.listObjectsOfProperty( positionNode.asResource(), hasValue );
 			while ( positionLabelNodes.hasNext() ) {
-				positionLabels.add(positionLabelNodes.next().toString());
+				positionLabels.add(positionLabelNodes.next().asLiteral().getInt());
 			}
 			
 		}
@@ -316,11 +317,7 @@ public class PDBIdRdfModel {
 		
 		Integer position = null;
 		if ( positionNodes.size() == 1 && positionLabels.size() == 1 ) {
-			String positionLabel = positionLabels.get(0);
-			String a = new String( "Position " );
-			String b = new String( " on chain" );
-			position = Integer.parseInt(
-					positionLabel.substring(positionLabel.indexOf(a) + a.length(), positionLabel.indexOf(b)));
+			position = positionLabels.get(0);
 		} else {
 			position = new Integer(0);
 			_logger.error("");
