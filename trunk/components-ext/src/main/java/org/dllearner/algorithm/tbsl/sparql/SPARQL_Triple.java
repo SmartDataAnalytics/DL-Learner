@@ -1,6 +1,11 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
-public class SPARQL_Triple {
+import java.io.Serializable;
+
+public class SPARQL_Triple implements Serializable{
+	
+	private static final long serialVersionUID = -1681019680404287955L;
+	
 	SPARQL_Term variable = new SPARQL_Term("");
 	SPARQL_Property property = new SPARQL_Property("");
 	SPARQL_Value value = new SPARQL_Value();

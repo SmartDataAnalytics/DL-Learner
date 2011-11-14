@@ -1,7 +1,11 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
-public class SPARQL_Pair
+import java.io.Serializable;
+
+public class SPARQL_Pair implements Serializable
 {
+	private static final long serialVersionUID = -1255754209857823420L;
+	
 	public SPARQL_Term a;
 	public Object b;
 

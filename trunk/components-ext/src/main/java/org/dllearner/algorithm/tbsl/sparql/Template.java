@@ -1,10 +1,13 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Template {
+public class Template implements Serializable{
 
+	private static final long serialVersionUID = -3925093269596915997L;
+	
 	Query query;
 	List<Slot> slots;
 

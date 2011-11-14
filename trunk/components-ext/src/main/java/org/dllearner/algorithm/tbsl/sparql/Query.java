@@ -1,13 +1,14 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Query
-{
-
+public class Query implements Serializable {
+	
+	private static final long serialVersionUID = 6040368736352575802L;
 	Set<SPARQL_Term> selTerms; // SELECT ?x ?y
 	Set<SPARQL_Prefix> prefixes;
 	Set<SPARQL_Triple> conditions;

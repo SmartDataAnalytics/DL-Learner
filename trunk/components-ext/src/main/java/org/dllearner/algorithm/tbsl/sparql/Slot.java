@@ -1,11 +1,14 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Slot {
+public class Slot implements Serializable{
 
+	private static final long serialVersionUID = 8672756914248710435L;
+	
 	String anchor;
 	String token;
 	SlotType type;
