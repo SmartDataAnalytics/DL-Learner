@@ -39,6 +39,7 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -283,7 +284,11 @@ public class Enrichment {
 			Set<NamedClass> classes = st.getAllClasses();
 			int entities = 0;
 			for(NamedClass nc : classes) {
-				runClassLearningAlgorithms(ks, nc);		
+				try {
+					runClassLearningAlgorithms(ks, nc);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}		
 				entities++;
 				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
 					break;
@@ -355,6 +360,10 @@ public class Enrichment {
 		// get instances of class as positive examples
 		SPARQLReasoner sr = new SPARQLReasoner(ks);
 		SortedSet<Individual> posExamples = sr.getIndividuals(nc, 20);
+		if(posExamples.isEmpty()){
+			System.out.println("Skipping CELOE because class " + nc.toString() + " is empty.");
+			return Collections.emptyList();
+		}
 		SortedSet<String> posExStr = Helper.getStringSet(posExamples);
 		
 		// use own implementation of negative example finder
