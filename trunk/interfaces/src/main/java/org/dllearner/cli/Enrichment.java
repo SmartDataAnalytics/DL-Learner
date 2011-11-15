@@ -23,6 +23,7 @@ import static java.util.Arrays.asList;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -218,11 +219,12 @@ public class Enrichment {
 	
 	private Set<OWLAxiom> learnedOWLAxioms;
 	
-	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, boolean useInference, boolean verbose) {
+	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, int nrOfAxiomsToLearn, boolean useInference, boolean verbose) {
 		this.se = se;
 		this.resource = resource;
 		this.verbose = verbose;
 		this.threshold = threshold;
+		this.nrOfAxiomsToLearn = nrOfAxiomsToLearn;
 		this.useInference = useInference;
 		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
@@ -722,6 +724,9 @@ public class Enrichment {
 		parser.acceptsAll(asList("t", "threshold"),
 				"Confidence threshold for suggestions. Set it to a value between 0 and 1.").withOptionalArg() 
 				.ofType(Double.class).defaultsTo(0.7);
+		parser.acceptsAll(asList("l", "limit"),
+		"Maximum number of returned axioms per axiom type. Set it to -1 if all axioms above the threshold should be returned.").withOptionalArg() 
+		.ofType(Integer.class).defaultsTo(10);
 		parser.acceptsAll(asList("i", "inference"),
 				"Specifies whether to use inference. If yes, the schema will be loaded into a reasoner and used for computing the scores.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
 		parser.acceptsAll(asList("s", "serialize"), "Specify a file where the ontology with all axioms can be written.")
@@ -806,6 +811,10 @@ public class Enrichment {
 			boolean useInference = (Boolean) options.valueOf("i");
 //			boolean verbose = (Boolean) options.valueOf("v");
 			double threshold = (Double) options.valueOf("t");
+			int maxNrOfResults = (Integer) options.valueOf("l");
+			if(maxNrOfResults == -1){
+				maxNrOfResults = Integer.MAX_VALUE;
+			}
 			
 			// TODO: some handling for inaccessible files or overwriting existing files
 			File f = (File) options.valueOf("o");
@@ -816,7 +825,7 @@ public class Enrichment {
 				 System.setOut(printStream);
 			}			
 			
-			Enrichment e = new Enrichment(se, resource, threshold, useInference, false);
+			Enrichment e = new Enrichment(se, resource, threshold, maxNrOfResults, useInference, false);
 			e.start();
 
 			SparqlEndpointKS ks = new SparqlEndpointKS(se);
