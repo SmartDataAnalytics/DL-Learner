@@ -283,13 +283,15 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
      * The learning problem variable, which must be used by
      * all learning algorithm implementations.
      */
+	@Override
     public AbstractLearningProblem getLearningProblem() {
         return learningProblem;
     }
 
     @Autowired
-    public void setLearningProblem(AbstractLearningProblem learningProblem) {
-        this.learningProblem = learningProblem;
+    @Override
+    public void setLearningProblem(LearningProblem learningProblem) {
+        this.learningProblem = (AbstractLearningProblem) learningProblem;
     }
 
     /**

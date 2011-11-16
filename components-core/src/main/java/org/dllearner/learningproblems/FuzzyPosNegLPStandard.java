@@ -91,7 +91,9 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 //		approxDelta = configurator.getApproxAccuracy();
 		
 		String accM = getAccuracyMethod();
-		if(accM.equals("standard")) {
+		if(accM == null) {
+			heuristic = HeuristicType.FMEASURE; // use F-Measure by default
+		} else if(accM.equals("standard")) {
 			heuristic = HeuristicType.AMEASURE;
 		} else if(accM.equals("fmeasure")) {
 			heuristic = HeuristicType.FMEASURE;
