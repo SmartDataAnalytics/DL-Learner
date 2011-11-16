@@ -89,9 +89,9 @@ import fuzzydll.fuzzyowl2fuzzydlparser.*;
 
 public class FuzzyDLReasonerManager implements OWLReasoner {
 
-	// private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "../examples/fuzzydll/fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
-	private static final String FUZZYOWL2FUZZYDLPARSEROUTPUT = "../examples/fuzzydll/fuzzyOWL2fuzzyDLparserOutput.fuzzyDL.txt";
-	private static String CONFIG_FILENAME = "../examples/fuzzydll/CONFIG";
+	// private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "../test/fuzzydll/fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
+	private static final String FUZZYOWL2FUZZYDLPARSEROUTPUT = "../test/fuzzydll/fuzzyOWL2fuzzyDLparserOutput.fuzzyDL.txt";
+	private static String CONFIG_FILENAME = "../test/fuzzydll/CONFIG";
 
 	private Solution queryResult;
 	private KnowledgeBase fuzzyKB;
