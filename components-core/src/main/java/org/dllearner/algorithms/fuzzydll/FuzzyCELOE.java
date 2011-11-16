@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.FuzzyClassExpressionLearningAlgorithm;
@@ -78,6 +79,7 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name="Fuzzy CELOE", shortName="fceloe", version=0.2, description="See Fuzzy DL-Learner paper published at ISDA 2011.")
 public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLearningAlgorithm {
 
 	private static Logger logger = Logger.getLogger(FuzzyCELOE.class);
