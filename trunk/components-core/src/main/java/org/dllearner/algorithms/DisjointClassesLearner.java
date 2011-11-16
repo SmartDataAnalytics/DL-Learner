@@ -19,7 +19,9 @@
 
 package org.dllearner.algorithms;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -186,6 +188,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		Set<NamedClass> completeDisjointclasses = new TreeSet<NamedClass>(allClasses);
 		completeDisjointclasses.removeAll(class2Count.keySet());
 		
+		//we remove the asserted sublcasses here
+		if(reasoner.isPrepared()){
+			completeDisjointclasses.removeAll(reasoner.getClassHierarchy().getSubClasses(classToDescribe));
+		} else {
+			completeDisjointclasses.removeAll(reasoner.getSubClasses(classToDescribe));
+		}
+		
+		
 		EvaluatedDescription evalDesc;
 		//firstly, create disjoint classexpressions which not occur and give score of 1
 		if(reasoner.isPrepared()){
@@ -208,12 +218,13 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	}
 	
 	public static void main(String[] args) throws Exception{
-		DisjointClassesLearner l = new DisjointClassesLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/SoccerClub"));
+		DisjointClassesLearner l = new DisjointClassesLearner(new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
+				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/ChemicalSubstance"));
 		l.init();
 		l.start();
 		
-		for(EvaluatedAxiom e : l.getCurrentlyBestEvaluatedAxioms(50)){
+		for(EvaluatedAxiom e : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, 0.75)){
 			System.out.println(e);
 		}
 		
