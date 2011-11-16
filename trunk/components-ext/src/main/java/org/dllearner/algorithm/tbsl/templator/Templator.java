@@ -10,6 +10,7 @@ import java.util.Set;
 import net.didion.jwnl.data.POS;
 
 import org.apache.log4j.Logger;
+
 import org.dllearner.algorithm.tbsl.converter.DRS2SPARQL_Converter;
 import org.dllearner.algorithm.tbsl.converter.DUDE2UDRS_Converter;
 import org.dllearner.algorithm.tbsl.ltag.parser.LTAGLexicon;
