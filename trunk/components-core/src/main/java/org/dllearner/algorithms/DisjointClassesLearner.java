@@ -68,6 +68,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	private NamedClass classToDescribe;
 	
 	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
+	private SortedSet<Description> subClasses;
 	
 	public DisjointClassesLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -93,6 +94,13 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		//at first get all existing classes in knowledgebase
 		Set<NamedClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
 		classes.remove(classToDescribe);
+		
+		//get the subclasses
+		if(reasoner.isPrepared()){
+			subClasses = reasoner.getClassHierarchy().getSubClasses(classToDescribe, false);
+		} else {
+			subClasses = reasoner.getSubClasses(classToDescribe, true);
+		}
 		
 		//get classes and how often they occur
 				int limit = 1000;
@@ -188,11 +196,10 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		Set<NamedClass> completeDisjointclasses = new TreeSet<NamedClass>(allClasses);
 		completeDisjointclasses.removeAll(class2Count.keySet());
 		
-		//we remove the asserted sublcasses here
-		if(reasoner.isPrepared()){
-			completeDisjointclasses.removeAll(reasoner.getClassHierarchy().getSubClasses(classToDescribe));
-		} else {
-			completeDisjointclasses.removeAll(reasoner.getSubClasses(classToDescribe));
+		//we remove the asserted subclasses here
+		completeDisjointclasses.removeAll(subClasses);
+		for(Description subClass : subClasses){
+			class2Count.remove(subClass);
 		}
 		
 		
@@ -220,8 +227,10 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	public static void main(String[] args) throws Exception{
 		DisjointClassesLearner l = new DisjointClassesLearner(new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
 				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/ChemicalSubstance"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Person"));
 		l.init();
+		l.getReasoner().prepareSubsumptionHierarchy();
+//		System.out.println(l.getReasoner().getClassHierarchy().getSubClasses(new NamedClass("http://dbpedia.org/ontology/Athlete"), false));System.exit(0);
 		l.start();
 		
 		for(EvaluatedAxiom e : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, 0.75)){
