@@ -19,6 +19,7 @@
 
 package org.dllearner.core.owl;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -74,6 +75,28 @@ public class ClassHierarchy {
 		if(result == null) {
 			logger.error("Query for sub class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
 			return new TreeSet<Description>();
+		}
+		
+		return new TreeSet<Description>(result);		
+		
+		// commented out, because these hacks just worked around a problem
+//		if (subsumptionHierarchyDown == null) {
+//			return new TreeSet<Description>();
+//		} else if (subsumptionHierarchyDown.get(concept) == null) {
+//			return new TreeSet<Description>();
+//		} else {
+//			return (TreeSet<Description>) subsumptionHierarchyDown.get(concept).clone();
+//		}
+	}
+	
+	public SortedSet<Description> getSubClasses(Description concept, boolean direct) {
+		SortedSet<Description> result =  subsumptionHierarchyDown.get(concept);
+		if(result == null) {
+			logger.error("Query for sub class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
+			return new TreeSet<Description>();
+		}
+		for(Description sub : new HashSet<Description>(result)){
+			result.addAll(getSubClasses(sub, false));
 		}
 		
 		return new TreeSet<Description>(result);		
