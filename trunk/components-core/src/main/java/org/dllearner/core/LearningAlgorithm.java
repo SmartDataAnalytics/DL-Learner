@@ -19,6 +19,8 @@
 
 package org.dllearner.core;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 /**
  * Basic interface for all DL-Learner learning algorithms.
@@ -33,5 +35,18 @@ public interface LearningAlgorithm extends Component {
 	 * a termination criterion has been reached.
 	 */
 	public abstract void start();	
+	
+	/**
+	 * Get underlying learning problem.
+	 * @return Underlying learning problem.
+	 */
+    public LearningProblem getLearningProblem();
+
+    /**
+     * Set the learning problem, which the algorithm should solve.
+     * @param learningProblem The learning problem to solve.
+     */
+    @Autowired
+    public void setLearningProblem(LearningProblem learningProblem);
 	
 }

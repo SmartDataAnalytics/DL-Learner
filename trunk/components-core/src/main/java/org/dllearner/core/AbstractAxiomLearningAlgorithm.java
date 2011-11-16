@@ -42,6 +42,7 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.AxiomComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -53,6 +54,7 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  */
 public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent implements AxiomLearningAlgorithm{
 	
+	protected LearningProblem learningProblem;
 	private static final Logger logger = LoggerFactory.getLogger(AbstractAxiomLearningAlgorithm.class);
 	
 	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="", propertyEditorClass=IntegerEditor.class)
@@ -75,6 +77,16 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		existingAxioms = new TreeSet<Axiom>(new AxiomComparator());
 	}
 	
+	@Override
+    public LearningProblem getLearningProblem() {
+        return learningProblem;
+    }
+
+    @Autowired
+    @Override
+    public void setLearningProblem(LearningProblem learningProblem) {
+        this.learningProblem = learningProblem;
+    }	
 	
 	ExtendedQueryEngineHTTP queryExecution;
 	
