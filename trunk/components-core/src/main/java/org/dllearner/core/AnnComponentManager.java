@@ -50,7 +50,8 @@ public class AnnComponentManager {
     // components must be listed here if they should be supported in interfaces
     // (CLI, GUI, Web Service) and scripts (HTML documentation generator)
     private static List<String> componentClassNames = new ArrayList<String>  ( Arrays.asList(new String[]{
-            "org.dllearner.algorithms.celoe.CELOE",    	
+            "org.dllearner.algorithms.celoe.CELOE",
+            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",   
             "org.dllearner.algorithms.BruteForceLearner",
             "org.dllearner.algorithms.RandomGuesser",
             "org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner",
@@ -76,10 +77,12 @@ public class AnnComponentManager {
             "org.dllearner.kb.SparqlEndpointKS",
             "org.dllearner.kb.sparql.SparqlKnowledgeSource",
             "org.dllearner.learningproblems.PosNegLPStandard",
+            "org.dllearner.learningproblems.FuzzyPosNegLPStandard",
             "org.dllearner.learningproblems.PosOnlyLP",
             "org.dllearner.learningproblems.ClassLearningProblem",
             "org.dllearner.reasoning.FastInstanceChecker",
             "org.dllearner.reasoning.OWLAPIReasoner",
+            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",
             "org.dllearner.algorithms.ocel.OCEL",
             "org.dllearner.algorithms.ocel.MultiHeuristic",
             "org.dllearner.refinementoperators.RhoDRDown",

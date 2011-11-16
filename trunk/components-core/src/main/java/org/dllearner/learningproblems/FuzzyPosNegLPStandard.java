@@ -27,6 +27,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.fuzzydll.FuzzyUnsupportedCodeException;
 import org.dllearner.core.options.BooleanConfigOption;
@@ -52,6 +53,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  * 
  */
+@ComponentAnn(name = "FuzzyPosNegLPStandard", shortName = "fuzzyPosNeg", version = 0.2)
 public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	
 	// approximation and F-measure

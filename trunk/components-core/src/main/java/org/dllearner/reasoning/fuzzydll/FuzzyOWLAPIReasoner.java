@@ -41,6 +41,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -128,6 +129,7 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "Fuzzy OWL API Reasoner", shortName = "foar", version = 0.2)
 public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 
 //	private static Logger logger = Logger
@@ -171,6 +173,10 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	private int reasonersComparationCounter = 0;
 	private int reasonersComparationDisparityCounter = 0;
 	private URL owlLinkURL;
+	
+    public FuzzyOWLAPIReasoner() {
+
+    }	
 	
 	public FuzzyOWLAPIReasoner(Set<AbstractKnowledgeSource> sources) {
 		super(sources);
