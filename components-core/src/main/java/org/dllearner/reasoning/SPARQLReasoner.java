@@ -682,6 +682,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 
 	@Override
 	public SortedSet<Description> getSubClasses(Description description) {
+		return getSubClasses(description, false);
+	}
+	
+	public SortedSet<Description> getSubClasses(Description description, boolean useVirtuoso) {
 		if(!(description instanceof NamedClass || description instanceof Thing)){
 			throw new IllegalArgumentException("Only named classes are supported.");
 		}
@@ -689,11 +693,16 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			description = new NamedClass(Thing.instance.getURI());
 		}
 		SortedSet<Description> subClasses = new TreeSet<Description>();
-		String query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
-				RDFS.subClassOf.getURI(),
-				((NamedClass)description).getURI().toString()
-				
-		);
+		String query;
+		if(useVirtuoso){
+			query = getAllSubClassesVirtuosoQuery(description);
+		} else {
+			query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
+					RDFS.subClassOf.getURI(),
+					((NamedClass)description).getURI().toString()
+					
+			);
+		}
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -701,6 +710,15 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			subClasses.add(new NamedClass(qs.getResource("sub").getURI()));
 		}
 		return subClasses;
+	}
+	
+	private String getAllSubClassesVirtuosoQuery(Description description){
+		String query = String.format(
+				"SELECT DISTINCT ?sub WHERE {"+
+				"{SELECT ?sub ?o where {?sub rdfs:subClassOf ?o.}}"+
+				"OPTION ( TRANSITIVE, t_distinct, t_in(?sub), t_out(?o), t_min (1), t_max (8), t_step ('step_no') as ?dist ) ."+
+				"FILTER(?o = <%s>)}", description.toString());
+		return query;
 	}
 
 	@Override
