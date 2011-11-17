@@ -141,6 +141,7 @@ ConfFileOption2 ConfOption() :
 	String value="", value1="", value2="", tmp="", tmp2=""; 
 	Set<String> values = new HashSet<String>();
 	Map<String,String> tuples = new HashMap<String,String>();
+	Map<String,Double> tuplesD = new HashMap<String,Double>();
 	
 	ConfFileOption2 option = new ConfFileOption2();
 	boolean isBeanRef = false;
@@ -150,6 +151,7 @@ ConfFileOption2 ConfOption() :
 	String propertyValue = "";
 	Class<?> propertyType;
 	Object val = null;
+	Double d;
 }
 {
   beanName=Id() [ "." propertyName = Id() {containsSubOption=true;} ] 
@@ -180,15 +182,24 @@ ConfFileOption2 ConfOption() :
            { val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; isBeanCollection = true;}
          // empty list
          | LOOKAHEAD("[" "]") "[" "]" { val = new LinkedList(); propertyType = List.class; propertyValue = "[]";}
-         // a list with several elements, which tuples
+         // a list with several elements with tuples
          // e.g. [("a","b"),("c","d")]
-         | "[" 
+         | LOOKAHEAD( "[" "(" String() "," String())
+           "[" 
            ( LOOKAHEAD(6) "(" tmp=String() "," tmp2=String()  ")"
            { tuples.put(tmp,tmp2); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\"), "; } "," )*
            "(" tmp=String() "," tmp2=String() ")"
            { tuples.put(tmp,tmp2); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\")";}
-           "]" { val = tuples; propertyType = List.class; propertyValue = "["+ propertyValue + "]";}         
-         )
+           "]" { val = tuples; propertyType = List.class; propertyValue = "["+ propertyValue + "]";}  
+         // a list with several elements with doubles
+         // e.g. [("a",1.0),("c",0.7)]
+         | "[" 
+           ( LOOKAHEAD(6) "(" tmp=String() "," d=Double()  ")"
+           { tuplesD.put(tmp,d); propertyValue += "(\""+ tmp + "\",\"" + d.toString() + "\"), "; } "," )*
+           "(" tmp=String() "," d=Double() ")"
+           { tuplesD.put(tmp,d); propertyValue += "(\""+ tmp + "\",\"" + d.toString() + "\")";}
+           "]" { val = tuplesD; propertyType = List.class; propertyValue = "["+ propertyValue + "]";}         
+            )    
          // <CONF_END>
   {
   	option.setBeanRef(isBeanRef);
