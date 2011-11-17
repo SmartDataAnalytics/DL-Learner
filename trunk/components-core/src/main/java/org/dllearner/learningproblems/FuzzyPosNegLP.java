@@ -21,6 +21,7 @@ package org.dllearner.learningproblems;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -53,7 +54,16 @@ public abstract class FuzzyPosNegLP extends AbstractLearningProblem {
 	
 	protected SortedSet<FuzzyIndividual> fuzzyExamples;
 
+	protected Map<Individual,Double> fuzzyEx;
 	
+	public Map<Individual, Double> getFuzzyEx() {
+		return fuzzyEx;
+	}
+
+	public void setFuzzyEx(Map<Individual, Double> fuzzyEx) {
+		this.fuzzyEx = fuzzyEx;
+	}
+
 	protected boolean useRetrievalForClassification = false;
 	protected UseMultiInstanceChecks useMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
 	protected double percentPerLengthUnit = 0.05;

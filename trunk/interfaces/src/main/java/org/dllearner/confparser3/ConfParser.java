@@ -93,6 +93,7 @@ public class ConfParser implements ConfParserConstants {
         String value="", value1="", value2="", tmp="", tmp2="";
         Set<String> values = new HashSet<String>();
         Map<String,String> tuples = new HashMap<String,String>();
+        Map<String,Double> tuplesD = new HashMap<String,Double>();
 
         ConfFileOption2 option = new ConfFileOption2();
         boolean isBeanRef = false;
@@ -102,6 +103,7 @@ public class ConfParser implements ConfParserConstants {
         String propertyValue = "";
         Class<?> propertyType;
         Object val = null;
+        Double d;
     beanName = Id();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case COMMAND_END:
@@ -140,11 +142,11 @@ public class ConfParser implements ConfParserConstants {
       break;
     default:
       jj_la1[2] = jj_gen;
-      if (jj_2_4(2147483647)) {
+      if (jj_2_5(2147483647)) {
         jj_consume_token(14);
         jj_consume_token(15);
                                         val = new HashSet(); propertyType = Set.class; propertyValue = "{}";
-      } else if (jj_2_5(4)) {
+      } else if (jj_2_6(4)) {
         jj_consume_token(14);
         label_2:
         while (true) {
@@ -187,37 +189,62 @@ public class ConfParser implements ConfParserConstants {
           break;
         default:
           jj_la1[3] = jj_gen;
-          if (jj_2_6(2147483647)) {
+          if (jj_2_7(2147483647)) {
             jj_consume_token(18);
             jj_consume_token(19);
                                         val = new LinkedList(); propertyType = List.class; propertyValue = "[]";
-          } else {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case 18:
-              jj_consume_token(18);
-              label_4:
-              while (true) {
-                if (jj_2_3(6)) {
-                  ;
-                } else {
-                  break label_4;
-                }
-                jj_consume_token(20);
-                tmp = String();
-                jj_consume_token(16);
-                tmp2 = String();
-                jj_consume_token(21);
-            tuples.put(tmp,tmp2); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + tmp2 + "\u005c"), ";
-                jj_consume_token(16);
+          } else if (jj_2_8(2147483647)) {
+            jj_consume_token(18);
+            label_4:
+            while (true) {
+              if (jj_2_3(6)) {
+                ;
+              } else {
+                break label_4;
               }
               jj_consume_token(20);
               tmp = String();
               jj_consume_token(16);
               tmp2 = String();
               jj_consume_token(21);
-            tuples.put(tmp,tmp2); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + tmp2 + "\u005c")";
-              jj_consume_token(19);
+             tuples.put(tmp,tmp2); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + tmp2 + "\u005c"), ";
+              jj_consume_token(16);
+            }
+            jj_consume_token(20);
+            tmp = String();
+            jj_consume_token(16);
+            tmp2 = String();
+            jj_consume_token(21);
+             tuples.put(tmp,tmp2); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + tmp2 + "\u005c")";
+            jj_consume_token(19);
                  val = tuples; propertyType = List.class; propertyValue = "["+ propertyValue + "]";
+          } else {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case 18:
+              jj_consume_token(18);
+              label_5:
+              while (true) {
+                if (jj_2_4(6)) {
+                  ;
+                } else {
+                  break label_5;
+                }
+                jj_consume_token(20);
+                tmp = String();
+                jj_consume_token(16);
+                d = Double();
+                jj_consume_token(21);
+             tuplesD.put(tmp,d); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + d.toString() + "\u005c"), ";
+                jj_consume_token(16);
+              }
+              jj_consume_token(20);
+              tmp = String();
+              jj_consume_token(16);
+              d = Double();
+              jj_consume_token(21);
+             tuplesD.put(tmp,d); propertyValue += "(\u005c""+ tmp + "\u005c",\u005c"" + d.toString() + "\u005c")";
+              jj_consume_token(19);
+                 val = tuplesD; propertyType = List.class; propertyValue = "["+ propertyValue + "]";
               break;
             default:
               jj_la1[4] = jj_gen;
@@ -261,7 +288,7 @@ public class ConfParser implements ConfParserConstants {
 
   final public String ComplexId() throws ParseException {
   Token t1,t2;
-    if (jj_2_7(2)) {
+    if (jj_2_9(2)) {
       t1 = jj_consume_token(ID);
       jj_consume_token(22);
       t2 = jj_consume_token(ID);
@@ -362,65 +389,103 @@ public class ConfParser implements ConfParserConstants {
     finally { jj_save(6, xla); }
   }
 
+  private boolean jj_2_8(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_8(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(7, xla); }
+  }
+
+  private boolean jj_2_9(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_9(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(8, xla); }
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_6()) return true;
+    if (jj_scan_token(16)) return true;
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    if (jj_scan_token(18)) return true;
+    if (jj_scan_token(19)) return true;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_scan_token(20)) return true;
+    if (jj_3R_6()) return true;
+    if (jj_scan_token(16)) return true;
+    if (jj_3R_6()) return true;
+    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(16)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_7() {
+    if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_3R_7()) return true;
+    if (jj_scan_token(16)) return true;
+    return false;
+  }
+
   private boolean jj_3_5() {
+    if (jj_scan_token(14)) return true;
+    if (jj_scan_token(15)) return true;
+    return false;
+  }
+
+  private boolean jj_3_9() {
+    if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(22)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_8() {
+    if (jj_scan_token(DOUBLE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_6() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  private boolean jj_3_4() {
+    if (jj_scan_token(20)) return true;
+    if (jj_3R_6()) return true;
+    if (jj_scan_token(16)) return true;
+    if (jj_3R_8()) return true;
+    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(16)) return true;
+    return false;
+  }
+
+  private boolean jj_3_8() {
+    if (jj_scan_token(18)) return true;
+    if (jj_scan_token(20)) return true;
+    if (jj_3R_6()) return true;
+    if (jj_scan_token(16)) return true;
+    if (jj_3R_6()) return true;
+    return false;
+  }
+
+  private boolean jj_3_6() {
     if (jj_scan_token(14)) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
       if (jj_3_1()) { jj_scanpos = xsp; break; }
     }
-    if (jj_3R_5()) return true;
-    if (jj_scan_token(15)) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    if (jj_3R_5()) return true;
-    if (jj_scan_token(16)) return true;
-    return false;
-  }
-
-  private boolean jj_3_6() {
-    if (jj_scan_token(18)) return true;
-    if (jj_scan_token(19)) return true;
-    return false;
-  }
-
-  private boolean jj_3_7() {
-    if (jj_scan_token(ID)) return true;
-    if (jj_scan_token(22)) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    if (jj_scan_token(20)) return true;
-    if (jj_3R_5()) return true;
-    if (jj_scan_token(16)) return true;
-    if (jj_3R_5()) return true;
-    if (jj_scan_token(21)) return true;
-    if (jj_scan_token(16)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_5() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
     if (jj_3R_6()) return true;
-    if (jj_scan_token(16)) return true;
-    return false;
-  }
-
-  private boolean jj_3_4() {
-    if (jj_scan_token(14)) return true;
     if (jj_scan_token(15)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_6() {
-    if (jj_scan_token(ID)) return true;
     return false;
   }
 
@@ -443,7 +508,7 @@ public class ConfParser implements ConfParserConstants {
    private static void jj_la1_init_0() {
       jj_la1_0 = new int[] {0x200,0x100,0x1e00,0x24000,0x40000,0x1200,0x200,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[7];
+  final private JJCalls[] jj_2_rtns = new JJCalls[9];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -668,7 +733,7 @@ public class ConfParser implements ConfParserConstants {
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 9; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -682,6 +747,8 @@ public class ConfParser implements ConfParserConstants {
             case 4: jj_3_5(); break;
             case 5: jj_3_6(); break;
             case 6: jj_3_7(); break;
+            case 7: jj_3_8(); break;
+            case 8: jj_3_9(); break;
           }
         }
         p = p.next;
