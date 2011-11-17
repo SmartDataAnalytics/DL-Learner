@@ -46,6 +46,7 @@ import org.dllearner.algorithm.tbsl.util.Prefixes;
 import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.algorithm.tbsl.util.SolrQueryResultStringSimilarityComparator;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Oracle;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
 import org.dllearner.core.owl.Description;
@@ -1540,6 +1541,18 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 
 	@Override
 	public void init() throws ComponentInitException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public LearningProblem getLearningProblem() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLearningProblem(LearningProblem learningProblem) {
 		// TODO Auto-generated method stub
 		
 	}

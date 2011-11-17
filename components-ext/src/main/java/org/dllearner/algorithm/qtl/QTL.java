@@ -48,6 +48,7 @@ import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -83,7 +84,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	
 	private static final Logger logger = Logger.getLogger(QTL.class);
 	
-	private AbstractLearningProblem learningProblem;
+	private LearningProblem learningProblem;
 	private SparqlEndpointKS endpointKS;
 //	private QTLConfigurator configurator;
 	
@@ -361,12 +362,12 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		System.out.println(query);
 	}
 
-	public AbstractLearningProblem getLearningProblem() {
+	public LearningProblem getLearningProblem() {
 		return learningProblem;
 	}
 
 	@Autowired
-	public void setLearningProblem(AbstractLearningProblem learningProblem) {
+	public void setLearningProblem(LearningProblem learningProblem) {
 		this.learningProblem = learningProblem;
 	}
 
