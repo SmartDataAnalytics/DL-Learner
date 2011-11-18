@@ -384,9 +384,11 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 		// changed by Josue
 		} else if (learningProblem instanceof PosNegLP) {
 			examples = Helper.union(((PosNegLP)learningProblem).getPositiveExamples(),((PosNegLP)learningProblem).getNegativeExamples());
-		} else if (learningProblem instanceof FuzzyPosNegLP) {
-			examples = Helper.union(((FuzzyPosNegLP)learningProblem).getPositiveExamples(),((FuzzyPosNegLP)learningProblem).getNegativeExamples());
-		}
+		} 
+		// commented by Josue as now there's no need of + and - examples (more code need to be deleted in this sense)
+		// else if (learningProblem instanceof FuzzyPosNegLP) {
+			//examples = Helper.union(((FuzzyPosNegLP)learningProblem).getPositiveExamples(),((FuzzyPosNegLP)learningProblem).getNegativeExamples());
+		// }
 	}
 
 	@Override
