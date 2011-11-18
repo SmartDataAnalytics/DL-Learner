@@ -89,12 +89,15 @@ public class PostProcessor {
 
             if (keyObject instanceof String) {
                 String keyString = (String) keyObject;
+                // replace prefixes in the key
+                for (String prefix : prefixes.keySet()) {
+                	key = keyString.replaceAll(prefix + ":", prefixes.get(prefix));
+                }
+                // if the value is a string, we also replace prefixes there
                 if (value instanceof String) {
                     String valueString = (String) value;
                     for (String prefix : prefixes.keySet()) {
-                        value = valueString.replaceAll(prefix + ":", prefixes.get(prefix));
-                        key = keyString.replaceAll(prefix + ":", prefixes.get(prefix));
-
+                        value = valueString.replaceAll(prefix + ":", prefixes.get(prefix));    
                     }
                 }
             }
