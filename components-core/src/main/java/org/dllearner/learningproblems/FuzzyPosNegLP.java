@@ -20,10 +20,12 @@
 package org.dllearner.learningproblems;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -61,7 +63,14 @@ public abstract class FuzzyPosNegLP extends AbstractLearningProblem {
 	}
 
 	public void setFuzzyEx(Map<Individual, Double> fuzzyEx) {
-		this.fuzzyEx = fuzzyEx;
+		fuzzyExamples = new TreeSet<FuzzyIndividual>();
+		
+		Iterator it = fuzzyEx.keySet().iterator();		
+		
+		while (it.hasNext()) {
+			Individual i = (Individual) it.next();
+			this.fuzzyExamples.add(new FuzzyIndividual(i.getName(), fuzzyEx.get(i).doubleValue()));
+		}
 	}
 
 	protected boolean useRetrievalForClassification = false;
