@@ -10,7 +10,13 @@
         <servlet-class>org.dllearner.server.Rest</servlet-class>
     </servlet>
 
-     <servlet>
+    <servlet-mapping>
+        <servlet-name>rest</servlet-name>
+        <url-pattern>/rest</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
         <servlet-name>NKEGeizhals</servlet-name>
         <servlet-class>org.dllearner.server.NKEGeizhals</servlet-class>
     </servlet>

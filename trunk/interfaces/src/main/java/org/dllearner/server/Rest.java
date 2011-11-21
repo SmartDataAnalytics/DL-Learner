@@ -2,6 +2,7 @@ package org.dllearner.server;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.security.InvalidParameterException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Rest extends HttpServlet {
@@ -38,39 +41,33 @@ public class Rest extends HttpServlet {
      * @throws java.io.IOException
      */
     private void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
-        Monitor mon = MonitorFactory.getTimeMonitor("NIFParameters.getInstance").start();
-        String result = "";
         try {
-            //check parameters
-            String conf = "";
-            if (isSet(httpServletRequest, "conf")) {
-                conf = httpServletRequest.getParameter("conf");
+            String conf = null;
+            if (!isSet("conf", httpServletRequest)) {
+                throw new IllegalArgumentException("Missing parameter: conf is required. ");
             } else {
-                throw new InvalidParameterException("No parameter 'conf' found. " + getDocumentation(httpServletRequest.getRequestURL().toString()));
+                conf = httpServletRequest.getParameter("conf");
             }
 
-            //output default is json
-            String output = "json";
-            if (isSet(httpServletRequest, "output")) {
-                output = httpServletRequest.getParameter("output");
-                //use the function one of
-                if (!oneOf(output, "json", "xml")) {
-                    throw new InvalidParameterException("Wrong parameter value for \"output\", must be one of ( json, xml ) " + getDocumentation(httpServletRequest.getRequestURL().toString()));
-                }
-            }
+            /*todo learn
+             Description  d = learn (conf);
+             String concept = d.getConceptAsString ();
+             String sparql = new SPARLQConverter().convert(d);
 
-            /**
-             * Do the magic here
-             */
-            result = conf;
+            */
+            String concept = "hasCar some (ClosedCar and ShortCar)";
+            String sparql  = "SELECT ?instances { ?instances :hasCar ?o .  ?o rdf:type :ClosedCar. ?o2 rdf:type  :ShortCar ";
 
-            PrintWriter pw = httpServletResponse.getWriter();
-            log.debug("Request handled: " + logMonitor(mon.stop()));
-            pw.print(result);
-            pw.close();
+            String result="{\"concept\": \""+concept+"\", \"SPARQL\":\""+sparql+"\"}";
+            result+="\n\nconf was:\n"+conf;
+
+            httpServletResponse.setContentType("text/plain");
+            PrintWriter out = httpServletResponse.getWriter();
+            out.println(result);
+            out.close();
 
         } catch (IllegalArgumentException e) {
-            String msg = e.getMessage() + printParameterMap(httpServletRequest);
+            String msg = e.getMessage();// + printParameterMap(httpServletRequest);
             log.error(msg);
             httpServletResponse.setContentType("text/plain");
             PrintWriter out = httpServletResponse.getWriter();
@@ -78,7 +75,7 @@ public class Rest extends HttpServlet {
             out.close();
 
         } catch (Exception e) {
-            String msg = "An error occured: " + e.getMessage() + printParameterMap(httpServletRequest);
+            String msg = "An error occured: " + e.getMessage(); //+ printParameterMap(httpServletRequest);
             log.error(msg, e);
             httpServletResponse.setContentType("text/plain");
             PrintWriter out = httpServletResponse.getWriter();
@@ -90,12 +87,23 @@ public class Rest extends HttpServlet {
     }
 
 
-    /**
-     * Examples are from NIF
-     *
-     * @param serviceUrl
-     * @return
-     */
+    public static String requiredParameter(String parameterName, HttpServletRequest hsr) {
+
+        if (!isSet(parameterName, hsr)) {
+            throw new IllegalArgumentException("Missing parameter: " + parameterName + " is required. ");
+        }
+        return hsr.getParameter(parameterName);
+    }
+
+    public static String requiredParameter(String parameterName, HttpServletRequest hsr, String... requiredValues) {
+        String value = requiredParameter(parameterName, hsr);
+        if (!oneOf(value, requiredValues)) {
+            throw new InvalidParameterException("Wrong value for parameter " + parameterName + ", value was: " + value + ", but must be one of ( " + StringUtils.join(requiredValues, ", ") + " ) ");
+        }
+        return value;
+    }
+
+
     public static String getDocumentation(String serviceUrl) {
         String doc = "";
         try {
@@ -107,12 +115,6 @@ public class Rest extends HttpServlet {
         return doc;
     }
 
-    public static boolean isSet(HttpServletRequest httpServletRequest, String name) {
-        log.trace("isSet(" + name + ")");
-        log.trace(httpServletRequest.getParameterValues(name) + "");
-        return httpServletRequest.getParameterValues(name) != null && httpServletRequest.getParameterValues(name).length == 1 && httpServletRequest.getParameter(name).length() > 0;
-    }
-
     public static boolean oneOf(String value, String... possibleValues) {
         for (String s : possibleValues) {
             if (s.equals(value)) {
@@ -122,19 +124,21 @@ public class Rest extends HttpServlet {
         return false;
     }
 
-    protected static String logMonitor(Monitor m) {
-        return "needed: " + m.getLastValue() + " ms. (" + m.getTotal() + " total)";
+    public static boolean isSet(String parameterName, HttpServletRequest hsr) {
+        boolean retVal = hsr.getParameterValues(parameterName) != null && hsr.getParameterValues(parameterName).length == 1 && hsr.getParameter(parameterName).length() > 0;
+        if (log.isTraceEnabled()) {
+            log.trace("Parameter " + parameterName + " isSet: " + retVal + " with value: " + hsr.getParameter(parameterName) + ")");
+        }
+        return retVal;
     }
 
-    public static String printParameterMap(HttpServletRequest httpServletRequest) {
-        StringBuffer buf = new StringBuffer();
+    public static Map<String, String> copyParameterMap(HttpServletRequest httpServletRequest) {
+        Map<String, String> ret = new HashMap<String, String>();
         for (Object key : httpServletRequest.getParameterMap().keySet()) {
-            buf.append("\nParameter: " + key + " Values: ");
-            for (String s : httpServletRequest.getParameterValues((String) key)) {
-                buf.append(((s.length() > 200) ? s.substring(0, 200) + "..." : s) + " ");
-            }
+            ret.put((String) key, httpServletRequest.getParameter((String) key));
         }
-        return buf.toString();
+        return ret;
     }
+
 
 }
