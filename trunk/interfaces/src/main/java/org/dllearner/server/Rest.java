@@ -1,8 +1,10 @@
 package org.dllearner.server;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.httpclient.util.ExceptionUtil;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URLEncoder;
-import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +41,8 @@ public class Rest extends HttpServlet {
      * @throws java.io.IOException
      */
     private void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+        JSONObject result = new JSONObject();
+        JSONObject learningResult = new JSONObject();
         try {
             String conf = null;
             if (!isSet("conf", httpServletRequest)) {
@@ -49,80 +51,77 @@ public class Rest extends HttpServlet {
                 conf = httpServletRequest.getParameter("conf");
             }
 
-            /*todo learn
-             Description  d = learn (conf);
-             String concept = d.getConceptAsString ();
-             String sparql = new SPARLQConverter().convert(d);
 
-            */
-            String concept = "hasCar some (ClosedCar and ShortCar)";
-            String sparql  = "SELECT ?instances { ?instances :hasCar ?o .  ?o rdf:type :ClosedCar. ?o2 rdf:type  :ShortCar ";
+            /*todo learn*/
 
-            String result="{\"concept\": \""+concept+"\", \"SPARQL\":\""+sparql+"\"}";
-            result+="\n\nconf was:\n"+conf;
+            if (isSet("debug", httpServletRequest) && httpServletRequest.getParameter("debug").equalsIgnoreCase("true")) {
 
-            httpServletResponse.setContentType("text/plain");
-            PrintWriter out = httpServletResponse.getWriter();
-            out.println(result);
-            out.close();
+
+                String manchester = "author some (Artist and Writer)";
+                String sparql = "prefix dbo: <http://dbpedia.org/ontology/>\n" +
+                        "SELECT ?instances WHERE {\n" +
+                        "?instances dbo:author ?o . ?o a dbo:Artist . ?o a dbo:Writer .\n" +
+                        "} ";
+
+                learningResult.put("success", "1");
+                learningResult.put("manchester", manchester);
+                learningResult.put("kbsyntax", "other syntax");
+                learningResult.put("sparql", sparql);
+                learningResult.put("truePositives", "uri1, uri2");
+                learningResult.put("truePositives", "uri1, uri2");
+                learningResult.put("trueNegatives", "uri1, uri2");
+                learningResult.put("falseNegatives", "uri1, uri2");
+            } else {
+
+                EvaluatedDescriptionPosNeg ed = learn(conf);
+
+                SparqlQueryDescriptionConvertVisitor sqd = new SparqlQueryDescriptionConvertVisitor();
+                learningResult.put("success", "1");
+                learningResult.put("manchester", ed.getDescription().toManchesterSyntaxString(null, null));
+                learningResult.put("kbsyntax", ed.getDescription().toKBSyntaxString());
+                learningResult.put("sparql", sqd.getSparqlQuery(ed.getDescription()));
+                learningResult.put("truePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredPositives()));
+                learningResult.put("falsePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredPositives()));
+                learningResult.put("trueNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredNegatives()));
+                learningResult.put("falseNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredNegatives()));
+            }
+
 
         } catch (IllegalArgumentException e) {
             String msg = e.getMessage();// + printParameterMap(httpServletRequest);
             log.error(msg);
-            httpServletResponse.setContentType("text/plain");
-            PrintWriter out = httpServletResponse.getWriter();
-            out.println(msg);
-            out.close();
+            learningResult.put("success", "0");
+            learningResult.put("error", msg);
+            learningResult.put("stacktrace", ExceptionUtils.getFullStackTrace(e));
 
         } catch (Exception e) {
             String msg = "An error occured: " + e.getMessage(); //+ printParameterMap(httpServletRequest);
             log.error(msg, e);
-            httpServletResponse.setContentType("text/plain");
-            PrintWriter out = httpServletResponse.getWriter();
-            out.println(msg);
-            out.close();
-
+            learningResult.put("success", "0");
+            learningResult.put("error", msg);
+            learningResult.put("stacktrace", ExceptionUtils.getFullStackTrace(e));
         }
+
+        result.put("learningresult", learningResult);
+        httpServletResponse.setContentType("text/plain");
+        PrintWriter out = httpServletResponse.getWriter();
+        out.println(result.toJSONString());
+        out.close();
 
     }
 
+    /**
+     * TODO
+     * This function takes the config string as in a conf file and the returns an EvaluatedDescription
+     *
+     * @param conf the content of a conf file
+     * @return
+     */
+    public EvaluatedDescriptionPosNeg learn(String conf) {
 
-    public static String requiredParameter(String parameterName, HttpServletRequest hsr) {
-
-        if (!isSet(parameterName, hsr)) {
-            throw new IllegalArgumentException("Missing parameter: " + parameterName + " is required. ");
-        }
-        return hsr.getParameter(parameterName);
+        return null;
     }
 
-    public static String requiredParameter(String parameterName, HttpServletRequest hsr, String... requiredValues) {
-        String value = requiredParameter(parameterName, hsr);
-        if (!oneOf(value, requiredValues)) {
-            throw new InvalidParameterException("Wrong value for parameter " + parameterName + ", value was: " + value + ", but must be one of ( " + StringUtils.join(requiredValues, ", ") + " ) ");
-        }
-        return value;
-    }
-
-
-    public static String getDocumentation(String serviceUrl) {
-        String doc = "";
-        try {
-            doc = "\nExample1: \n " + serviceUrl + "?input=" + URLEncoder.encode("That's a lot of nuts! That'll be four bucks, baby! You want fries with that? ", "UTF-8") + "&type=text";
-            doc += "\nExample2: \n " + serviceUrl + "?input=" + URLEncoder.encode("That's a lot of nuts! That's a lot of nuts! ", "UTF-8") + "&type=text";
-        } catch (Exception e) {
-            log.error("", e);
-        }
-        return doc;
-    }
-
-    public static boolean oneOf(String value, String... possibleValues) {
-        for (String s : possibleValues) {
-            if (s.equals(value)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public static boolean isSet(String parameterName, HttpServletRequest hsr) {
         boolean retVal = hsr.getParameterValues(parameterName) != null && hsr.getParameterValues(parameterName).length == 1 && hsr.getParameter(parameterName).length() > 0;
