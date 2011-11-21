@@ -403,18 +403,6 @@ public class ConfParser implements ConfParserConstants {
     finally { jj_save(8, xla); }
   }
 
-  private boolean jj_3_1() {
-    if (jj_3R_6()) return true;
-    if (jj_scan_token(16)) return true;
-    return false;
-  }
-
-  private boolean jj_3_7() {
-    if (jj_scan_token(18)) return true;
-    if (jj_scan_token(19)) return true;
-    return false;
-  }
-
   private boolean jj_3_3() {
     if (jj_scan_token(20)) return true;
     if (jj_3R_6()) return true;
@@ -486,6 +474,18 @@ public class ConfParser implements ConfParserConstants {
     }
     if (jj_3R_6()) return true;
     if (jj_scan_token(15)) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_6()) return true;
+    if (jj_scan_token(16)) return true;
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    if (jj_scan_token(18)) return true;
+    if (jj_scan_token(19)) return true;
     return false;
   }
 

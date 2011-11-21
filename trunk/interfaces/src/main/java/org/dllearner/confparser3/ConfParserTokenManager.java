@@ -120,7 +120,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                      jjCheckNAddTwoStates(3, 4);
                   break;
                case 3:
-                  if ((0xfffffffbffffdbffL & l) != 0L)
+                  if ((0xfffffffbffffffffL & l) != 0L)
                      jjCheckNAddTwoStates(3, 4);
                   break;
                case 4:
