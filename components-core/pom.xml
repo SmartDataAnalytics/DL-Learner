@@ -49,62 +49,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>de.tarent.maven.plugins</groupId>
-				<artifactId>maven-pkg-plugin</artifactId>
-				<version>2.1.0</version>
-				<configuration>
-
-					<defaultTarget>all</defaultTarget>
-
-					<defaultDistro>ubuntu_intrepid</defaultDistro>
-					<shortDescription>This is the libraries that are necessary for
-						running dl-learner.</shortDescription>
-
-					<defaults>
-						<section>libs</section>
-						<architecture>all</architecture>
-						<srcAuxFilesDir>src/main/pkg</srcAuxFilesDir>
-						<maintainer>Jens Lehmann</maintainer>
-						<bundleDependencies>
-							<boolean>true</boolean>
-						</bundleDependencies>
-					</defaults>
-
-
-
-					<targetConfigurations>
-
-						<targetConfiguration>
-							<target>i386</target>
-
-							<architecture>i386</architecture>
-							<srcJNIFilesDir>src/main/native/i386</srcJNIFilesDir>
-
-						</targetConfiguration>
-
-						<targetConfiguration>
-							<target>armel</target>
-
-							<architecture>armel</architecture>
-							<srcJNIFilesDir>src/main/native/armel</srcJNIFilesDir>
-
-						</targetConfiguration>
-
-					</targetConfigurations>
-
-					<distroConfigurations>
-						<distroConfiguration>
-
-							<distros>
-								<distro>ubuntu_intrepid</distro>
-								<distro>ubuntu_karmic</distro>
-							</distros>
-
-						</distroConfiguration>
-					</distroConfigurations>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
 				<configuration>
@@ -296,5 +240,10 @@
 				<groupId>org.aksw.commons</groupId>
 				<artifactId>collections</artifactId>
 			</dependency>
+			<dependency>
+            <groupId>net.didion.jwnl</groupId>
+            <artifactId>jwnl</artifactId>
+            <version>1.4.1.RC2</version>
+        </dependency>
 	</dependencies>
 </project>
