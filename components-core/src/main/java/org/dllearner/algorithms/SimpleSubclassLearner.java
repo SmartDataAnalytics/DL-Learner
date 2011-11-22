@@ -19,7 +19,9 @@
 
 package org.dllearner.algorithms;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,7 +216,8 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveOpenLink());
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
+				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
 		reasoner.prepareSubsumptionHierarchy();
@@ -223,11 +226,13 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		l.setReasoner(reasoner);
 		
 		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 10);
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Bridge"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/AdministrativeRegion"));
 		l.init();
 		l.start();
 		
-		System.out.println(l.getCurrentlyBestEvaluatedDescriptions(5));
+		for(EvaluatedAxiom e : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, 0.75)){
+			System.out.println(e);
+		}
 	}
 
 }
