@@ -45,6 +45,7 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,7 +127,10 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 						oldCnt = result.get(cls);
 						if(oldCnt == null){
 							oldCnt = Integer.valueOf(newCnt);
+						} else {
+							oldCnt += newCnt;
 						}
+						
 						result.put(cls, oldCnt);
 						qs.getLiteral("count").getInt();
 						repeat = true;
@@ -215,8 +219,15 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		
 		//secondly, create disjoint classexpressions with score 1 - (#occurence/#all)
 		for(Entry<NamedClass, Integer> entry : sortByValues(class2Count)){
+//			evalDesc = new EvaluatedDescription(entry.getKey(),
+//					new AxiomScore(1 - (entry.getValue() / (double)all)));
+			System.out.println(entry.getKey());
+			System.out.println(all);
+			System.out.println(entry.getValue());
+			double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(all, entry.getValue());
+			double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
 			evalDesc = new EvaluatedDescription(entry.getKey(),
-					new AxiomScore(1 - (entry.getValue() / (double)all)));
+					new AxiomScore(1 - accuracy));
 			evalDescs.add(evalDesc);
 		}
 		
@@ -227,7 +238,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	public static void main(String[] args) throws Exception{
 		DisjointClassesLearner l = new DisjointClassesLearner(new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
 				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Person"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/AdministrativeRegion"));
 		l.init();
 		l.getReasoner().prepareSubsumptionHierarchy();
 //		System.out.println(l.getReasoner().getClassHierarchy().getSubClasses(new NamedClass("http://dbpedia.org/ontology/Athlete"), false));System.exit(0);
