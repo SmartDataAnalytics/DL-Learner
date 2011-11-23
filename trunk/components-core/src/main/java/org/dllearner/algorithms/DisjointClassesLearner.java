@@ -75,6 +75,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	
 	private boolean useWordNetDistance = false;
 	private boolean suggestMostGeneralClasses = true;
+	private boolean useClassPopularity = true;
 	
 	public DisjointClassesLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -239,7 +240,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			SortedSet<Description> mostGeneralClasses = reasoner.getClassHierarchy().getMostGeneralClasses();
 		}
 		for(NamedClass cls : completeDisjointclasses){
-			evalDesc = new EvaluatedDescription(cls, new AxiomScore(1));
+			if(useClassPopularity){
+				double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(reasoner.getIndividualsCount(cls), 0);
+				double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
+				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1- accuracy));
+			} else {
+				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1));
+			}
+			
 			evalDescs.add(evalDesc);
 		}
 		
@@ -268,7 +276,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	public static void main(String[] args) throws Exception{
 		DisjointClassesLearner l = new DisjointClassesLearner(new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
 				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/AdministrativeRegion"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/SoccerClub"));
 		l.init();
 		l.getReasoner().prepareSubsumptionHierarchy();
 //		System.out.println(l.getReasoner().getClassHierarchy().getSubClasses(new NamedClass("http://dbpedia.org/ontology/Athlete"), false));System.exit(0);

@@ -568,6 +568,17 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		} 
 		return null;
 	}
+	
+	public int getIndividualsCount(NamedClass nc){
+		String query = String.format("SELECT COUNT(?s) WHERE {" +
+				"?s a ?type." +
+				"}", 
+				nc.getURI());
+		ResultSet rs = executeSelectQuery(query);
+		int cnt = rs.next().get(rs.getResultVars().get(0)).asLiteral().getInt();
+		return cnt;
+		
+	}
 
 	@Override
 	public DataRange getRange(DatatypeProperty datatypeProperty) {
