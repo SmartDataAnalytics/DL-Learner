@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,6 +39,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.NamedClassEditor;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
@@ -71,6 +73,9 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
 	private SortedSet<Description> subClasses;
 	
+	private boolean useWordNetDistance = false;
+	private boolean suggestMostGeneralClasses = true;
+	
 	public DisjointClassesLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
@@ -81,6 +86,22 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 
 	public void setClassToDescribe(NamedClass classToDescribe) {
 		this.classToDescribe = classToDescribe;
+	}
+
+	public boolean isUseWordNetDistance() {
+		return useWordNetDistance;
+	}
+
+	public void setUseWordNetDistance(boolean useWordNetDistance) {
+		this.useWordNetDistance = useWordNetDistance;
+	}
+
+	public boolean isSuggestMostGeneralClasses() {
+		return suggestMostGeneralClasses;
+	}
+
+	public void setSuggestMostGeneralClasses(boolean suggestMostGeneralClasses) {
+		this.suggestMostGeneralClasses = suggestMostGeneralClasses;
 	}
 
 	@Override
@@ -200,6 +221,11 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		Set<NamedClass> completeDisjointclasses = new TreeSet<NamedClass>(allClasses);
 		completeDisjointclasses.removeAll(class2Count.keySet());
 		
+		//drop all classes which have a super class in this set
+		if(suggestMostGeneralClasses && reasoner.isPrepared()){
+			keepMostGeneralClasses(completeDisjointclasses);
+		}
+		
 		//we remove the asserted subclasses here
 		completeDisjointclasses.removeAll(subClasses);
 		for(Description subClass : subClasses){
@@ -221,9 +247,6 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		for(Entry<NamedClass, Integer> entry : sortByValues(class2Count)){
 //			evalDesc = new EvaluatedDescription(entry.getKey(),
 //					new AxiomScore(1 - (entry.getValue() / (double)all)));
-			System.out.println(entry.getKey());
-			System.out.println(all);
-			System.out.println(entry.getValue());
 			double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(all, entry.getValue());
 			double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
 			evalDesc = new EvaluatedDescription(entry.getKey(),
@@ -233,6 +256,13 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		
 		class2Count.put(classToDescribe, all);
 		return evalDescs;
+	}
+	
+	private void keepMostGeneralClasses(Set<NamedClass> classes){
+		ClassHierarchy h = reasoner.getClassHierarchy();
+		for(NamedClass nc : new HashSet<NamedClass>(classes)){
+			classes.removeAll(h.getSubClasses(nc));
+		}
 	}
 	
 	public static void main(String[] args) throws Exception{
