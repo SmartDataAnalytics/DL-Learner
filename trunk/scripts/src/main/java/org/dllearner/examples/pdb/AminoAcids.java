@@ -117,32 +117,122 @@ public final class AminoAcids {
 		return resourceString;
 	}
 	
-	public static HashMap<String, String> getAminoAcidArffAttributeMap(){
+/*
+	++++ Amino acid names and numbers ++++
+Every line starts with the one-letter-code, followed by their numeric representation for .arff files, 
+followed by their three-letter-code and finally their name. 
+  A = 1		Ala	Alanin
+  C = 3		Cys	Cystein
+  D = 4		Asp	Aspartat
+  E = 5		Glu	Glutamat
+  F = 6		Phe	Phenylalanin
+  G = 7		Gly	Glycin
+  H = 8		His	Histidin
+  I = 9		Ile	Isoleucin
+  K = 11	Lys	Lysin
+  L = 12	Leu	Leucin
+  M = 13	Met	Methionin
+  N = 14	Asn	Asparagin
+  O = 15	Pyl	Pyrrolysin
+  P = 16	Pro	Prolin
+  Q = 17	Gln	Glutamin
+  R = 18	Arg	Arginin
+  S = 19	Ser	Serin
+  T = 20	Thr	Threonin
+  U = 21	Sec	Selenocystein
+  V = 22	Val	Valin
+  W = 23	Trp	Tryptophan
+  Y = 25	Tyr	Tyrosin
+*/	
+	public static HashMap<String, String> getAminoAcidNumber(){
+		HashMap<String,String> resnum = new HashMap<String, String>(30);
+		resnum.put(new String("A"), new String("1"));
+		resnum.put(new String("C"), new String("3"));
+		resnum.put(new String("D"), new String("4"));
+		resnum.put(new String("E"), new String("5"));
+		resnum.put(new String("F"), new String("6"));
+		resnum.put(new String("G"), new String("7"));
+		resnum.put(new String("H"), new String("8"));
+		resnum.put(new String("I"), new String("9"));
+		resnum.put(new String("K"), new String("11"));
+		resnum.put(new String("L"), new String("12"));
+		resnum.put(new String("M"), new String("13"));
+		resnum.put(new String("N"), new String("14"));
+		resnum.put(new String("O"), new String("15"));
+		resnum.put(new String("P"), new String("16"));
+		resnum.put(new String("Q"), new String("17"));
+		resnum.put(new String("R"), new String("18"));
+		resnum.put(new String("S"), new String("19"));
+		resnum.put(new String("T"), new String("20"));
+		resnum.put(new String("U"), new String("21"));
+		resnum.put(new String("V"), new String("22"));
+		resnum.put(new String("W"), new String("23"));
+		resnum.put(new String("Y"), new String("25"));
+		
+		return resnum;
+	}
+	
+	public static HashMap<String, String> getAminoAcidNumericArffAttributeMap(){
+		// Hydrophobicity   hydrophilic = 0; Hydrophobic = 1; aromatic = 2; aliphatic = 3
+		// Polarity unpolar = 0; polar = 1; positive = 2; negative = 3; 
+		// Size Tiny = 0; Small = 1; Large = 2;
 		HashMap<String, String> resdata = new HashMap<String, String>(30); 
-		resdata.put(new String("A"), new String("2,0,0.5,?,?"));
-		resdata.put(new String("C"), new String("1,0,1,?,0"));
-		resdata.put(new String("D"), new String("0,-1,1,?,-1"));
-		resdata.put(new String("E"), new String("0,-1,2,?,-1"));
-		resdata.put(new String("F"), new String("2,0,2,1,?"));
-		resdata.put(new String("G"), new String("2,0,0.5,?,?"));
-		resdata.put(new String("H"), new String("1,1,2,1,1"));
-		resdata.put(new String("I"), new String("2,0,2,0,?"));
-		resdata.put(new String("K"), new String("1,1,2,?,1"));
-		resdata.put(new String("L"), new String("2,0,2,0,?"));
-		resdata.put(new String("M"), new String("2,0,2,?,?"));
-		resdata.put(new String("N"), new String("0,0,1,?,0"));
-		resdata.put(new String("P"), new String("?,0,1,?,?"));
-		resdata.put(new String("Q"), new String("0,0,2,?,0"));
-		resdata.put(new String("R"), new String("0,1,2,?,1"));
-		resdata.put(new String("S"), new String("0,0,0.5,?,0"));
-		resdata.put(new String("T"), new String("1,0,1,?,0,"));
-		resdata.put(new String("V"), new String("2,0,1,0,?"));
-		resdata.put(new String("W"), new String("1,0,2,1,1"));
-		resdata.put(new String("Y"), new String("1,0,2,1,0"));
-		resdata.put(new String("U"), new String("?,?,?,?,?"));
+		resdata.put(new String("A"), new String("1,0,0"));
+		resdata.put(new String("C"), new String("1,1,0"));
+		resdata.put(new String("D"), new String("0,3,1"));
+		resdata.put(new String("E"), new String("0,3,2"));
+		resdata.put(new String("F"), new String("2,0,2"));
+		resdata.put(new String("G"), new String("1,0,0"));
+		resdata.put(new String("H"), new String("2,2,2"));
+		resdata.put(new String("I"), new String("3,0,2"));
+		resdata.put(new String("K"), new String("1,2,2"));
+		resdata.put(new String("L"), new String("3,0,2"));
+		resdata.put(new String("M"), new String("1,0,2"));
+		resdata.put(new String("N"), new String("0,1,1"));
+		resdata.put(new String("O"), new String("?,?,?"));
+		resdata.put(new String("P"), new String("0,0,1"));
+		resdata.put(new String("Q"), new String("0,1,2"));
+		resdata.put(new String("R"), new String("0,2,2"));
+		resdata.put(new String("S"), new String("0,1,0"));
+		resdata.put(new String("T"), new String("1,1,1"));
+		resdata.put(new String("V"), new String("3,0,1"));
+		resdata.put(new String("W"), new String("2,1,2"));
+		resdata.put(new String("X"), new String("?,?,?")); // unknown residue (e.g. modified amino acids)
+		resdata.put(new String("Y"), new String("2,1,2"));
+		resdata.put(new String("U"), new String("?,?,?"));	
+		return resdata;
+	}
+	
+	public static HashMap<String, String> getAminoAcidNominalArffAttributeMap(){
+		// Hydrophobicity   hydrophilic = 0; Hydrophobic = 1; aromatic = 2; aliphatic = 3
+		// Polarity unpolar = 0 polar = 1; positive = 2; negative = 3; 
+		// Size Tiny = 0; Small = 1; Large = 2;
+		HashMap<String, String> resdata = new HashMap<String, String>(30);
+
+		resdata.put(new String("A"), new String("Hydrophobic,Unpolar,Tiny"));
+		resdata.put(new String("C"), new String("Hydrophobic,Polar,Tiny"));
+		resdata.put(new String("D"), new String("Hydrophilic,Negative,Small"));
+		resdata.put(new String("E"), new String("Hydrophilic,Negative,Large"));
+		resdata.put(new String("F"), new String("Aromatic,Unpolar,Large"));
+		resdata.put(new String("G"), new String("Hydrophobic,Unpolar,Tiny"));
+		resdata.put(new String("H"), new String("Aromatic,Positive,Large"));
+		resdata.put(new String("I"), new String("Aliphatic,Unpolar,Large"));
+		resdata.put(new String("K"), new String("Hydrophobic,Positive,Large"));
+		resdata.put(new String("L"), new String("Aliphatic,Unpolar,Large"));
+		resdata.put(new String("M"), new String("Hydrophobic,Unpolar,Large"));
+		resdata.put(new String("N"), new String("Hydrophilic,Polar,Small"));
+		resdata.put(new String("O"), new String("?,?,?"));
+		resdata.put(new String("P"), new String("Hydrophilic,Unpolar,Small"));
+		resdata.put(new String("Q"), new String("Hydrophilic,Polar,Large"));
+		resdata.put(new String("R"), new String("Hydrophilic,Positive,Large"));
+		resdata.put(new String("S"), new String("Hydrophilic,Polar,Tiny"));
+		resdata.put(new String("T"), new String("Hydrophobic,Polar,Small"));
+		resdata.put(new String("V"), new String("Aliphatic,Unpolar,Small"));
+		resdata.put(new String("W"), new String("Aromatic,Polar,Large"));
+		resdata.put(new String("X"), new String("?,?,?")); // unknown residue (e.g. modified amino acids)
+		resdata.put(new String("Y"), new String("Aromatic,Polar,Large"));
+		resdata.put(new String("U"), new String("?,?,?"));
 		
 		return resdata;
 	}
-
-	
 }

@@ -20,8 +20,6 @@ import org.apache.log4j.PatternLayout;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 
-
-import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -176,7 +174,8 @@ public class HelixRDFCreator {
 				if (arff)
 				{
 					ResIterator niter = trainmodel.getFirstAA();
-					createArffFile(pdbDir, trainmodel, niter);
+					createNumericArffFile(pdbDir, trainmodel, niter);
+					createNominalArffFile(pdbDir, trainmodel, niter);
 				}
 				
 				/*
@@ -361,7 +360,7 @@ public class HelixRDFCreator {
 			
 			// add knowledge source definition to <PDB ID>.conf files
 			confFile.println(ks);
-									
+			
 			// add knowledge source definition to <PDB ID>_<Amino Acid>.conf files
 			Iterator<Resource> resources = resprint.keySet().iterator();
 			while (resources.hasNext()){
@@ -451,13 +450,14 @@ public class HelixRDFCreator {
     	}
 	}
 	
-	private static void createArffFile(String pdbDir, PDBIdRdfModel model, ResIterator firstAAs){
+	private static void createNumericArffFile(String pdbDir, PDBIdRdfModel model, ResIterator firstAAs){
 
 		try {
 			PDBProtein protein = model.getProtein();
 			String arffFilePath = pdbDir + protein.getArffFileName();
+			arffFilePath = arffFilePath.replace(".arff", ".numeric.arff");
 			PrintStream out = new PrintStream (arffFilePath);
-			_logger.debug("Creating ARFF file: " + arffFilePath);
+			_logger.debug("Creating numeric ARFF file: " + arffFilePath);
 	
 			/*
 			 * RELATION
@@ -470,14 +470,16 @@ public class HelixRDFCreator {
 			 * ATTRIBUTES
 			 */
 			// Integer declaring Position in chain
-			StringBuffer attributes = new StringBuffer("@ATTRIBUTE hydrophob NUMERIC\n" + //  Hydrophilic = 0; Hydrophobic = 1; Very_hydrophobic = 2
-					"@ATTRIBUTE charge NUMERIC\n" + // Negative = -1; Neutral = 0; Positive = 1 
-					"@ATTRIBUTE size NUMERIC\n" + // Large = 2; Small = 1; Tiny = 0.5 
-					"@ATTRIBUTE aromaticity NUMERIC\n" + // Aliphatic = 0; Aromatic = 1 
-					"@ATTRIBUTE hydrogen_bonding NUMERIC\n"); // Donor = 1; Donor/Acceptor = 0; Acceptor = -1 
+			StringBuffer attributes = new StringBuffer(
+					// Hydrophobicity   hydrophilic = 0; Hydrophobic = 1; aromatic = 2; aliphatic = 3
+					"@ATTRIBUTE hydrophobicity NUMERIC\n" +
+					// Polarity unpolar = 0 polar = 1; positive = 2; negative = 3; 
+					"@ATTRIBUTE polarity NUMERIC\n" + 
+					// Size Tiny = 0; Small = 1; Large = 2;
+					"@ATTRIBUTE size NUMERIC\n"); 
 
 			for (int i = -8; i <= 8; i++) {
-				attributes.append("@ATTRIBUTE aa_position_" + i + " {A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y}\n"); // amino acid at position $i from current amino acid
+				attributes.append("@ATTRIBUTE aa_position_" + i + " NUMERIC\n"); // amino acid at position $i from current amino acid 
 			}
 			attributes.append("@ATTRIBUTE in_helix NUMERIC\n"); // Helix = 1 Other = 0
 					
@@ -492,13 +494,13 @@ public class HelixRDFCreator {
 			out.println(data);
 			
 			// HashMap containing information about the properties of every amino acid
-			HashMap<String, String> resdata = AminoAcids.getAminoAcidArffAttributeMap();
+			HashMap<String, String> resdata = AminoAcids.getAminoAcidNumericArffAttributeMap();
+			HashMap<String, String> resnum = AminoAcids.getAminoAcidNumber();
 			ArrayList<Resource> positives = model.getPositives();
 			ArrayList<Resource> negatives = model.getNegatives();
-			Property type = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
-			Property iib = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "isImmediatelyBefore");
 			String sequence = protein.getSequence();
 			HashMap<Integer, Resource> posRes = model.getPositionResource();
+			
 			
 			for ( int i = 0; i < sequence.length(); i++) {
 				StringBuffer dataLine = new StringBuffer("");
@@ -509,13 +511,14 @@ public class HelixRDFCreator {
 					dataLine.append( resdata.get(key) + "," );
 				} else {
 					// 
-					dataLine.append( resdata.get("U") + "," );
+					dataLine.append( resdata.get("X") + "," );
 				}
 				
 				// add information about neighbouring amino acids to dataLine
 				for (int j = (i - 8); j <= (i + 8) ; j++){
 					try {
-						dataLine.append( protein.getSequence().charAt(j) + "," );
+						dataLine.append( resnum.get(
+								Character.toString(protein.getSequence().charAt(j))) + "," );
 					} catch (IndexOutOfBoundsException e) {
 						dataLine.append( "?," );
 					}
@@ -538,50 +541,96 @@ public class HelixRDFCreator {
 		} catch (FileNotFoundException e){
 			e.printStackTrace();
 		}
-			
-			
-/*			// to be exchanged
-			while (firstAAs.hasNext()){
-				Resource firstAA = firstAAs.next();
-				Resource currentAA = firstAA;
-				Resource nextAA = firstAA;
-				
-				
-				
-				for ( int i = 0; currentAA.hasProperty(iib); i++ ) {
-					StringBuffer dataLine = new StringBuffer("");
-					currentAA = nextAA;
-					
-					NodeIterator niter = model.getModel().listObjectsOfProperty(currentAA, type);
-					while (niter.hasNext()){
-						Resource key = niter.next().asResource();
-						if (resdata.containsKey(key)){
-							dataLine.append( resdata.get(key) + "," );
-						}
-					}
-					
-					for (int j = (i - 8); j <= (i + 8) ; j++){
-						try {
-							dataLine.append( protein.getSequence().charAt(j) + "," );
-						} catch (IndexOutOfBoundsException e) {
-							dataLine.append( "?," );
-						}
-					}
-					
-					if (positives.contains(currentAA)){
-						dataLine.append( "1" );
-					} else if (negatives.contains(currentAA)){
-						dataLine.append( "0" );
-					} else {
-						dataLine.append( "?" );
-					}
-
-					
-					
-					// get next AA if there is one
-					if (model.getModel().contains(currentAA, iib)){
-						nextAA = model.getModel().getProperty(currentAA, iib).getResource();
-					}
-*/
 	}
+	
+	private static void createNominalArffFile(String pdbDir, PDBIdRdfModel model, ResIterator firstAAs){
+
+		try {
+			PDBProtein protein = model.getProtein();
+			String arffFilePath = pdbDir + protein.getArffFileName();
+			arffFilePath = arffFilePath.replace(".arff", ".nominal.arff");
+			PrintStream out = new PrintStream (arffFilePath);
+			_logger.debug("Creating nominal ARFF file: " + arffFilePath);
+	
+			/*
+			 * RELATION
+			 */
+			String relation = "@RELATION " + protein.getPdbID();
+			out.println(relation);
+			_logger.debug(relation);
+			
+			/*
+			 * ATTRIBUTES
+			 */
+			// Integer declaring Position in chain
+			StringBuffer attributes = new StringBuffer(
+					// Hydrophobicity   hydrophilic = 0; hydrophobic = 1; aromatic = 2; aliphatic = 3
+					"@ATTRIBUTE hydrophob {hydrophilic, hydrophobic, aromatic, aliphatic}\n" + //  Hydrophilic = 0; Hydrophobic = 1; Very_hydrophobic = 2
+					// Polarity unpolar = 0; polar = 1; positive = 2; negative = 3;
+					"@ATTRIBUTE charge {unpolar, polar, positive, negative}\n" + // Negative = -1; Neutral = 0; Positive = 1
+					// Size tiny = 0; small = 1; large = 2;
+					"@ATTRIBUTE size {tiny, small, large}\n");
+
+			for (int i = -8; i <= 8; i++) {
+				attributes.append("@ATTRIBUTE aa_position_" + i + " {A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y}\n"); // amino acid at position $i from current amino acid
+			}
+			attributes.append("@ATTRIBUTE in_helix {Helix, Non_helix}\n"); // Helix = 1 Other = 0
+					
+			_logger.debug(attributes);
+			out.println(attributes);
+			
+			/*
+			 * @DATA
+			 */
+			String data = "@DATA\n";
+			_logger.debug(data);
+			out.println(data);
+			
+			// HashMap containing information about the properties of every amino acid
+			HashMap<String, String> resdata = AminoAcids.getAminoAcidNominalArffAttributeMap();
+			ArrayList<Resource> positives = model.getPositives();
+			ArrayList<Resource> negatives = model.getNegatives();
+			String sequence = protein.getSequence();
+			HashMap<Integer, Resource> posRes = model.getPositionResource();
+			
+			for ( int i = 0; i < sequence.length(); i++) {
+				StringBuffer dataLine = new StringBuffer("");
+				String key = Character.toString( sequence.charAt(i) );
+
+				// add amino acid description to dataLine
+				if ( resdata.containsKey(key) ){
+					dataLine.append( resdata.get(key) + "," );
+				} else {
+					// 
+					dataLine.append( resdata.get("X") + "," );
+				}
+				
+				// add information about neighbouring amino acids to dataLine
+				for (int j = (i - 8); j <= (i + 8) ; j++){
+					try {
+						dataLine.append( protein.getSequence().charAt(j) + "," );
+					} catch (IndexOutOfBoundsException e) {
+						dataLine.append( "?," );
+					}
+				}
+				
+				// add information about positive or negative to dataLine
+				if (positives.contains( posRes.get( new Integer(i) ))){
+					dataLine.append( "Helix" );
+				} else if (negatives.contains( posRes.get( new Integer(i) ))){
+					dataLine.append( "Non_helix" );
+				} else {
+					dataLine.append( "?" );
+				}
+				
+				_logger.info(dataLine);
+				out.println(dataLine);
+				
+			}
+			
+		} catch (FileNotFoundException e){
+			e.printStackTrace();
+		}
+	}
+
 }

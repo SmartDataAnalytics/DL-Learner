@@ -52,7 +52,7 @@ public class PDBIdRdfModel {
 		this.getProtein().setSpecies(extractSpecies(_pdbIdModel));
 		System.out.println("Species: " + this.getProtein().getSpecies());
 		createPositivesAndNegatives();
-		_positionResource = createPositionResidueMap();
+		this._positionResource = createPositionResidueMap();
 	}
 	
 	public PdbRdfModel getModel(){
@@ -160,15 +160,15 @@ public class PDBIdRdfModel {
 		Resource polymerSequence = ResourceFactory.createResource("http://bio2rdf.org/pdb:PolymerSequence");
 		
 		ResIterator riter = model.listResourcesWithProperty(type, polymerSequence);
-		while (riter.hasNext()){
-			Resource nextRes = riter.next();
+		while (riter.hasNext()) {
+			Resource nextRes = riter.nextResource();
 			if (model.contains(nextRes, hasValue)){
 				NodeIterator niter = model.listObjectsOfProperty(nextRes, hasValue);
 				sequence = niter.next().toString();
 				
 				System.out.println("Sequence: " + sequence);
 			}
-		}
+		} ;
     	return sequence;
 	}
 
@@ -230,7 +230,6 @@ public class PDBIdRdfModel {
 	    		// a amino acid is followed
 	    		" OPTIONAL { ?x5 pdb:isImmediatelyBefore ?x7 . } . " +
 	    		" ?x5 pdb:hasChainPosition ?x8 ." +
-	    		" ?x8 rdfs:label ?residuePosition ." +
 	    		" ?x8 pdb:hasValue ?x9 Filter (xsd:int(?x9)) .";		 
 		 if (chainID.length() == 1 && pdbID.length() == 4)
 			{
@@ -283,7 +282,7 @@ public class PDBIdRdfModel {
 		Property iib = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "isImmediatelyBefore");
 
 		ResIterator firstAAs = this.getFirstAA();
-		while ( firstAAs.hasNext()){
+		while ( firstAAs.hasNext()) {
 			Resource firstAA = firstAAs.next();
 			Resource currentAA = firstAA;
 			posres.put(new Integer(this.getResiduePosition(currentAA)), currentAA);
@@ -311,8 +310,7 @@ public class PDBIdRdfModel {
 			while ( positionLabelNodes.hasNext() ) {
 				positionLabels.add(positionLabelNodes.next().asLiteral().getInt());
 			}
-			
-		}
+		} 
 		
 		
 		Integer position = null;
