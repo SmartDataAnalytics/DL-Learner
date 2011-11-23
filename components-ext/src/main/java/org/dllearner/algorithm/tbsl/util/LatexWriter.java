@@ -24,7 +24,7 @@ public class LatexWriter {
 		beginSummaryTable();
 	}
 	
-	private String loadPraeambel(){
+	public String loadPraeambel(){
 		StringBuilder praeamble = new StringBuilder();
 		try {
 			Scanner scanner = new Scanner(new FileInputStream(this.getClass().getClassLoader().getResource(PRAEAMBEL_FILE).getPath()));
@@ -105,6 +105,11 @@ public class LatexWriter {
 		summary.append("\\small\n");
 		summary.append("\\begin{tabular}{| c | p{10cm} | c | c | c |}\\hline\n");
 		summary.append("id & question & P & R & \\\\\\hline\\hline\n");
+	}
+	
+	@Override
+	public String toString() {
+		return sb.toString();
 	}
 	
 	public void endSummaryTable(){
