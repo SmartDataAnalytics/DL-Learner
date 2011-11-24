@@ -13,7 +13,11 @@ import java.util.*;
 import net.didion.jwnl.JWNLException;
 
 import org.dllearner.algorithm.tbsl.exploration.Sparql.SparqlObject;
-import org.dllearner.algorithm.tbsl.exploration.sax.ParseXmlHtml;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /*
  * 
@@ -21,6 +25,18 @@ import org.dllearner.algorithm.tbsl.exploration.sax.ParseXmlHtml;
  * in Eclipse Run -> RunConfigurations -> Arguments -> VM Arguments -> -Xmx1024m
  */
 
+/*
+ * 
+ * 
+ * for pom.xml file
+ * <dependencies>
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.6.16</version>
+    </dependency>
+  </dependencies>
+ */
 // Sax example from http://www.bennyn.de/programmierung/java/java-xml-sax-parser.html
 
 /*
@@ -39,14 +55,15 @@ public class exploration_main {
 	 * @throws IOException 
 	 * @throws JWNLException 
 	 * @throws InterruptedException 
+	 * @throws ClassNotFoundException 
+	 * @throws SQLException 
 	 */
-	public static void main(String[] args) throws IOException, JWNLException, InterruptedException {
+	public static void main(String[] args) throws IOException, JWNLException, InterruptedException, ClassNotFoundException, SQLException {
 		
 		/**
 		 * Do the starting initializing stuff
 		 */
 		long startInitTime = System.currentTimeMillis();
-
     	System.out.println("Start Indexing");
     	
     	 //For testing!
@@ -168,5 +185,7 @@ public class exploration_main {
 	    
 	    return name;
 	}
+	
+	
 
 }

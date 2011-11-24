@@ -1,5 +1,6 @@
 package org.dllearner.algorithm.tbsl.exploration.Sparql;
 import java.io.BufferedReader;
+
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,6 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.didion.jwnl.JWNLException;
@@ -28,6 +30,13 @@ import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 
 
 public class SparqlObject {
@@ -41,19 +50,25 @@ public class SparqlObject {
 	static WordNet wordnet;
 	BasicTemplator btemplator;
 	Templator templator;
-	private static HashMap<String, String> hm = new HashMap<String, String>();
+/*	private static HashMap<String, String> hm = new HashMap<String, String>();
+	private static HashMap<String, String> hm_new = new HashMap<String, String>();*/
+	private static mySQLDictionary myindex; 
 	
 
 	//Konstruktor
-	public SparqlObject() throws MalformedURLException{
+	public SparqlObject() throws MalformedURLException, ClassNotFoundException, SQLException{
 		wordnet = new WordNet();
 		//hm=hm_new;
-		hm=ParseXmlHtml.parse_xml("/home/swalter/workspace/qaldEntity2",hm);
-		hm=ParseXmlHtml.parse_xml("/home/swalter/workspace/qaldEntity1",hm);
+		/*hm=ParseXmlHtml.parse_xml("/home/swalter/workspace/qaldEntity2",hm);
+		hm=ParseXmlHtml.parse_xml("/home/swalter/workspace/qaldEntity1",hm);*/
 		System.out.println("Loading SPARQL Templator");
     	btemplator = new BasicTemplator();
     	templator = new Templator();
     	System.out.println("Loading SPARQL Templator Done\n");
+    	System.out.println("Start Indexing Wikipedia URI's");
+    	myindex = new mySQLDictionary();
+    	
+    	System.out.println("Done:Indexing Wikipedia URI's");
     	setExplorationdepthwordnet(1);
     	//eigentlich immer mit 0 initialisieren
     	setIterationdepth(1);
@@ -103,7 +118,7 @@ public class SparqlObject {
 	 * "Main" Method of this Class.
 	 * 
 	 */
-	 public void create_Sparql_query(String question) throws JWNLException, IOException{
+	 public void create_Sparql_query(String question) throws JWNLException, IOException, SQLException{
 		 	//create_Sparql_query_new(string);
 			
 		 ArrayList<ArrayList<String>> lstquery = new ArrayList<ArrayList<String>>();
@@ -215,7 +230,7 @@ public class SparqlObject {
 					//asking server
 					String answer;
 					answer=sendServerQuestionRequest(query);
-					
+					System.out.println(query);
 					//if Emty answer, get properties an look up the right property with levensthein
 					if(answer.contains("EmtyAnswer")){
 						//TODO: get all information from the query
@@ -249,7 +264,8 @@ public class SparqlObject {
 						 Boolean goOnAfterProperty = true;
 						 try {
 							 //using uri now, not the string
-							properties=property.getPropertys(hm.get(rescource.toLowerCase()));
+							//properties=property.getPropertys(hm.get(rescource.toLowerCase()));
+							 properties=property.getPropertys(getUriFromIndex(rescource.toLowerCase(),0));
 							if (properties==null){
 								final_answer.add("Error in getting Properties\n");
 								goOnAfterProperty=false;
@@ -276,7 +292,8 @@ public class SparqlObject {
 									 //System.out.println(tmp);
 									 //alte property uri mit neuer ersetzen:
 									 String query_tmp=query;
-									 query_tmp=query_tmp.replace(hm.get(property_to_compare_with.toLowerCase()),properties.get(i-1));
+									 //query_tmp=query_tmp.replace(hm.get(property_to_compare_with.toLowerCase()),properties.get(i-1));
+									 query_tmp=query_tmp.replace(getUriFromIndex(property_to_compare_with.toLowerCase(),1),properties.get(i-1));
 									 //System.out.println("hm.get(property_to_compare_with.toLowerCase(): " + hm.get(property_to_compare_with.toLowerCase()));
 									 new_queries.add(query_tmp);
 								 }
@@ -328,7 +345,9 @@ public class SparqlObject {
 												//create new query
 											result_SemanticsMatchProperties.add(properties.get(h));
 											 String query_tmp=query;
-											 query_tmp=query_tmp.replace(hm.get(property_to_compare_with.toLowerCase()),properties.get(h-1));
+											 
+											 //query_tmp=query_tmp.replace(hm.get(property_to_compare_with.toLowerCase()),properties.get(h-1));
+											 query_tmp=query_tmp.replace(getUriFromIndex(property_to_compare_with.toLowerCase(),1),properties.get(h-1));
 											 //System.out.println("hm.get(property_to_compare_with.toLowerCase(): " + hm.get(property_to_compare_with.toLowerCase()));
 											 new_queries.add(query_tmp);
 											}
@@ -402,13 +421,16 @@ public class SparqlObject {
 			 //create_Sparql_query_old(string);
 			 
 		// }
+	 
 
+	 
 	 /**
 	* Method gets a String and takes the information from the templator to creat a Sparql query.
 	* @param question question in natural language
 	* @return ArrayList of Sparql queries.
+	 * @throws SQLException 
 	*/
-	private ArrayList<ArrayList<String>> getQuery(String question) {
+	private ArrayList<ArrayList<String>> getQuery(String question) throws SQLException {
 		ArrayList<ArrayList<String>> lstquery = new ArrayList<ArrayList<String>>();
 	    Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(question);
 	     	for (BasicQueryTemplate temp : querytemps) {
@@ -423,6 +445,7 @@ public class SparqlObject {
 	     		String query;
 	     		String selTerms ="";
 	     		for(SPARQL_Term terms :temp.getSelTerms()) selTerms=selTerms+(terms.toString())+" ";
+	     		System.out.println(selTerms);
 	     		
 	     		String conditions = "";
 	     		for(Path condition: temp.getConditions()) conditions=conditions+(condition.toString())+".";
@@ -474,7 +497,9 @@ public class SparqlObject {
 	    			//System.out.println("replace: " + replace);
 	    			//hier dann den hm wert von array[1] eintragen
 	    			
-	    			String hm_result=hm.get(array[1].toLowerCase());
+	    			
+	    			//String hm_result=hm.get(array[1].toLowerCase());
+	    			String hm_result=getUriFromIndex(array[1].toLowerCase(),0);
 	    		      try
 	    		      {
 	    		    	  if(hm_result.contains("Category:")) hm_result=hm_result.replace("Category:","");
@@ -515,77 +540,39 @@ public class SparqlObject {
 	
 	 
 	 
-	 
-	 
-	private void doIteration(String string1, String string2) throws JWNLException{
-		 long startTime = System.currentTimeMillis();
-
-		 String string2_uri;
-		 string2_uri=hm.get(string2);
-		 string2_uri=string2_uri.replace("Category:", "");
-		 string2_uri=string2_uri.replace("category:", "");
-		 System.out.println("Get Propertys of "+string2);
-		 
-		 //contains uri AND string, every second is the string
-		 ArrayList<String> properties = new ArrayList<String>();
-		 GetRessourcePropertys property = new GetRessourcePropertys();
-		 try {
-			 //using uri now, not the string
-			properties=property.getPropertys(hm.get(string2));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	/**
+	 *  
+	 * @param string
+	 * @param fall 1 Property 0 no Property
+	 * @return
+	 * @throws SQLException 
+	 */
+	private String getUriFromIndex(String string, int fall) throws SQLException{
+		String result=null;
+		if(fall==0){
+			//result=hm.get(string.toLowerCase());
+			//if(result==null)result=myindex.getURI(string);
+			result=myindex.getResourceURI(string.toLowerCase());
+			if(result==null)result=myindex.getPropertyURI(string.toLowerCase());
 		}
-		 
-		 System.out.println("Start Iterating Wordnet with "+string1+" and deept of "+explorationdepthwordnet);
-		 ArrayList<String> semantics=new ArrayList<String>();
-		 ArrayList<String> tmp_semantics=new ArrayList<String>();
-		 ArrayList<String> result_SemanticsMatchProperties=new ArrayList<String>();
-		 semantics.add(string1);
-		 tmp_semantics=semantics;
-		 for(int i=0;i<=explorationdepthwordnet;i++){
-
-			 try {
-				tmp_semantics=getSemantics(tmp_semantics);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				
+		if(fall==1){
+			/*result=hm.get(string.toLowerCase());
+			if(result==null)result=myindex.getURI(string);
+			if(result==null)result="http://dbpedia.org/property/"+string.toLowerCase();*/
+			//should be alway property an not resource
+			//result=result.replace("resource", "property");
+			result=myindex.getPropertyURI(string.toLowerCase());
+			if(result==null){
+				result=myindex.getResourceURI(string.toLowerCase());
+				result=result.replace("resource", "property");
 			}
-			 //each word only one time
-			 for(String k : tmp_semantics){
-				 if(!semantics.contains(k)) semantics.add(k);
-			 }
-					 
-		 }
-		 long endTime = System.currentTimeMillis();
-		System.out.println("Getting Properties and Semantics took "+(endTime-startTime) +" ms\n");
+			
+		}
 		
-		//TODO: Try, if it works, if you use only one loop: (b.lowerCase).contains(properties.get(h))
-		for(int h=1;h<properties.size()-2;h=h+2){
-			for(String b : semantics){
-				//System.out.println(properties.get(h));
-				//System.out.println(b);
-				if(properties.get(h).contains(b.toLowerCase())){
-					if(!result_SemanticsMatchProperties.contains(properties.get(h)))
-					result_SemanticsMatchProperties.add(properties.get(h));
-				}
-			}
-		}
-		for(String b : result_SemanticsMatchProperties){
-			string1=b.toLowerCase();
-			String anfrage;
-			String string1_uri;
-			string1_uri=hm.get(string1);
-			if(string1_uri!=null){
-				 anfrage="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>select ?x  where { <"+string2_uri+"> <"+string1_uri+"> ?x.}";
-				 System.out.println("Answer with the property \" " + b + "\" :\n"+sendServerQuestionRequest(anfrage));
-			}
-		}
-		long endTime2 = System.currentTimeMillis();
-		System.out.println("Getting Properties, Semantics and Answer from server took "+(endTime2-startTime) +" ms");
+		if(result==null) return "http://dbpedia.org/property/"+string.toLowerCase();
+		else return result;
 	}
-	
+
 
 	
 	
@@ -612,6 +599,7 @@ public class SparqlObject {
 	private String sendServerQuestionRequest(String query){
 		//SPARQL-Endpoint of Semantic Computing Group
 		String tmp="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
+		System.out.println(tmp);
 		URL url;
 	    InputStream is;
 	    InputStreamReader isr;
@@ -711,7 +699,13 @@ public class SparqlObject {
 	    return query;
 	}
 	
+	
+	
+	
+	
 }
+
+
 
 /**
  * Cluster function
