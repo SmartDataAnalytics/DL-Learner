@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Template implements Serializable{
+public class Template implements Serializable, Comparable<Template>{
 
 	private static final long serialVersionUID = -3925093269596915997L;
 	
@@ -51,6 +51,11 @@ public class Template implements Serializable{
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public int compareTo(Template o) {
+		return getQuery().toString().compareTo(o.getQuery().toString());
 	}
 	
 }
