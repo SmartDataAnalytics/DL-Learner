@@ -29,7 +29,8 @@ public class ConfParserConfiguration implements IConfiguration {
 
     public ConfParserConfiguration(Resource source) {
         try {
-            baseDir = source.getFile().getAbsoluteFile().getParent();
+//          baseDir = source.getFile().getAbsoluteFile().getParent();
+        	baseDir = source.getFile().getParentFile().toURI().toString();
             parser = new ConfParser(source.getInputStream());
             parser.Start();
         } catch (ParseException e) {

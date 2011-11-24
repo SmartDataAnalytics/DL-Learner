@@ -22,6 +22,7 @@ package org.dllearner.kb;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -100,7 +101,7 @@ public class KBFile extends AbstractKnowledgeSource {
                     /** Leave it as is */
                     kb = KBParser.parseKBFile(getUrl());
                 } else {
-                    File f = new File(baseDir, getUrl());
+                    File f = new File(new URI(baseDir + File.separator + getUrl()));
                     setUrl(f.toURI().toString());
                     kb = KBParser.parseKBFile(f);
                 }
@@ -114,7 +115,9 @@ public class KBFile extends AbstractKnowledgeSource {
             throw new ComponentInitException("KB file " + getUrl() + " could not be parsed correctly.", e);
         }catch (FileNotFoundException e) {
             throw new ComponentInitException("KB file " + getUrl() + " could not be found.", e);
-        }
+        } catch (URISyntaxException e) {
+        	throw new ComponentInitException("KB file " + getUrl() + " could not be found.", e);
+		}
     }
 
 	/*
