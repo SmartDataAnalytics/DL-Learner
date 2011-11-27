@@ -2,10 +2,13 @@ package org.dllearner.scripts;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
-import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.ConsoleAppender;
@@ -19,6 +22,7 @@ import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -29,19 +33,26 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.OWL;
 
 public class SPARQLSampleDebugging {
 	
 	private SparqlEndpoint endpoint;
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
 	
-	private int sampleSize = 10;
-	private int depth = 5;
-	private int nrOfChunks = 10;
-	private int maxNrOfExplanations = 10;
+	private int sampleSize = 100;
+	private int depth = 4;
+	private int nrOfChunks = 100;
+	private int maxNrOfExplanations = 20;
 	
 	private Logger logger = Logger.getLogger(SPARQLSampleDebugging.class);
 	
@@ -235,8 +246,21 @@ public class SPARQLSampleDebugging {
 			logger.info("Consistent: " + isConsistent);
 			if(!isConsistent){
 				Set<Set<OWLAxiom>> explanations = computeExplanations(reasoner);
+				logger.info("Found " + explanations.size() + " explanations.");
+				Map<AxiomType, Integer> axiomType2CountMap = new HashMap<AxiomType, Integer>();
 				for(Set<OWLAxiom> explanation : explanations){
 					logger.info(explanation);
+					for(OWLAxiom axiom : explanation){
+						Integer cnt = axiomType2CountMap.get(axiom.getAxiomType());
+						if(cnt == null){
+							cnt = Integer.valueOf(0);
+						}
+						cnt = Integer.valueOf(cnt + 1);
+						axiomType2CountMap.put(axiom.getAxiomType(), cnt);
+					}
+				}
+				for(Entry<AxiomType, Integer> entry : axiomType2CountMap.entrySet()){
+					logger.info(entry.getKey() + "\t: " + entry.getValue());
 				}
 			}
 			ontologies.remove(module);
@@ -244,6 +268,32 @@ public class SPARQLSampleDebugging {
 			
 		}
 		
+	}
+	
+	public void runPatternBasedDetection(){
+		Model model = ModelFactory.createDefaultModel();
+
+		//read schema
+		InputStream in = getClass().getClassLoader().getResourceAsStream("dbpedia_0.75.owl");
+		model.read(in, null);
+		
+		//read data
+		ModelGenerator modelGen = new ModelGenerator(endpoint, cache);
+		model.add(modelGen.createModel("http://dbpedia.org/resource/Leipzig", Strategy.CHUNKS, depth));
+
+		//query for conflicts
+		String queryString = "SELECT ?s WHERE {?type1 <" + OWL.disjointWith + "> ?type2. ?s a ?type1. ?s a ?type2.} LIMIT 1";
+		Query query = QueryFactory.create(queryString) ;
+		QueryExecution qexec = QueryExecutionFactory.create(query, model) ;
+		try {
+		    ResultSet results = qexec.execSelect() ;
+		    for ( ; results.hasNext() ; )
+		    {
+		      QuerySolution soln = results.nextSolution() ;
+		      Resource r = soln.getResource("s") ; 
+		      System.out.println(r.getURI());
+		    }
+		  } finally { qexec.close() ; }
 	}
 	
 	/**
@@ -261,7 +311,8 @@ public class SPARQLSampleDebugging {
         
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
 				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
-		new SPARQLSampleDebugging(endpoint).run3();
+		new SPARQLSampleDebugging(endpoint).runPatternBasedDetection();
+//		new SPARQLSampleDebugging(endpoint).run3();
 
 	}
 
