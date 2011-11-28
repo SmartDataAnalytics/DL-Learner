@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import org.apache.log4j.Logger;
+
 public class ProteinDataSet {
+	
+	private static Logger _logger = Logger.getLogger(HelixRDFCreator.class);
 	
 	private static String _dataDir = "../test/pdb/";
 
@@ -71,11 +75,11 @@ public class ProteinDataSet {
 			pdbproteins.close();
 			// get number of lines			
 			int linenr = lines.size();
-			System.out.println("File "+ pdbIDlist.getCanonicalPath() + " has " + linenr + " lines.");
+			_logger.info("File "+ pdbIDlist.getCanonicalPath() + " has " + linenr + " lines.");
 			this._proteinSet = new ArrayList<PDBProtein>(linenr);
 			for (int i = 0; i < linenr; i++)
 			{
-				System.out.println("LINES element " + i + " contains " + lines.get(i));
+				_logger.info("LINES element " + i + " contains " + lines.get(i));
 				this._proteinSet.add(
 						new PDBProtein(
 								this.getPdbID(i, lines),
@@ -85,7 +89,7 @@ public class ProteinDataSet {
 		}
 		catch (IOException e)
 		{
-			System.err.println("File " + pdbIDlist.getAbsolutePath() + " could not be read in!");
+			_logger.error("File " + pdbIDlist.getAbsolutePath() + " could not be read in!");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
