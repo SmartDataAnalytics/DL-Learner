@@ -84,6 +84,7 @@ public final class AminoAcids {
 			resprint.put(TRP, new PrintStream(allConfFiles.get(TRP)));
 			resprint.put(TYR, new PrintStream(allConfFiles.get(TYR)));
 			resprint.put(SEL, new PrintStream(allConfFiles.get(SEL)));
+			resprint.put(HYT, new PrintStream(allConfFiles.get(HYT)));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -114,6 +115,7 @@ public final class AminoAcids {
 		resourceString.put(TRP, new StringBuffer(init));
 		resourceString.put(TYR, new StringBuffer(init));
 		resourceString.put(SEL, new StringBuffer(init));
+		resourceString.put(HYT, new StringBuffer(init));
 		return resourceString;
 	}
 	
@@ -171,6 +173,14 @@ followed by their three-letter-code and finally their name.
 		
 		return resnum;
 	}
+	
+	/*
+	 * +++ Amino acid properties +++
+	 * 
+	 * the following amino acid properties were gathered from
+	 * http://www.russelllab.org/aas/
+	 * 
+	 */
 	
 	public static HashMap<String, String> getAminoAcidNumericArffAttributeMap(){
 		// Hydrophobicity   hydrophilic = 0; Hydrophobic = 1; aromatic = 2; aliphatic = 3
@@ -232,7 +242,6 @@ followed by their three-letter-code and finally their name.
 		resdata.put(new String("X"), new String("?,?,?")); // unknown residue (e.g. modified amino acids)
 		resdata.put(new String("Y"), new String("Aromatic,Polar,Large"));
 		resdata.put(new String("U"), new String("?,?,?"));
-		
 		return resdata;
 	}
 }

@@ -53,7 +53,7 @@ public class HelixRDFCreator {
 		// console, you have to set the threshold and log level to trace
 		// (but we recommend just setting the log level to trace and observe
 		// the log file)
-		consoleAppender.setThreshold(Level.DEBUG);
+		consoleAppender.setThreshold(Level.INFO);
 		
 		// logger 2 is writes to a file; it records all debug messages
 		// (you can choose HTML or TXT)
@@ -66,11 +66,12 @@ public class HelixRDFCreator {
 			fileName = _dataDir + "log/log.html";
 		} else {
 			// simple variant: layout2 = new SimpleLayout();
-			layout2 = new PatternLayout("%r [%t] %-5p %c :\n%m%n\n");
+			layout2 = new PatternLayout("%d [%t] %-5p %c : %m%n");
 			fileName = _dataDir + "log/log.txt";
 		}
 		try {
 			fileAppenderNormal = new FileAppender(layout2, fileName, false);
+			fileAppenderNormal.setThreshold(Level.INFO);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
@@ -79,7 +80,7 @@ public class HelixRDFCreator {
 		_rootLogger.removeAllAppenders();
 		_rootLogger.addAppender(consoleAppender);
 		_rootLogger.addAppender(fileAppenderNormal);
-		_rootLogger.setLevel(Level.DEBUG);
+		_rootLogger.setLevel(Level.INFO);
 		
 		
 		Boolean fasta = true;
@@ -102,12 +103,12 @@ public class HelixRDFCreator {
 		Boolean dlLearn = false;
 		Boolean wekaLearn = false;
 		
-		int dataSet = 5;
+		int dataSet = 1;
 
 		/*
 		 * data for test purpose
 		 */
-		PDBProtein testProtein = new PDBProtein("1XFF","A");
+		PDBProtein testProtein = new PDBProtein("1EDM","B");
 //		PDBProtein testProtein = new PDBProtein("1LMB", "3");
 //		PDBProtein testProtein = new PDBProtein("8ABP");
 
@@ -146,6 +147,7 @@ public class HelixRDFCreator {
 			if (rdfConf || arff) {
 				
 				PDBProtein protein = proteinSet.getProteinset().get(i);
+				_logger.info("Start with extracting data from: " + protein.getPdbID());
 				String pdbDir = _dataDir +  protein.getPdbID() + "/";
 				File directory = new File(pdbDir);
 				if(! directory.exists()) directory.mkdir();
@@ -153,7 +155,7 @@ public class HelixRDFCreator {
 				//String arffFilePath = pdbDir + protein.getArffFileName();
 				
 				_logger.info("PDB ID: " + protein.getPdbID());
-				_logger.info("chain ID: " + protein.getChainID());
+				_logger.info("Chain ID: " + protein.getChainID());
 				
 				trainmodel = new PDBIdRdfModel(protein);
 				
@@ -189,6 +191,8 @@ public class HelixRDFCreator {
 				trainmodel.removeStatementsWithObject(residue);
 				Property isPartOf = ResourceFactory.createProperty("http://purl.org/dc/terms/", "isPartOf");
 				trainmodel.removeStatementsWithPoperty(isPartOf);
+				Property hasValue = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "hasValue");
+				trainmodel.removeStatementsWithPoperty(hasValue);
 				/*
 				 * we add the information which amino acid is the fourth predecessor of which other amino acid 
 				 */
@@ -533,7 +537,7 @@ public class HelixRDFCreator {
 					dataLine.append( "?" );
 				}
 				
-				_logger.info(dataLine);
+				_logger.debug(dataLine);
 				out.println(dataLine);
 				
 			}
@@ -623,7 +627,7 @@ public class HelixRDFCreator {
 					dataLine.append( "?" );
 				}
 				
-				_logger.info(dataLine);
+				_logger.debug(dataLine);
 				out.println(dataLine);
 				
 			}

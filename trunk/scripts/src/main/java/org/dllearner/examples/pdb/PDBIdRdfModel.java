@@ -34,7 +34,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 public class PDBIdRdfModel {
 
-	private static Logger _logger = Logger.getRootLogger();
+	private static Logger _logger = Logger.getLogger(HelixRDFCreator.class);
 	
 	private PdbRdfModel _pdbIdModel = new PdbRdfModel();
 	private PdbRdfModel _removedFromModel = new PdbRdfModel();
@@ -48,9 +48,9 @@ public class PDBIdRdfModel {
 		this._protein = protein;
 		this._pdbIdModel = this.getPdbRdfModel();
 		this.getProtein().setSequence(extractSequence(_pdbIdModel));
-		System.out.println("Sequence: " + this.getProtein().getSequence());
+		_logger.info("Sequence: " + this.getProtein().getSequence());
 		this.getProtein().setSpecies(extractSpecies(_pdbIdModel));
-		System.out.println("Species: " + this.getProtein().getSpecies());
+		_logger.info("Species: " + this.getProtein().getSpecies());
 		createPositivesAndNegatives();
 		this._positionResource = createPositionResidueMap();
 	}
@@ -122,7 +122,7 @@ public class PDBIdRdfModel {
 	    		" ?x1 pdb:isImmediatelyBefore ?x4 ." +
 				" OPTIONAL { ?x5 rdfs:label ?species FILTER (str(?x5) = fn:concat(str(?x2), '/extraction/source/gene/organism')) . } . }";
 		
-		// System.out.println(queryString);
+		_logger.debug(queryString);
 		
 		PdbRdfModel construct = new PdbRdfModel();
 		Query query = QueryFactory.create(queryString);
@@ -138,10 +138,7 @@ public class PDBIdRdfModel {
 			{
 				RDFNode nextRes = niter.next();
 				species = nextRes.toString();
-/*				QuerySolution soln = results.nextSolution() ;
-				Literal l = soln.getLiteral("species") ;   // Get a result variable - must be a literal
-				species = l.getString();*/
-				System.out.println(species);
+				_logger.debug(species);
 			}
 		}
 		finally 
@@ -166,7 +163,7 @@ public class PDBIdRdfModel {
 				NodeIterator niter = model.listObjectsOfProperty(nextRes, hasValue);
 				sequence = niter.next().toString();
 				
-				System.out.println("Sequence: " + sequence);
+				_logger.debug("Sequence: " + sequence);
 			}
 		} ;
     	return sequence;
@@ -219,9 +216,10 @@ public class PDBIdRdfModel {
 	    		" ?organism rdfs:label ?organismName ." +
 	    		" ?seq rdf:type pdb:PolymerSequence ." +
 	    		" ?seq pdb:hasValue ?sequence . } " +	    		
-	    		"WHERE { ?x1 rdf:type pdb:Helix ." +
+	    		"WHERE { " +
+	    		" OPTIONAL { ?x1 rdf:type pdb:Helix ." +
 	    		" ?x1 pdb:beginsAt ?x2 ." +
-	    		" ?x1 pdb:endsAt ?x3 ." +
+	    		" ?x1 pdb:endsAt ?x3 . } . " +
 	    		" ?x3 dcterms:isPartOf ?x4 ." +
 	    		" ?x4 rdf:type <http://bio2rdf.org/pdb:Polypeptide(L)> ." +
 	    		" ?x5 dcterms:isPartOf ?x4 ." +
@@ -245,7 +243,7 @@ public class PDBIdRdfModel {
 	    		" OPTIONAL { ?organism rdfs:label ?organismName " +
 	    			"FILTER (str(?organism) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . } . }";
 		
-		System.out.println(queryString);
+		_logger.debug(queryString);
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
     	construct.add(qe.execConstruct()); 
@@ -318,7 +316,6 @@ public class PDBIdRdfModel {
 			position = positionLabels.get(0);
 		} else {
 			position = new Integer(0);
-			_logger.error("");
 		}
 		return position.intValue();
 	}
@@ -347,7 +344,7 @@ public class PDBIdRdfModel {
 			"PREFIX x:<" + prop.getNameSpace() + "> " +
     		"CONSTRUCT { ?x1 x:" + prop.getLocalName()+ " ?x2 . } " +
     		"WHERE { ?x1 x:" + prop.getLocalName() + " ?x2 . }";
-		//System.out.println(queryString);
+		_logger.debug(queryString);
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, _pdbIdModel);
     	StmtIterator stmtiter = qe.execConstruct().listStatements(); 
@@ -365,7 +362,7 @@ public class PDBIdRdfModel {
 			"PREFIX x:<" + res.getNameSpace() + "> " +
     		"CONSTRUCT { ?x1 ?x2 x:" + res.getLocalName() + " . } " +
     		"WHERE { ?x1 ?x2 x:" + res.getLocalName() + " . }";
-		// System.out.println(queryString);
+		_logger.debug(queryString);
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, _pdbIdModel);
     	StmtIterator stmtiter = qe.execConstruct().listStatements(); 
@@ -392,7 +389,7 @@ public class PDBIdRdfModel {
 		while (riter.hasNext()) {
 			// Initialization of variables needed
 			Resource firstAA = riter.nextResource();
-			System.out.println("First AA: " + firstAA.getLocalName());
+			_logger.debug("First AA: " + firstAA.getLocalName());
 			Resource currentAA  = firstAA;
 			Resource nextAA = firstAA;
 			boolean inHelix = false;
@@ -427,15 +424,15 @@ public class PDBIdRdfModel {
 			} while (currentAA.hasProperty(iib)) ;
 		}
 		_positives = pos;
-		System.out.println("+++ Positive set +++");
+		_logger.debug("+++ Positive set +++");
 		for (int i = 0; i < pos.size(); i++){
-			System.out.println("Das " + i + "te Element: " + pos.get(i).getLocalName());
+			_logger.debug("Das " + i + "te Element: " + pos.get(i).getLocalName());
 		}
 		
 		_negatives = neg;
-		System.out.println("+++ Negatvie set +++");
+		_logger.debug("+++ Negatvie set +++");
 		for (int i = 0; i < neg.size(); i++){
-			System.out.println("Das " + i + "te Element: " + neg.get(i).getLocalName());
+			_logger.debug("Das " + i + "te Element: " + neg.get(i).getLocalName());
 		}
 	}
 	
@@ -473,84 +470,4 @@ public class PDBIdRdfModel {
 		this.getProtein().setFastaFileName(fastaFileName);
 		this.createFastaFile(dir);
 	}
-	
-	
-	/*
-	 * OLD STUFF
-	 * 
-	 // every element in riter stands for a AA-chain start
-		// every first amino acid indicates a new AA-chain 
-		while (riter.hasNext())
-		{
-			// Initialization of variables needed
-			int i = 0;
-			Resource aaOne = riter.nextResource();
-			Resource currentaa  = aaOne;
-			Resource nextaa = aaOne;
-			boolean inHelix = false;
-			_logger.debug(currentaa.getURI());
-			// look if there is a next AA
-			do {
-				++i;
-				_logger.debug(i);
-				//looks weird, but is needed to enter loop even for the last AA which does not have a iib-Property
-				currentaa = nextaa;
-				NodeIterator resType = model.listObjectsOfProperty(currentaa,type);
-				
-				// die Guten ins Töpfchen ...
-				// if we get an non-empty iterator for pdb:beginsAt the next AAs are within a AA-helix
-				if(model.listResourcesWithProperty(ba, currentaa).hasNext() && !inHelix )
-				{
-					inHelix = true;
-				}
-				// die Schlechten ins Kröpfchen
-				// if we get an non-empty iterator for pdb:endsAt and are already within a AA-helix
-				// the AAs AFTER the current ones aren't within a helix
-				if (model.listResourcesWithProperty(ea, currentaa).hasNext() && inHelix)
-				{
-					inHelix = false;
-				}
-				// get next AA if there is one
-				if (model.listObjectsOfProperty(currentaa, iib).hasNext())
-				{
-					nextaa = model.getProperty(currentaa, iib).getResource();
-				}
-				
-				// add current amino acid to positives or negatives set
-				while(resType.hasNext())
-				{
-					Resource aaType = resType.next().asResource();
-					_logger.info(aaType.getURI());
-					if (resdata.get(aaType) != null)
-					{
-						if (inHelix)
-						{
-							data += i + "," + 1 + "," + resdata.get(aaType);
-						}
-						else
-						{
-							data += i + "," + 0 + "," + resdata.get(aaType);
-						}
-					}
-				}
-				
-			} while (currentaa.hasProperty(iib)) ;
-		}
-			
-		try
-		{
-			PrintStream out = new PrintStream (new File(arffFilePath));
-			out.println(relation);
-			out.print(attribute);
-			out.print(data);
-			out.close();
-		}
-		catch (FileNotFoundException e )
-		{
-    		System.err.println("Datei " + arffFilePath + " konnte nicht angelegt werden!");
-			e.printStackTrace();
-		}
-	 
-	 
-	 */
 }
