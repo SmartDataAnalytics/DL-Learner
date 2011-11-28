@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -47,6 +49,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
@@ -127,7 +130,22 @@ public class SPARQLSampleDebugging {
 			} else {
 				ps.setInt(4, explanations.size());
 				ps.setString(5, explanations.toString());
-				ps.setObject(6, explanations);
+				try {
+					OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+					OWLOntology ont = OWLManager.createOWLOntologyManager().createOntology();
+					for(Set<OWLAxiom> axioms : explanations){
+						man.addAxioms(ont, axioms);
+					}
+					Model model = convert(ont);
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					model.write(baos, "N-TRIPLE");
+					String modelStr = baos.toString("UTF-8");
+					ps.setClob(6, new StringReader(modelStr));
+				} catch (UnsupportedEncodingException e) {
+					logger.error("ERROR", e);
+				} catch (OWLOntologyCreationException e) {
+					logger.error("ERROR", e);
+				}
 			}
 			
 
@@ -239,6 +257,29 @@ public class SPARQLSampleDebugging {
 
 		}
 		return retOnt;
+	}
+	
+	private Model convert(OWLOntology ontology) {
+		Model model = ModelFactory.createDefaultModel();
+		ByteArrayInputStream bais = null;
+		try {
+			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			man.saveOntology(ontology, baos);
+			bais = new ByteArrayInputStream(baos.toByteArray());
+			model.read(bais, null);
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(bais != null){
+					bais.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return model;
 	}
 	
 	public void run() throws OWLOntologyCreationException{
