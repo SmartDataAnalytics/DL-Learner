@@ -39,6 +39,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -48,6 +49,7 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.reasoner.InferenceType;
@@ -72,9 +74,9 @@ public class SPARQLSampleDebugging {
 	private SparqlEndpoint endpoint;
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
 	
-	private int sampleSize = 100;
+	private int sampleSize = 10;
 	private int depth = 4;
-	private int nrOfChunks = 100;
+	private int nrOfChunks = 1;
 	private int maxNrOfExplanations = 20;
 	
 	private Logger logger = Logger.getLogger(SPARQLSampleDebugging.class);
@@ -265,7 +267,7 @@ public class SPARQLSampleDebugging {
 		try {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			man.saveOntology(ontology, baos);
+			man.saveOntology(ontology, new RDFXMLOntologyFormat(), baos);
 			bais = new ByteArrayInputStream(baos.toByteArray());
 			model.read(bais, null);
 		} catch (OWLOntologyStorageException e) {
@@ -476,7 +478,7 @@ public class SPARQLSampleDebugging {
         
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
 				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
-		new SPARQLSampleDebugging(endpoint).runPatternBasedDetection();
+//		new SPARQLSampleDebugging(endpoint).runPatternBasedDetection();
 		new SPARQLSampleDebugging(endpoint).run3();
 
 	}
