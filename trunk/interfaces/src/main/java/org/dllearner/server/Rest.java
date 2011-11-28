@@ -1,21 +1,37 @@
 package org.dllearner.server;
 
-import org.apache.commons.httpclient.util.ExceptionUtil;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.dllearner.configuration.IConfiguration;
+import org.dllearner.configuration.spring.ApplicationContextBuilder;
+import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
+import org.dllearner.confparser3.ConfParserConfiguration;
+import org.dllearner.core.ClassExpressionLearningAlgorithm;
+import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 
 
 public class Rest extends HttpServlet {
@@ -50,7 +66,6 @@ public class Rest extends HttpServlet {
             } else {
                 conf = httpServletRequest.getParameter("conf");
             }
-
 
             /*todo learn*/
 
@@ -118,7 +133,24 @@ public class Rest extends HttpServlet {
      * @return
      */
     public EvaluatedDescriptionPosNeg learn(String conf) {
+    	try {
+			Resource confFile = new InputStreamResource(new ByteArrayInputStream(conf.getBytes()));
+			
+			IConfiguration configuration = new ConfParserConfiguration(confFile);
 
+			ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
+			ApplicationContext context =  builder.buildApplicationContext(configuration, new ArrayList<Resource>());
+			
+			LearningAlgorithm algorithm = context.getBean(LearningAlgorithm.class);
+			algorithm.start();
+			if(algorithm instanceof ClassExpressionLearningAlgorithm){
+				return (EvaluatedDescriptionPosNeg)((ClassExpressionLearningAlgorithm) algorithm).getCurrentlyBestEvaluatedDescriptions(1).iterator().next();
+			}
+		} catch (BeansException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
         return null;
     }
 
@@ -138,6 +170,28 @@ public class Rest extends HttpServlet {
         }
         return ret;
     }
+    
+    public static void main(String[] args) throws Exception{
+    	String filePath = "../examples/father.conf";
+    	byte[] buffer = new byte[(int) new File(filePath).length()];
+        BufferedInputStream f = null;
+        try {
+            f = new BufferedInputStream(new FileInputStream(filePath));
+            f.read(buffer);
+        } finally {
+            if (f != null) try { f.close(); } catch (IOException ignored) { }
+        }
+        String confString = new String(buffer);
+        
+        Resource confFile = new InputStreamResource(new ByteArrayInputStream(confString.getBytes()));
+        
+        IConfiguration configuration = new ConfParserConfiguration(confFile);
 
+        ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
+        ApplicationContext context =  builder.buildApplicationContext(configuration, new ArrayList<Resource>());
+        
+        LearningAlgorithm algorithm = context.getBean(LearningAlgorithm.class);
+        algorithm.start();
+    }
 
 }

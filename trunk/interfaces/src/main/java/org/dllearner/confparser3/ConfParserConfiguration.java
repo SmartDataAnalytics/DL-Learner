@@ -6,6 +6,7 @@ import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.IConfigurationProperty;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -30,7 +31,11 @@ public class ConfParserConfiguration implements IConfiguration {
     public ConfParserConfiguration(Resource source) {
         try {
 //          baseDir = source.getFile().getAbsoluteFile().getParent();
-        	baseDir = source.getFile().getParentFile().toURI().toString();
+        	if(!(source instanceof InputStreamResource)){
+        		baseDir = source.getFile().getParentFile().toURI().toString();
+        	} else {
+        		baseDir = null;
+        	}
             parser = new ConfParser(source.getInputStream());
             parser.Start();
         } catch (ParseException e) {
