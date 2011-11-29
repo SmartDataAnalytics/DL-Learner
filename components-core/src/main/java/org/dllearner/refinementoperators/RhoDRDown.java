@@ -45,6 +45,7 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DoubleMaxValue;
@@ -60,6 +61,7 @@ import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
@@ -98,6 +100,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 	
 	// hierarchies
 	private ClassHierarchy subHierarchy;
+	private ObjectPropertyHierarchy objectPropertyHierarchy;
+	private DatatypePropertyHierarchy dataPropertyHierarchy;
 	
 	// domains and ranges
 	private Map<ObjectProperty,Description> opDomains = new TreeMap<ObjectProperty,Description>();
@@ -262,6 +266,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 //		subHierarchy = rs.getClassHierarchy();
 	public void init() {	
 //		System.out.println("subHierarchy: " + subHierarchy);
+//		System.out.println("object properties: " + );
 		
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
@@ -560,7 +565,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
-			Set<ObjectProperty> moreSpecialRoles = reasoner.getSubProperties(ar);
+			// remove reasoner calls
+//			Set<ObjectProperty> moreSpecialRoles = reasoner.getSubProperties(ar);
+			Set<ObjectProperty> moreSpecialRoles = objectPropertyHierarchy.getMoreSpecialRoles(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles)
 				refinements.add(new ObjectSomeRestriction(moreSpecialRole, description.getChild(0)));
 
@@ -604,7 +611,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
-			Set<ObjectProperty> moreSpecialRoles = reasoner.getSubProperties(ar);
+//			Set<ObjectProperty> moreSpecialRoles = reasoner.getSubProperties(ar);
+			Set<ObjectProperty> moreSpecialRoles = objectPropertyHierarchy.getMoreSpecialRoles(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
 				refinements.add(new ObjectAllRestriction(moreSpecialRole, description.getChild(0)));
 			}
@@ -961,9 +969,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		topComputationTimeNs += System.nanoTime() - topComputationTimeStartNs;
 		
 //		if(domain == null) {
-//			System.out.println("computed top refinements: " + topRefinementsCumulative.get(maxLength));
+//			System.out.println("computed top refinements up to length " + topRefinementsLength + ": " + topRefinementsCumulative.get(maxLength));
 //		} else {
-//			System.out.println("computed top refinements: " + topARefinementsCumulative.get(domain).get(maxLength));
+//			System.out.println("computed top refinements up to length " + topARefinementsLength + ": (domain: "+domain+"): " + topARefinementsCumulative.get(domain).get(maxLength));
 //		}		
 	}
 	
@@ -1002,6 +1010,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		SortedSet<Description> m3 = new TreeSet<Description>(conceptComparator);
 		if(useExistsConstructor) {
 			// only uses most general roles
+//			System.out.println("EXISTS: " + reasoner.getMostGeneralProperties());
 			for(ObjectProperty r : reasoner.getMostGeneralProperties()) {
 				m3.add(new ObjectSomeRestriction(r, new Thing()));
 			}				
@@ -1673,5 +1682,21 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 
 	public void setCardinalityLimit(int cardinalityLimit) {
 		this.cardinalityLimit = cardinalityLimit;
+	}
+
+	public ObjectPropertyHierarchy getObjectPropertyHierarchy() {
+		return objectPropertyHierarchy;
+	}
+
+	public void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy) {
+		this.objectPropertyHierarchy = objectPropertyHierarchy;
+	}
+
+	public DatatypePropertyHierarchy getDataPropertyHierarchy() {
+		return dataPropertyHierarchy;
+	}
+
+	public void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy) {
+		this.dataPropertyHierarchy = dataPropertyHierarchy;
 	}
 }

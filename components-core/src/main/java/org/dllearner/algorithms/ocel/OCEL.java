@@ -104,7 +104,7 @@ public class OCEL extends AbstractCELA {
 	private File searchTreeFile;
 	private boolean replaceSearchTree = false;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
-	private String heuristicStr = "multi";
+//	private String heuristicStr = "multi";
 	Set<NamedClass> allowedConcepts;
 	Set<ObjectProperty> allowedRoles;
 	Set<NamedClass> ignoredConcepts;
@@ -239,84 +239,6 @@ public class OCEL extends AbstractCELA {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	@SuppressWarnings({"unchecked"})
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if(name.equals("writeSearchTree"))
-			writeSearchTree = (Boolean) entry.getValue();
-		else if(name.equals("searchTreeFile"))
-			searchTreeFile = new File((String)entry.getValue());
-		else if(name.equals("replaceSearchTree"))
-			replaceSearchTree = (Boolean) entry.getValue();
-		else if(name.equals("heuristic")) {
-			String value = (String) entry.getValue();
-			if(value.equals("lexicographic"))
-				heuristicStr = "lexicographic";
-			else
-				heuristicStr = "flexible";
-		} else if(name.equals("allowedConcepts")) {
-			allowedConcepts = CommonConfigMappings.getAtomicConceptSet((Set<String>)entry.getValue());
-		} else if(name.equals("allowedRoles")) {
-			allowedRoles = CommonConfigMappings.getAtomicRoleSet((Set<String>)entry.getValue());
-		} else if(name.equals("ignoredConcepts")) {
-			ignoredConcepts = CommonConfigMappings.getAtomicConceptSet((Set<String>)entry.getValue());
-		} else if(name.equals("ignoredRoles")) {
-			ignoredRoles = CommonConfigMappings.getAtomicRoleSet((Set<String>)entry.getValue());
-		} else if(name.equals("applyAllFilter")) {
-//			applyAllFilter = (Boolean) entry.getValue();
-		} else if(name.equals("applyExistsFilter")) {
-//			applyExistsFilter = (Boolean) entry.getValue();
-		} else if(name.equals("useTooWeakList")) {
-			useTooWeakList = (Boolean) entry.getValue();
-		} else if(name.equals("useOverlyGeneralList")) {
-			useOverlyGeneralList = (Boolean) entry.getValue();
-		} else if(name.equals("useShortConceptConstruction")) {
-			useShortConceptConstruction = (Boolean) entry.getValue();
-		} else if(name.equals("improveSubsumptionHierarchy")) {
-			improveSubsumptionHierarchy = (Boolean) entry.getValue();
-		} else if(name.equals("useAllConstructor")) {
-//			useAllConstructor = (Boolean) entry.getValue();
-		} else if(name.equals("useExistsConstructor")) {
-//			useExistsConstructor = (Boolean) entry.getValue();
-		} else if(name.equals("useHasValueConstructor")) {
-//			useHasValueConstructor = (Boolean) entry.getValue();
-		} else if(name.equals("valueFrequencyThreshold")) {
-//			valueFrequencyThreshold = (Integer) entry.getValue();
-		} else if(name.equals("useCardinalityRestrictions")) {
-//			useCardinalityRestrictions = (Boolean) entry.getValue();
-		} else if(name.equals("useNegation")) {
-//			useNegation = (Boolean) entry.getValue();
-		} else if(name.equals("noisePercentage")) {
-			noisePercentage = (Double) entry.getValue();
-		} else if(name.equals("useBooleanDatatypes")) {
-//			useBooleanDatatypes = (Boolean) entry.getValue();
-		} else if(name.equals("useDoubleDatatypes")) {
-//			useDoubleDatatypes = (Boolean) entry.getValue();
-		} else if(name.equals("usePropernessChecks")) {
-			usePropernessChecks = (Boolean) entry.getValue();
-		} else if(name.equals("maxPosOnlyExpansion")) {
-			maxPosOnlyExpansion = (Integer) entry.getValue();
-		} else if(name.equals("startClass")) {
-			startClass = new NamedClass((String)entry.getValue());
-		}else if(name.equals("maxExecutionTimeInSeconds")) {
-			maxExecutionTimeInSeconds = (Integer) entry.getValue();
-		}else if(name.equals("minExecutionTimeInSeconds")) {
-			minExecutionTimeInSeconds = (Integer) entry.getValue();
-		}else if(name.equals("guaranteeXgoodDescriptions")) {
-			guaranteeXgoodDescriptions =  (Integer) entry.getValue();
-		} else if(name.equals("maxClassDescriptionTests")) {
-			maxClassDescriptionTests =  (Integer) entry.getValue();
-		} else if(name.equals("logLevel")) {
-			logLevel = ((String)entry.getValue()).toUpperCase();
-		} else if(name.equals("forceRefinementLengthIncrease")) {
-			forceRefinementLengthIncrease = (Boolean) entry.getValue();
-		}
-	}
-
-	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
@@ -340,21 +262,46 @@ public class OCEL extends AbstractCELA {
 		// adjust heuristic
 
 		if(heuristic == null) {
-		if(heuristicStr == "lexicographic")
-			heuristic = new LexicographicHeuristic();
-		else if(heuristicStr == "flexible") {
-			if(learningProblem instanceof PosOnlyLP) {
-				throw new RuntimeException("does not work with positive examples only yet");
-			}
-			heuristic = new FlexibleHeuristic(((PosNegLP) getLearningProblem()).getNegativeExamples().size(), ((PosNegLP) getLearningProblem()).getPercentPerLengthUnit());
-		} else {
 			if(getLearningProblem() instanceof PosOnlyLP) {
 				throw new RuntimeException("does not work with positive examples only yet");
 //				heuristic = new MultiHeuristic(((PosOnlyLP) getLearningProblem()).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			} else {
 				heuristic = new MultiHeuristic(((PosNegLP) getLearningProblem()).getPositiveExamples().size(),((PosNegLP) getLearningProblem()).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
+			}			
+			
+			// OLD CODE below: in the new framework we assume that the 
+			// heuristic is always injected as object (not as string)
+//			if(heuristicStr == "lexicographic")
+//				heuristic = new LexicographicHeuristic();
+//			else if(heuristicStr == "flexible") {
+//				if(learningProblem instanceof PosOnlyLP) {
+//					throw new RuntimeException("does not work with positive examples only yet");
+//				}
+//				heuristic = new FlexibleHeuristic(((PosNegLP) getLearningProblem()).getNegativeExamples().size(), ((PosNegLP) getLearningProblem()).getPercentPerLengthUnit());
+//			} else {
+//				if(getLearningProblem() instanceof PosOnlyLP) {
+//					throw new RuntimeException("does not work with positive examples only yet");
+//	//				heuristic = new MultiHeuristic(((PosOnlyLP) getLearningProblem()).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
+//				} else {
+//					heuristic = new MultiHeuristic(((PosNegLP) getLearningProblem()).getPositiveExamples().size(),((PosNegLP) getLearningProblem()).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
+//				}
+//			}
+		} else {
+			// we need to set some variables to make the heuristic work
+			if(heuristic instanceof MultiHeuristic) {
+				MultiHeuristic mh = ((MultiHeuristic)heuristic);
+				if(mh.getNrOfNegativeExamples() == 0) {
+					mh.setNrOfNegativeExamples(((PosNegLP) getLearningProblem()).getNegativeExamples().size());
+				}
+				int nrPosEx = ((PosNegLP) getLearningProblem()).getPositiveExamples().size();
+				int nrNegEx = ((PosNegLP) getLearningProblem()).getNegativeExamples().size();
+				if(mh.getNrOfExamples() == 0) {
+					mh.setNrOfExamples(nrPosEx + nrNegEx);
+				}				
+				if(mh.getNrOfNegativeExamples() == 0) {
+					mh.setNrOfNegativeExamples(nrNegEx);
+				}					
 			}
-		}
 		}
 		
 		// warn the user if he/she sets any non-standard heuristic, because it will just be ignored
@@ -411,9 +358,7 @@ public class OCEL extends AbstractCELA {
 		if(operator == null) {
 			// we use a default operator and inject the class hierarchy for now
 			operator = new RhoDRDown();
-			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
 			((RhoDRDown)operator).setReasoner(reasoner);
-			((RhoDRDown)operator).init();
 			
 //		operator = new RhoDRDown(
 //				reasoner,
@@ -436,10 +381,11 @@ public class OCEL extends AbstractCELA {
 //					useStringDatatypes, 
 //					instanceBasedDisjoints
 //			);		
-		} else {
-			// we still have to inject the class hierarchy even if the operator is configured
-			operator.setSubHierarchy(classHierarchy);
 		}
+		((RhoDRDown)operator).setSubHierarchy(classHierarchy);
+		((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+		((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		((RhoDRDown)operator).init();		
 		
 		// create an algorithm object and pass all configuration
 		// options to it
@@ -570,14 +516,6 @@ public class OCEL extends AbstractCELA {
 
 	public void setReplaceSearchTree(boolean replaceSearchTree) {
 		this.replaceSearchTree = replaceSearchTree;
-	}
-
-	public String getHeuristicStr() {
-		return heuristicStr;
-	}
-
-	public void setHeuristicStr(String heuristic) {
-		this.heuristicStr = heuristic;
 	}
 
 	public Set<NamedClass> getAllowedConcepts() {

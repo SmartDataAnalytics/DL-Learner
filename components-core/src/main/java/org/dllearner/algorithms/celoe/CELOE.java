@@ -276,12 +276,12 @@ public class CELOE extends AbstractCELA {
 		if(operator == null) {
 			operator = new RhoDRDown();
 			((RhoDRDown)operator).setStartClass(startClass);
-			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
 			((RhoDRDown)operator).setReasoner(reasoner);
-			((RhoDRDown)operator).init();
-		} else {
-			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
 		}
+		((RhoDRDown)operator).setSubHierarchy(classHierarchy);
+		((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+		((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		((RhoDRDown)operator).init();		
 //		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
@@ -1002,6 +1002,14 @@ public class CELOE extends AbstractCELA {
 
 	public void setUseMinimizer(boolean useMinimizer) {
 		this.useMinimizer = useMinimizer;
+	}
+
+	public OEHeuristicRuntime getHeuristic() {
+		return heuristic;
+	}
+
+	public void setHeuristic(OEHeuristicRuntime heuristic) {
+		this.heuristic = heuristic;
 	}	
 	
 }
