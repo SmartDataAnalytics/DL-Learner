@@ -215,4 +215,20 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
     public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
         this.expansionPenaltyFactor = expansionPenaltyFactor;
     }
+
+	public int getNrOfNegativeExamples() {
+		return nrOfNegativeExamples;
+	}
+
+	public void setNrOfNegativeExamples(int nrOfNegativeExamples) {
+		this.nrOfNegativeExamples = nrOfNegativeExamples;
+	}
+
+	public int getNrOfExamples() {
+		return nrOfExamples;
+	}
+
+	public void setNrOfExamples(int nrOfExamples) {
+		this.nrOfExamples = nrOfExamples;
+	}
 }
