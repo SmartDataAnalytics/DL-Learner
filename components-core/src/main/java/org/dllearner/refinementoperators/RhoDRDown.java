@@ -353,7 +353,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		valueFrequency = null;
 		dataValueFrequency = null;
 		
-		System.out.println("freqDataValues: " + frequentDataValues);
+//		System.out.println("freqDataValues: " + frequentDataValues);
 		
 		// compute splits for double datatype properties
 		for(DatatypeProperty dp : reasoner.getDoubleDatatypeProperties()) {
