@@ -354,38 +354,17 @@ public class OCEL extends AbstractCELA {
 		
 		// create a refinement operator and pass all configuration
 		// variables to it
-//		RhoDRDown 
 		if(operator == null) {
 			// we use a default operator and inject the class hierarchy for now
 			operator = new RhoDRDown();
 			((RhoDRDown)operator).setReasoner(reasoner);
-			
-//		operator = new RhoDRDown(
-//				reasoner,
-//				classHierarchy,
-////				configurator,
-//					applyAllFilter,
-//					applyExistsFilter,
-////					useAllConstructor,
-//					true,
-////					useExistsConstructor,
-//					true,
-//					useHasValueConstructor,
-//					valueFrequencyThreshold,
-//					useCardinalityRestrictions,
-//					useNegation,
-//					useBooleanDatatypes,
-//					useDoubleDatatypes,
-//					startClass,
-//					cardinalityLimit, 
-//					useStringDatatypes, 
-//					instanceBasedDisjoints
-//			);		
+			((RhoDRDown)operator).init();
 		}
+		// TODO: find a better solution as this is quite difficult to debug
 		((RhoDRDown)operator).setSubHierarchy(classHierarchy);
 		((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
 		((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-		((RhoDRDown)operator).init();		
+				
 		
 		// create an algorithm object and pass all configuration
 		// options to it

@@ -344,5 +344,9 @@ public class AnnComponentManager {
 	 */
 	public static double getVersion(Component component){
 		return getVersion(component.getClass());
+	}
+
+	public static boolean addComponentClassName(String e) {
+		return componentClassNames.add(e);
 	}	
 }
