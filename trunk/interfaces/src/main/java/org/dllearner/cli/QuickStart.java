@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A tool to quickly start a learning example. It detects all conf files in the
@@ -173,7 +174,7 @@ public class QuickStart {
 		// System.out.println(f.isDirectory()+f.getAbsolutePath());
 	}
 
-	public static void getAllConfs(File f, String path, HashMap<String, ArrayList<String>> confs) {
+	public static void getAllConfs(File f, String path, Map<String, ArrayList<String>> confs) {
 		path = path + File.separator;
 		// System.out.println(path);
 		String[] act = f.list();

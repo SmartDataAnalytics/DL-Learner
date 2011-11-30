@@ -41,6 +41,7 @@ import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.confparser3.ParseException;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.learningproblems.PosNegLP;
@@ -64,6 +65,9 @@ public class CLI {
 	private ApplicationContext context;
 	private IConfiguration configuration;
 	private File confFile;
+	
+	private LearningAlgorithm algorithm;
+	private KnowledgeSource knowledgeSource;
 	
 	// some CLI options
 	private boolean writeSpringConfiguration = false;
@@ -119,7 +123,8 @@ public class CLI {
 			AbstractCELA la = context.getBean(AbstractCELA.class);
 			new CrossValidation(la,lp,rs,nrOfFolds,false);
 		} else {
-	    	LearningAlgorithm algorithm = context.getBean(LearningAlgorithm.class);
+			knowledgeSource = context.getBean(KnowledgeSource.class);
+	    	algorithm = context.getBean(LearningAlgorithm.class);
 	        algorithm.start();
 		}
 
@@ -220,6 +225,14 @@ public class CLI {
 
 	public void setNrOfFolds(int nrOfFolds) {
 		this.nrOfFolds = nrOfFolds;
+	}
+	
+	public LearningAlgorithm getLearningAlgorithm() {
+		return algorithm;
+	}
+	
+	public KnowledgeSource getKnowledgeSource() {
+		return knowledgeSource;
 	}
 
 }

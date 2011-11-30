@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
@@ -72,7 +74,7 @@ public class ExampleTests {
 		// if true, then examples are executed in random order (avoids the problem
 		// that the same examples are tested first on several runs); otherwise
 		// it runs the examples in alphabetical order
-		boolean randomize = true;
+		boolean randomize = false;
 		
 		// GPs can be excluded temporarily (because those tests are very time-consuming)
 		boolean testGP = false;
@@ -90,7 +92,7 @@ public class ExampleTests {
 		logger.setLevel(Level.WARN);
 
 		// map containing a list of conf files for each path
-		HashMap<String, ArrayList<String>> confFiles = new HashMap<String, ArrayList<String>>();
+		Map<String, ArrayList<String>> confFiles = new TreeMap<String, ArrayList<String>>();
 		String exampleDir = ".." + File.separator + "examples";
 		File f = new File(exampleDir);
 		QuickStart.getAllConfs(f, exampleDir, confFiles);
