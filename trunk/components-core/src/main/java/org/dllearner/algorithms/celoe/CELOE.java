@@ -30,8 +30,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.sound.midi.SysexMessage;
-
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
@@ -39,18 +37,12 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.DoubleConfigOption;
-import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.ClassLearningProblem;
@@ -94,6 +86,7 @@ public class CELOE extends AbstractCELA {
 	
 	private RefinementOperator operator;
 	private DescriptionMinimizer minimizer;
+	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
 	private boolean useMinimizer = true;
 	
 	// all nodes in the search tree (used for selecting most promising node)
@@ -102,6 +95,7 @@ public class CELOE extends AbstractCELA {
 	// root of search tree
 	private OENode startNode;
 	// the class with which we start the refinement process
+	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
 	private Description startClass;
 	
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)
@@ -111,6 +105,7 @@ public class CELOE extends AbstractCELA {
 	
 	// if true, then each solution is evaluated exactly instead of approximately
 	// private boolean exactBestDescriptionEvaluation = false;
+	@ConfigOption(name = "singleSuggestionMode", defaultValue="false", description="Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.")
 	private boolean singleSuggestionMode;
 	private Description bestDescription;
 	private double bestAccuracy = Double.MIN_VALUE;
@@ -156,27 +151,37 @@ public class CELOE extends AbstractCELA {
 	Set<NamedClass> allowedConcepts = null;
 	Set<NamedClass> ignoredConcepts = null;
 
+	@ConfigOption(name = "writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
 	private boolean writeSearchTree = false;
 
+	@ConfigOption(name = "searchTreeFile", defaultValue="log/searchTree.txt", description="file to use for the search tree")
 	private String searchTreeFile = "log/searchTree.txt";
 
+	@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
+	private boolean replaceSearchTree = false;
+	
+	@ConfigOption(name = "maxNrOfResults", defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")	
 	private int maxNrOfResults = 10;
 
+	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
 
+	@ConfigOption(name = "filterDescriptionsFollowingFromKB", defaultValue="false", description="If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.")
 	private boolean filterDescriptionsFollowingFromKB = false;
 
+	@ConfigOption(name = "reuseExistingDescription", defaultValue="false", description="If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.")
 	private boolean reuseExistingDescription = false;
 
-	private boolean replaceSearchTree = false;
-
+	@ConfigOption(name = "maxClassDescriptionTests", defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 	private int maxClassDescriptionTests = 0;
 
-	@org.dllearner.core.config.ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
+	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
 	private int maxExecutionTimeInSeconds = 10;
 
+	@ConfigOption(name = "terminateOnNoiseReached", defaultValue="false", description="specifies whether to terminate when noise criterion is met")
 	private boolean terminateOnNoiseReached = false;
 	
+	@ConfigOption(name = "maxDepth", defaultValue="7", description="maximum depth of description")
 	private double maxDepth = 7;
 	
 //	public CELOEConfigurator getConfigurator() {
@@ -192,43 +197,11 @@ public class CELOE extends AbstractCELA {
 //		configurator = new CELOEConfigurator(this);
 	}
 
-	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
-		problems.add(AbstractLearningProblem.class);
-		return problems;
-	}	
-	
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(CommonConfigOptions.useAllConstructor());
-		options.add(CommonConfigOptions.useExistsConstructor());
-		options.add(CommonConfigOptions.useHasValueConstructor());
-		options.add(CommonConfigOptions.useDataHasValueConstructor());
-		options.add(CommonConfigOptions.valueFreqencyThreshold());
-		options.add(CommonConfigOptions.useCardinalityRestrictions());
-		options.add(CommonConfigOptions.cardinalityLimit());
-		// by default, we do not use negation (should be configurable in GUI)
-		options.add(CommonConfigOptions.useNegation(false));
-		options.add(CommonConfigOptions.useBooleanDatatypes());
-		options.add(CommonConfigOptions.useDoubleDatatypes());
-		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
-		options.add(CommonConfigOptions.getNoisePercentage());
-		options.add(CommonConfigOptions.getTerminateOnNoiseReached(false));
-		options.add(CommonConfigOptions.getMaxDepth(7));
-		options.add(CommonConfigOptions.maxNrOfResults(10));
-		options.add(CommonConfigOptions.maxClassDescriptionTests());
-		options.add(new BooleanConfigOption("singleSuggestionMode", "Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.", false));
-		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
-		options.add(new BooleanConfigOption("filterDescriptionsFollowingFromKB", "If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.", false));
-		options.add(new BooleanConfigOption("reuseExistingDescription", "If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.", false));
-		options.add(new BooleanConfigOption("writeSearchTree", "specifies whether to write a search tree", false));
-		options.add(new StringConfigOption("searchTreeFile","file to use for the search tree", "log/searchTree.txt"));
-		options.add(new BooleanConfigOption("replaceSearchTree","specifies whether to replace the search tree in the log file after each run or append the new search tree", false));
-		options.add(new DoubleConfigOption("expansionPenaltyFactor","heuristic penalty per syntactic construct used (lower = finds more complex expression, but might miss simple ones)", 0.1));
-		options.add(CommonConfigOptions.allowedConcepts());
-		options.add(CommonConfigOptions.ignoredConcepts());
-		return options;
-	}
+//	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
+//		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
+//		problems.add(AbstractLearningProblem.class);
+//		return problems;
+//	}
 	
 	public static String getName() {
 		return "CELOE";
