@@ -37,10 +37,14 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.gp.GP;
+import org.dllearner.cli.CLI;
 import org.dllearner.cli.QuickStart;
 import org.dllearner.cli.Start;
+import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Helper;
 import org.junit.Test;
@@ -87,7 +91,7 @@ public class ExampleTests {
 
 		// map containing a list of conf files for each path
 		HashMap<String, ArrayList<String>> confFiles = new HashMap<String, ArrayList<String>>();
-		String exampleDir = "." + File.separator + "examples";
+		String exampleDir = ".." + File.separator + "examples";
 		File f = new File(exampleDir);
 		QuickStart.getAllConfs(f, exampleDir, confFiles);
 
@@ -155,16 +159,22 @@ public class ExampleTests {
 				boolean success = false, started = false;
 				try {
 					// start example
-					Start start = new Start(new File(conf));
+					CLI start = new CLI(new File(conf));
+					start.init();
+					start.run();
 //					System.out.println("algorithm: " + start.getLearningAlgorithm());
-					boolean isSparql = start.getSources().iterator().next() instanceof SparqlKnowledgeSource;
-					if((testGP || !(start.getLearningAlgorithm() instanceof GP)) &&
+					boolean isSparql = start.getKnowledgeSource() instanceof SparqlKnowledgeSource;
+//					boolean isSparql = false;
+					LearningAlgorithm algorithm = start.getLearningAlgorithm();
+					if((testGP || !(algorithm instanceof GP)) &&
 							(sparql == 0 || (sparql == 1 &&  isSparql) || (sparql == 2 && !isSparql) ) ) {
 						started = true;
-						start.start(false);
+//						start.start(false);
 						// test is successful if a concept was learned
-						assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
-						start.getReasonerComponent().releaseKB();
+						if(algorithm instanceof AbstractCELA){
+							assert (((AbstractCELA) algorithm).getCurrentlyBestDescription() != null);
+						}
+//						start.getReasonerComponent().releaseKB();
 						success = true;						
 					} else {
 						System.out.println("Test skipped, because of GP or SPARQL settings.");
