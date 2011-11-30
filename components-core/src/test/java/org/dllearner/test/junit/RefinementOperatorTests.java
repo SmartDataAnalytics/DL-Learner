@@ -88,7 +88,8 @@ public class RefinementOperatorTests {
 //			rs.prepareSubsumptionHierarchy();
 //			rs.prepareRoleHierarchy();
 			
-			RhoDRDown op = new RhoDRDown(rc);
+			RhoDRDown op = new RhoDRDown();
+			op.setReasoner(rc);
 			Description concept = KBParser.parseConcept(uri("Compound"));
 			Set<Description> results = op.refine(concept, 4, null);
 
@@ -113,7 +114,8 @@ public class RefinementOperatorTests {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.EPC_OE);
 		baseURI = reasoner.getBaseURI();
 		
-		RhoDRDown op = new RhoDRDown(reasoner);
+		RhoDRDown op = new RhoDRDown();
+		op.setReasoner(reasoner);
 		Description concept = KBParser.parseConcept("(\"http://localhost/aris/sap_model.owl#EPC\" AND EXISTS \"http://localhost/aris/sap_model.owl#hasModelElements\".\"http://localhost/aris/sap_model.owl#Object\")");
 		Set<Description> results = op.refine(concept,10);
 
@@ -148,9 +150,8 @@ public class RefinementOperatorTests {
 		classHierarchy.thinOutSubsumptionHierarchy();
 		
 		System.out.println(" UNIT TEST INCOMPLETE AFTER FRAMEWORK CHANGE, BECAUSE CLASS HIERARCHY IS NOT PASSED TO REFINEMENT OPERATOR ");
-		RhoDRDown op = new RhoDRDown(
-				reasoner // TODO: pass class hierarchy here
-			);
+		RhoDRDown op = new RhoDRDown();
+		op.setReasoner(reasoner);
 		
 		Description concept = KBParser.parseConcept("EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND TOP)");
 		Set<Description> results = op.refine(concept,8);
@@ -192,7 +193,8 @@ public class RefinementOperatorTests {
 	@Test
 	public void rhoDRDownTest4() throws ParseException, LearningProblemUnsupportedException {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
-		RefinementOperator operator = new RhoDRDown(rs);
+		RefinementOperator operator = new RhoDRDown();
+		((RhoDRDown)operator).setReasoner(rs);
 		Description concept = KBParser.parseConcept("(car AND EXISTS hasOwner.person)");
 //		Description concept = Thing.instance;
 		Set<Description> refinements = operator.refine(concept, 6);
@@ -204,7 +206,8 @@ public class RefinementOperatorTests {
 	@Test
 	public void rhoDRDownTest5() throws ParseException, LearningProblemUnsupportedException {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SWORE);
-		RefinementOperator operator = new RhoDRDown(rs);
+		RefinementOperator operator = new RhoDRDown();
+		((RhoDRDown)operator).setReasoner(rs);		
 //		Description concept = KBParser.parseConcept("((NOT \"http://ns.softwiki.de/req/Requirement\") OR (ALL \"http://ns.softwiki.de/req/isCreatedBy\".(NOT \"http://ns.softwiki.de/req/Creditor\")))");
 		Description concept = KBParser.parseConcept("(NOT \"http://ns.softwiki.de/req/Requirement\" OR ALL \"http://ns.softwiki.de/req/isCreatedBy\".NOT \"http://ns.softwiki.de/req/Creditor\")");
 		System.out.println(concept);
@@ -217,7 +220,8 @@ public class RefinementOperatorTests {
 	@Test
 	public void invertedOperatorTest() throws ParseException {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
-		RhoDRDown rho = new RhoDRDown(rs);
+		RhoDRDown rho = new RhoDRDown();
+		rho.setReasoner(rs);	
 		rho.setDropDisjuncts(true);
 		RefinementOperator operator = new OperatorInverter(rho);
 		Description concept = KBParser.parseConcept("(limo AND EXISTS hasOwner.man)");
@@ -234,7 +238,8 @@ public class RefinementOperatorTests {
 	public void rhoDownTestPellet() {
 		Logger.getRootLogger().setLevel(Level.TRACE);
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.FATHER);
-		RhoDRDown rho = new RhoDRDown(rs);
+		RhoDRDown rho = new RhoDRDown();
+		rho.setReasoner(rs);
 		NamedClass nc = new NamedClass("http://example.com/father#male");
 		Set<Description> refinements = rho.refine(nc, 5);
 		for(Description refinement : refinements) {

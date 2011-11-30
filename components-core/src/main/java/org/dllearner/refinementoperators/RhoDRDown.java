@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -224,47 +225,52 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABDisjoint = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 	
+	private boolean isInitialised = false;
+	
 	public RhoDRDown() {
 		
 	}
 	
-	public RhoDRDown(AbstractReasonerComponent reasoningService) {
-//		this(reasoningService, reasoningService.getClassHierarchy(), null, true, true, true, true, true, 3, true, true, true, true, null);
-		this.reasoner = reasoningService;
-		this.subHierarchy = reasoner.getClassHierarchy();
-		init();
-	}
+//	public RhoDRDown(AbstractReasonerComponent reasoningService) {
+////		this(reasoningService, reasoningService.getClassHierarchy(), null, true, true, true, true, true, 3, true, true, true, true, null);
+//		this.reasoner = reasoningService;
+//		this.subHierarchy = reasoner.getClassHierarchy();
+//		init();
+//	}
 		
 	// TODO constructor which takes a RhoDRDownConfigurator object;
 	// this should be an interface implemented e.g. by ExampleBasedROLComponentConfigurator;
 	// the goal is to use the configurator system while still being flexible enough to
 	// use one refinement operator in several learning algorithms
-	public RhoDRDown(AbstractReasonerComponent reasoningService, ClassHierarchy subHierarchy, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
-			boolean useExistsConstructor, boolean useHasValueConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass,
-			int cardinalityLimit, boolean useStringDatatypes, boolean instanceBasedDisjoints) {
-		this.reasoner = reasoningService;
-		this.subHierarchy = subHierarchy;
-		this.applyAllFilter = applyAllFilter;
-		this.applyExistsFilter = applyExistsFilter;
-		this.useAllConstructor = useAllConstructor;
-		this.useExistsConstructor = useExistsConstructor;
-		this.useHasValueConstructor = useHasValueConstructor;
-		this.frequencyThreshold = valueFrequencyThreshold;
-		this.useCardinalityRestrictions = useCardinalityRestrictions;
-		this.cardinalityLimit = cardinalityLimit;
-		this.useNegation = useNegation;
-		this.useBooleanDatatypes = useBooleanDatatypes;
-		this.useDoubleDatatypes = useDoubleDatatypes;
-		this.useStringDatatypes = useStringDatatypes;
-		this.instanceBasedDisjoints = instanceBasedDisjoints;
-		if(startClass != null) {
-			this.startClass = startClass;
-		}
-		init();
-	}
+//	public RhoDRDown(AbstractReasonerComponent reasoningService, ClassHierarchy subHierarchy, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
+//			boolean useExistsConstructor, boolean useHasValueConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass,
+//			int cardinalityLimit, boolean useStringDatatypes, boolean instanceBasedDisjoints) {
+//		this.reasoner = reasoningService;
+//		this.subHierarchy = subHierarchy;
+//		this.applyAllFilter = applyAllFilter;
+//		this.applyExistsFilter = applyExistsFilter;
+//		this.useAllConstructor = useAllConstructor;
+//		this.useExistsConstructor = useExistsConstructor;
+//		this.useHasValueConstructor = useHasValueConstructor;
+//		this.frequencyThreshold = valueFrequencyThreshold;
+//		this.useCardinalityRestrictions = useCardinalityRestrictions;
+//		this.cardinalityLimit = cardinalityLimit;
+//		this.useNegation = useNegation;
+//		this.useBooleanDatatypes = useBooleanDatatypes;
+//		this.useDoubleDatatypes = useDoubleDatatypes;
+//		this.useStringDatatypes = useStringDatatypes;
+//		this.instanceBasedDisjoints = instanceBasedDisjoints;
+//		if(startClass != null) {
+//			this.startClass = startClass;
+//		}
+//		init();
+//	}
 		
 //		subHierarchy = rs.getClassHierarchy();
-	public void init() {	
+	public void init() throws ComponentInitException {	
+		if(isInitialised) {
+			throw new ComponentInitException("Refinement operator cannot be nitialised twice.");
+		}
 //		System.out.println("subHierarchy: " + subHierarchy);
 //		System.out.println("object properties: " + );
 		
@@ -347,6 +353,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		valueFrequency = null;
 		dataValueFrequency = null;
 		
+		System.out.println("freqDataValues: " + frequentDataValues);
+		
 		// compute splits for double datatype properties
 		for(DatatypeProperty dp : reasoner.getDoubleDatatypeProperties()) {
 			computeSplits(dp);
@@ -368,6 +376,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 			}
 			maxNrOfFillers.put(op, maxFillers);
 		}
+		
+			isInitialised = true;
+		
 		}
 		
 		/*
