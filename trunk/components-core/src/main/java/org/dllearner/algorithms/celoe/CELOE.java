@@ -244,7 +244,7 @@ public class CELOE extends AbstractCELA {
 		}
 		
 //		singleSuggestionMode = configurator.getSingleSuggestionMode();
-		
+		/*
 		// create refinement operator
 		if(operator == null) {
 			operator = new RhoDRDown();
@@ -255,6 +255,22 @@ public class CELOE extends AbstractCELA {
 		((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
 		((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
 		((RhoDRDown)operator).init();		
+		*/
+		// create a refinement operator and pass all configuration
+		// variables to it
+		if(operator == null) {
+			// we use a default operator and inject the class hierarchy for now
+			operator = new RhoDRDown();
+			((RhoDRDown)operator).setStartClass(startClass);
+			((RhoDRDown)operator).setReasoner(reasoner);
+			((RhoDRDown)operator).init();
+		}
+		// TODO: find a better solution as this is quite difficult to debug
+		((RhoDRDown)operator).setSubHierarchy(classHierarchy);
+		((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+		((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		
+		
 //		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
