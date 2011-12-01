@@ -42,6 +42,8 @@ public interface ManchesterSyntaxParserConstants {
   int STRING = 19;
   /** RegularExpression Id. */
   int URI = 20;
+  /** RegularExpression Id. */
+  int URI_PREFIX = 21;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -69,6 +71,7 @@ public interface ManchesterSyntaxParserConstants {
     "\"<=\"",
     "<STRING>",
     "<URI>",
+    "<URI_PREFIX>",
     "\"(\"",
     "\")\"",
     "\".\"",

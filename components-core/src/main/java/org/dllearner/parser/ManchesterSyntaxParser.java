@@ -28,32 +28,32 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     default:
       jj_la1[0] = jj_gen;
       if (jj_2_1(2147483647)) {
-        jj_consume_token(21);
+        jj_consume_token(22);
         c1 = ClassExpression();
         jj_consume_token(AND);
         c2 = ClassExpression();
-        jj_consume_token(22);
+        jj_consume_token(23);
          {if (true) return new Intersection(c1,c2);}
       } else if (jj_2_2(2147483647)) {
-        jj_consume_token(21);
+        jj_consume_token(22);
         c1 = ClassExpression();
         jj_consume_token(OR);
         c2 = ClassExpression();
-        jj_consume_token(22);
+        jj_consume_token(23);
          {if (true) return new Union(c1,c2);}
       } else if (jj_2_3(2147483647)) {
-        jj_consume_token(21);
+        jj_consume_token(22);
         s = URI();
         jj_consume_token(SOME);
         c = ClassExpression();
-        jj_consume_token(22);
+        jj_consume_token(23);
          {if (true) return new ObjectSomeRestriction(new ObjectProperty(s),c);}
       } else if (jj_2_4(2147483647)) {
-        jj_consume_token(21);
+        jj_consume_token(22);
         s = URI();
         jj_consume_token(ONLY);
         c = ClassExpression();
-        jj_consume_token(22);
+        jj_consume_token(23);
          {if (true) return new ObjectAllRestriction(new ObjectProperty(s),c);}
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -66,7 +66,7 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
           jj_consume_token(GE);
           i = Integer();
           s = URI();
-          jj_consume_token(23);
+          jj_consume_token(24);
           c = ClassExpression();
          {if (true) return new ObjectMinCardinalityRestriction(i,new ObjectProperty(s),c);}
           break;
@@ -74,29 +74,30 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
           jj_consume_token(LE);
           i = Integer();
           s = URI();
-          jj_consume_token(23);
+          jj_consume_token(24);
           c = ClassExpression();
          {if (true) return new ObjectMaxCardinalityRestriction(i,new ObjectProperty(s),c);}
           break;
         default:
           jj_la1[1] = jj_gen;
           if (jj_2_5(4)) {
-            jj_consume_token(21);
-            s1 = URI();
-            jj_consume_token(24);
-            s2 = URI();
             jj_consume_token(22);
+            s1 = URI();
+            jj_consume_token(25);
+            s2 = URI();
+            jj_consume_token(23);
       {if (true) return new ObjectValueRestriction(new ObjectProperty(s1), new Individual(s2));}
           } else if (jj_2_6(4)) {
-            jj_consume_token(21);
-            s1 = URI();
-            jj_consume_token(24);
-            s2 = String();
             jj_consume_token(22);
+            s1 = URI();
+            jj_consume_token(25);
+            s2 = String();
+            jj_consume_token(23);
       {if (true) return new StringValueRestriction(new DatatypeProperty(s1), s2);}
           } else {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
             case URI:
+            case URI_PREFIX:
               s = URI();
                {if (true) return new NamedClass(s);}
               break;
@@ -140,11 +141,24 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
   final public String URI() throws ParseException {
   Token t;
   String s;
-    t = jj_consume_token(URI);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case URI_PREFIX:
+      // LOOKAHEAD("<")
+        t = jj_consume_token(URI_PREFIX);
     // cut "<" and ">"
     s = t.image;
     s = s.substring(1, s.length() - 1);
     {if (true) return s;}
+      break;
+    case URI:
+      t = jj_consume_token(URI);
+               {if (true) return t.image;}
+      break;
+    default:
+      jj_la1[3] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -190,30 +204,21 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     finally { jj_save(5, xla); }
   }
 
-  private boolean jj_3R_8() {
-    if (jj_scan_token(21)) return true;
-    if (jj_3R_2()) return true;
-    if (jj_scan_token(SOME)) return true;
-    if (jj_3R_1()) return true;
-    if (jj_scan_token(22)) return true;
-    return false;
-  }
-
   private boolean jj_3R_7() {
-    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(22)) return true;
     if (jj_3R_1()) return true;
     if (jj_scan_token(OR)) return true;
     if (jj_3R_1()) return true;
-    if (jj_scan_token(22)) return true;
+    if (jj_scan_token(23)) return true;
     return false;
   }
 
   private boolean jj_3R_6() {
-    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(22)) return true;
     if (jj_3R_1()) return true;
     if (jj_scan_token(AND)) return true;
     if (jj_3R_1()) return true;
-    if (jj_scan_token(22)) return true;
+    if (jj_scan_token(23)) return true;
     return false;
   }
 
@@ -267,8 +272,13 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     return false;
   }
 
-  private boolean jj_3R_14() {
+  private boolean jj_3R_16() {
     if (jj_scan_token(NUMBER)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_15() {
+    if (jj_scan_token(URI)) return true;
     return false;
   }
 
@@ -277,38 +287,48 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     return false;
   }
 
+  private boolean jj_3R_14() {
+    if (jj_scan_token(URI_PREFIX)) return true;
+    return false;
+  }
+
   private boolean jj_3R_2() {
-    if (jj_scan_token(URI)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_14()) {
+    jj_scanpos = xsp;
+    if (jj_3R_15()) return true;
+    }
     return false;
   }
 
   private boolean jj_3_6() {
-    if (jj_scan_token(21)) return true;
-    if (jj_3R_2()) return true;
-    if (jj_scan_token(24)) return true;
-    if (jj_3R_3()) return true;
     if (jj_scan_token(22)) return true;
+    if (jj_3R_2()) return true;
+    if (jj_scan_token(25)) return true;
+    if (jj_3R_3()) return true;
+    if (jj_scan_token(23)) return true;
     return false;
   }
 
   private boolean jj_3_4() {
-    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(22)) return true;
     if (jj_3R_2()) return true;
     if (jj_scan_token(ONLY)) return true;
     return false;
   }
 
   private boolean jj_3_5() {
-    if (jj_scan_token(21)) return true;
-    if (jj_3R_2()) return true;
-    if (jj_scan_token(24)) return true;
-    if (jj_3R_2()) return true;
     if (jj_scan_token(22)) return true;
+    if (jj_3R_2()) return true;
+    if (jj_scan_token(25)) return true;
+    if (jj_3R_2()) return true;
+    if (jj_scan_token(23)) return true;
     return false;
   }
 
   private boolean jj_3_3() {
-    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(22)) return true;
     if (jj_3R_2()) return true;
     if (jj_scan_token(SOME)) return true;
     return false;
@@ -316,15 +336,15 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
 
   private boolean jj_3R_12() {
     if (jj_scan_token(LE)) return true;
-    if (jj_3R_14()) return true;
+    if (jj_3R_16()) return true;
     if (jj_3R_2()) return true;
-    if (jj_scan_token(23)) return true;
+    if (jj_scan_token(24)) return true;
     if (jj_3R_1()) return true;
     return false;
   }
 
   private boolean jj_3_2() {
-    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(22)) return true;
     if (jj_3R_1()) return true;
     if (jj_scan_token(OR)) return true;
     return false;
@@ -332,9 +352,9 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
 
   private boolean jj_3R_11() {
     if (jj_scan_token(GE)) return true;
-    if (jj_3R_14()) return true;
+    if (jj_3R_16()) return true;
     if (jj_3R_2()) return true;
-    if (jj_scan_token(23)) return true;
+    if (jj_scan_token(24)) return true;
     if (jj_3R_1()) return true;
     return false;
   }
@@ -346,23 +366,32 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
   }
 
   private boolean jj_3_1() {
-    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(22)) return true;
     if (jj_3R_1()) return true;
     if (jj_scan_token(AND)) return true;
     return false;
   }
 
   private boolean jj_3R_9() {
-    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(22)) return true;
     if (jj_3R_2()) return true;
     if (jj_scan_token(ONLY)) return true;
     if (jj_3R_1()) return true;
-    if (jj_scan_token(22)) return true;
+    if (jj_scan_token(23)) return true;
     return false;
   }
 
   private boolean jj_3R_3() {
     if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_8() {
+    if (jj_scan_token(22)) return true;
+    if (jj_3R_2()) return true;
+    if (jj_scan_token(SOME)) return true;
+    if (jj_3R_1()) return true;
+    if (jj_scan_token(23)) return true;
     return false;
   }
 
@@ -377,13 +406,13 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[3];
+  final private int[] jj_la1 = new int[4];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xc00,0x70000,0x100000,};
+      jj_la1_0 = new int[] {0xc00,0x70000,0x300000,0x300000,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[6];
   private boolean jj_rescan = false;
@@ -400,7 +429,7 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -415,7 +444,7 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -426,7 +455,7 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -437,7 +466,7 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -447,7 +476,7 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -457,7 +486,7 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -569,12 +598,12 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[25];
+    boolean[] la1tokens = new boolean[26];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -583,7 +612,7 @@ public class ManchesterSyntaxParser implements ManchesterSyntaxParserConstants {
         }
       }
     }
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < 26; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

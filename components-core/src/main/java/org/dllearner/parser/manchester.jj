@@ -66,7 +66,10 @@ TOKEN :
   | < LE: "<=" >
   // support single quotes and double quotes
   | < STRING: "\"" (~["\"","\\","\n","\r"])* "\"" | "'" (~["\"","\\","\n","\r"])* "'">
-  | < URI: "<" (~[">","\\","\n","\r"])* ">" >
+//  | < URI: "<" (~[">","\\","\n","\r"])* ">" >
+  | < URI:  (~["<",">","\\","\n","\r"])* ":" (~["<",">","\\","\n","\r"])*  >
+  | < URI_PREFIX:  "<" (~[">","\\","\n","\r"])* ":" (~[">","\\","\n","\r"])* ">" >
+//  |  <URI: ["<"] (~[ ">","<", "\"", "{", "}", "^", "\\", "|", "`", "\u0000"-"\u0020"])* ">"? >
 }
 
 Description ClassExpression() : 
@@ -150,11 +153,13 @@ String URI() :
   String s;
 }
 {
-  t=<URI>
+  // LOOKAHEAD("<")
+  t=<URI_PREFIX> 
   {
     // cut "<" and ">"
     s = t.image;
     s = s.substring(1, s.length() - 1);
     return s;
   }
+  |  t=<URI> { return t.image; }
 }
