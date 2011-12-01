@@ -62,6 +62,7 @@ import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
 import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
@@ -71,6 +72,7 @@ import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.InverseObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
@@ -237,7 +239,9 @@ public class Enrichment {
 		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
 		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
 		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(AsymmetricObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(InverseObjectPropertyAxiomLearner.class);
 
 		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
 		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
