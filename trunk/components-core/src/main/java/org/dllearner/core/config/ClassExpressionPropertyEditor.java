@@ -71,8 +71,10 @@ public class ClassExpressionPropertyEditor implements PropertyEditor {
 	@Override
 	public void setAsText(String arg0) throws IllegalArgumentException {
 		// we assume that the start class string is given in Manchester syntax
+//		System.out.println("parser string: " + arg0);
 		try {
 			description = ManchesterSyntaxParser.parseClassExpression(arg0);
+//			System.out.println("parsed: " + description);
 		} catch (ParseException e) {
 			throw new IllegalArgumentException(e);
 		}
