@@ -579,6 +579,20 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		return cnt;
 		
 	}
+	
+	public SortedSet<ObjectProperty> getInverseObjectProperties(ObjectProperty property){
+		SortedSet<ObjectProperty> inverseObjectProperties = new TreeSet<ObjectProperty>();
+		String query = "SELECT ?p WHERE {" +
+				"{<%p> <%ax> ?p.} UNION {?p <%ax> <%p>}}".replace("%p", property.getName()).replace("%ax", OWL.inverseOf.getURI());
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			inverseObjectProperties.add(new ObjectProperty(qs.getResource("p").getURI()));
+			
+		}
+		return inverseObjectProperties;
+	}
 
 	@Override
 	public DataRange getRange(DatatypeProperty datatypeProperty) {
