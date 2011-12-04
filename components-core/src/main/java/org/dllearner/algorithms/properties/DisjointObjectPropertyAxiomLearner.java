@@ -19,7 +19,9 @@
 
 package org.dllearner.algorithms.properties;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,13 +32,16 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.DisjointObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +55,8 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
+	
+	private boolean usePropertyPopularity = true;
 	
 	public DisjointObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -126,6 +133,16 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		EvaluatedAxiom evalAxiom;
 		//first create disjoint axioms with properties which not occur and give score of 1
 		for(ObjectProperty p : completeDisjointProperties){
+			if(usePropertyPopularity){
+				int popularity = reasoner.getPropertyCount(p);
+				//skip if property is not used in kb
+				if(popularity == 0) continue;
+				double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(popularity, 0);
+				double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
+				evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(1- accuracy));
+			} else {
+				evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(1));
+			}
 			evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p),
 					new AxiomScore(1));
 			axioms.add(evalAxiom);
@@ -133,8 +150,10 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		
 		//second create disjoint axioms with other properties and score 1 - (#occurence/#all)
 		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
+			double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(all, entry.getValue());
+			double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
 			evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, entry.getKey()),
-					new AxiomScore(1 - (entry.getValue() / (double)all)));
+					new AxiomScore(1 - accuracy));
 			axioms.add(evalAxiom);
 		}
 		
@@ -142,5 +161,13 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		return axioms;
 	}
 	
-	
+	public static void main(String[] args) throws Exception{
+		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(
+				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));//.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/engineType"));
+		l.setMaxExecutionTimeInSeconds(10);
+		l.init();
+		l.start();
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
+	}
 }
