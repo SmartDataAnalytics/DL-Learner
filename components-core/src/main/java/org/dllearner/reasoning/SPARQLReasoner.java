@@ -580,6 +580,17 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		
 	}
 	
+	public int getPropertyCount(ObjectProperty property){
+		String query = String.format("SELECT COUNT(*) WHERE {" +
+				"?s <%s> ?o." +
+				"}", 
+				property.getName());
+		ResultSet rs = executeSelectQuery(query);
+		int cnt = rs.next().get(rs.getResultVars().get(0)).asLiteral().getInt();
+		return cnt;
+		
+	}
+	
 	public SortedSet<ObjectProperty> getInverseObjectProperties(ObjectProperty property){
 		SortedSet<ObjectProperty> inverseObjectProperties = new TreeSet<ObjectProperty>();
 		String query = "SELECT ?p WHERE {" +
