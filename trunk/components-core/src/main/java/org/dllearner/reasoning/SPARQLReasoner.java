@@ -571,7 +571,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	
 	public int getIndividualsCount(NamedClass nc){
 		String query = String.format("SELECT COUNT(?s) WHERE {" +
-				"?s a ?type." +
+				"?s a <%s>." +
 				"}", 
 				nc.getURI());
 		ResultSet rs = executeSelectQuery(query);
