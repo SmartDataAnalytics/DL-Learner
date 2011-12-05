@@ -21,6 +21,7 @@ package org.dllearner.test.junit;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Collections;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -119,23 +120,23 @@ public final class TestOntologies {
 			kbString += "OPRANGE(hasOwner) = person.\n";
 			kbString += "hasOwner(opel123,person123).\n";
 		} else if(ont.equals(TestOntology.FATHER)) {
-			owlFile = "examples/father.owl";
+			owlFile = "../examples/father.owl";
 		} else if(ont.equals(TestOntology.FATHER_OE)) {
-			owlFile = "examples/family/father_oe.owl";
+			owlFile = "../examples/family/father_oe.owl";
 		} else if(ont.equals(TestOntology.CARCINOGENESIS)) {
-			owlFile = "examples/carcinogenesis/carcinogenesis.owl";
+			owlFile = "../examples/carcinogenesis/carcinogenesis.owl";
 		} else if(ont.equals(TestOntology.EPC_OE)) {
-			owlFile = "examples/epc/sap_epc_oe.owl";
+			owlFile = "../examples/epc/sap_epc_oe.owl";
 		} else if(ont.equals(TestOntology.KRK_ZERO_ONE)) {
-			owlFile = "examples/krk/KRK_ZERO_ONE.owl";
+			owlFile = "../examples/krk/KRK_ZERO_ONE.owl";
 		}  else if(ont.equals(TestOntology.DBPEDIA_OWL)) {
 			owlFile = "/home/jl/promotion/ontologien/dbpedia.owl";
 		} else if(ont.equals(TestOntology.TRAINS_OWL)) {
-			owlFile = "examples/cross-benchmark/trains/trains.owl";
+			owlFile = "../examples/cross-benchmark/trains/trains.owl";
 		} else if(ont.equals(TestOntology.SWORE)) {
-			owlFile = "examples/swore/swore.rdf";
+			owlFile = "../examples/swore/swore.rdf";
 		} else if(ont.equals(TestOntology.MDM)) {
-			owlFile = "test/MDM0.73.owl";
+			owlFile = "../test/MDM0.73.owl";
 		} 
 		
 		try {	
@@ -148,17 +149,10 @@ public final class TestOntologies {
 				source = new KBFile(kb);
 			// do nothing for empty ontology
 			} else {
-				source = cm.knowledgeSource(OWLFile.class);
-				try {
-					cm.applyConfigEntry(source, "url", new File(owlFile).toURI().toURL());
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				}			
+				source = new OWLFile(owlFile);
 			}
 			
-			AbstractReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, source);
-//			ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, source);
-			source.init();
+			AbstractReasonerComponent rc = new OWLAPIReasoner(Collections.singleton(source));
 			rc.init();
 			return rc;	
 		} catch(ParseException e) {
