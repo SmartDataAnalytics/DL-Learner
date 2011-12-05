@@ -126,13 +126,13 @@ public final class TestOntologies {
 		} else if(ont.equals(TestOntology.CARCINOGENESIS)) {
 			owlFile = "../examples/carcinogenesis/carcinogenesis.owl";
 		} else if(ont.equals(TestOntology.EPC_OE)) {
-			owlFile = "../examples/epc/sap_epc_oe.owl";
+			owlFile = "../test/epc/sap_epc_oe.owl";
 		} else if(ont.equals(TestOntology.KRK_ZERO_ONE)) {
-			owlFile = "../examples/krk/KRK_ZERO_ONE.owl";
+			owlFile = "../test/krk/KRK_ZERO_ONE.owl";
 		}  else if(ont.equals(TestOntology.DBPEDIA_OWL)) {
 			owlFile = "/home/jl/promotion/ontologien/dbpedia.owl";
 		} else if(ont.equals(TestOntology.TRAINS_OWL)) {
-			owlFile = "../examples/cross-benchmark/trains/trains.owl";
+			owlFile = "../test/cross-benchmark/trains/trains.owl";
 		} else if(ont.equals(TestOntology.SWORE)) {
 			owlFile = "../examples/swore/swore.rdf";
 		} else if(ont.equals(TestOntology.MDM)) {
