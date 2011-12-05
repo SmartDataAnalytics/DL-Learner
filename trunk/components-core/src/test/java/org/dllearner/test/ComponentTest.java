@@ -21,6 +21,7 @@ package org.dllearner.test;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -32,6 +33,7 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -51,40 +53,30 @@ public class ComponentTest {
 	 */
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		
-		// get singleton instance of component manager
-		ComponentManager cm = ComponentManager.getInstance();
-		
 		// create knowledge source
-		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		String example = "examples/family/uncle.owl";
-		cm.applyConfigEntry(source, "url", new File(example).toURI().toURL());
-		source.init();
+		String example = "../examples/family/uncle.owl";
+		AbstractKnowledgeSource source = new OWLFile(example);
 		
 		// create OWL API reasoning service with standard settings
-		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(source));
 		reasoner.init();
 		
 		// create a learning problem and set positive and negative examples
-		AbstractLearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
-		Set<String> positiveExamples = new TreeSet<String>();
-		positiveExamples.add("http://localhost/foo#heinz");
-		positiveExamples.add("http://localhost/foo#alex");
-		Set<String> negativeExamples = new TreeSet<String>();
-		negativeExamples.add("http://localhost/foo#jan");
-		negativeExamples.add("http://localhost/foo#anna");
-		negativeExamples.add("http://localhost/foo#hanna");
-		cm.applyConfigEntry(lp, "positiveExamples", positiveExamples);
-		cm.applyConfigEntry(lp, "negativeExamples", negativeExamples);
+		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
+		Set<Individual> positiveExamples = new TreeSet<Individual>();
+		positiveExamples.add(new Individual("http://localhost/foo#heinz"));
+		positiveExamples.add(new Individual("http://localhost/foo#alex"));
+		Set<Individual> negativeExamples = new TreeSet<Individual>();
+		negativeExamples.add(new Individual("http://localhost/foo#jan"));
+		negativeExamples.add(new Individual("http://localhost/foo#anna"));
+		negativeExamples.add(new Individual("http://localhost/foo#hanna"));
+		lp.setPositiveExamples(positiveExamples);
+		lp.setNegativeExamples(negativeExamples);
 		lp.init();
 		
 		// create the learning algorithm
-		AbstractCELA la = null;
-		try {
-			la = cm.learningAlgorithm(OCEL.class, lp, reasoner);
-			la.init();
-		} catch (LearningProblemUnsupportedException e) {
-			e.printStackTrace();
-		}
+		AbstractCELA la = new OCEL(lp, reasoner);
+		la.init();
 	
 		// start the algorithm and print the best concept found
 		la.start();
