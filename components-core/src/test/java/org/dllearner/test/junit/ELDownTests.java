@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -296,12 +297,10 @@ public class ELDownTests {
 		logger.removeAllAppenders();
 		logger.addAppender(app);	
 		
-		ComponentManager cm = ComponentManager.getInstance();
-		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		String ont = "test/galen2.owl";
-		cm.applyConfigEntry(source, "url", new File(ont).toURI().toURL());
+		String ont = "../test/galen2.owl";
+		AbstractKnowledgeSource source = new OWLFile(ont);
 		source.init();
-		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(source));
 		reasoner.init();
 		System.out.println("Galen loaded.");
 		
@@ -333,12 +332,10 @@ public class ELDownTests {
 	@Test
 	public void asTest() throws ComponentInitException, MalformedURLException {
 		
-		ComponentManager cm = ComponentManager.getInstance();
-		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		String ont = "test/galen2.owl";
-		cm.applyConfigEntry(source, "url", new File(ont).toURI().toURL());
+		String ont = "../test/galen2.owl";
+		AbstractKnowledgeSource source = new OWLFile(ont);
 		source.init();
-		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(source));
 		reasoner.init();
 		System.out.println("Galen loaded.");
 		

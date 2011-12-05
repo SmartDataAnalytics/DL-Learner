@@ -101,7 +101,6 @@ public class HeuristicTests {
 		AbstractKnowledgeSource ks = new KBFile(kb);
 		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 		ClassLearningProblem problem = cm.learningProblem(ClassLearningProblem.class, reasoner);
-		ks.init();
 		reasoner.init();
 		
 		//// equivalent classes, no noise, no approximations ////
@@ -198,7 +197,6 @@ public class HeuristicTests {
 		AbstractKnowledgeSource ks = new KBFile(kb);
 		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 		PosNegLPStandard problem = cm.learningProblem(PosNegLPStandard.class, reasoner);
-		ks.init();
 		reasoner.init();		
 		
 		Individual[] pos1 = new Individual[] {ind[0], ind[1], ind[2], ind[3], ind[4]};
