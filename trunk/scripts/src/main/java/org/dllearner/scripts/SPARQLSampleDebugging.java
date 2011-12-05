@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
+import org.dllearner.core.owl.IrreflexiveObjectPropertyAxiom;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -44,12 +45,14 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -82,11 +85,15 @@ public class SPARQLSampleDebugging {
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
 	
 	private int sampleSize = 10;
-	private int depth = 4;
+	private int depth = 2;
 	private int nrOfChunks = 1;
-	private int maxNrOfExplanations = 60;
+	private int maxNrOfExplanations = 20;
 	
 	private Logger logger = Logger.getLogger(SPARQLSampleDebugging.class);
+	
+	private Logger functionalLogger = Logger.getLogger("functionality");
+	private Logger asymmetricLogger = Logger.getLogger("asymmetry");
+	private Logger irreflexiveLogger = Logger.getLogger("irreflexivity");
 	
 	private Connection conn;
 	private PreparedStatement ps;
@@ -429,8 +436,8 @@ public class SPARQLSampleDebugging {
 		man.addOntologyChangeListener( reasoner );
 		Set<String> resources = extractSampleResourcesChunked(sampleSize);
 		for(String resource : resources){
-			logger.info("Resource " + resource);resource = "http://dbpedia.org/resource/Leipzig";
-			module = extractSampleModule(Collections.singleton(resource));
+			logger.info("Resource " + resource);resource = "http://dbpedia.org/resource/The_Man_Who_Wouldn%27t_Die";
+			module = extractSampleModule(Collections.singleton(resource));computeExplanations(convert(module).add(convert(extractSampleModule(resource))));
 			man.addAxioms(reference, module.getABoxAxioms(true));
 			boolean isConsistent = reasoner.isConsistent();
 			logger.info("Consistent: " + isConsistent);
@@ -512,10 +519,10 @@ public class SPARQLSampleDebugging {
 				ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 				while(rs.hasNext()){
 					QuerySolution qs = rs.next();
-					logger.info("********************************************************");
-					logger.info(prop);
-					logger.info(qs.get("s") + "-->" + qs.get("o1"));
-					logger.info(qs.get("s") + "-->" + qs.get("o2"));
+					functionalLogger.info("********************************************************");
+					functionalLogger.info(prop);
+					functionalLogger.info(qs.get("s") + "-->" + qs.get("o1"));
+					functionalLogger.info(qs.get("s") + "-->" + qs.get("o2"));
 				}
 				
 			}
@@ -523,6 +530,57 @@ public class SPARQLSampleDebugging {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void checkIrreflexivityViolation(){
+		try {
+			OWLOntology ontology = loadReferenceOntology();
+			
+			Set<String> properties = new TreeSet<String>();
+			for(OWLAxiom ax : ontology.getAxioms(AxiomType.IRREFLEXIVE_OBJECT_PROPERTY)){
+				OWLObjectProperty prop = ((OWLIrreflexiveObjectPropertyAxiom)ax).getProperty().asOWLObjectProperty();
+				properties.add(prop.toStringID());
+			}
+			for(String prop : properties){
+				String query = "SELECT * WHERE {?s <%s> ?s.} LIMIT 1".replaceAll("%s", prop);
+				ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+				while(rs.hasNext()){
+					QuerySolution qs = rs.next();
+					irreflexiveLogger.info("********************************************************");
+					irreflexiveLogger.info(prop);
+					irreflexiveLogger.info(qs.get("s"));
+				}
+				
+			}
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void checkAsymmetryViolation(){
+		try {
+			OWLOntology ontology = loadReferenceOntology();
+			
+			Set<String> properties = new TreeSet<String>();
+			for(OWLAxiom ax : ontology.getAxioms(AxiomType.ASYMMETRIC_OBJECT_PROPERTY)){
+				OWLObjectProperty prop = ((OWLAsymmetricObjectPropertyAxiom)ax).getProperty().asOWLObjectProperty();
+				properties.add(prop.toStringID());
+			}
+			for(String prop : properties){
+				String query = "SELECT * WHERE {?s <%s> ?o.?o <%s> ?s.FILTER(?s != ?o)} LIMIT 1".replaceAll("%s", prop);
+				ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+				while(rs.hasNext()){
+					QuerySolution qs = rs.next();
+					asymmetricLogger.info("********************************************************");
+					asymmetricLogger.info(prop);
+					asymmetricLogger.info(qs.get("s") + "<-->" + qs.get("o"));
+				}
+				
+			}
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void removeAxiomsWithNamespace(Set<String> namespaces){
@@ -538,6 +596,9 @@ public class SPARQLSampleDebugging {
 		Logger.getRootLogger().removeAllAppenders();
 		Logger.getRootLogger().addAppender(new ConsoleAppender(new SimpleLayout()));
 		Logger.getRootLogger().addAppender(new FileAppender(new SimpleLayout(), "log/debug.log"));
+		Logger.getLogger("functionality").addAppender(new FileAppender(new SimpleLayout(), "log/functionality_violations.log"));
+		Logger.getLogger("irreflexivity").addAppender(new FileAppender(new SimpleLayout(), "log/irreflexivity_violations.log"));
+		Logger.getLogger("asymmetry").addAppender(new FileAppender(new SimpleLayout(), "log/asymmetry_violations.log"));
 		Logger.getLogger(SPARQLSampleDebugging.class).setLevel(Level.INFO);
 		java.util.logging.Logger pelletLogger = java.util.logging.Logger.getLogger("com.clarkparsia.pellet");
         pelletLogger.setLevel(java.util.logging.Level.OFF);
@@ -554,7 +615,9 @@ public class SPARQLSampleDebugging {
 		
 		SPARQLSampleDebugging debug = new SPARQLSampleDebugging(endpoint);
 		
-//		debug.checkFunctionalityViolation();
+		debug.checkFunctionalityViolation();
+		debug.checkAsymmetryViolation();
+		debug.checkIrreflexivityViolation();
 		
 		long s1 = System.currentTimeMillis();
 		debug.runOptimized(ontology);
