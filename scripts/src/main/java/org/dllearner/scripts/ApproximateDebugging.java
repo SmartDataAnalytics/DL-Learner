@@ -54,7 +54,7 @@ public class ApproximateDebugging {
 	static {PelletExplanation.setup();}
 	
 	public ApproximateDebugging(OWLOntology ontology) {
-		this.ontology = ontology;System.out.println(ontology.getLogicalAxiomCount());
+		this.ontology = ontology;
 		
 		model = convert(ontology);
 		factory = new OWLDataFactoryImpl();
@@ -72,11 +72,33 @@ public class ApproximateDebugging {
 	private Set<Set<OWLAxiom>> computeInconsistencyExplanationsByPellet(){
 		Set<Set<OWLAxiom>> explanations = new HashSet<Set<OWLAxiom>>();
 		
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		manager.removeAxioms(ontology, ontology.getAxioms(AxiomType.DISJOINT_CLASSES));
 		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		
+		try {
+			OWLOntology dummy = manager.createOntology();
+			OWLObjectProperty prop = factory.getOWLObjectProperty(IRI.create("p"));
+			OWLIndividual s = factory.getOWLNamedIndividual(IRI.create("i"));
+			OWLIndividual o1 = factory.getOWLNamedIndividual(IRI.create("o1"));
+			OWLIndividual o2 = factory.getOWLNamedIndividual(IRI.create("o2"));
+			OWLAxiom ax = factory.getOWLObjectPropertyAssertionAxiom(prop, s, o1);
+			manager.addAxiom(dummy, ax);
+			ax = factory.getOWLObjectPropertyAssertionAxiom(prop, s, o2);
+			manager.addAxiom(dummy, ax);
+			ax = factory.getOWLFunctionalObjectPropertyAxiom(prop);
+			manager.addAxiom(dummy, ax);
+			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dummy);
+			System.out.println(reasoner.isConsistent());
+			PelletExplanation expGen = new PelletExplanation(reasoner);
+			System.out.println(expGen.getInconsistencyExplanation());
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
+		
+		
+		manager.removeAxioms(ontology, ontology.getAxioms(AxiomType.DISJOINT_CLASSES));
 		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
-		reasoner.isConsistent();
+		System.out.println(reasoner.isConsistent());
 		
 		PelletExplanation expGen = new PelletExplanation(reasoner);
 		System.out.println(expGen.getInconsistencyExplanation());
@@ -243,7 +265,7 @@ public class ApproximateDebugging {
 		Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
 		ontologies.add(ontology);
 		ontologies.add(convert(model));
-		ontology = man.createOntology(IRI.create("http://merged.owl"), ontologies, true);//man.addAxioms(ontology, convert(model).getLogicalAxioms());
+		ontology = man.createOntology(IRI.create("http://merged.owl"), ontologies);//man.addAxioms(ontology, convert(model).getLogicalAxioms());
 		
 		ApproximateDebugging debug = new ApproximateDebugging(ontology);
 		debug.computeInconsistencyExplanations();
