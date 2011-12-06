@@ -93,7 +93,7 @@ public class ApproximateDebugging {
 		factory = new OWLDataFactoryImpl();
 	}
 	
-	public void computeInconsistencyExplanations(){
+	public Set<Set<OWLAxiom>> computeInconsistencyExplanations(){
 		Set<Set<OWLAxiom>> allExplanations = new HashSet<Set<OWLAxiom>>();
 		
 		Set<Set<OWLAxiom>> explanations = computeInconsistencyExplanationsByPellet();
@@ -105,16 +105,31 @@ public class ApproximateDebugging {
 		logger.info("Computed " + explanations.size() + " explanations with anti-pattern.");
 		
 		logger.info("Computed overall " + allExplanations.size() + " explanations.");
+		return allExplanations;
 	}
 	
 	private Set<Set<OWLAxiom>> computeInconsistencyExplanationsByPellet(){
 		Set<Set<OWLAxiom>> explanations = new HashSet<Set<OWLAxiom>>();
-		
+//		man.removeAxioms(ontology, ontology.getAxioms(AxiomType.DISJOINT_CLASSES));
+//		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
+//		System.out.println(reasoner.isConsistent());
+//		
+//		OWLObjectProperty prop = factory.getOWLObjectProperty(IRI.create("p"));
+//		OWLIndividual s = factory.getOWLNamedIndividual(IRI.create("i"));
+//		OWLIndividual o1 = factory.getOWLNamedIndividual(IRI.create("o1"));
+//		OWLIndividual o2 = factory.getOWLNamedIndividual(IRI.create("o2"));
+//		OWLAxiom axi = factory.getOWLObjectPropertyAssertionAxiom(prop, s, o1);
+//		man.addAxiom(ontology, axi);
+//		axi = factory.getOWLObjectPropertyAssertionAxiom(prop, s, o2);
+//		man.addAxiom(ontology, axi);
+//		axi = factory.getOWLFunctionalObjectPropertyAxiom(prop);
+//		man.addAxiom(ontology, axi);
+//		System.out.println(reasoner.isConsistent());
 		
 //		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 //		
 //		try {
-//			OWLOntology dummy = manager.createOntology();
+//			OWLOntology dummy = man.createOntology();
 //			OWLObjectProperty prop = factory.getOWLObjectProperty(IRI.create("p"));
 //			OWLIndividual s = factory.getOWLNamedIndividual(IRI.create("i"));
 //			OWLIndividual o1 = factory.getOWLNamedIndividual(IRI.create("o1"));
@@ -168,7 +183,7 @@ public class ApproximateDebugging {
 			expGen = new PelletExplanation(reasoner);
 			logger.info("Computing explanations...");
 			startTime = System.currentTimeMillis();
-			Set<Set<OWLAxiom>> temp = expGen.getUnsatisfiableExplanations(unsatClass, 50);
+			Set<Set<OWLAxiom>> temp = expGen.getUnsatisfiableExplanations(unsatClass, 10);
 			logger.info("done in " + (System.currentTimeMillis()-startTime) + "ms.");
 			logger.info("#Explanations: " + temp.size());
 			//we get all asserted instances
@@ -212,6 +227,15 @@ public class ApproximateDebugging {
 		
 		
 		return explanations;
+	}
+	
+	public Set<Set<OWLAxiom>> computeExplanationsDefault(int limit){
+		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(schema);
+		reasoner.isConsistent();
+		
+		PelletExplanation expGen = new PelletExplanation(reasoner);
+		
+		return expGen.getInconsistencyExplanations(limit);
 	}
 	
 	private Set<OWLObjectProperty> getUnsatisfiableObjectProperties(PelletReasoner reasoner){
@@ -449,20 +473,23 @@ public class ApproximateDebugging {
 		Logger.getRootLogger().addAppender(new ConsoleAppender(new SimpleLayout()));
 		
 		PelletOptions.USE_UNIQUE_NAME_ASSUMPTION = true;
-		String resource = "http://dbpedia.org/resource/Leipzig";
+		String resource = "http://dbpedia.org/resource/Brad_Pitt";
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
 				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
 		
 		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, new ExtractionDBCache("cache"));
 //		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(endpoint, new ExtractionDBCache("cache"));
-		Model model = cbdGen.getConciseBoundedDescription(resource, 3);
+		Model model = cbdGen.getConciseBoundedDescription(resource, 4);
 		OWLOntology data = convert(model);
 		
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("/home/lorenz/arbeit/dbpedia_0.75_no_datapropaxioms.owl"));
 		
 		ApproximateDebugging debug = new ApproximateDebugging(schema, data);
-		debug.computeInconsistencyExplanations();
+		Set<Set<OWLAxiom>> explanations1 = debug.computeInconsistencyExplanations();
+		Set<Set<OWLAxiom>> explanations2 = debug.computeExplanationsDefault(500);
+		System.out.println(explanations1.size());
+		System.out.println(explanations2.size());
 	}
 
 }
