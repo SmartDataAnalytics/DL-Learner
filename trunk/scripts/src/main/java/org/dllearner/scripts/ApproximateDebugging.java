@@ -484,11 +484,11 @@ public class ApproximateDebugging {
 		
 		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, new ExtractionDBCache("cache"));
 //		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(endpoint, new ExtractionDBCache("cache"));
-		Model model = cbdGen.getConciseBoundedDescription(resource, 4);
+		Model model = cbdGen.getConciseBoundedDescription(resource, 3);
 		OWLOntology data = convert(model);
 		
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("/home/lorenz/arbeit/dbpedia_0.75_no_datapropaxioms.owl"));
+		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("src/main/resources/dbpedia_0.75_no_datapropaxioms.owl"));
 		
 		ApproximateDebugging debug = new ApproximateDebugging(schema, data);
 		Set<Set<OWLAxiom>> explanations1 = debug.computeInconsistencyExplanations();
