@@ -14,6 +14,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -232,10 +233,13 @@ public class ApproximateDebugging {
 	public Set<Set<OWLAxiom>> computeExplanationsDefault(int limit){
 		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(schema);
 		reasoner.isConsistent();
-		
+		logger.info("Computing inconsistency explanations with only Pellet...");
+		long startTime = System.currentTimeMillis();
 		PelletExplanation expGen = new PelletExplanation(reasoner);
-		
-		return expGen.getInconsistencyExplanations(limit);
+		Set<Set<OWLAxiom>> explanations = expGen.getInconsistencyExplanations(limit);
+		logger.info("done in " + (System.currentTimeMillis()-startTime) + "ms.");
+		logger.info("#Explanations: " + explanations.size());
+		return explanations;
 	}
 	
 	private Set<OWLObjectProperty> getUnsatisfiableObjectProperties(PelletReasoner reasoner){
@@ -471,6 +475,7 @@ public class ApproximateDebugging {
 		Logger.getRootLogger().setLevel(Level.INFO);
 		Logger.getRootLogger().removeAllAppenders();
 		Logger.getRootLogger().addAppender(new ConsoleAppender(new SimpleLayout()));
+		Logger.getRootLogger().addAppender(new FileAppender(new SimpleLayout(), "log/approx_debug.log"));
 		
 		PelletOptions.USE_UNIQUE_NAME_ASSUMPTION = true;
 		String resource = "http://dbpedia.org/resource/Brad_Pitt";
