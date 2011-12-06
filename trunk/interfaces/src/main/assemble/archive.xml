@@ -41,6 +41,13 @@
 				<include>javadoc.html</include>
 			</includes>
 		</fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>log4j.properties</include>
+            </includes>
+            <outputDirectory/>
+        </fileSet>
 		<fileSet>
 			<directory>${project.build.directory}/site</directory>
 			<outputDirectory>docs</outputDirectory>
