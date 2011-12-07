@@ -176,21 +176,21 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://factforge.net/sparql")));//.getEndpointDBpediaLiveAKSW()));
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql")));//.getEndpointDBpediaLiveAKSW()));
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
-//		reasoner.prepareSubsumptionHierarchy();
+		reasoner.prepareSubsumptionHierarchy();
 		
 		
 		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/industry"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/officialLanguage"));
 		l.setMaxExecutionTimeInSeconds(10);
-		l.setReturnOnlyNewAxioms(true);
+//		l.setReturnOnlyNewAxioms(true);
 		l.init();
 		l.start();
 		
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(10, 0.75));
 	}
 	
 }

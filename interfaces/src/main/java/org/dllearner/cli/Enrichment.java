@@ -128,6 +128,7 @@ import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.io.SystemOutDocumentTarget;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -223,6 +224,7 @@ public class Enrichment {
 	AbstractReasonerComponent rcCached;
 	
 	private Set<OWLAxiom> learnedOWLAxioms;
+	private Set<EvaluatedAxiom> learnedEvaluatedAxioms;
 	
 	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, int nrOfAxiomsToLearn, boolean useInference, boolean verbose) {
 		this.se = se;
@@ -263,6 +265,7 @@ public class Enrichment {
 		algorithmRuns = new LinkedList<AlgorithmRun>();
 		
 		learnedOWLAxioms = new HashSet<OWLAxiom>();
+		learnedEvaluatedAxioms = new HashSet<EvaluatedAxiom>();
 	}
 	
 	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
@@ -444,7 +447,7 @@ public class Enrichment {
         	learnedAxioms.add(new EvaluatedAxiom(axiom, score)); 
         }
         System.out.println(prettyPrint(learnedAxioms));	
-        
+        learnedEvaluatedAxioms.addAll(learnedAxioms);
         algorithmRuns.add(new AlgorithmRun(CELOE.class, learnedAxioms, ConfigHelper.getConfigOptionValues(la)));	
 		return learnedAxioms;
 	}
@@ -485,7 +488,7 @@ public class Enrichment {
 		List<EvaluatedAxiom> learnedAxioms = learner
 				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn, threshold);
 		System.out.println(prettyPrint(learnedAxioms));
-		
+		learnedEvaluatedAxioms.addAll(learnedAxioms);
 		for(EvaluatedAxiom evAx : learnedAxioms){
 			learnedOWLAxioms.add(OWLAPIAxiomConvertVisitor.convertAxiom(evAx.getAxiom()));
 		}
@@ -665,11 +668,36 @@ public class Enrichment {
 		return model;
 	}	
 	
-	private OWLOntology getGeneratedOntology(){
+	public OWLOntology getGeneratedOntology(){
 		OWLOntology ontology = null;
 		try {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			ontology = man.createOntology(learnedOWLAxioms);
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ontology;
+	}
+	
+	public OWLOntology getGeneratedOntology(boolean withConfidenceAsAnnotations){
+		OWLOntology ontology = null;
+		try {
+			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			OWLDataFactory factory = man.getOWLDataFactory();
+			if(withConfidenceAsAnnotations){
+				OWLAnnotationProperty confAnnoProp = factory.getOWLAnnotationProperty(IRI.create(EnrichmentVocabulary.NS + "confidence"));
+				Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+				for(EvaluatedAxiom evAx : learnedEvaluatedAxioms){
+					OWLAxiom ax = OWLAPIAxiomConvertVisitor.convertAxiom(evAx.getAxiom());
+					ax = ax.getAnnotatedAxiom(Collections.singleton(
+							factory.getOWLAnnotation(confAnnoProp, factory.getOWLLiteral(evAx.getScore().getAccuracy()))));
+					axioms.add(ax);
+				}
+				ontology = man.createOntology(axioms);
+			} else {
+				ontology = man.createOntology(learnedOWLAxioms);
+			}
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -748,6 +776,8 @@ public class Enrichment {
 				"Specifies whether to use inference. If yes, the schema will be loaded into a reasoner and used for computing the scores.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
 		parser.acceptsAll(asList("s", "serialize"), "Specify a file where the ontology with all axioms can be written.")
 		.withRequiredArg().ofType(File.class);
+		parser.acceptsAll(asList("a", "annotations"),
+				"Specifies whether to save scores as annotations.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
 		// parse options and display a message for the user in case of problems
 		OptionSet options = null;
 		try {
@@ -885,7 +915,7 @@ public class Enrichment {
 			if(options.has("s")){
 				File file = (File)options.valueOf("s");
 				try {
-					OWLOntology ontology = e.getGeneratedOntology();
+					OWLOntology ontology = e.getGeneratedOntology(options.has("a"));
 					OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
 					OWLManager.createOWLOntologyManager().saveOntology(ontology, new RDFXMLOntologyFormat(), os);
 				} catch (OWLOntologyStorageException e1) {

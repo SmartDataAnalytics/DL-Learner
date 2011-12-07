@@ -123,7 +123,7 @@ public class CLI {
 			AbstractCELA la = context.getBean(AbstractCELA.class);
 			new CrossValidation(la,lp,rs,nrOfFolds,false);
 		} else {
-			knowledgeSource = context.getBean(KnowledgeSource.class);
+			knowledgeSource = context.getBeansOfType(KnowledgeSource.class).entrySet().iterator().next().getValue();
 	    	algorithm = context.getBean(LearningAlgorithm.class);
 	        algorithm.start();
 		}

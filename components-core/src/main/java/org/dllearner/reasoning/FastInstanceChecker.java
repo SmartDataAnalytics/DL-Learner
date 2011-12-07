@@ -514,7 +514,11 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		// policy: returned sets are clones, i.e. can be modified
 		// (of course we only have to clone the leafs of a class description tree)
 		if (description instanceof NamedClass) {
-			return (TreeSet<Individual>) classInstancesPos.get((NamedClass) description).clone();
+			if(classInstancesPos.containsKey((NamedClass) description)){
+				return (TreeSet<Individual>) classInstancesPos.get((NamedClass) description).clone();
+			} else {
+				return new TreeSet<Individual>();
+			}
 		} else if (description instanceof Negation) {
 			if(description.getChild(0) instanceof NamedClass) {
 				return (TreeSet<Individual>) classInstancesNeg.get((NamedClass) description.getChild(0)).clone();
