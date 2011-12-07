@@ -16,6 +16,8 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
+import com.clarkparsia.modularity.IncrementalClassifier;
+
 public class GreedyCohaerencyExtractor {
 	
 	public GreedyCohaerencyExtractor() {
@@ -23,6 +25,9 @@ public class GreedyCohaerencyExtractor {
 	}
 	
 	public OWLOntology getCoharentOntology(OWLOntology ontology) throws OWLOntologyCreationException{
+		IncrementalClassifier reasoner = new IncrementalClassifier(ontology);
+		reasoner.classify();
+		
 		BidiMap<AxiomType<? extends OWLAxiom>, Integer> axiomType2CountMap = getAxiomTypeCount(ontology);
 		
 		Map<AxiomType<? extends OWLAxiom>, List<OWLAxiom>> axiomType2AxiomsMap = new HashMap<AxiomType<? extends OWLAxiom>, List<OWLAxiom>>();
@@ -33,12 +38,22 @@ public class GreedyCohaerencyExtractor {
 		int lcm = lcm(new ArrayList<Integer>(axiomType2CountMap.values()));
 		
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		man.addOntologyChangeListener(reasoner);
 		OWLOntology cohaerentOntology = man.createOntology();
 		
+		boolean isCohaerent = true;
 		for(int i = 0; i < lcm; i++){
-			for(Entry<AxiomType<? extends OWLAxiom>, Integer> entry : axiomType2CountMap.entrySet()){
-				if((i % entry.getValue()) == 0){
-					man.addAxiom(cohaerentOntology, axiomType2AxiomsMap.get(entry.getKey()).remove(0));
+			if(isCohaerent){
+				for(Entry<AxiomType<? extends OWLAxiom>, Integer> entry : axiomType2CountMap.entrySet()){
+					if((i % entry.getValue()) == 0){
+						OWLAxiom ax = axiomType2AxiomsMap.get(entry.getKey()).remove(0);
+						man.addAxiom(cohaerentOntology, ax);
+						isCohaerent = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().isEmpty();
+						if(!isCohaerent){
+							man.removeAxiom(cohaerentOntology, ax);
+							break;
+						}
+					}
 				}
 			}
 		}
