@@ -21,55 +21,12 @@ public class mySQLDictionary {
 		conn = DriverManager.getConnection("jdbc:sqlite::memory:");
 		createIndexPropertys();
 		createIndexResource();
+		createWordnetHelp();
 		
 		//optional!!
 		//createIndexWikipedia();
 	
 	}
-
-private String createSimpleHashKey(String string){
-	string = string.replace("!","");
-	string = string.replace(":","");
-	string = string.replace("/","");
-	string = string.replace("\\","");
-	string = string.replace("?","");
-	string = string.replace(":","");
-
-	string = string.replace("a","1");
-	string = string.replace("b","2");
-	string = string.replace("c","3");
-	string = string.replace("d","4");
-	string = string.replace("e","5");
-	string = string.replace("f","6");
-	string = string.replace("g","7");
-	string = string.replace("h","8");
-	string = string.replace("i","9");
-	string = string.replace("j","10");
-	string = string.replace("k","11");
-	string = string.replace("l","12");
-	string = string.replace("m","13");
-	string = string.replace("n","14");
-	string = string.replace("o","15");
-	string = string.replace("p","16");
-	string = string.replace("q","17");
-	string = string.replace("r","18");
-	string = string.replace("s","19");
-	string = string.replace("t","20");
-	string = string.replace("u","21");
-	string = string.replace("v","22");
-	string = string.replace("w","23");
-	string = string.replace("x","24");
-	string = string.replace("y","25");
-	string = string.replace("z","26");
-	string = string.replace("ä","0");
-	string = string.replace("ö","0");
-	string = string.replace("ü","0");
-	string = string.replace("?","0");
-	string = string.replace(" ","0");
-	return string;
-
-	
-}
 
 	public String getResourceURI(String string) throws SQLException{
 		  Statement stat = conn.createStatement();
@@ -115,6 +72,80 @@ private String createSimpleHashKey(String string){
 		  
 	  }
 	
+	public String getWordnetHelp(String string) throws SQLException{
+		  Statement stat = conn.createStatement();
+		  ResultSet rs;
+		try {
+			rs = stat.executeQuery("select singular from wordnet where plural='"+string.toLowerCase()+"';");
+			return rs.getString("singular");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			return null;
+		}
+	
+		  
+	  }
+	
+	private void createWordnetHelp() throws SQLException{		/*System.out.println("Start SQL test");
+		Class.forName( "org.sqlite.JDBC" );
+		conn = DriverManager.getConnection("jdbc:sqlite::memory:");*/
+		System.out.println("start generating Wordnet Help-Function");
+	    Statement stat = conn.createStatement();
+	    stat.executeUpdate("drop table if exists wordnet;");
+	    stat.executeUpdate("create table wordnet (plural, singular);");
+	    PreparedStatement prep = conn.prepareStatement("insert into wordnet values (?, ?);");
+	    BufferedReader in=null;
+	   // conn.setAutoCommit(false);
+	    int zaehler=0;
+		try {
+		      in = new BufferedReader(
+		                          new InputStreamReader(
+		                          new FileInputStream( "/home/swalter/workspace/noun.exc" ) ) );
+		      String s;
+			while( null != (s = in.readLine()) ) {
+		        String[] tmp_array =s.split(" ");
+		        if(tmp_array.length>=2){
+		        	prep.setString(1, tmp_array[0]);
+		    	    prep.setString(2, tmp_array[1]);
+		    	    String temp="";
+		    	    if(tmp_array.length>2){
+		    	    	for(int i =1;i<tmp_array.length;i++){
+		    	    		temp=temp+tmp_array[i]+" ";
+		    	    	}
+		    	    	prep.setString(2, temp);
+		    	    }
+		    	    prep.addBatch();
+		    	    zaehler=zaehler+1;
+		    	    //if(zaehler%10000==0) System.out.println(zaehler);
+		    	    if(zaehler%10000==0){
+		    	    	conn.setAutoCommit(false);
+		    		    prep.executeBatch();
+		    		    conn.setAutoCommit(false);
+		    		    System.out.println("done");
+		    	    }
+
+		        }
+		      }
+		    } catch( FileNotFoundException ex ) {
+		    } catch( Exception ex ) {
+		      System.out.println( ex );
+		    } finally {
+		      if( in != null )
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+	 
+	    conn.setAutoCommit(false);
+	    prep.executeBatch();
+	    conn.setAutoCommit(true);
+	    System.out.println("Done");
+	    
+	  }
 	
 	  private void createIndexWikipedia() throws ClassNotFoundException, SQLException{
 			/*System.out.println("Start SQL test");
