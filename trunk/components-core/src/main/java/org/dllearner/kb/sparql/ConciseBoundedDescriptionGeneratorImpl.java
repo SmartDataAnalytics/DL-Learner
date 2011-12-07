@@ -80,15 +80,19 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		StringBuilder sb = new StringBuilder();
 		sb.append("CONSTRUCT {\n");
 		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
+		sb.append("?p0 a ?type0.\n");
 		for(int i = 1; i < depth; i++){
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
+			sb.append("?p").append(i).append(" ").append("a").append(" ").append("?type").append(i).append(".\n");
 		}
 		sb.append("}\n");
 		sb.append("WHERE {\n");
 		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
+		sb.append("?p0 a ?type0.\n");
 		for(int i = 1; i < depth; i++){
 			sb.append("OPTIONAL{\n");
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
+			sb.append("?p").append(i).append(" ").append("a").append(" ").append("?type").append(i).append(".\n");
 		}
 		for(int i = 1; i < depth; i++){
 			sb.append("}");
@@ -96,7 +100,6 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		sb.append("}\n");
 		sb.append("LIMIT ").append(limit).append("\n");
 		sb.append("OFFSET ").append(offset);
-		
 		return sb.toString();
 	}
 	

@@ -177,7 +177,7 @@ public class QuickStart {
 	public static void getAllConfs(File f, String path, Map<String, ArrayList<String>> confs) {
 		path = path + File.separator;
 		// System.out.println(path);
-		String[] act = f.list();
+		String[] act = f.list();System.out.println(f);
 		for (int i = 0; i < act.length; i++) {
 			// System.out.println(act[i]);
 

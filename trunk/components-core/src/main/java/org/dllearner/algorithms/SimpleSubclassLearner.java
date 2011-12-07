@@ -226,7 +226,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		l.setReasoner(reasoner);
 		
 		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 10);
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/AdministrativeRegion"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Olympics"));
 		l.init();
 		l.start();
 		

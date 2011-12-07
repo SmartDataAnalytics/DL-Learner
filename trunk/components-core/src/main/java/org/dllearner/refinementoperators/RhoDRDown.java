@@ -351,7 +351,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 		// we do not need the temporary set anymore and let the
 		// garbage collector take care of it
 		valueFrequency = null;
-		dataValueFrequency = null;
+		dataValueFrequency.clear();// = null;
 		
 //		System.out.println("freqDataValues: " + frequentDataValues);
 		

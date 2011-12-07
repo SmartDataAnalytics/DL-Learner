@@ -19,6 +19,8 @@
 
 package org.dllearner.algorithms.properties;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
@@ -101,10 +103,14 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
-	public static void main(String[] args) {
-		IrreflexiveObjectPropertyAxiomLearner l = new IrreflexiveObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/thumbnail"));
+	public static void main(String[] args) throws Exception {
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql")));
+		
+		IrreflexiveObjectPropertyAxiomLearner l = new IrreflexiveObjectPropertyAxiomLearner(ks);
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/author"));
 		l.start();
+		
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(10, 0.75));
 	}
 	
 }

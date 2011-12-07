@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.aksw.commons.jena.CollectionResultSet;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
@@ -190,6 +191,13 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		queryExecution.setDefaultGraphURIs(ks.getEndpoint().getDefaultGraphURIs());
 		queryExecution.setNamedGraphURIs(ks.getEndpoint().getNamedGraphURIs());
 		
+//		ResultSet resultSet = null;
+//		try {
+//			resultSet = queryExecution.execSelect();
+//		} catch (Exception e) {
+//			logger.error("Got a timeout during query execution.", e);
+//			resultSet = new CollectionResultSet(Collections.<String>emptyList(), Collections.<QuerySolution>emptyList());
+//		}
 		ResultSet resultSet = queryExecution.execSelect();
 		
 		return resultSet;
