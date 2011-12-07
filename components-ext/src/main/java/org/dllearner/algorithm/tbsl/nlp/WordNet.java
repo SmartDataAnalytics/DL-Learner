@@ -71,9 +71,9 @@ public class WordNet {
 			IndexWord iw = dict.getIndexWord(pos, s);//dict.getMorphologicalProcessor().lookupBaseForm(pos, s)
 //			IndexWord iw = dict.getMorphologicalProcessor().lookupBaseForm(pos, s);
 			if(iw != null){
-				Synset[] synsets = iw.getSenses();System.out.println(synsets[0]);
+				Synset[] synsets = iw.getSenses();
+				//System.out.println(synsets[0]);
 				PointerTarget[] pointerArr = synsets[0].getTargets();
-				System.out.println(pointerArr);
 			}
 			
 		} catch (JWNLException e) {
