@@ -99,6 +99,7 @@ public class GetRessourcePropertys {
 	    result=result.replace(" ", "");
 	    result=result.replaceFirst("<td>", "");
 	    
+	    
 	    String[] tmp_array=result.split("</td><td>");
 	    
 	    for(int i =1; i<=tmp_array.length-2;i=i+2) {
