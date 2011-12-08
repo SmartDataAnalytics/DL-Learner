@@ -223,20 +223,32 @@ public class SparqlObject {
 				 */				
 				//Iterration 1
 				if(getIterationdepth()==1&&startIterating==true){
-					
+				/*	
 					//4, because of query + three conditions for the simple case
 					if(querylist.size()==4)final_answer=simpleIteration1Case(querylist, query);
 					
 					//if we have more conditions, we need to change the way of replacing the uris got from wordnet etc
+					if(querylist.size()>4)final_answer=complexeIteration1Case(querylist, query);
+					*/
+					
+					
+					if(querylist.size()==4)final_answer=simpleLevinstheinIteration(querylist, query);
+					if(querylist.size()>4)final_answer=complexeLevinstheinIteration(querylist, query);
 					
 				}
 				/*
 				 * #################################################################################################
 				 */				
 				//Iterration 2
+				/*
+				 * Only Levensthein!!!
+				 */
 				if(getIterationdepth()==2&&startIterating==true){
-					
+					if(querylist.size()==4)final_answer=simpleWordnetIteration(querylist, query);
+					if(querylist.size()>4)final_answer=complexWordnetIteration(querylist, query);
 				}
+				
+				
 			}
 			
 			BufferedReader in = null;
@@ -292,6 +304,626 @@ public class SparqlObject {
 		    outfile.close();
 		}
 
+	 
+	 private ArrayList<String> simpleLevinstheinIteration(ArrayList<String> querylist, String query) throws SQLException,
+		JWNLException {
+	//asking server
+		 String answer;
+		 ArrayList<String> final_answer=new ArrayList<String>();
+		String resource="";
+		String property_to_compare_with="";
+		String sideOfProperty="LEFT";
+
+		
+		int tmpcounter=0;
+		for(String s : querylist){
+			//we dont need the first one, because thats the query itself
+			tmpcounter=tmpcounter+1;
+			if(tmpcounter>=1){
+				if(s.contains("LEFT")){
+					sideOfProperty="LEFT";
+					resource=s.replace("LEFT","");
+				}
+				if(s.contains("RIGHT")){
+					sideOfProperty="RIGHT";
+					resource=s.replace("RIGHT","");
+				}
+				if(s.contains("PROPERTY")){
+					property_to_compare_with=s.replace("PROPERTY","");
+				}
+				
+			}
+		}
+		System.out.println("Property to compare:: "+ property_to_compare_with);
+		System.out.println("Resource: "+ resource);
+		//contains uri AND string, every second is the string
+		 HashMap<String,String> properties = new HashMap<String, String>();
+		 GetRessourcePropertys property = new GetRessourcePropertys();
+		 Boolean goOnAfterProperty = true;
+		 try {
+			 /*
+			  * TODO: Have to check now, if we need a right Property or a left one
+			  */
+			 properties=property.getPropertys(getUriFromIndex(resource.toLowerCase(),0),sideOfProperty);
+			if (properties==null){
+				//final_answer.add("Error in getting Properties\n");
+				
+				final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+				goOnAfterProperty=false;
+			}
+			//System.out.println(properties);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			
+			final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+			goOnAfterProperty=false;
+			
+		}
+		if(goOnAfterProperty==true){
+			 //property_to_compare_with mit der Liste der propertys vergleichen, und wenn der normalisierte Wert >= LvenstheinMin ist, einbauen und neue query erzeugen.
+			 ArrayList<String> new_queries= new ArrayList<String>();
+			 for (Entry<String, String> entry : properties.entrySet()) {
+				    String key = entry.getKey();
+				    String value = entry.getValue();
+				 double tmp=Levenshtein.computeLevenshteinDistance(property_to_compare_with.toLowerCase(), key);
+				 
+				 /*
+				  * TODO: Implement Normalised levensthein
+				  */
+			     if(tmp<=3.0){
+					 //alte property uri mit neuer ersetzen:
+					 String query_tmp=query;
+					 String test = getUriFromIndex(property_to_compare_with.toLowerCase(),1);
+					 //query_tmp=query_tmp.replace(test,properties.get(i-1));
+					 query_tmp=query_tmp.replace(test,value);
+					 new_queries.add(query_tmp);
+				 }
+			 }
+
+				 
+				for(String anfrage : new_queries){
+					String answer_tmp;
+					answer_tmp=sendServerQuestionRequest(anfrage);
+					System.out.println("Antwort vom Server: "+answer_tmp);
+					final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
+				}
+			 }
+		
+	
+	return final_answer;
+}
+	 
+	 private ArrayList<String> complexeLevinstheinIteration(ArrayList<String> querylist, String query) throws SQLException,
+		JWNLException {
+		 
+		 /*
+		  * in this case we need a inner and outer loop, because the properties are different from the resource or up side down
+		  * Only for questions with two sets of conditions(s p o . s p o)
+		  */
+		 
+	//asking server
+		 String answer;
+		 ArrayList<String> final_answer=new ArrayList<String>();
+		String resourceOne="";
+		String property_to_compare_withOne="";
+		String resourceTwo="";
+		String property_to_compare_withTwo="";
+		String sideOfPropertyOne="LEFT";
+		String sideOfPropertyTwo="LEFT";
+
+		
+		int tmpcounter=0;
+		for(String s : querylist){
+			//we dont need the first one, because thats the query itself
+			tmpcounter=tmpcounter+1;
+			if(tmpcounter>=1&&tmpcounter<=4){
+				if(s.contains("LEFT")){
+					sideOfPropertyOne="LEFT";
+					resourceOne=s.replace("LEFT","");
+				}
+				if(s.contains("RIGHT")){
+					sideOfPropertyOne="RIGHT";
+					resourceOne=s.replace("RIGHT","");
+				}
+				if(s.contains("PROPERTY")){
+					property_to_compare_withOne=s.replace("PROPERTY","");
+				}
+				
+			}
+			if(tmpcounter>4){
+				if(s.contains("LEFT")){
+					sideOfPropertyOne="LEFT";
+					resourceTwo=s.replace("LEFT","");
+				}
+				if(s.contains("RIGHT")){
+					sideOfPropertyOne="RIGHT";
+					resourceTwo=s.replace("RIGHT","");
+				}
+				if(s.contains("PROPERTY")){
+					property_to_compare_withTwo=s.replace("PROPERTY","");
+				}
+				
+			}
+		}
+		 HashMap<String,String> propertiesOne = new HashMap<String, String>();
+		 HashMap<String,String> propertiesTwo = new HashMap<String, String>();
+		 GetRessourcePropertys property = new GetRessourcePropertys();
+		 Boolean goOnAfterProperty = true;
+		 try {
+			 /*
+			  * TODO: Have to check now, if we need a right Property or a left one
+			  */
+			 propertiesOne=property.getPropertys(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyOne);
+			if (propertiesOne==null){
+				//final_answer.add("Error in getting Properties\n");
+				
+				final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+				goOnAfterProperty=false;
+			}
+			//System.out.println(properties);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			
+			final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+			goOnAfterProperty=false;
+			
+		}
+		 try {
+			 /*
+			  * TODO: Have to check now, if we need a right Property or a left one
+			  */
+			 propertiesTwo=property.getPropertys(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyTwo);
+			if (propertiesOne==null){
+				//final_answer.add("Error in getting Properties\n");
+				
+				final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+				goOnAfterProperty=false;
+			}
+			//System.out.println(properties);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			
+			final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+			goOnAfterProperty=false;
+			
+		}
+		 
+		if(goOnAfterProperty==true){
+			 //property_to_compare_with mit der Liste der propertys vergleichen, und wenn der normalisierte Wert >= LvenstheinMin ist, einbauen und neue query erzeugen.
+			 ArrayList<String> new_queries= new ArrayList<String>();
+			 
+			 for (Entry<String, String> entryOne : propertiesOne.entrySet()) {
+				 
+				 String queryOne=query;
+				 String keyOne = entryOne.getKey();
+				 String valueOne = entryOne.getValue();
+				 double levnstheinDistanzeOne=Levenshtein.computeLevenshteinDistance(property_to_compare_withOne.toLowerCase(), keyOne);
+			     if(levnstheinDistanzeOne<=3.0){
+					 String test = getUriFromIndex(property_to_compare_withOne.toLowerCase(),1);
+					 queryOne=queryOne.replace(test,valueOne);
+				 }
+			     
+				 for (Entry<String, String> entryTwo : propertiesTwo.entrySet()) {
+					    String keyTwo = entryTwo.getKey();
+					    String valueTwo = entryTwo.getValue();
+					 double levnstheinDistanzeTwo=Levenshtein.computeLevenshteinDistance(property_to_compare_withTwo.toLowerCase(), keyTwo);
+					 
+					 /*
+					  * TODO: Implement Normalised levensthein
+					  */
+				     if(levnstheinDistanzeTwo<=3.0){
+						 //alte property uri mit neuer ersetzen:
+						 String queryTwo=queryOne;
+						 String test = getUriFromIndex(property_to_compare_withTwo.toLowerCase(),1);
+						 queryTwo=queryTwo.replace(test,valueTwo);
+						 new_queries.add(queryTwo);
+					 }
+				     
+				 }
+			 }
+			 
+			 
+				 
+				for(String anfrage : new_queries){
+					String answer_tmp;
+					answer_tmp=sendServerQuestionRequest(anfrage);
+					System.out.println("Antwort vom Server: "+answer_tmp);
+					final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
+				}
+			 
+		}
+	
+	return final_answer;
+}
+	 
+	 private ArrayList<String> simpleWordnetIteration(ArrayList<String> querylist, String query) throws SQLException,
+		JWNLException {
+	//asking server
+	String answer;
+	ArrayList<String> final_answer=new ArrayList<String>();
+	
+	/*
+	 * First try the original query on the server. If that doesnt work, try it with Iteration
+	 */
+	answer=sendServerQuestionRequest(query);
+
+	if(answer.contains("EmtyAnswer")){
+	
+		String resource="";
+		String property_to_compare_with="";
+		String sideOfProperty="LEFT";
+
+		
+		int tmpcounter=0;
+		for(String s : querylist){
+			//we dont need the first one, because thats the query itself
+			tmpcounter=tmpcounter+1;
+			if(tmpcounter>=1){
+				if(s.contains("LEFT")){
+					sideOfProperty="LEFT";
+					resource=s.replace("LEFT","");
+				}
+				if(s.contains("RIGHT")){
+					sideOfProperty="RIGHT";
+					resource=s.replace("RIGHT","");
+				}
+				if(s.contains("PROPERTY")){
+					property_to_compare_with=s.replace("PROPERTY","");
+				}
+				
+			}
+		}
+		System.out.println("Property to compare:: "+ property_to_compare_with);
+		System.out.println("Resource: "+ resource);
+		//contains uri AND string, every second is the string
+		 HashMap<String,String> properties = new HashMap<String, String>();
+		 GetRessourcePropertys property = new GetRessourcePropertys();
+		 Boolean goOnAfterProperty = true;
+		 try {
+			 /*
+			  * TODO: Have to check now, if we need a right Property or a left one
+			  */
+			 properties=property.getPropertys(getUriFromIndex(resource.toLowerCase(),0),sideOfProperty);
+			if (properties==null){
+				//final_answer.add("Error in getting Properties\n");
+				
+				final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+				goOnAfterProperty=false;
+			}
+			//System.out.println(properties);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			
+			final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+			goOnAfterProperty=false;
+			
+		}
+		if(goOnAfterProperty==true){
+			 //property_to_compare_with mit der Liste der propertys vergleichen, und wenn der normalisierte Wert >= LvenstheinMin ist, einbauen und neue query erzeugen.
+			 ArrayList<String> new_queries= new ArrayList<String>();
+
+			 System.out.println("Start Iterating Wordnet with "+property_to_compare_with+" and deept of "+explorationdepthwordnet);
+			 ArrayList<String> semantics=new ArrayList<String>();
+			 ArrayList<String> tmp_semantics=new ArrayList<String>();
+			 ArrayList<String> result_SemanticsMatchProperties=new ArrayList<String>();
+			 semantics.add(property_to_compare_with);
+			 
+			 //first check, if there is a singular form in the wordnet dictionary.. eg children -> child
+			 String _temp_=myindex.getWordnetHelp(property_to_compare_with);
+			 if(_temp_==null){
+				 tmp_semantics=semantics;
+			 }
+			 else{
+				 semantics.clear();
+				 semantics.add(_temp_);
+				 tmp_semantics=semantics;
+			 }
+			 Boolean goOnAfterWordnet = true;
+			 for(int i=0;i<=explorationdepthwordnet;i++){
+
+				 try {
+					tmp_semantics=getSemantics(tmp_semantics);
+					if (tmp_semantics==null){
+						goOnAfterWordnet=false;
+						final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semantics+" \n End");
+
+					}
+					else{
+					//each word only one time
+					 for(String k : tmp_semantics){
+						 if(!semantics.contains(k)) semantics.add(k);
+					 }
+					}
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+					goOnAfterWordnet=false;
+					final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semantics+" \n End");
+					
+				}
+						 
+			 }
+			
+			 if(goOnAfterWordnet==true){
+				
+				 for (Entry<String, String> entry : properties.entrySet()) {
+					    String key = entry.getKey();
+					    String value = entry.getValue();
+					    
+					for(String b : semantics){
+						if(key.contains(b.toLowerCase())){
+							if(!result_SemanticsMatchProperties.contains(key)){
+								//create new query
+							result_SemanticsMatchProperties.add(key);
+							 String query_tmp=query;
+							 String test = getUriFromIndex(property_to_compare_with.toLowerCase(),1);
+							 query_tmp=query_tmp.replace(test,value);
+							 System.out.println("New query after wordnet: "+ query_tmp);
+							 new_queries.add(query_tmp);
+							}
+						}
+					}
+				}
+				 
+				for(String bla : new_queries){
+					String answer_tmp;
+					answer_tmp=sendServerQuestionRequest(bla);
+					System.out.println("Antwort vom Server: "+answer_tmp);
+					final_answer.add("Begin:\n"+bla +"\n"+answer_tmp+" \n End");
+				}
+			 }
+		}
+	}
+	
+	return final_answer;
+}
+	 
+	 
+	 private ArrayList<String> complexWordnetIteration(ArrayList<String> querylist, String query) throws SQLException,
+		JWNLException {
+	//asking server
+	String answer;
+	ArrayList<String> final_answer=new ArrayList<String>();
+	
+	/*
+	 * First try the original query on the server. If that doesnt work, try it with Iteration
+	 */
+	answer=sendServerQuestionRequest(query);
+
+	if(answer.contains("EmtyAnswer")){
+	
+		String resourceOne="";
+		String property_to_compare_withOne="";
+		String resourceTwo="";
+		String property_to_compare_withTwo="";
+		String sideOfPropertyOne="LEFT";
+		String sideOfPropertyTwo="LEFT";
+
+		
+		int tmpcounter=0;
+		for(String s : querylist){
+			//we dont need the first one, because thats the query itself
+			tmpcounter=tmpcounter+1;
+			if(tmpcounter>=1&&tmpcounter<=4){
+				if(s.contains("LEFT")){
+					sideOfPropertyOne="LEFT";
+					resourceOne=s.replace("LEFT","");
+				}
+				if(s.contains("RIGHT")){
+					sideOfPropertyOne="RIGHT";
+					resourceOne=s.replace("RIGHT","");
+				}
+				if(s.contains("PROPERTY")){
+					property_to_compare_withOne=s.replace("PROPERTY","");
+				}
+				
+			}
+			if(tmpcounter>4){
+				if(s.contains("LEFT")){
+					sideOfPropertyOne="LEFT";
+					resourceTwo=s.replace("LEFT","");
+				}
+				if(s.contains("RIGHT")){
+					sideOfPropertyOne="RIGHT";
+					resourceTwo=s.replace("RIGHT","");
+				}
+				if(s.contains("PROPERTY")){
+					property_to_compare_withTwo=s.replace("PROPERTY","");
+				}
+				
+			}
+		}
+		System.out.println("Property to compare:: "+ property_to_compare_withOne);
+		System.out.println("Resource: "+ resourceOne);
+		//contains uri AND string, every second is the string
+		 HashMap<String,String> propertiesOne = new HashMap<String, String>();
+		 HashMap<String,String> propertiesTwo = new HashMap<String, String>();
+		 GetRessourcePropertys property = new GetRessourcePropertys();
+		 Boolean goOnAfterProperty = true;
+		 try {
+			 /*
+			  * TODO: Have to check now, if we need a right Property or a left one
+			  */
+			 propertiesOne=property.getPropertys(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyOne);
+			 propertiesTwo=property.getPropertys(getUriFromIndex(resourceTwo.toLowerCase(),0),sideOfPropertyTwo);
+			if (propertiesOne==null){
+				//final_answer.add("Error in getting Properties\n");
+				
+				final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+				goOnAfterProperty=false;
+			}
+			//System.out.println(properties);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			
+			final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+			goOnAfterProperty=false;
+			
+		}
+		if(goOnAfterProperty==true){
+			
+			/*
+			 * #################################### Semantics One#############################################
+			 */
+			 //property_to_compare_with mit der Liste der propertys vergleichen, und wenn der normalisierte Wert >= LvenstheinMin ist, einbauen und neue query erzeugen.
+			 ArrayList<String> new_queries= new ArrayList<String>();
+
+			 System.out.println("Start Iterating Wordnet with "+property_to_compare_withOne+" and deept of "+explorationdepthwordnet);
+			 ArrayList<String> semanticsOne=new ArrayList<String>();
+			 ArrayList<String> tmp_semanticsOne=new ArrayList<String>();
+			 ArrayList<String> result_SemanticsMatchPropertiesOne=new ArrayList<String>();
+			 semanticsOne.add(property_to_compare_withOne);
+			 
+			 //first check, if there is a singular form in the wordnet dictionary.. eg children -> child
+			 String _temp_One=myindex.getWordnetHelp(property_to_compare_withOne);
+			 if(_temp_One==null){
+				 tmp_semanticsOne=semanticsOne;
+			 }
+			 else{
+				 semanticsOne.clear();
+				 semanticsOne.add(_temp_One);
+				 tmp_semanticsOne=semanticsOne;
+			 }
+			 Boolean goOnAfterWordnet = true;
+			 for(int i=0;i<=explorationdepthwordnet;i++){
+
+				 try {
+					tmp_semanticsOne=getSemantics(tmp_semanticsOne);
+					if (tmp_semanticsOne==null){
+						goOnAfterWordnet=false;
+						final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsOne+" \n End");
+
+					}
+					else{
+					//each word only one time
+					 for(String k : tmp_semanticsOne){
+						 if(!semanticsOne.contains(k)) semanticsOne.add(k);
+					 }
+					}
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+					goOnAfterWordnet=false;
+					final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsOne+" \n End");
+					
+				}
+				 
+						 
+			 }
+			 /*
+				 * #################################### Semantics Two#############################################
+			*/
+
+			 System.out.println("Start Iterating Wordnet with "+property_to_compare_withOne+" and deept of "+explorationdepthwordnet);
+			 ArrayList<String> semanticsTwo=new ArrayList<String>();
+			 ArrayList<String> tmp_semanticsTwo=new ArrayList<String>();
+			 ArrayList<String> result_SemanticsMatchPropertiesTwo=new ArrayList<String>();
+			 semanticsTwo.add(property_to_compare_withTwo);
+			 
+			 //first check, if there is a singular form in the wordnet dictionary.. eg children -> child
+			 String _temp_Two=myindex.getWordnetHelp(property_to_compare_withTwo);
+			 if(_temp_Two==null){
+				 tmp_semanticsOne=semanticsTwo;
+			 }
+			 else{
+				 semanticsTwo.clear();
+				 semanticsTwo.add(_temp_Two);
+				 tmp_semanticsTwo=semanticsTwo;
+			 }
+			 
+			 for(int i=0;i<=explorationdepthwordnet;i++){
+
+				 try {
+					tmp_semanticsTwo=getSemantics(tmp_semanticsTwo);
+					if (tmp_semanticsTwo==null){
+						goOnAfterWordnet=false;
+						final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsTwo+" \n End");
+
+					}
+					else{
+					//each word only one time
+					 for(String k : tmp_semanticsTwo){
+						 if(!semanticsTwo.contains(k)) semanticsTwo.add(k);
+					 }
+					}
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+					goOnAfterWordnet=false;
+					final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsTwo+" \n End");
+					
+				}
+				 
+						 
+			 }
+			 
+			
+			 if(goOnAfterWordnet==true){
+				
+				 for (Entry<String, String> entryOne : propertiesOne.entrySet()) {
+					 String keyOne = entryOne.getKey();
+					 String valueOne = entryOne.getValue();
+					 String queryOne=query;
+					 
+					 for(String b : semanticsOne){
+							if(keyOne.contains(b.toLowerCase())){
+								if(!result_SemanticsMatchPropertiesOne.contains(keyOne)){
+									//create new query
+								result_SemanticsMatchPropertiesOne.add(keyOne);
+								 String replacementOne = getUriFromIndex(property_to_compare_withOne.toLowerCase(),1);
+								 queryOne=queryOne.replace(replacementOne,valueOne);
+								 
+								 for (Entry<String, String> entryTwo : propertiesTwo.entrySet()) {
+									    String keyTwo = entryTwo.getKey();
+									    String valueTwo = entryTwo.getValue();
+									    
+									for(String z : semanticsTwo){
+										if(keyTwo.contains(z.toLowerCase())){
+											if(!result_SemanticsMatchPropertiesTwo.contains(keyTwo)){
+												//create new query
+											result_SemanticsMatchPropertiesTwo.add(keyTwo);
+											 String queryTwo=queryOne;
+											 String replacementTwo = getUriFromIndex(property_to_compare_withTwo.toLowerCase(),1);
+											 queryTwo=queryTwo.replace(replacementTwo,valueTwo);
+											 System.out.println("New query after wordnet: "+ queryTwo);
+											 new_queries.add(queryTwo);
+											}
+										}
+									}
+								}
+								 
+								}
+							}
+						}
+					 
+					 
+					 
+				 }
+				 
+				 
+				 
+				 
+				for(String bla : new_queries){
+					String answer_tmp;
+					answer_tmp=sendServerQuestionRequest(bla);
+					System.out.println("Antwort vom Server: "+answer_tmp);
+					final_answer.add("Begin:\n"+bla +"\n"+answer_tmp+" \n End");
+				}
+			 }
+		}
+	}
+	
+	return final_answer;
+}
+	 
 	 
 	 /**
 	  * Is the function for the Case, you are in Iteration one and have only one triple of condition (s,p,o). 
@@ -463,6 +1095,13 @@ public class SparqlObject {
 		return final_answer;
 	}
 		 
+	
+	
+	
+	
+	
+	
+	
 
 	 /**
 	  * Iterates thru the conditions and returns an array, where one can see, if the Property is left or right from the resource
