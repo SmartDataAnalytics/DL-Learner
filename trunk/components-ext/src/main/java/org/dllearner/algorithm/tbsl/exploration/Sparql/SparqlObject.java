@@ -61,13 +61,13 @@ public class SparqlObject {
 
 	//Konstruktor
 	public SparqlObject() throws MalformedURLException, ClassNotFoundException, SQLException{
-		this.wordnet = new WordNet();
+		wordnet = new WordNet();
 		System.out.println("Loading SPARQL Templator");
-    	this.btemplator = new BasicTemplator();
-    	this.templator = new Templator();
+    	btemplator = new BasicTemplator();
+    	templator = new Templator();
     	System.out.println("Loading SPARQL Templator Done\n");
     	System.out.println("Start Indexing");
-    	this.myindex = new mySQLDictionary();
+    	myindex = new mySQLDictionary();
     	
     	System.out.println("Done:Indexing");
     	setExplorationdepthwordnet(1);
@@ -132,8 +132,7 @@ public class SparqlObject {
 		if(lstquery.isEmpty()){
 			saveNotParsedQuestions(question);
 		}
-			//for each querry
-		//TODO: Add function that no qery is send to the server, if querylist==null
+
 			for(ArrayList<String> querylist : lstquery){
 				
 				boolean startIterating=true;
@@ -271,7 +270,6 @@ public class SparqlObject {
 				try {
 					in.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		    }	
@@ -279,7 +277,7 @@ public class SparqlObject {
 		    String out="";
 			for(String answer : final_answer){
 				//only answered question
-			//	if(!answer.contains("Error in searching Wordnet with word") && !answer.contains("EmtyAnswer")&& !answer.contains("Error in getting Properties"))out=out+ "\n"+answer+"\n";
+				if(!answer.contains("Error in searching Wordnet with word") && !answer.contains("EmtyAnswer")&& !answer.contains("Error in getting Properties"))out=out+ "\n"+answer+"\n";
 			    
 				/*
 				//only questions with wordnet error
@@ -289,7 +287,7 @@ public class SparqlObject {
 				if(answer.contains("EmtyAnswer"))out=out+ "\n"+answer+"\n";
 */				
 				//only questions with Error in Properties
-				if(answer.contains("Error in getting Properties"))out=out+ "\n"+answer+"\n";
+			//	if(answer.contains("Error in getting Properties"))out=out+ "\n"+answer+"\n";
 
 
 
@@ -367,11 +365,13 @@ public class SparqlObject {
 				    String key = entry.getKey();
 				    String value = entry.getValue();
 				 double tmp=Levenshtein.computeLevenshteinDistance(property_to_compare_with.toLowerCase(), key);
+				 double nld=Levenshtein.nld(property_to_compare_with.toLowerCase(), key);
 				 
 				 /*
 				  * TODO: Implement Normalised levensthein
 				  */
-			     if(tmp<=3.0){
+				 //if(tmp<=3.0){
+			     if(nld>=LvenstheinMin){
 					 //alte property uri mit neuer ersetzen:
 					 String query_tmp=query;
 					 String test = getUriFromIndex(property_to_compare_with.toLowerCase(),1);
@@ -433,11 +433,11 @@ public class SparqlObject {
 			}
 			if(tmpcounter>4){
 				if(s.contains("LEFT")){
-					sideOfPropertyOne="LEFT";
+					sideOfPropertyTwo="LEFT";
 					resourceTwo=s.replace("LEFT","");
 				}
 				if(s.contains("RIGHT")){
-					sideOfPropertyOne="RIGHT";
+					sideOfPropertyTwo="RIGHT";
 					resourceTwo=s.replace("RIGHT","");
 				}
 				if(s.contains("PROPERTY")){
@@ -451,10 +451,9 @@ public class SparqlObject {
 		 GetRessourcePropertys property = new GetRessourcePropertys();
 		 Boolean goOnAfterProperty = true;
 		 try {
-			 /*
-			  * TODO: Have to check now, if we need a right Property or a left one
-			  */
+
 			 propertiesOne=property.getPropertys(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyOne);
+			 propertiesTwo=property.getPropertys(getUriFromIndex(resourceTwo.toLowerCase(),0),sideOfPropertyTwo);
 			if (propertiesOne==null){
 				//final_answer.add("Error in getting Properties\n");
 				
@@ -463,33 +462,13 @@ public class SparqlObject {
 			}
 			//System.out.println(properties);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			
 			final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
 			goOnAfterProperty=false;
 			
 		}
-		 try {
-			 /*
-			  * TODO: Have to check now, if we need a right Property or a left one
-			  */
-			 propertiesTwo=property.getPropertys(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyTwo);
-			if (propertiesOne==null){
-				//final_answer.add("Error in getting Properties\n");
-				
-				final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
-				goOnAfterProperty=false;
-			}
-			//System.out.println(properties);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-			
-			final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
-			goOnAfterProperty=false;
-			
-		}
+		 
 		 
 		if(goOnAfterProperty==true){
 			 //property_to_compare_with mit der Liste der propertys vergleichen, und wenn der normalisierte Wert >= LvenstheinMin ist, einbauen und neue query erzeugen.
@@ -500,8 +479,15 @@ public class SparqlObject {
 				 String queryOne=query;
 				 String keyOne = entryOne.getKey();
 				 String valueOne = entryOne.getValue();
-				 double levnstheinDistanzeOne=Levenshtein.computeLevenshteinDistance(property_to_compare_withOne.toLowerCase(), keyOne);
-			     if(levnstheinDistanzeOne<=3.0){
+				 //double levnstheinDistanzeOne=Levenshtein.computeLevenshteinDistance(property_to_compare_withOne.toLowerCase(), keyOne);
+			     //if(levnstheinDistanzeOne<=3.0){
+			     double levnstheinDistanzeOne=Levenshtein.nld(property_to_compare_withOne.toLowerCase(), keyOne);
+					 
+					 /*
+					  * TODO: Implement Normalised levensthein
+					  */
+					 //if(tmp<=3.0){
+				 if(levnstheinDistanzeOne>=LvenstheinMin){
 					 String test = getUriFromIndex(property_to_compare_withOne.toLowerCase(),1);
 					 queryOne=queryOne.replace(test,valueOne);
 				 }
@@ -509,12 +495,19 @@ public class SparqlObject {
 				 for (Entry<String, String> entryTwo : propertiesTwo.entrySet()) {
 					    String keyTwo = entryTwo.getKey();
 					    String valueTwo = entryTwo.getValue();
-					 double levnstheinDistanzeTwo=Levenshtein.computeLevenshteinDistance(property_to_compare_withTwo.toLowerCase(), keyTwo);
+					// double levnstheinDistanzeTwo=Levenshtein.computeLevenshteinDistance(property_to_compare_withTwo.toLowerCase(), keyTwo);
 					 
 					 /*
 					  * TODO: Implement Normalised levensthein
 					  */
-				     if(levnstheinDistanzeTwo<=3.0){
+				     //if(levnstheinDistanzeTwo<=3.0){
+					  double levnstheinDistanzeTwo=Levenshtein.nld(property_to_compare_withTwo.toLowerCase(), keyTwo);
+						 
+						 /*
+						  * TODO: Implement Normalised levensthein
+						  */
+						 //if(tmp<=3.0){
+					 if(levnstheinDistanzeTwo>=0.9){
 						 //alte property uri mit neuer ersetzen:
 						 String queryTwo=queryOne;
 						 String test = getUriFromIndex(property_to_compare_withTwo.toLowerCase(),1);
@@ -583,9 +576,6 @@ public class SparqlObject {
 		 GetRessourcePropertys property = new GetRessourcePropertys();
 		 Boolean goOnAfterProperty = true;
 		 try {
-			 /*
-			  * TODO: Have to check now, if we need a right Property or a left one
-			  */
 			 properties=property.getPropertys(getUriFromIndex(resource.toLowerCase(),0),sideOfProperty);
 			if (properties==null){
 				//final_answer.add("Error in getting Properties\n");
@@ -595,7 +585,6 @@ public class SparqlObject {
 			}
 			//System.out.println(properties);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			
 			final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
@@ -725,11 +714,11 @@ public class SparqlObject {
 			}
 			if(tmpcounter>4){
 				if(s.contains("LEFT")){
-					sideOfPropertyOne="LEFT";
+					sideOfPropertyTwo="LEFT";
 					resourceTwo=s.replace("LEFT","");
 				}
 				if(s.contains("RIGHT")){
-					sideOfPropertyOne="RIGHT";
+					sideOfPropertyTwo="RIGHT";
 					resourceTwo=s.replace("RIGHT","");
 				}
 				if(s.contains("PROPERTY")){
@@ -740,15 +729,11 @@ public class SparqlObject {
 		}
 		System.out.println("Property to compare:: "+ property_to_compare_withOne);
 		System.out.println("Resource: "+ resourceOne);
-		//contains uri AND string, every second is the string
 		 HashMap<String,String> propertiesOne = new HashMap<String, String>();
 		 HashMap<String,String> propertiesTwo = new HashMap<String, String>();
 		 GetRessourcePropertys property = new GetRessourcePropertys();
 		 Boolean goOnAfterProperty = true;
 		 try {
-			 /*
-			  * TODO: Have to check now, if we need a right Property or a left one
-			  */
 			 propertiesOne=property.getPropertys(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyOne);
 			 propertiesTwo=property.getPropertys(getUriFromIndex(resourceTwo.toLowerCase(),0),sideOfPropertyTwo);
 			if (propertiesOne==null){
@@ -774,7 +759,7 @@ public class SparqlObject {
 			 //property_to_compare_with mit der Liste der propertys vergleichen, und wenn der normalisierte Wert >= LvenstheinMin ist, einbauen und neue query erzeugen.
 			 ArrayList<String> new_queries= new ArrayList<String>();
 
-			 System.out.println("Start Iterating Wordnet with "+property_to_compare_withOne+" and deept of "+explorationdepthwordnet);
+			 //System.out.println("Start Iterating Wordnet with "+property_to_compare_withOne+" and deept of "+explorationdepthwordnet);
 			 ArrayList<String> semanticsOne=new ArrayList<String>();
 			 ArrayList<String> tmp_semanticsOne=new ArrayList<String>();
 			 ArrayList<String> result_SemanticsMatchPropertiesOne=new ArrayList<String>();
@@ -1335,12 +1320,7 @@ public class SparqlObject {
 	        	result=result.concat(str);
 	        		counter=counter+1;}
 	      } while (str != null);
-	      
-	     //TODO:if counter = 5 or less, there is an empty answer from the Server! Still to Verify!
-	     /* if(counter<=5){
-	    	  System.out.println("Empty Answer from Server");  
-	    	  return "noanswer";
-	      }*/
+
 	    } catch (MalformedURLException e) {
 	      System.out.println("Must enter a valid URL");
 	    } catch (IOException e) {
