@@ -25,31 +25,10 @@ import java.sql.Statement;
  * in Eclipse Run -> RunConfigurations -> Arguments -> VM Arguments -> -Xmx1024m
  */
 
-/*
- * 
- * 
- * for pom.xml file
- * <dependencies>
-    <dependency>
-      <groupId>org.xerial</groupId>
-      <artifactId>sqlite-jdbc</artifactId>
-      <version>3.6.16</version>
-    </dependency>
-  </dependencies>
- */
-// Sax example from http://www.bennyn.de/programmierung/java/java-xml-sax-parser.html
 
-/*
- * 
- * eins:http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query=SELECT+DISTINCT+%3Fx+%3Fl++WHERE+{%0D%0A++%3Fx+rdf%3Atype+%3Fc+.%0D%0A++%3Fx+rdfs%3Alabel+%3Fl+.%0D%0A++FILTER+%28lang%28%3Fl%29+%3D+%27en%27%29%0D%0A}&format=text%2Fhtml&debug=on&timeout=
- * zwei:http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query=SELECT+DISTINCT+%3Fc+%3Fl++WHERE+{%0D%0A++%3Fx+rdf%3Atype+%3Fc+.%0D%0A++%3Fc+rdfs%3Alabel+%3Fl+.%0D%0A++FILTER+%28lang%28%3Fl%29+%3D+%27en%27%29%0D%0A}&format=text%2Fhtml&debug=on&timeout=
- * 
- */
 public class exploration_main {
 
-	//private static HashMap<String, String> hm = new HashMap<String, String>();
-	private static String qaldEntity2="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query=SELECT+DISTINCT+%3Fc+%3Fl++WHERE+{%0D%0A++%3Fx+rdf%3Atype+%3Fc+.%0D%0A++%3Fc+rdfs%3Alabel+%3Fl+.%0D%0A++FILTER+%28lang%28%3Fl%29+%3D+%27en%27%29%0D%0A}&format=text%2Fhtml&debug=on&timeout=";
-	private static String qaldEntity1="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query=SELECT+DISTINCT+%3Fx+%3Fl++WHERE+{%0D%0A++%3Fx+rdf%3Atype+%3Fc+.%0D%0A++%3Fx+rdfs%3Alabel+%3Fl+.%0D%0A++FILTER+%28lang%28%3Fl%29+%3D+%27en%27%29%0D%0A}&format=text%2Fhtml&debug=on&timeout=";
+	
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -64,24 +43,12 @@ public class exploration_main {
 		 * Do the starting initializing stuff
 		 */
 		long startInitTime = System.currentTimeMillis();
-    	System.out.println("Start Indexing");
-    	
-    	 //For testing!
-		//hm=ParseXmlHtml.parse_xml("/home/swalter/workspace/qaldEntity2",hm);
-		//hm=ParseXmlHtml.parse_xml("/home/swalter/workspace/qaldEntity1",hm);
-		
-    	//30% Ram
-    	/*
-    	 * For real use!
-    	 */
-		/*hm=ParseXmlHtml.parse_xml((getEntity(qaldEntity2,"/tmp/qaldEntity2")),hm);
-		System.out.println("Entity2 done");
-		hm=ParseXmlHtml.parse_xml((getEntity(qaldEntity1,"/tmp/qaldEntity1")),hm);
-		System.out.println("Entity1 done");*/
-		System.out.println("Done with indexing\n");
-		System.out.println("Start generating Wordnet Dictionary");
+
+		/*
+		 * Create Sparql Object
+		 */
 		SparqlObject sparql = new SparqlObject();
-		System.out.println("Generating Wordnet Dictionary Done");
+
 		long stopInitTime = System.currentTimeMillis();
 		System.out.println("Time for Initialising "+(stopInitTime-startInitTime)+" ms");
 		
