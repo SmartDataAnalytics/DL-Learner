@@ -47,11 +47,7 @@ public class GetRessourcePropertys {
 		 */
 		
 		String vergleichorig = vergleich;
-		/*String bla123 = vergleich;
-		//to get only the name
-		bla123=bla123.replace("http://dbpedia.org/resource/Category:","");
-		bla123=bla123.replace("http://dbpedia.org/resource/","");
-		vergleich=bla123;*/
+		
 		
 		String tmp_left="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {?y ?p <"+vergleichorig+">. ?p rdfs:label ?s.}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
 		//System.out.println("property right!!! : " +tmp_right);
