@@ -186,7 +186,7 @@ public class Files {
 	 * @param content
 	 *            Content of the file.
 	 */
-	public static void appendFile(File file, String content) {
+	public static void appendToFile(File file, String content) {
 		try {
 			FileOutputStream fos = new FileOutputStream(file, true);
 			fos.write(content.getBytes());

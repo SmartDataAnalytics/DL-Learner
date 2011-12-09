@@ -237,7 +237,7 @@ public class SemanticBibleComparison {
 	public static void writeJamonLog(String filename){
 		File jamonlog = new File(filename);
 		Files.createFile(jamonlog, MonitorFactory.getReport());
-		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
+		Files.appendToFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 	}
 	
 	

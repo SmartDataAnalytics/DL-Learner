@@ -216,7 +216,7 @@ public class Start {
 		// write JaMON report in HTML file
 		File jamonlog = new File("log/jamon.html");
 		Files.createFile(jamonlog, MonitorFactory.getReport());
-		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
+		Files.appendToFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 	}
 
 	/**

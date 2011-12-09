@@ -243,7 +243,7 @@ public class Mutagenesis {
 		confHeader += "refexamples.writeSearchTree = false;\n";
 		confHeader += "refexamples.searchTreeFile = \"log/mutagenesis/searchTree.log\";\n";
 		confHeader += "\n";
-		Files.appendFile(file, confHeader);
+		Files.appendToFile(file, confHeader);
 	}
 
 	private static void generatePositiveExamples(String fileName)
@@ -439,7 +439,7 @@ public class Mutagenesis {
 			else
 				content.append("-\"" + example.toString() + "\"\n");
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}
 
 	public static void appendNegExamples(File file, List<Individual> examples) {
@@ -450,7 +450,7 @@ public class Mutagenesis {
 			else
 				content.append("+\"" + example.toString() + "\"\n");
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}
 
 	private static String getAtomClass(String element, String atomType) {
@@ -583,7 +583,7 @@ public class Mutagenesis {
 		for (String negEx : negativeExamples) {
 			content.append("-\"" + getIndividual(negEx) + "\"\n");
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}
 
 	private static BooleanDatatypePropertyAssertion getBooleanDatatypePropertyAssertion(

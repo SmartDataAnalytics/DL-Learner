@@ -283,7 +283,7 @@ public class Parkinsons {
 		confHeader += "refexamples.writeSearchTree = false;\n";
 		confHeader += "refexamples.searchTreeFile = \"log/parkinsons/searchTree.log\";\n";
 		confHeader += "\n";
-		Files.appendFile(file, confHeader);
+		Files.appendToFile(file, confHeader);
 	}
 
 	private static void generateExamples(File file) {
@@ -298,7 +298,7 @@ public class Parkinsons {
 			}
 
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}
 
 	private static String getURI(String name) {

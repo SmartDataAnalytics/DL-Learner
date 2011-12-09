@@ -361,61 +361,61 @@ int neg_count = 1;
 			String pt = rs.getString("phenotype");	
 			if ((pt.toLowerCase().contains("polymorphism"))&&( neg_count<=negEx )) { 
 				if (writeAlephFiles) {
-					Files.appendFile(badFile, "deleterious(id"+mutationID+").\n");
+					Files.appendToFile(badFile, "deleterious(id"+mutationID+").\n");
 				}
 				if (writeYYFiles) {
-					Files.appendFile(yybadFile, "http://example.com/mutation/mutation#mutation"+mutationID+"\n");
+					Files.appendToFile(yybadFile, "http://example.com/mutation/mutation#mutation"+mutationID+"\n");
 				}
 				if (cvAleph){
 					switch (kn) {					
 						case 1: 
 							aneg++;
-							Files.appendFile(split1n, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split1n, "deleterious(id"+mutationID+").\n");
 							if (aneg == neps) {aneg = 0; kn++;}
 							break;
 						case 2: 
 							aneg++;
-							Files.appendFile(split2n, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split2n, "deleterious(id"+mutationID+").\n");
 							if (aneg == neps) {aneg = 0; kn++;}
 							break;
 						case 3: 
 							aneg++;
-							Files.appendFile(split3n, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split3n, "deleterious(id"+mutationID+").\n");
 							if (aneg == neps) {aneg = 0; kn++;}
 							break;
 						case 4: 
 							aneg++;
-							Files.appendFile(split4n, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split4n, "deleterious(id"+mutationID+").\n");
 							if (aneg == neps) {aneg = 0; kn++;}
 							break;
 						case 5: 
 							aneg++;
-							Files.appendFile(split5n, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split5n, "deleterious(id"+mutationID+").\n");
 							if (aneg == neps) {aneg = 0; kn++;}
 							break;
 						case 6: 
 							aneg++;
-							Files.appendFile(split6n, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split6n, "deleterious(id"+mutationID+").\n");
 							if (aneg == neps) {aneg = 0; kn++;}
 							break;
 						case 7: 
 							aneg++;
-							Files.appendFile(split7n, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split7n, "deleterious(id"+mutationID+").\n");
 							if (aneg == neps) {aneg = 0; kn++;}
 							break;
 						case 8: 
 							aneg++;
-							Files.appendFile(split8n, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split8n, "deleterious(id"+mutationID+").\n");
 							if (aneg == neps) {aneg = 0; kn++;}
 							break;
 						case 9: 
 							aneg++;
-							Files.appendFile(split9n, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split9n, "deleterious(id"+mutationID+").\n");
 							if (aneg == neps) {aneg = 0; kn++;}
 							break;
 						case 10: 
 							aneg++;
-							Files.appendFile(split10n, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split10n, "deleterious(id"+mutationID+").\n");
 //							if (aneg == neps) {aneg = 0; kn++;}
 							break;			
 //						case 11: 						// without comment its round negExamples / 10
@@ -427,61 +427,61 @@ int neg_count = 1;
 				}
 			if ((!pt.toLowerCase().contains("polymorphism"))&& ( pos_count<=posEx)) { 
 				if (writeAlephFiles) {
-					Files.appendFile(posFile, "deleterious(id"+mutationID+").\n");
+					Files.appendToFile(posFile, "deleterious(id"+mutationID+").\n");
 				}
 				if (writeYYFiles) {
-				Files.appendFile(yyposFile, "http://example.com/mutation/mutation#mutation"+mutationID+"\n");
+				Files.appendToFile(yyposFile, "http://example.com/mutation/mutation#mutation"+mutationID+"\n");
 				}
 				if (cvAleph){
 					switch (kp) {					
 						case 1: 
 							apos++;
-							Files.appendFile(split1f, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split1f, "deleterious(id"+mutationID+").\n");
 							if (apos == peps) {apos = 0; kp++;}
 							break;
 						case 2: 
 							apos++;
-							Files.appendFile(split2f, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split2f, "deleterious(id"+mutationID+").\n");
 							if (apos == peps) {apos = 0; kp++;}
 							break;
 						case 3: 
 							apos++;
-							Files.appendFile(split3f, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split3f, "deleterious(id"+mutationID+").\n");
 							if (apos == peps) {apos = 0; kp++;}
 							break;
 						case 4: 
 							apos++;
-							Files.appendFile(split4f, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split4f, "deleterious(id"+mutationID+").\n");
 							if (apos == peps) {apos = 0; kp++;}
 							break;
 						case 5: 
 							apos++;
-							Files.appendFile(split5f, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split5f, "deleterious(id"+mutationID+").\n");
 							if (apos == peps) {apos = 0; kp++;}
 							break;
 						case 6: 
 							apos++;
-							Files.appendFile(split6f, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split6f, "deleterious(id"+mutationID+").\n");
 							if (apos == peps) {apos = 0; kp++;}
 							break;
 						case 7: 
 							apos++;
-							Files.appendFile(split7f, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split7f, "deleterious(id"+mutationID+").\n");
 							if (apos == peps) {apos = 0; kp++;}
 							break;
 						case 8: 
 							apos++;
-							Files.appendFile(split8f, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split8f, "deleterious(id"+mutationID+").\n");
 							if (apos == peps) {apos = 0; kp++;}
 							break;
 						case 9: 
 							apos++;
-							Files.appendFile(split9f, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split9f, "deleterious(id"+mutationID+").\n");
 							if (apos == peps) {apos = 0; kp++;}
 							break;
 						case 10: 
 							apos++;
-							Files.appendFile(split10f, "deleterious(id"+mutationID+").\n");
+							Files.appendToFile(split10f, "deleterious(id"+mutationID+").\n");
 //							if (apos == peps) {apos = 0; kp++;}
 							break;
 //						case 11:				// without comments its round to posExamples / 10	
@@ -712,7 +712,7 @@ count++;
 			confHeader += "\n";
 		}
 		
-		Files.appendFile(confFile, confHeader);
+		Files.appendToFile(confFile, confHeader);
 		if(!generatePosExampleClass) {
 			MonogenicDiseases.appendPosExamples(confFile, posExamples);
 			MonogenicDiseases.appendNegExamples(confFile, negExamples);
@@ -751,7 +751,7 @@ count++;
 			else
 				content.append("-\""+example.toString()+"\"\n");
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}
 	
 	public static void appendNegExamples(File file, List<Individual> examples) {
@@ -762,6 +762,6 @@ count++;
 			else
 				content.append("+\""+example.toString()+"\"\n");
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}	
 }

@@ -357,7 +357,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 
 			File jamonlog = new File("log/jamon.html");
 			Files.createFile(jamonlog, MonitorFactory.getReport());
-			Files.appendFile(jamonlog, "<xmp>\n"
+			Files.appendToFile(jamonlog, "<xmp>\n"
 					+ JamonMonitorLogger.getStringForAllSortedByLabel());
 			System.exit(0);
 		}

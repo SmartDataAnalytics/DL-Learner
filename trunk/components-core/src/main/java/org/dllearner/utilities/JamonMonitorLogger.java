@@ -168,7 +168,7 @@ public class JamonMonitorLogger {
 	public static void writeHTMLReport(String filename){
 		File jamonlog = new File(filename);
 		Files.createFile(jamonlog, MonitorFactory.getReport());
-		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
+		Files.appendToFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 	}
 	
 	

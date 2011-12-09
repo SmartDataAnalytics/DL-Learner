@@ -171,7 +171,7 @@ public class Suramin {
 		confHeader += "refexamples.writeSearchTree = false;\n";
 		confHeader += "refexamples.searchTreeFile = \"log/suramin/searchTree.log\";\n";
 		confHeader += "\n";
-		Files.appendFile(confTrainFile, confHeader);
+		Files.appendToFile(confTrainFile, confHeader);
 		appendExamples(confTrainFile, posExamples);
 		
 	}
@@ -382,7 +382,7 @@ public class Suramin {
 				content.append("-\""+getIndividual(compound.toString())+"\"\n");
 			}
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}
 
 }
