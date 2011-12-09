@@ -489,7 +489,7 @@ public class CELOE extends AbstractCELA {
 				if (replaceSearchTree)
 					Files.createFile(new File(searchTreeFile), treeString);
 				else
-					Files.appendFile(new File(searchTreeFile), treeString);
+					Files.appendToFile(new File(searchTreeFile), treeString);
 			}
 			
 //			System.out.println(loop);

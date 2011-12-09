@@ -255,7 +255,7 @@ public class Mammographic {
 		confHeader += "refexamples.writeSearchTree = false;\n";
 		confHeader += "refexamples.searchTreeFile = \"log/mammographic/searchTree.log\";\n";
 		confHeader += "\n";
-		Files.appendFile(file, confHeader);
+		Files.appendToFile(file, confHeader);
 	}
 	
 	private static void generateExamples(File file) {
@@ -269,7 +269,7 @@ public class Mammographic {
 				content.append("-\"" + getIndividual(key) + "\"\n");
 			}
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}
 	
 	private static String getURI(String name) {

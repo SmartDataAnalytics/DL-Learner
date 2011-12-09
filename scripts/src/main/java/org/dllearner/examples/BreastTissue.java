@@ -296,7 +296,7 @@ public class BreastTissue {
 		confHeader += "refexamples.writeSearchTree = false;\n";
 		confHeader += "refexamples.searchTreeFile = \"log/breasttissue/searchTree.log\";\n";
 		confHeader += "\n";
-		Files.appendFile(file, confHeader);
+		Files.appendToFile(file, confHeader);
 	}
 
 	private static void generateExamples(File file, HashMap<String, Integer> patients, int i) {
@@ -311,7 +311,7 @@ public class BreastTissue {
 			}
 
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}
 
 	private static String getURI(String name) {

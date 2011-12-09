@@ -475,7 +475,7 @@ public class ROLearner2 {
 				if (replaceSearchTree)
 					Files.createFile(searchTreeFile, treeString);
 				else
-					Files.appendFile(searchTreeFile, treeString);
+					Files.appendToFile(searchTreeFile, treeString);
 			}
 
 			// Anzahl Schleifendurchläufe

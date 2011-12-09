@@ -176,7 +176,7 @@ public class DIGHTTPConnector {
 			osw.close();
 			
 			if(protocolFile != null)
-				Files.appendFile(protocolFile, "DIG code send to reasoner:\n\n"+send+"\n\n");
+				Files.appendToFile(protocolFile, "DIG code send to reasoner:\n\n"+send+"\n\n");
 			
 			// receive answer
 			InputStream is = connection.getInputStream();
@@ -198,7 +198,7 @@ public class DIGHTTPConnector {
 //		}	
 		
 		if(protocolFile != null)
-			Files.appendFile(protocolFile, "DIG code received from reasoner:\n\n"+answer+"\n\n");
+			Files.appendToFile(protocolFile, "DIG code received from reasoner:\n\n"+answer+"\n\n");
 		
 		return answer.toString();
 	}

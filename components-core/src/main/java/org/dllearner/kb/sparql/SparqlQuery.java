@@ -245,7 +245,7 @@ public class SparqlQuery {
 				Files.createFile(f, s + "\n");
 				logDeletedOnStart = true;
 			} else {
-				Files.appendFile(f, s + "\n");
+				Files.appendToFile(f, s + "\n");
 			}
 		
 	}

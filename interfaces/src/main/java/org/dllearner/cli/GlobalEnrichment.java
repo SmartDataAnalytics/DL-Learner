@@ -22,6 +22,7 @@ package org.dllearner.cli;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,6 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.xml.ws.http.HTTPException;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -41,11 +44,14 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import com.hp.hpl.jena.sparql.resultset.ResultSetException;
 
 /**
  * Enriches all of the LOD cloud.
@@ -124,19 +130,49 @@ public class GlobalEnrichment {
 			// run enrichment
 			SparqlEndpoint se = endpoint.getValue();
 			String name = endpoint.getKey();
+			
+			File f = new File(baseDir + name + ".ttl"); 
+			File log = new File(baseDir + name + ".log");
+			
 			System.out.println("Enriching " + name + " using " + se);
 			Enrichment e = new Enrichment(se, null, threshold, nrOfAxiomsToLearn, useInference, false);
-			e.start();
-			// save results to a file
-			SparqlEndpointKS ks = new SparqlEndpointKS(se);
-			List<AlgorithmRun> runs = e.getAlgorithmRuns();
-			List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
-			for(AlgorithmRun run : runs) {
-				axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
+			
+			e.maxEntitiesPerType = 3; // hack for faster testing of endpoints
+			
+			boolean success = false;
+			// run enrichment script - we make a case distinguish to see which kind of problems we get
+			// (could be interesting for statistics later on)
+			try {
+				e.start();
+				success = true;
+			} catch(StackOverflowError error) {
+				error.printStackTrace(new PrintStream(log));
+				Files.appendToFile(log, "stack overflows could be caused by cycles in class hierarchies");
+				error.printStackTrace();
+			} catch(ResultSetException ex) {
+				ex.printStackTrace(new PrintStream(log));
+				Files.appendToFile(log, ex.getMessage());
+				ex.printStackTrace();
+			} catch(QueryExceptionHTTP ex) {
+				ex.printStackTrace(new PrintStream(log));
+				Files.appendToFile(log, ex.getMessage());
+				ex.printStackTrace();				
+			} 
+//			catch(Exception ex) {
+//				System.out.println("class of exception: " + ex.getClass());
+//			}
+			
+			// save results to a file (TODO: check if enrichment format 
+			if(success) {
+				SparqlEndpointKS ks = new SparqlEndpointKS(se);
+				List<AlgorithmRun> runs = e.getAlgorithmRuns();
+				List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
+				for(AlgorithmRun run : runs) {
+					axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
+				}
+				Model model = e.getModel(axioms);			
+				model.write(new FileOutputStream(f), "TURTLE");				
 			}
-			Model model = e.getModel(axioms);
-			File f = new File(baseDir + name + ".ttl"); 
-			model.write(new FileOutputStream(f), "TURTLE");
 		}
 	}
 

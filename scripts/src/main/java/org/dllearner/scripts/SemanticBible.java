@@ -79,8 +79,8 @@ public class SemanticBible {
 		initLogger();
 		logger.info("Start");
 		Files.clearFile(file);
-		Files.appendFile(file, "neg Ex random: "+RANDOMNEGATIVES+"\n");
-		Files.appendFile(file, "negfactor : "+NEGFACTOR+"\n");
+		Files.appendToFile(file, "neg Ex random: "+RANDOMNEGATIVES+"\n");
+		Files.appendToFile(file, "negfactor : "+NEGFACTOR+"\n");
 			
 		
 		//String fileURL = new File(ontologyFile).toURI().toString();
@@ -113,7 +113,7 @@ public class SemanticBible {
 		
 		
 		for (NamedClass target : classesToRelearn) {
-			Files.appendFile(file,"now learning: "+target+"\n");
+			Files.appendToFile(file,"now learning: "+target+"\n");
 			waitForInput();
 			
 			positiveEx.clear();
@@ -138,7 +138,7 @@ public class SemanticBible {
 			if(negativeEx.size()<0) {
 				System.out.println(target);
 				waitForInput();
-				Files.appendFile(file, "\tSKIPPED negEX "+negativeEx+"\n");
+				Files.appendToFile(file, "\tSKIPPED negEX "+negativeEx+"\n");
 				continue;
 			}
 			// reasoningService.prepareSubsumptionHierarchy();
@@ -151,7 +151,7 @@ public class SemanticBible {
 				e.printStackTrace();
 			}
 			waitForInput();
-			Files.appendFile(file, "*************\n");
+			Files.appendToFile(file, "*************\n");
 			
 		}
 

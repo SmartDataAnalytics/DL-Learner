@@ -374,7 +374,7 @@ public class CrossValidation {
 	
 	private void outputWriter(String output) {
 		if(writeToFile) {
-			Files.appendFile(outputFile, output +"\n");
+			Files.appendToFile(outputFile, output +"\n");
 			System.out.println(output);
 		} else {
 			System.out.println(output);

@@ -268,7 +268,7 @@ public class Carcinogenesis {
 		confHeader += "refexamples.writeSearchTree = false;\n";
 		confHeader += "refexamples.searchTreeFile = \"log/carcinogenesis/searchTree.log\";\n";
 		confHeader += "\n";
-		Files.appendFile(confTrainFile, confHeader);
+		Files.appendToFile(confTrainFile, confHeader);
 		
 		// generating training examples
 		File trainingFilePositives = new File(prologDirectory + "train.f");
@@ -291,7 +291,7 @@ public class Carcinogenesis {
 		appendNegExamples(confTrainFile, negPTE1Examples);
 		if(createPTE1Conf) {
 			Files.clearFile(confPTE1File);
-			Files.appendFile(confPTE1File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
+			Files.appendToFile(confPTE1File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
 			appendPosExamples(confPTE1File, posPTE1Examples);
 			appendNegExamples(confPTE1File, negPTE1Examples);
 		}
@@ -300,8 +300,8 @@ public class Carcinogenesis {
 		if(createPTE2Conf) {
 			File confPTE2File = new File("examples/carcinogenesis/testpte2.conf");
 			Files.clearFile(confPTE2File);
-			Files.appendFile(confPTE2File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
-			Files.appendFile(confPTE2File, getPTE2Examples());
+			Files.appendToFile(confPTE2File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
+			Files.appendToFile(confPTE2File, getPTE2Examples());
 		}
 
 	}
@@ -492,7 +492,7 @@ public class Carcinogenesis {
 			else
 				content.append("-\""+example.toString()+"\"\n");
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}
 	
 	public static void appendNegExamples(File file, List<Individual> examples) {
@@ -503,7 +503,7 @@ public class Carcinogenesis {
 			else
 				content.append("+\""+example.toString()+"\"\n");
 		}
-		Files.appendFile(file, content.toString());
+		Files.appendToFile(file, content.toString());
 	}	
 	
 	private static String getAtomClass(String element, String atomType) {

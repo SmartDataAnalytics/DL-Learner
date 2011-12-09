@@ -521,7 +521,7 @@ public class ROLearner extends AbstractCELA {
 				if(replaceSearchTree)
 					Files.createFile(searchTreeFile, treeString);
 				else
-					Files.appendFile(searchTreeFile, treeString);
+					Files.appendToFile(searchTreeFile, treeString);
 			}//write search tree
 			
 			// Anzahl Schleifendurchläufe

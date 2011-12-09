@@ -199,7 +199,7 @@ public class Enrichment {
 
 	// restrict tested number of entities per type (only for testing purposes);
 	// should be set to -1 in production mode
-	private int maxEntitiesPerType = -1;
+	int maxEntitiesPerType = -1;
 	
 	// number of axioms which will be learned/considered (only applies to
 	// some learners)
@@ -583,8 +583,11 @@ public class Enrichment {
 			OWLNamedIndividual knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
 			ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.SPARQLEndpoint, knowldegeBaseInd);
 			axioms.add(ax);
-			ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.defaultGraph, knowldegeBaseInd, f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getDefaultGraphURIs().iterator().next())));
-			axioms.add(ax);
+			if(!ks.getEndpoint().getDefaultGraphURIs().isEmpty()) {
+				// TODO: only writes one default graph
+				ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.defaultGraph, knowldegeBaseInd, f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getDefaultGraphURIs().iterator().next())));
+				axioms.add(ax);
+			}
 			ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.hasInput,
 					algorithmRunInd, knowldegeBaseInd);
 			axioms.add(ax);
