@@ -155,7 +155,7 @@ import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 public class Enrichment {
 
 	// data structure for holding the result of an algorithm run
-	private class AlgorithmRun {
+	protected class AlgorithmRun {
 		
 		// we only store the algorithm class and not the learning algorithm object,
 		// since otherwise we run into memory problems for full enrichment
@@ -521,7 +521,7 @@ public class Enrichment {
 	/*
 	 * Generates list of OWL axioms.
 	 */
-	private List<OWLAxiom> toRDF(List<EvaluatedAxiom> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,Object> parameters, SparqlEndpointKS ks){
+	List<OWLAxiom> toRDF(List<EvaluatedAxiom> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,Object> parameters, SparqlEndpointKS ks){
 		return toRDF(evalAxioms, algorithm, parameters, ks, null);
 	}
 	
@@ -653,7 +653,7 @@ public class Enrichment {
 //		return model;
 //	}	
 	
-	private Model getModel(List<OWLAxiom> axioms) {
+	Model getModel(List<OWLAxiom> axioms) {
 		Model model = ModelFactory.createDefaultModel();
 		try {
 			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms));
