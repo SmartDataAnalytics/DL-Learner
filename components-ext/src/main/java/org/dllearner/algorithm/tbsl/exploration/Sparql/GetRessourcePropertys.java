@@ -31,6 +31,9 @@ public class GetRessourcePropertys {
 	 * @throws IOException
 	 */
 	private HashMap<String,String> sendServerPropertyRequest(String vergleich, String side) throws IOException{
+		
+		System.out.println("Resource die gesucht wird: "+ vergleich);
+		System.out.println("Seite die gesucht wird: "+side);
 		/*
 		 * 
 		 * For the second Iteration, I can just add the sparql property here.
@@ -53,12 +56,13 @@ public class GetRessourcePropertys {
 		//System.out.println("property right!!! : " +tmp_right);
 		String tmp_right="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {<"+vergleichorig+"> ?p ?y. ?p rdfs:label ?s.}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
 
-		String verarbeitungsstring=null;
-		if(side.contains("RIGHT")) verarbeitungsstring=tmp_right;
-		if(side.contains("LEFT")) verarbeitungsstring=tmp_left;
+		String verarbeitungsurl=null;
+		if(side.contains("RIGHT")) verarbeitungsurl=tmp_right;
+		if(side.contains("LEFT")) verarbeitungsurl=tmp_left;
 		
+		System.out.println(verarbeitungsurl);
 		//just in case.....
-		if(!side.contains("LEFT") && !side.contains("RIGHT")) verarbeitungsstring=tmp_left;
+		if(!side.contains("LEFT") && !side.contains("RIGHT")) verarbeitungsurl=tmp_left;
 
 		//String verarbeitungsstring="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query=PREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+res%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F%3E%0D%0A%0D%0ASELECT+DISTINCT+%3Fp+%3Fl+WHERE++{%0D%0A+{+res%3A"+vergleich+"+%3Fp+%3Fo+.+}%0D%0A+UNION%0D%0A+{+%3Fs+%3Fp+res%3A"+vergleich+"+.+}%0D%0A+{+%3Fp+rdfs%3Alabel+%3Fl+.+}%0D%0A}%0D%0A&format=text%2Fhtml&debug=on&timeout=";
 		URL url;
@@ -69,7 +73,7 @@ public class GetRessourcePropertys {
 	    String result="";
 
 	    try {
-	      url = new URL(verarbeitungsstring);
+	      url = new URL(verarbeitungsurl);
 	      is = url.openStream();
 	      isr = new InputStreamReader(is);
 	      r = new BufferedReader(isr);
