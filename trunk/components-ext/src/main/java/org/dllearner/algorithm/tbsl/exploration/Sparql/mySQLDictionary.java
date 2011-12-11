@@ -22,6 +22,8 @@ public class mySQLDictionary {
 		createIndexPropertys();
 		createIndexResource();
 		createWordnetHelp();
+		createIndexOntology();
+		createIndexoOntologyClass();
 		
 		//optional!!
 		//createIndexWikipedia();
@@ -56,6 +58,38 @@ public class mySQLDictionary {
 	
 		  
 	  }
+	
+	public String getontologyURI(String string) throws SQLException{
+		  Statement stat = conn.createStatement();
+		  ResultSet rs;
+		try {
+			rs = stat.executeQuery("select uri from ontology where name='"+string.toLowerCase()+"';");
+			return rs.getString("uri");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			return null;
+		}
+	
+		  
+	  }
+	
+	public String getontologyClassURI(String string) throws SQLException{
+		  Statement stat = conn.createStatement();
+		  ResultSet rs;
+		try {
+			rs = stat.executeQuery("select uri from ontologyClass where name='"+string.toLowerCase()+"';");
+			return rs.getString("uri");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			return null;
+		}
+	
+		  
+	  }
+	
+	
 	
 	public String getWikipediaURI(String string) throws SQLException{
 		  Statement stat = conn.createStatement();
@@ -197,40 +231,6 @@ public class mySQLDictionary {
 		    prep.executeBatch();
 		    conn.setAutoCommit(true);
 		    System.out.println("Done");
-		    //Statement stat = conn.createStatement();
-		/*    long start = System.currentTimeMillis();
-		    // zu messender Code
-		    
-		    ResultSet rs = stat.executeQuery("select * from people where name='kornyval';");
-		    while (rs.next())
-		    {
-		      System.out.println("name = " + rs.getString("name"));
-		      System.out.println("job = " + rs.getString("occupation"));
-		    }
-		    System.out.println("Duration in ms: " + (System.currentTimeMillis() - start));
-		    
-		    start = System.currentTimeMillis();
-		    // zu messender Code
-		    
-		    rs = stat.executeQuery("select * from people where name='barack obama';");
-		    while (rs.next())
-		    {
-		      System.out.println("name = " + rs.getString("name"));
-		      System.out.println("job = " + rs.getString("occupation"));
-		    }
-		    System.out.println("Duration in ms: " + (System.currentTimeMillis() - start));
-		    
-		    rs = stat.executeQuery("select * from people where name='kornyval';");
-		    while (rs.next())
-		    {
-		      System.out.println("name = " + rs.getString("name"));
-		      System.out.println("job = " + rs.getString("occupation"));
-		    }
-		    System.out.println("Duration in ms: " + (System.currentTimeMillis() - start));
-		    
-		    
-		    rs.close();*/
-		   // conn.close();
 		  }
 private void createIndexPropertys() throws ClassNotFoundException, SQLException{
 			/*System.out.println("Start SQL test");
@@ -252,8 +252,8 @@ private void createIndexPropertys() throws ClassNotFoundException, SQLException{
 				while( null != (s = in.readLine()) ) {
 			        String[] tmp_array =s.split(":::");
 			        if(tmp_array.length>=2){
-			        	prep.setString(1, tmp_array[1]);
-			    	    prep.setString(2, tmp_array[0]);
+			        	prep.setString(1, tmp_array[0]);
+			    	    prep.setString(2, tmp_array[1]);
 			    	    prep.addBatch();
 			    	    zaehler=zaehler+1;
 			    	    //if(zaehler%10000==0) System.out.println(zaehler);
@@ -303,8 +303,8 @@ private void createIndexResource() throws ClassNotFoundException, SQLException{
 				while( null != (s = in.readLine()) ) {
 			        String[] tmp_array =s.split(":::");
 			        if(tmp_array.length>=2){
-			        	prep.setString(1, tmp_array[1]);
-			    	    prep.setString(2, tmp_array[0]);
+			        	prep.setString(1, tmp_array[0]);
+			    	    prep.setString(2, tmp_array[1]);
 			    	    prep.addBatch();
 			    	    zaehler=zaehler+1;
 			    	  //  if(zaehler%10000==0) System.out.println(zaehler);
@@ -312,7 +312,7 @@ private void createIndexResource() throws ClassNotFoundException, SQLException{
 			    	    	conn.setAutoCommit(false);
 			    		    prep.executeBatch();
 			    		    conn.setAutoCommit(false);
-			    		    System.out.println("done");
+			    		    System.out.println("done"+zaehler);
 			    	    }
 
 			        }
@@ -334,7 +334,113 @@ private void createIndexResource() throws ClassNotFoundException, SQLException{
 		    prep.executeBatch();
 		    conn.setAutoCommit(true);
 		    System.out.println("Done");
+
+			
 		    
 		  }
+private void createIndexOntology() throws ClassNotFoundException, SQLException{
+	/*System.out.println("Start SQL test");*/
+		System.out.println("start indexing Ontology");
+	    Statement stat = conn.createStatement();
+	    stat.executeUpdate("drop table if exists ontology;");
+	    stat.executeUpdate("create table ontology (name, uri);");
+	    PreparedStatement prep = conn.prepareStatement("insert into ontology values (?, ?);");
+	    BufferedReader in=null;
+	   // conn.setAutoCommit(false);
+	    int zaehler=0;
+		try {
+		      in = new BufferedReader(
+		                          new InputStreamReader(
+		                          new FileInputStream( "/home/swalter/workspace/ontology" ) ) );
+		      String s;
+			while( null != (s = in.readLine()) ) {
+		        String[] tmp_array =s.split(":::");
+		        if(tmp_array.length>=2){
+		        	prep.setString(1, tmp_array[0]);
+		    	    prep.setString(2, tmp_array[1]);
+		    	    prep.addBatch();
+		    	    zaehler=zaehler+1;
+		    	  //  if(zaehler%10000==0) System.out.println(zaehler);
+		    	    if(zaehler%1000000==0){
+		    	    	conn.setAutoCommit(false);
+		    		    prep.executeBatch();
+		    		    conn.setAutoCommit(false);
+		    		    System.out.println("done" + zaehler);
+		    	    }
+
+		        }
+		      }
+		    } catch( FileNotFoundException ex ) {
+		    } catch( Exception ex ) {
+		      System.out.println( ex );
+		    } finally {
+		      if( in != null )
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+	 
+	    conn.setAutoCommit(false);
+	    prep.executeBatch();
+	    conn.setAutoCommit(true);
+	    System.out.println("Done");
+	    
+	  }
+
+private void createIndexoOntologyClass() throws ClassNotFoundException, SQLException{
+	/*System.out.println("Start SQL test");*/
+		System.out.println("start indexing ontologyClass");
+	    Statement stat = conn.createStatement();
+	    stat.executeUpdate("drop table if exists ontologyClass;");
+	    stat.executeUpdate("create table ontologyClass (name, uri);");
+	    PreparedStatement prep = conn.prepareStatement("insert into ontologyClass values (?, ?);");
+	    BufferedReader in=null;
+	   // conn.setAutoCommit(false);
+	    int zaehler=0;
+		try {
+		      in = new BufferedReader(
+		                          new InputStreamReader(
+		                          new FileInputStream( "/home/swalter/workspace/ontologyClass" ) ) );
+		      String s;
+			while( null != (s = in.readLine()) ) {
+		        String[] tmp_array =s.split(":::");
+		        if(tmp_array.length>=2){
+		        	prep.setString(1, tmp_array[0]);
+		    	    prep.setString(2, tmp_array[1]);
+		    	    prep.addBatch();
+		    	    zaehler=zaehler+1;
+		    	  //  if(zaehler%10000==0) System.out.println(zaehler);
+		    	    if(zaehler%1000000==0){
+		    	    	conn.setAutoCommit(false);
+		    		    prep.executeBatch();
+		    		    conn.setAutoCommit(false);
+		    		    System.out.println("done" + zaehler);
+		    	    }
+
+		        }
+		      }
+		    } catch( FileNotFoundException ex ) {
+		    } catch( Exception ex ) {
+		      System.out.println( ex );
+		    } finally {
+		      if( in != null )
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+	 
+	    conn.setAutoCommit(false);
+	    prep.executeBatch();
+	    conn.setAutoCommit(true);
+	    System.out.println("Done");
+	    
+	  }
+
 
 }
