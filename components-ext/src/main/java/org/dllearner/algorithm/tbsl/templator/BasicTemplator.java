@@ -32,7 +32,7 @@ public class BasicTemplator {
 	Preprocessor pp;
 	
 	boolean ONE_SCOPE_ONLY = true;
-	boolean UNTAGGED_INPUT = true;
+	public boolean UNTAGGED_INPUT = true;
 	
 	public BasicTemplator() {
 		List<InputStream> grammarFiles = new ArrayList<InputStream>();
