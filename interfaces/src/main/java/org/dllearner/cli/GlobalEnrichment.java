@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import javax.xml.ws.http.HTTPException;
 
@@ -125,6 +126,9 @@ public class GlobalEnrichment {
 		}
 		System.out.println(endpoints.size() + " endpoints detected.");
 		
+		TreeSet<String> blacklist = new TreeSet<String>();
+		blacklist.add("rkb-explorer-crime"); // computation never completes
+		
 		// perform enrichment on endpoints
 		for(Entry<String,SparqlEndpoint> endpoint : endpoints.entrySet()) {
 			// run enrichment
@@ -138,6 +142,10 @@ public class GlobalEnrichment {
 			Enrichment e = new Enrichment(se, null, threshold, nrOfAxiomsToLearn, useInference, false);
 			
 			e.maxEntitiesPerType = 3; // hack for faster testing of endpoints
+			
+			if(blacklist.contains(name)) {
+				continue;
+			}
 			
 			boolean success = false;
 			// run enrichment script - we make a case distinguish to see which kind of problems we get
