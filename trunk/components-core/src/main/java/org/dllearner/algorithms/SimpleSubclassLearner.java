@@ -129,7 +129,6 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 			logger.info("Existing super classes: " + existingSuperClasses);
 		}
 		
-		
 		Map<Individual, SortedSet<Description>> ind2Types = new HashMap<Individual, SortedSet<Description>>();
 		int limit = 1000;
 		boolean repeat = true;
@@ -142,7 +141,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		
 		logger.info("...finished in {}ms. (Got {} rows)", (System.currentTimeMillis()-startTime), fetchedRows);
 	}
-
+	
 	public NamedClass getClassToDescribe() {
 		return classToDescribe;
 	}
@@ -152,10 +151,13 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	}
 	
 	private boolean addIndividualsWithTypes(Map<Individual, SortedSet<Description>> ind2Types, int limit, int offset){
-//		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
 		boolean notEmpty = false;
-		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}", classToDescribe.getName(), limit, offset);
-//		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
+		String query;
+		if(ks.supportsSPARQL_1_1()){
+			query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}", classToDescribe.getName(), limit, offset);
+		} else {
+			query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
+		}
 		ResultSet rs = executeSelectQuery(query);
 		Individual ind;
 		Description newType;

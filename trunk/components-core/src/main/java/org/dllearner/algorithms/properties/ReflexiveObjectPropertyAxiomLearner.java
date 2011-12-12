@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL2;
 
 @ComponentAnn(name="reflexive objectproperty axiom learner", shortName="oplrefl", version=0.1)
@@ -44,6 +46,8 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
+	
+	private boolean declaredAsReflexive;
 
 	public ReflexiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -66,19 +70,72 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		
 		//check if property is already declared as reflexive in knowledge base
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.ReflexiveProperty.getURI());
-		boolean declaredAsReflexive = executeAskQuery(query);
+		declaredAsReflexive = executeAskQuery(query);
 		if(declaredAsReflexive) {
 			existingAxioms.add(new ReflexiveObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as reflexive in knowledge base.");
 		}
 		
-		//get fraction of instances s with <s p s> 
-		query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+		if(ks.supportsSPARQL_1_1()){
+			runSPARQL1_1_Mode();
+		} else {
+			runSPARQL1_0_Mode();
+		}
+		
+		
+		
+		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	}
+	
+	private void runSPARQL1_0_Mode() {
+		Model model = ModelFactory.createDefaultModel();
+		int limit = 1000;
+		int offset = 0;
+		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		Model newModel = executeConstructQuery(query);
+		while(newModel.size() != 0){
+			model.add(newModel);
+			// get fraction of instances s with <s p s>
+			query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			ResultSet rs = executeSelectQuery(query);
+			QuerySolution qs;
+			int total = 0;
+			while (rs.hasNext()) {
+				qs = rs.next();
+				total = qs.getLiteral("total").getInt();
+			}
+			query = "SELECT (COUNT(?s) AS ?reflexive) WHERE {?s <%s> ?s.}";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			rs = executeSelectQuery(query);
+			int reflexive = 0;
+			while (rs.hasNext()) {
+				qs = rs.next();
+				reflexive = qs.getLiteral("reflexive").getInt();
+
+			}
+			if (total > 0) {
+				currentlyBestAxioms.clear();
+				currentlyBestAxioms.add(new EvaluatedAxiom(
+						new ReflexiveObjectPropertyAxiom(propertyToDescribe),
+						computeScore(total, reflexive), declaredAsReflexive));
+			}
+			
+			offset += limit;
+			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			newModel = executeConstructQuery(query);
+		}
+	}
+	
+	private void runSPARQL1_1_Mode() {
+		// get fraction of instances s with <s p s>
+		String query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		int total = 0;
-		while(rs.hasNext()){
+		while (rs.hasNext()) {
 			qs = rs.next();
 			total = qs.getLiteral("total").getInt();
 		}
@@ -86,17 +143,16 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
 		int reflexive = 0;
-		while(rs.hasNext()){
+		while (rs.hasNext()) {
 			qs = rs.next();
 			reflexive = qs.getLiteral("reflexive").getInt();
-			
+
 		}
-		if(total > 0){
-			currentlyBestAxioms.add(new EvaluatedAxiom(new ReflexiveObjectPropertyAxiom(propertyToDescribe),
+		if (total > 0) {
+			currentlyBestAxioms.add(new EvaluatedAxiom(
+					new ReflexiveObjectPropertyAxiom(propertyToDescribe),
 					computeScore(total, reflexive), declaredAsReflexive));
 		}
-		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	public static void main(String[] args) throws Exception{

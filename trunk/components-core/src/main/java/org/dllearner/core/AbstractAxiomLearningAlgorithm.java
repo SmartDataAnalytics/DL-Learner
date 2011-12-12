@@ -28,7 +28,6 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.aksw.commons.jena.CollectionResultSet;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
@@ -45,8 +44,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 /**
@@ -183,6 +184,17 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		return returnList;
 	}
 	
+	protected Model executeConstructQuery(String query) {
+		logger.info("Sending query\n{} ...", query);
+		queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(),
+				query);
+		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
+		queryExecution.setDefaultGraphURIs(ks.getEndpoint().getDefaultGraphURIs());
+		queryExecution.setNamedGraphURIs(ks.getEndpoint().getNamedGraphURIs());
+		System.out.println(query);
+		return queryExecution.execConstruct();
+	}
+	
 	protected ResultSet executeSelectQuery(String query) {
 		logger.info("Sending query\n{} ...", query);
 		queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(),
@@ -201,6 +213,15 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		ResultSet resultSet = queryExecution.execSelect();
 		
 		return resultSet;
+	}
+	
+	protected ResultSet executeSelectQuery(String query, Model model) {
+		logger.info("Sending query\n{} ...", query);
+		QueryExecution qexec = QueryExecutionFactory.create(query, model);
+		ResultSet rs = qexec.execSelect();;
+		
+
+		return rs;
 	}
 	
 	protected void close() {

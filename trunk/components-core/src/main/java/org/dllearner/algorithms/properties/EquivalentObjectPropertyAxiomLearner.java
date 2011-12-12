@@ -33,6 +33,7 @@ import java.util.SortedSet;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.EquivalentObjectPropertiesAxiom;
@@ -126,8 +127,11 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			properties = new HashSet<ObjectProperty>();
 			properties.add(propertyToDescribe);
 			properties.add(entry.getKey());
-			evalAxiom = new EvaluatedAxiom(new EquivalentObjectPropertiesAxiom(properties),
-					new AxiomScore(entry.getValue() / (double)all));
+			int popularity = reasoner.getPropertyCount(entry.getKey());
+			int total = popularity;//Math.max(popularity, all);
+			int success = entry.getValue();System.out.println(entry.getKey());System.out.println(total);System.out.println(success);
+			Score score = computeScore(total, success);
+			evalAxiom = new EvaluatedAxiom(new EquivalentObjectPropertiesAxiom(properties),score);
 			axioms.add(evalAxiom);
 		}
 		
@@ -138,7 +142,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	public static void main(String[] args) throws Exception{
 		EquivalentObjectPropertyAxiomLearner l = new EquivalentObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(
 				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/country"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/thirdDriverCountry"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();
