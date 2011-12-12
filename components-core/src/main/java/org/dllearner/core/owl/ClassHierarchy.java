@@ -95,6 +95,7 @@ public class ClassHierarchy {
 			logger.error("Query for sub class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
 			return new TreeSet<Description>();
 		}
+		result.remove(concept);
 		for(Description sub : new HashSet<Description>(result)){
 			result.addAll(getSubClasses(sub, false));
 		}

@@ -19,7 +19,6 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -37,6 +36,8 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL2;
 
 @ComponentAnn(name="irreflexive objectproperty axiom learner", shortName="oplirrefl", version=0.1)
@@ -46,6 +47,8 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
+	
+	private boolean declaredAsIrreflexive;
 
 	public IrreflexiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -68,39 +71,97 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		
 		//check if property is already declared as irreflexive in knowledge base
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.IrreflexiveProperty.getURI());
-		boolean declaredAsIrreflexive = executeAskQuery(query);
+		declaredAsIrreflexive = executeAskQuery(query);
 		if(declaredAsIrreflexive) {
 			existingAxioms.add(new IrreflexiveObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as irreflexive in knowledge base.");
 		}
+		
+		if(ks.supportsSPARQL_1_1()){
+			runSPARQL1_1_Mode();
+		} else {
+			runSPARQL1_0_Mode();
+		}
 
-		//get all instance s with <s p o>
-		query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}", propertyToDescribe);
+		
+		
+		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	}
+	
+	private void runSPARQL1_0_Mode() {
+		Model model = ModelFactory.createDefaultModel();
+		int limit = 1000;
+		int offset = 0;
+		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		Model newModel = executeConstructQuery(query);
+		while(newModel.size() != 0){
+			model.add(newModel);
+			// get all instance s with <s p o>
+			query = String.format(
+					"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
+					propertyToDescribe);
+			ResultSet rs = executeSelectQuery(query);
+			QuerySolution qs;
+			int all = 0;
+			while (rs.hasNext()) {
+				qs = rs.next();
+				all = qs.getLiteral("all").getInt();
+
+			}
+
+			// get number of instances s where not exists <s p s>
+			query = "SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER(?s != ?o)}";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			rs = executeSelectQuery(query);
+			int irreflexive = 0;
+			while (rs.hasNext()) {
+				qs = rs.next();
+				irreflexive = qs.getLiteral("irreflexive").getInt();
+			}
+
+			if (all > 0) {
+				currentlyBestAxioms.clear();
+				currentlyBestAxioms.add(new EvaluatedAxiom(
+						new IrreflexiveObjectPropertyAxiom(propertyToDescribe),
+						computeScore(all, irreflexive), declaredAsIrreflexive));
+			}
+			
+			offset += limit;
+			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			newModel = executeConstructQuery(query);
+		}
+	}
+	
+	private void runSPARQL1_1_Mode() {
+		// get all instance s with <s p o>
+		String query = String.format(
+				"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
+				propertyToDescribe);
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		int all = 0;
-		while(rs.hasNext()){
+		while (rs.hasNext()) {
 			qs = rs.next();
 			all = qs.getLiteral("all").getInt();
-			
+
 		}
-		
-		//get number of instances s where not exists  <s p s> 
+
+		// get number of instances s where not exists <s p s>
 		query = "SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER(?s != ?o)}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
 		int irreflexive = 0;
-		while(rs.hasNext()){
+		while (rs.hasNext()) {
 			qs = rs.next();
 			irreflexive = qs.getLiteral("irreflexive").getInt();
 		}
-		
-		if(all > 0){
-			currentlyBestAxioms.add(new EvaluatedAxiom(new IrreflexiveObjectPropertyAxiom(propertyToDescribe),
+
+		if (all > 0) {
+			currentlyBestAxioms.add(new EvaluatedAxiom(
+					new IrreflexiveObjectPropertyAxiom(propertyToDescribe),
 					computeScore(all, irreflexive), declaredAsIrreflexive));
 		}
-		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	public static void main(String[] args) throws Exception {

@@ -77,6 +77,8 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	private boolean suggestMostGeneralClasses = true;
 	private boolean useClassPopularity = true;
 	
+	private Set<NamedClass> allClasses;
+	
 	public DisjointClassesLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
@@ -115,8 +117,8 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		//TODO
 		
 		//at first get all existing classes in knowledgebase
-		Set<NamedClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
-		classes.remove(classToDescribe);
+		allClasses = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+		allClasses.remove(classToDescribe);
 		
 		//get the subclasses
 		if(reasoner.isPrepared()){
@@ -125,45 +127,96 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			subClasses = reasoner.getSubClasses(classToDescribe, true);
 		}
 		
+		if(ks.supportsSPARQL_1_1()){
+			runSPARQL1_1_Mode();
+		} else {
+			runSPARQL1_0_Mode();
+		}
+		
 		//get classes and how often they occur
-				int limit = 1000;
-				int offset = 0;
-				String queryTemplate = "SELECT ?type COUNT(?s) AS ?count WHERE {?s a ?type." +
-				"{SELECT ?s WHERE {?s a <%s>.} LIMIT %d OFFSET %d}" +
-				"}";
-				String query;
-				Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
-				NamedClass cls;
-				Integer oldCnt;
-				boolean repeat = true;
 				
-				while(!terminationCriteriaSatisfied() && repeat){
-					query = String.format(queryTemplate, classToDescribe, limit, offset);
-					ResultSet rs = executeSelectQuery(query);
-					QuerySolution qs;
-					repeat = false;
-					while(rs.hasNext()){
-						qs = rs.next();
-						cls = new NamedClass(qs.getResource("type").getURI());
-						int newCnt = qs.getLiteral("count").getInt();
-						oldCnt = result.get(cls);
-						if(oldCnt == null){
-							oldCnt = Integer.valueOf(newCnt);
-						} else {
-							oldCnt += newCnt;
-						}
-						
-						result.put(cls, oldCnt);
-						qs.getLiteral("count").getInt();
-						repeat = true;
-					}
-					if(!result.isEmpty()){
-						currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, classes);
-						offset += 1000;
-					}
-				}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	}
+	
+	private void runSPARQL1_0_Mode(){
+		int limit = 1000;
+		int offset = 0;
+		String queryTemplate = "SELECT ?s ?type WHERE {?s a <%s>. ?s a ?type.} LIMIT %d OFFSET %d";
+		String query;
+		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
+		NamedClass cls;
+		Integer oldCnt;
+		boolean repeat = true;
+		
+		int total = 0;
+		
+		String resource = "";
+		while(!terminationCriteriaSatisfied() && repeat){
+			query = String.format(queryTemplate, classToDescribe, limit, offset);
+			ResultSet rs = executeSelectQuery(query);
+			QuerySolution qs;
+			repeat = false;
+			while(rs.hasNext()){
+				qs = rs.next();
+				String newResource = qs.getResource("?s").getURI();
+				if(newResource != resource){
+					total++;
+					resource = newResource;
+				}
+				cls = new NamedClass(qs.getResource("type").getURI());
+				oldCnt = result.get(cls);
+				if(oldCnt == null){
+					oldCnt = Integer.valueOf(0);
+				} 
+				int newCnt = oldCnt + 1;
+				
+				result.put(cls, newCnt);
+				repeat = true;
+			}
+			if(!result.isEmpty()){
+				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, total);
+				offset += 1000;
+			}
+		}
+	}
+	
+	private void runSPARQL1_1_Mode(){
+		int limit = 1000;
+		int offset = 0;
+		String queryTemplate = "SELECT ?type COUNT(?s) AS ?count WHERE {?s a ?type." +
+		"{SELECT ?s WHERE {?s a <%s>.} LIMIT %d OFFSET %d}" +
+		"}";
+		String query;
+		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
+		NamedClass cls;
+		Integer oldCnt;
+		boolean repeat = true;
+		
+		while(!terminationCriteriaSatisfied() && repeat){
+			query = String.format(queryTemplate, classToDescribe, limit, offset);
+			ResultSet rs = executeSelectQuery(query);
+			QuerySolution qs;
+			repeat = false;
+			while(rs.hasNext()){
+				qs = rs.next();
+				cls = new NamedClass(qs.getResource("type").getURI());
+				int newCnt = qs.getLiteral("count").getInt();
+				oldCnt = result.get(cls);
+				if(oldCnt == null){
+					oldCnt = Integer.valueOf(newCnt);
+				} else {
+					oldCnt += newCnt;
+				}
+				
+				result.put(cls, oldCnt);
+				repeat = true;
+			}
+			if(!result.isEmpty()){
+				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, allClasses);
+				offset += 1000;
+			}
+		}
 	}
 
 	@Override
@@ -266,6 +319,63 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		}
 		
 		class2Count.put(classToDescribe, all);
+		return evalDescs;
+	}
+	
+	private List<EvaluatedDescription> buildEvaluatedClassDescriptions(Map<NamedClass, Integer> class2Count, int total){
+		List<EvaluatedDescription> evalDescs = new ArrayList<EvaluatedDescription>();
+		
+		//Remove temporarily classToDescribe but keep track of their count
+				class2Count.remove(classToDescribe);
+		
+		//get complete disjoint classes
+		Set<NamedClass> completeDisjointclasses = new TreeSet<NamedClass>(allClasses);
+		completeDisjointclasses.removeAll(class2Count.keySet());
+		
+		//drop all classes which have a super class in this set
+		if(suggestMostGeneralClasses && reasoner.isPrepared()){
+			keepMostGeneralClasses(completeDisjointclasses);
+		}
+		
+		//we remove the asserted subclasses here
+		completeDisjointclasses.removeAll(subClasses);
+		for(Description subClass : subClasses){
+			class2Count.remove(subClass);
+		}
+		
+		
+		EvaluatedDescription evalDesc;
+		//firstly, create disjoint classexpressions which not occur and give score of 1
+		if(reasoner.isPrepared()){
+			SortedSet<Description> mostGeneralClasses = reasoner.getClassHierarchy().getMostGeneralClasses();
+		}
+		for(NamedClass cls : completeDisjointclasses){
+			if(useClassPopularity){
+				int popularity = reasoner.getIndividualsCount(cls);
+				//we skip classes with no instances
+				if(popularity == 0) continue;
+				double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(popularity, 0);
+				double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
+				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1- accuracy));
+			} else {
+				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1));
+			}
+			
+			evalDescs.add(evalDesc);
+		}
+		
+		//secondly, create disjoint classexpressions with score 1 - (#occurence/#all)
+		for(Entry<NamedClass, Integer> entry : sortByValues(class2Count)){
+//			evalDesc = new EvaluatedDescription(entry.getKey(),
+//					new AxiomScore(1 - (entry.getValue() / (double)all)));
+			double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, entry.getValue());
+			double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
+			evalDesc = new EvaluatedDescription(entry.getKey(),
+					new AxiomScore(1 - accuracy));
+			evalDescs.add(evalDesc);
+		}
+		
+		class2Count.put(classToDescribe, total);
 		return evalDescs;
 	}
 	

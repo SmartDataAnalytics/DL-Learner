@@ -21,22 +21,15 @@ package org.dllearner.algorithms.properties;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedSet;
 
-import org.aksw.commons.collections.multimaps.BiHashMultimap;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.InverseObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -45,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 @ComponentAnn(name="inverse objectproperty domain axiom learner", shortName="oplinv", version=0.1)
 public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
@@ -91,35 +86,36 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 	}
 	
 	private void runSPARQL1_0_Mode(){
-		Map<ObjectProperty, Integer> prop2CountMap = new HashMap<ObjectProperty, Integer>();
-		boolean repeat = true;
+		Model model = ModelFactory.createDefaultModel();
 		int limit = 1000;
-		int total = 0;
-		while(!terminationCriteriaSatisfied() && repeat){
-			String query = String.format("SELECT ?s ?p WHERE {?s <%s> ?o. OPTIONAL{?o ?p ?s.}} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, fetchedRows);
+		int offset = 0;
+		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		Model newModel = executeConstructQuery(query);
+		while(newModel.size() != 0){
+			model.add(newModel);
+			// get number of instances of s with <s p o>
+			query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
-			ObjectProperty p;
-			int cnt = 0;
+			int total = 0;
 			while(rs.hasNext()){
 				qs = rs.next();
-				if(qs.getResource("p") != null){
-					p = new ObjectProperty(qs.getResource("p").getURI());
-					Integer oldCnt = prop2CountMap.get(p);
-					if(oldCnt == null){
-						oldCnt = Integer.valueOf(0);
-					}
-					prop2CountMap.put(p, Integer.valueOf(oldCnt + 1));
-				}
-				cnt++;
+				total = qs.getLiteral("total").getInt();
 			}
-			total += cnt;
-			for(Entry<ObjectProperty, Integer> entry : prop2CountMap.entrySet()){
-				currentlyBestAxioms = Collections.singletonList(new EvaluatedAxiom(new InverseObjectPropertyAxiom(entry.getKey(), propertyToDescribe),
-						computeScore(total, entry.getValue())));
+			
+			query = String.format("SELECT ?p (COUNT(?s) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p", propertyToDescribe.getName());
+			rs = executeSelectQuery(query);
+			while(rs.hasNext()){
+				qs = rs.next();
+				currentlyBestAxioms.add(new EvaluatedAxiom(
+						new InverseObjectPropertyAxiom(new ObjectProperty(qs.getResource("p").getURI()), propertyToDescribe),
+						computeScore(total, qs.getLiteral("cnt").getInt())));
 			}
-			fetchedRows += limit;
-			repeat = (cnt == limit);
+			offset += limit;
+			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			newModel = executeConstructQuery(query);
 		}
 	}
 	

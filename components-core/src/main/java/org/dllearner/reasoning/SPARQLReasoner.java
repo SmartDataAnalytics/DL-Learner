@@ -19,6 +19,7 @@
 
 package org.dllearner.reasoning;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -745,6 +746,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			qs = rs.next();
 			subClasses.add(new NamedClass(qs.getResource("sub").getURI()));
 		}
+		subClasses.remove(description);
 		return subClasses;
 	}
 	
@@ -909,17 +911,23 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	}
 	
 	
-	public static void main(String[] args) {
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+	public static void main(String[] args) throws Exception{
+//		QueryEngineHTTP e = new QueryEngineHTTP("http://bibleontology.com/sparql/index.jsp",
+//				"SELECT DISTINCT ?type WHERE {?s a ?type) LIMIT 10");
+//		e.addParam("type1", "xml");System.out.println(e.toString());
+//		e.execSelect();
+		
+		
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://rae2001.rkbexplorer.com/sparql/")));
 		SPARQLReasoner r = new SPARQLReasoner(ks);
 		long startTime = System.currentTimeMillis();
 		ClassHierarchy h = r.prepareSubsumptionHierarchy();
-		System.out.println(h.getSuperClasses(new NamedClass("http://dbpedia.org/ontology/PoloLeague")));
 		System.out.println(h.toString(false));
 //		Model schema = r.loadSchema();
 //		for(Statement st : schema.listStatements().toList()){
 //			System.out.println(st);
 //		}
+		System.out.println(h.getSubClasses(new NamedClass("http://acm.rkbexplorer.com/ontologies/acm#A"), false));
 		System.out.println("Time needed: " + (System.currentTimeMillis()-startTime) + "ms");
 		
 	}

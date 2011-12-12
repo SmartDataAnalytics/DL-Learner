@@ -21,18 +21,14 @@ package org.dllearner.algorithms.properties;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 
-import org.aksw.commons.collections.multimaps.BiHashMultimap;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.AsymmetricObjectPropertyAxiom;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
@@ -40,6 +36,8 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL2;
 
 @ComponentAnn(name="asymmetric objectproperty axiom learner", shortName="oplasymm", version=0.1)
@@ -49,6 +47,8 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
+	
+	private boolean declaredAsymmetric;
 
 	public AsymmetricObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -71,7 +71,7 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		
 		//check if property is already declared as asymmetric in knowledge base
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.AsymmetricProperty.getURI());
-		boolean declaredAsymmetric = executeAskQuery(query);
+		declaredAsymmetric = executeAskQuery(query);
 		if(declaredAsymmetric) {
 			existingAxioms.add(new AsymmetricObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as symmetric in knowledge base.");
@@ -87,36 +87,42 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	}
 	
 	private void runSPARQL1_0_Mode(){
-		BiHashMultimap<Individual, Individual> individualsMap = new BiHashMultimap<Individual, Individual>();
-		boolean repeat = true;
+		Model model = ModelFactory.createDefaultModel();
 		int limit = 1000;
-		while(!terminationCriteriaSatisfied() && repeat){
-			String query = String.format("SELECT DISTINCT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d", propertyToDescribe.getURI().toString(), limit, fetchedRows);
+		int offset = 0;
+		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		Model newModel = executeConstructQuery(query);
+		while(newModel.size() != 0){
+			model.add(newModel);
+			// get number of instances of s with <s p o>
+			query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
-			Individual s;
-			Individual o;
-			int cnt = 0;
+			int total = 0;
 			while(rs.hasNext()){
 				qs = rs.next();
-				s = new Individual(qs.getResource("s").getURI());
-				o = new Individual(qs.getResource("o").getURI());
-				individualsMap.put(s, o);
-				cnt++;
+				total = qs.getLiteral("total").getInt();
 			}
-			int total = individualsMap.size();
-			int asymmetric = 0;
-			
-			for(java.util.Map.Entry<Individual, Individual> e : individualsMap.entries()){
-				if(!individualsMap.getInverse().containsEntry(e.getKey(), e.getValue())){
-					asymmetric++;
-				}
+			query = "SELECT (COUNT(?s) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s.}";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			rs = executeSelectQuery(query);
+			int symmetric = 0;
+			while(rs.hasNext()){
+				qs = rs.next();
+				symmetric = qs.getLiteral("symmetric").getInt();
 			}
+			int asymmetric = total - symmetric;
 			
-			currentlyBestAxioms = Collections.singletonList(new EvaluatedAxiom(new AsymmetricObjectPropertyAxiom(propertyToDescribe),
-			computeScore(total, asymmetric)));
-			fetchedRows += limit;
-			repeat = (cnt == limit);
+			if(total > 0){
+				currentlyBestAxioms.clear();
+				currentlyBestAxioms.add(new EvaluatedAxiom(new AsymmetricObjectPropertyAxiom(propertyToDescribe),
+						computeScore(total, asymmetric), declaredAsymmetric));
+			}
+			offset += limit;
+			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			newModel = executeConstructQuery(query);
 		}
 	}
 	
@@ -142,7 +148,7 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		
 		if(total > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new AsymmetricObjectPropertyAxiom(propertyToDescribe),
-					computeScore(total, asymmetric)));
+					computeScore(total, asymmetric), declaredAsymmetric));
 		}
 		
 	}
