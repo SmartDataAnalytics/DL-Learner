@@ -32,8 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
-
-import javax.xml.ws.http.HTTPException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -69,6 +70,15 @@ public class GlobalEnrichment {
 	
 	// directory for generated schemata
 	private static String baseDir = "log/lod-enriched/";
+	
+	
+	//parameters for thread pool
+	//Parallel running Threads(Executor) on System
+	private static int corePoolSize = 10;
+	//Maximum Threads allowed in Pool
+	private static int maximumPoolSize = 20;
+	//Keep alive time for waiting threads for jobs(Runnable)
+	private static long keepAliveTime = 10;
 	
 	/**
 	 * @param args
@@ -129,58 +139,91 @@ public class GlobalEnrichment {
 		TreeSet<String> blacklist = new TreeSet<String>();
 		blacklist.add("rkb-explorer-crime"); // computation never completes
 		
+		ArrayBlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(endpoints.size());
+		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, workQueue);
+		
+		
 		// perform enrichment on endpoints
-		for(Entry<String,SparqlEndpoint> endpoint : endpoints.entrySet()) {
-			// run enrichment
-			SparqlEndpoint se = endpoint.getValue();
-			String name = endpoint.getKey();
+		for(final Entry<String,SparqlEndpoint> endpoint : endpoints.entrySet()) {
 			
-			File f = new File(baseDir + name + ".ttl"); 
-			File log = new File(baseDir + name + ".log");
-			
-			System.out.println("Enriching " + name + " using " + se);
-			Enrichment e = new Enrichment(se, null, threshold, nrOfAxiomsToLearn, useInference, false);
-			
-			e.maxEntitiesPerType = 3; // hack for faster testing of endpoints
-			
-			if(blacklist.contains(name)) {
-				continue;
-			}
-			
-			boolean success = false;
-			// run enrichment script - we make a case distinguish to see which kind of problems we get
-			// (could be interesting for statistics later on)
-			try {
-				e.start();
-				success = true;
-			} catch(StackOverflowError error) {
-				error.printStackTrace(new PrintStream(log));
-				Files.appendToFile(log, "stack overflows could be caused by cycles in class hierarchies");
-				error.printStackTrace();
-			} catch(ResultSetException ex) {
-				ex.printStackTrace(new PrintStream(log));
-				Files.appendToFile(log, ex.getMessage());
-				ex.printStackTrace();
-			} catch(QueryExceptionHTTP ex) {
-				ex.printStackTrace(new PrintStream(log));
-				Files.appendToFile(log, ex.getMessage());
-				ex.printStackTrace();				
-			} 
-//			catch(Exception ex) {
-//				System.out.println("class of exception: " + ex.getClass());
-//			}
-			
-			// save results to a file (TODO: check if enrichment format 
-			if(success) {
-				SparqlEndpointKS ks = new SparqlEndpointKS(se);
-				List<AlgorithmRun> runs = e.getAlgorithmRuns();
-				List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
-				for(AlgorithmRun run : runs) {
-					axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
+			threadPool.execute(new Runnable() {
+				
+				@Override
+				public void run() {
+					// run enrichment
+					SparqlEndpoint se = endpoint.getValue();
+					String name = endpoint.getKey();
+					
+					File f = new File(baseDir + name + ".ttl"); 
+					File log = new File(baseDir + name + ".log");
+					
+					System.out.println("Enriching " + name + " using " + se.getURL());
+					Enrichment e = new Enrichment(se, null, threshold, nrOfAxiomsToLearn, useInference, false);
+					
+					e.maxEntitiesPerType = 3; // hack for faster testing of endpoints
+					
+//					if(blacklist.contains(name)) {
+//						continue;
+//					}
+					
+					boolean success = false;
+					// run enrichment script - we make a case distinguish to see which kind of problems we get
+					// (could be interesting for statistics later on)
+					try {
+						e.start();
+						success = true;
+					} catch(StackOverflowError error) {
+						try {
+							error.printStackTrace(new PrintStream(log));
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						Files.appendToFile(log, "stack overflows could be caused by cycles in class hierarchies");
+						error.printStackTrace();
+					} catch(ResultSetException ex) {
+						try {
+							ex.printStackTrace(new PrintStream(log));
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						Files.appendToFile(log, ex.getMessage());
+						ex.printStackTrace();
+					} catch(QueryExceptionHTTP ex) {
+						try {
+							ex.printStackTrace(new PrintStream(log));
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						Files.appendToFile(log, ex.getMessage());
+						ex.printStackTrace();				
+					} 
+					catch(Exception ex) {
+						System.out.println("class of exception: " + ex.getClass());
+					}
+					
+					// save results to a file (TODO: check if enrichment format 
+					if(success) {
+						SparqlEndpointKS ks = new SparqlEndpointKS(se);
+						List<AlgorithmRun> runs = e.getAlgorithmRuns();
+						List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
+						for(AlgorithmRun run : runs) {
+							axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
+						}
+						Model model = e.getModel(axioms);			
+						try {
+							model.write(new FileOutputStream(f), "TURTLE");
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}				
+					}
+					
 				}
-				Model model = e.getModel(axioms);			
-				model.write(new FileOutputStream(f), "TURTLE");				
-			}
+			});
+			
 		}
 	}
 

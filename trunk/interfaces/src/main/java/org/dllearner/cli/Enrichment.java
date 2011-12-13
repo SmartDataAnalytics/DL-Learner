@@ -278,8 +278,8 @@ public class Enrichment {
 		SPARQLTasks st = new SPARQLTasks(se);
 		
 		//check if endpoint supports SPARQL 1.1
-		boolean supportsSPARQL_1_1 = st.supportsSPARQL_1_1();
-		ks.setSupportsSPARQL_1_1(supportsSPARQL_1_1);
+//		boolean supportsSPARQL_1_1 = st.supportsSPARQL_1_1();
+//		ks.setSupportsSPARQL_1_1(supportsSPARQL_1_1);
 		
 		if(useInference){
 			reasoner = new SPARQLReasoner(ks);
