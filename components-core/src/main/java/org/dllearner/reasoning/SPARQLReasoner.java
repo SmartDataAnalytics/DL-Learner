@@ -595,7 +595,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	public SortedSet<ObjectProperty> getInverseObjectProperties(ObjectProperty property){
 		SortedSet<ObjectProperty> inverseObjectProperties = new TreeSet<ObjectProperty>();
 		String query = "SELECT ?p WHERE {" +
-				"{<%p> <%ax> ?p.} UNION {?p <%ax> <%p>}}".replace("%p", property.getName()).replace("%ax", OWL.inverseOf.getURI());
+				"{<%p> <%ax> ?p.} UNION {?p <%ax> <%p>}}".replace("%p", property.getName()).replace("%ax", OWL.inverseOf.getURI());System.out.println(query);
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
