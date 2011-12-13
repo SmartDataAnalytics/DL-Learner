@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 @ComponentAnn(name="disjoint dataproperty axiom learner", shortName="dpldisjoint", version=0.1)
 public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
@@ -50,6 +52,8 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
 	private DatatypeProperty propertyToDescribe;
+	
+	private Set<DatatypeProperty> allDataProperties;
 	
 	public DisjointDataPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -73,45 +77,94 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		//TODO
 		
 		//at first get all existing dataproperties in knowledgebase
-		Set<DatatypeProperty> dataProperties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
+		allDataProperties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
+		allDataProperties.remove(propertyToDescribe);
 		
-		//get properties and how often they occur
-				int limit = 1000;
-				int offset = 0;
-				String queryTemplate = "SELECT ?p (COUNT(?s) as ?count) WHERE {?s ?p ?o." +
-				"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
-				"}";
-				String query;
-				Map<DatatypeProperty, Integer> result = new HashMap<DatatypeProperty, Integer>();
-				DatatypeProperty prop;
-				Integer oldCnt;
-				boolean repeat = true;
-				
-				ResultSet rs = null;
-				while(!terminationCriteriaSatisfied() && repeat){
-					query = String.format(queryTemplate, propertyToDescribe, limit, offset);
-					rs = executeSelectQuery(query);
-					QuerySolution qs;
-					repeat = false;
-					while(rs.hasNext()){
-						qs = rs.next();
-						prop = new DatatypeProperty(qs.getResource("p").getURI());
-						int newCnt = qs.getLiteral("count").getInt();
-						oldCnt = result.get(prop);
-						if(oldCnt == null){
-							oldCnt = Integer.valueOf(newCnt);
-						}
-						result.put(prop, oldCnt);
-						qs.getLiteral("count").getInt();
-						repeat = true;
-					}
-					if(!result.isEmpty()){
-						currentlyBestAxioms = buildAxioms(result, dataProperties);
-						offset += 1000;
-					}
-				}
+		if(ks.supportsSPARQL_1_1()){
+			runSPARQL1_1_Mode();
+		} else {
+			runSPARQL1_0_Mode();
+		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	}
+	
+	private void runSPARQL1_0_Mode() {
+		Model model = ModelFactory.createDefaultModel();
+		int limit = 1000;
+		int offset = 0;
+		String baseQuery  = "CONSTRUCT {?s ?p ?o.} WHERE {?s <%s> ?o. ?s ?p ?o.} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+		Model newModel = executeConstructQuery(query);
+		Map<DatatypeProperty, Integer> result = new HashMap<DatatypeProperty, Integer>();
+		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
+			model.add(newModel);
+			query = "SELECT ?p (COUNT(?s) AS ?count) WHERE {?s ?p ?o.} GROUP BY ?p";
+			
+			DatatypeProperty prop;
+			Integer oldCnt;
+			ResultSet rs = executeSelectQuery(query, model);
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				prop = new DatatypeProperty(qs.getResource("p").getURI());
+				int newCnt = qs.getLiteral("count").getInt();
+				oldCnt = result.get(prop);
+				if(oldCnt == null){
+					oldCnt = Integer.valueOf(newCnt);
+				}
+				result.put(prop, oldCnt);
+				qs.getLiteral("count").getInt();
+			}
+			if(!result.isEmpty()){
+				currentlyBestAxioms = buildAxioms(result, allDataProperties);
+			}
+			
+			
+			offset += limit;
+			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			newModel = executeConstructQuery(query);
+		}
+		
+	}
+	
+	private void runSPARQL1_1_Mode() {
+		//get properties and how often they occur
+		int limit = 1000;
+		int offset = 0;
+		String queryTemplate = "SELECT ?p (COUNT(?s) as ?count) WHERE {?s ?p ?o." +
+		"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
+		"}";
+		String query;
+		Map<DatatypeProperty, Integer> result = new HashMap<DatatypeProperty, Integer>();
+		DatatypeProperty prop;
+		Integer oldCnt;
+		boolean repeat = true;
+		
+		ResultSet rs = null;
+		while(!terminationCriteriaSatisfied() && repeat){
+			query = String.format(queryTemplate, propertyToDescribe, limit, offset);
+			rs = executeSelectQuery(query);
+			QuerySolution qs;
+			repeat = false;
+			while(rs.hasNext()){
+				qs = rs.next();
+				prop = new DatatypeProperty(qs.getResource("p").getURI());
+				int newCnt = qs.getLiteral("count").getInt();
+				oldCnt = result.get(prop);
+				if(oldCnt == null){
+					oldCnt = Integer.valueOf(newCnt);
+				}
+				result.put(prop, oldCnt);
+				qs.getLiteral("count").getInt();
+				repeat = true;
+			}
+			if(!result.isEmpty()){
+				currentlyBestAxioms = buildAxioms(result, allDataProperties);
+				offset += 1000;
+			}
+		}
+		
 	}
 
 	@Override

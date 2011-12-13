@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 @ComponentAnn(name="data subPropertyOf axiom learner", shortName="dplsubprop", version=0.1)
 public class SubDataPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorithm {
@@ -71,23 +73,31 @@ public class SubDataPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorith
 		SortedSet<DatatypeProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
 		logger.debug("Existing super properties: " + existingSuperProperties);
 		
-		//get properties and how often they occur
+		if(ks.supportsSPARQL_1_1()){
+			runSPARQL1_1_Mode();
+		} else {
+			runSPARQL1_0_Mode();
+		}
+		
+		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	}
+	
+	private void runSPARQL1_0_Mode() {
+		Model model = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
-		String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?p a <http://www.w3.org/2002/07/owl#DatatypeProperty>. ?s ?p ?o. " +
-		"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
-		"}";
-		String query;
+		String baseQuery  = "CONSTRUCT {?s ?p ?o.} WHERE {?s <%s> ?o. ?s ?p ?o.} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+		Model newModel = executeConstructQuery(query);
 		Map<DatatypeProperty, Integer> result = new HashMap<DatatypeProperty, Integer>();
-		DatatypeProperty prop;
-		Integer oldCnt;
-		boolean repeat = true;
-		
-		while(!terminationCriteriaSatisfied() && repeat){
-			query = String.format(queryTemplate, propertyToDescribe, limit, offset);
-			ResultSet rs = executeSelectQuery(query);
+		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
+			model.add(newModel);
+			query = "SELECT ?p (COUNT(?s) AS ?count) WHERE {?s ?p ?o.} GROUP BY ?p";
+			
+			DatatypeProperty prop;
+			Integer oldCnt;
+			ResultSet rs = executeSelectQuery(query, model);
 			QuerySolution qs;
-			repeat = false;
 			while(rs.hasNext()){
 				qs = rs.next();
 				prop = new DatatypeProperty(qs.getResource("p").getURI());
@@ -98,16 +108,56 @@ public class SubDataPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorith
 				}
 				result.put(prop, oldCnt);
 				qs.getLiteral("count").getInt();
-				repeat = true;
 			}
-			
 			if(!result.isEmpty()){
 				currentlyBestAxioms = buildAxioms(result);
-				offset += 1000;
 			}
+			
+			
+			offset += limit;
+			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			newModel = executeConstructQuery(query);
 		}
 		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	}
+	
+	private void runSPARQL1_1_Mode() {
+		//get subjects with types
+				int limit = 1000;
+				int offset = 0;
+				String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?s ?p ?o." +
+				"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
+				"}";
+				String query;
+				Map<DatatypeProperty, Integer> result = new HashMap<DatatypeProperty, Integer>();
+				DatatypeProperty prop;
+				Integer oldCnt;
+				boolean repeat = true;
+				
+				while(!terminationCriteriaSatisfied() && repeat){
+					query = String.format(queryTemplate, propertyToDescribe, limit, offset);
+					ResultSet rs = executeSelectQuery(query);
+					QuerySolution qs;
+					repeat = false;
+					while(rs.hasNext()){
+						qs = rs.next();
+						prop = new DatatypeProperty(qs.getResource("p").getURI());
+						int newCnt = qs.getLiteral("count").getInt();
+						oldCnt = result.get(prop);
+						if(oldCnt == null){
+							oldCnt = Integer.valueOf(newCnt);
+						}
+						result.put(prop, oldCnt);
+						qs.getLiteral("count").getInt();
+						repeat = true;
+					}
+					if(!result.isEmpty()){
+						currentlyBestAxioms = buildAxioms(result);
+						offset += 1000;
+					}
+					
+				}
+		
 	}
 	
 	private List<EvaluatedAxiom> buildAxioms(Map<DatatypeProperty, Integer> property2Count){

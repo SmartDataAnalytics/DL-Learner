@@ -350,7 +350,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			SortedSet<Description> mostGeneralClasses = reasoner.getClassHierarchy().getMostGeneralClasses();
 		}
 		for(NamedClass cls : completeDisjointclasses){
-			if(useClassPopularity){
+			if(useClassPopularity && ks.supportsSPARQL_1_1()){
 				int popularity = reasoner.getIndividualsCount(cls);
 				//we skip classes with no instances
 				if(popularity == 0) continue;

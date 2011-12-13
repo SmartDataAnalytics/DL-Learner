@@ -191,7 +191,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 		queryExecution.setDefaultGraphURIs(ks.getEndpoint().getDefaultGraphURIs());
 		queryExecution.setNamedGraphURIs(ks.getEndpoint().getNamedGraphURIs());
-		System.out.println(query);
+		
 		return queryExecution.execConstruct();
 	}
 	
