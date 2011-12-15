@@ -698,6 +698,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			qs = rs.next();
 			superClasses.add(new NamedClass(qs.getResource("sup").getURI()));
 		}
+		superClasses.remove(description);
 		return superClasses;
 	}
 	
