@@ -111,6 +111,7 @@ public class GetRessourcePropertys {
 	    	//System.out.println(tmp_array[i-1].toLowerCase() + "  " +tmp_array[i]);
 	    }
 	    
+	    System.out.println("created Properties: "+hm);
 	    return hm;
 	}
 	
