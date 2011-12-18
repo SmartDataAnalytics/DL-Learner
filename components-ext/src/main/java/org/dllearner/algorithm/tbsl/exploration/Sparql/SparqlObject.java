@@ -63,7 +63,7 @@ public class SparqlObject {
 		//
     	btemplator = new BasicTemplator();
     	btemplator.UNTAGGED_INPUT = false;
-    	templator = new Templator();
+    	//templator = new Templator();
     	System.out.println("Loading SPARQL Templator Done\n");
     	System.out.println("Start Indexing");
     	myindex = new mySQLDictionary();
@@ -73,7 +73,7 @@ public class SparqlObject {
     	//normaly 1
     	setExplorationdepthwordnet(1);
     	//eigentlich immer mit 0 initialisieren
-    	setIterationdepth(9);
+    	setIterationdepth(1);
     	setNumberofanswers(1);
 	}
 	
@@ -127,8 +127,10 @@ public class SparqlObject {
 		long startParsingTime = System.currentTimeMillis();
 		lstquery=getQuery(question);
 		long endParsingTime = System.currentTimeMillis();
+		long startIterationTime = System.currentTimeMillis();
 		System.out.println("The Questionparsing took "+ (endParsingTime-startParsingTime)+ " ms");
 		ArrayList<String> final_answer = new ArrayList<String>();
+		ArrayList<String> final_query = new ArrayList<String>();
 		
 		if(lstquery.isEmpty()){
 			saveNotParsedQuestions(question);
@@ -226,21 +228,53 @@ public class SparqlObject {
 				 * Only Levensthein!!!
 				 */
 				if(getIterationdepth()==1&&startIterating==true||getIterationdepth()==9&&startIterating==true){
-				/*	
-					//4, because of query + three conditions for the simple case
-					if(querylist.size()==4)final_answer=simpleIteration1Case(querylist, query);
-					
-					//if we have more conditions, we need to change the way of replacing the uris got from wordnet etc
-					if(querylist.size()>4)final_answer=complexeIteration1Case(querylist, query);
-					*/
 					
 					ArrayList<String> final_answer_tmp = new ArrayList<String>();
-					if(querylist.size()==4)final_answer_tmp=simpleLevinstheinIteration(querylist, query);
-					if(querylist.size()>4)final_answer_tmp=complexeLevinstheinIteration(querylist, query);
-					
-					for(String i : final_answer_tmp){
-						final_answer.add(i);
+					ArrayList<String> final_query_tmp=new ArrayList<String>();
+					if(querylist.size()==4){
+						//System.out.println("YEAH!!!!!");
+						//final_answer_tmp=simpleLevinstheinIteration(querylist, query);
+						final_query_tmp=simpleLevinstheinIteration(querylist, query);
+						for(String i: final_query_tmp){
+							
+							//do it unnice for first
+							boolean double_query=false;
+							for(String s: final_query ){
+								
+								if(s.contains(i)){
+									double_query=true;
+									
+								}
+							}
+							if(double_query==false){
+								
+								final_query.add(i);
+							}
+						}
 					}
+					
+					
+					if(querylist.size()>4){
+						final_query_tmp=complexeLevinstheinIteration(querylist, query);
+						for(String i: final_query_tmp){
+							
+							//do it unnice for first
+							boolean double_query=false;
+							for(String s: final_query ){
+								
+								if(s.contains(i)){
+									double_query=true;
+									
+								}
+							}
+							if(double_query==false){
+								
+								final_query.add(i);
+							}
+						}
+					}
+					
+					
 					
 					
 					
@@ -254,20 +288,66 @@ public class SparqlObject {
 				 */
 				if(getIterationdepth()==2&&startIterating==true||getIterationdepth()==9&&startIterating==true){
 					ArrayList<String> final_answer_tmp = new ArrayList<String>();
+					ArrayList<String> final_query_tmp  = new ArrayList<String>();
 
-					if(querylist.size()==4)final_answer_tmp=simpleWordnetIteration(querylist, query);
+					if(querylist.size()==4){
+						
+						//final_answer_tmp=simpleLevinstheinIteration(querylist, query);
+						final_query_tmp = simpleWordnetIteration(querylist, query);
+						for(String i: final_query_tmp){
+							
+							//do it unnice for first
+							boolean double_query=false;
+							for(String s: final_query ){
+								
+								if(s.contains(i)){
+									double_query=true;
+									
+								}
+							}
+							if(double_query==false){
+								
+								final_query.add(i);
+							}
+						}
+					}
+						final_answer_tmp=simpleWordnetIteration(querylist, query);
 					//if(querylist.size()>4)final_answer=complexWordnetIteration(querylist, query);
 					
 					//for a test only use:
-					if(querylist.size()>4)final_answer_tmp=newIteration(querylist,query);
-					
-					for(String i : final_answer_tmp){
-						final_answer.add(i);
+					if(querylist.size()>4){
+						final_query_tmp=newIteration(querylist,query);
+						for(String i: final_query_tmp){
+							boolean double_query=false;
+							for(String s: final_query ){
+								if(s.contains(i)){
+									double_query=true;
+								}
+							}
+							if(double_query==false){
+								final_query.add(i);
+							}
+						}
 					}
 				}
 				
 				
 			}
+			
+			
+			/*
+			 * Send Query to Server and get answers
+			 */
+			
+			for(String anfrage : final_query){
+				String answer_tmp;
+				answer_tmp=sendServerQuestionRequest(anfrage);
+				//System.out.println("Antwort vom Server: "+answer_tmp);
+				if(!final_answer.contains(anfrage))
+					final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
+				//final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
+			}
+			
 			
 			BufferedReader in = null;
 			
@@ -317,7 +397,7 @@ public class SparqlObject {
 
 			}
 		    System.out.println(question);
-		    out = out.replace("@en","").replace("\"","");
+		    out = out.replace("@en","").replace("\"","").replace("^^&lt;http://www.w3.org/2001/XMLSchema#int&gt; ", "");
 		    System.out.println(out);
 		    
 		    BufferedWriter outfile = new BufferedWriter(
@@ -326,6 +406,10 @@ public class SparqlObject {
 
 		    outfile.write(tmp+"\n"+question+" :\n"+out);
 		    outfile.close();
+		    long stopIterationTime = System.currentTimeMillis();
+		    System.out.println("The Questionparsing took "+ (endParsingTime-startParsingTime)+ " ms");
+		    System.out.println("The Iteration took "+ (stopIterationTime-startIterationTime)+ " ms");
+		    System.out.println("All took "+ (stopIterationTime-startParsingTime)+ " ms");
 		}
 
 	 private ArrayList<String> newIteration(ArrayList<String> querylist, String query) throws SQLException,
@@ -450,6 +534,7 @@ public class SparqlObject {
 		String resource="";
 		String property_to_compare_with="";
 		String sideOfProperty="LEFT";
+		ArrayList<String> new_queries= new ArrayList<String>();
 
 		
 		int tmpcounter=0;
@@ -487,7 +572,7 @@ public class SparqlObject {
 			 properties=property.getPropertys(getUriFromIndex(resource.toLowerCase(),0),sideOfProperty);
 			if (properties==null){
 				
-				final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+				System.out.println("Begin:\n"+query +"\nError in getting Properties \n End");
 				goOnAfterProperty=false;
 			}
 			
@@ -495,18 +580,20 @@ public class SparqlObject {
 			
 		} catch (IOException e) {
 			
-			final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+			System.out.println("Begin:\n"+query +"\nError in getting Properties \n End");
 			goOnAfterProperty=false;
 			
 		}
 		if(goOnAfterProperty==true){
-			 ArrayList<String> new_queries= new ArrayList<String>();
+			 String bestQuery="";
+			 double highestNLD=0;
 			 //iterate over properties
 			 for (Entry<String, String> entry : properties.entrySet()) {
 				 String key = entry.getKey();
 				 key=key.replace("\"","");
 				 key=key.replace("@en","");
 				 String value = entry.getValue();
+				// System.out.println("Key "+ key +" and value "+value);
 				 
 				 //compare property gotten from the resource with the property from the original query
 				 double nld=Levenshtein.nld(property_to_compare_with.toLowerCase(), key);
@@ -520,32 +607,46 @@ public class SparqlObject {
 						 replacement=replacement.replace("ontology", "property");
 					 }
 					 querynew=querynew.replace(replacement,value);
-					 System.out.println("Simple Levensthein Query: "+ querynew);
+					 if(nld>highestNLD){
+						 bestQuery=querynew;
+						 highestNLD=nld;
+					 }
+					/* System.out.println("Simple Levensthein Query: "+ querynew);
+					 new_queries.add(querynew);*/
+					 //only add, if nld is greater than the already existing nld.
+					 
 					 new_queries.add(querynew);
 				 }
+			     
 			 }
-
+			 	
 				
-			 
+			 	/*new_queries.add(bestQuery);
+			 	System.out.println("Best Query "+bestQuery);*/
 			 	//add original query for iteration
+			 	
 			 	new_queries.add(query);
+			 	
 			 	//iterate over all Queries and get answer from Server
-				for(String anfrage : new_queries){
+			/*	for(String anfrage : new_queries){
 					String answer_tmp;
 					answer_tmp=sendServerQuestionRequest(anfrage);
 					System.out.println("Antwort vom Server: "+answer_tmp);
 					final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
-				}
+				}*/
 			 }
 		
-	
-	return final_answer;
+		
+		//test to returnqueries, put them together and than send them to the server.
+	return new_queries;
+	//return final_answer;
 }
 	 
 	 private ArrayList<String> complexeLevinstheinIteration(ArrayList<String> querylist, String query) throws SQLException,
 		JWNLException {
 
 		ArrayList<String> final_answer=new ArrayList<String>();
+		ArrayList<String> new_queries= new ArrayList<String>();
 		String resourceOne="";
 		String property_to_compare_withOne="";
 		String resourceTwo="";
@@ -603,13 +704,13 @@ public class SparqlObject {
 			 propertiesTwo=property.getPropertys(getUriFromIndex(resourceTwo.toLowerCase(),0),sideOfPropertyTwo);
 			 
 			if (propertiesOne==null){
-				final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+				System.out.println("Begin:\n"+query +"\nError in getting Properties \n End");
 				goOnAfterProperty=false;
 			}
 			
 		} catch (IOException e) {
 			
-			final_answer.add("Begin:\n"+query +"\nError in getting Properties \n End");
+			System.out.println("Begin:\n"+query +"\nError in getting Properties \n End");
 			goOnAfterProperty=false;
 			
 		}
@@ -617,7 +718,7 @@ public class SparqlObject {
 		 
 		if(goOnAfterProperty==true){
 
-			 ArrayList<String> new_queries= new ArrayList<String>();
+			 
 			 
 			 //Iterate over property from resource one
 			 for (Entry<String, String> entryOne : propertiesOne.entrySet()) {
@@ -672,17 +773,9 @@ public class SparqlObject {
 			 
 			//add original query for iteration
 			 	new_queries.add(query);
-			//iterate over all Queries and get answer from Server
-				for(String anfrage : new_queries){
-					String answer_tmp;
-					answer_tmp=sendServerQuestionRequest(anfrage);
-					System.out.println("Antwort vom Server: "+answer_tmp);
-					final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
-				}
-			 
 		}
 	
-	return final_answer;
+	return new_queries;
 }
 
 
@@ -769,7 +862,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 					System.out.println("tmp_semantics in Iteration: "+ tmp_semantics);
 					if (tmp_semantics==null){
 						goOnAfterWordnet=false;
-						final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semantics+" \n End");
+						System.out.println("Begin:\n"+query +"\n Error in searching Wordnet with word "+semantics+" \n End");
 
 					}
 					else{
@@ -782,7 +875,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 				} catch (IOException e) {
 					
 					goOnAfterWordnet=false;
-					final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semantics+" \n End");
+					System.out.println("Begin:\n"+query +"\n Error in searching Wordnet with word "+semantics+" \n End");
 					
 				}
 						 
@@ -832,6 +925,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 	 private ArrayList<String> simpleWordnetIteration(ArrayList<String> querylist, String query) throws SQLException,
 		JWNLException {
 	ArrayList<String> final_answer=new ArrayList<String>();
+	ArrayList<String> new_queries= new ArrayList<String>();
 	
 	System.out.println("In simpleWordnetIteration");
 	
@@ -882,7 +976,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 		}
 		if(goOnAfterProperty==true){
 			
-			 ArrayList<String> new_queries= new ArrayList<String>();
+			 
 
 			 System.out.println("Start Iterating Wordnet with "+property_to_compare_with+" and deept of "+explorationdepthwordnet);
 			 ArrayList<String> semantics=new ArrayList<String>();
@@ -901,7 +995,11 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 				 semantics.add(_temp_);
 				 tmp_semantics=semantics;
 			 }
-			 
+			 if(property_to_compare_with.contains("_")){
+				 String[] array=property_to_compare_with.split("_");
+				 for(String i : array) tmp_semantics.add(i);
+				 tmp_semantics.add(property_to_compare_with.replace("_"," "));
+			 }
 			 System.out.println("tmp_semantics: "+ tmp_semantics);
 			 Boolean goOnAfterWordnet = true;
 			 
@@ -918,7 +1016,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 					System.out.println("tmp_semantics in Iteration: "+ tmp_semantics);
 					if (tmp_semantics==null){
 						goOnAfterWordnet=false;
-						final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semantics+" \n End");
+						System.out.println("Begin:\n"+query +"\n Error in searching Wordnet with word "+semantics+" \n End");
 
 					}
 					else{
@@ -931,7 +1029,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 				} catch (IOException e) {
 					
 					goOnAfterWordnet=false;
-					final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semantics+" \n End");
+					System.out.println("Begin:\n"+query +"\n Error in searching Wordnet with word "+semantics+" \n End");
 					
 				}
 						 
@@ -943,8 +1041,9 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 					    String key = entry.getKey();
 					    key=key.replace("\"","");
 					    key=key.replace("@en","");
+			
 					    String value = entry.getValue();
-					   // System.out.println("Key propery: "+ key);
+					    System.out.println("Key "+ key +" and value "+value);
 					   // System.out.println("Value propery: "+ value);
 					    
 					for(String b : semantics){
@@ -960,6 +1059,8 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 								 test=test.replace("ontology", "property");
 							 }
 							 query_tmp=query_tmp.replace(test,value);
+							 System.out.println("\n");
+							 System.out.println("Original Query: "+ query);
 							 System.out.println("Simple Wordnet Query: "+ query_tmp);
 							 System.out.println("\n");
 							 new_queries.add(query_tmp);
@@ -969,25 +1070,20 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 				}
 				 
 				//add original query for iteration
-				 	new_queries.add(query);
-				//iterate over all Queries and get answer from Server
-				for(String bla : new_queries){
-					String answer_tmp;
-					answer_tmp=sendServerQuestionRequest(bla);
-					System.out.println("Antwort vom Server: "+answer_tmp);
-					final_answer.add("Begin:\n"+bla +"\n"+answer_tmp+" \n End");
-				}
+				 new_queries.add(query);
+				
 			 }
 		}
 	
 	
-	return final_answer;
+	return new_queries;
 }
 	 
 	 
 	 private ArrayList<String> complexWordnetIteration(ArrayList<String> querylist, String query) throws SQLException,
 		JWNLException {
 	ArrayList<String> final_answer=new ArrayList<String>();
+	ArrayList<String> new_queries= new ArrayList<String>();
 	
 		String resourceOne="";
 		String property_to_compare_withOne="";
@@ -1062,7 +1158,6 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 			 * #################################### Semantics One#############################################
 			 */
 			
-			 ArrayList<String> new_queries= new ArrayList<String>();
 
 			 //System.out.println("Start Iterating Wordnet with "+property_to_compare_withOne+" and deept of "+explorationdepthwordnet);
 			 ArrayList<String> semanticsOne=new ArrayList<String>();
@@ -1089,7 +1184,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 					tmp_semanticsOne=getSemantics(tmp_semanticsOne);
 					if (tmp_semanticsOne==null){
 						goOnAfterWordnet=false;
-						final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsOne+" \n End");
+						System.out.println("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsOne+" \n End");
 
 					}
 					else{
@@ -1102,7 +1197,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 				} catch (IOException e) {
 
 					goOnAfterWordnet=false;
-					final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsOne+" \n End");
+					System.out.println("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsOne+" \n End");
 					
 				}
 				 
@@ -1136,7 +1231,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 					tmp_semanticsTwo=getSemantics(tmp_semanticsTwo);
 					if (tmp_semanticsTwo==null){
 						goOnAfterWordnet=false;
-						final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsTwo+" \n End");
+						System.out.println("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsTwo+" \n End");
 
 					}
 					else{
@@ -1149,7 +1244,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 				} catch (IOException e) {
 					
 					goOnAfterWordnet=false;
-					final_answer.add("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsTwo+" \n End");
+					System.out.println("Begin:\n"+query +"\n Error in searching Wordnet with word "+semanticsTwo+" \n End");
 					
 				}
 				 
@@ -1214,17 +1309,11 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 				 
 				//add original query for iteration
 				 	new_queries.add(query);
-				//iterate over all Queries and get answer from Server
-				for(String bla : new_queries){
-					String answer_tmp;
-					answer_tmp=sendServerQuestionRequest(bla);
-					System.out.println("Antwort vom Server: "+answer_tmp);
-					final_answer.add("Begin:\n"+bla +"\n"+answer_tmp+" \n End");
-				}
+				
 			 }
 		}
 	
-	return final_answer;
+	return new_queries;
 }
 	 
 	 
@@ -1623,19 +1712,19 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 					List<String> array_relatedNouns=null;
 					List<String> array_bestsynonyms=null;
 					
-					System.out.println("Wordnet Word: "+id);
+					//System.out.println("Wordnet Word: "+id);
 					try{
 						array_relatedNouns =wordnet.getRelatedNouns(id);
 					}
 					catch(Exception e){
 						//array_relatedNouns.clear();
 					}
-					System.out.println("array_relatedNouns: "+ array_relatedNouns);
+					//System.out.println("array_relatedNouns: "+ array_relatedNouns);
 					//System.out.println("after relatedNouns");
 	
 					try{
 						array_bestsynonyms=wordnet.getBestSynonyms(POS.NOUN, id);
-						System.out.println("array_bestsynonyms: "+ array_bestsynonyms);
+						//System.out.println("array_bestsynonyms: "+ array_bestsynonyms);
 					}
 					catch(Exception e){
 						//
@@ -1687,12 +1776,12 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 								catch(Exception e){
 									//array_relatedNouns.clear();
 								}
-								System.out.println("array_relatedNouns: "+ array_relatedNouns);
+								//System.out.println("array_relatedNouns: "+ array_relatedNouns);
 								//System.out.println("after relatedNouns");
 
 								try{
 									array_bestsynonyms=wordnet.getBestSynonyms(POS.NOUN, advanced_id);
-									System.out.println("array_bestsynonyms: "+ array_bestsynonyms);
+								//	System.out.println("array_bestsynonyms: "+ array_bestsynonyms);
 								}
 								catch(Exception e){
 									//
@@ -1728,6 +1817,10 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 		
 		
 		
+		
+	/*
+	 * http://purpurtentacle.techfak.uni-bielefeld.de:8893/sparql new endpoint
+	 */
 		
 	private String sendServerQuestionRequest(String query){
 		//SPARQL-Endpoint of Semantic Computing Group
