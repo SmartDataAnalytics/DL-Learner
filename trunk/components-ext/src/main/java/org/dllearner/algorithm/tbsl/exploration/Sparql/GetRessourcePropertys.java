@@ -32,8 +32,8 @@ public class GetRessourcePropertys {
 	 */
 	private HashMap<String,String> sendServerPropertyRequest(String vergleich, String side) throws IOException{
 		
-		System.out.println("Resource die gesucht wird: "+ vergleich);
-		System.out.println("Seite die gesucht wird: "+side);
+		//System.out.println("Resource die gesucht wird: "+ vergleich);
+		//System.out.println("Seite die gesucht wird: "+side);
 		/*
 		 * 
 		 * For the second Iteration, I can just add the sparql property here.

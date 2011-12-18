@@ -13,8 +13,9 @@ public class Levenshtein {
 		double length=Math.max(orig.length(),eing.length());
 		
 		//if distance between both is zero, then the NLD must be one
+		//but because they are equal, return a very high value, so that that query will be taken.
 		if(result==0.0 ){
-			return 1;
+			return 10.0;
 		}
 		else{
 			
