@@ -45,6 +45,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 
 	private SparqlEndpoint endpoint;
 	private boolean supportsSPARQL_1_1 = false;
+	private boolean isRemote = true;
 
 	// TODO: turn those into config options
 	
@@ -83,6 +84,10 @@ public class SparqlEndpointKS implements KnowledgeSource {
 
 	public void setUrl(URL url) {
 		this.url = url;
+	}
+	
+	public boolean isRemote() {
+		return isRemote;
 	}
 
 	public List<String> getDefaultGraphURIs() {

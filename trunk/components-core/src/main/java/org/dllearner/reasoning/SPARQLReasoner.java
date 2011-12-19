@@ -53,6 +53,7 @@ import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -64,6 +65,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.clarkparsia.owlapiv3.XSD;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -87,6 +91,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	
 	private SparqlEndpointKS ks;
 	private ClassHierarchy hierarchy;
+	private OntModel model;
 	
 	
 	public SPARQLReasoner(SparqlEndpointKS ks) {
@@ -95,6 +100,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		if(useCache){
 			cache = new ExtractionDBCache("cache");
 		}
+	}
+	
+	public SPARQLReasoner(OntModel model) {
+		this.model = model;
 	}
 	
 	public final ClassHierarchy prepareSubsumptionHierarchy() {
@@ -117,7 +126,18 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		subsumptionHierarchyDown.put(Nothing.instance, new TreeSet<Description>(conceptComparator));
 		
 		// ... and named classes
-		Set<NamedClass> atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+		Set<NamedClass> atomicConcepts;
+		if(ks.isRemote()){
+			atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+		} else {
+			atomicConcepts = new TreeSet<NamedClass>();
+			for(OntClass cls :  ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().toList()){
+				if(!cls.isAnon()){
+					atomicConcepts.add(new NamedClass(cls.getURI()));
+				}
+			}
+		}
+		
 		for (NamedClass atom : atomicConcepts) {
 			tmp = getSubClasses(atom);
 			// quality control: we explicitly check that no reasoner implementation returns null here
@@ -571,7 +591,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	}
 	
 	public int getIndividualsCount(NamedClass nc){
-		String query = String.format("SELECT COUNT(?s) WHERE {" +
+		String query = String.format("SELECT (COUNT(?s) AS ?cnt) WHERE {" +
 				"?s a <%s>." +
 				"}", 
 				nc.getURI());
@@ -859,20 +879,26 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	
 	private ResultSet executeSelectQuery(String query){
 		logger.info("Sending query \n {}", query);
-		ResultSet resultset = null;
-		if(useCache){
-			resultset = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(ks.getEndpoint(), query));
-		} else {
-			QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
-			for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
-				queryExecution.addDefaultGraph(dgu);
+		ResultSet rs = null;
+		if(ks.isRemote()){
+			if(useCache){
+				rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(ks.getEndpoint(), query));
+			} else {
+				QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+				for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
+					queryExecution.addDefaultGraph(dgu);
+				}
+				for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
+					queryExecution.addNamedGraph(ngu);
+				}			
+				rs = queryExecution.execSelect();
 			}
-			for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
-				queryExecution.addNamedGraph(ngu);
-			}			
-			resultset = queryExecution.execSelect();
+		} else {
+			QueryExecution qExec = com.hp.hpl.jena.query.QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
+			rs = qExec.execSelect();
+			
 		}
-		return resultset;
+		return rs;
 	}
 	
 	/**
@@ -888,26 +914,22 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	}
 	
 	private boolean executeAskQuery(String query){
-		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
-		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
-			queryExecution.addDefaultGraph(dgu);
+		boolean ret;
+		if(ks.isRemote()){
+			QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
+			for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
+				queryExecution.addDefaultGraph(dgu);
+			}
+			for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
+				queryExecution.addNamedGraph(ngu);
+			}			
+			ret = queryExecution.execAsk();
+			
+		} else {
+			QueryExecution qExec = com.hp.hpl.jena.query.QueryExecutionFactory.create(query,  ((LocalModelBasedSparqlEndpointKS)ks).getModel());
+			ret = qExec.execAsk();
 		}
-		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
-			queryExecution.addNamedGraph(ngu);
-		}			
-		boolean ret = queryExecution.execAsk();
-		return ret;
-	}
-	
-	private Model executeConstructQuery(String query){
-		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
-		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
-			queryExecution.addDefaultGraph(dgu);
-		}
-		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
-			queryExecution.addNamedGraph(ngu);
-		}			
-		Model ret = queryExecution.execConstruct();
+		
 		return ret;
 	}
 	
