@@ -59,19 +59,19 @@ public class BasicSlotBuilder {
 					/* DP */
 					String[] dpEntry1 = {token,
 							"(DP (NP " + treetoken + "))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slot + "]>"};
+							"<x,l1,<<e,t>,t>,[ l1:[ x,p | SLOT_" + tokenfluent + "(p), ISA(x,p) ] ],[],[],[" + slot + "]>"};
 					String[] dpEntry2 = {token,
 							"(DP (NP " + treetoken + " DP[name]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x), equal(x,y) ] ],[ (l2,y,name,<<e,t>,t>) ],[l2=l1],[" + slot + "]>"};
+							"<x,l1,<<e,t>,t>,[ l1:[ x,p | SLOT_" + tokenfluent + "(p), ISA(x,p), equal(x,y) ] ],[ (l2,y,name,<<e,t>,t>) ],[l2=l1],[" + slot + "]>"};
 					result.add(dpEntry1);
 					result.add(dpEntry2);
 					/* NP */
 					String[] npEntry1 = {token,
 							"(NP " + treetoken + ")",
-							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slot + "]>"};
+							"<x,l1,<e,t>,[ l1:[ p | SLOT_" + tokenfluent + "(p), ISA(x,p) ] ],[],[],[" + slot + "]>"};
 					String[] npEntry2 = {token,
 							"(NP " + treetoken + " DP[name])",
-							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x), equal(x,y) ] ],[ (l2,y,name,<<e,t>,t>) ],[l2=l1],[" + slot + "]>"};
+							"<x,l1,<e,t>,[ l1:[ p | SLOT_" + tokenfluent + "(p), ISA(x,p), equal(x,y) ] ],[ (l2,y,name,<<e,t>,t>) ],[l2=l1],[" + slot + "]>"};
 					result.add(npEntry1);
 					result.add(npEntry2);	
 				} 
@@ -89,13 +89,13 @@ public class BasicSlotBuilder {
 				else if (pos.equals("NPREP")) {
 					String[] dpEntry1 = {token,
 							"(DP (NP " + treetoken + " DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slot + "]>"}; 
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(p), p(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slot + "]>"}; 
 					String[] dpEntry2 = {token,
 							"(DP DET[det] (NP " + treetoken + " DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ | SLOT_" + tokenfluent + "(x,y) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slot + "]>"};
+							"<x,l1,<<e,t>,t>,[ l1:[ | SLOT_" + tokenfluent + "(p), p(x,y) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slot + "]>"};
 					String[] npEntry = {token,
 							"(NP " + treetoken + " DP[pobj])",
-							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slot + "]>"};
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(p), p(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slot + "]>"};
 					result.add(dpEntry1);
 					result.add(dpEntry2);
 					result.add(npEntry);
@@ -116,10 +116,10 @@ public class BasicSlotBuilder {
 					result.add(npEntry);
 				}
 				else if(pos.equals("JJNN") && token.contains("_")) {
-					slot = "SLOT_" + tokenfluent + "/USNPEC/" + token;
+					slot = "SLOT_" + tokenfluent + "/UNSPEC/" + token;
 					String[] npEntry = {token,
 							"(NP " + treetoken + " )",
-							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slot + "]>"};
+							"<x,l1,<e,t>,[ l1:[ p | SLOT_" + tokenfluent + "(p), ISA(x,p) ] ],[],[],[" + slot + "]>"};
 					result.add(npEntry);
 				}
 						
@@ -160,10 +160,14 @@ public class BasicSlotBuilder {
 					result.add(passEntry);
 				}
 				else if (pos.equals("VPASSIN")) {
-					String[] passEntry = {token,
+					String[] passEntry1 = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
 							"<x,l1,t,[ l1:[|], l4:[ p | SLOT_" + token + "(p), p(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
-					result.add(passEntry);
+					String[] passEntry2 = {token,
+							"(S DP[dp] (VP V:'" + token + "' NUM[num]))",
+							"<x,l1,t,[ l1:[|], l4:[ p | SLOT_" + token + "(p), p(y,z) ] ],[(l2,x,dp,<<e,t>,t>),(l3,z,num,e)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
+					result.add(passEntry1);
+					result.add(passEntry2);
 				}
 				else if (pos.equals("GERUNDIN")) {
 					String[] gerundinEntry1 = {token,
@@ -178,15 +182,19 @@ public class BasicSlotBuilder {
 					result.add(gerundinEntry2);
 				}
 				else if (pos.equals("VPREP")) {
-					String[] passEntry = {token,
+					String[] passEntry1 = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
 							"<x,l1,t,[ l1:[|], l4:[ p | SLOT_" + token + "(p), p(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>" +
 									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
+					String[] passEntry2 = {token,
+							"(S DP[subj] (VP V:'" + token + "' NUM[num]))",
+							"<x,l1,t,[ l1:[|], l4:[ p | SLOT_" + token + "(p), p(x,y), DATE(y,z) ] ],[(l2,x,subj,<<e,t>,t>),(l3,z,num,e)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
 					String[] whEntry = {token,
 							"(S DP[obj] (VP DP[subj] V:'" + token + "'))",
 							"<x,l1,t,[ l1:[|], l4:[ p | SLOT_" + token + "(p), p(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>" +
 									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
-					result.add(passEntry);
+					result.add(passEntry1);
+					result.add(passEntry2);
 					result.add(whEntry);
 				}
 				else if (pos.equals("VBD") || pos.equals("VBZ") || pos.equals("VBP")) {
@@ -239,13 +247,13 @@ public class BasicSlotBuilder {
 				if (pos.equals("JJ")) {
 					String[] adjEntry = {token,
 							"(NP ADJ:'" + token.toLowerCase() + "' NP*)",
-							"<x,l1,<e,t>,[ l1:[ j | SLOT_" + token + "(j) ] ],[],[],["+slot+"]>"};			
+							"<x,l1,<e,t>,[ l1:[ j | SLOT_" + token + "(p), p(x,j) ] ],[],[],["+slot+"]>"};			
 					result.add(adjEntry);
 				}
 				if (pos.equals("JJH")) {
 					String[] howEntry = {"how "+token,
 							"(DP ADJ:'" + token.toLowerCase() + "')",
-							"<x,l1,<<e,t>,t>,[ l1:[ ?j,x | SLOT_" + token + "(j) ] ],[],[],["+slot+"]>"};
+							"<x,l1,<<e,t>,t>,[ l1:[ ?j,x,p | SLOT_" + token + "(p), p(x,j) ] ],[],[],["+slot+"]>"};
 					result.add(howEntry);
 				}
 				/* COMPARATIVE */

@@ -63,6 +63,7 @@ public class Preprocessor {
 		 * x/RBR adj/JJ > adj/JJR, x/RBS adj/JJ > adj/JJS, x/WRB adj/JJ > x/JJH
 		 * nn/RBR of/IN > nn/NPREP
 		 * usw. 
+		 * Note: Matching these patterns is order-dependent!
 		 * */ 
 		String condensedstring = taggedstring.replaceAll("``/``","").replaceAll("''/''","").replaceAll("  "," ");
 		Matcher m;

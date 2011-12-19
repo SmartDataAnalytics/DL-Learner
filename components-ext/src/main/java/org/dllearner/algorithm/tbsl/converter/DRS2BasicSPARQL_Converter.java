@@ -19,9 +19,11 @@ import org.dllearner.algorithm.tbsl.sparql.SPARQL_Filter;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_OrderBy;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Pair;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_PairType;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Prefix;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Property;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_QueryType;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Term;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Triple;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 
@@ -120,6 +122,14 @@ public class DRS2BasicSPARQL_Converter {
             for (DRS_Condition cond : scope.getConditions()) {
                 temp = convertCondition(cond,temp);
             }
+            // preserve marked referents from restrictor and scope
+            Set<DiscourseReferent> tokeep = restrictor.collectDRs();
+            tokeep.addAll(scope.collectDRs());
+            for (DiscourseReferent dr : tokeep) {
+            	if (dr.isMarked()) { 
+            		temp.addSelTerm(new SPARQL_Term(dr.getValue()));
+            	}
+            }
             // add the quantifier at last
             DiscourseReferent ref = complex.getReferent();
             String sref = ref.getValue();
@@ -165,7 +175,7 @@ public class DRS2BasicSPARQL_Converter {
 
         } else {
             Simple_DRS_Condition simple = (Simple_DRS_Condition) condition;
-            
+                       
             String predicate = simple.getPredicate();
             if (predicate.startsWith("SLOT")) {
             	for (Slot s : slots) {
@@ -287,6 +297,28 @@ public class DRS2BasicSPARQL_Converter {
                         SPARQL_PairType.EQ)));
                 return temp;
             }
+            else if (predicate.equals("DATE")) {
+            	temp.addFilter(new SPARQL_Filter(
+            			new SPARQL_Pair(
+                        new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
+                        new SPARQL_Term("'^"+simple.getArguments().get(1).getValue()+"'",true),
+                        SPARQL_PairType.REGEX)));
+            }
+            else if (predicate.equals("regex")) {
+            	temp.addFilter(new SPARQL_Filter(
+            			new SPARQL_Pair(
+                        new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),true),
+                        SPARQL_PairType.REGEX)));
+            }
+            else if (predicate.equals("ISA")) {
+            	temp.addConditions(new Path(simple.getArguments().get(0).getValue(),"isA",simple.getArguments().get(1).getValue()));
+            }
+//            else {
+//	            if (simple.getArguments().size() == 1) {
+//	            	temp.addConditions(new Path(simple.getArguments().get(0).getValue(),"rdf:type",simple.getPredicate()));
+//	            }
+//            }
         }
         return temp;
     }

@@ -29,6 +29,21 @@ public class TestFrontend {
             if (s.equals(":q")) {
                 System.exit(0);
             }
+            if (s.equals(":mode")) {
+            	if (BASIC_MODE) System.out.println("Mode: BASIC");
+            	else System.out.println("Current mode is: LEIPZIG");
+            	continue;
+            }
+            if (s.equals(":mode BASIC")) {
+            	BASIC_MODE = true;
+            	System.out.println("Current mode is switched to BASIC.");
+            	continue;
+            }
+            else if (s.equals(":mode LEIPZIG")) {
+            	BASIC_MODE = false;
+            	System.out.println("Current mode is switched to LEIPZIG.");
+            	continue;
+            }
          
             if (BASIC_MODE) {
             	for (BasicQueryTemplate temp : handler.buildBasicTemplates(s)) {
