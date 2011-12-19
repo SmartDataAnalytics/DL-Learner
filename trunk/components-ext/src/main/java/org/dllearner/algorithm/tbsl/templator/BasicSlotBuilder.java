@@ -244,7 +244,7 @@ public class BasicSlotBuilder {
 				}
 				if (pos.equals("JJH")) {
 					String[] howEntry = {"how "+token,
-							"(DP WH:'how' ADJ:'" + token.toLowerCase() + "')",
+							"(DP ADJ:'" + token.toLowerCase() + "')",
 							"<x,l1,<<e,t>,t>,[ l1:[ ?j,x | SLOT_" + token + "(j) ] ],[],[],["+slot+"]>"};
 					result.add(howEntry);
 				}
