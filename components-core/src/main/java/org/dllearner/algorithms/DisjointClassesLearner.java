@@ -43,6 +43,8 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -117,7 +119,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		//TODO
 		
 		//at first get all existing classes in knowledgebase
-		allClasses = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+		allClasses = getAllClasses();
 		allClasses.remove(classToDescribe);
 		
 		//get the subclasses
@@ -128,9 +130,9 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		}
 		
 		if(ks.supportsSPARQL_1_1()){
-			runSPARQL1_1_Mode();
-		} else {
 			runSPARQL1_0_Mode();
+		} else {
+			runSPARQL1_1_Mode();
 		}
 		
 		//get classes and how often they occur
@@ -184,9 +186,9 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	private void runSPARQL1_1_Mode(){
 		int limit = 1000;
 		int offset = 0;
-		String queryTemplate = "SELECT ?type COUNT(?s) AS ?count WHERE {?s a ?type." +
-		"{SELECT ?s WHERE {?s a <%s>.} LIMIT %d OFFSET %d}" +
-		"}";
+		String queryTemplate = "SELECT ?type (COUNT(?s) AS ?count) WHERE {?s a ?type." +
+		"{SELECT ?s WHERE {?s a <%s>.} LIMIT %d OFFSET %d} " +
+		"} GROUP BY ?type";
 		String query;
 		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
 		NamedClass cls;
@@ -200,17 +202,20 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			repeat = false;
 			while(rs.hasNext()){
 				qs = rs.next();
-				cls = new NamedClass(qs.getResource("type").getURI());
-				int newCnt = qs.getLiteral("count").getInt();
-				oldCnt = result.get(cls);
-				if(oldCnt == null){
-					oldCnt = Integer.valueOf(newCnt);
-				} else {
-					oldCnt += newCnt;
+				if(qs.getResource("type") != null){
+					cls = new NamedClass(qs.getResource("type").getURI());
+					int newCnt = qs.getLiteral("count").getInt();
+					oldCnt = result.get(cls);
+					if(oldCnt == null){
+						oldCnt = Integer.valueOf(newCnt);
+					} else {
+						oldCnt += newCnt;
+					}
+					
+					result.put(cls, oldCnt);
+					repeat = true;
 				}
 				
-				result.put(cls, oldCnt);
-				repeat = true;
 			}
 			if(!result.isEmpty()){
 				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, allClasses);
@@ -350,7 +355,8 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			SortedSet<Description> mostGeneralClasses = reasoner.getClassHierarchy().getMostGeneralClasses();
 		}
 		for(NamedClass cls : completeDisjointclasses){
-			if(useClassPopularity && ks.supportsSPARQL_1_1()){
+			if(useClassPopularity && (
+					(ks instanceof SparqlEndpointKS && ((SparqlEndpointKS) ks).supportsSPARQL_1_1()) || !(ks instanceof SparqlEndpointKS))){
 				int popularity = reasoner.getIndividualsCount(cls);
 				//we skip classes with no instances
 				if(popularity == 0) continue;
@@ -387,9 +393,11 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	}
 	
 	public static void main(String[] args) throws Exception{
+		LocalModelBasedSparqlEndpointKS ks = new LocalModelBasedSparqlEndpointKS(new URL("http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/examples/swore/swore.rdf?revision=2217"));
 		DisjointClassesLearner l = new DisjointClassesLearner(new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
 				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Band"));
+		l = new DisjointClassesLearner(ks);
+		l.setClassToDescribe(new NamedClass("http://ns.softwiki.de/req/CustomerRequirement"));
 		l.init();
 		l.getReasoner().prepareSubsumptionHierarchy();
 //		System.out.println(l.getReasoner().getClassHierarchy().getSubClasses(new NamedClass("http://dbpedia.org/ontology/Athlete"), false));System.exit(0);

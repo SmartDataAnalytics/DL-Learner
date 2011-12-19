@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -34,8 +35,12 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
+import org.dllearner.kb.sparql.SPARQLTasks;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -44,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
@@ -90,8 +96,6 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
         this.learningProblem = learningProblem;
     }	
 	
-	ExtendedQueryEngineHTTP queryExecution;
-	
 	public int getMaxExecutionTimeInSeconds() {
 		return maxExecutionTimeInSeconds;
 	}
@@ -132,7 +136,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	public void init() throws ComponentInitException {
 		ks.init();
 		if(reasoner == null){
-			reasoner = new SPARQLReasoner(ks);
+			reasoner = new SPARQLReasoner((SparqlEndpointKS) ks);
 		}
 	}
 
@@ -184,68 +188,72 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		return returnList;
 	}
 	
+	protected Set<NamedClass> getAllClasses() {
+		if(ks.isRemote()){
+			return new SPARQLTasks(((SparqlEndpointKS) ks).getEndpoint()).getAllClasses();
+		} else {
+			Set<NamedClass> classes = new TreeSet<NamedClass>();
+			for(OntClass cls : ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().toList()){
+				if(!cls.isAnon()){
+					classes.add(new NamedClass(cls.getURI()));
+				}
+			}
+			return classes;
+		}
+		
+	}
+	
 	protected Model executeConstructQuery(String query) {
 		logger.info("Sending query\n{} ...", query);
-		queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(),
-				query);
-		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
-		queryExecution.setDefaultGraphURIs(ks.getEndpoint().getDefaultGraphURIs());
-		queryExecution.setNamedGraphURIs(ks.getEndpoint().getNamedGraphURIs());
-		
-		return queryExecution.execConstruct();
+		if(ks.isRemote()){
+			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
+			ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(),
+					query);
+			queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
+			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
+			queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
+			return queryExecution.execConstruct();
+		} else {
+			QueryExecution qexec = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
+			return qexec.execConstruct();
+		}
 	}
 	
 	protected ResultSet executeSelectQuery(String query) {
 		logger.info("Sending query\n{} ...", query);
-		queryExecution = new ExtendedQueryEngineHTTP(ks.getEndpoint().getURL().toString(),
-				query);
-		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
-		queryExecution.setDefaultGraphURIs(ks.getEndpoint().getDefaultGraphURIs());
-		queryExecution.setNamedGraphURIs(ks.getEndpoint().getNamedGraphURIs());
-		
-//		ResultSet resultSet = null;
-//		try {
-//			resultSet = queryExecution.execSelect();
-//		} catch (Exception e) {
-//			logger.error("Got a timeout during query execution.", e);
-//			resultSet = new CollectionResultSet(Collections.<String>emptyList(), Collections.<QuerySolution>emptyList());
-//		}
-		ResultSet resultSet = queryExecution.execSelect();
-		
-		return resultSet;
+		if(ks.isRemote()){
+			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
+			ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(),
+					query);
+			queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
+			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
+			queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
+			return queryExecution.execSelect();
+		} else {
+			return executeSelectQuery(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
+		}
 	}
 	
 	protected ResultSet executeSelectQuery(String query, Model model) {
 		logger.info("Sending query\n{} ...", query);
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSet rs = qexec.execSelect();;
-		
 
 		return rs;
 	}
 	
-	protected void close() {
-		queryExecution.close();
-	}
-	
 	protected boolean executeAskQuery(String query){
 		logger.info("Sending query\n{} ...", query);
-		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
-		for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
-			queryExecution.addDefaultGraph(dgu);
+		if(ks.isRemote()){
+			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
+			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
+			queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
+			return queryExecution.execAsk();
+		} else {
+			QueryExecution queryExecution = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
+			return queryExecution.execAsk();
 		}
-		for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
-			queryExecution.addNamedGraph(ngu);
-		}			
-//		ResultSet rs = queryExecution.execSelect();
-//		boolean result = false;
-//		QuerySolution qs;
-//		if(rs.hasNext()){
-//			qs = rs.next();
-//			result = qs.get(qs.varNames().next()).asLiteral().getBoolean();
-//		}
-		boolean result = queryExecution.execAsk();
-		return result;
 	}
 	
 	protected <K, V extends Comparable<V>> List<Entry<K, V>> sortByValues(Map<K, V> map){
@@ -269,6 +277,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	protected List<Entry<Description, Integer>> sortByValues(Map<Description, Integer> map, final boolean useHierachy){
 		List<Entry<Description, Integer>> entries = new ArrayList<Entry<Description, Integer>>(map.entrySet());
 		final ClassHierarchy hierarchy = reasoner.getClassHierarchy();
+		
         Collections.sort(entries, new Comparator<Entry<Description, Integer>>() {
 
 			@Override
