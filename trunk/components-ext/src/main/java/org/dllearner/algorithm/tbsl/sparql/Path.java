@@ -28,11 +28,14 @@ public class Path {
 	}
 	
 	public String toString() {
+		String v;
+		if (via.equals("isA")) v = via; else v = "?"+via;
+		
 		if (via.isEmpty()) {
 			return "?" + start + " -- " + "?" + target;
 		}
 		else {
-			return "?" + start + " -- ?" + via + " -- ?" + target;
+			return "?" + start + " -- " + v + " -- ?" + target;
 		}
 	}
 }
