@@ -226,9 +226,21 @@ public class Preprocessor {
 		String flat = s;
 		
 		Matcher m;
-		Pattern nnpPattern   = Pattern.compile("\\s?((\\w+)/NNP[S]?\\s(\\w+))/NNP[S]?(\\W|$)");
-		Pattern nnPattern    = Pattern.compile("\\s?((\\w+)/NN[S]?\\s(\\w+))/NN[S]?(\\W|$)");
-		Pattern nnnnpPattern = Pattern.compile("\\s?((\\w+)/NNP[S]?)\\s(\\w+)/NN[S]?(\\W|$)");
+		Pattern quotePattern1 = Pattern.compile("``/``(\\s)?(\\w+(/\\w+\\s)).*''/''");
+		Pattern quotePattern2 = Pattern.compile("(``/``((.*)_)''/'')");
+		Pattern nnpPattern    = Pattern.compile("\\s?((\\w+)/NNP[S]?\\s(\\w+))/NNP[S]?(\\W|$)");
+		Pattern nnPattern     = Pattern.compile("\\s?((\\w+)/NN[S]?\\s(\\w+))/NN[S]?(\\W|$)");
+		Pattern nnnnpPattern  = Pattern.compile("\\s?((\\w+)/NNP[S]?)\\s(\\w+)/NN[S]?(\\W|$)");
+
+		m = quotePattern1.matcher(flat);
+		while (m.find()) {
+			flat = flat.replaceFirst(m.group(3),"_");
+			m = quotePattern1.matcher(flat);
+		}
+		m = quotePattern2.matcher(flat);
+		while (m.find()) {
+			flat = flat.replaceFirst(m.group(2),m.group(3)+"/NNP");
+		}
 		
 		m = nnpPattern.matcher(flat);
 		while (m.find()) {

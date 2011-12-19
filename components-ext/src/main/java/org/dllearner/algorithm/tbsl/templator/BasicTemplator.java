@@ -14,6 +14,7 @@ import org.dllearner.algorithm.tbsl.ltag.parser.Parser;
 import org.dllearner.algorithm.tbsl.ltag.parser.Preprocessor;
 import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.sem.drs.DRS;
 import org.dllearner.algorithm.tbsl.sem.drs.UDRS;
 import org.dllearner.algorithm.tbsl.sem.dudes.data.Dude;
@@ -31,6 +32,9 @@ public class BasicTemplator {
 	Parser p;
 	Preprocessor pp;
 	
+    DUDE2UDRS_Converter d2u;
+    DRS2BasicSPARQL_Converter d2s;
+	
 	boolean ONE_SCOPE_ONLY = true;
 	public boolean UNTAGGED_INPUT = true;
 	
@@ -42,8 +46,8 @@ public class BasicTemplator {
 		
         g = LTAG_Constructor.construct(grammarFiles);
 
-//      tagger = new StanfordPartOfSpeechTagger();
-        tagger = new ApachePartOfSpeechTagger();
+        tagger = new StanfordPartOfSpeechTagger();
+//      tagger = new ApachePartOfSpeechTagger();
 		
 	    p = new Parser();
 	    p.SHOW_GRAMMAR = true;
@@ -52,6 +56,9 @@ public class BasicTemplator {
 	    p.MODE = "BASIC";
 	    
 	    pp = new Preprocessor(false);
+	    
+	    d2u = new DUDE2UDRS_Converter();
+	    d2s = new DRS2BasicSPARQL_Converter();
 	}
 	
 	public void setUNTAGGED_INPUT(boolean b) {
@@ -59,9 +66,7 @@ public class BasicTemplator {
 	}
 
 	public Set<BasicQueryTemplate> buildBasicQueries(String s) {
-		
-        DUDE2UDRS_Converter d2u = new DUDE2UDRS_Converter();
-        DRS2BasicSPARQL_Converter d2s = new DRS2BasicSPARQL_Converter();
+	
 		boolean clearAgain = true;
         
 		String tagged;
