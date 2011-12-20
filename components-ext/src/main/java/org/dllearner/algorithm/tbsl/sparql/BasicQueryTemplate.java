@@ -106,6 +106,16 @@ public class BasicQueryTemplate
 		}
 		return result;
 	}
+	
+	public Set<String> getVariablesInConditions() {
+		Set<String> vars = new HashSet<String>();
+		for (Path p : conditions) {
+			vars.add(p.start);
+			vars.add(p.via);
+			vars.add(p.target);
+		}
+		return vars;
+	}
 
 	public Set<SPARQL_Term> getSelTerms()
 	{

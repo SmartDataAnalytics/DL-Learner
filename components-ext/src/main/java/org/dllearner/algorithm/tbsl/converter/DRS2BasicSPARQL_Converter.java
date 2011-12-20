@@ -33,6 +33,7 @@ public class DRS2BasicSPARQL_Converter {
     List<Slot> slots;
 //    BasicQueryTemplate query;
     List<Integer> usedInts;
+    List<Simple_DRS_Condition> unusedConditions;
 
     public DRS2BasicSPARQL_Converter() {
  //   	query = new BasicQueryTemplate();
@@ -54,7 +55,7 @@ public class DRS2BasicSPARQL_Converter {
         
  //       query = new BasicQueryTemplate();
         slots = ls;
-        
+    	        
         return convert(drs, new BasicQueryTemplate(), false);
     }
 
@@ -65,8 +66,10 @@ public class DRS2BasicSPARQL_Converter {
         if (!restructureEmpty(drs)) {
         	return null;
         }
-        System.out.println("--- DRS (after) : " + drs); // DEBUG
-            
+        System.out.println("DRS:\n" + drs); // DEBUG
+        
+    	unusedConditions = new ArrayList<Simple_DRS_Condition>();
+        
         for (DRS_Condition condition : drs.getConditions()) {
             convertCondition(condition,temp);
             if (negate) {
@@ -76,6 +79,21 @@ public class DRS2BasicSPARQL_Converter {
                     temp.addFilter(f);
             	}
             }
+        }
+       
+        for (Simple_DRS_Condition c : unusedConditions) {
+        	if (!temp.getVariablesInConditions().contains(c.getArguments().get(0))) {
+        		String v = c.getArguments().get(0).getValue();
+        		for (Slot s : slots) {
+        			if (s.getAnchor().equals(v) && !s.getSlotType().equals(SlotType.RESOURCE)) {
+        				String fresh = v+createFresh();
+        				s.setAnchor(fresh);
+        				temp.addConditions(new Path(v,"isA",fresh));
+        				temp.addSlot(s);
+        				break;
+        			}
+        		}	
+        	}
         }
         
         for (DiscourseReferent referent : drs.collectDRs()) {
@@ -91,6 +109,7 @@ public class DRS2BasicSPARQL_Converter {
             	f.addNotBound(term);
             	temp.addFilter(f);
             }
+
             for (Slot s : slots) {
         		if (s.getAnchor().equals(referent.getValue())) {
         			temp.addSlot(s); // query
@@ -311,15 +330,14 @@ public class DRS2BasicSPARQL_Converter {
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),true),
                         SPARQL_PairType.REGEX)));
             }
-            else if (predicate.equals("ISA")) {
-            	temp.addConditions(new Path(simple.getArguments().get(0).getValue(),"isA",simple.getArguments().get(1).getValue()));
+            else {
+            	if (simple.getArguments().size() == 1) {
+            		unusedConditions.add((Simple_DRS_Condition) condition);
+	            }
             }
-//            else {
-//	            if (simple.getArguments().size() == 1) {
-//	            	temp.addConditions(new Path(simple.getArguments().get(0).getValue(),"rdf:type",simple.getPredicate()));
-//	            }
-//            }
+
         }
+    	
         return temp;
     }
 
