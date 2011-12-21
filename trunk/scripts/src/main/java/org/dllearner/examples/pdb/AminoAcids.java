@@ -31,6 +31,7 @@ public final class AminoAcids {
 	public static final Resource TYR = ResourceFactory.createResource("http://bio2rdf.org/pdb:Tyrosine");
 	public static final Resource SEL = ResourceFactory.createResource("http://bio2rdf.org/pdb:Selenomethionine");
 	public static final Resource HYT = ResourceFactory.createResource("http://bio2rdf.org/pdb:2-hydroxy-tryptophan");
+	public static final Resource SOC = ResourceFactory.createResource("http://bio2rdf.org/pdb:S-oxyCysteine");
 	
 	public static HashMap<Resource, File> getAllConfFiles (String dir, String confFileName){
 		HashMap<Resource, File> aminoAcidsConfFiles = new HashMap<Resource, File>(30);
@@ -56,6 +57,8 @@ public final class AminoAcids {
 		aminoAcidsConfFiles.put(TYR, new File(dir + confFileName.replace(".conf", "." + TYR.getLocalName() + ".conf")));
 		aminoAcidsConfFiles.put(SEL, new File(dir + confFileName.replace(".conf", "." + SEL.getLocalName() + ".conf")));
 		aminoAcidsConfFiles.put(HYT, new File(dir + confFileName.replace(".conf", "." + HYT.getLocalName() + ".conf")));
+		aminoAcidsConfFiles.put(SOC, new File(dir + confFileName.replace(".conf", "." + SOC.getLocalName() + ".conf")));
+
 		return aminoAcidsConfFiles;
 	}
 	
@@ -85,6 +88,8 @@ public final class AminoAcids {
 			resprint.put(TYR, new PrintStream(allConfFiles.get(TYR)));
 			resprint.put(SEL, new PrintStream(allConfFiles.get(SEL)));
 			resprint.put(HYT, new PrintStream(allConfFiles.get(HYT)));
+			resprint.put(SOC, new PrintStream(allConfFiles.get(SOC)));
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -116,6 +121,7 @@ public final class AminoAcids {
 		resourceString.put(TYR, new StringBuffer(init));
 		resourceString.put(SEL, new StringBuffer(init));
 		resourceString.put(HYT, new StringBuffer(init));
+		resourceString.put(SOC, new StringBuffer(init));
 		return resourceString;
 	}
 	

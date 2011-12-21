@@ -103,14 +103,18 @@ public class HelixRDFCreator {
 		Boolean dlLearn = false;
 		Boolean wekaLearn = false;
 		
-		int dataSet = 1;
+		int dataSet = 5;
 
 		/*
 		 * data for test purpose
 		 */
-		PDBProtein testProtein = new PDBProtein("1EDM","B");
-//		PDBProtein testProtein = new PDBProtein("1LMB", "3");
-//		PDBProtein testProtein = new PDBProtein("8ABP");
+
+		/* +++ Problem IDs +++
+		 * Warum funktionieren die Abfragen mit den untenstehenden PDB IDs nicht???
+		 */
+//		PDBProtein testProtein = new PDBProtein("1HTR","P");
+//		PDBProtein testProtein = new PDBProtein("2W9Y","A");
+		PDBProtein testProtein = new PDBProtein("3A4R","A");
 
 		
 		/*
@@ -411,6 +415,7 @@ public class HelixRDFCreator {
 			for (int i = 0 ; i < negatives.size() ; i++ ) {
 				lp.append("\"" + negatives.get(i).getURI() + "\", ");
 				try{
+					_logger.info("Negative residue: " + negatives.get(i).getURI());
 					Statement spo = model.getModel().getProperty(negatives.get(i), type);
 					resourceStringBuffer.get(spo.getResource()).append("\"" + negatives.get(i).getURI() + "\", ");
 				} catch (NullPointerException e) {
