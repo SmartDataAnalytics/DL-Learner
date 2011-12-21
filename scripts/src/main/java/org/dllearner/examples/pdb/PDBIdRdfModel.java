@@ -7,11 +7,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.xml.sax.InputSource;
 
 import com.dumontierlab.pdb2rdf.model.PdbRdfModel;
@@ -22,7 +18,6 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -205,30 +200,36 @@ public class PDBIdRdfModel {
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 				"PREFIX fn: <http://www.w3.org/2005/xpath-functions#> " +
 				"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " +
-				"CONSTRUCT { ?x1 pdb:beginsAt ?x2 ." +
-	    		" ?x1 pdb:endsAt ?x3 ." +
-	    		" ?x5 dcterms:isPartOf ?x4 ." +
-	    		" ?x5 rdf:type ?x6 ." +
-	    		" ?x5 pdb:isImmediatelyBefore ?x7 ." +
-	    		" ?x5 pdb:hasChainPosition ?x8 ." +
-	    		" ?x8 rdfs:label ?residuePosition ." +
-	    		" ?x8 pdb:hasValue ?x9 ." +
-	    		" ?organism rdfs:label ?organismName ." +
-	    		" ?seq rdf:type pdb:PolymerSequence ." +
-	    		" ?seq pdb:hasValue ?sequence . } " +	    		
+				"CONSTRUCT { " +
+					" ?x1 pdb:beginsAt ?x2 ." +
+					" ?x1 pdb:endsAt ?x3 ." +
+					" ?x5 dcterms:isPartOf ?x4 ." +
+					" ?x5 rdf:type ?x6 ." +
+					" ?x5 pdb:isImmediatelyBefore ?x7 ." +
+					" ?x5 pdb:hasChainPosition ?x8 ." +
+					" ?x8 pdb:hasValue ?x9 ." +
+					" ?organism rdfs:label ?organismName ." +
+					" ?seq rdf:type pdb:PolymerSequence ." +
+					" ?seq pdb:hasValue ?sequence . " +
+				"} " +	    		
 	    		"WHERE { " +
-	    		" OPTIONAL { ?x1 rdf:type pdb:Helix ." +
-	    		" ?x1 pdb:beginsAt ?x2 ." +
-	    		" ?x1 pdb:endsAt ?x3 . } . " +
-	    		" ?x3 dcterms:isPartOf ?x4 ." +
-	    		" ?x4 rdf:type <http://bio2rdf.org/pdb:Polypeptide(L)> ." +
-	    		" ?x5 dcterms:isPartOf ?x4 ." +
-	    		" ?x5 rdf:type ?x6 ." +
+	    			" OPTIONAL { ?x1 rdf:type pdb:Helix ." +
+	    				" ?x1 pdb:beginsAt ?x2 ." +
+	    				" ?x1 pdb:endsAt ?x3 . " +
+	    			"} . " +
+	    			" ?x3 dcterms:isPartOf ?x4 ." +
+	    			" ?x4 rdf:type <http://bio2rdf.org/pdb:Polypeptide(L)> ." +
+	    		//" <http://bio2rdf.org/pdb:3A4R/chemicalComponent_A0> dcterms:isPartOf ?x4 ." +
+	    		//" <http://bio2rdf.org/pdb:3A4R/chemicalComponent_A0> rdf:type ?x6 ." +
+	    		//" OPTIONAL { <http://bio2rdf.org/pdb:3A4R/chemicalComponent_A0> pdb:isImmediatelyBefore ?x7 . } ." +
+	    		//" <http://bio2rdf.org/pdb:3A4R/chemicalComponent_A0> pdb:hasChainPosition ?x8 ." +
+	    			" ?x5 dcterms:isPartOf ?x4 . " +
+	    			" ?x5 rdf:type ?x6 ." +
 	    		// with the optional clause i get the information by which amino acid
 	    		// a amino acid is followed
-	    		" OPTIONAL { ?x5 pdb:isImmediatelyBefore ?x7 . } . " +
-	    		" ?x5 pdb:hasChainPosition ?x8 ." +
-	    		" ?x8 pdb:hasValue ?x9 Filter (xsd:int(?x9)) .";		 
+	    			" OPTIONAL { ?x5 pdb:isImmediatelyBefore ?x7 . } ." +
+	    			" ?x5 pdb:hasChainPosition ?x8 ." +
+	    			" ?x8 pdb:hasValue ?x9 Filter (datatype((?x9)) = xsd:integer) .";
 		 if (chainID.length() == 1 && pdbID.length() == 4)
 			{
 				queryString +=
@@ -237,11 +238,13 @@ public class PDBIdRdfModel {
 								"/chain_" + chainID.toUpperCase() + "> .";
 			}
 		 queryString +=
-				" ?x4 pdb:hasPolymerSequence ?seq . " +
-	    		" ?seq rdf:type pdb:PolymerSequence . " +
-	    		" ?seq pdb:hasValue ?sequence . " +
-	    		" OPTIONAL { ?organism rdfs:label ?organismName " +
-	    			"FILTER (str(?organism) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . } . }";
+					" ?x4 pdb:hasPolymerSequence ?seq . " +
+					" ?seq rdf:type pdb:PolymerSequence . " +
+					" ?seq pdb:hasValue ?sequence . " +
+					" OPTIONAL { ?organism rdfs:label ?organismName " +
+	    				"FILTER (str(?organism) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . " +
+	    			"} . " +
+	    		"}";
 		
 		_logger.debug(queryString);
 		Query query = QueryFactory.create(queryString);
