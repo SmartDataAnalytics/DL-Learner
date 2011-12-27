@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,17 +45,21 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
-import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
+import org.openrdf.model.vocabulary.OWL;
+import org.openrdf.model.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * Learns disjoint classes using SPARQL queries.
@@ -123,64 +128,85 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		allClasses.remove(classToDescribe);
 		
 		//get the subclasses
-		if(reasoner.isPrepared()){
-			subClasses = reasoner.getClassHierarchy().getSubClasses(classToDescribe, false);
+		if(ks.isRemote()){
+			if(reasoner.isPrepared()){
+				subClasses = reasoner.getClassHierarchy().getSubClasses(classToDescribe, false);
+			} else {
+				subClasses = reasoner.getSubClasses(classToDescribe, true);
+			}
 		} else {
-			subClasses = reasoner.getSubClasses(classToDescribe, true);
+			subClasses = new TreeSet<Description>();
+			OntModel ontModel = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
+			OntClass cls = ontModel.getOntClass(classToDescribe.getName());
+			for(OntClass sub : cls.listSubClasses(false).toSet()){
+				if(!sub.isAnon()){
+					subClasses.add(new NamedClass(sub.getURI()));
+				}
+			}
+			for(OntClass sup : cls.listSuperClasses().toSet()){System.out.println(cls.listSuperClasses().toSet());
+				if(!sup.isAnon()){
+					subClasses.add(new NamedClass(sup.getURI()));
+				}
+			}
 		}
 		
 		if(ks.supportsSPARQL_1_1()){
 			runSPARQL1_0_Mode();
 		} else {
-			runSPARQL1_1_Mode();
+			runSPARQL1_0_Mode();
 		}
-		
-		//get classes and how often they occur
-				
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private void runSPARQL1_0_Mode(){
+		Model model = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
-		String queryTemplate = "SELECT ?s ?type WHERE {?s a <%s>. ?s a ?type.} LIMIT %d OFFSET %d";
-		String query;
+		String baseQuery  = "CONSTRUCT {?s a <%s>. ?s a ?type.} WHERE {?s a <%s>. ?s a ?type.} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, classToDescribe.getName(), classToDescribe.getName(), limit, offset);System.out.println(query);
+		Model newModel = executeConstructQuery(query);
 		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
 		NamedClass cls;
 		Integer oldCnt;
-		boolean repeat = true;
-		
-		int total = 0;
-		
-		String resource = "";
-		while(!terminationCriteriaSatisfied() && repeat){
-			query = String.format(queryTemplate, classToDescribe, limit, offset);
-			ResultSet rs = executeSelectQuery(query);
+		while(newModel.size() != 0){
+			model.add(newModel);
+			//get total number of distinct instances
+			query = "SELECT (COUNT(DISTINCT ?s) AS ?count) WHERE {?s a ?type.}";
+			ResultSet rs = executeSelectQuery(query, model);
+			int total = rs.next().getLiteral("count").getInt();
+			
+			// get number of instances of s with <s p o>
+			query = "SELECT ?type (COUNT(?s) AS ?count) WHERE {?s a ?type.}" +
+					" GROUP BY ?type";
+			rs = executeSelectQuery(query, model);
 			QuerySolution qs;
-			repeat = false;
 			while(rs.hasNext()){
-				qs = rs.next();
-				String newResource = qs.getResource("?s").getURI();
-				if(newResource != resource){
-					total++;
-					resource = newResource;
+				qs = rs.next();System.out.println(qs);
+				if(qs.getResource("type") != null){
+					cls = new NamedClass(qs.getResource("type").getURI());
+					int newCnt = qs.getLiteral("count").getInt();
+					oldCnt = result.get(cls);
+					if(oldCnt == null){
+						oldCnt = Integer.valueOf(newCnt);
+					} else {
+						oldCnt += newCnt;
+					}
+					
+					result.put(cls, oldCnt);
 				}
-				cls = new NamedClass(qs.getResource("type").getURI());
-				oldCnt = result.get(cls);
-				if(oldCnt == null){
-					oldCnt = Integer.valueOf(0);
-				} 
-				int newCnt = oldCnt + 1;
 				
-				result.put(cls, newCnt);
-				repeat = true;
 			}
+			
 			if(!result.isEmpty()){
-				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, total);
-				offset += 1000;
+				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, allClasses, total);
 			}
+			
+			offset += limit;
+			query = String.format(baseQuery, classToDescribe.getName(), classToDescribe.getName(), limit, offset);
+			newModel = executeConstructQuery(query);
 		}
+		
 	}
 	
 	private void runSPARQL1_1_Mode(){
@@ -201,7 +227,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			QuerySolution qs;
 			repeat = false;
 			while(rs.hasNext()){
-				qs = rs.next();
+				qs = rs.next();System.out.println(qs);
 				if(qs.getResource("type") != null){
 					cls = new NamedClass(qs.getResource("type").getURI());
 					int newCnt = qs.getLiteral("count").getInt();
@@ -218,7 +244,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 				
 			}
 			if(!result.isEmpty()){
-				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, allClasses);
+				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, allClasses, result.get(classToDescribe));
 				offset += 1000;
 			}
 		}
@@ -269,11 +295,11 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		return axioms;
 	}
 	
-	private List<EvaluatedDescription> buildEvaluatedClassDescriptions(Map<NamedClass, Integer> class2Count, Set<NamedClass> allClasses){
+	private List<EvaluatedDescription> buildEvaluatedClassDescriptions(Map<NamedClass, Integer> class2Count, Set<NamedClass> allClasses, int total){
 		List<EvaluatedDescription> evalDescs = new ArrayList<EvaluatedDescription>();
 		
 		//Remove temporarily classToDescribe but keep track of their count
-				Integer all = class2Count.get(classToDescribe);
+//				Integer all = class2Count.get(classToDescribe);
 				class2Count.remove(classToDescribe);
 		
 		//get complete disjoint classes
@@ -299,7 +325,12 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		}
 		for(NamedClass cls : completeDisjointclasses){
 			if(useClassPopularity){
-				int popularity = reasoner.getIndividualsCount(cls);
+				int popularity = 0;
+				if(ks.isRemote()){
+					popularity = reasoner.getIndividualsCount(cls);
+				} else {
+					popularity = ((LocalModelBasedSparqlEndpointKS)ks).getModel().getOntClass(cls.getName()).listInstances(true).toSet().size();
+				}
 				//we skip classes with no instances
 				if(popularity == 0) continue;
 				double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(popularity, 0);
@@ -314,64 +345,8 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		
 		//secondly, create disjoint classexpressions with score 1 - (#occurence/#all)
 		for(Entry<NamedClass, Integer> entry : sortByValues(class2Count)){
-//			evalDesc = new EvaluatedDescription(entry.getKey(),
-//					new AxiomScore(1 - (entry.getValue() / (double)all)));
-			double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(all, entry.getValue());
-			double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
-			evalDesc = new EvaluatedDescription(entry.getKey(),
-					new AxiomScore(1 - accuracy));
-			evalDescs.add(evalDesc);
-		}
-		
-		class2Count.put(classToDescribe, all);
-		return evalDescs;
-	}
-	
-	private List<EvaluatedDescription> buildEvaluatedClassDescriptions(Map<NamedClass, Integer> class2Count, int total){
-		List<EvaluatedDescription> evalDescs = new ArrayList<EvaluatedDescription>();
-		
-		//Remove temporarily classToDescribe but keep track of their count
-				class2Count.remove(classToDescribe);
-		
-		//get complete disjoint classes
-		Set<NamedClass> completeDisjointclasses = new TreeSet<NamedClass>(allClasses);
-		completeDisjointclasses.removeAll(class2Count.keySet());
-		
-		//drop all classes which have a super class in this set
-		if(suggestMostGeneralClasses && reasoner.isPrepared()){
-			keepMostGeneralClasses(completeDisjointclasses);
-		}
-		
-		//we remove the asserted subclasses here
-		completeDisjointclasses.removeAll(subClasses);
-		for(Description subClass : subClasses){
-			class2Count.remove(subClass);
-		}
-		
-		
-		EvaluatedDescription evalDesc;
-		//firstly, create disjoint classexpressions which not occur and give score of 1
-		if(reasoner.isPrepared()){
-			SortedSet<Description> mostGeneralClasses = reasoner.getClassHierarchy().getMostGeneralClasses();
-		}
-		for(NamedClass cls : completeDisjointclasses){
-			if(useClassPopularity && (
-					(ks instanceof SparqlEndpointKS && ((SparqlEndpointKS) ks).supportsSPARQL_1_1()) || !(ks instanceof SparqlEndpointKS))){
-				int popularity = reasoner.getIndividualsCount(cls);
-				//we skip classes with no instances
-				if(popularity == 0) continue;
-				double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(popularity, 0);
-				double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
-				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1- accuracy));
-			} else {
-				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1));
-			}
-			
-			evalDescs.add(evalDesc);
-		}
-		
-		//secondly, create disjoint classexpressions with score 1 - (#occurence/#all)
-		for(Entry<NamedClass, Integer> entry : sortByValues(class2Count)){
+			//drop classes from OWL and RDF namespace
+			if(entry.getKey().getName().startsWith(OWL.NAMESPACE) || entry.getKey().getName().startsWith(RDF.NAMESPACE))continue;
 //			evalDesc = new EvaluatedDescription(entry.getKey(),
 //					new AxiomScore(1 - (entry.getValue() / (double)all)));
 			double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, entry.getValue());
@@ -385,6 +360,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		return evalDescs;
 	}
 	
+	
 	private void keepMostGeneralClasses(Set<NamedClass> classes){
 		ClassHierarchy h = reasoner.getClassHierarchy();
 		for(NamedClass nc : new HashSet<NamedClass>(classes)){
@@ -393,17 +369,16 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	}
 	
 	public static void main(String[] args) throws Exception{
-		LocalModelBasedSparqlEndpointKS ks = new LocalModelBasedSparqlEndpointKS(new URL("http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/examples/swore/swore.rdf?revision=2217"));
-		DisjointClassesLearner l = new DisjointClassesLearner(new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
-				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));
-		l = new DisjointClassesLearner(ks);
+//		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
+		SparqlEndpointKS ks = new LocalModelBasedSparqlEndpointKS(new URL("http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/examples/swore/swore.rdf?revision=2217"));
+		DisjointClassesLearner l = new DisjointClassesLearner(ks);
 		l.setClassToDescribe(new NamedClass("http://ns.softwiki.de/req/CustomerRequirement"));
 		l.init();
-		l.getReasoner().prepareSubsumptionHierarchy();
+//		l.getReasoner().prepareSubsumptionHierarchy();
 //		System.out.println(l.getReasoner().getClassHierarchy().getSubClasses(new NamedClass("http://dbpedia.org/ontology/Athlete"), false));System.exit(0);
 		l.start();
 		
-		for(EvaluatedAxiom e : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, 0.75)){
+		for(EvaluatedAxiom e : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, 0.2)){
 			System.out.println(e);
 		}
 		
