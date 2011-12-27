@@ -45,6 +45,7 @@ import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.AxiomComparator;
+import org.openrdf.model.vocabulary.OWL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.util.iterator.Filter;
 
 /**
  * @author Lorenz Bühmann
@@ -193,7 +195,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			return new SPARQLTasks(((SparqlEndpointKS) ks).getEndpoint()).getAllClasses();
 		} else {
 			Set<NamedClass> classes = new TreeSet<NamedClass>();
-			for(OntClass cls : ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().toList()){
+			for(OntClass cls : ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().filterDrop(new OWLFilter()).toList()){
 				if(!cls.isAnon()){
 					classes.add(new NamedClass(cls.getURI()));
 				}
@@ -235,7 +237,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected ResultSet executeSelectQuery(String query, Model model) {
-		logger.info("Sending query\n{} ...", query);
+		logger.info("Sending query on local model\n{} ...", query);
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSet rs = qexec.execSelect();;
 
@@ -317,6 +319,17 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		return new AxiomScore(accuracy, confidence);
 	}
 	
+	class OWLFilter extends Filter<OntClass>{
+
+		@Override
+		public boolean accept(OntClass cls) {
+			if(!cls.isAnon()){
+				return cls.getURI().startsWith(OWL.NAMESPACE);
+			}
+			return false;
+		}
+		
+	}
 	
 
 }
