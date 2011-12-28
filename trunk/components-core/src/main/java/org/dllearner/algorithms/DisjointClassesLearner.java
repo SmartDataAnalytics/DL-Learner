@@ -60,6 +60,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * Learns disjoint classes using SPARQL queries.
@@ -143,7 +144,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 					subClasses.add(new NamedClass(sub.getURI()));
 				}
 			}
-			for(OntClass sup : cls.listSuperClasses().toSet()){System.out.println(cls.listSuperClasses().toSet());
+			for(OntClass sup : cls.listSuperClasses().toSet()){
 				if(!sup.isAnon()){
 					subClasses.add(new NamedClass(sup.getURI()));
 				}
@@ -151,7 +152,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		}
 		
 		if(ks.supportsSPARQL_1_1()){
-			runSPARQL1_0_Mode();
+			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
@@ -226,9 +227,11 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
 			repeat = false;
+			Resource res;
 			while(rs.hasNext()){
-				qs = rs.next();System.out.println(qs);
-				if(qs.getResource("type") != null){
+				qs = rs.next();
+				res = qs.getResource("type");
+				if(res != null && !res.isAnon()){
 					cls = new NamedClass(qs.getResource("type").getURI());
 					int newCnt = qs.getLiteral("count").getInt();
 					oldCnt = result.get(cls);
@@ -302,10 +305,9 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 //				Integer all = class2Count.get(classToDescribe);
 				class2Count.remove(classToDescribe);
 				
-				
 		//get complete disjoint classes
 		Set<NamedClass> completeDisjointclasses = new TreeSet<NamedClass>(allClasses);
-		completeDisjointclasses.removeAll(class2Count.keySet());System.out.println(completeDisjointclasses);
+		completeDisjointclasses.removeAll(class2Count.keySet());
 		
 		// we remove the asserted subclasses here
 		completeDisjointclasses.removeAll(subClasses);
