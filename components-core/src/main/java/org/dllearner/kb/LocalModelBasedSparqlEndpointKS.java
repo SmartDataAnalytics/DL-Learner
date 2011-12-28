@@ -35,7 +35,7 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 		// read the RDF/XML file
 		baseModel.read(in, null);
 		
-		model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_TRANS_INF, baseModel);
+		model = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM_RDFS_INF, baseModel);
 	}
 	
 	@Override

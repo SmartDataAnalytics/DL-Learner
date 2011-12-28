@@ -46,6 +46,8 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.AxiomComparator;
 import org.openrdf.model.vocabulary.OWL;
+import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -195,7 +197,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			return new SPARQLTasks(((SparqlEndpointKS) ks).getEndpoint()).getAllClasses();
 		} else {
 			Set<NamedClass> classes = new TreeSet<NamedClass>();
-			for(OntClass cls : ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().filterDrop(new OWLFilter()).toList()){
+			for(OntClass cls : ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().filterDrop(new OWLFilter()).filterDrop(new RDFSFilter()).filterDrop(new RDFFilter()).toList()){
 				if(!cls.isAnon()){
 					classes.add(new NamedClass(cls.getURI()));
 				}
@@ -325,6 +327,30 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		public boolean accept(OntClass cls) {
 			if(!cls.isAnon()){
 				return cls.getURI().startsWith(OWL.NAMESPACE);
+			}
+			return false;
+		}
+		
+	}
+	
+	class RDFSFilter extends Filter<OntClass>{
+
+		@Override
+		public boolean accept(OntClass cls) {
+			if(!cls.isAnon()){
+				return cls.getURI().startsWith(RDFS.NAMESPACE);
+			}
+			return false;
+		}
+		
+	}
+	
+	class RDFFilter extends Filter<OntClass>{
+
+		@Override
+		public boolean accept(OntClass cls) {
+			if(!cls.isAnon()){
+				return cls.getURI().startsWith(RDF.NAMESPACE);
 			}
 			return false;
 		}
