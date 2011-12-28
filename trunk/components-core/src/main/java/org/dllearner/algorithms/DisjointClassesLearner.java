@@ -183,7 +183,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			QuerySolution qs;
 			while(rs.hasNext()){
 				qs = rs.next();System.out.println(qs);
-				if(qs.getResource("type") != null){
+				if(qs.getResource("type") != null && !qs.getResource("type").isAnon()){
 					cls = new NamedClass(qs.getResource("type").getURI());
 					int newCnt = qs.getLiteral("count").getInt();
 					oldCnt = result.get(cls);
@@ -301,35 +301,35 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		//Remove temporarily classToDescribe but keep track of their count
 //				Integer all = class2Count.get(classToDescribe);
 				class2Count.remove(classToDescribe);
-		
+				
+				
 		//get complete disjoint classes
 		Set<NamedClass> completeDisjointclasses = new TreeSet<NamedClass>(allClasses);
-		completeDisjointclasses.removeAll(class2Count.keySet());
+		completeDisjointclasses.removeAll(class2Count.keySet());System.out.println(completeDisjointclasses);
+		
+		// we remove the asserted subclasses here
+		completeDisjointclasses.removeAll(subClasses);
+		for (Description subClass : subClasses) {
+			class2Count.remove(subClass);
+		}
 		
 		//drop all classes which have a super class in this set
-		if(suggestMostGeneralClasses && reasoner.isPrepared()){
+		if(suggestMostGeneralClasses){
 			keepMostGeneralClasses(completeDisjointclasses);
 		}
 		
-		//we remove the asserted subclasses here
-		completeDisjointclasses.removeAll(subClasses);
-		for(Description subClass : subClasses){
-			class2Count.remove(subClass);
-		}
+		
 		
 		
 		EvaluatedDescription evalDesc;
 		//firstly, create disjoint classexpressions which not occur and give score of 1
-		if(reasoner.isPrepared()){
-			SortedSet<Description> mostGeneralClasses = reasoner.getClassHierarchy().getMostGeneralClasses();
-		}
 		for(NamedClass cls : completeDisjointclasses){
 			if(useClassPopularity){
 				int popularity = 0;
 				if(ks.isRemote()){
 					popularity = reasoner.getIndividualsCount(cls);
 				} else {
-					popularity = ((LocalModelBasedSparqlEndpointKS)ks).getModel().getOntClass(cls.getName()).listInstances(true).toSet().size();
+					popularity = ((LocalModelBasedSparqlEndpointKS)ks).getModel().getOntClass(cls.getName()).listInstances().toSet().size();
 				}
 				//we skip classes with no instances
 				if(popularity == 0) continue;
@@ -362,9 +362,33 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	
 	
 	private void keepMostGeneralClasses(Set<NamedClass> classes){
-		ClassHierarchy h = reasoner.getClassHierarchy();
-		for(NamedClass nc : new HashSet<NamedClass>(classes)){
-			classes.removeAll(h.getSubClasses(nc));
+		if(ks.isRemote()){
+			if(reasoner.isPrepared()){
+				ClassHierarchy h = reasoner.getClassHierarchy();
+				for(NamedClass nc : new HashSet<NamedClass>(classes)){
+					classes.removeAll(h.getSubClasses(nc));
+				}
+			}
+		} else {
+			OntModel model = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
+			
+//			Set<NamedClass> topClasses = new HashSet<NamedClass>();
+//			for(OntClass cls : model.listNamedClasses().toSet()){
+//				Set<OntClass> superClasses = cls.listSuperClasses().toSet();
+//				if(superClasses.isEmpty() || 
+//						(superClasses.size() == 1 && superClasses.contains(model.getOntClass(com.hp.hpl.jena.vocabulary.OWL.Thing.getURI())))){
+//					topClasses.add(new NamedClass(cls.getURI()));
+//				}
+//				
+//			}
+//			classes.retainAll(topClasses);
+			for(NamedClass nc : new HashSet<NamedClass>(classes)){//System.out.print(nc + "::");
+				for(OntClass cls : model.getOntClass(nc.getName()).listSubClasses().toSet()){//System.out.print(cls + "|");
+					classes.remove(new NamedClass(cls.getURI()));
+				}
+//				System.out.println();
+			}
+			
 		}
 	}
 	
@@ -378,7 +402,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 //		System.out.println(l.getReasoner().getClassHierarchy().getSubClasses(new NamedClass("http://dbpedia.org/ontology/Athlete"), false));System.exit(0);
 		l.start();
 		
-		for(EvaluatedAxiom e : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, 0.2)){
+		for(EvaluatedAxiom e : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, 0.0)){
 			System.out.println(e);
 		}
 		
