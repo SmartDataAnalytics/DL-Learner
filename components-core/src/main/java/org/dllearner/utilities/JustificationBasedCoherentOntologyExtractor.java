@@ -14,10 +14,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.aksw.mole.ore.rootderived.StructureBasedRootClassFinder;
 import org.mindswap.pellet.RBox;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLEntity;
@@ -50,7 +50,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	
 	@Override
 	public OWLOntology getCoherentOntology(OWLOntology ontology) {
-		this.ontology = ontology;
+		this.ontology = ontology;ontology.getOWLOntologyManager().removeAxioms(ontology, ontology.getAxioms(AxiomType.TRANSITIVE_OBJECT_PROPERTY));
 		this.incoherentOntology = getOntologyWithoutAnnotations(ontology);
 		
 //		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(incoherentOntology);
