@@ -51,10 +51,14 @@ public class GetRessourcePropertys {
 		
 		String vergleichorig = vergleich;
 		
-		
-		String tmp_left="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {?y ?p <"+vergleichorig+">. ?p rdfs:label ?s.}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
+		/*
+		 * change to dbpedia http://dbpedia.org/sparql
+		 */
+		//String tmp_left="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {?y ?p <"+vergleichorig+">. ?p rdfs:label ?s.}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
+		String tmp_left="http://dbpedia.org/sparql?default-graph-uri=&query="+createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {?y ?p <"+vergleichorig+">. ?p rdfs:label ?s.}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
+
 		//System.out.println("property right!!! : " +tmp_right);
-		String tmp_right="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {<"+vergleichorig+"> ?p ?y. ?p rdfs:label ?s.}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
+		String tmp_right="http://dbpedia.org/sparql?default-graph-uri=&query="+createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {<"+vergleichorig+"> ?p ?y. ?p rdfs:label ?s.}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
 
 		String verarbeitungsurl=null;
 		if(side.contains("RIGHT")) verarbeitungsurl=tmp_right;
