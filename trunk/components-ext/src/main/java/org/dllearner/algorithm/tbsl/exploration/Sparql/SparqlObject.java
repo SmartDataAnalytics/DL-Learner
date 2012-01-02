@@ -58,11 +58,12 @@ public class SparqlObject {
 	
 	//Konstruktor
 	public SparqlObject() throws MalformedURLException, ClassNotFoundException, SQLException{
+		
 		wordnet = new WordNet();
 		System.out.println("Loading SPARQL Templator");
 		//
     	btemplator = new BasicTemplator();
-    	btemplator.UNTAGGED_INPUT = false;
+    	//btemplator.UNTAGGED_INPUT = false;
     	//templator = new Templator();
     	System.out.println("Loading SPARQL Templator Done\n");
     	System.out.println("Start Indexing");
@@ -73,7 +74,7 @@ public class SparqlObject {
     	//normaly 1
     	setExplorationdepthwordnet(1);
     	//eigentlich immer mit 0 initialisieren
-    	setIterationdepth(1);
+    	setIterationdepth(0);
     	setNumberofanswers(1);
 	}
 	
@@ -123,7 +124,7 @@ public class SparqlObject {
 	 public void create_Sparql_query(String question) throws JWNLException, IOException, SQLException{
 		 	//create_Sparql_query_new(string);
 			
-		 ArrayList<ArrayList<String>> lstquery = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> lstquery = new ArrayList<ArrayList<String>>();
 		long startParsingTime = System.currentTimeMillis();
 		lstquery=getQuery(question);
 		long endParsingTime = System.currentTimeMillis();
@@ -158,7 +159,7 @@ public class SparqlObject {
 				                          new InputStreamReader(
 				                          new FileInputStream( "/tmp/testresult.txt" ) ) );
 				      while( null != (s = in.readLine()) ) {
-				        tmp+="\n"+s;
+				        tmp=tmp.concat("\n".concat(s));
 				      }
 				    } catch( FileNotFoundException ex ) {
 				    } catch( Exception ex ) {
@@ -174,7 +175,7 @@ public class SparqlObject {
 				    }
 				    
 				    String out=null;
-				    if (query=="" || query==" "||query.length()==0) query="Could not parse";
+				    if (query.equals("") || query.equals(" ")||query.length()==0) query="Could not parse";
 				    out=tmp + "\n" + question + ":\n"+query+"\n";
 				    
 				    BufferedWriter outfile = new BufferedWriter(
@@ -527,9 +528,27 @@ public class SparqlObject {
 		 
 	 }
 	 
+	 
+	 /*
+	  * if there are more than one condition and if there is an isA Case in it, use this function.
+	  * TODO: Change other simple Case function, that they have a Resource to deal with, or change the get Query function
+	  */
+	 private ArrayList<String> isAIteration(ArrayList<String> querylist, String query) throws SQLException,
+		JWNLException {
+		 //only for special case, that the first condition has a resource
+		 ArrayList<String> final_answer=new ArrayList<String>();
+		 
+		 return final_answer;
+		 
+	 }
+	 
+	 
+	 
+	 
 	 private ArrayList<String> simpleLevinstheinIteration(ArrayList<String> querylist, String query) throws SQLException,
 		JWNLException {
-
+		 
+		 System.out.println("In Simpe levensthein case!!");
 		ArrayList<String> final_answer=new ArrayList<String>();
 		String resource="";
 		String property_to_compare_with="";
@@ -1043,7 +1062,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 					    key=key.replace("@en","");
 			
 					    String value = entry.getValue();
-					    System.out.println("Key "+ key +" and value "+value);
+					    //System.out.println("Key "+ key +" and value "+value);
 					   // System.out.println("Value propery: "+ value);
 					    
 					for(String b : semantics){
@@ -1060,6 +1079,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 							 }
 							 query_tmp=query_tmp.replace(test,value);
 							 System.out.println("\n");
+							 System.out.println("Match with "+ b);
 							 System.out.println("Original Query: "+ query);
 							 System.out.println("Simple Wordnet Query: "+ query_tmp);
 							 System.out.println("\n");
@@ -1375,6 +1395,9 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 		  	return lstquery;
 	 }
 	 
+	 
+	 //TODO: Plural Singual abfragen über die Wordnetdatei...
+	 
 	 /**
 	* Method gets a String and takes the information from the templator to creat a Sparql query.
 	* @param question question in natural language
@@ -1419,8 +1442,35 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 	     			filters="";
 	     			addQuery=false;
 	     		}
+	     		
+	     		//if there is no order by, replace with ""
+	     		String orderdBy="ORDER BY ";
+	     		try{
+	     			for(SPARQL_Term tmp : temp.getOrderBy()) {
+	     				System.out.println("Yeah");
+	     				orderdBy=orderdBy+tmp+" ";
+	     			}
+	     			if((temp.getOrderBy()).size()==0)orderdBy="";
+	     		}
+	     		catch(Exception e){
+	     			orderdBy="";
+	     			addQuery=false;
+	     		}
+	     		
+	     		//if limit == 0, then set limit as ""
+	     		String limit="";
+	     		try{
+	     			limit="LIMIT "+temp.getLimit();
+	     			
+	     			if(temp.getLimit()==0)limit="";
+	     		}
+	     		catch(Exception e){
+	     			limit="";
+	     			addQuery=false;
+	     		}
+	     		
 	     		if(addQuery==true){
-		        	query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" WHERE {"+  conditions.replace("--","") + filters+"}";
+		        	query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" WHERE {"+  conditions.replace("--","") + filters+"}"+orderdBy +" "+limit;
 		        	
 		        	String conditions_new = "";
 		     		for(Path condition: temp.getConditions()){
@@ -1444,11 +1494,63 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 		     		System.out.println("Conditions_new: " + conditions_new);
 		     		
 		     		
-		        	String query_upside_down = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" WHERE {"+  conditions_new.replace("--","") +filters+ "}";
+		        	String query_upside_down = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" WHERE {"+  conditions_new.replace("--","") +filters+ "}" + orderdBy +" "+limit;
 		        	String[] slots= null;
+		        	
+		        	
+		        	/*
+		        	 * replace isA with rdf:type
+		        	 */
+		        	query_upside_down=query_upside_down.replace("isA", "rdf:type");
+		        	query=query.replace("isA", "rdf:type");
+		        	
 		        	int slotcounter=1;
+		        	
+		        	/*
+		        	 * the one after the isA, has to be an ontology Class!!!
+		        	 * so first find out, which one is behind the isA
+		        	 * best with regex or so.... take the condition, regex the thing between isA and . for End of Condition
+		        	 * kind of regex=[*a IsA (\\?*a.)*a]
+		        	 * Then put the isA thing in the variable isaComponent  and mark it as later on as Resource!
+		        	 */
+		        	String isaComponent="";
+		        	
+		        	Pattern p = Pattern.compile (".*isA (\\?.*)\\..*");
+		        	
+		        	/*
+		        	 * use conditions, because only in this case, there is the right resource right of the isA
+		        	 */
+		    	    Matcher m = p.matcher (conditions.replace("--", "").replace("  ", " "));
+		    	    String result="";
+
+		    	    System.out.println("################");
+		    	  	while (m.find()) {
+		    	  		if(m.group(1)!=null) 
+		    	  		//System.out.println(m.group(1));
+		    	  		isaComponent=m.group(1);
+		    	  	}
+		    	  	System.out.println("isaComponent "+isaComponent);
+		    	  	
+		    	  	/*
+		    	  	 * just in case, there is still a . in it...
+		    	  	 * funzt
+		    	  	 * 
+		    	  	 */
+		    	  	if(isaComponent.contains(".")){
+		    	  		String[] tmp_array=isaComponent.split("\\.");
+		    	  		for(String i: tmp_array) System.out.println("tmp_array "+i);
+		    	  		isaComponent=tmp_array[0];
+		    	  		
+		    	  		System.out.println("new isaComponent "+isaComponent);
+		    	  	}
+		    	  	
+		    	  	if(isaComponent=="") isaComponent="No isa Component";
+		    	  	System.out.println("isaComponent "+isaComponent);
+		    	  	System.out.println("################");
+		        	
 		    		for(Slot slot : temp.getSlots()){
 		    			
+		    			System.out.println("Slot: "+slot);
 		    			//see below
 		    			slotcounter=slotcounter+1;
 		    			
@@ -1469,7 +1571,55 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 		    			
 		    			//query=query.replace(replace, "<"+hm_result+">");
 		    			
-		    			if(resource!=""){
+		    			/*System.out.println("Recource "+resource);
+		    			System.out.println("Property "+property);*/
+		    			
+		    			boolean skip=false;
+		    			if(resource.contains(isaComponent.replace("?", "")) || property.contains(isaComponent.replace("?", ""))){
+		    				skip=true;
+		    				
+		    				/*
+		    				 * now replace the variable with the value of OntologyClass
+		    				 */
+		    				String replace="";
+		    				String tmp="";
+		    				
+		    				if(resource.contains(isaComponent.replace("?", ""))) tmp=resource;
+		    				if(property.contains(isaComponent.replace("?", ""))) tmp=property;
+		    				
+		    				String[] array = tmp.split(":");
+		    				if(array[0].length()<2)replace = "?"+array[0]+" ";
+			    			else replace="?"+array[0];
+		    				try{
+		    					array[1]=array[1].replace("  ", "");
+		    				}
+		    				catch(Exception e){
+		    					
+		    				}
+		    				String hm_result=myindex.getontologyClassURI(array[1]);
+		    				if(hm_result==null)hm_result="http://dbpedia.org/ontology/"+Character.toUpperCase(array[1].charAt(0)) + array[1].substring(1, array[1].length());
+		    				System.out.println(array[1]+" for getOntologyClass "+hm_result);
+			    			//System.out.print("URI for_ThingGettingURIfor: "+hm_result);
+			    		      try
+			    		      {
+			    		    	  if(hm_result.contains("Category:")) hm_result=hm_result.replace("Category:","");
+			    		        }
+			    		      catch ( Exception e )
+			    		      {
+		
+			    		      }
+			    		      
+			    		    query=query.replace(replace, "<"+hm_result+">");
+				    		//System.out.println("Query: "+query);
+				    		query_upside_down=query_upside_down.replace(replace, "<"+hm_result+">");
+				    		//System.out.println("Query Up Side Down: "+query_upside_down);
+		    				
+		    			}
+		    			
+		    			
+		    			
+		    			
+		    			if(resource!=""&&skip==false){
 		    				String replace="";
 		    				String[] array = resource.split(":");
 		    				if(array[0].length()<2)replace = "?"+array[0]+" ";
@@ -1493,7 +1643,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 		    				
 		    			}
 		    			
-		    			if(property!=""){
+		    			if(property!=""&&skip==false){
 		    				String replace="";
 		    				String[] array = property.split(":");
 		    				if(array[0].length()<2)replace = "?"+array[0]+" ";
@@ -1512,6 +1662,8 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 		    		
 		    		query_upside_down=query_upside_down.replace("><","> <").replace(">?", "> ?");
 		    		query=query.replace("><","> <").replace(">?", "> ?");
+		    		query=query.replace("/__", "/");
+		    		query_upside_down=query_upside_down.replace("/__", "/");
 		    		lstquerupsidedown.add(query_upside_down);
 		    		lstquerynew.add(query);
 		    		System.out.println("Query: "+query);
@@ -1519,6 +1671,10 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 		    		
 		    		
 		    		
+		    		/*
+		    		 * Add, that the one with the isa is an Resource!!!
+		    		 * An ontology Resource!
+		    		 */
 		    		ArrayList<String> lsttmp=createLeftAndRightPropertyArray(query);
 		    		//if its lower than three, we dont have any conditions and dont need to check it.
 		    		//also if the size%3 isnt 0, than something else is wrong and we dont need to test the query
@@ -1601,6 +1757,10 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 	 * @throws SQLException 
 	 */
 	private String getUriFromIndex(String string, int fall) throws SQLException{
+		
+		/*
+		 * something like /dbpedia.org/property/__bla nicht erlauben, also /__ durch / ersetzen
+		 */
 		String originalString=string;
 		string=string.replace("_", " ");
 		string=string.replace("-", " ");
@@ -1646,7 +1806,7 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 		if(result==null) {
 			if(fall==1)return "http://dbpedia.org/property/"+tmp;
 			if(fall==0) {
-				String bla ="http://dbpedia.org/resource/"+tmp;
+				String hotfix ="http://dbpedia.org/resource/"+tmp;
 				if(tmp.contains("_")){
 					String[] newarraytmp=tmp.split("_");
 					String tmpneu="";
@@ -1654,17 +1814,23 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 						tmpneu+= "_"+ Character.toUpperCase(s.charAt(0)) + s.substring(1);
 					}
 					tmpneu=tmpneu.replaceFirst("_", "");
-					bla ="http://dbpedia.org/resource/"+tmpneu;
-					System.out.println("Hotfix: "+bla);
+					hotfix ="http://dbpedia.org/resource/"+tmpneu;
+					hotfix=hotfix.replace("/__", "/");
+					System.out.println("Hotfix: "+hotfix);
 				}
-				return bla;
+				hotfix=hotfix.replace("/__", "/");
+				return hotfix;
 			}
 		else{
+			result=result.replace("/__","/");
 			System.out.println("return result: "+result);
 				return result;
 		}
 		}
-		else return result;
+		else {
+			result=result.replace("/__","/");
+			return result;
+		}
 	}
 
 
@@ -1826,8 +1992,11 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 		//SPARQL-Endpoint of Semantic Computing Group
 		
 		//5171
-		String tmp="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
-		System.out.println(tmp);
+		/*
+		 * change to dbpedia http://dbpedia.org/sparql
+		 */
+		//String tmp="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
+		String tmp="http://dbpedia.org/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";		System.out.println(tmp);
 		URL url;
 	    InputStream is;
 	    InputStreamReader isr;
@@ -1861,7 +2030,12 @@ private ArrayList<String> simpleWordnetIterationArray(ArrayList<String> querylis
 	
 	private ArrayList<String> sendServerQuestionRequestArray(String query){
 		//SPARQL-Endpoint of Semantic Computing Group
-		String tmp="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
+		/*
+		 * change to dbpedia http://dbpedia.org/sparql
+		 */
+		//String tmp="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
+		String tmp="http://dbpedia.org/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
+
 		System.out.println(tmp);
 		URL url;
 	    InputStream is;
