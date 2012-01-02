@@ -194,7 +194,7 @@ public class ExtractionDBCache {
 			}
 			for (String ngu : endpoint.getNamedGraphURIs()) {
 				queryExecution.addNamedGraph(ngu);
-			}			
+			}
 			com.hp.hpl.jena.query.ResultSet tmp = queryExecution.execSelect();
 			ResultSetRewindable rs2 = ResultSetFactory.makeRewindable(tmp);
 			String json = SparqlQuery.convertResultSetToJSON(rs2);

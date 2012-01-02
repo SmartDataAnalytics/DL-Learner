@@ -46,6 +46,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	private SparqlEndpoint endpoint;
 	private boolean supportsSPARQL_1_1 = false;
 	private boolean isRemote = true;
+	private boolean initialized = false;
 
 	// TODO: turn those into config options
 	
@@ -68,10 +69,13 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	
 	@Override
 	public void init() throws ComponentInitException {
-		if(endpoint == null) {
-			endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
+		if(!initialized){
+			if(endpoint == null) {
+				endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
+			}
+			supportsSPARQL_1_1 = new SPARQLTasks(endpoint).supportsSPARQL_1_1();
+			initialized = true;
 		}
-		supportsSPARQL_1_1 = new SPARQLTasks(endpoint).supportsSPARQL_1_1();
 	}
 	
 	public SparqlEndpoint getEndpoint() {

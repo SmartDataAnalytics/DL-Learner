@@ -69,6 +69,6 @@ public class InverseObjectPropertyAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "INVERSEOBJECTPROPERTYAXIOM NOT IMPLEMENTED";
+		return role.toManchesterSyntaxString(baseURI, prefixes) + " InverseOf: " + inverseRole.toManchesterSyntaxString(baseURI, prefixes);
 	}	
 }
