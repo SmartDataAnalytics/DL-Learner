@@ -274,10 +274,10 @@ public class SparqlQuery {
 	 *            errors.
 	 * @return JSON representation of the result set.
 	 */
-	public static String convertResultSetToJSON(ResultSetRewindable resultSet) {
+	public static String convertResultSetToJSON(ResultSet resultSet) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ResultSetFormatter.outputAsJSON(baos, resultSet);
-		resultSet.reset();
+//		resultSet.reset();
 		try {
 			return baos.toString("UTF-8");
 		} catch (UnsupportedEncodingException e) {

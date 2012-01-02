@@ -36,6 +36,8 @@ import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapiv3.OntologyUtils;
 
 public class JustificationBasedCoherentOntologyExtractor implements CoherentOntologyExtractor{
+	
+	private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JustificationBasedCoherentOntologyExtractor.class);
 
 	private static final int NUMBER_OF_JUSTIFICATIONS = 5;
 //	private PelletReasoner reasoner;
@@ -60,20 +62,31 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		
 		OWLOntologyManager man = incoherentOntology.getOWLOntologyManager();
 //		man.addOntologyChangeListener(reasoner);
+		
+		//compute the unsatisfiable classes
 		StructureBasedRootClassFinder rootFinder = new StructureBasedRootClassFinder(reasoner);
 		rootFinder.computeRootDerivedClasses();
-		Set<OWLClass> unsatClasses = rootFinder.getRootUnsatisfiableClasses();//reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
-		int cnt = unsatClasses.size();
+		Set<OWLClass> unsatClasses = rootFinder.getRootUnsatisfiableClasses();
+		Set<OWLClass> derivedUnsatClasses = rootFinder.getDerivedUnsatisfiableClasses();
+		int rootCnt = unsatClasses.size();
+		int derivedCnt = derivedUnsatClasses.size();
+//		Set<OWLClass> unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
+		int cnt = rootCnt + derivedCnt;
+		logger.info("Detected " + cnt + " unsatisfiable classes, " + rootCnt + " of them as root.");
 		
 		//if the ontology is not incoherent we return it here
 		if(unsatClasses.isEmpty()){
 			return incoherentOntology;
 		}
 		//compute the logical modules for each unsatisfiable class
+		logger.info("Computing module for each unsatisfiable class...");
 		cls2ModuleMap = extractModules(unsatClasses);
+		logger.info("...done.");
 				
 		//compute initial explanations for each unsatisfiable class
+		logger.info("Computing initial explanations...");
 		Map<OWLClass, Set<Set<OWLAxiom>>> cls2Explanations = getInitialExplanationsForUnsatClasses(unsatClasses);
+		logger.info("...done.");
 		
 		while(!unsatClasses.isEmpty()){
 			//get frequency for each axiom
@@ -86,7 +99,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			}
 			//we remove the most frequent axiom from the ontology
 			OWLAxiom toRemove = sortedEntries.get(0).getKey();
-			System.out.println("Removing axiom " + toRemove);
+			logger.info("Removing axiom " + toRemove + ".");
 			man.removeAxiom(incoherentOntology, toRemove);
 			man.applyChange(new RemoveAxiom(incoherentOntology, toRemove));
 			removeFromExplanations(cls2Explanations, toRemove);
@@ -94,26 +107,34 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			
 			//recompute the unsatisfiable classes
 			reasoner.classify();
+//			unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
+			
 			rootFinder = new StructureBasedRootClassFinder(reasoner);
 			rootFinder.computeRootDerivedClasses();
-			unsatClasses = rootFinder.getRootUnsatisfiableClasses();//reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
-			System.out.println("Remaining unsatisfiable classes: " + unsatClasses.size());
+			unsatClasses = rootFinder.getRootUnsatisfiableClasses();
+			rootCnt = unsatClasses.size();
+			derivedUnsatClasses = rootFinder.getDerivedUnsatisfiableClasses();
+			derivedCnt = derivedUnsatClasses.size();
+			logger.info("Remaining unsatisfiable classes: " + (rootCnt + derivedCnt) + "(" + rootCnt + " roots).");
 			
 			//save
-			if(cnt - unsatClasses.size() >= 10){
+			if(cnt - (rootCnt+derivedCnt) >= 10){
+				cnt = rootCnt + derivedCnt;
 				OWLOntology toSave = getOntologyWithAnnotations(incoherentOntology);
 				try {
-					toSave.getOWLOntologyManager().saveOntology(incoherentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/dbpedia_" + unsatClasses.size() + ".owl")));
+					toSave.getOWLOntologyManager().saveOntology(incoherentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/dbpedia_" + cnt + ".owl")));
 				} catch (OWLOntologyStorageException e) {
 					e.printStackTrace();
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
-				cnt = unsatClasses.size();
+				cnt = rootCnt + derivedCnt;
 			}
 			
 			//recompute explanations if necessary
+			logger.info("Recomputing explanations...");
 			refillExplanations(unsatClasses, cls2Explanations);
+			logger.info("...done.");
 			
 			System.gc();
 		}
@@ -246,9 +267,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	public static void main(String[] args) throws Exception{
 		Logger.getLogger(RBox.class.getName()).setLevel(Level.OFF);
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-//		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("../components-core/cohaerent.owl"));
-//		System.out.println(schema.getLogicalAxiomCount());
-		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("/home/lorenz/arbeit/dbpedia_0.75_no_datapropaxioms.owl"));
+//		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("/home/lorenz/dbpedia_0.75_no_datapropaxioms.owl"));
+		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("log/dbpedia_95.owl"));
 //		System.out.println(schema.getLogicalAxiomCount());
 //		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("log/dbpedia_coherent.owl"));
 		System.out.println(schema.getLogicalAxiomCount());

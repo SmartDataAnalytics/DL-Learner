@@ -102,6 +102,11 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		}
 	}
 	
+	public SPARQLReasoner(SparqlEndpointKS ks, ExtractionDBCache cache) {
+		this.ks = ks;
+		this.cache = cache;
+	}
+	
 	public SPARQLReasoner(OntModel model) {
 		this.model = model;
 	}
@@ -602,10 +607,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	}
 	
 	public int getPropertyCount(ObjectProperty property){
-		String query = String.format("SELECT COUNT(*) WHERE {" +
-				"?s <%s> ?o." +
-				"}", 
-				property.getName());
+		String query = String.format("SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o.}", property.getName());
 		ResultSet rs = executeSelectQuery(query);
 		int cnt = rs.next().get(rs.getResultVars().get(0)).asLiteral().getInt();
 		return cnt;
@@ -615,7 +617,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	public SortedSet<ObjectProperty> getInverseObjectProperties(ObjectProperty property){
 		SortedSet<ObjectProperty> inverseObjectProperties = new TreeSet<ObjectProperty>();
 		String query = "SELECT ?p WHERE {" +
-				"{<%p> <%ax> ?p.} UNION {?p <%ax> <%p>}}".replace("%p", property.getName()).replace("%ax", OWL.inverseOf.getURI());System.out.println(query);
+				"{<%p> <%ax> ?p.} UNION {?p <%ax> <%p>}}".replace("%p", property.getName()).replace("%ax", OWL.inverseOf.getURI());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){

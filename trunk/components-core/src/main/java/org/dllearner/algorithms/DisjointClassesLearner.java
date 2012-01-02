@@ -169,7 +169,6 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		Model newModel = executeConstructQuery(query);
 		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
 		NamedClass cls;
-		Integer oldCnt;
 		while(newModel.size() != 0){
 			model.add(newModel);
 			//get total number of distinct instances
@@ -183,18 +182,11 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			rs = executeSelectQuery(query, model);
 			QuerySolution qs;
 			while(rs.hasNext()){
-				qs = rs.next();System.out.println(qs);
+				qs = rs.next();
 				if(qs.getResource("type") != null && !qs.getResource("type").isAnon()){
 					cls = new NamedClass(qs.getResource("type").getURI());
 					int newCnt = qs.getLiteral("count").getInt();
-					oldCnt = result.get(cls);
-					if(oldCnt == null){
-						oldCnt = Integer.valueOf(newCnt);
-					} else {
-						oldCnt += newCnt;
-					}
-					
-					result.put(cls, oldCnt);
+					result.put(cls, newCnt);
 				}
 				
 			}

@@ -120,7 +120,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			
 			
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 		
