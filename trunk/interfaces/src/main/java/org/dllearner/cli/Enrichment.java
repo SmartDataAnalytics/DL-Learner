@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -36,6 +37,7 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -104,6 +106,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -208,6 +211,8 @@ public class Enrichment {
 	
 	private boolean useInference;
 	private SPARQLReasoner reasoner;
+	private ExtractionDBCache cache;
+	private String cacheDir = "cache";
 	
 	// lists of algorithms to apply
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
@@ -233,6 +238,14 @@ public class Enrichment {
 		this.threshold = threshold;
 		this.nrOfAxiomsToLearn = nrOfAxiomsToLearn;
 		this.useInference = useInference;
+		
+		try {
+			cacheDir = "cache" + File.separator + URLEncoder.encode(se.getURL().toString(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		cache = new ExtractionDBCache(cacheDir);
 		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
 		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
@@ -282,7 +295,7 @@ public class Enrichment {
 //		ks.setSupportsSPARQL_1_1(supportsSPARQL_1_1);
 		
 		if(useInference){
-			reasoner = new SPARQLReasoner(ks);
+			reasoner = new SPARQLReasoner(ks, cache);
 			System.out.print("Precomputing subsumption hierarchy ... ");
 			long startTime = System.currentTimeMillis();
 			reasoner.prepareSubsumptionHierarchy();
@@ -332,7 +345,13 @@ public class Enrichment {
 				runDataPropertyAlgorithms(ks, (DatatypeProperty) resource);
 			} else if(resource instanceof NamedClass) {
 				System.out.println(resource + " appears to be a class. Running appropriate algorithms.\n");
-				runClassLearningAlgorithms(ks, (NamedClass) resource);				
+				try {
+					runClassLearningAlgorithms(ks, (NamedClass) resource);
+				} catch (Exception e) {
+					System.out.println(e.getCause());
+				} catch (Error e) {
+					System.out.println(e.getCause());
+				}			
 			} else {
 				throw new Error("The type " + resource.getClass() + " of resource " + resource + " cannot be handled by this enrichment tool.");
 			}
@@ -401,6 +420,7 @@ public class Enrichment {
             ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
             ks2.setUseLits(false);
             ks2.setUseCacheDatabase(true);
+            ks2.setCacheDir(cacheDir);
             ks2.setRecursionDepth(2);
             ks2.setCloseAfterRecursion(true);
             ks2.setSaveExtractedFragment(true);

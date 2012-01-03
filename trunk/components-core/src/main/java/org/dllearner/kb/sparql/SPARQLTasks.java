@@ -33,6 +33,7 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
+import com.clarkparsia.owlapiv3.OWL;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -710,6 +711,9 @@ public class SPARQLTasks {
 			}
 			
 		}
+		//remove trivial classes
+		classes.remove(OWL.Nothing.toStringID());
+		classes.remove(OWL.Thing.toStringID());
 		return classes;
 	}	
 	
