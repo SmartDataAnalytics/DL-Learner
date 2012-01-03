@@ -64,7 +64,7 @@ public class GetRessourcePropertys {
 		if(side.contains("RIGHT")) verarbeitungsurl=tmp_right;
 		if(side.contains("LEFT")) verarbeitungsurl=tmp_left;
 		
-		System.out.println(verarbeitungsurl);
+		//System.out.println(verarbeitungsurl);
 		//just in case.....
 		if(!side.contains("LEFT") && !side.contains("RIGHT")) verarbeitungsurl=tmp_left;
 
@@ -115,7 +115,7 @@ public class GetRessourcePropertys {
 	    	//System.out.println(tmp_array[i-1].toLowerCase() + "  " +tmp_array[i]);
 	    }
 	    
-	    System.out.println("created Properties: "+hm);
+	   // System.out.println("created Properties: "+hm);
 	    return hm;
 	}
 	
