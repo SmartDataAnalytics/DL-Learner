@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -74,7 +75,7 @@ public class GlobalEnrichment {
 	
 	//parameters for thread pool
 	//Parallel running Threads(Executor) on System
-	private static int corePoolSize = 10;
+	private static int corePoolSize = 1;
 	//Maximum Threads allowed in Pool
 	private static int maximumPoolSize = 20;
 	//Keep alive time for waiting threads for jobs(Runnable)
@@ -103,7 +104,7 @@ public class GlobalEnrichment {
 		Logger.getRootLogger().addAppender(consoleAppender);		
 		
 		// get all SPARQL endpoints and their graphs - the key is a name-identifier
-		Map<String,SparqlEndpoint> endpoints = new HashMap<String,SparqlEndpoint>();
+		Map<String,SparqlEndpoint> endpoints = new TreeMap<String,SparqlEndpoint>();
 		
 		String query = "";
 		query += "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
@@ -130,7 +131,7 @@ public class GlobalEnrichment {
 		ResultSet rs = sq.send();
 		while(rs.hasNext()) {
 			QuerySolution qs = rs.next();
-			String endpoint = qs.get("endpoint").toString();
+			String endpoint = qs.get("endpoint").toString();System.out.println(endpoint);
 			String shortName = qs.get("shortName").toString();
 			endpoints.put(shortName, new SparqlEndpoint(new URL(endpoint)));
 		}
@@ -170,18 +171,20 @@ public class GlobalEnrichment {
 					// run enrichment script - we make a case distinguish to see which kind of problems we get
 					// (could be interesting for statistics later on)
 					try {
-						e.start();
-						success = true;
-					} catch(StackOverflowError error) {
 						try {
+							e.start();
+							success = true;
+						} catch (Exception ex){
+							ex.printStackTrace(new PrintStream(log));
+						} catch(StackOverflowError error) {
 							error.printStackTrace(new PrintStream(log));
-						} catch (FileNotFoundException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							Files.appendToFile(log, "stack overflows could be caused by cycles in class hierarchies");
+							error.printStackTrace();
 						}
-						Files.appendToFile(log, "stack overflows could be caused by cycles in class hierarchies");
-						error.printStackTrace();
-					} catch(ResultSetException ex) {
+					} catch (FileNotFoundException e2) {
+						e2.printStackTrace();
+					} 
+					/*catch(ResultSetException ex) {
 						try {
 							ex.printStackTrace(new PrintStream(log));
 						} catch (FileNotFoundException e1) {
@@ -202,7 +205,7 @@ public class GlobalEnrichment {
 					} 
 					catch(Exception ex) {
 						System.out.println("class of exception: " + ex.getClass());
-					}
+					}*/
 					
 					// save results to a file (TODO: check if enrichment format 
 					if(success) {
