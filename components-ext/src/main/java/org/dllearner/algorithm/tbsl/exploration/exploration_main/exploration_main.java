@@ -2,6 +2,7 @@ package org.dllearner.algorithm.tbsl.exploration.exploration_main;
 import java.io.BufferedReader;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,10 +10,14 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.didion.jwnl.JWNLException;
 
 import org.dllearner.algorithm.tbsl.exploration.Sparql.SparqlObject;
+import org.dllearner.algorithm.tbsl.exploration.Sparql.queryInformation;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -114,7 +119,9 @@ public class exploration_main {
 				    		System.out.println(s);
 				    		anzahl++;
 				    		//get each line and send it to the parser
-				    		sparql.create_Sparql_query(s);
+				    		//String query1, String id1, String type1, boolean fusion1, boolean aggregation1, boolean yago1, String XMLtype1
+				    		queryInformation newQuery = new queryInformation(s,"0","",false,false,false,"non",false);
+				    		sparql.create_Sparql_query(newQuery);
 				    }
 				    long timeNow = System.currentTimeMillis();
 				    long diff = timeNow-startTime;
@@ -122,9 +129,46 @@ public class exploration_main {
 				    System.out.println("Time for "+anzahl+" questions = "+diff+" ms.");
 				     
 				}
+				if(line.contains(":xml")&& schleife==true){
+					TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+
+
+					System.out.println("Please enter Path of xml File:");
+					line=in.readLine();
+					
+					//create Structs
+					ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
+					//if you dont want to use the hints in the questions, use false
+					list_of_structs=generateStruct(line,true);
+					//Start Time measuring
+					long startTime = System.currentTimeMillis();
+				    
+				    int anzahl=0;
+					for(queryInformation s : list_of_structs){
+						anzahl=anzahl+1;
+				    	System.out.println("");
+				    	if(s.getId()==""||s.getId()==null)System.out.println("NO");
+						System.out.println("ID: "+s.getId());
+						System.out.println("Query: "+s.getQuery());
+						System.out.println("Type: "+s.getType());
+						System.out.println("XMLType: "+s.getXMLtype());
+						sparql.create_Sparql_query(s);
+					}
+					
+				    
+				    //sparql.create_Sparql_query(s);
+				 
+				    long timeNow = System.currentTimeMillis();
+				    long diff = timeNow-startTime;
+				              
+				    System.out.println("Time for "+anzahl+" questions = "+diff+" ms.");
+				     
+				}
+				
 				else if(schleife==true && doing ==true){
 					long startTime = System.currentTimeMillis();
-					sparql.create_Sparql_query(line);
+					queryInformation newQuery = new queryInformation(line,"0","",false,false,false,"non",false);
+					sparql.create_Sparql_query(newQuery);
 					long endTime= System.currentTimeMillis();
 					System.out.println("\n The complete answering of the Question took "+(endTime-startTime)+" ms");
 				}
@@ -139,20 +183,126 @@ public class exploration_main {
 
 
 	
-	private static String getEntity(String query, String name) throws IOException, InterruptedException{
+	private static ArrayList<queryInformation> generateStruct(String filename, boolean hint) {
 		
-	   // String query_complete="wget "+"\""+query+"\""+" -O "+"\""+name+"\"";
-	    URL url = new URL(query);
-	    ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-	    //System.out.println(rbc.toString());
-	    FileOutputStream fos = new FileOutputStream(name);
-	    //max 200MB = 209715200 Byte
-	    fos.getChannel().transferFrom(rbc, 0, 209715200 );
-
+		String XMLType=null;
+		
+		BufferedReader in = null;
+		
+	    String tmp="";
+		// Lies Textzeilen aus der Datei in einen Vector:
+	    try {
+	      in = new BufferedReader(
+	                          new InputStreamReader(
+	                          new FileInputStream(filename) ) );
+	      String s;
+		while( null != (s = in.readLine()) ) {
+	        tmp=tmp+s;
+	        //System.out.println(tmp);
+	      }
+	    } catch( FileNotFoundException ex ) {
+	    } catch( Exception ex ) {
+	      System.out.println( ex );
+	    } finally {
+	      if( in != null )
+			try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	    }	
 	    
-	    return name;
+		String string=tmp;
+	    Pattern p = Pattern.compile (".*\\<question(.*)\\</question\\>.*");
+	    Matcher m = p.matcher (string);
+	    
+	    
+	    if(string.contains("id=\"dbpedia-train\"><question")){
+	    	string=string.replace("id=\"dbpedia-train\"><question", "");
+	    	XMLType="dbpedia-train";
+	    	System.out.println("dbpedia-train");
+	    }
+	    if(string.contains("id=\"dbpedia-test\"><question")){
+	    	string=string.replace("id=\"dbpedia-test\"><question", "");
+	    	XMLType="dbpedia-test";
+	    	//System.out.println("dbpedia-test");
+	    }
+	    ArrayList<queryInformation> querylist = new ArrayList<queryInformation>();
+	    String [] bla = string.split("</question><question");
+	    for(String s : bla){
+	    	String query="";
+	    	String type="";
+	   	 	boolean fusion=false;
+	   	 	boolean aggregation=false;
+	   	 	boolean yago=false;
+	   	 	String id="";
+	   	 
+	    	Pattern p1= Pattern.compile("(id.*)\\</string\\>\\<query\\>.*");
+	    	Matcher m1 = p1.matcher(s);
+	    	//System.out.println("");
+	    	while(m1.find()){
+	    		//System.out.println(m1.group(1));
+	    		Pattern p2= Pattern.compile(".*><string>(.*)");
+		    	Matcher m2 = p2.matcher(m1.group(1));
+		    	while(m2.find()){
+		    		//System.out.println("Query: "+ m2.group(1));
+		    		query=m2.group(1);
+		    	}
+		    	Pattern p3= Pattern.compile("id=\"(.*)\" answer.*");
+		    	Matcher m3 = p3.matcher(m1.group(1));
+		    	while(m3.find()){
+		    		//System.out.println("Id: "+ m3.group(1));
+		    		id=m3.group(1);
+		    	}
+		    	
+		    	Pattern p4= Pattern.compile(".*answertype=\"(.*)\" fusion.*");
+		    	Matcher m4 = p4.matcher(m1.group(1));
+		    	while(m4.find()){
+		    		//System.out.println("answertype: "+ m4.group(1));
+		    		type=m4.group(1);
+		    	}
+		    	
+		    	Pattern p5= Pattern.compile(".*fusion=\"(.*)\" aggregation.*");
+		    	Matcher m5 = p5.matcher(m1.group(1));
+		    	while(m5.find()){
+		    		//System.out.println("fusion: "+ m5.group(1));
+		    		if(m5.group(1).contains("true"))fusion=true;
+		    		else fusion=false;
+		    	}
+		    	
+		    	Pattern p6= Pattern.compile(".*aggregation=\"(.*)\" yago.*");
+		    	Matcher m6 = p6.matcher(m1.group(1));
+		    	while(m6.find()){
+		    		//System.out.println("aggregation: "+ m6.group(1));
+		    		if(m6.group(1).contains("true"))aggregation=true;
+		    		else aggregation=false;
+		    	}
+		    	
+		    	Pattern p7= Pattern.compile(".*yago=\"(.*)\" ><string>.*");
+		    	Matcher m7 = p7.matcher(m1.group(1));
+		    	while(m7.find()){
+		    		//System.out.println("yago: "+ m7.group(1));
+		    		if(m7.group(1).contains("true"))yago=true;
+		    		else yago=false;
+		    	}
+		    	
+		    	
+		    	
+	    	}
+	    	queryInformation blaquery=new queryInformation(query, id,type,fusion,aggregation,yago,XMLType,hint);
+	    	if(id!=""&&id!=null) querylist.add(blaquery);
+	    }
+	   /* for(queryInformation s : querylist){
+	    	System.out.println("");
+	    	if(s.getId()==""||s.getId()==null)System.out.println("NO");
+			System.out.println("ID: "+s.getId());
+			System.out.println("Query: "+s.getQuery());
+			System.out.println("Type: "+s.getType());
+			System.out.println("XMLType: "+s.getXMLtype());
+		}*/
+	    return querylist;
 	}
-	
+
 	
 
 }
