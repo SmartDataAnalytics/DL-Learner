@@ -13,6 +13,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,6 +45,7 @@ import java.sql.Statement;
 
 
 
+
 public class SparqlObject {
 	//global Variable dict
 	
@@ -56,6 +59,12 @@ public class SparqlObject {
 	Templator templator;
 	private static mySQLDictionary myindex; 
 	boolean only_best_levensthein_query;
+	
+	//change here and in getRessourcePropertys
+	//String Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
+	//String Prefix="http://dbpedia.org/sparql";
+	String Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8892/sparql";
+		
 	
 	//Konstruktor
 	public SparqlObject() throws MalformedURLException, ClassNotFoundException, SQLException{
@@ -75,7 +84,7 @@ public class SparqlObject {
     	//normaly 1
     	setExplorationdepthwordnet(1);
     	//eigentlich immer mit 0 initialisieren
-    	setIterationdepth(1);
+    	setIterationdepth(9);
     	setNumberofanswers(1);
     	
     	only_best_levensthein_query=false;
@@ -124,20 +133,22 @@ public class SparqlObject {
 	 * "Main" Method of this Class.
 	 * 
 	 */
-	 public void create_Sparql_query(String question) throws JWNLException, IOException, SQLException{
+	 public void create_Sparql_query(queryInformation query_struct) throws JWNLException, IOException, SQLException{
 		 	//create_Sparql_query_new(string);
 			
 		ArrayList<ArrayList<String>> lstquery = new ArrayList<ArrayList<String>>();
 		long startParsingTime = System.currentTimeMillis();
-		lstquery=getQuery(question);
+		lstquery=getQuery(query_struct.getQuery());
 		long endParsingTime = System.currentTimeMillis();
 		long startIterationTime = System.currentTimeMillis();
 		System.out.println("The Questionparsing took "+ (endParsingTime-startParsingTime)+ " ms");
 		ArrayList<String> final_answer = new ArrayList<String>();
 		ArrayList<String> final_query = new ArrayList<String>();
+		Set<String> final_query_hash = new HashSet<String>();
+		Set<String> final_answer_hash = new HashSet<String>();
 		
 		if(lstquery.isEmpty()){
-			saveNotParsedQuestions(question);
+			saveNotParsedQuestions(query_struct.getQuery());
 		}
 
 			for(ArrayList<String> querylist : lstquery){
@@ -179,7 +190,7 @@ public class SparqlObject {
 				    
 				    String out=null;
 				    if (query.equals("") || query.equals(" ")||query.length()==0) query="Could not parse";
-				    out=tmp + "\n" + question + ":\n"+query+"\n";
+				    out=tmp + "\n" + query_struct.getQuery() + ":\n"+query+"\n";
 				    
 				    BufferedWriter outfile = new BufferedWriter(
 	                          new OutputStreamWriter(
@@ -219,9 +230,8 @@ public class SparqlObject {
 							e.printStackTrace();
 						}
 				    }					
-					String answer;
-					answer=sendServerQuestionRequest(query);
-					final_answer.add("Begin:\n"+query +"\n"+answer+" \n End");
+
+				    final_query_hash.add(query);
 					
 				}
 				/*
@@ -236,68 +246,28 @@ public class SparqlObject {
 					ArrayList<String> final_answer_tmp = new ArrayList<String>();
 					ArrayList<String> final_query_tmp=new ArrayList<String>();
 					if(querylist.size()==4){
-						//System.out.println("YEAH!!!!!");
-						//final_answer_tmp=simpleLevinstheinIteration(querylist, query);
-						//final_query_tmp=simpleLevinstheinIteration(querylist, query);
+
 						final_query_tmp=simpleCase(querylist, query, "LEVENSTHEIN");
 						for(String i: final_query_tmp){
+							final_query_hash.add(i);
 							
-							//do it unnice for first
-							boolean double_query=false;
-							for(String s: final_query ){
-								
-								if(s.contains(i)){
-									double_query=true;
-									
-								}
-							}
-							if(double_query==false){
-								
-								final_query.add(i);
-							}
 						}
 					}
 					
 					
 					if(querylist.size()>4&&query.contains("rdf:type")){
-						//System.out.println("YEAH!!!!!");
-						//final_answer_tmp=simpleLevinstheinIteration(querylist, query);
+
 						final_query_tmp=isAIteration(querylist, query,"LEVENSTHEIN");
 						for(String i: final_query_tmp){
 							
-							//do it unnice for first
-							boolean double_query=false;
-							for(String s: final_query ){
-								
-								if(s.contains(i)){
-									double_query=true;
-									
-								}
-							}
-							if(double_query==false){
-								
-								final_query.add(i);
-							}
+							final_query_hash.add(i);
 						}
 					}
 					
 					if(querylist.size()>4&&!query.contains("rdf:type")){
 						final_query_tmp=advancedCase(querylist, query,"LEVENSTHEIN");
 						for(String i: final_query_tmp){
-							
-							//do it unnice for first
-							boolean double_query=false;
-							for(String s: final_query ){
-								
-								if(s.contains(i)){
-									double_query=true;
-									
-								}
-							}
-							if(double_query==false){
-								
-								final_query.add(i);
-							}
+							final_query_hash.add(i);
 						}
 					}
 					
@@ -321,106 +291,28 @@ public class SparqlObject {
 
 						final_query_tmp=simpleCase(querylist, query, "WORDNET");
 						for(String i: final_query_tmp){
-							
-							//do it unnice for first
-							boolean double_query=false;
-							for(String s: final_query ){
-								
-								if(s.contains(i)){
-									double_query=true;
-									
-								}
-							}
-							if(double_query==false){
-								
-								final_query.add(i);
-							}
+							final_query_hash.add(i);
 						}
 					}
 					
 					if(querylist.size()>4&&query.contains("rdf:type")){
-						//System.out.println("YEAH!!!!!");
-						//final_answer_tmp=simpleLevinstheinIteration(querylist, query);
+
 						final_query_tmp=isAIteration(querylist, query,"WORDNET");
 						for(String i: final_query_tmp){
-							
-							//do it unnice for first
-							boolean double_query=false;
-							for(String s: final_query ){
-								
-								if(s.contains(i)){
-									double_query=true;
-									
-								}
-							}
-							if(double_query==false){
-								
-								final_query.add(i);
-							}
+							final_query_hash.add(i);
 						}
 					}
 					
 					if(querylist.size()>4&&!query.contains("rdf:type")){
 						final_query_tmp=advancedCase(querylist, query,"WORDNET");
 						for(String i: final_query_tmp){
-							
-							//do it unnice for first
-							boolean double_query=false;
-							for(String s: final_query ){
-								
-								if(s.contains(i)){
-									double_query=true;
-									
-								}
-							}
-							if(double_query==false){
-								
-								final_query.add(i);
-							}
+							final_query_hash.add(i);
 						}
 					}
 					
 					
 
-				/*	if(querylist.size()==4){
-						
-						//final_answer_tmp=simpleLevinstheinIteration(querylist, query);
-						final_query_tmp = simpleWordnetIteration(querylist, query);
-						for(String i: final_query_tmp){
-							
-							//do it unnice for first
-							boolean double_query=false;
-							for(String s: final_query ){
-								
-								if(s.contains(i)){
-									double_query=true;
-									
-								}
-							}
-							if(double_query==false){
-								
-								final_query.add(i);
-							}
-						}
-					}
-						final_answer_tmp=simpleWordnetIteration(querylist, query);
-					//if(querylist.size()>4)final_answer=complexWordnetIteration(querylist, query);
-					
-					//for a test only use:
-					if(querylist.size()>4){
-						final_query_tmp=newIteration(querylist,query);
-						for(String i: final_query_tmp){
-							boolean double_query=false;
-							for(String s: final_query ){
-								if(s.contains(i)){
-									double_query=true;
-								}
-							}
-							if(double_query==false){
-								final_query.add(i);
-							}
-						}
-					}*/
+				
 				}
 				
 				
@@ -431,14 +323,23 @@ public class SparqlObject {
 			 * Send Query to Server and get answers
 			 */
 			
-			for(String anfrage : final_query){
-				String answer_tmp;
-				answer_tmp=sendServerQuestionRequest(anfrage);
-				//System.out.println("Antwort vom Server: "+answer_tmp);
-				if(!final_answer.contains(anfrage))
-					final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
-				//final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
-			}
+			
+			
+			Iterator it = final_query_hash.iterator();
+		    while (it.hasNext()) {
+		      System.out.println(it.next());
+		      String answer_tmp;
+		      try{
+		    	  String anfrage=it.next().toString();
+		    	  answer_tmp=sendServerQuestionRequest(anfrage);
+		    	  final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
+		      }
+		      catch (Exception e){
+		    	  
+		      }
+		    }
+		    
+			
 			
 			
 			BufferedReader in = null;
@@ -488,7 +389,7 @@ public class SparqlObject {
 				}
 
 			}
-		    System.out.println(question);
+		    System.out.println(query_struct.getQuery());
 		    out = out.replace("@en","").replace("\"","").replace("^^&lt;http://www.w3.org/2001/XMLSchema#int&gt; ", "");
 		    System.out.println(out);
 		    
@@ -496,7 +397,7 @@ public class SparqlObject {
                       new OutputStreamWriter(
                       new FileOutputStream( "/tmp/answer" ) ) );
 
-		    outfile.write(tmp+"\n"+question+" :\n"+out);
+		    outfile.write(tmp+"\n"+query_struct.getQuery()+" :\n"+out);
 		    outfile.close();
 		    long stopIterationTime = System.currentTimeMillis();
 		    System.out.println("The Questionparsing took "+ (endParsingTime-startParsingTime)+ " ms");
@@ -1928,7 +1829,7 @@ JWNLException {
 		 * change to dbpedia http://dbpedia.org/sparql
 		 */
 		//String tmp="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
-		String tmp="http://dbpedia.org/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";		System.out.println(tmp);
+		String tmp=Prefix+"?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";		System.out.println(tmp);
 		URL url;
 	    InputStream is;
 	    InputStreamReader isr;
@@ -1966,7 +1867,7 @@ JWNLException {
 		 * change to dbpedia http://dbpedia.org/sparql
 		 */
 		//String tmp="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
-		String tmp="http://dbpedia.org/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
+		String tmp=Prefix+"?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
 
 		System.out.println(tmp);
 		URL url;
@@ -2001,11 +1902,8 @@ JWNLException {
 	}
 	
 	private String createAnswer(String string){
-		//<td>Klaus Wowereit</td>
 		
-		//get with regex all between <td> </td>
-		
-		Pattern p = Pattern.compile (".*<td>(.*)</td>.*");
+		/*Pattern p = Pattern.compile (".*<td>(.*)</td>.*");
 	    Matcher m = p.matcher (string);
 	    String result="";
 
@@ -2013,8 +1911,23 @@ JWNLException {
 	  		if(m.group(1)!=null) 
 	  		result = result+" "+ m.group(1);
 	  	}
-	  		
+	  		*/
+		Pattern p = Pattern.compile (".*\\<td\\>(.*)\\</td\\>.*");
+		string = string.replace("<table class=\"sparql\" border=\"1\">", "").replace("<tr>","").replace("</tr>", "").replace("</table>", "");
+	    Matcher m = p.matcher (string);
+	    String[] bla = string.split("   ");
+	    
+	    String result="";
+	  	for(String s: bla){
+	  		m=p.matcher(s);
+	  		while (m.find()) {
+	  			result = result+"\n"+ m.group(1);
+	  			  		
+	  		}
+	    }
+	  	
 		if (result.length()==0) result="EmtyAnswer";
+		if(string.matches("true")|| string.matches("false"))  result=string;
 
 		return result;
 
@@ -2024,17 +1937,31 @@ JWNLException {
 		
 		//get with regex all between <td> </td>
 		
-		Pattern p = Pattern.compile (".*<td>(.*)</td>.*");
+		/*Pattern p = Pattern.compile (".*<td>(.*)</td>.*");
 	    Matcher m = p.matcher (string);
 	    ArrayList<String> result=new ArrayList<String>();
 
 	  	while (m.find()) {
 	  		if(m.group(1)!=null) 
 	  		result.add(m.group(1));
-	  	}
+	  	}*/
+		Pattern p = Pattern.compile (".*\\<td\\>(.*)\\</td\\>.*");
+		string = string.replace("<table class=\"sparql\" border=\"1\">", "").replace("<tr>","").replace("</tr>", "").replace("</table>", "");
+	    Matcher m = p.matcher (string);
+	    String[] bla = string.split("   ");
+	    
+	    ArrayList<String> result= new ArrayList<String>();
+	  	for(String s: bla){
+	  		m=p.matcher(s);
+	  		while (m.find()) {
+	  			result.add(m.group(1));
+	  			  		
+	  		}
+	    }
+	  	
 	  		
 		//if (result.length()==0) result="EmtyAnswer";
-
+	  	if(string.matches("true")|| string.matches("false")) result.add(string);
 		return result;
 
 	}
