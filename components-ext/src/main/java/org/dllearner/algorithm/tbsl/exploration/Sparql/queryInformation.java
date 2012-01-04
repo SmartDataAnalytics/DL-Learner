@@ -1,5 +1,7 @@
 package org.dllearner.algorithm.tbsl.exploration.Sparql;
 
+import java.util.ArrayList;
+
 public class queryInformation {
 	// <question id="32" type="boolean" fusion="false" aggregation="false" yago="false">
 	public final String query;
@@ -10,8 +12,18 @@ public class queryInformation {
 	 public final String id;
 	 public final String XMLtype;
 	 public final boolean hint;
+	 public ArrayList<String> result = new ArrayList<String>();
 	 
-	 public boolean isHint() {
+	 public ArrayList<String> getResult() {
+		return result;
+	}
+	 
+	 public void setResult(ArrayList<String> new_result) {
+		 this.result=new_result;
+		}
+
+
+	public boolean isHint() {
 		return hint;
 	}
 

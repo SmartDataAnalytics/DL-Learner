@@ -133,7 +133,7 @@ public class SparqlObject {
 	 * "Main" Method of this Class.
 	 * 
 	 */
-	 public void create_Sparql_query(queryInformation query_struct) throws JWNLException, IOException, SQLException{
+	 public queryInformation create_Sparql_query(queryInformation query_struct) throws JWNLException, IOException, SQLException{
 		 	//create_Sparql_query_new(string);
 			
 		ArrayList<ArrayList<String>> lstquery = new ArrayList<ArrayList<String>>();
@@ -143,9 +143,7 @@ public class SparqlObject {
 		long startIterationTime = System.currentTimeMillis();
 		System.out.println("The Questionparsing took "+ (endParsingTime-startParsingTime)+ " ms");
 		ArrayList<String> final_answer = new ArrayList<String>();
-		ArrayList<String> final_query = new ArrayList<String>();
 		Set<String> final_query_hash = new HashSet<String>();
-		Set<String> final_answer_hash = new HashSet<String>();
 		
 		if(lstquery.isEmpty()){
 			saveNotParsedQuestions(query_struct.getQuery());
@@ -332,7 +330,41 @@ public class SparqlObject {
 		      try{
 		    	  String anfrage=it.next().toString();
 		    	  answer_tmp=sendServerQuestionRequest(anfrage);
-		    	  final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
+		    	  answer_tmp=answer_tmp.replace("\"@en", "");
+		    	  answer_tmp=answer_tmp.replace("\"", "");
+		    	  
+		    	  //filter answers!
+		    	  if(query_struct.isHint()){
+		    		  System.out.println("Using hint!");
+		    		  /*
+		    		   * Answertyps: resource, string, boolean, num, date
+		    		   */
+		    		  if(query_struct.getType().contains("boolean")){
+		    			  if(answer_tmp.contains("true")||answer_tmp.contains("false")) final_answer.add(answer_tmp);
+		    			  
+		    		  }
+		    		  else if (query_struct.getType().contains("resource")){
+		    			  final_answer.add(answer_tmp);
+		    		  } 
+		    		  else if (query_struct.getType().contains("string")){
+		    			  if(!answer_tmp.contains("http")&&!answer_tmp.contains("EmtyAnswer")) {
+		    				  String[] tmparray = answer_tmp.split("\n");
+		    				  for(String z : tmparray)final_answer.add(z);
+		    			  }
+		    			  
+		    		  } 
+		    		  else if (query_struct.getType().contains("num")){
+		    			  if(answer_tmp.matches("[0-9]*")) final_answer.add(answer_tmp);
+		    			  
+		    		  } 
+		    		  else if (query_struct.getType().contains("date")){
+		    			  final_answer.add(answer_tmp);
+		    		  } 
+		    	  }
+		    	  else{
+		    		  //final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
+		    		  final_answer.add(answer_tmp);
+		    	  }
 		      }
 		      catch (Exception e){
 		    	  
@@ -341,68 +373,9 @@ public class SparqlObject {
 		    
 			
 			
+		    query_struct.setResult(final_answer);
 			
-			BufferedReader in = null;
-			
-		    String tmp="";
-			// Lies Textzeilen aus der Datei in einen Vector:
-		    try {
-		      in = new BufferedReader(
-		                          new InputStreamReader(
-		                          new FileInputStream( "/tmp/answer" ) ) );
-		      String s;
-			while( null != (s = in.readLine()) ) {
-		        tmp+="\n"+s;
-		      }
-		    } catch( FileNotFoundException ex ) {
-		    } catch( Exception ex ) {
-		      System.out.println( ex );
-		    } finally {
-		      if( in != null )
-				try {
-					in.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		    }	
-		    
-		    String out="";
-			for(String answer : final_answer){
-				if(answer!=null){
-				//only answered question
-				if(!answer.contains("Error in searching Wordnet with word") && !answer.contains("EmtyAnswer")&& !answer.contains("Error in getting Properties"))out=out+ "\n"+answer+"\n";
-			    
-				/*
-				//only questions with wordnet error
-				if(answer.contains("Error in searching Wordnet with word"))out=out+ "\n"+answer+"\n";
-				
-				//only questions with emty answers
-				if(answer.contains("EmtyAnswer"))out=out+ "\n"+answer+"\n";
-*/				
-				//only questions with Error in Properties
-			//	if(answer.contains("Error in getting Properties"))out=out+ "\n"+answer+"\n";
-
-				//out+= "\n"+answer+"\n";
-				}
-				else{
-					System.out.println("Answer was null");
-				}
-
-			}
-		    System.out.println(query_struct.getQuery());
-		    out = out.replace("@en","").replace("\"","").replace("^^&lt;http://www.w3.org/2001/XMLSchema#int&gt; ", "");
-		    System.out.println(out);
-		    
-		    BufferedWriter outfile = new BufferedWriter(
-                      new OutputStreamWriter(
-                      new FileOutputStream( "/tmp/answer" ) ) );
-
-		    outfile.write(tmp+"\n"+query_struct.getQuery()+" :\n"+out);
-		    outfile.close();
-		    long stopIterationTime = System.currentTimeMillis();
-		    System.out.println("The Questionparsing took "+ (endParsingTime-startParsingTime)+ " ms");
-		    System.out.println("The Iteration took "+ (stopIterationTime-startIterationTime)+ " ms");
-		    System.out.println("All took "+ (stopIterationTime-startParsingTime)+ " ms");
+		    return query_struct;
 		}
 
 	 private ArrayList<String> newIteration(ArrayList<String> querylist, String query) throws SQLException,
