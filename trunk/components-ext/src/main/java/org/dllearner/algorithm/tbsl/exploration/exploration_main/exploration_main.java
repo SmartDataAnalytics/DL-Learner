@@ -1,9 +1,11 @@
 package org.dllearner.algorithm.tbsl.exploration.exploration_main;
 import java.io.BufferedReader;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -121,7 +123,12 @@ public class exploration_main {
 				    		//get each line and send it to the parser
 				    		//String query1, String id1, String type1, boolean fusion1, boolean aggregation1, boolean yago1, String XMLtype1
 				    		queryInformation newQuery = new queryInformation(s,"0","",false,false,false,"non",false);
-				    		sparql.create_Sparql_query(newQuery);
+				    		queryInformation result = new queryInformation(s,"0","",false,false,false,"non",false);
+				    		result=sparql.create_Sparql_query(newQuery);
+				    		ArrayList<String> ergebnis = result.getResult();
+							for(String i: ergebnis){
+								System.out.println(i);
+							}
 				    }
 				    long timeNow = System.currentTimeMillis();
 				    long diff = timeNow-startTime;
@@ -138,6 +145,7 @@ public class exploration_main {
 					
 					//create Structs
 					ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
+					ArrayList<queryInformation> list_of_resultstructs = new ArrayList<queryInformation>();
 					//if you dont want to use the hints in the questions, use false
 					list_of_structs=generateStruct(line,true);
 					//Start Time measuring
@@ -152,12 +160,16 @@ public class exploration_main {
 						System.out.println("Query: "+s.getQuery());
 						System.out.println("Type: "+s.getType());
 						System.out.println("XMLType: "+s.getXMLtype());
-						sparql.create_Sparql_query(s);
+						list_of_resultstructs.add(sparql.create_Sparql_query(s));
 					}
 					
 				    
-				    //sparql.create_Sparql_query(s);
-				 
+				    //Print to Console
+					System.out.println("\n#############\n Result:");
+					for(queryInformation s : list_of_resultstructs){
+						System.out.println(s.getResult());
+					}
+					createXML(list_of_resultstructs);
 				    long timeNow = System.currentTimeMillis();
 				    long diff = timeNow-startTime;
 				              
@@ -168,7 +180,12 @@ public class exploration_main {
 				else if(schleife==true && doing ==true){
 					long startTime = System.currentTimeMillis();
 					queryInformation newQuery = new queryInformation(line,"0","",false,false,false,"non",false);
-					sparql.create_Sparql_query(newQuery);
+					queryInformation result = new queryInformation(line,"0","",false,false,false,"non",false);
+					result= sparql.create_Sparql_query(newQuery);
+					ArrayList<String> ergebnis = result.getResult();
+					for(String i: ergebnis){
+						System.out.println(i);
+					}
 					long endTime= System.currentTimeMillis();
 					System.out.println("\n The complete answering of the Question took "+(endTime-startTime)+" ms");
 				}
@@ -182,6 +199,39 @@ public class exploration_main {
 	}
 
 
+	private static void createXML(ArrayList<queryInformation> list){
+		
+		
+		String xmlDocument="";
+		int counter=0;
+		for (queryInformation s : list){
+			String tmp;
+			if(counter==0){
+				counter=counter+1;
+				xmlDocument="<?xml version=\"1.0\" ?><dataset id=\""+s.getXMLtype()+"\">";
+			}
+			tmp="<question id=\""+s.getId()+"\"><string>"+s.getQuery()+"</string><query></query><ANSWERS>";
+			for(String i : s.getResult())tmp+="<answer>"+i+"</answer>";
+			tmp+="</ANSWERS></question>";
+			xmlDocument+=tmp;
+			
+		}
+		xmlDocument+="</dataset>";
+		File file;
+		FileWriter writer;
+		file = new File("/home/swalter/result.xml");
+	     try {
+	       writer = new FileWriter(file ,false);    
+	       writer.write(xmlDocument);
+	       writer.flush();
+	       
+
+	       writer.close();
+	    } catch (IOException e) {
+	      e.printStackTrace();
+	    }
+	     
+	}
 	
 	private static ArrayList<queryInformation> generateStruct(String filename, boolean hint) {
 		
