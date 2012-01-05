@@ -84,8 +84,8 @@
 	the most || (DET DET:'the' DET:'most') || <y, l1, e, [ l1:[ | l2:[ y | ] THEMOST y l3:[|] ] ], [], [],[]>
 	the least || (DET DET:'the' DET:'least') || <y, l1, e, [ l1:[ | l2:[ y | ] THELEAST y l3:[|] ] ], [], [],[]>
 
-    // CHEAT!
-	highest || (NP ADJ:'highest' NP*) || <x, l1, e, [ l1:[ | maximum(x) ] ], [], [],[]> ;; <x, l1, e, [ l1:[ j | SLOT_high(x,j), maximum(j) ] ],[],[],[ SLOT_high/PROPERTY/height^elevation ]>
+    // NECESSARY "CHEAT"
+	highest || (NP ADJ:'highest' NP*) || <x, l1, e, [ l1:[ | maximum(x) ] ], [], [],[]> ;; <x, l1, e, [ l1:[ j | SLOT_high(x,j), maximum(j) ] ],[],[],[ SLOT_high/PROPERTY/height ]>
 
 	// COUNT
 	more than || (DP DET:'more' DET:'than' NUM[num] NP[np]) || <y,l1,<<e,t>,t>,[ l1:[ y,c | count(y,c), greater(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]> ;; <y,l1,<<e,t>,t>,[ l1:[ y | greater(y,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
