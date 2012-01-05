@@ -505,7 +505,7 @@ public class DRS implements SemanticRepresentation {
 			drs1.replaceReferent(oldV,newV);
 		}
 		
-		// Hack: If it looks the same, it is the same.
+		// If it looks the same, it is the same.
 		
 		DRS_Constructor dc = new DRS_Constructor();
 		if (dc.construct(drs1.toString()).equals(dc.construct(drs2.toString()))) {
