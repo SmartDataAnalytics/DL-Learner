@@ -178,11 +178,11 @@ public class CELOE extends AbstractCELA {
 	@ConfigOption(name = "maxClassExpressionTestsAfterImprovement", defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 	private int maxClassExpressionTestsAfterImprovement = 0;
 	
-	@ConfigOption(defaultValue = "0", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
-	private int maxExecutionTimeInSeconds = 0;
+	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
+	private int maxExecutionTimeInSeconds = 10;
 
-	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSecondsAfterImprovement", description = "maximum execution of the algorithm in seconds")
-	private int maxExecutionTimeInSecondsAfterImprovement = 10;
+	@ConfigOption(defaultValue = "0", name = "maxExecutionTimeInSecondsAfterImprovement", description = "maximum execution of the algorithm in seconds")
+	private int maxExecutionTimeInSecondsAfterImprovement = 0;
 	
 	@ConfigOption(name = "terminateOnNoiseReached", defaultValue="false", description="specifies whether to terminate when noise criterion is met")
 	private boolean terminateOnNoiseReached = false;
@@ -219,6 +219,10 @@ public class CELOE extends AbstractCELA {
 	@Override
 	public void init() throws ComponentInitException {
 			
+		if(maxExecutionTimeInSeconds != 0) {
+			maxExecutionTimeInSeconds = Math.min(maxExecutionTimeInSeconds, maxExecutionTimeInSecondsAfterImprovement);
+		}
+		
 		// compute used concepts/roles from allowed/ignored
 		// concepts/roles
 		Set<NamedClass> usedConcepts;
