@@ -16,6 +16,7 @@ import org.dllearner.algorithm.tbsl.sparql.BasicQueryTemplate;
 import org.dllearner.algorithm.tbsl.sparql.Path;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Aggregate;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Filter;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Having;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_OrderBy;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Pair;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_PairType;
@@ -242,21 +243,41 @@ public class DRS2BasicSPARQL_Converter {
             	}
             }
             else if (predicate.equals("count")) {
-            	// COUNT(?x) AS ?c
-            	if (!literal) {
-            		temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, simple.getArguments().get(1).getValue()));
-            		return temp;
+            	if (simple.getArguments().size() == 1) {
+            		temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT));
             	}
             	else {
-            		String fresh = "c"+createFresh();
-            		temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, fresh));
-            		temp.addFilter(new SPARQL_Filter(
-            				new SPARQL_Pair(
-            				new SPARQL_Term(fresh),
-            				new SPARQL_Term(simple.getArguments().get(1).getValue(),true),
-            				SPARQL_PairType.EQ)));
-            		return temp;
+	            	if (!literal) {
+	            		temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, simple.getArguments().get(1).getValue()));
+	            		return temp;
+	            	}
+	            	else { // COUNT(?x) AS ?c
+	//            		String fresh = "c"+createFresh();
+	//            		temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, fresh));
+	//            		temp.addFilter(new SPARQL_Filter(
+	//            				new SPARQL_Pair(
+	//            				new SPARQL_Term(fresh),
+	//            				new SPARQL_Term(simple.getArguments().get(1).getValue(),true),
+	//            				SPARQL_PairType.EQ)));
+	            		temp.addHaving(new SPARQL_Having("COUNT(?"+simple.getArguments().get(0).getValue() + ") = "+simple.getArguments().get(1).getValue()));
+	            		return temp;
+	            	}
             	}
+            } else if (predicate.equals("count_greater")) {
+            	temp.addHaving(new SPARQL_Having("COUNT(?"+simple.getArguments().get(0).getValue() + ") > "+simple.getArguments().get(1).getValue()));
+        		return temp;
+            } else if (predicate.equals("count_less")) {
+            	temp.addHaving(new SPARQL_Having("COUNT(?"+simple.getArguments().get(0).getValue() + ") < "+simple.getArguments().get(1).getValue()));
+        		return temp;
+            } else if (predicate.equals("count_greatereq")) {
+            	temp.addHaving(new SPARQL_Having("COUNT(?"+simple.getArguments().get(0).getValue() + ") >= "+simple.getArguments().get(1).getValue()));
+        		return temp;
+            } else if (predicate.equals("count_lesseq")) {
+            	temp.addHaving(new SPARQL_Having("COUNT(?"+simple.getArguments().get(0).getValue() + ") <= "+simple.getArguments().get(1).getValue()));
+        		return temp;
+            } else if (predicate.equals("count_eq")) {
+            	temp.addHaving(new SPARQL_Having("COUNT(?"+simple.getArguments().get(0).getValue() + ") = "+simple.getArguments().get(1).getValue()));
+        		return temp;
             } else if (predicate.equals("sum")) {
                 temp.addSelTerm(new SPARQL_Term(simple.getArguments().get(1).getValue(), SPARQL_Aggregate.SUM));
                 return temp;

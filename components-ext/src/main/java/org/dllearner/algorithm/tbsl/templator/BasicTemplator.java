@@ -24,7 +24,7 @@ import org.dllearner.algorithm.tbsl.sparql.Slot;
 
 public class BasicTemplator {
 	
-	String[] GRAMMAR_FILES = {"tbsl/lexicon/english.lex"};
+	String[] GRAMMAR_FILES = {"tbsl/lexicon/basic_english.lex"};
 	
 	PartOfSpeechTagger tagger;
 	LTAGLexicon g;

@@ -13,6 +13,7 @@ public class BasicQueryTemplate
 	Set<Path> conditions;
 	Set<SPARQL_Term> orderBy;
 	Set<SPARQL_Filter> filter;
+	Set<SPARQL_Having> having;
 	SPARQL_QueryType qt = SPARQL_QueryType.SELECT;
 	List<Slot> slots;
 
@@ -27,6 +28,7 @@ public class BasicQueryTemplate
 		conditions = new HashSet<Path>();
 		orderBy    = new HashSet<SPARQL_Term>();
 		filter     = new HashSet<SPARQL_Filter>();
+		having     = new HashSet<SPARQL_Having>();
 		slots      = new ArrayList<Slot>();
 	}
 	
@@ -71,6 +73,10 @@ public class BasicQueryTemplate
 		}
 
 		retVal += "}\n";
+		
+		for (SPARQL_Having h : having) {
+			retVal += h + "\n";
+		}
 
 		if (orderBy != null && !orderBy.isEmpty())
 		{
@@ -151,6 +157,14 @@ public class BasicQueryTemplate
 			if (f.equals(filter.toArray()[i])) return;
 
 		this.filter.add(f);
+	}
+	
+	public Set<SPARQL_Having> getHavings() {
+		return having;
+	}
+	
+	public void addHaving(SPARQL_Having h) {
+		having.add(h);
 	}
 
 	public Set<SPARQL_Term> getOrderBy()
@@ -241,7 +255,10 @@ public class BasicQueryTemplate
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result
+				+ ((conditions == null) ? 0 : conditions.hashCode());
 		result = prime * result + ((filter == null) ? 0 : filter.hashCode());
+		result = prime * result + ((having == null) ? 0 : having.hashCode());
 		result = prime * result + limit;
 		result = prime * result + offset;
 		result = prime * result + ((orderBy == null) ? 0 : orderBy.hashCode());
@@ -263,10 +280,20 @@ public class BasicQueryTemplate
 		if (getClass() != obj.getClass())
 			return false;
 		BasicQueryTemplate other = (BasicQueryTemplate) obj;
+		if (conditions == null) {
+			if (other.conditions != null)
+				return false;
+		} else if (!conditions.equals(other.conditions))
+			return false;
 		if (filter == null) {
 			if (other.filter != null)
 				return false;
 		} else if (!filter.equals(other.filter))
+			return false;
+		if (having == null) {
+			if (other.having != null)
+				return false;
+		} else if (!having.equals(other.having))
 			return false;
 		if (limit != other.limit)
 			return false;
@@ -299,5 +326,6 @@ public class BasicQueryTemplate
 			return false;
 		return true;
 	}
+
 
 }
