@@ -172,17 +172,26 @@ public class CELOE extends AbstractCELA {
 	@ConfigOption(name = "reuseExistingDescription", defaultValue="false", description="If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.")
 	private boolean reuseExistingDescription = false;
 
-	@ConfigOption(name = "maxClassDescriptionTests", defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
-	private int maxClassDescriptionTests = 0;
+	@ConfigOption(name = "maxClassExpressionTests", defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+	private int maxClassExpressionTests = 0;
 
-	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
-	private int maxExecutionTimeInSeconds = 10;
+	@ConfigOption(name = "maxClassExpressionTestsAfterImprovement", defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+	private int maxClassExpressionTestsAfterImprovement = 0;
+	
+	@ConfigOption(defaultValue = "0", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
+	private int maxExecutionTimeInSeconds = 0;
 
+	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSecondsAfterImprovement", description = "maximum execution of the algorithm in seconds")
+	private int maxExecutionTimeInSecondsAfterImprovement = 10;
+	
 	@ConfigOption(name = "terminateOnNoiseReached", defaultValue="false", description="specifies whether to terminate when noise criterion is met")
 	private boolean terminateOnNoiseReached = false;
 	
 	@ConfigOption(name = "maxDepth", defaultValue="7", description="maximum depth of description")
 	private double maxDepth = 7;
+
+	private int expressionTestCountLastImprovement;
+	private long timeLastImprovement = 0;
 	
 //	public CELOEConfigurator getConfigurator() {
 //		return configurator;
@@ -427,7 +436,9 @@ public class CELOE extends AbstractCELA {
 			
 			if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
 				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
-				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));	
+				expressionTestCountLastImprovement = expressionTests;
+				timeLastImprovement = System.nanoTime();
+				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
 			}
 
 			// chose best node according to heuristics
@@ -765,7 +776,9 @@ public class CELOE extends AbstractCELA {
 	private boolean terminationCriteriaSatisfied() {
 		return 
 		stop || 
-		(maxClassDescriptionTests != 0 && (expressionTests >= maxClassDescriptionTests)) ||
+		(maxClassExpressionTestsAfterImprovement != 0 && (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement)) ||
+		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
+		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement*1000000000l))) ||
 		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l))) ||
 		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage));
 	}
@@ -954,11 +967,11 @@ public class CELOE extends AbstractCELA {
 	}
 
 	public int getMaxClassDescriptionTests() {
-		return maxClassDescriptionTests;
+		return maxClassExpressionTests;
 	}
 
 	public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
-		this.maxClassDescriptionTests = maxClassDescriptionTests;
+		this.maxClassExpressionTests = maxClassDescriptionTests;
 	}
 
 	public int getMaxExecutionTimeInSeconds() {
@@ -999,6 +1012,24 @@ public class CELOE extends AbstractCELA {
 
 	public void setHeuristic(OEHeuristicRuntime heuristic) {
 		this.heuristic = heuristic;
+	}
+
+	public int getMaxClassExpressionTestsWithoutImprovement() {
+		return maxClassExpressionTestsAfterImprovement;
+	}
+
+	public void setMaxClassExpressionTestsWithoutImprovement(
+			int maxClassExpressionTestsWithoutImprovement) {
+		this.maxClassExpressionTestsAfterImprovement = maxClassExpressionTestsWithoutImprovement;
+	}
+
+	public int getMaxExecutionTimeInSecondsAfterImprovement() {
+		return maxExecutionTimeInSecondsAfterImprovement;
+	}
+
+	public void setMaxExecutionTimeInSecondsAfterImprovement(
+			int maxExecutionTimeInSecondsAfterImprovement) {
+		this.maxExecutionTimeInSecondsAfterImprovement = maxExecutionTimeInSecondsAfterImprovement;
 	}	
 	
 }
