@@ -87,7 +87,7 @@ public class Preprocessor {
 		Pattern vpassPattern      = Pattern.compile("\\s(\\w+/VBD.(\\w+)/VBN)");
 		Pattern vpassinPattern    = Pattern.compile("\\s((\\w+)/VPASS.\\w+/IN)");
 		Pattern gerundinPattern   = Pattern.compile("\\s((\\w+)/((VBG)|(VBN)).\\w+/IN)");
-		Pattern vprepPattern      = Pattern.compile("\\s((\\w+)/V[A-Z]+\\s\\w+/(IN|TO))");
+		Pattern vprepPattern      = Pattern.compile("\\s((\\w+)(?<!have)/V[A-Z]+\\s\\w+/(IN|TO))");
 		Pattern whenPattern       = Pattern.compile("(?i)(when/WRB\\s(.+\\s)(\\w+)/((V[A-Z]+)|(PASS[A-Z]+)))");
 		Pattern wherePattern      = Pattern.compile("(?i)(where/WRB\\s(.+\\s)(\\w+)/((V[A-Z]+)|(PASS[A-Z]+)))");
 		Pattern adjsPattern       = Pattern.compile("((\\w+)/JJ.(\\w+)/JJ)");
