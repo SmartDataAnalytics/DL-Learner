@@ -1458,7 +1458,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 				result = isDisjointInstanceBased(d1,d2);
 			} else {
 				Description d = new Intersection(d1, d2);
-				result = reasoner.isSuperClassOf(new Nothing(), d);				
+				result = reasoner.isSuperClassOf(new Nothing(), d);		System.out.println("TEST");		
 			}
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
