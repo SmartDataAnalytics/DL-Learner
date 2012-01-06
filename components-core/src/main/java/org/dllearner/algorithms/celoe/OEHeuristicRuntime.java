@@ -21,7 +21,11 @@ package org.dllearner.algorithms.celoe;
 
 import java.util.Comparator;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DoubleEditor;
 import org.dllearner.utilities.owl.ConceptComparator;
 
 /**
@@ -32,8 +36,8 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * @author Jens Lehmann
  *
  */
-@ComponentAnn(name = "OEHeuristicRuntime", shortName = "OEHeuristicRuntime", version = 0.5)
-public class OEHeuristicRuntime implements Comparator<OENode>{
+@ComponentAnn(name = "OEHeuristicRuntime", shortName = "celoe_heuristic", version = 0.5)
+public class OEHeuristicRuntime implements Component, Comparator<OENode>{
 	
 	// strong penalty for long descriptions
 	private double expansionPenaltyFactor = 0.1;
@@ -45,9 +49,17 @@ public class OEHeuristicRuntime implements Comparator<OENode>{
 	// syntactic comparison as final comparison criterion
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
+	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
+	private double startNodeBonus = 0.1;
+	
 	public OEHeuristicRuntime() {
 
 	}
+	
+	@Override
+	public void init() throws ComponentInitException {
+
+	}		
 	
 	@Override
 	public int compare(OENode node1, OENode node2) {
@@ -74,6 +86,9 @@ public class OEHeuristicRuntime implements Comparator<OENode>{
 		if(!node.isRoot()) {
 			double parentAccuracy = node.getParent().getAccuracy();
 			score += (parentAccuracy - score) * gainBonusFactor;
+		// the root node also gets a bonus to possibly spawn useful disjunctions
+		} else {
+			score += startNodeBonus;
 		}
 		// penalty for horizontal expansion
 		score -= node.getHorizontalExpansion() * expansionPenaltyFactor;
@@ -104,5 +119,15 @@ public class OEHeuristicRuntime implements Comparator<OENode>{
 
 	public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
 		this.expansionPenaltyFactor = expansionPenaltyFactor;
-	}	
+	}
+
+	public double getStartNodeBonus() {
+		return startNodeBonus;
+	}
+
+	public void setStartNodeBonus(double startNodeBonus) {
+		this.startNodeBonus = startNodeBonus;
+	}
+
+
 }
