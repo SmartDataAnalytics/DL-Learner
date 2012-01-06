@@ -42,7 +42,7 @@ public @interface ComponentAnn {
 	
     /**
      * The short name of this component, which should exclusively consist of
-     * lower case ASCII symbols without whitespace.
+     * lower case ASCII symbols and "_" without whitespace.
      * @return The short name of this component.
      */
     String shortName();

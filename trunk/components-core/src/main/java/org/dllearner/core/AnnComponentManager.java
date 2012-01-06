@@ -85,6 +85,7 @@ public class AnnComponentManager {
             "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",
             "org.dllearner.algorithms.ocel.OCEL",
             "org.dllearner.algorithms.ocel.MultiHeuristic",
+            "org.dllearner.algorithms.celoe.OEHeuristicRuntime",
             "org.dllearner.refinementoperators.RhoDRDown",
     } ));
     private static Collection<Class<? extends Component>> components;
