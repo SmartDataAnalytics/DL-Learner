@@ -21,6 +21,7 @@ package org.dllearner.algorithms.celoe;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,7 +39,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.SimpleLayout;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
@@ -86,7 +90,6 @@ import com.jamonapi.MonitorFactory;
 @ComponentAnn(name="PCELOE", shortName="pceloe", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class PCELOE extends AbstractCELA {
 	
-	Map<Thread, RefinementOperator> ops = new HashMap<Thread, RefinementOperator>();
 	//parameters for thread pool
 		//Parallel running Threads(Executor) on System
 		private static int corePoolSize = 5;
@@ -441,99 +444,29 @@ public class PCELOE extends AbstractCELA {
 		addNode(startClass, null);
 		
 		int nrOfThreads = Runtime.getRuntime().availableProcessors();
+		nrOfThreads = 8;//only for tests TODO make number of threads configurable
 		ExecutorService service = Executors.newFixedThreadPool(nrOfThreads);
 		
-		for(int i = 0; i < 2; i++){
-			service.submit(new Runnable() {
-				
-				
-				
-				@Override
-				public void run() {
-					// we use a default operator and inject the class hierarchy for now
-					RefinementOperator operator = new RhoDRDown();
-					((RhoDRDown)operator).setStartClass(startClass);
-					((RhoDRDown)operator).setReasoner(reasoner);
-					try {
-						((RhoDRDown)operator).init();
-					} catch (ComponentInitException e) {
-						e.printStackTrace();
-					}
-					// TODO: find a better solution as this is quite difficult to debug
-					((RhoDRDown)operator).setSubHierarchy(reasoner.getClassHierarchy().clone());
-					((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-					((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-					
-					ops.put(Thread.currentThread(), operator);
-					
-					OENode nextNode;
-					double highestAccuracy = 0.0;
-					int loop = 0;
-					while (!terminationCriteriaSatisfied()) {
-						
-						
-						if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
-							highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
-							logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));	
-						}
-
-						// chose best node according to heuristics
-						logger.info("Get next node to expand...");
-						nextNode = getNextNodeToExpand();
-						logger.info("...done");
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						logger.info("next Node: " + nextNode);
-						if(nextNode != null){
-							int horizExp = nextNode.getHorizontalExpansion();
-							
-							// apply operator
-							Monitor mon = MonitorFactory.start("refineNode");
-							logger.info("Refine node...");
-							TreeSet<Description> refinements = refineNode(nextNode);
-							mon.stop();
-							logger.info("...done");
-							
-							while(refinements.size() != 0) {
-								// pick element from set
-								Description refinement = refinements.pollFirst();
-								int length = refinement.getLength();
-												
-								// we ignore all refinements with lower length and too high depth
-								// (this also avoids duplicate node children)
-								if(length > horizExp && refinement.getDepth() <= maxDepth) {
-									
-//									System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
-									Monitor mon2 = MonitorFactory.start("addNode");
-									logger.info("Add node...");
-									addNode(refinement, nextNode);
-									mon2.stop();
-									logger.info("...done");
-									// adding nodes is potentially computationally expensive, so we have
-									// to check whether max time is exceeded	
-									if(terminationCriteriaSatisfied()) {
-										break;
-									}
-//									System.out.println("addNode finished" + " " + new Date());
-								}
-						
-//								System.out.println("  refinement queue length: " + refinements.size());
-							}
-							
-//							updateMinMaxHorizExp(nextNode);
-								
-							loop++;
-							currentlyProcessedNodes.remove(nextNode);
-						}
-						
-					}
-					
-				}
-			});
+		List<Runnable> tasks = new ArrayList<Runnable>();
+		
+		for(int i = 0; i < nrOfThreads; i++){
+			RhoDRDown operator = new RhoDRDown();
+			operator.setStartClass(startClass);
+			operator.setReasoner(reasoner);
+			try {
+				operator.init();
+			} catch (ComponentInitException e) {
+				e.printStackTrace();
+			}
+			operator.setSubHierarchy(reasoner.getClassHierarchy().clone());
+			operator.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			operator.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			
+			tasks.add(new Worker(operator));
+		}
+		
+		for(Runnable task : tasks){
+			service.submit(task);
 		}
 		
 		try {
@@ -554,12 +487,14 @@ public class PCELOE extends AbstractCELA {
 		}
 		
 		// print solution(s)
+		
+//		System.out.println("isRunning: " + isRunning);
+		
 		logger.info("solutions:\n" + getSolutionString());
 		
 //		System.out.println(startNode.toTreeString(baseURI));
 		
 		isRunning = false;
-//		System.out.println("isRunning: " + isRunning);
 		service.shutdown();
 		
 	}
@@ -568,14 +503,20 @@ public class PCELOE extends AbstractCELA {
 		// we expand the best node of those, which have not achieved 100% accuracy
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
+		synchronized (nodes) {logger.info("in 1.lock");
 		Iterator<OENode> it = nodes.descendingIterator();//logger.info(nodes.size());
-		while(it.hasNext()) {
-			OENode node = it.next();
-			if(!currentlyProcessedNodes.contains(node) && (node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength())) {
-				currentlyProcessedNodes.add(node);
-				return node;
+		logger.info("search tree size: " + nodes.size());
+			while(it.hasNext()) {
+				OENode node = it.next();
+				logger.info("checking node " + node);
+				if(!currentlyProcessedNodes.contains(node) && (node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength())) {
+					currentlyProcessedNodes.add(node);
+					return node;
+				}
+				logger.info("Checked.");
 			}
 		}
+		
 		
 		// this should practically never be called, since for any reasonable learning
 		// task, we will always have at least one node with less than 100% accuracy
@@ -583,19 +524,24 @@ public class PCELOE extends AbstractCELA {
 	}
 	
 	// expand node horizontically
-	private TreeSet<Description> refineNode(OENode node) {
+	private TreeSet<Description> refineNode(OENode node, RhoDRDown operator) {
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
-		nodes.remove(node);
+		synchronized (nodes) {
+			nodes.remove(node);
+		}
+		
 //		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
 //		TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
-		RefinementOperator operator = ops.get(Thread.currentThread()); //logger.info("Got operator");
 		TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
-		nodes.add(node);
+		synchronized (refinements) {
+			nodes.add(node);
+		}
+		
 		return refinements;
 	}
 	
@@ -688,13 +634,16 @@ public class PCELOE extends AbstractCELA {
 			// A is not a candidate; on the other hand this suppresses many meaningless extensions of A
 			boolean shorterDescriptionExists = false;
 			if(forceMutualDifference) {
-				for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
-					if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
-//						System.out.println("shorter: " + ed.getDescription());
-						shorterDescriptionExists = true;
-						break;
-					}
-				}				
+				synchronized (bestEvaluatedDescriptions) {
+					for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+						if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
+//							System.out.println("shorter: " + ed.getDescription());
+							shorterDescriptionExists = true;
+							break;
+						}
+					}	
+				}
+							
 			}
 			logger.info("Point 2");
 			
@@ -822,11 +771,13 @@ public class PCELOE extends AbstractCELA {
 	}
 	
 	private boolean terminationCriteriaSatisfied() {
-		return 
-		stop || 
-		(maxClassDescriptionTests != 0 && (expressionTests >= maxClassDescriptionTests)) ||
-		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l))) ||
-		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage));
+		boolean ret = stop || 
+				(maxClassDescriptionTests != 0 && (expressionTests >= maxClassDescriptionTests)) ||
+				(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l))) ||
+				(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage));
+		logger.info("terminate: " + ret);
+		return ret;
+		
 	}
 	
 	private void reset() {
@@ -1062,6 +1013,8 @@ public class PCELOE extends AbstractCELA {
 	
 	
 	public static void main(String[] args) throws Exception{
+		Logger.getLogger(PCELOE.class).addAppender(new FileAppender(new PatternLayout( "[%t] %c: %m%n" ), "log/parallel_run.txt", false));
+		
 		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
 		ks.init();
 		
@@ -1070,14 +1023,97 @@ public class PCELOE extends AbstractCELA {
 		
 		ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(new NamedClass("http://example.com/father#father"));
+		lp.setCheckConsistency(false);
 		lp.init();
 		
 		PCELOE alg = new PCELOE(lp, rc);
 		alg.setMaxExecutionTimeInSeconds(10);
-		alg.setMaxClassDescriptionTests(100);
+//		alg.setMaxClassDescriptionTests(200);
 		alg.init();
 		
 		alg.start();
+		
+	}
+	
+	class Worker implements Runnable{
+		
+		private RhoDRDown operator;
+		
+		public Worker(RhoDRDown operator) {
+			this.operator = operator;
+		}
+
+		@Override
+		public void run() {
+			logger.info("Started thread...");
+			
+			OENode nextNode;
+			double highestAccuracy = 0.0;
+			int loop = 0;
+			while (!terminationCriteriaSatisfied()) {
+				
+				
+				if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
+					highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
+					logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));	
+				}
+
+				// chose best node according to heuristics
+				logger.info("Get next node to expand...");
+				nextNode = getNextNodeToExpand();
+				logger.info("...done");
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				logger.info("next Node: " + nextNode);
+				if(nextNode != null){
+					int horizExp = nextNode.getHorizontalExpansion();
+					
+					// apply operator
+					Monitor mon = MonitorFactory.start("refineNode");
+					logger.info("Refine node...");
+					TreeSet<Description> refinements = refineNode(nextNode, operator);
+					mon.stop();
+					logger.info("...done");
+					
+					while(refinements.size() != 0) {
+						// pick element from set
+						Description refinement = refinements.pollFirst();
+						int length = refinement.getLength();
+										
+						// we ignore all refinements with lower length and too high depth
+						// (this also avoids duplicate node children)
+						if(length > horizExp && refinement.getDepth() <= maxDepth) {
+							
+//							System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
+							Monitor mon2 = MonitorFactory.start("addNode");
+							logger.info("Add node...");
+							addNode(refinement, nextNode);
+							mon2.stop();
+							logger.info("...done");
+							// adding nodes is potentially computationally expensive, so we have
+							// to check whether max time is exceeded	
+							if(terminationCriteriaSatisfied()) {
+								break;
+							}
+//							System.out.println("addNode finished" + " " + new Date());
+						}
+				
+//						System.out.println("  refinement queue length: " + refinements.size());
+					}
+					
+//					updateMinMaxHorizExp(nextNode);
+						
+					loop++;
+					currentlyProcessedNodes.remove(nextNode);
+				}
+				
+			}
+			
+		}
 		
 	}
 	
