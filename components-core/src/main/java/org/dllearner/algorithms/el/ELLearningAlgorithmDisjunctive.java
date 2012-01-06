@@ -19,6 +19,7 @@
 
 package org.dllearner.algorithms.el;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,11 +32,10 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Thing;
@@ -80,6 +80,7 @@ import org.dllearner.utilities.owl.DescriptionMinimizer;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name="Disjunctive ELTL", shortName="deltl", version=0.5, description="Disjunctive ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf with support for disjunctions.")
 public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithmDisjunctive.class);	
@@ -100,8 +101,12 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	// all trees (for fast redundancy check)
 	private TreeSet<ELDescriptionTree> trees;
 	
-	// tree search
+	@ConfigOption(name = "treeSearchTimeSeconds", defaultValue = "1.0", description="Specifies how long the algorithm should search for a partial solution (a tree).")
 	private double treeSearchTimeSeconds = 1.0;
+	
+	@ConfigOption(name = "tryFullCoverage", defaultValue = "false", description="If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, it may lead to overfitting.")
+	private boolean tryFullCoverage = false;
+	
 //	private double noise = 0;
 	private List<ELDescriptionTree> currentSolution = new LinkedList<ELDescriptionTree>();
 	private EvaluatedDescription bestEvaluatedDescription;
@@ -117,7 +122,13 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	// minimum score a tree must have to be part of the solution
 	private double minimumTreeScore = -1;
 
-	private boolean instanceBasedDisjoints; 
+	private boolean instanceBasedDisjoints;
+
+	private DecimalFormat df = new DecimalFormat("0.00"); 
+	
+	public ELLearningAlgorithmDisjunctive() {
+		
+	}	
 	
 	public ELLearningAlgorithmDisjunctive(PosNegLP problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
@@ -134,13 +145,13 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	}
 	
 	
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(CommonConfigOptions.getNoisePercentage());
-		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
-		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
-		return options;
-	}		
+//	public static Collection<ConfigOption<?>> createConfigOptions() {
+//		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+//		options.add(CommonConfigOptions.getNoisePercentage());
+//		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
+//		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
+//		return options;
+//	}		
 	
 	@Override
 	public void init() throws ComponentInitException {
@@ -210,12 +221,13 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				// we found a tree (partial solution)
 				currentSolution.add(bestCurrentNode.getDescriptionTree());
 				Description bestDescription = bestCurrentNode.getDescriptionTree().transformToDescription();
+				Description bestCombinedDescription = bestDescription;
 				// form union of trees found so far with 
 				if(treeCount==0) {
 					bestEvaluatedDescription = learningProblem.evaluate(bestDescription);
 				} else {
-					Union union = new Union(bestEvaluatedDescription.getDescription(), bestDescription);
-					bestEvaluatedDescription = learningProblem.evaluate(union);
+					bestCombinedDescription = new Union(bestEvaluatedDescription.getDescription(), bestDescription);
+					bestEvaluatedDescription = learningProblem.evaluate(bestCombinedDescription);
 				}
 				
 				// remove already covered examples
@@ -224,6 +236,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				while(it.hasNext()) {
 					Individual ind = it.next();
 					if(reasoner.hasType(bestDescription, ind)) {
+//						System.out.println("covered pos: " + ind);
 						it.remove();
 						posCov++;
 					}
@@ -233,11 +246,13 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				while(it.hasNext()) {
 					Individual ind = it.next();
 					if(reasoner.hasType(bestDescription, ind)) {
+//						System.out.println("covered neg: " + ind);
 						it.remove();
 						negCov++;
 					}
 				}
-				logger.info("tree found: " + bestDescription.toManchesterSyntaxString(baseURI, prefixes) + " (" + posCov + " pos covered, " + currentPosExamples.size() + " remaining, " + negCov + " neg covered, " + currentNegExamples.size() + " remaining, score: " + bestCurrentNode.getScore() + ")");				
+				logger.info("tree found: " + bestDescription.toManchesterSyntaxString(baseURI, prefixes) + " (" + posCov + " pos covered, " + currentPosExamples.size() + " remaining, " + negCov + " neg covered, " + currentNegExamples.size() + " remaining, score: " + bestCurrentNode.getScore() + ")");
+				logger.info("combined accuracy: " + df .format(bestEvaluatedDescription.getAccuracy()));
 			} else {
 				logger.info("no tree found, which satisfies the minimum criteria - the best was: " + bestCurrentNode.getDescriptionTree().transformToDescription().toManchesterSyntaxString(baseURI, prefixes) + " with score " + bestCurrentNode.getScore());
 			}
@@ -372,6 +387,11 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 //		SearchTreeNode bestNode = candidates.last();
 //		return (bestNode.getCoveredNegatives() == 0);
 		
+		// stop if there are no more positive examples to cover
+		if(currentPosExamples.size()==0) {
+			return true;
+		}
+		
 		// we stop when the score of the last tree added is too low
 		// (indicating that the algorithm could not find anything appropriate 
 		// in the timeframe set)
@@ -380,8 +400,12 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		}
 		
 		// stop when almost all positive examples have been covered
-		int maxPosRemaining = (int) Math.ceil(startPosExamplesSize * 0.05d);
-		return (currentPosExamples.size()<=maxPosRemaining);
+		if(tryFullCoverage) {
+			return false;
+		} else {
+			int maxPosRemaining = (int) Math.ceil(startPosExamplesSize * 0.05d);
+			return (currentPosExamples.size()<=maxPosRemaining);
+		}
 	}
 	
 	private void reset() {
@@ -391,8 +415,9 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		trees.clear();
 		currentSolution.clear();
 		bestEvaluatedDescription = learningProblem.evaluate(Thing.instance);
-		currentPosExamples = ((PosNegLP)getLearningProblem()).getPositiveExamples();
-		currentNegExamples = ((PosNegLP)getLearningProblem()).getNegativeExamples();
+		// we need to clone in order not to modify the learning problem
+		currentPosExamples = new TreeSet<Individual>(((PosNegLP)getLearningProblem()).getPositiveExamples());
+		currentNegExamples = new TreeSet<Individual>(((PosNegLP)getLearningProblem()).getNegativeExamples());
 		startPosExamplesSize = currentPosExamples.size();
 //		startNegExamplesSize = currentNegExamples.size();
 	}
@@ -438,6 +463,22 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 
 	public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
 		this.instanceBasedDisjoints = instanceBasedDisjoints;
+	}
+
+	public double getTreeSearchTimeSeconds() {
+		return treeSearchTimeSeconds;
+	}
+
+	public void setTreeSearchTimeSeconds(double treeSearchTimeSeconds) {
+		this.treeSearchTimeSeconds = treeSearchTimeSeconds;
+	}
+
+	public boolean isTryFullCoverage() {
+		return tryFullCoverage;
+	}
+
+	public void setTryFullCoverage(boolean tryFullCoverage) {
+		this.tryFullCoverage = tryFullCoverage;
 	}	
 
 }

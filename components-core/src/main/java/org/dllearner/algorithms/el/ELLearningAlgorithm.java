@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractCELA;
@@ -38,10 +39,11 @@ import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.ELDown2;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 
 /**
- * A learning algorithm for EL, which will be based on a (hopefully)
+ * A learning algorithm for EL, which is based on an
  * ideal refinement operator.
  * 
  * TODO redundancy check
@@ -49,6 +51,7 @@ import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name="ELTL", shortName="eltl", version=0.5, description="ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf.")
 public class ELLearningAlgorithm extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
@@ -72,6 +75,10 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	private SearchTreeNode startNode;
 	private ELHeuristic heuristic;
 	private TreeSet<SearchTreeNode> candidates;
+	
+	public ELLearningAlgorithm() {
+		
+	}
 	
 	public ELLearningAlgorithm(PosNegLP problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
@@ -144,7 +151,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		}
 		
 		// print solution(s)
-		logger.info("solution : " + bestEvaluatedDescriptions.getBest());
+		logger.info("solution : " + bestEvaluatedDescriptions.getBest() + " [time: " + Helper.prettyPrintNanoSeconds(System.nanoTime()-treeStartTime) + "]");
 		
 		isRunning = false;
 	}
