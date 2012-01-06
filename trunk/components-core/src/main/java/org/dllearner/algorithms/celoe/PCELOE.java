@@ -499,21 +499,21 @@ public class PCELOE extends AbstractCELA {
 		
 	}
 
-	private OENode getNextNodeToExpand() {
+	synchronized private OENode getNextNodeToExpand() {
 		// we expand the best node of those, which have not achieved 100% accuracy
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
-		synchronized (nodes) {logger.info("in 1.lock");
+		synchronized (nodes) {logger.info("in 1.lock of getNextNodeToExpand method");
 		Iterator<OENode> it = nodes.descendingIterator();//logger.info(nodes.size());
 		logger.info("search tree size: " + nodes.size());
 			while(it.hasNext()) {
 				OENode node = it.next();
-				logger.info("checking node " + node);
+				logger.info("Checking node " + node + "...");
 				if(!currentlyProcessedNodes.contains(node) && (node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength())) {
 					currentlyProcessedNodes.add(node);
 					return node;
 				}
-				logger.info("Checked.");
+				logger.info("...checked.");
 			}
 		}
 		
