@@ -23,6 +23,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -85,6 +86,7 @@ import com.jamonapi.MonitorFactory;
 @ComponentAnn(name="PCELOE", shortName="pceloe", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class PCELOE extends AbstractCELA {
 	
+	Map<Thread, RefinementOperator> ops = new HashMap<Thread, RefinementOperator>();
 	//parameters for thread pool
 		//Parallel running Threads(Executor) on System
 		private static int corePoolSize = 5;
@@ -440,12 +442,30 @@ public class PCELOE extends AbstractCELA {
 		
 		int nrOfThreads = Runtime.getRuntime().availableProcessors();
 		ExecutorService service = Executors.newFixedThreadPool(nrOfThreads);
-	
+		
 		for(int i = 0; i < 2; i++){
 			service.submit(new Runnable() {
 				
+				
+				
 				@Override
 				public void run() {
+					// we use a default operator and inject the class hierarchy for now
+					RefinementOperator operator = new RhoDRDown();
+					((RhoDRDown)operator).setStartClass(startClass);
+					((RhoDRDown)operator).setReasoner(reasoner);
+					try {
+						((RhoDRDown)operator).init();
+					} catch (ComponentInitException e) {
+						e.printStackTrace();
+					}
+					// TODO: find a better solution as this is quite difficult to debug
+					((RhoDRDown)operator).setSubHierarchy(reasoner.getClassHierarchy().clone());
+					((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+					((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+					
+					ops.put(Thread.currentThread(), operator);
+					
 					OENode nextNode;
 					double highestAccuracy = 0.0;
 					int loop = 0;
@@ -458,7 +478,9 @@ public class PCELOE extends AbstractCELA {
 						}
 
 						// chose best node according to heuristics
+						logger.info("Get next node to expand...");
 						nextNode = getNextNodeToExpand();
+						logger.info("...done");
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {
@@ -471,8 +493,10 @@ public class PCELOE extends AbstractCELA {
 							
 							// apply operator
 							Monitor mon = MonitorFactory.start("refineNode");
+							logger.info("Refine node...");
 							TreeSet<Description> refinements = refineNode(nextNode);
 							mon.stop();
+							logger.info("...done");
 							
 							while(refinements.size() != 0) {
 								// pick element from set
@@ -485,8 +509,10 @@ public class PCELOE extends AbstractCELA {
 									
 //									System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
 									Monitor mon2 = MonitorFactory.start("addNode");
+									logger.info("Add node...");
 									addNode(refinement, nextNode);
 									mon2.stop();
+									logger.info("...done");
 									// adding nodes is potentially computationally expensive, so we have
 									// to check whether max time is exceeded	
 									if(terminationCriteriaSatisfied()) {
@@ -564,6 +590,8 @@ public class PCELOE extends AbstractCELA {
 		nodes.remove(node);
 //		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
+//		TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
+		RefinementOperator operator = ops.get(Thread.currentThread()); //logger.info("Got operator");
 		TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
@@ -582,15 +610,17 @@ public class PCELOE extends AbstractCELA {
 		if(!nonRedundant) {
 			return false;
 		}
-		
+		logger.info("Check if description is allowed...");
 		// check whether the description is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
 			return false;
 		}
+		logger.info("...done");
 		
 //		System.out.println("Test " + new Date());
 		// quality of description (return if too weak)
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
+		logger.info("Accuracy: " + accuracy);
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
 			logger.warn("Invalid accuracy value " + accuracy + " for description " + description + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
@@ -634,6 +664,7 @@ public class PCELOE extends AbstractCELA {
 		// we need to make sure that this does not get called more often than
 		// necessary since rewriting is expensive
 		boolean isCandidate = !bestEvaluatedDescriptions.isFull();
+		logger.info("Is candidate:" + isCandidate);
 		if(!isCandidate) {
 			EvaluatedDescription worst = bestEvaluatedDescriptions.getWorst();
 			double accThreshold = worst.getAccuracy();
@@ -665,17 +696,22 @@ public class PCELOE extends AbstractCELA {
 					}
 				}				
 			}
+			logger.info("Point 2");
 			
 //			System.out.println("shorter description? " + shorterDescriptionExists + " nice: " + niceDescription);
-			
+			filterFollowsFromKB = false;
 			if(!shorterDescriptionExists) {
 				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
 //					System.out.println("Test2");
-					bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
+					synchronized (bestEvaluatedDescriptions) {
+						bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
+					}
+					
 //					System.out.println("acc: " + accuracy);
 //					System.out.println(bestEvaluatedDescriptions);
 				}
 			}
+			logger.info("Point 3");
 						
 //			System.out.println(bestEvaluatedDescriptions.getSet().size());
 		}
@@ -1038,7 +1074,7 @@ public class PCELOE extends AbstractCELA {
 		
 		PCELOE alg = new PCELOE(lp, rc);
 		alg.setMaxExecutionTimeInSeconds(10);
-		alg.setMaxClassDescriptionTests(200);
+		alg.setMaxClassDescriptionTests(100);
 		alg.init();
 		
 		alg.start();
