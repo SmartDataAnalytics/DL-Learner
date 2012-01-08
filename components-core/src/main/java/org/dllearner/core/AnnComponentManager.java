@@ -51,6 +51,7 @@ public class AnnComponentManager {
     // (CLI, GUI, Web Service) and scripts (HTML documentation generator)
     private static List<String> componentClassNames = new ArrayList<String>  ( Arrays.asList(new String[]{
             "org.dllearner.algorithms.celoe.CELOE",
+            "org.dllearner.algorithms.celoe.PCELOE",
             "org.dllearner.algorithms.el.ELLearningAlgorithm",
             "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
             "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",   
