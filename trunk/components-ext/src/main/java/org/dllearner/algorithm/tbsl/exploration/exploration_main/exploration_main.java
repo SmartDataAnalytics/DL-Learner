@@ -152,6 +152,8 @@ public class exploration_main {
 					long startTime = System.currentTimeMillis();
 				    
 				    int anzahl=0;
+				    int anzahl_query_with_answers=0;
+				    int yago_querys=0;
 					for(queryInformation s : list_of_structs){
 						anzahl=anzahl+1;
 				    	System.out.println("");
@@ -160,20 +162,56 @@ public class exploration_main {
 						System.out.println("Query: "+s.getQuery());
 						System.out.println("Type: "+s.getType());
 						System.out.println("XMLType: "+s.getXMLtype());
-						list_of_resultstructs.add(sparql.create_Sparql_query(s));
+						//queryInformation tmpquery;
+						//only question, which are not yago files
+						if(s.isYago()==true)yago_querys=yago_querys+1;
+						if(s.isYago()==false){
+							queryInformation tmpquery=sparql.create_Sparql_query(s);
+							if(!tmpquery.getResult().isEmpty()) {
+								list_of_resultstructs.add(sparql.create_Sparql_query(s));
+								anzahl_query_with_answers=anzahl_query_with_answers+1;
+							}
+						}
 					}
 					
-				    
+				    /*
 				    //Print to Console
 					System.out.println("\n#############\n Result:");
 					for(queryInformation s : list_of_resultstructs){
 						System.out.println(s.getResult());
-					}
-					createXML(list_of_resultstructs);
+					}*/
+					String systemid="";
+					systemid=createXML(list_of_resultstructs);
+					writeQueryInformation(list_of_structs,systemid);
+					writeTime(list_of_structs,systemid);
+					
+					//now create File with systemid for time and a file, which lists alle propertys and so on
+					
 				    long timeNow = System.currentTimeMillis();
 				    long diff = timeNow-startTime;
-				              
-				    System.out.println("Time for "+anzahl+" questions = "+diff+" ms.");
+				    String string1="Time for "+anzahl+" questions = "+diff+" ms.";
+				    System.out.println(string1);
+				    String string2="From "+anzahl_query_with_answers+" questions I got an answer";
+				    String string3=yago_querys+ " Yago Questions were skiped";
+				    System.out.println(string2);
+				    System.out.println(string3);
+				    String string4 ="Average time for one question : "+(diff/anzahl/1000)+"sek";
+				    File file;
+					FileWriter writer;
+					file = new File("../../generalInformation"+systemid+".txt");
+				     try {
+				       writer = new FileWriter(file ,true);    
+				       writer.write(string1+"\n"+string2+"\n"+string3+"\n"+string4);
+				       writer.flush();
+				       
+
+				       writer.close();
+				    } catch (IOException e) {
+				      e.printStackTrace();
+				    }
+				     
+				    System.out.println("Finished test");
+				    System.exit(0);
 				     
 				}
 				
@@ -198,9 +236,71 @@ public class exploration_main {
 
 	}
 
-
-	private static void createXML(ArrayList<queryInformation> list){
+	private static void writeQueryInformation(ArrayList<queryInformation> list, String systemid){
+		String Document="";
+		for (queryInformation s : list){
+			ArrayList<ArrayList<String>> tmp = s.getQueryInformation();
+			Document+= "Question "+s.getQuery()+" and ID "+s.getId()+"\n";
+			for(ArrayList<String> z : tmp){
+				String bla="";
+				for(String p : z ){
+					bla+=p+" ";
+				}
+				Document+=bla+"\n";
+			}
+			Document+="#########################\n";
+		}
 		
+		File file;
+		FileWriter writer;
+		file = new File("../../queryInfromation"+systemid+".txt");
+	     try {
+	       writer = new FileWriter(file ,true);    
+	       writer.write(Document);
+	       writer.flush();
+	       
+
+	       writer.close();
+	    } catch (IOException e) {
+	      e.printStackTrace();
+	    }
+	     
+		
+	}
+	
+	private static void writeTime(ArrayList<queryInformation> list, String systemid){
+		String Document="";
+		for (queryInformation s : list){
+			Document+= "Question "+s.getQuery()+" and ID "+s.getId()+"\n"+"Gesamtzeit: "+s.getTimeGesamt()+"ParserZeit: "+s.getTimeParser() + "Iteration Zeit: "+s.getTimeWithoutParser()+"\n";
+			
+			Document+="#########################\n";
+		}
+		
+		File file;
+		FileWriter writer;
+		file = new File("../../time"+systemid+".txt");
+	     try {
+	       writer = new FileWriter(file ,true);    
+	       writer.write(Document);
+	       writer.flush();
+	       
+
+	       writer.close();
+	    } catch (IOException e) {
+	      e.printStackTrace();
+	    }
+	     
+		
+	}
+	
+	
+	private static String createXML(ArrayList<queryInformation> list){
+		
+		java.util.Date now = new java.util.Date();
+
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy HH.mm.ss");
+		String systemid = sdf.format(now);
+
 		
 		String xmlDocument="";
 		int counter=0;
@@ -210,18 +310,25 @@ public class exploration_main {
 				counter=counter+1;
 				xmlDocument="<?xml version=\"1.0\" ?><dataset id=\""+s.getXMLtype()+"\">";
 			}
-			tmp="<question id=\""+s.getId()+"\"><string>"+s.getQuery()+"</string><query></query><ANSWERS>";
-			for(String i : s.getResult())tmp+="<answer>"+i+"</answer>";
-			tmp+="</ANSWERS></question>";
+			tmp="<question id=\""+s.getId()+"\"><string>"+s.getQuery()+"</string>\n<answers>";
+			for(String i : s.getResult()){
+				String input="";
+				if(i.contains("http")) input="<uri>"+i+"</uri>\n";
+				else if (i.contains("true")||i.contains("false")) input="<boolean>"+i+"</boolean>\n";
+				else if(i.matches("[0-9]*"))input="<number>"+i+"</number>\n";
+				else input="<string>"+i+"</string>\n";
+				tmp+="<answer>"+input+"</answer>\n";
+			}
+			tmp+="</answers></question>\n";
 			xmlDocument+=tmp;
 			
 		}
 		xmlDocument+="</dataset>";
 		File file;
 		FileWriter writer;
-		file = new File("/home/swalter/result.xml");
+		file = new File("../../result"+systemid+".xml");
 	     try {
-	       writer = new FileWriter(file ,false);    
+	       writer = new FileWriter(file ,true);    
 	       writer.write(xmlDocument);
 	       writer.flush();
 	       
@@ -231,6 +338,7 @@ public class exploration_main {
 	      e.printStackTrace();
 	    }
 	     
+	   return systemid;
 	}
 	
 	private static ArrayList<queryInformation> generateStruct(String filename, boolean hint) {

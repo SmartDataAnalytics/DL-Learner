@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,15 +28,18 @@ import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.POS;
 
 import org.dllearner.algorithm.tbsl.exploration.sax.ParseXmlHtml;
+import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.sparql.BasicQueryTemplate;
 import org.dllearner.algorithm.tbsl.sparql.Path;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Filter;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Having;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Term;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
 import org.dllearner.algorithm.tbsl.templator.Templator;
+import org.xml.sax.InputSource;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -53,17 +58,20 @@ public class SparqlObject {
 	static int explorationdepthwordnet=2;
 	static int iterationdepth =0;
 	static int numberofanswers=1;
-	static double LevenstheinMin = 0.8;
+	static double LevenstheinMin = 0.9;
 	static WordNet wordnet;
 	BasicTemplator btemplator;
 	Templator templator;
 	private static mySQLDictionary myindex; 
 	boolean only_best_levensthein_query;
+	static StanfordLemmatizer lemmatiser;
+	//one Minute
+	private static int timeToTimeoutOnServer=60000;
 	
 	//change here and in getRessourcePropertys
 	//String Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
-	//String Prefix="http://dbpedia.org/sparql";
-	String Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8892/sparql";
+	String Prefix="http://dbpedia.org/sparql";
+	//String Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8892/sparql";
 		
 	
 	//Konstruktor
@@ -88,6 +96,7 @@ public class SparqlObject {
     	setNumberofanswers(1);
     	
     	only_best_levensthein_query=false;
+    	lemmatiser = new StanfordLemmatizer();
 	}
 	
 	/*
@@ -133,12 +142,19 @@ public class SparqlObject {
 	 * "Main" Method of this Class.
 	 * 
 	 */
-	 public queryInformation create_Sparql_query(queryInformation query_struct) throws JWNLException, IOException, SQLException{
+	 public queryInformation create_Sparql_query(queryInformation queryObject) throws JWNLException, IOException, SQLException{
 		 	//create_Sparql_query_new(string);
 			
 		ArrayList<ArrayList<String>> lstquery = new ArrayList<ArrayList<String>>();
 		long startParsingTime = System.currentTimeMillis();
-		lstquery=getQuery(query_struct.getQuery());
+		//lstquery=getQuery(queryObject.getQuery(),queryObject);
+		queryObject=getQuery(queryObject);
+		lstquery=queryObject.getQueryInformation();
+		queryObject.setQueryInformation(lstquery);
+		/*BufferedReader in1 = new BufferedReader(new InputStreamReader(System.in));
+		String line;
+		
+			line = in1.readLine();*/
 		long endParsingTime = System.currentTimeMillis();
 		long startIterationTime = System.currentTimeMillis();
 		System.out.println("The Questionparsing took "+ (endParsingTime-startParsingTime)+ " ms");
@@ -146,7 +162,7 @@ public class SparqlObject {
 		Set<String> final_query_hash = new HashSet<String>();
 		
 		if(lstquery.isEmpty()){
-			saveNotParsedQuestions(query_struct.getQuery());
+			saveNotParsedQuestions(queryObject.getQuery());
 		}
 
 			for(ArrayList<String> querylist : lstquery){
@@ -188,7 +204,7 @@ public class SparqlObject {
 				    
 				    String out=null;
 				    if (query.equals("") || query.equals(" ")||query.length()==0) query="Could not parse";
-				    out=tmp + "\n" + query_struct.getQuery() + ":\n"+query+"\n";
+				    out=tmp + "\n" + queryObject.getQuery() + ":\n"+query+"\n";
 				    
 				    BufferedWriter outfile = new BufferedWriter(
 	                          new OutputStreamWriter(
@@ -243,19 +259,23 @@ public class SparqlObject {
 					
 					ArrayList<String> final_answer_tmp = new ArrayList<String>();
 					ArrayList<String> final_query_tmp=new ArrayList<String>();
-					if(querylist.size()==4){
+					if(querylist.size()==4&&!query.contains("rdf:type")){
 
-						final_query_tmp=simpleCase(querylist, query, "LEVENSTHEIN");
+						final_query_tmp=simpleCase(querylist, query, "LEVENSTHEIN",queryObject);
 						for(String i: final_query_tmp){
 							final_query_hash.add(i);
 							
 						}
 					}
+					//e.g. Select ßy Where (?y rdf:type <http://..../ontology/School>
+					if(querylist.size()==4&&query.contains("rdf:type")){
+						final_query_hash.add(query);
+					}
 					
 					
 					if(querylist.size()>4&&query.contains("rdf:type")){
 
-						final_query_tmp=isAIteration(querylist, query,"LEVENSTHEIN");
+						final_query_tmp=isAIteration(querylist, query,"LEVENSTHEIN",queryObject.getIsaResource());
 						for(String i: final_query_tmp){
 							
 							final_query_hash.add(i);
@@ -285,17 +305,21 @@ public class SparqlObject {
 					ArrayList<String> final_query_tmp  = new ArrayList<String>();
 					//isAIteration(querylist, query);
 					
-					if(querylist.size()==4){
+					if(querylist.size()==4&&!query.contains("rdf:type")){
 
-						final_query_tmp=simpleCase(querylist, query, "WORDNET");
+						final_query_tmp=simpleCase(querylist, query, "WORDNET",queryObject);
 						for(String i: final_query_tmp){
 							final_query_hash.add(i);
 						}
 					}
+					//e.g. Select ßy Where (?y rdf:type <http://..../ontology/School>
+					if(querylist.size()==4&&query.contains("rdf:type")){
+						final_query_hash.add(query);
+					}
 					
 					if(querylist.size()>4&&query.contains("rdf:type")){
 
-						final_query_tmp=isAIteration(querylist, query,"WORDNET");
+						final_query_tmp=isAIteration(querylist, query,"WORDNET",queryObject.getIsaResource());
 						for(String i: final_query_tmp){
 							final_query_hash.add(i);
 						}
@@ -323,47 +347,59 @@ public class SparqlObject {
 			
 			
 			
-			Iterator it = final_query_hash.iterator();
+			Iterator<String> it = final_query_hash.iterator();
 		    while (it.hasNext()) {
 		      System.out.println(it.next());
-		      String answer_tmp;
+		      ArrayList<String> answer= new ArrayList<String>();
 		      try{
 		    	  String anfrage=it.next().toString();
-		    	  answer_tmp=sendServerQuestionRequest(anfrage);
+		    	  answer=sendServerQuestionRequestArray(anfrage);
+		    	  // @en is also in the ML
+		    	  /*
 		    	  answer_tmp=answer_tmp.replace("\"@en", "");
-		    	  answer_tmp=answer_tmp.replace("\"", "");
+		    	  answer_tmp=answer_tmp.replace("\"", "");*/
 		    	  
 		    	  //filter answers!
-		    	  if(query_struct.isHint()){
-		    		  System.out.println("Using hint!");
-		    		  /*
-		    		   * Answertyps: resource, string, boolean, num, date
-		    		   */
-		    		  if(query_struct.getType().contains("boolean")){
-		    			  if(answer_tmp.contains("true")||answer_tmp.contains("false")) final_answer.add(answer_tmp);
-		    			  
-		    		  }
-		    		  else if (query_struct.getType().contains("resource")){
-		    			  final_answer.add(answer_tmp);
-		    		  } 
-		    		  else if (query_struct.getType().contains("string")){
-		    			  if(!answer_tmp.contains("http")&&!answer_tmp.contains("EmtyAnswer")) {
-		    				  String[] tmparray = answer_tmp.split("\n");
-		    				  for(String z : tmparray)final_answer.add(z);
-		    			  }
-		    			  
-		    		  } 
-		    		  else if (query_struct.getType().contains("num")){
-		    			  if(answer_tmp.matches("[0-9]*")) final_answer.add(answer_tmp);
-		    			  
-		    		  } 
-		    		  else if (query_struct.getType().contains("date")){
-		    			  final_answer.add(answer_tmp);
-		    		  } 
-		    	  }
-		    	  else{
-		    		  //final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
-		    		  final_answer.add(answer_tmp);
+		    	  for(String answer_tmp : answer ){
+			    	  if(answer_tmp!="EmtyAnswer"){
+				    	  if(queryObject.isHint()){
+				    		  //System.out.println("Using hint!");
+				    		  /*
+				    		   * Answertyps: resource, string, boolean, num, date
+				    		   */
+				    		  if(queryObject.getType().contains("boolean")){
+				    			  if(answer_tmp.contains("true")||answer_tmp.contains("false")) final_answer.add(answer_tmp);
+				    			  
+				    		  }
+				    		  else if (queryObject.getType().contains("resource")){
+				    			  try{
+				    				  String[] tmparray = answer_tmp.split("\n");
+				    				  for(String z : tmparray)final_answer.add(z);
+				    			  }
+				    			  catch(Exception e){
+				    				  final_answer.add(answer_tmp);
+				    			  }
+				    		  } 
+				    		  else if (queryObject.getType().contains("string")||queryObject.getType().contains("uri")){
+				    			  if(!answer_tmp.contains("EmtyAnswer")) {
+				    				  String[] tmparray = answer_tmp.split("\n");
+				    				  for(String z : tmparray)final_answer.add(z);
+				    			  }
+				    			  
+				    		  } 
+				    		  else if (queryObject.getType().contains("num")){
+				    			  if(answer_tmp.matches("[0-9]*")) final_answer.add(answer_tmp);
+				    			  
+				    		  } 
+				    		  else if (queryObject.getType().contains("date")){
+				    			  final_answer.add(answer_tmp);
+				    		  } 
+				    	  }
+				    	  else{
+				    		  //final_answer.add("Begin:\n"+anfrage +"\n"+answer_tmp+" \n End");
+				    		  final_answer.add(answer_tmp);
+				    	  }
+			    	  }
 		    	  }
 		      }
 		      catch (Exception e){
@@ -372,13 +408,20 @@ public class SparqlObject {
 		    }
 		    
 			
+		    long stopIterationTime = System.currentTimeMillis();
+		    /*
+		     * Set time
+		     */
+		    
+		    queryObject.setTimeGesamt(stopIterationTime-startParsingTime);
+		    queryObject.setTimeParser(endParsingTime-startParsingTime);
+		    queryObject.setTimeWithoutParser(stopIterationTime-startIterationTime);
+		    queryObject.setResult(final_answer);
 			
-		    query_struct.setResult(final_answer);
-			
-		    return query_struct;
+		    return queryObject;
 		}
 
-	 private ArrayList<String> newIteration(ArrayList<String> querylist, String query) throws SQLException,
+	 private ArrayList<String> newIteration(ArrayList<String> querylist, String query, queryInformation queryObject) throws SQLException,
 		JWNLException {
 		 //only for special case, that the first condition has a resource
 		 ArrayList<String> final_answer=new ArrayList<String>();
@@ -439,7 +482,7 @@ public class SparqlObject {
 		 querylist_new.add("PROPERTY"+firstProperty);
 		 querylist_new.add(sideOfProperty+firstResource);
 		 if(answer_tmp.isEmpty()){
-			 answer_tmp=simpleCase(querylist_new,firstquery,"WORDNET"); 
+			 answer_tmp=simpleCase(querylist_new,firstquery,"WORDNET",queryObject); 
 		 }
 		 //if answer_tmp is still empty return null and exit function
 		 if(answer_tmp.isEmpty()){final_answer.add("new Iteration didnt work");
@@ -481,7 +524,7 @@ public class SparqlObject {
 		 for(ArrayList as: secondquerylist){
 			 ArrayList<String> answer_tmp_two=new ArrayList<String>();
 			 //answer_tmp_two=sendServerQuestionRequestArray(s);
-			 answer_tmp=simpleCase(as,as.get(0).toString(),"WORDNET"); 
+			 answer_tmp=simpleCase(as,as.get(0).toString(),"WORDNET",queryObject); 
 			 for(String t :answer_tmp_two){
 				 final_answer.add(t);
 				 System.out.println("Answer from advanced Iteration: "+ t);
@@ -495,7 +538,7 @@ public class SparqlObject {
 	 
 	 
 
-	 private ArrayList<String> isAIteration(ArrayList<String> querylist, String query, String fall) throws SQLException,
+	 private ArrayList<String> isAIteration(ArrayList<String> querylist, String query, String fall, String uri_isA_Resource) throws SQLException,
 		JWNLException {
 		 ArrayList<String> new_queries= new ArrayList<String>();
 		 //TODO: in get Query change, that there will be a second query, but only with the part of the condition upsidedown, which doesnt contains an isA
@@ -506,28 +549,16 @@ public class SparqlObject {
 			 
 			 */
 		 
-		 //take query and use regex, to take only the part beween the {}
-		 Pattern p = Pattern.compile (".*\\{(.*\\<http.*)\\}.*");
-		 Matcher m = p.matcher (query);
 		 ArrayList<String> list_of_x=new ArrayList<String>();
 		 String query_for_x=null;
-		 while(m.find()){
-			 String tmp=m.group(1);
-			 
-			 Pattern p2=Pattern.compile (".*(http://dbpedia.org/ontology/[A-Z].*)\\>\\W.*");
-		  	 Matcher m2 = p2.matcher (tmp);
-		  	 //now we know, that we are in the part with the rdf type thing
-		  	 while(m2.find()){
-		  		query_for_x="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?x WHERE { ?x rdf:type <"+m2.group(1)+">}";
-		  		//System.out.println("Done: "+ query_for_x);
-		  	 } 
-			 
-		 }
 		 
+		 
+		 
+		
+		 query_for_x="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?x WHERE { ?x rdf:type <"+uri_isA_Resource+">}";
 		 //now send query_for_x to the server, to get all x
 		 System.out.println("IsA x-query: "+query_for_x);
 		 if(query_for_x!=null)list_of_x=sendServerQuestionRequestArray(query_for_x);
-		 
 		 
 		/*
 		 * Zweiter Schritt:
@@ -543,6 +574,7 @@ public class SparqlObject {
 			 /*
 			  * First use left and also right Propertys
 			  */
+			 
 			 tmpcounter++;
 			 if(tmpcounter <=number_of_x_used){
 				 HashMap<String,String> propertiesleft = new HashMap<String, String>();
@@ -550,8 +582,8 @@ public class SparqlObject {
 				 GetRessourcePropertys property = new GetRessourcePropertys();
 
 				 try {
-					 propertiesleft=property.getPropertys(s,"LEFT");
-					 propertiesright=property.getPropertys(s,"RIGHT");
+					 propertiesleft=property.getPropertys(s,"LEFT",timeToTimeoutOnServer);
+					 propertiesright=property.getPropertys(s,"RIGHT",timeToTimeoutOnServer);
 				 }
 				 catch (Exception e){
 					 
@@ -565,7 +597,14 @@ public class SparqlObject {
 			 }
 			 
 		 }
-		 //System.out.println(list_of_properties);
+		/* System.out.println("List of Properties: ");
+		 for (Entry<String, String> entry : list_of_properties.entrySet()) {
+			 String key = entry.getKey();
+			 key=key.replace("\"","");
+			 key=key.replace("@en","");
+			 String value = entry.getValue();
+			 System.out.println("Key: "+ key + " Value: "+value);
+		 }*/
 		 
 		 /*
 		  * get Property used in the original query
@@ -577,47 +616,44 @@ public class SparqlObject {
 		 //http://dbpedia.org/ontology/officialLanguage
 		 
 		 //look for property
-		 Pattern p3=Pattern.compile (".*\\<(http://dbpedia.org/property/.*)\\>\\W\\?.*");
+		 Pattern p3=Pattern.compile (".*\\<(http://dbpedia.org/property/.*)\\>\\W\\W*\\?.*");
 	  	 Matcher m3 = p3.matcher(query);
-	  	 while(m3.find()) System.out.println("Property in IsA: "+m3.group(1));
-	  	 
-	  	 //look for ontology, which is NO class
-	  	//Pattern p4=Pattern.compile (".*\\<(http://dbpedia.org/ontology/^[A-Z].*)\\>\\W.*");
-	  	Pattern p4=Pattern.compile (".*\\<(http://dbpedia.org/ontology/[a-z].*)\\>\\W\\?.*");
-	  	 Matcher m4 = p4.matcher(query);
-	  	 String uri_property=null;
-	  	 while(m4.find()) {
-	  		 uri_property=m4.group(1);
-	  		 System.out.println("Uri_Property: "+ uri_property);
+	  	 String property_to_compare_with_uri="";
+	  	 while(m3.find()) {
+	  		property_to_compare_with_uri=m3.group(1);
+	  		 System.out.println("Property in IsA: "+m3.group(1));
 	  	 }
 	  	 
-	  	 /*
-	  	  * Nice, now i get http://dbpedia.org/ontology/officialLanguage
-	  	  */
-	  	 if(uri_property!=null){
-	  		 String property=uri_property.replace("http://dbpedia.org/ontology/", "").replace("http://dbpedia.org/property/", "");
-	  		String property_to_compare_with="";
-
+	  	 //if there is no property but an ontology-property
+	  	 if(property_to_compare_with_uri==""){
+	  		Pattern p4=Pattern.compile (".*\\<(http://dbpedia.org/ontology/[a-z].*)\\>\\W\\W*\\?.*");
+		  	Matcher m4 = p4.matcher(query);
+		  	 while(m4.find()) {
+		  		property_to_compare_with_uri=m4.group(1);
+		  		 System.out.println("Property in IsA: "+m4.group(1));
+		  	 }
+	  	 }
+	  	 
+	  	 String property_to_compare_with=property_to_compare_with_uri.replace("http://dbpedia.org/property/","").replace("http://dbpedia.org/ontology/","");
+	  	 
+	  	/* BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+			String line;
 			
-			for(String s : querylist){
-					if(s.contains("PROPERTY")){
-						property_to_compare_with=s.replace("PROPERTY","");
-					}
-					
-				}
-			
-	  
-	  		 /*
-	  		  * Dritter Schritt: original Query nehmen und über die Liste mit den Propertys laufen und normal mit wordnet/levensthein vergleichen
-	  		  */
-	  		 
-	  		 //I think, i dont need here the last part of the uri but the original word from the query!
-	  		 //new_queries=doWordnet(query,property,uri_property,list_of_properties);
-			
-			//if you want to use wordnet:
-			if(fall.contains("WORDNET")) new_queries=doWordnet(query,property_to_compare_with,uri_property,list_of_properties);
-			if(fall.contains("LEVENSTHEIN")) new_queries=doLevensthein(query,property_to_compare_with,uri_property,list_of_properties);
-	  	 	}
+			System.out.println("############################");
+			System.out.println("query: "+query);
+			System.out.println("property_to_compare_with: "+property_to_compare_with);
+			System.out.println("property_to_compare_with_uri: "+property_to_compare_with_uri);
+			System.out.println("############################");
+		try {
+			line = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+	  	if(fall.contains("WORDNET")) new_queries=doWordnet(query,property_to_compare_with,property_to_compare_with_uri,list_of_properties);
+		if(fall.contains("LEVENSTHEIN")) new_queries=doLevensthein(query,property_to_compare_with_uri,property_to_compare_with_uri,list_of_properties);
+	  	 
+	  	 
 		 
 		 return new_queries;
 		 
@@ -625,7 +661,7 @@ public class SparqlObject {
 	 
 	 
 
-	 private ArrayList<String> simpleCase(ArrayList<String> querylist, String query, String fall) throws SQLException,
+	 private ArrayList<String> simpleCase(ArrayList<String> querylist, String query, String fall, queryInformation queryObject) throws SQLException,
 		JWNLException {
 		 
 		System.out.println("In Simpe levensthein case!!");
@@ -655,6 +691,7 @@ public class SparqlObject {
 			}
 			
 		}
+		System.out.println("ARRAY LIST: "+querylist);
 		System.out.println("Property to compare:: "+ property_to_compare_with);
 		System.out.println("Resource: "+ resource);
 		
@@ -664,11 +701,12 @@ public class SparqlObject {
 		 
 		 Boolean goOnAfterProperty = true;
 		 
-		 System.out.println("URI from Resource "+ resource +": "+getUriFromIndex(resource.toLowerCase(),0));
+		 //System.out.println("URI from Resource "+ resource +": "+getUriFromIndex(resource.toLowerCase(),0));
+		 System.out.println("URI from Resource "+ resource +": "+queryObject.getHashValue(resource.toLowerCase()));
 		 
 		 //gets Propertys left or right from the resource!
 		 try {
-			 properties=property.getPropertys(getUriFromIndex(resource.toLowerCase(),0),sideOfProperty);
+			 properties=property.getPropertys(queryObject.getHashValue(resource.toLowerCase()),sideOfProperty,timeToTimeoutOnServer);
 			if (properties==null){
 				
 				System.out.println("Begin:\n"+query +"\nError in getting Properties \n End");
@@ -684,8 +722,8 @@ public class SparqlObject {
 			
 		}
 		if(goOnAfterProperty==true){
-			if(fall.contains("WORDNET")) new_queries=doWordnet(query, property_to_compare_with,getUriFromIndex(property_to_compare_with.toLowerCase(),1),properties);
-			if(fall.contains("LEVENSTHEIN")) new_queries=doLevensthein(query, property_to_compare_with,getUriFromIndex(property_to_compare_with.toLowerCase(),1),properties);
+			if(fall.contains("WORDNET")) new_queries=doWordnet(query, property_to_compare_with,queryObject.getHashValue(property_to_compare_with.toLowerCase()),properties);
+			if(fall.contains("LEVENSTHEIN")) new_queries=doLevensthein(query, property_to_compare_with,queryObject.getHashValue(property_to_compare_with.toLowerCase()),properties);
 			//new_queries=doLevensthein(query, property_to_compare_with,getUriFromIndex(property_to_compare_with.toLowerCase(),1),properties);
 			
 			//add original query
@@ -797,8 +835,8 @@ public class SparqlObject {
 		 //Get Properties for Resource in condition One and Two from Server
 		 try {
 
-			 propertiesOne=property.getPropertys(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyOne);
-			 propertiesTwo=property.getPropertys(getUriFromIndex(resourceTwo.toLowerCase(),0),sideOfPropertyTwo);
+			 propertiesOne=property.getPropertys(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyOne,timeToTimeoutOnServer);
+			 propertiesTwo=property.getPropertys(getUriFromIndex(resourceTwo.toLowerCase(),0),sideOfPropertyTwo,timeToTimeoutOnServer);
 			 
 			if (propertiesOne==null){
 				System.out.println("Begin:\n"+query +"\nError in getting Properties \n End");
@@ -1128,7 +1166,8 @@ JWNLException {
 	
 	
 	
-
+	
+	//TODO: Write function new!!!!!
 	 /**
 	  * Iterates thrue the conditions and returns an array, where one can see, if the Property is left or right from the resource
 	  * @param query
@@ -1140,31 +1179,83 @@ JWNLException {
 		    Matcher m = p.matcher (query);
 		    ArrayList<String> lstquery = new ArrayList<String>();
 		  	while (m.find()) {
-		  		String tmp= m.group(1);
+		  		System.out.println("In While Loop!");
+		  		String workingQuery= m.group(1);
 		  		//if there is an .../ontology/C, dann ist das eine Klasse und das ganze soll dann nicht ersetzt reingepackt werden, sondern so bleiben, wie es ist.
-		  		System.out.println("Before new pattern and checking "+tmp);
-		  		Pattern p1=Pattern.compile (".*(http://dbpedia.org/ontology/[A-Z].*)\\>\\W.*");
-		  		Matcher m1 = p1.matcher (tmp);
+		  		System.out.println("Before new pattern and checking "+workingQuery);
+		  		
+		  		//take the Filter out, so you only have the conditions left
+		  		Pattern p2=Pattern.compile (".*(\\.FILTER\\(.*\\)).*");
+		  		Matcher m2 = p2.matcher (workingQuery);
+		  		while(m2.find()){
+		  			System.out.println("FIlter: "+m2.group(1));
+		  			workingQuery=workingQuery.replace(m2.group(1), "");
+		  			System.out.println("Without Filter: "+workingQuery);
+		  		}
+		  		
 		  		String resourceTemp="";
 		  		
-		  		while(m1.find()){
-		  			resourceTemp="RESOURCE"+m1.group(1);
-		  			tmp=tmp.replace("<"+m1.group(1)+">", "SKIP");
-		  			System.out.println("New temp: "+tmp);
-		  		}
-		  	/*	if(m1.find()){
-		  			System.out.println("YEAHHHHHHHHHHHHHHHHHHHH "+m1.group(1));
-		  		}
-		  		else{*/
-		  			
+		  		if(workingQuery.contains("ontologie")){
+			  		Pattern p1=Pattern.compile (".*\\<(http://dbpedia.org/ontology/[A-Z].*)\\>\\W\\W*.*");
+			  		Matcher m1 = p1.matcher (workingQuery);
 			  		
-			  		tmp=tmp.replace("http://dbpedia.org/resource/","").replace("http://dbpedia.org/property/", "").replace("http://dbpedia.org/ontology/", "");
 			  		
+			  		/*
+			  		 * Das darf nicht sein:
+			  		 * Replacment: <http://dbpedia.org/ontology/Caves> rdf:type ?x .?y <http://dbpedia.org/property/entrances>
+			  		 */
+			  		while(m1.find()){
+			  			resourceTemp="RESOURCE"+m1.group(1);
+			  			String replacment="<"+m1.group(1)+">";
+			  			//TODO: Make it nice!!!
+			  			//if he doesnt find the ontolokg party, kind of skip
+			  			if(!replacment.contains("property")&&!replacment.contains("resource")){
+			  				System.out.println("Replacment: "+replacment);
+				  			workingQuery=workingQuery.replace(replacment, "SKIP");
+				  			System.out.println("New temp: "+workingQuery);
+			  			}
+			  			
+			  		}
+		  	
+		  		}
+		  		
+		  		/*
+		  		 * dbpedia.org/class/yago/
+		  		 */
+		  		if(workingQuery.contains("yago")){
+			  		Pattern p3=Pattern.compile (".*\\<(http://dbpedia.org/class/yago//[A-Z].*)\\>\\W.*");
+			  		Matcher m3 = p3.matcher (workingQuery);
+			  		
+			  		
+			  		/*
+			  		 * Das darf nicht sein:
+			  		 * Replacment: <http://dbpedia.org/ontology/Caves> rdf:type ?x .?y <http://dbpedia.org/property/entrances>
+			  		 */
+			  		while(m3.find()){
+			  			resourceTemp="RESOURCE"+m3.group(1);
+			  			String replacment="<"+m3.group(1)+">";
+			  			//TODO: Make it nice!!!
+			  			//if he doesnt find the ontolokg party, kind of skip
+			  			if(!replacment.contains("property")&&!replacment.contains("resource")){
+			  				System.out.println("Replacment: "+replacment);
+				  			workingQuery=workingQuery.replace(replacment, "SKIP");
+				  			System.out.println("New temp: "+workingQuery);
+			  			}
+			  			
+			  		}
+		  	
+		  		}
+		  		
+		  			System.out.println("TMP before replace :"+workingQuery);
+			  		workingQuery=workingQuery.replace("http://dbpedia.org/resource/","").replace("http://dbpedia.org/property/", "").replace("http://dbpedia.org/ontology/", "");
+			  		
+			  		System.out.println("TMP After replace :"+workingQuery);
 			  		//split on . for sign for end of conditions
-			  		String[] firstArray=tmp.split("\\.");
+			  		String[] firstArray=workingQuery.split("\\.");
 			  		for(String i : firstArray){
 			  			
 			  			String[] secondArray=i.split(" ");
+			  			
 			  			//always in three counts
 			  			int counter=0;
 			  			for(String j : secondArray){
@@ -1189,7 +1280,7 @@ JWNLException {
 			  					else if(j.contains("SKIP"))lstquery.add(resourceTemp);
 			  					else if(j.contains("rdf:type"))lstquery.add("IsA");
 			  				}
-			  				if(counter==0)counter=0;
+			  				if(counter==3)counter=0;
 			  				
 			  				
 			  			}
@@ -1202,6 +1293,7 @@ JWNLException {
 	 }
 	 
 	 
+	 
 	 //TODO: Plural Singual abfragen über die Wordnetdatei...
 	 
 	 /**
@@ -1210,8 +1302,9 @@ JWNLException {
 	* @return ArrayList of Sparql queries.
 	 * @throws SQLException 
 	*/
-	private ArrayList<ArrayList<String>> getQuery(String question) throws SQLException {
+	private queryInformation getQuery(queryInformation queryObject) throws SQLException {
 		ArrayList<ArrayList<String>> lstquery = new ArrayList<ArrayList<String>>();
+		String question=queryObject.getQuery();
 	    Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(question);
 	     	for (BasicQueryTemplate temp : querytemps) {
 	     		
@@ -1219,6 +1312,8 @@ JWNLException {
 	     		ArrayList<String> lstquerupsidedown = new ArrayList<String>();
 	     		String query;
 	     		String selTerms ="";
+	     		String yago_query="";
+	        	String yago_query_upside_down="";
 	     		
 	     		boolean addQuery=true;
 	     		//sometimes there isnt an Selectterm, so dont use this query
@@ -1248,6 +1343,14 @@ JWNLException {
 	     			filters="";
 	     			addQuery=false;
 	     		}
+	     		String having="";
+	     		try{
+	     			for(SPARQL_Having tmp : temp.getHavings()) having=having+tmp+" ";
+	     		}
+	     		catch(Exception e){
+	     			having="";
+	     			addQuery=false;
+	     		}	
 	     		
 	     		//if there is no order by, replace with ""
 	     		String orderdBy="ORDER BY ";
@@ -1276,7 +1379,7 @@ JWNLException {
 	     		}
 	     		
 	     		if(addQuery==true){
-		        	query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" WHERE {"+  conditions.replace("--","") + filters+"}"+orderdBy +" "+limit;
+		        	query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" WHERE {"+  conditions.replace("--","") + filters+"}"+orderdBy+" "+having +" "+limit;
 		        	
 		        	String conditions_new = "";
 		     		for(Path condition: temp.getConditions()){
@@ -1300,7 +1403,7 @@ JWNLException {
 		     		System.out.println("Conditions_new: " + conditions_new);
 		     		
 		     		
-		        	String query_upside_down = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" WHERE {"+  conditions_new.replace("--","") +filters+ "}" + orderdBy +" "+limit;
+		        	String query_upside_down = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+temp.getQt().toString()+" "+selTerms+" WHERE {"+  conditions_new.replace("--","") +filters+"}" + orderdBy +" "+having+" "+limit;
 		        	String[] slots= null;
 		        	
 		        	
@@ -1313,7 +1416,7 @@ JWNLException {
 		        	int slotcounter=1;
 		        	
 		        	/*
-		        	 * the one after the isA, has to be an ontology Class!!!
+		        	 * the one after the isA, has to be an ontology Class or an Yago Class!!!
 		        	 * so first find out, which one is behind the isA
 		        	 * best with regex or so.... take the condition, regex the thing between isA and . for End of Condition
 		        	 * kind of regex=[*a IsA (\\?*a.)*a]
@@ -1381,6 +1484,10 @@ JWNLException {
 		    			System.out.println("Property "+property);*/
 		    			
 		    			boolean skip=false;
+		    			
+		    			/*
+		    			 * Der geht hier garnicht in die Schleife.
+		    			 */
 		    			if(resource.contains(isaComponent.replace("?", "")) || property.contains(isaComponent.replace("?", ""))){
 		    				skip=true;
 		    				
@@ -1402,8 +1509,40 @@ JWNLException {
 		    				catch(Exception e){
 		    					
 		    				}
-		    				String hm_result=myindex.getontologyClassURI(array[1]);
-		    				if(hm_result==null)hm_result="http://dbpedia.org/ontology/"+Character.toUpperCase(array[1].charAt(0)) + array[1].substring(1, array[1].length());
+		    				
+		    				/*
+		    				 * Here lookup in ontology and in Yago, if ontology doesnt exist, use Yago, if not, use Ontology
+		    				 * if both exist, add yago_query and yago_query upsideDown, but also change the isACase function for Yago
+		    				 */
+		    				//first look in Hasmap, if there is already an entry, if not, add founded result
+		    				String hm_result="";
+		    				hm_result=queryObject.getHashValue(array[1]);
+		    				if(hm_result.contains("NONE")){
+		    					//hm_result=myindex.getontologyClassURI(array[1]);
+		    					hm_result=getUriFromIndex(array[1].toLowerCase(),2);
+		    					System.out.println("direkt gefunden URI: "+hm_result);
+		    					if(hm_result.contains("NONE")){
+		    						hm_result=getUriFromIndex(array[1].toLowerCase(),3);
+		    						if(hm_result.contains("NONE"))hm_result="http://dbpedia.org/ontology/"+Character.toUpperCase(array[1].charAt(0)) + array[1].substring(1, array[1].length());
+		    					}
+		    					queryObject.setHashValue(array[1], hm_result);
+		    				}
+		    				
+		    				//check for Yago!
+		    				String hm_result_new=getUriFromIndex(array[1].toLowerCase(),3);
+		    				/*if(!hm_result_new.contains("NONE")){
+		    					//set identefire
+		    					yago_query="YAGO"+query.replace(replace, "<"+hm_result_new+">");
+		    		        	yago_query_upside_down="YAGO"+query_upside_down.replace(replace, "<"+hm_result_new+">");
+		    				}
+		    				else{*/
+		    					yago_query="NONE";
+		    		        	yago_query_upside_down="NONE";
+		    				//}
+		    				//add the uri for the Resource in isA case, so I dont have to search for it again
+		    				queryObject.setIsaResource(hm_result);
+		
+		    				
 		    				System.out.println(array[1]+" for getOntologyClass "+hm_result);
 			    			//System.out.print("URI for_ThingGettingURIfor: "+hm_result);
 			    		      try
@@ -1431,8 +1570,13 @@ JWNLException {
 		    				if(array[0].length()<2)replace = "?"+array[0]+" ";
 			    			else replace="?"+array[0];
 		    				
-		    				String hm_result=getUriFromIndex(array[1],0);
-			    			//System.out.print("URI for_ThingGettingURIfor: "+hm_result);
+		    				String hm_result="";
+		    				hm_result=queryObject.getHashValue(array[1]);
+		    				if(hm_result.contains("NONE")){
+		    					hm_result=getUriFromIndex(array[1],0);
+		    					queryObject.setHashValue(array[1], hm_result);
+		    				}
+		    				
 			    		      try
 			    		      {
 			    		    	  if(hm_result.contains("Category:")) hm_result=hm_result.replace("Category:","");
@@ -1446,6 +1590,10 @@ JWNLException {
 				    		//System.out.println("Query: "+query);
 				    		query_upside_down=query_upside_down.replace(replace, "<"+hm_result+">");
 				    		//System.out.println("Query Up Side Down: "+query_upside_down);
+				    	/*	if(!yago_query.contains("NONE")){
+				    			yago_query=yago_query.replace(replace, "<"+hm_result+">");
+		    		        	yago_query_upside_down=yago_query_upside_down.replace(replace, "<"+hm_result+">");
+				    		}*/
 		    				
 		    			}
 		    			
@@ -1455,12 +1603,21 @@ JWNLException {
 		    				if(array[0].length()<2)replace = "?"+array[0]+" ";
 			    			else replace="?"+array[0];
 		    				
-		    				String hm_result=getUriFromIndex(array[1],1);
+		    				String hm_result="";
+		    				hm_result=queryObject.getHashValue(array[1]);
+		    				if(hm_result.contains("NONE")){
+		    					hm_result=getUriFromIndex(array[1],1);
+		    					queryObject.setHashValue(array[1], hm_result);
+		    				}
 			    			  
 			    		    query=query.replace(replace, "<"+hm_result+">");
 				    		//System.out.println("Query: "+query);
 				    		query_upside_down=query_upside_down.replace(replace, "<"+hm_result+">");
 				    		//System.out.println("Query Up Side Down: "+query_upside_down);
+				    	/*	if(!yago_query.contains("NONE")){
+				    			yago_query=yago_query.replace(replace, "<"+hm_result+">");
+		    		        	yago_query_upside_down=yago_query_upside_down.replace(replace, "<"+hm_result+">");
+				    		}*/
 		    				
 		    			}
 		    		
@@ -1470,6 +1627,12 @@ JWNLException {
 		    		query=query.replace("><","> <").replace(">?", "> ?");
 		    		query=query.replace("/__", "/");
 		    		query_upside_down=query_upside_down.replace("/__", "/");
+		    		/*if(!yago_query.contains("NONE")){
+		    			yago_query_upside_down=yago_query_upside_down.replace("><","> <").replace(">?", "> ?");
+		    			yago_query=yago_query.replace("><","> <").replace(">?", "> ?");
+		    			yago_query=yago_query.replace("/__", "/");
+		    			yago_query_upside_down=yago_query_upside_down.replace("/__", "/");
+		    		}*/
 		    		lstquerupsidedown.add(query_upside_down);
 		    		lstquerynew.add(query);
 		    		System.out.println("Query: "+query);
@@ -1484,6 +1647,7 @@ JWNLException {
 		    		ArrayList<String> lsttmp=createLeftAndRightPropertyArray(query);
 		    		//if its lower than three, we dont have any conditions and dont need to check it.
 		    		//also if the size%3 isnt 0, than something else is wrong and we dont need to test the query
+		    		System.out.println("lsttmp :"+lsttmp);
 		    		if(lsttmp.size()>=3&&lsttmp.size()%3==0){
 		    			for(String i : lsttmp) lstquerynew.add(i.replace("__",""));
 		    			lstquery.add(lstquerynew);
@@ -1515,7 +1679,8 @@ JWNLException {
 	     	}
 	     		
 	     	System.out.println("List of Query: "+lstquery);
-	     	return lstquery;
+	     	queryObject.setQueryInformation(lstquery);
+	     	return queryObject;
 		}
 	
 	 
@@ -1558,7 +1723,7 @@ JWNLException {
 	/**
 	 *  
 	 * @param string
-	 * @param fall 1 Property 0 no Property
+	 * @param fall 1=Property, 0=Resource, 2=OntologyClass, 3=Yago
 	 * @return
 	 * @throws SQLException 
 	 */
@@ -1574,25 +1739,114 @@ JWNLException {
 		String result=null;
 		String tmp1=null;
 		String tmp2 = null;
-		//just to be sure its only 0 or 1
-		if(fall!=0 && fall!=1) fall=0;
+		
 		if(fall==0){
 			
-			//first try: take always the ontology if existing and not the Resource
-			tmp1=myindex.getResourceURI(string.toLowerCase());
-			tmp2=myindex.getontologyClassURI(string.toLowerCase());
-			/*System.out.println("URI from resource: "+tmp1);
-			System.out.println("URI from ontologyClass: "+tmp2);*/
-			
-			
-			
-			if(tmp1!=null && tmp2!=null) result=tmp2;
-			if(tmp1!=null && tmp2==null) result=tmp1;
-			if(tmp1==null && tmp2!=null) result=tmp2;
-			
-			//result=myindex.getResourceURI(string.toLowerCase());
-			if(result==null)result=myindex.getPropertyURI(string.toLowerCase());
+			result=myindex.getResourceURI(string.toLowerCase());
+			 if(result==null){
+				 /*
+				 * Second try lemmatised one
+				 */
+				 result=myindex.getResourceURI(lemmatiser.stem(string.toLowerCase()));
+				 if(result==null){
+					/*
+					 * Third try lemmatised with like
+					 */ 
+				 ArrayList<String> tmp=myindex.getResourceURILike(lemmatiser.stem(string.toLowerCase()));
+				 double highestNLD=0;
+				 String bestWord="";
+				 try{
+					 if(!tmp.isEmpty()){
+						 for(String i : tmp){
+							 double nld_tmp=Levenshtein.nld(string.toLowerCase(), i);
+							 if(nld_tmp>highestNLD) bestWord=i;
+						 }
+						 result=bestWord;
+					 	}
+					 else{
+						 result="NONE";
+					 }
+				 }
+				 catch(Exception e){
+					 result="NONE";
+				 }
+				 }
+			 }
+
 		}
+		if(fall==2){
+			
+			System.out.println("Im Ontology Fall");
+			result=myindex.getontologyClassURI(string.toLowerCase());
+			 if(result==null){
+				 /*
+				 * Second try lemmatised one
+				 */
+				 result=myindex.getontologyClassURI(lemmatiser.stem(string.toLowerCase()));
+				 if(result==null){
+					/*
+					 * Third try lemmatised with like
+					 */ 
+				 ArrayList<String> tmp=myindex.getontologyClassURILike(lemmatiser.stem(string.toLowerCase()));
+				 double highestNLD=0;
+				 String bestWord="";
+				 try{
+					 if(!tmp.isEmpty()){
+						 for(String i : tmp){
+							 double nld_tmp=Levenshtein.nld(string.toLowerCase(), i);
+							 if(nld_tmp>highestNLD) bestWord=i;
+						 }
+						 result=bestWord;
+					 	}
+					 else{
+						 result="NONE";
+					 }
+				 }
+				 catch(Exception e){
+					 result="NONE";
+				 }
+				 }
+			 }
+			 System.out.println("URi in Ontology: "+result);
+
+		}
+			if(fall==3){
+			
+			System.out.println("Im Yago Fall");
+			result=myindex.getYagoURI(string.toLowerCase());
+			 if(result==null){
+				 /*
+				 * Second try lemmatised one
+				 */
+				 result=myindex.getYagoURI(lemmatiser.stem(string.toLowerCase()));
+				 if(result==null){
+					/*
+					 * Third try lemmatised with like
+					 */ 
+				 ArrayList<String> tmp=myindex.getYagoURILike(lemmatiser.stem(string.toLowerCase()));
+				 double highestNLD=0;
+				 String bestWord="";
+				 try{
+					 if(!tmp.isEmpty()){
+						 for(String i : tmp){
+							 double nld_tmp=Levenshtein.nld(string.toLowerCase(), i);
+							 if(nld_tmp>highestNLD) bestWord=i;
+						 }
+						 result=bestWord;
+					 	}
+					 else{
+						 result="NONE";
+					 }
+				 }
+				 catch(Exception e){
+					 result="NONE";
+				 }
+				 }
+			 }
+			 System.out.println("URi in Ontology: "+result);
+
+		}
+
 		if(fall==1){
 			tmp1=myindex.getPropertyURI(string.toLowerCase());
 			tmp2=myindex.getontologyURI(string.toLowerCase());
@@ -1600,7 +1854,10 @@ JWNLException {
 			if(tmp1!=null && tmp2==null) result=tmp1;
 			if(tmp1==null && tmp2!=null) result=tmp2;
 			if(result==null){
+				//kann ich mir sparen
 				result=myindex.getResourceURI(string.toLowerCase());
+				
+				
 				if(result!=null) result=result.replace("resource", "property");
 			}
 			
@@ -1653,25 +1910,11 @@ JWNLException {
 			
 			ArrayList<String> semantics = new ArrayList<String>();
 			semantics=semanticsOrig;
-			/*//check out, if in the semantics are still terms, with _ or ,
-			//if so, split on _ and , and add them to the semantic list
-			for(String id :semanticsOrig){
-				if(id.contains("_")){
-					System.out.println("in _");
-					String[] tmp=id.split("_");
-					for(String i: tmp) if(!semantics.contains(i))semantics.add(i);
-					
-					//and also add a term without _
-					if(!semantics.contains(id.replace("_"," ")))semantics.add(id.replace("_"," "));
-					//remove old id
-					//semantics.remove(id);
-				}
-				if(id.contains(",")){
-					System.out.println("in ,");
-					String[] tmp=id.split(",");
-					for(String i: tmp) if(!semantics.contains(i))semantics.add(i);
-					//semantics.remove(id);
-				}
+			//also look at the stemmt part!
+			/*for(String s: semanticsOrig){
+				String bla=lemmatiser.stem(s);
+				semantics.add(bla);
+				semantics.add(s);
 			}*/
 			
 			try{
@@ -1802,33 +2045,57 @@ JWNLException {
 		 * change to dbpedia http://dbpedia.org/sparql
 		 */
 		//String tmp="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
-		String tmp=Prefix+"?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";		System.out.println(tmp);
-		URL url;
-	    InputStream is;
-	    InputStreamReader isr;
-	    BufferedReader r;
-	    String str="";
-	    String result="";
-
-	    try {
-	      url = new URL(tmp);
-	      is = url.openStream();
-	      isr = new InputStreamReader(is);
-	      r = new BufferedReader(isr);
-	      int counter=0;
-	      do {
-	        str = r.readLine();
-	        if (str != null){
-	        	result=result.concat(str);
-	        		counter=counter+1;}
-	      } while (str != null);
-
-	    } catch (MalformedURLException e) {
-	      System.out.println("Must enter a valid URL");
-	    } catch (IOException e) {
-	      System.out.println("Can not connect");
-	    }
+		String tmp=Prefix+"?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";		
+		//System.out.println(tmp);
+		String result="";
+		HttpURLConnection connection = null;
+	      OutputStreamWriter wr = null;
+	      BufferedReader rd  = null;
+	      StringBuilder sb = null;
+	      String line = null;
 	    
+	      URL serverAddress = null;
+	    
+	      try {
+	          serverAddress = new URL(tmp);
+	          //set up out communications stuff
+	          connection = null;
+	        
+	          //Set up the initial connection
+	          connection = (HttpURLConnection)serverAddress.openConnection();
+	          connection.setRequestMethod("GET");
+	          connection.setDoOutput(true);
+	          connection.setReadTimeout(timeToTimeoutOnServer);
+	                    
+	          connection.connect();
+	          rd  = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	          sb = new StringBuilder();
+	        
+	          while ((line = rd.readLine()) != null)
+	          {
+	              sb.append(line + '\n');
+	          }
+	        
+	          //System.out.println(sb.toString());
+	          result=sb.toString();
+	                    
+	      } catch (MalformedURLException e) {
+		      System.out.println("Must enter a valid URL");
+		    } catch (IOException e) {
+		      System.out.println("Can not connect or timeout");
+		    }
+	      finally
+	      {
+	          //close the connection, set all objects to null
+	          connection.disconnect();
+	          rd = null;
+	          sb = null;
+	          wr = null;
+	          connection = null;
+	      }
+	    
+
+        
 	    
 	    
 		return createAnswer(result);
@@ -1842,32 +2109,53 @@ JWNLException {
 		//String tmp="http://greententacle.techfak.uni-bielefeld.de:5171/sparql?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
 		String tmp=Prefix+"?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
 
-		System.out.println(tmp);
-		URL url;
-	    InputStream is;
-	    InputStreamReader isr;
-	    BufferedReader r;
-	    String str="";
-	    String result="";
-
-	    try {
-	      url = new URL(tmp);
-	      is = url.openStream();
-	      isr = new InputStreamReader(is);
-	      r = new BufferedReader(isr);
-	      int counter=0;
-	      do {
-	        str = r.readLine();
-	        if (str != null){
-	        	result=result.concat(str);
-	        		counter=counter+1;}
-	      } while (str != null);
-
-	    } catch (MalformedURLException e) {
-	      System.out.println("Must enter a valid URL");
-	    } catch (IOException e) {
-	      System.out.println("Can not connect");
-	    }
+		//System.out.println(tmp);
+		String result="";
+		HttpURLConnection connection = null;
+	      OutputStreamWriter wr = null;
+	      BufferedReader rd  = null;
+	      StringBuilder sb = null;
+	      String line = null;
+	    
+	      URL serverAddress = null;
+	    
+	      try {
+	          serverAddress = new URL(tmp);
+	          //set up out communications stuff
+	          connection = null;
+	        
+	          //Set up the initial connection
+	          connection = (HttpURLConnection)serverAddress.openConnection();
+	          connection.setRequestMethod("GET");
+	          connection.setDoOutput(true);
+	          connection.setReadTimeout(timeToTimeoutOnServer);
+	                    
+	          connection.connect();
+	          rd  = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	          sb = new StringBuilder();
+	        
+	          while ((line = rd.readLine()) != null)
+	          {
+	              sb.append(line + '\n');
+	          }
+	        
+	          //System.out.println(sb.toString());
+	          result=sb.toString();
+	                    
+	      } catch (MalformedURLException e) {
+		      System.out.println("Must enter a valid URL");
+		    } catch (IOException e) {
+		      System.out.println("Can not connect or timeout");
+		    }
+	      finally
+	      {
+	          //close the connection, set all objects to null
+	          connection.disconnect();
+	          rd = null;
+	          sb = null;
+	          wr = null;
+	          connection = null;
+	      }
 	    
 	    
 	    
