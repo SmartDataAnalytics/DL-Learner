@@ -205,12 +205,15 @@ public class PCELOE extends AbstractCELA {
 	
 	@ConfigOption(name = "maxDepth", defaultValue="7", description="maximum depth of description")
 	private double maxDepth = 7;
+	
+	@ConfigOption(name = "nrOfThreads", defaultValue="2", description="number of threads running in parallel")
+	private int nrOfThreads = 2;
 
 	private int expressionTestCountLastImprovement;
 	private long timeLastImprovement = 0;
 	
 	private Set<OENode> currentlyProcessedNodes = Collections.synchronizedSet(new HashSet<OENode>());
-	private double highestAccuracy = 0.0;
+	private volatile double highestAccuracy = 0.0;
 	
 //	public CELOEConfigurator getConfigurator() {
 //		return configurator;
@@ -451,13 +454,15 @@ public class PCELOE extends AbstractCELA {
 
 		addNode(startClass, null);
 		
-		int nrOfThreads = Runtime.getRuntime().availableProcessors();
-		nrOfThreads = 4;//only for tests TODO make number of threads configurable
-		ExecutorService service = Executors.newFixedThreadPool(nrOfThreads);
+		int nrOfWorkers = nrOfThreads;
+		if(nrOfWorkers == 0){
+			nrOfWorkers = Runtime.getRuntime().availableProcessors();
+		}
+		ExecutorService service = Executors.newFixedThreadPool(nrOfWorkers);
 		
 		List<Runnable> tasks = new ArrayList<Runnable>();
 		
-		for(int i = 0; i < nrOfThreads; i++){
+		for(int i = 0; i < nrOfWorkers; i++){
 			tasks.add(new Worker());
 		}
 		
@@ -633,7 +638,9 @@ public class PCELOE extends AbstractCELA {
 			if(!shorterDescriptionExists) {
 				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
 //					System.out.println("Test2");
-					bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
+					synchronized (bestEvaluatedDescriptions) {
+						bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
+					}
 //					System.out.println("acc: " + accuracy);
 //					System.out.println(bestEvaluatedDescriptions);
 				}
@@ -1011,19 +1018,33 @@ public class PCELOE extends AbstractCELA {
 		this.maxExecutionTimeInSecondsAfterImprovement = maxExecutionTimeInSecondsAfterImprovement;
 	}	
 	
+	
+	
+	public int getNrOfThreads() {
+		return nrOfThreads;
+	}
+
+	public void setNrOfThreads(int nrOfThreads) {
+		this.nrOfThreads = nrOfThreads;
+	}
+
+	private synchronized double getHighestAccuracy(){
+		return highestAccuracy;
+	}
+
+
 	class Worker implements Runnable{
 
 		@Override
 		public void run() {
 			int loop = 0;
-			
 			// highest accuracy so far
 //			double highestAccuracy = 0.0;
 			OENode nextNode;
 			while (!terminationCriteriaSatisfied()) {
 //				System.out.println("loop " + loop);
 				
-				if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
+				if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > getHighestAccuracy()) {
 					highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
 					expressionTestCountLastImprovement = expressionTests;
 					timeLastImprovement = System.nanoTime();
