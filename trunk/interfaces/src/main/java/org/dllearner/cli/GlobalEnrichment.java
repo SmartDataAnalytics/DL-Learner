@@ -19,14 +19,18 @@
  */
 package org.dllearner.cli;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +40,8 @@ import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import javax.servlet.jsp.SkipPageException;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -53,8 +59,6 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
-import com.hp.hpl.jena.sparql.resultset.ResultSetException;
 
 /**
  * Enriches all of the LOD cloud.
@@ -63,6 +67,13 @@ import com.hp.hpl.jena.sparql.resultset.ResultSetException;
  * 
  */
 public class GlobalEnrichment {
+	
+	//whether or not to skip endpoints which caused exceptions in a run before
+	private static boolean skipFailedEndpoints = true;
+	//whether or not to skip endpoints which returned no axioms during the learning process
+	private static boolean skipEmptyEndpoints = true;
+	//whether or not to skip endpoints on which we could learn something
+	private static boolean skipSuccessfulEndpoints = true;
 
 	// parameters
 	private static double threshold = 0.8;
@@ -75,7 +86,7 @@ public class GlobalEnrichment {
 	
 	//parameters for thread pool
 	//Parallel running Threads(Executor) on System
-	private static int corePoolSize = 1;
+	private static int corePoolSize = 5;
 	//Maximum Threads allowed in Pool
 	private static int maximumPoolSize = 20;
 	//Keep alive time for waiting threads for jobs(Runnable)
@@ -131,7 +142,7 @@ public class GlobalEnrichment {
 		ResultSet rs = sq.send();
 		while(rs.hasNext()) {
 			QuerySolution qs = rs.next();
-			String endpoint = qs.get("endpoint").toString();System.out.println(endpoint);
+			String endpoint = qs.get("endpoint").toString();
 			String shortName = qs.get("shortName").toString();
 			endpoints.put(shortName, new SparqlEndpoint(new URL(endpoint)));
 		}
@@ -139,6 +150,23 @@ public class GlobalEnrichment {
 		
 		TreeSet<String> blacklist = new TreeSet<String>();
 		blacklist.add("rkb-explorer-crime"); // computation never completes
+		
+		//remove endpoints which failed in a run before
+		if(skipFailedEndpoints){
+			for(String name : getErrorList()){
+				endpoints.remove(name);
+			}
+		}
+		if(skipEmptyEndpoints){
+			for(String name : getEmptyList()){
+				endpoints.remove(name);
+			}
+		}
+		if(skipSuccessfulEndpoints){
+			for(String name : getSuccessList()){
+				endpoints.remove(name);
+			}
+		}
 		
 		ArrayBlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(endpoints.size());
 		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, workQueue);
@@ -155,8 +183,8 @@ public class GlobalEnrichment {
 					SparqlEndpoint se = endpoint.getValue();
 					String name = endpoint.getKey();
 					
-					File f = new File(baseDir + name + ".ttl"); 
-					File log = new File(baseDir + name + ".log");
+					File f = new File(baseDir + File.separator + "success" + File.separator + name + ".ttl"); 
+					File log = new File(baseDir + File.separator + "failed" + File.separator + name + ".log");
 					
 					System.out.println("Enriching " + name + " using " + se.getURL());
 					Enrichment e = new Enrichment(se, null, threshold, nrOfAxiomsToLearn, useInference, false);
@@ -175,6 +203,8 @@ public class GlobalEnrichment {
 							e.start();
 							success = true;
 						} catch (Exception ex){
+							write2File(ex, se);
+							ex.printStackTrace();
 							ex.printStackTrace(new PrintStream(log));
 						} catch(StackOverflowError error) {
 							error.printStackTrace(new PrintStream(log));
@@ -212,11 +242,16 @@ public class GlobalEnrichment {
 						SparqlEndpointKS ks = new SparqlEndpointKS(se);
 						List<AlgorithmRun> runs = e.getAlgorithmRuns();
 						List<OWLAxiom> axioms = new LinkedList<OWLAxiom>();
+						int axiomCnt = 0;
 						for(AlgorithmRun run : runs) {
+							axiomCnt += e.getGeneratedOntology().getLogicalAxiomCount();
 							axioms.addAll(e.toRDF(run.getAxioms(), run.getAlgorithm(), run.getParameters(), ks));
 						}
 						Model model = e.getModel(axioms);			
 						try {
+							if(axiomCnt == 0){
+								f = f = new File(baseDir + File.separator + "success/empty" + File.separator + name + ".ttl"); 
+							}
 							model.write(new FileOutputStream(f), "TURTLE");
 						} catch (FileNotFoundException e1) {
 							// TODO Auto-generated catch block
@@ -228,6 +263,49 @@ public class GlobalEnrichment {
 			});
 			
 		}
+		threadPool.shutdown();
+	}
+	
+	public static void write2File(Exception e, SparqlEndpoint endpoint) {
+		try {
+			File file = new File(baseDir + File.separator + "errors" + File.separator + e.getClass().getName());
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file, true);
+			fw.append(endpoint.getURL().toString() + "\n");
+			fw.flush();
+			fw.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static List<String> getErrorList(){
+		List<String> errorNames = new ArrayList<String>();
+		File dir = new File(baseDir + "/failed/");
+		for(File file : dir.listFiles()){
+			errorNames.add(file.getName().replace(".log", ""));
+		}
+		return errorNames;
+	}
+	
+	public static List<String> getEmptyList(){
+		List<String> errorNames = new ArrayList<String>();
+		File dir = new File(baseDir + "/success/empty/");
+		for(File file : dir.listFiles()){
+			errorNames.add(file.getName().replace(".ttl", ""));
+		}
+		return errorNames;
+	}
+	
+	public static List<String> getSuccessList(){
+		List<String> errorNames = new ArrayList<String>();
+		File dir = new File(baseDir + "/success/");
+		for(File file : dir.listFiles()){
+			errorNames.add(file.getName().replace(".ttl", ""));
+		}
+		return errorNames;
 	}
 
 }
