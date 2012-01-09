@@ -1014,6 +1014,7 @@ public class CELOE extends AbstractCELA {
 		return heuristic;
 	}
 
+	@Autowired(required=false)
 	public void setHeuristic(OEHeuristicRuntime heuristic) {
 		this.heuristic = heuristic;
 	}
