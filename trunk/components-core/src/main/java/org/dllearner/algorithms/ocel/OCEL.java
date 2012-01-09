@@ -145,7 +145,7 @@ public class OCEL extends AbstractCELA {
 	private int maxClassDescriptionTests = CommonConfigOptions.maxClassDescriptionTestsDefault;
 	
 	private double negativeWeight = 1.0;
-	private double startNodeBonus = 1.0;
+	private double startNodeBonus = 0.1; // 1.0;
 	private double expansionPenaltyFactor = 0.02;
 	private int negationPenalty = 0;
 	private boolean terminateOnNoiseReached = true;
