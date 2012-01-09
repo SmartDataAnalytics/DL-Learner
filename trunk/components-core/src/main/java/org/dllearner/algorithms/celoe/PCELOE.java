@@ -1106,8 +1106,8 @@ public class PCELOE extends AbstractCELA {
 	
 	public static void main(String[] args) throws Exception{
 		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger(PCELOE2.class).setLevel(Level.DEBUG);
-		Logger.getLogger(PCELOE2.class).addAppender(new FileAppender(new PatternLayout( "[%t] %c: %m%n" ), "log/parallel_run.txt", false));
+		Logger.getLogger(PCELOE.class).setLevel(Level.DEBUG);
+		Logger.getLogger(PCELOE.class).addAppender(new FileAppender(new PatternLayout( "[%t] %c: %m%n" ), "log/parallel_run.txt", false));
 		
 		
 		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
