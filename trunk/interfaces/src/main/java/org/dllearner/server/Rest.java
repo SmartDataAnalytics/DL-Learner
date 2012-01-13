@@ -61,13 +61,15 @@ public class Rest extends HttpServlet {
         JSONObject learningResult = new JSONObject();
         try {
             String conf = null;
+            int limit = 5;
             if (!isSet("conf", httpServletRequest)) {
                 throw new IllegalArgumentException("Missing parameter: conf is required. ");
             } else {
                 conf = httpServletRequest.getParameter("conf");
+                if(isSet("limit" , httpServletRequest)){
+                    limit = Integer.parseInt(httpServletRequest.getParameter("limit")) ;
+                }
             }
-
-            /*todo learn*/
 
             if (isSet("debug", httpServletRequest) && httpServletRequest.getParameter("debug").equalsIgnoreCase("true")) {
 
@@ -91,6 +93,8 @@ public class Rest extends HttpServlet {
                 EvaluatedDescriptionPosNeg ed = learn(conf);
 
                 SparqlQueryDescriptionConvertVisitor sqd = new SparqlQueryDescriptionConvertVisitor();
+                sqd.setLimit(limit);
+
                 learningResult.put("success", "1");
                 learningResult.put("manchester", ed.getDescription().toManchesterSyntaxString(null, null));
                 learningResult.put("kbsyntax", ed.getDescription().toKBSyntaxString());
