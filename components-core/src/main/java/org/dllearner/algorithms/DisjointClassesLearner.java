@@ -165,7 +165,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s a <%s>. ?s a ?type.} WHERE {?s a <%s>. ?s a ?type.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, classToDescribe.getName(), classToDescribe.getName(), limit, offset);System.out.println(query);
+		String query = String.format(baseQuery, classToDescribe.getName(), classToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
 		NamedClass cls;
