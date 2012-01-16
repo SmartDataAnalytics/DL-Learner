@@ -130,7 +130,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 			
 			
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 		
