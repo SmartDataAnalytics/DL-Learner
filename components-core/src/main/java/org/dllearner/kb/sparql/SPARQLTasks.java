@@ -712,8 +712,8 @@ public class SPARQLTasks {
 			
 		}
 		//remove trivial classes
-		classes.remove(OWL.Nothing.toStringID());
-		classes.remove(OWL.Thing.toStringID());
+		classes.remove(new NamedClass(OWL.Nothing.toStringID()));
+		classes.remove(new NamedClass(OWL.Thing.toStringID()));
 		return classes;
 	}	
 	
