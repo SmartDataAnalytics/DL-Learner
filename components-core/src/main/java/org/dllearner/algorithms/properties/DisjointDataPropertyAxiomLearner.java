@@ -154,6 +154,8 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 				oldCnt = result.get(prop);
 				if(oldCnt == null){
 					oldCnt = Integer.valueOf(newCnt);
+				} else {
+					oldCnt += newCnt;
 				}
 				result.put(prop, oldCnt);
 				repeat = true;
