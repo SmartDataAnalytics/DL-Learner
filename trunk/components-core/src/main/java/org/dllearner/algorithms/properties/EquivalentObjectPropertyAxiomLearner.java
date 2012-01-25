@@ -151,9 +151,10 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 						oldCnt = result.get(prop);
 						if(oldCnt == null){
 							oldCnt = Integer.valueOf(newCnt);
+						} else {
+							oldCnt += newCnt;
 						}
 						result.put(prop, oldCnt);
-						qs.getLiteral("count").getInt();
 						repeat = true;
 					}
 					if(!result.isEmpty()){

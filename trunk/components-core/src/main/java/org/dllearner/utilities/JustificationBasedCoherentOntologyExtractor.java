@@ -4,6 +4,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,12 +16,17 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import openlink.util.MD5;
+
 import org.mindswap.pellet.RBox;
+import org.semanticweb.HermiT.Configuration;
+import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -27,11 +34,17 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.reasoner.IllegalConfigurationException;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 
 import com.clarkparsia.modularity.IncrementalClassifier;
 import com.clarkparsia.modularity.ModularityUtils;
+import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
+import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapiv3.OntologyUtils;
 
@@ -39,35 +52,72 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	
 	private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JustificationBasedCoherentOntologyExtractor.class);
 
-	private static final int NUMBER_OF_JUSTIFICATIONS = 5;
+	private int numberOfJustifications = 10;
 //	private PelletReasoner reasoner;
 	private IncrementalClassifier reasoner;
+	private Reasoner hermitReasoner;
 
 	private OWLOntology incoherentOntology;
 	private OWLOntology ontology;
+	private OWLDataFactory factory;
 	
 	private Map<OWLClass, OWLOntology> cls2ModuleMap = new HashMap<OWLClass, OWLOntology>();
+	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+	
+	MessageDigest md5;
+	
+	public JustificationBasedCoherentOntologyExtractor() {
+		try {
+			md5 = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	static {PelletExplanation.setup();}
 	
 	@Override
-	public OWLOntology getCoherentOntology(OWLOntology ontology) {
-		this.ontology = ontology;ontology.getOWLOntologyManager().removeAxioms(ontology, ontology.getAxioms(AxiomType.TRANSITIVE_OBJECT_PROPERTY));
+	public OWLOntology getCoherentOntology(OWLOntology ontology){
+		return getCoherentOntology(ontology, false);
+	}
+	
+	@Override
+	public OWLOntology getCoherentOntology(OWLOntology ontology, boolean preferRoots){
+		if(preferRoots){
+			return computeCoherentOntologyRootBased(ontology);
+		} else {
+			return computeCoherentOntology(ontology);
+		}
+	}
+	
+	private OWLOntology computeCoherentOntologyRootBased(OWLOntology ontology) {
+		this.ontology = ontology;
 		this.incoherentOntology = getOntologyWithoutAnnotations(ontology);
 		
-//		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(incoherentOntology);
-//		reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+		//only for debugging
+		ontology.getOWLOntologyManager().removeAxioms(ontology, ontology.getAxioms(AxiomType.TRANSITIVE_OBJECT_PROPERTY));
+		
+		long startTime = System.currentTimeMillis();
 		reasoner = new IncrementalClassifier(incoherentOntology);
 		reasoner.classify();
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+		
+//		startTime = System.currentTimeMillis();
+//		hermitReasoner = new Reasoner(incoherentOntology);
+//		hermitReasoner.classifyClasses();
+//		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		
 		OWLOntologyManager man = incoherentOntology.getOWLOntologyManager();
+		factory = man.getOWLDataFactory();
 //		man.addOntologyChangeListener(reasoner);
 		
 		//compute the unsatisfiable classes
+		logger.info("Computing root/derived unsatisfiable classes...");
+		startTime = System.currentTimeMillis();
 		StructureBasedRootClassFinder rootFinder = new StructureBasedRootClassFinder(reasoner);
-		rootFinder.computeRootDerivedClasses();
 		Set<OWLClass> unsatClasses = rootFinder.getRootUnsatisfiableClasses();
 		Set<OWLClass> derivedUnsatClasses = rootFinder.getDerivedUnsatisfiableClasses();
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		int rootCnt = unsatClasses.size();
 		int derivedCnt = derivedUnsatClasses.size();
 //		Set<OWLClass> unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
@@ -80,13 +130,15 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		}
 		//compute the logical modules for each unsatisfiable class
 		logger.info("Computing module for each unsatisfiable class...");
+		startTime = System.currentTimeMillis();
 		cls2ModuleMap = extractModules(unsatClasses);
-		logger.info("...done.");
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 				
 		//compute initial explanations for each unsatisfiable class
 		logger.info("Computing initial explanations...");
+		startTime = System.currentTimeMillis();
 		Map<OWLClass, Set<Set<OWLAxiom>>> cls2Explanations = getInitialExplanationsForUnsatClasses(unsatClasses);
-		logger.info("...done.");
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		
 		while(!unsatClasses.isEmpty()){
 			//get frequency for each axiom
@@ -95,7 +147,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			//get a sorted list of entries with the highest axiom count first
 			List<Entry<OWLAxiom, Integer>> sortedEntries = MapUtils.sortByValues(axiom2CountMap);
 			for(Entry<OWLAxiom, Integer> entry : sortedEntries){
-				System.out.println(entry.getKey() + ":" + entry.getValue());
+//				System.out.println(entry.getKey() + ":" + entry.getValue());
 			}
 			//we remove the most frequent axiom from the ontology
 			OWLAxiom toRemove = sortedEntries.get(0).getKey();
@@ -106,15 +158,22 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			removeFromModules(toRemove);
 			
 			//recompute the unsatisfiable classes
+			logger.info("Reclassifying...");
+			startTime = System.currentTimeMillis();
 			reasoner.classify();
+//			hermitReasoner.classifyClasses();
 //			unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
+			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 			
+			logger.info("Computing root/derived unsatisfiable classes...");
+			startTime = System.currentTimeMillis();
 			rootFinder = new StructureBasedRootClassFinder(reasoner);
-			rootFinder.computeRootDerivedClasses();
 			unsatClasses = rootFinder.getRootUnsatisfiableClasses();
-			rootCnt = unsatClasses.size();
 			derivedUnsatClasses = rootFinder.getDerivedUnsatisfiableClasses();
+			rootCnt = unsatClasses.size();
 			derivedCnt = derivedUnsatClasses.size();
+			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+			
 			logger.info("Remaining unsatisfiable classes: " + (rootCnt + derivedCnt) + "(" + rootCnt + " roots).");
 			
 			//save
@@ -133,13 +192,111 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			
 			//recompute explanations if necessary
 			logger.info("Recomputing explanations...");
+			startTime = System.currentTimeMillis();
 			refillExplanations(unsatClasses, cls2Explanations);
-			logger.info("...done.");
+			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 			
 			System.gc();
 		}
 		try {
-			incoherentOntology.getOWLOntologyManager().saveOntology(incoherentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/dbpedia_coherent.owl")));
+			incoherentOntology.getOWLOntologyManager().saveOntology(getOntologyWithAnnotations(incoherentOntology), new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/dbpedia_coherent.owl")));
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		System.out.println(incoherentOntology.getLogicalAxiomCount());
+		
+		return getOntologyWithAnnotations(incoherentOntology);
+	}
+	
+	private OWLOntology computeCoherentOntology(OWLOntology ontology) {
+		this.ontology = ontology;
+		this.incoherentOntology = getOntologyWithoutAnnotations(ontology);
+		
+		//only for debugging
+		ontology.getOWLOntologyManager().removeAxioms(ontology, ontology.getAxioms(AxiomType.TRANSITIVE_OBJECT_PROPERTY));
+		
+		long startTime = System.currentTimeMillis();
+		reasoner = new IncrementalClassifier(incoherentOntology);
+		reasoner.classify();
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+		
+		OWLOntologyManager man = incoherentOntology.getOWLOntologyManager();
+		factory = man.getOWLDataFactory();
+		
+		//compute the unsatisfiable classes
+		logger.info("Computing unsatisfiable classes...");
+		startTime = System.currentTimeMillis();
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+		Set<OWLClass> unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
+		int cnt = unsatClasses.size();
+		logger.info("Detected " + cnt + " unsatisfiable classes.");
+		
+		//if the ontology is not incoherent we return it here
+		if(unsatClasses.isEmpty()){
+			return incoherentOntology;
+		}
+		//compute the logical modules for each unsatisfiable class
+		logger.info("Computing module for each unsatisfiable class...");
+		startTime = System.currentTimeMillis();
+		cls2ModuleMap = extractModules(unsatClasses);
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+				
+		//compute initial explanations for each unsatisfiable class
+		logger.info("Computing initial explanations...");
+		startTime = System.currentTimeMillis();
+		Map<OWLClass, Set<Set<OWLAxiom>>> cls2Explanations = getInitialExplanationsForUnsatClasses(unsatClasses);
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+		
+		while(!unsatClasses.isEmpty()){
+			//get frequency for each axiom
+			Map<OWLAxiom, Integer> axiom2CountMap = getAxiomFrequency(cls2Explanations);
+			
+			//get a sorted list of entries with the highest axiom count first
+			List<Entry<OWLAxiom, Integer>> sortedEntries = MapUtils.sortByValues(axiom2CountMap);
+			for(Entry<OWLAxiom, Integer> entry : sortedEntries){
+//				System.out.println(entry.getKey() + ":" + entry.getValue());
+			}
+			//we remove the most frequent axiom from the ontology
+			OWLAxiom toRemove = sortedEntries.get(0).getKey();
+			logger.info("Removing axiom " + toRemove + ".");
+			man.removeAxiom(incoherentOntology, toRemove);
+			man.applyChange(new RemoveAxiom(incoherentOntology, toRemove));
+			removeFromExplanations(cls2Explanations, toRemove);
+			removeFromModules(toRemove);
+			
+			//recompute the unsatisfiable classes
+			logger.info("Reclassifying...");
+			startTime = System.currentTimeMillis();
+			reasoner.classify();
+			unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
+			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+			logger.info("Remaining unsatisfiable classes: " + unsatClasses.size());
+			
+			//save
+			if(cnt - unsatClasses.size() >= 10){
+				cnt = unsatClasses.size();
+				OWLOntology toSave = getOntologyWithAnnotations(incoherentOntology);
+				try {
+					toSave.getOWLOntologyManager().saveOntology(incoherentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/dbpedia_" + cnt + ".owl")));
+				} catch (OWLOntologyStorageException e) {
+					e.printStackTrace();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			//recompute explanations if necessary
+			logger.info("Recomputing explanations...");
+			startTime = System.currentTimeMillis();
+			refillExplanations(unsatClasses, cls2Explanations);
+			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+			
+			System.gc();
+		}
+		try {
+			incoherentOntology.getOWLOntologyManager().saveOntology(getOntologyWithAnnotations(incoherentOntology), new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/dbpedia_coherent.owl")));
 		} catch (OWLOntologyStorageException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
@@ -172,8 +329,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	private void refillExplanations(Set<OWLClass> unsatClasses, Map<OWLClass, Set<Set<OWLAxiom>>> cls2Explanations){
 		for(OWLClass unsatClass : unsatClasses){
 			Set<Set<OWLAxiom>> precomputedExplanations = cls2Explanations.get(unsatClass);
-			if(precomputedExplanations == null || precomputedExplanations.size() < NUMBER_OF_JUSTIFICATIONS){
-				Set<Set<OWLAxiom>> newExplanations = computeExplanations(unsatClass, NUMBER_OF_JUSTIFICATIONS);
+			if(precomputedExplanations == null || precomputedExplanations.size() < numberOfJustifications){
+				Set<Set<OWLAxiom>> newExplanations = computeExplanations(unsatClass, numberOfJustifications);
 				cls2Explanations.put(unsatClass, newExplanations);
 			}
 		}
@@ -237,20 +394,61 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	
 	private Set<Set<OWLAxiom>> computeExplanations(OWLClass unsatClass){
 		PelletExplanation expGen = new PelletExplanation(getModule(unsatClass));
-		return expGen.getUnsatisfiableExplanations(unsatClass, NUMBER_OF_JUSTIFICATIONS);
+		return expGen.getUnsatisfiableExplanations(unsatClass, numberOfJustifications);
 	}
 	
 	private Set<Set<OWLAxiom>> computeExplanations(OWLClass unsatClass, int limit){
 		PelletExplanation expGen = new PelletExplanation(getModule(unsatClass));
-		return expGen.getUnsatisfiableExplanations(unsatClass, NUMBER_OF_JUSTIFICATIONS);
+		return expGen.getUnsatisfiableExplanations(unsatClass, numberOfJustifications);
 	}
 	
-	private OWLOntology getModule(OWLClass cls){
+	private Set<Set<OWLAxiom>> computeExplanationsBlackBox(OWLClass unsatClass, int limit){
+		BlackBoxExplanation singleExpGen = new BlackBoxExplanation(incoherentOntology, new HermiTReasonerFactory(), hermitReasoner);
+		HSTExplanationGenerator expGen = new HSTExplanationGenerator(singleExpGen);
+		return expGen.getExplanations(unsatClass, limit);
+	}
+	
+//	private Set<Set<OWLAxiom>> computeExplanationsBlackbox(OWLClass unsatClass, int limit){
+//		BlackBoxExplanation b = new BlackBoxExplanation(incoherentOntology, reasonerFactory, hermitReasoner)
+//		MultipleExplanationGenerator expGen = new HSTExplanationGenerator(b);
+//		PelletExplanation expGen = new PelletExplanation(getModule(unsatClass));
+//		return expGen.getUnsatisfiableExplanations(unsatClass, NUMBER_OF_JUSTIFICATIONS);
+//	}
+	
+	private OWLOntology getModule(OWLClass cls){System.out.println(cls);
 		OWLOntology module = cls2ModuleMap.get(cls);
+		new File("log").mkdir();
 		if(module == null){
-			module = OntologyUtils.getOntologyFromAxioms(
-					ModularityUtils.extractModule(incoherentOntology, Collections.singleton((OWLEntity)cls), ModuleType.TOP_OF_BOT));
+			md5.reset();
+			md5.update((ontology.getOWLOntologyManager().getOntologyDocumentIRI(ontology).toString() + cls.toStringID()).getBytes());
+			String hash = MD5.asHex(md5.digest());
+			String filename = "log/" + hash + ".owl";
+			File file = new File(filename);
+			if(file.exists()){
+				module = loadModule(file);
+			} else {
+				module = OntologyUtils.getOntologyFromAxioms(
+						ModularityUtils.extractModule(incoherentOntology, Collections.singleton((OWLEntity)cls), ModuleType.TOP_OF_BOT));
+				try {
+					manager.saveOntology(module, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(filename)));
+				} catch (OWLOntologyStorageException e) {
+					e.printStackTrace();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			cls2ModuleMap.put(cls, module);
+		}
+		return module;
+	}
+	
+	private OWLOntology loadModule(File file){
+		OWLOntology module = null;
+		try {
+			module = manager.loadOntologyFromOntologyDocument(file);
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
 		}
 		return module;
 	}
@@ -264,17 +462,81 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		return cls2ModuleMap;
 	}
 	
+	public void setNumberOfJustifications(int numberOfJustifications) {
+		this.numberOfJustifications = numberOfJustifications;
+	}
+	
 	public static void main(String[] args) throws Exception{
 		Logger.getLogger(RBox.class.getName()).setLevel(Level.OFF);
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-//		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("/home/lorenz/dbpedia_0.75_no_datapropaxioms.owl"));
-		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("log/dbpedia_95.owl"));
+		
+		if(args.length != 3){
+			System.out.println("USAGE: JustificationBasedCoherentOntologyExtractor <incoherent.owl> <numberOfJustifcations> <preferRootClasses(true|false)>");
+			System.exit(0);
+		}
+		String filename = args[0];
+		int numberOfJustifications = Integer.parseInt(args[1]);
+		boolean preferRoots = Boolean.valueOf(args[2]);
+		
+		System.out.println("Loading ontology...");
+		File file = new File(filename);
+		OWLOntology schema = man.loadOntologyFromOntologyDocument(file);
+		man.removeAxioms(schema, schema.getAxioms(AxiomType.TRANSITIVE_OBJECT_PROPERTY));
+		
+//		OWLOntology cleaned = man.createOntology(IRI.create("http://dbpedia_cleaned.owl"));
+//		man.addAxioms(cleaned, schema.getLogicalAxioms());
+//		man.removeAxioms(cleaned, cleaned.getAxioms(AxiomType.TRANSITIVE_OBJECT_PROPERTY));
+//		man.removeAxioms(cleaned, cleaned.getAxioms(AxiomType.REFLEXIVE_OBJECT_PROPERTY));
+//		man.removeAxioms(cleaned, cleaned.getAxioms(AxiomType.IRREFLEXIVE_OBJECT_PROPERTY));
+//		man.removeAxioms(cleaned, cleaned.getAxioms(AxiomType.SYMMETRIC_OBJECT_PROPERTY));
+//		man.removeAxioms(cleaned, cleaned.getAxioms(AxiomType.ASYMMETRIC_OBJECT_PROPERTY));
+//		man.removeAxioms(cleaned, cleaned.getAxioms(AxiomType.FUNCTIONAL_OBJECT_PROPERTY));
+//		man.removeAxioms(cleaned, cleaned.getAxioms(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY));
+//		man.saveOntology(cleaned, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(file.getParent() + "/cleaned.owl")));
+//		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("log/dbpedia_95.owl"));
+//		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("/home/lorenz/arbeit/dbpedia_0.75_no_datapropaxioms.owl"));
 //		System.out.println(schema.getLogicalAxiomCount());
 //		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("log/dbpedia_coherent.owl"));
-		System.out.println(schema.getLogicalAxiomCount());
+//		System.out.println(schema.getLogicalAxiomCount());
+		System.out.println("...done.");
 		
 		JustificationBasedCoherentOntologyExtractor extractor = new JustificationBasedCoherentOntologyExtractor();
-		OWLOntology coherentOntology = extractor.getCoherentOntology(schema);System.out.println(coherentOntology.getLogicalAxiomCount());
+		extractor.setNumberOfJustifications(numberOfJustifications);
+		OWLOntology coherentOntology = extractor.getCoherentOntology(schema, preferRoots);
+		System.out.println("Coherent ontology contains " + coherentOntology.getLogicalAxiomCount() + " logical axioms.");
+	}
+	
+	class HermiTReasonerFactory implements OWLReasonerFactory{
+
+		@Override
+		public OWLReasoner createNonBufferingReasoner(OWLOntology ontology) {
+			return new Reasoner(ontology);
+		}
+
+		@Override
+		public OWLReasoner createNonBufferingReasoner(OWLOntology ontology,
+				OWLReasonerConfiguration config)
+				throws IllegalConfigurationException {
+			return new Reasoner((Configuration) config, ontology);
+		}
+
+		@Override
+		public OWLReasoner createReasoner(OWLOntology ontology) {
+			return new Reasoner(ontology);
+		}
+
+		@Override
+		public OWLReasoner createReasoner(OWLOntology ontology,
+				OWLReasonerConfiguration config)
+				throws IllegalConfigurationException {
+			return new Reasoner((Configuration) config, ontology);
+		}
+
+		@Override
+		public String getReasonerName() {
+			return "HermiT Reasoner";
+		}
+		
 	}
 
 }

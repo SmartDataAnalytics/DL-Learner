@@ -161,14 +161,15 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 				oldCnt = result.get(prop);
 				if(oldCnt == null){
 					oldCnt = Integer.valueOf(newCnt);
+				} else {
+					oldCnt += newCnt;
 				}
 				result.put(prop, oldCnt);
-				qs.getLiteral("count").getInt();
 				repeat = true;
 			}
 			if(!result.isEmpty()){
 				currentlyBestAxioms = buildAxioms(result, allObjectProperties);
-				offset += 1000;
+				offset += limit;
 			}
 		}
 		
@@ -185,7 +186,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		
 		EvaluatedAxiom evalAxiom;
 		//first create disjoint axioms with properties which not occur and give score of 1
-		for(ObjectProperty p : completeDisjointProperties){
+		for(ObjectProperty p : completeDisjointProperties){System.out.println(p);
 			if(usePropertyPopularity){
 				int popularity = reasoner.getPropertyCount(p);
 				//skip if property is not used in kb
@@ -217,10 +218,10 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	public static void main(String[] args) throws Exception{
 		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(
 				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/engineType"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/state"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE));
 	}
 }
