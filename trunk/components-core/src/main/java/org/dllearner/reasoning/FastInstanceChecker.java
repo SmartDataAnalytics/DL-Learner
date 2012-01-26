@@ -20,6 +20,7 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -143,7 +144,65 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	public FastInstanceChecker() {
 	}
 
-    public FastInstanceChecker(Set<AbstractKnowledgeSource> sources) {
+    public FastInstanceChecker(TreeSet<Individual> individuals,
+			Map<NamedClass, TreeSet<Individual>> classInstancesPos,
+			Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos,
+			Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id,
+			Map<DatatypeProperty, TreeSet<Individual>> bdPos,
+			Map<DatatypeProperty, TreeSet<Individual>> bdNeg,
+			AbstractKnowledgeSource... sources) {
+		super(new HashSet<AbstractKnowledgeSource>(Arrays.asList(sources)));
+		this.individuals = individuals;
+		this.classInstancesPos = classInstancesPos;
+		this.opPos = opPos;
+		this.id = id;
+		this.bdPos = bdPos;
+		this.bdNeg = bdNeg;
+		
+		if(rc == null){
+            rc = new OWLAPIReasoner(new HashSet<AbstractKnowledgeSource>(Arrays.asList(sources)));
+            try {
+				rc.init();
+			} catch (ComponentInitException e) {
+				e.printStackTrace();
+			}
+        }
+		
+		atomicConcepts = rc.getNamedClasses();
+		datatypeProperties = rc.getDatatypeProperties();
+		booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
+		doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
+		intDatatypeProperties = rc.getIntDatatypeProperties();
+		stringDatatypeProperties = rc.getStringDatatypeProperties();
+		atomicRoles = rc.getObjectProperties();
+		
+		for (NamedClass atomicConcept : rc.getNamedClasses()) {
+			TreeSet<Individual> pos = classInstancesPos.get(atomicConcept);
+			if(pos != null){
+				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
+			} else {
+				classInstancesPos.put(atomicConcept, new TreeSet<Individual>());
+				classInstancesNeg.put(atomicConcept, individuals);
+			}
+		}
+		for(ObjectProperty p : atomicRoles){
+			if(opPos.get(p) == null){
+				opPos.put(p, new HashMap<Individual, SortedSet<Individual>>());
+			}
+		}
+		
+		for (DatatypeProperty dp : booleanDatatypeProperties) {
+			if(bdPos.get(dp) == null){
+				bdPos.put(dp, new TreeSet<Individual>());
+			}
+			if(bdNeg.get(dp) == null){
+				bdNeg.put(dp, new TreeSet<Individual>());
+			}
+			
+		}
+	}
+
+	public FastInstanceChecker(Set<AbstractKnowledgeSource> sources) {
         super(sources);
     }
 
