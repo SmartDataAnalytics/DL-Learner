@@ -714,9 +714,10 @@ public class SPARQLSampleDebugging {
 		}
 		
 		InputStream is = new BufferedInputStream(new FileInputStream(args[0]));
-		 CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
-		
-		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(in);
+		if(args[0].endsWith("bz2")){
+			is = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
+		}
+		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(is);
 		
 		SPARQLSampleDebugging debug = new SPARQLSampleDebugging(endpoint);
 		
