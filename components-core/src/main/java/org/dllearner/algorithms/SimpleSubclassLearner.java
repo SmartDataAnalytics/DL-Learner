@@ -126,7 +126,23 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		//get existing super classes
 		SortedSet<Description> existingSuperClasses = reasoner.getSuperClasses(classToDescribe);
 		if(!existingSuperClasses.isEmpty()){
+			SortedSet<Description> inferredSuperClasses = new TreeSet<Description>();
+			for(Description assertedSup : existingSuperClasses){
+				if(reasoner.isPrepared()){
+					if(reasoner.getClassHierarchy().contains(assertedSup)){
+						for(Description inferredSup : reasoner.getClassHierarchy().getSuperClasses(assertedSup, false)){
+							inferredSuperClasses.add(inferredSup);
+						}
+					}
+				} else {
+					inferredSuperClasses.add(assertedSup);
+				}
+			}
+			existingSuperClasses.addAll(inferredSuperClasses);
 			logger.info("Existing super classes: " + existingSuperClasses);
+			for(Description sup : existingSuperClasses){
+				existingAxioms.add(new SubClassAxiom(classToDescribe, sup));
+			}
 		}
 		
 		Map<Individual, SortedSet<Description>> ind2Types = new HashMap<Individual, SortedSet<Description>>();
@@ -226,9 +242,10 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		
 		SimpleSubclassLearner l = new SimpleSubclassLearner(ks);
 		l.setReasoner(reasoner);
+		l.setReturnOnlyNewAxioms(true);
 		
 		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 10);
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Olympics"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/SoccerClub"));
 		l.init();
 		l.start();
 		

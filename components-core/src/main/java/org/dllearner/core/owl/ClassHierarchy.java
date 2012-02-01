@@ -111,6 +111,20 @@ public class ClassHierarchy {
 //			return (TreeSet<Description>) subsumptionHierarchyDown.get(concept).clone();
 //		}
 	}
+	
+	public SortedSet<Description> getSuperClasses(Description concept, boolean direct) {
+		SortedSet<Description> result =  subsumptionHierarchyUp.get(concept);
+		if(result == null) {
+			logger.error("Query for super class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
+			return new TreeSet<Description>();
+		}
+		result.remove(concept);
+		for(Description sub : new HashSet<Description>(result)){
+			result.addAll(getSuperClasses(sub, false));
+		}
+		
+		return new TreeSet<Description>(result);		
+	}
 
 	/**
 	 * Computes the siblings of the specified descriptions. Siblings are all those
