@@ -1,30 +1,34 @@
 package org.dllearner.scripts;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithm.qtl.util.ModelGenerator;
-import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SymmetricConciseBoundedDescriptionGeneratorImpl;
 import org.mindswap.pellet.PelletOptions;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
@@ -35,7 +39,6 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
@@ -48,7 +51,6 @@ import org.semanticweb.owlapi.reasoner.InferenceType;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
-import weka.attributeSelection.ConsistencySubsetEval;
 
 import com.clarkparsia.modularity.ModularityUtils;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
@@ -84,6 +86,12 @@ public class ApproximateDebugging {
 	public ApproximateDebugging(OWLOntology schema, OWLOntology data) throws OWLOntologyCreationException {
 		this.schema = schema;
 		this.data = data;
+		System.out.println(data.getLogicalAxiomCount());
+		for(OWLAxiom ax : new HashSet<OWLAxiom>(data.getLogicalAxioms())){
+			if(!ax.getDataPropertiesInSignature().isEmpty()){
+				man.removeAxiom(data, ax);
+			}
+		}System.out.println(data.getLogicalAxiomCount());
 		
 		Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
 		ontologies.add(schema);
@@ -181,7 +189,8 @@ public class ApproximateDebugging {
 			logger.info("done in " + (System.currentTimeMillis()-startTime) + "ms.");
 			logger.info("Module size: " + module.size());
 			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(OntologyUtils.getOntologyFromAxioms(module));
-			expGen = new PelletExplanation(reasoner);
+//			expGen = new PelletExplanation(reasoner);
+			expGen = new PelletExplanation(schema, false);
 			logger.info("Computing explanations...");
 			startTime = System.currentTimeMillis();
 			Set<Set<OWLAxiom>> temp = expGen.getUnsatisfiableExplanations(unsatClass, 10);
@@ -231,9 +240,9 @@ public class ApproximateDebugging {
 	}
 	
 	public Set<Set<OWLAxiom>> computeExplanationsDefault(int limit){
-		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(schema);
+		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
 		reasoner.isConsistent();
-		logger.info("Computing inconsistency explanations with only Pellet...");
+		logger.info("Computing inconsistency explanations with Pellet only...");
 		long startTime = System.currentTimeMillis();
 		PelletExplanation expGen = new PelletExplanation(reasoner);
 		Set<Set<OWLAxiom>> explanations = expGen.getInconsistencyExplanations(limit);
@@ -312,7 +321,7 @@ public class ApproximateDebugging {
 		
 		for(OWLObjectProperty prop : extractObjectProperties(AxiomType.FUNCTIONAL_OBJECT_PROPERTY)){
 			OWLAxiom axiom = factory.getOWLFunctionalObjectPropertyAxiom(prop);
-			String queryString = "SELECT * WHERE {?s <%s> ?o1. ?s <%s> ?o2. FILTER(?o1 != ?o2)}".replace("%s", prop.toStringID());
+			String queryString = "SELECT DISTINCT * WHERE {?s <%s> ?o1. ?s <%s> ?o2. FILTER(?o1 != ?o2)}".replace("%s", prop.toStringID());
 			Query query = QueryFactory.create(queryString) ;
 			QueryExecution qexec = QueryExecutionFactory.create(query, model) ;
 			try {
@@ -427,6 +436,7 @@ public class ApproximateDebugging {
 		for(OWLAxiom ax : ontology.getAxioms(axiomType)){
 			properties.add(((OWLObjectPropertyCharacteristicAxiom)ax).getProperty().asOWLObjectProperty());
 		}
+//		properties.retainAll(data.getObjectPropertiesInSignature());
 		return properties;
 	}
 	
@@ -472,6 +482,11 @@ public class ApproximateDebugging {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
+		if(args.length != 1){
+			System.out.println("Usage: ApproximateDebugging <Schema-Ontology>");
+			System.exit(0);
+		}
+		
 		Logger.getRootLogger().setLevel(Level.INFO);
 		Logger.getRootLogger().removeAllAppenders();
 		Logger.getRootLogger().addAppender(new ConsoleAppender(new SimpleLayout()));
@@ -487,14 +502,55 @@ public class ApproximateDebugging {
 		Model model = cbdGen.getConciseBoundedDescription(resource, 3);
 		OWLOntology data = convert(model);
 		
+		InputStream is = new BufferedInputStream(new FileInputStream(args[0]));
+		 CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
+		 
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("src/main/resources/dbpedia_0.75_no_datapropaxioms.owl"));
+		OWLOntology schema = man.loadOntologyFromOntologyDocument(in);
 		
 		ApproximateDebugging debug = new ApproximateDebugging(schema, data);
+		
+		Set<Set<OWLAxiom>> explanations2 = debug.computeExplanationsDefault(3);
+		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
+		PrintWriter out = new PrintWriter( System.out );
+		renderer.startRendering( out );
+		for(Set<OWLAxiom> exp : explanations2){
+			out.flush();
+			renderer.render( Collections.singleton(exp) );
+		}
+		renderer.endRendering();
+		for(Entry<AxiomType<? extends OWLAxiom>, Integer> entry : getAxiomTypeCount(explanations2).entrySet()){
+			System.out.println(entry.getKey() + ": " + entry.getValue());
+		}
+		
 		Set<Set<OWLAxiom>> explanations1 = debug.computeInconsistencyExplanations();
-		Set<Set<OWLAxiom>> explanations2 = debug.computeExplanationsDefault(500);
-		System.out.println(explanations1.size());
-		System.out.println(explanations2.size());
+		for(Set<OWLAxiom> exp : explanations1){
+			System.out.println(exp);
+		}
+		
+		for(Entry<AxiomType<? extends OWLAxiom>, Integer> entry : getAxiomTypeCount(explanations1).entrySet()){
+			System.out.println(entry.getKey() + ": " + entry.getValue());
+		}
+//		
+//		System.out.println(explanations1.size());
+//		System.out.println(explanations2.size());
+	}
+	
+	private static Map<AxiomType<? extends OWLAxiom>, Integer> getAxiomTypeCount(Set<Set<OWLAxiom>> explanations){
+		Map<AxiomType<? extends OWLAxiom>, Integer> axiomType2CountMap = new HashMap<AxiomType<? extends OWLAxiom>, Integer>();
+		
+		for(Set<OWLAxiom> exp : explanations){
+			for(OWLAxiom ax : exp){
+				Integer cnt = axiomType2CountMap.get(ax.getAxiomType());
+				if(cnt == null){
+					cnt = Integer.valueOf(0);
+				}
+				cnt = Integer.valueOf(cnt + 1);
+				axiomType2CountMap.put(ax.getAxiomType(), cnt);
+			}
+		}
+		
+		return axiomType2CountMap;
 	}
 
 }
