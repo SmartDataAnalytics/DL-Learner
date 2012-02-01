@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -29,7 +30,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
-import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
@@ -54,6 +54,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -473,16 +474,32 @@ public class SPARQLSampleDebugging {
 					logger.info(exp + "\n");
 				}
 				Map<AxiomType, Integer> axiomType2CountMap = new HashMap<AxiomType, Integer>();
-				for(Set<OWLAxiom> explanation : explanations){
-					logger.info(explanation);
-					for(OWLAxiom axiom : explanation){
-						Integer cnt = axiomType2CountMap.get(axiom.getAxiomType());
-						if(cnt == null){
-							cnt = Integer.valueOf(0);
+				ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
+				try {
+					FileWriter out = new FileWriter( "log/justifications.txt" );
+					renderer.startRendering(out );
+					for(Set<OWLAxiom> explanation : explanations){
+						logger.info(explanation);
+						out.flush();
+						try {
+							renderer.render( Collections.singleton(explanation) );
+						} catch (UnsupportedOperationException e) {
+							e.printStackTrace();
+						} catch (OWLException e) {
+							e.printStackTrace();
 						}
-						cnt = Integer.valueOf(cnt + 1);
-						axiomType2CountMap.put(axiom.getAxiomType(), cnt);
+						for(OWLAxiom axiom : explanation){
+							Integer cnt = axiomType2CountMap.get(axiom.getAxiomType());
+							if(cnt == null){
+								cnt = Integer.valueOf(0);
+							}
+							cnt = Integer.valueOf(cnt + 1);
+							axiomType2CountMap.put(axiom.getAxiomType(), cnt);
+						}
 					}
+					renderer.endRendering();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 				logger.info("Axiom type count:");
 				for(Entry<AxiomType, Integer> entry : axiomType2CountMap.entrySet()){
