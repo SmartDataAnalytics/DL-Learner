@@ -21,6 +21,7 @@ package org.dllearner.algorithms.properties;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.SortedSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
@@ -142,7 +143,8 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql")));//.getEndpointDBpediaLiveAKSW()));
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(
+				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));//.getEndpointDBpediaLiveAKSW()));
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
 		reasoner.prepareSubsumptionHierarchy();

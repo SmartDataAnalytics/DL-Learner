@@ -84,6 +84,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	protected int fetchedRows;
 	
 	protected long startTime;
+	protected int limit = 1000;
 	
 	public AbstractAxiomLearningAlgorithm() {
 		existingAxioms = new TreeSet<Axiom>(new AxiomComparator());
@@ -134,6 +135,14 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 
 	@Override
 	public void start() {
+	}
+
+	public int getLimit() {
+		return limit;
+	}
+
+	public void setLimit(int limit) {
+		this.limit = limit;
 	}
 
 	@Override

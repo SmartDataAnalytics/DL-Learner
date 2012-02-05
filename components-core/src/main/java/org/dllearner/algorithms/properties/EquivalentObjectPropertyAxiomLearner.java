@@ -128,7 +128,6 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	
 	private void runSPARQL1_1_Mode() {
 		//get subjects with types
-				int limit = 1000;
 				int offset = 0;
 				String queryTemplate = "SELECT ?p (COUNT(?s) AS ?count) WHERE {?s ?p ?o." +
 				"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
@@ -159,7 +158,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 					}
 					if(!result.isEmpty()){
 						currentlyBestAxioms = buildAxioms(result);
-						offset += 1000;
+						offset += limit;
 					}
 					
 				}
@@ -178,9 +177,10 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			properties.add(propertyToDescribe);
 			properties.add(entry.getKey());
 			int popularity = reasoner.getPropertyCount(entry.getKey());
-			int total = popularity;//Math.max(popularity, all);
+//			int total = popularity;
+			int total = Math.max(popularity, all);
 			int success = entry.getValue();//System.out.println(entry.getKey());System.out.println(entry.getKey());System.out.println(total);System.out.println(success);
-			Score score = computeScore(total, success);
+			Score score = computeScore(total, success);//System.out.println(entry + ": " + score.getAccuracy());
 			evalAxiom = new EvaluatedAxiom(new EquivalentObjectPropertiesAxiom(properties),score);
 			axioms.add(evalAxiom);
 		}
@@ -192,7 +192,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	public static void main(String[] args) throws Exception{
 		EquivalentObjectPropertyAxiomLearner l = new EquivalentObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(
 				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/state"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/nationality"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();

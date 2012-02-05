@@ -21,6 +21,7 @@ package org.dllearner.algorithms.properties;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -145,7 +146,6 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			symmetric = qs.getLiteral("symmetric").getInt();
 		}
 		int asymmetric = total - symmetric;
-		
 		if(total > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new AsymmetricObjectPropertyAxiom(propertyToDescribe),
 					computeScore(total, asymmetric), declaredAsymmetric));
@@ -154,8 +154,9 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	}
 	
 	public static void main(String[] args) throws Exception{
-		AsymmetricObjectPropertyAxiomLearner l = new AsymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(new URL("http://factforge.net/sparql"))));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/country"));
+		AsymmetricObjectPropertyAxiomLearner l = new AsymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(
+				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));//.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/spouse"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();
