@@ -19,7 +19,9 @@
 
 package org.dllearner.algorithms.properties;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -143,7 +145,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			qs = rs.next();
 			transitive = qs.getLiteral("transitive").getInt();
 		}
-		
+		System.out.println(total);
 		if(total > 0){
 			currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe),
 					computeScore(total, transitive), declaredAsTransitive));
@@ -152,9 +154,10 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(
+				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
 		TransitiveObjectPropertyAxiomLearner l = new TransitiveObjectPropertyAxiomLearner(ks);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/subregion"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/chairman"));
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(1));

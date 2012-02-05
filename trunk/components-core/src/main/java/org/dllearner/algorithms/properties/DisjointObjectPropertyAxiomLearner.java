@@ -138,7 +138,6 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	
 	private void runSPARQL1_1_Mode() {
 		//get properties and how often they occur
-		int limit = 1000;
 		int offset = 0;
 		String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?s ?p ?o." +
 		"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
@@ -186,7 +185,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		
 		EvaluatedAxiom evalAxiom;
 		//first create disjoint axioms with properties which not occur and give score of 1
-		for(ObjectProperty p : completeDisjointProperties){System.out.println(p);
+		for(ObjectProperty p : completeDisjointProperties){
 			if(usePropertyPopularity){
 				int popularity = reasoner.getPropertyCount(p);
 				//skip if property is not used in kb
@@ -205,7 +204,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		//second create disjoint axioms with other properties and score 1 - (#occurence/#all)
 		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
 			double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(all, entry.getValue());
-			double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
+			double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;//System.out.println(entry + ": " + accuracy);
 			evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, entry.getKey()),
 					new AxiomScore(1 - accuracy));
 			axioms.add(evalAxiom);
