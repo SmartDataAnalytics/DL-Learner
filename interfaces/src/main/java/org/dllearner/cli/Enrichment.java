@@ -208,6 +208,7 @@ public class Enrichment {
 	// some learners)
 	private int nrOfAxiomsToLearn = 10;	
 	private double threshold = 0.7;
+	private int chunksize = 1000;
 	
 	private boolean useInference;
 	private SPARQLReasoner reasoner;
@@ -231,13 +232,15 @@ public class Enrichment {
 	private Set<OWLAxiom> learnedOWLAxioms;
 	private Set<EvaluatedAxiom> learnedEvaluatedAxioms;
 	
-	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, int nrOfAxiomsToLearn, boolean useInference, boolean verbose) {
+	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, int nrOfAxiomsToLearn, boolean useInference, boolean verbose, int chunksize, int maxExecutionTimeInSeconds) {
 		this.se = se;
 		this.resource = resource;
 		this.verbose = verbose;
 		this.threshold = threshold;
 		this.nrOfAxiomsToLearn = nrOfAxiomsToLearn;
 		this.useInference = useInference;
+		this.chunksize = chunksize;
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 		
 		try {
 			cacheDir = "cache" + File.separator + URLEncoder.encode(se.getURL().toString(), "UTF-8");
@@ -487,6 +490,7 @@ public class Enrichment {
 		}
 		ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 				maxExecutionTimeInSeconds);
+		((AbstractAxiomLearningAlgorithm)learner).setLimit(chunksize);
 		learner.init();
 		if(reasoner != null){
 			((AbstractAxiomLearningAlgorithm)learner).setReasoner(reasoner);
@@ -801,6 +805,11 @@ public class Enrichment {
 		.withRequiredArg().ofType(File.class);
 		parser.acceptsAll(asList("a", "annotations"),
 				"Specifies whether to save scores as annotations.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+		parser.acceptsAll(asList("chunksize"),
+		"Specifies the chunk size for the query result as the approach is incrementally.").withRequiredArg().ofType(Integer.class).defaultsTo(1000);
+		parser.acceptsAll(asList("maxExecutionTimeInSeconds"),
+		"Specifies the max execution time for each algorithm run and each entity.").withRequiredArg().ofType(Integer.class).defaultsTo(10);
+		
 		// parse options and display a message for the user in case of problems
 		OptionSet options = null;
 		try {
@@ -886,6 +895,9 @@ public class Enrichment {
 				maxNrOfResults = Integer.MAX_VALUE;
 			}
 			
+			int chunksize = (Integer) options.valueOf("chunksize");
+			int runtime = (Integer) options.valueOf("runtime");
+			
 			// TODO: some handling for inaccessible files or overwriting existing files
 			File f = (File) options.valueOf("o");
 			
@@ -895,7 +907,7 @@ public class Enrichment {
 				 System.setOut(printStream);
 			}			
 			
-			Enrichment e = new Enrichment(se, resource, threshold, maxNrOfResults, useInference, false);
+			Enrichment e = new Enrichment(se, resource, threshold, maxNrOfResults, useInference, false, chunksize, runtime);
 			e.start();
 
 			SparqlEndpointKS ks = new SparqlEndpointKS(se);

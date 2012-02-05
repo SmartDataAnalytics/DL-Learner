@@ -78,6 +78,8 @@ public class GlobalEnrichment {
 	// parameters
 	private static double threshold = 0.8;
 	private static int nrOfAxiomsToLearn = 10;
+	private static int queryChunkSize = 1000;
+	private static int maxExecutionTimeInSeconds = 10;
 	private static boolean useInference = true;
 	
 	// directory for generated schemata
@@ -187,7 +189,7 @@ public class GlobalEnrichment {
 					File log = new File(baseDir + File.separator + "failed" + File.separator + name + ".log");
 					
 					System.out.println("Enriching " + name + " using " + se.getURL());
-					Enrichment e = new Enrichment(se, null, threshold, nrOfAxiomsToLearn, useInference, false);
+					Enrichment e = new Enrichment(se, null, threshold, nrOfAxiomsToLearn, useInference, false, queryChunkSize, maxExecutionTimeInSeconds);
 					
 					e.maxEntitiesPerType = 3; // hack for faster testing of endpoints
 					
