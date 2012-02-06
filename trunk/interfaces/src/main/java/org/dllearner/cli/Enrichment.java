@@ -209,6 +209,7 @@ public class Enrichment {
 	private int nrOfAxiomsToLearn = 10;	
 	private double threshold = 0.7;
 	private int chunksize = 1000;
+	private boolean omitExistingAxioms;
 	
 	private boolean useInference;
 	private SPARQLReasoner reasoner;
@@ -232,7 +233,7 @@ public class Enrichment {
 	private Set<OWLAxiom> learnedOWLAxioms;
 	private Set<EvaluatedAxiom> learnedEvaluatedAxioms;
 	
-	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, int nrOfAxiomsToLearn, boolean useInference, boolean verbose, int chunksize, int maxExecutionTimeInSeconds) {
+	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, int nrOfAxiomsToLearn, boolean useInference, boolean verbose, int chunksize, int maxExecutionTimeInSeconds, boolean omitExistingAxioms) {
 		this.se = se;
 		this.resource = resource;
 		this.verbose = verbose;
@@ -241,6 +242,7 @@ public class Enrichment {
 		this.useInference = useInference;
 		this.chunksize = chunksize;
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+		this.omitExistingAxioms = omitExistingAxioms;
 		
 		try {
 			cacheDir = "cache" + File.separator + URLEncoder.encode(se.getURL().toString(), "UTF-8");
@@ -426,6 +428,7 @@ public class Enrichment {
             ks2.setCacheDir(cacheDir);
             ks2.setRecursionDepth(2);
             ks2.setCloseAfterRecursion(true);
+            ks2.setDissolveBlankNodes(false);
             ks2.setSaveExtractedFragment(true);
             startTime = System.currentTimeMillis();
             System.out.print("getting knowledge base fragment ... ");
@@ -491,6 +494,7 @@ public class Enrichment {
 		ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 				maxExecutionTimeInSeconds);
 		((AbstractAxiomLearningAlgorithm)learner).setLimit(chunksize);
+		((AbstractAxiomLearningAlgorithm)learner).setReturnOnlyNewAxioms(omitExistingAxioms);
 		learner.init();
 		if(reasoner != null){
 			((AbstractAxiomLearningAlgorithm)learner).setReasoner(reasoner);
@@ -809,6 +813,8 @@ public class Enrichment {
 		"Specifies the chunk size for the query result as the approach is incrementally.").withRequiredArg().ofType(Integer.class).defaultsTo(1000);
 		parser.acceptsAll(asList("maxExecutionTimeInSeconds"),
 		"Specifies the max execution time for each algorithm run and each entity.").withRequiredArg().ofType(Integer.class).defaultsTo(10);
+		parser.acceptsAll(asList("omitExistingAxioms"),
+				"Specifies whether return only axioms which not already exist in the knowlegde base.").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
 		
 		// parse options and display a message for the user in case of problems
 		OptionSet options = null;
@@ -896,7 +902,8 @@ public class Enrichment {
 			}
 			
 			int chunksize = (Integer) options.valueOf("chunksize");
-			int runtime = (Integer) options.valueOf("runtime");
+			int maxExecutionTimeInSeconds = (Integer) options.valueOf("maxExecutionTimeInSeconds");
+			boolean omitExistingAxioms = (Boolean) options.valueOf("omitExistingAxioms");
 			
 			// TODO: some handling for inaccessible files or overwriting existing files
 			File f = (File) options.valueOf("o");
@@ -907,7 +914,7 @@ public class Enrichment {
 				 System.setOut(printStream);
 			}			
 			
-			Enrichment e = new Enrichment(se, resource, threshold, maxNrOfResults, useInference, false, chunksize, runtime);
+			Enrichment e = new Enrichment(se, resource, threshold, maxNrOfResults, useInference, false, chunksize, maxExecutionTimeInSeconds, omitExistingAxioms);
 			e.start();
 
 			SparqlEndpointKS ks = new SparqlEndpointKS(se);
