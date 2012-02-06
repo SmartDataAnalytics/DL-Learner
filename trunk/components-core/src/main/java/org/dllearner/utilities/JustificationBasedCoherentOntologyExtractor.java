@@ -26,6 +26,7 @@ import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -56,7 +57,8 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 public class JustificationBasedCoherentOntologyExtractor implements CoherentOntologyExtractor{
 	
 	private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JustificationBasedCoherentOntologyExtractor.class);
-
+	private static final String DIFF_ONTOLOGY_NAME = "diff.owl";
+	
 	private int numberOfJustifications = 10;
 //	private PelletReasoner reasoner;
 	private IncrementalClassifier reasoner;
@@ -66,7 +68,11 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	private OWLOntology ontology;
 	private OWLDataFactory factory;
 	
+	//we store the removed axioms in it
+	private OWLOntology diffOntology;
+	
 	private Map<OWLEntity, OWLOntology> entity2ModuleMap = new HashMap<OWLEntity, OWLOntology>();
+	private Map<OWLEntity, Set<Set<OWLAxiom>>> entity2Explanations = new HashMap<OWLEntity, Set<Set<OWLAxiom>>>();
 	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	
 	MessageDigest md5;
@@ -93,6 +99,17 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	public OWLOntology getCoherentOntology(OWLOntology ontology, boolean preferRoots){
 		this.ontology = ontology;
 		this.incoherentOntology = getOntologyWithoutAnnotations(ontology);
+		
+		File diffFile = new File(new File(ontology.getOWLOntologyManager().getOntologyDocumentIRI(ontology).toURI()).getParent() + "/" + DIFF_ONTOLOGY_NAME);
+		try {System.out.println(diffFile);
+			if(diffFile.exists()){
+				diffOntology = manager.loadOntologyFromOntologyDocument(diffFile);
+			} else {
+				diffOntology = manager.createOntology(IRI.create("http://diff.org/"));
+			}
+		} catch (OWLOntologyCreationException e1) {
+			e1.printStackTrace();
+		}
 		
 		//only for debugging
 		removedTransitiveAxioms = incoherentOntology.getAxioms(AxiomType.TRANSITIVE_OBJECT_PROPERTY);
@@ -141,6 +158,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		int derivedCnt = derivedUnsatClasses.size();
 //		Set<OWLClass> unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 		int cnt = rootCnt + derivedCnt;
+		int unsatPropCnt = unsatObjectProperties.size();
 		logger.info("Detected " + cnt + " unsatisfiable classes, " + rootCnt + " of them as root.");
 		
 		//if the ontology is not incoherent we return it here
@@ -156,7 +174,6 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		//compute initial explanations for each unsatisfiable class
 		logger.info("Computing initial explanations...");
 		startTime = System.currentTimeMillis();
-		Map<OWLEntity, Set<Set<OWLAxiom>>> entity2Explanations = new HashMap<OWLEntity, Set<Set<OWLAxiom>>>();
 		entity2Explanations.putAll(getInitialExplanations(unsatClasses));
 		entity2Explanations.putAll(getInitialExplanations(unsatObjectProperties));
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
@@ -172,11 +189,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			}
 			//we remove the most frequent axiom from the ontology
 			OWLAxiom toRemove = sortedEntries.get(0).getKey();
-			logger.info("Removing axiom " + toRemove + ".");
-			man.removeAxiom(incoherentOntology, toRemove);
-			man.applyChange(new RemoveAxiom(incoherentOntology, toRemove));
-			removeFromExplanations(entity2Explanations, toRemove);
-			removeFromModules(toRemove);
+			removeAxiom(toRemove);
 			
 			//recompute the unsatisfiable classes
 			logger.info("Reclassifying...");
@@ -202,10 +215,11 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
 			
 			//save
-			if(cnt - (rootCnt+derivedCnt) >= 10){
+			if(cnt - (rootCnt+derivedCnt) >= 1 || (unsatPropCnt - unsatObjectProperties.size()) >= 1){
 				cnt = rootCnt + derivedCnt;
-				save("log/dbpedia_" + cnt + ".owl");
+				save("log/dbpedia_" + cnt + "cls" + unsatPropCnt + "prop.owl");
 				cnt = rootCnt + derivedCnt;
+				unsatPropCnt = unsatObjectProperties.size();
 			}
 			
 			//recompute explanations if necessary
@@ -251,7 +265,6 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		//compute initial explanations for each unsatisfiable class
 		logger.info("Computing initial explanations...");
 		startTime = System.currentTimeMillis();
-		Map<OWLEntity, Set<Set<OWLAxiom>>> entity2Explanations = new HashMap<OWLEntity, Set<Set<OWLAxiom>>>();
 		entity2Explanations.putAll(getInitialExplanations(unsatClasses));
 		entity2Explanations.putAll(getInitialExplanations(unsatObjectProperties));
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
@@ -267,11 +280,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			}
 			//we remove the most frequent axiom from the ontology
 			OWLAxiom toRemove = sortedEntries.get(0).getKey();
-			logger.info("Removing axiom " + toRemove + ".");
-			manager.removeAxiom(incoherentOntology, toRemove);
-			manager.applyChange(new RemoveAxiom(incoherentOntology, toRemove));
-			removeFromExplanations(entity2Explanations, toRemove);
-			removeFromModules(toRemove);
+			removeAxiom(toRemove);
 			
 			//recompute the unsatisfiable classes
 			logger.info("Reclassifying...");
@@ -312,10 +321,20 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		return getOntologyWithAnnotations(incoherentOntology);
 	}
 	
+	private void removeAxiom(OWLAxiom axiom){
+		logger.info("Removing axiom " + axiom + ".");
+		manager.removeAxiom(incoherentOntology, axiom);
+		manager.addAxiom(diffOntology, axiom);
+		manager.applyChange(new RemoveAxiom(incoherentOntology, axiom));
+		removeFromExplanations(entity2Explanations, axiom);
+		removeFromModules(axiom);
+	}
+	
 	private void save(String fileName){
 		OWLOntology toSave = getOntologyWithAnnotations(incoherentOntology);
 		try {
 			toSave.getOWLOntologyManager().saveOntology(incoherentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(fileName)));
+			toSave.getOWLOntologyManager().saveOntology(diffOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/diff.owl")));
 		} catch (OWLOntologyStorageException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
