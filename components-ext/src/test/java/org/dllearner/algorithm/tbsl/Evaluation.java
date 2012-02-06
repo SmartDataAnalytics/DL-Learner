@@ -203,7 +203,7 @@ public class Evaluation{
 		String question;
 		Object answer;
 		for(Entry<Integer, String> entry : id2Query.entrySet()){
-			if(testID != -1 && entry.getKey() != testID)continue;
+			if(testID != -1 && entry.getKey() != testID || (exclusions.contains(entry.getKey())))continue;
 			questionId = entry.getKey();
 			question = entry.getValue();
 			try {
@@ -484,8 +484,9 @@ public class Evaluation{
 				logger.error("Template generation failed");
 				errorCode = "NT";
 				latex.addSummaryTableEntry(questionId, extractSentence(question), precision, recall, errorCode);
-			} catch(Exception e){
+			} catch(Exception e){cnt++;
 				e.printStackTrace();
+				errorCode = "ERR";
 				logger.error("ERROR");
 				latex.addSummaryTableEntry(questionId, extractSentence(question), precision, recall, errorCode);
 			}
