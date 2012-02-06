@@ -25,8 +25,8 @@ import org.xml.sax.SAXException;
 
 public class GoldTagger {
 
-	static String GOLD = "src/main/resources/tbsl/evaluation/dbpedia-train.xml";
-	static String OUT  = "target/dbpedia-train-tagged.xml";
+	static String GOLD = "src/main/resources/tbsl/evaluation/qald2-dbpedia-train.xml";
+	static String OUT  = "target/qald2-dbpedia-train-tagged.xml";
 	
 	public static void main(String[] args) {
 						

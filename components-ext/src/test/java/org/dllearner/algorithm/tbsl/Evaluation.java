@@ -64,7 +64,8 @@ import com.ibm.icu.util.Calendar;
 
 public class Evaluation{
 	
-	List<Integer> yagoExclusions = Arrays.asList(new Integer[]{1,	3,	6,	11,	15,	22,	23,	46});
+//	List<Integer> yagoExclusions = Arrays.asList(new Integer[]{1,	3,	6,	11,	15,	22,	23,	46});
+	List<Integer> exclusions = Arrays.asList(new Integer[]{1,5,8,9,16,28,30,32,38,51,52,53,74,86,94,95,96,97,98,99,100});
 	Map<Integer, String> evalCodes = new HashMap<Integer, String>();
 	
 	private static Logger logger = Logger.getLogger(Evaluation.class);
@@ -97,8 +98,10 @@ public class Evaluation{
 		prefixMap = new HashMap<String, String>();
 		prefixMap.put("rdf", RDF.getURI());
 		prefixMap.put("rdfs", RDFS.getURI());
-		prefixMap.put("onto", "http://dbpedia.org/ontology/");
-		prefixMap.put("prop", "http://dbpedia.org/property/");
+//		prefixMap.put("onto", "http://dbpedia.org/ontology/");
+//		prefixMap.put("prop", "http://dbpedia.org/property/");
+		prefixMap.put("dbo", "http://dbpedia.org/ontology/");
+		prefixMap.put("dbp", "http://dbpedia.org/property/");
 		prefixMap.put("res", "http://dbpedia.org/resource/");
 		prefixMap.put("foaf", FOAF.getURI());
 		prefixMap.put("yago", "http://dbpedia.org/class/yago/");
@@ -323,7 +326,7 @@ public class Evaluation{
 		int i = 0;
 		int cnt = 0;
 		for(Entry<Integer, String> entry : id2Question.entrySet()){//if(entry.getKey()==50)continue;
-			if((testID != -1 && entry.getKey() != testID) || (yagoExclusions.contains(entry.getKey())))continue;
+			if((testID != -1 && entry.getKey() != testID) || (exclusions.contains(entry.getKey()))) continue;
 			try {
 				questionId = entry.getKey();
 				question = entry.getValue();
