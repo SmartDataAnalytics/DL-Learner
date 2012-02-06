@@ -81,6 +81,7 @@ public class GlobalEnrichment {
 	private static int queryChunkSize = 1000;
 	private static int maxExecutionTimeInSeconds = 10;
 	private static boolean useInference = true;
+	private static boolean omitExistingAxioms = false;
 	
 	// directory for generated schemata
 	private static String baseDir = "log/lod-enriched/";
@@ -88,7 +89,7 @@ public class GlobalEnrichment {
 	
 	//parameters for thread pool
 	//Parallel running Threads(Executor) on System
-	private static int corePoolSize = 5;
+	private static int corePoolSize = 1;
 	//Maximum Threads allowed in Pool
 	private static int maximumPoolSize = 20;
 	//Keep alive time for waiting threads for jobs(Runnable)
@@ -189,7 +190,8 @@ public class GlobalEnrichment {
 					File log = new File(baseDir + File.separator + "failed" + File.separator + name + ".log");
 					
 					System.out.println("Enriching " + name + " using " + se.getURL());
-					Enrichment e = new Enrichment(se, null, threshold, nrOfAxiomsToLearn, useInference, false, queryChunkSize, maxExecutionTimeInSeconds);
+					Enrichment e = new Enrichment(se, null, threshold, nrOfAxiomsToLearn, useInference, 
+							false, queryChunkSize, maxExecutionTimeInSeconds, omitExistingAxioms);
 					
 					e.maxEntitiesPerType = 3; // hack for faster testing of endpoints
 					
