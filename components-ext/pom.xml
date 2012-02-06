@@ -57,7 +57,6 @@
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-core</artifactId>
-            <version>1.4.1</version>
         </dependency>
 
         <!--BEGIN Logging Dependencies-->
@@ -66,16 +65,20 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.8</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
         </dependency>
 
         <!--This is the bridge that ties calls to the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
-        <dependency>
+        <!-- dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.11</version>
             <scope>runtime</scope>
-        </dependency>
+        </dependency-->
 
         <!-- This is the concrete implementation of the log4j framework - it is a runtime dependency that needs to be used with the slf4j-log4j12 dependency -->
         <dependency>
@@ -83,12 +86,12 @@
             <artifactId>log4j</artifactId>
         </dependency>
 
-        <dependency>
+        <!-- dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>1.5.11</version>
             <scope>runtime</scope>
-        </dependency>
+        </dependency-->
         <!--END Logging Dependencies-->
 
 
