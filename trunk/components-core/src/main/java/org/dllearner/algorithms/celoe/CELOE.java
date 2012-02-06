@@ -32,6 +32,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
@@ -45,10 +46,12 @@ import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -1036,5 +1039,57 @@ public class CELOE extends AbstractCELA {
 			int maxExecutionTimeInSecondsAfterImprovement) {
 		this.maxExecutionTimeInSecondsAfterImprovement = maxExecutionTimeInSecondsAfterImprovement;
 	}	
+	
+	public boolean isSingleSuggestionMode() {
+		return singleSuggestionMode;
+	}
+
+	public void setSingleSuggestionMode(boolean singleSuggestionMode) {
+		this.singleSuggestionMode = singleSuggestionMode;
+	}
+
+	public int getMaxClassExpressionTests() {
+		return maxClassExpressionTests;
+	}
+
+	public void setMaxClassExpressionTests(int maxClassExpressionTests) {
+		this.maxClassExpressionTests = maxClassExpressionTests;
+	}
+
+	public int getMaxClassExpressionTestsAfterImprovement() {
+		return maxClassExpressionTestsAfterImprovement;
+	}
+
+	public void setMaxClassExpressionTestsAfterImprovement(
+			int maxClassExpressionTestsAfterImprovement) {
+		this.maxClassExpressionTestsAfterImprovement = maxClassExpressionTestsAfterImprovement;
+	}
+
+	public double getMaxDepth() {
+		return maxDepth;
+	}
+
+	public void setMaxDepth(double maxDepth) {
+		this.maxDepth = maxDepth;
+	}
+
+	public static void main(String[] args) throws Exception{
+		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
+		ks.init();
+		
+		AbstractReasonerComponent rc = new FastInstanceChecker(ks);
+		rc.init();
+		
+		ClassLearningProblem lp = new ClassLearningProblem(rc);
+		lp.setClassToDescribe(new NamedClass("http://example.com/father#father"));
+		lp.init();
+		
+		CELOE alg = new CELOE(lp, rc);
+		alg.setMaxExecutionTimeInSeconds(10);
+		alg.init();
+		
+		alg.start();
+		
+	}
 	
 }
