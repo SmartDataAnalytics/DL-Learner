@@ -129,7 +129,9 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		//compute the unsatisfiable object properties and their corresponding modules
 		unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
 		logger.info("Found unsatisfiable object properties: " + unsatObjectProperties.size());
-		entity2ModuleMap.putAll(extractModules(unsatObjectProperties));
+		if(computeParallel){
+			entity2ModuleMap.putAll(extractModules(unsatObjectProperties));
+		}
 		
 		//start main process, either preferring root classes or not
 		if(preferRoots){
@@ -240,9 +242,14 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			
 			System.gc();
 		}
+		entity2Explanations.clear();
+		entity2ModuleMap.clear();
+		
 		if(!computeParallel){
 			unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
 			logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
+			
+			entity2ModuleMap.putAll(extractModules(unsatObjectProperties));
 			while(!unsatObjectProperties.isEmpty()){
 				//get frequency for each axiom
 				Map<OWLAxiom, Integer> axiom2CountMap = getAxiomFrequency(entity2Explanations);
