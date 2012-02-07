@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,6 +31,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
@@ -65,7 +67,13 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.reasoner.ClassExpressionNotInProfileException;
+import org.semanticweb.owlapi.reasoner.FreshEntitiesException;
+import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 import org.semanticweb.owlapi.reasoner.InferenceType;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
+import org.semanticweb.owlapi.reasoner.TimeOutException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -109,11 +117,18 @@ public class SPARQLSampleDebugging {
 	
 	private OWLDataFactory factory = new OWLDataFactoryImpl();
 	
+	private OWLOntology dbpediaOntology;
+	private OWLReasoner dbpediaReasoner;
+	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+	
 	static {PelletExplanation.setup();}
 	
 	public SPARQLSampleDebugging(SparqlEndpoint endpoint) {
 		this.endpoint = endpoint;
 		initDBConnection();
+		dbpediaOntology = loadDBpediaOntology();
+		dbpediaReasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbpediaOntology);
+		dbpediaReasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 	}
 	
 	private void initDBConnection() {
@@ -302,6 +317,30 @@ public class SPARQLSampleDebugging {
 		return ontology;
 	}
 	
+	private OWLOntology loadDBpediaOntology() {
+		long startTime = System.currentTimeMillis();
+		logger.info("Loading DBpedia reference ontology...");
+		OWLOntology ontology = null;
+		try {
+			URL dbpediaURL = new URL("http://downloads.dbpedia.org/3.7/dbpedia_3.7.owl.bz2");
+			InputStream is = dbpediaURL.openStream();
+			is = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
+			ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(is);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (CompressorException e) {
+			e.printStackTrace();
+		}
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+		return ontology;
+	}
+	
+	
+	
 	private OWLOntology convert(Model model) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		model.write(baos, "N-TRIPLE");
@@ -470,16 +509,13 @@ public class SPARQLSampleDebugging {
 				explanations.addAll(computeInconsistencyExplanationsByIrreflexivityPattern(reference, model));
 				explanations.addAll(computeInconsistencyExplanationsByFunctionalityPattern(reference, model));
 				logger.info("Found " + explanations.size() + " explanations.");
-				for(Set<OWLAxiom> exp : explanations){
-					logger.info(exp + "\n");
-				}
 				Map<AxiomType, Integer> axiomType2CountMap = new HashMap<AxiomType, Integer>();
 				ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
 				try {
 					FileWriter out = new FileWriter( "log/justifications.txt" );
 					renderer.startRendering(out );
 					for(Set<OWLAxiom> explanation : explanations){
-						logger.info(explanation);
+						logger.info(explanation + "\n");
 						out.flush();
 						try {
 							renderer.render( Collections.singleton(explanation) );
@@ -700,6 +736,42 @@ public class SPARQLSampleDebugging {
 		}
 //		properties.retainAll(data.getObjectPropertiesInSignature());
 		return properties;
+	}
+	
+	private boolean isLearnedAxiom(OWLAxiom axiom){
+		return !dbpediaReasoner.isEntailed(axiom);
+	}
+	
+	private boolean containsUnsatisfiableObjectProperty(Set<OWLAxiom> justification){
+		boolean value = false;
+		
+		OWLReasoner reasoner = null;
+		try {
+			OWLOntology ontology = manager.createOntology(justification);
+			manager.removeAxioms(ontology, ontology.getABoxAxioms(true));
+			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
+			for(OWLObjectProperty p : ontology.getObjectPropertiesInSignature()){
+				boolean satisfiable = reasoner.isSatisfiable(factory.getOWLObjectExactCardinality(1, p));
+				if(!satisfiable){
+					value = true;
+					break;
+				}
+			}
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		} catch (ClassExpressionNotInProfileException e) {
+			e.printStackTrace();
+		} catch (FreshEntitiesException e) {
+			e.printStackTrace();
+		} catch (InconsistentOntologyException e) {
+			e.printStackTrace();
+		} catch (ReasonerInterruptedException e) {
+			e.printStackTrace();
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
+		reasoner.dispose();
+		return value;
 	}
 	
 	public void removeAxiomsWithNamespace(Set<String> namespaces){
