@@ -80,6 +80,9 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	private Set<OWLTransitiveObjectPropertyAxiom> removedTransitiveAxioms;
 	private Set<OWLObjectProperty> unsatObjectProperties;
 	
+	//whether to debug classes and properties in parallel
+	private boolean computeParallel = false;
+	
 	public JustificationBasedCoherentOntologyExtractor() {
 		try {
 			md5 = MessageDigest.getInstance("MD5");
@@ -101,7 +104,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		this.incoherentOntology = getOntologyWithoutAnnotations(ontology);
 		
 		File diffFile = new File(new File(ontology.getOWLOntologyManager().getOntologyDocumentIRI(ontology).toURI()).getParent() + "/" + DIFF_ONTOLOGY_NAME);
-		try {System.out.println(diffFile);
+		try {
 			if(diffFile.exists()){
 				diffOntology = manager.loadOntologyFromOntologyDocument(diffFile);
 			} else {
@@ -175,7 +178,9 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		logger.info("Computing initial explanations...");
 		startTime = System.currentTimeMillis();
 		entity2Explanations.putAll(getInitialExplanations(unsatClasses));
-		entity2Explanations.putAll(getInitialExplanations(unsatObjectProperties));
+		if(computeParallel){
+			entity2Explanations.putAll(getInitialExplanations(unsatObjectProperties));
+		}
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		
 		while(!unsatClasses.isEmpty()){
@@ -211,8 +216,10 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			logger.info("Remaining unsatisfiable classes: " + (rootCnt + derivedCnt) + "(" + rootCnt + " roots).");
 			
 			//recompute unsatisfiable object properties
-			unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
-			logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
+			if(computeParallel){
+				unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
+				logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
+			}
 			
 			//save
 			if(cnt - (rootCnt+derivedCnt) >= 1 || (unsatPropCnt - unsatObjectProperties.size()) >= 1){
@@ -226,11 +233,52 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			logger.info("Recomputing explanations...");
 			startTime = System.currentTimeMillis();
 			refillExplanations(unsatClasses, entity2Explanations);
-			refillExplanations(unsatObjectProperties, entity2Explanations);
+			if(computeParallel){
+				refillExplanations(unsatObjectProperties, entity2Explanations);
+			}
 			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 			
 			System.gc();
 		}
+		if(!computeParallel){
+			unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
+			logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
+			while(!unsatObjectProperties.isEmpty()){
+				//get frequency for each axiom
+				Map<OWLAxiom, Integer> axiom2CountMap = getAxiomFrequency(entity2Explanations);
+				
+				//get a sorted list of entries with the highest axiom count first
+				List<Entry<OWLAxiom, Integer>> sortedEntries = MapUtils.sortByValues(axiom2CountMap);
+				//we remove the most frequent axiom from the ontology
+				OWLAxiom toRemove = sortedEntries.get(0).getKey();
+				removeAxiom(toRemove);
+				
+				//recompute the unsatisfiable classes
+				logger.info("Reclassifying...");
+				startTime = System.currentTimeMillis();
+				reasoner.classify();
+				logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+				
+				//recompute unsatisfiable object properties
+				unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
+				logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
+				
+				//save
+				if((unsatPropCnt - unsatObjectProperties.size()) >= 1){
+					save("log/dbpedia_" + cnt + "cls" + unsatPropCnt + "prop.owl");
+					unsatPropCnt = unsatObjectProperties.size();
+				}
+				
+				//recompute explanations if necessary
+				logger.info("Recomputing explanations...");
+				startTime = System.currentTimeMillis();
+				refillExplanations(unsatObjectProperties, entity2Explanations);
+				logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+				
+				System.gc();
+			}
+		}
+		
 		try {
 			incoherentOntology.getOWLOntologyManager().saveOntology(getOntologyWithAnnotations(incoherentOntology), new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/dbpedia_coherent.owl")));
 		} catch (OWLOntologyStorageException e) {
@@ -238,7 +286,6 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		System.out.println(incoherentOntology.getLogicalAxiomCount());
 		
 		return getOntologyWithAnnotations(incoherentOntology);
 	}
@@ -584,17 +631,22 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		this.numberOfJustifications = numberOfJustifications;
 	}
 	
+	public void setComputeParallel(boolean computeParallel) {
+		this.computeParallel = computeParallel;
+	}
+	
 	public static void main(String[] args) throws Exception{
 		Logger.getLogger(RBox.class.getName()).setLevel(Level.OFF);
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		
-		if(args.length != 3){
-			System.out.println("USAGE: JustificationBasedCoherentOntologyExtractor <incoherent.owl> <numberOfJustifcations> <preferRootClasses(true|false)>");
+		if(args.length != 4){
+			System.out.println("USAGE: JustificationBasedCoherentOntologyExtractor <incoherent.owl> <numberOfJustifcations> <preferRootClasses(true|false)> <computeParallel(true|false)>");
 			System.exit(0);
 		}
 		String filename = args[0];
 		int numberOfJustifications = Integer.parseInt(args[1]);
 		boolean preferRoots = Boolean.valueOf(args[2]);
+		boolean computeParallel = Boolean.valueOf(args[3]);
 		
 		System.out.println("Loading ontology...");
 		File file = new File(filename);
@@ -620,6 +672,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		
 		JustificationBasedCoherentOntologyExtractor extractor = new JustificationBasedCoherentOntologyExtractor();
 		extractor.setNumberOfJustifications(numberOfJustifications);
+		extractor.setComputeParallel(computeParallel);
 		OWLOntology coherentOntology = extractor.getCoherentOntology(schema, preferRoots);
 		System.out.println("Coherent ontology contains " + coherentOntology.getLogicalAxiomCount() + " logical axioms.");
 	}
