@@ -4,6 +4,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
@@ -20,6 +24,8 @@ import java.util.logging.Logger;
 
 import openlink.util.MD5;
 
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.mindswap.pellet.RBox;
 import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner;
@@ -39,6 +45,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.owllink.builtin.requests.LoadOntologies;
 import org.semanticweb.owlapi.reasoner.IllegalConfigurationException;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
@@ -83,12 +90,15 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	//whether to debug classes and properties in parallel
 	private boolean computeParallel = false;
 	
+	private OWLOntology dbpediaOntology;
+	
 	public JustificationBasedCoherentOntologyExtractor() {
 		try {
 			md5 = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
+		dbpediaOntology = loadDBpediaOntology();
 	}
 	
 	static {PelletExplanation.setup();}
@@ -185,18 +195,13 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		}
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		
-		while(!unsatClasses.isEmpty()){
-			//get frequency for each axiom
-			Map<OWLAxiom, Integer> axiom2CountMap = getAxiomFrequency(entity2Explanations);
-			
-			//get a sorted list of entries with the highest axiom count first
-			List<Entry<OWLAxiom, Integer>> sortedEntries = MapUtils.sortByValues(axiom2CountMap);
-			for(Entry<OWLAxiom, Integer> entry : sortedEntries){
-//				System.out.println(entry.getKey() + ":" + entry.getValue());
-			}
-			//we remove the most frequent axiom from the ontology
-			OWLAxiom toRemove = sortedEntries.get(0).getKey();
-			removeAxiom(toRemove);
+		if(computeParallel){
+			cnt += unsatPropCnt;
+		}
+		
+		while(cnt >= 0){
+			//we remove the most appropriate axiom from the ontology
+			removeAppropriateAxiom();
 			
 			//recompute the unsatisfiable classes
 			logger.info("Reclassifying...");
@@ -229,6 +234,9 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 				save("log/dbpedia_" + cnt + "cls" + unsatPropCnt + "prop.owl");
 				cnt = rootCnt + derivedCnt;
 				unsatPropCnt = unsatObjectProperties.size();
+				if(computeParallel){
+					cnt += unsatPropCnt;
+				}
 			}
 			
 			//recompute explanations if necessary
@@ -251,14 +259,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			
 			entity2ModuleMap.putAll(extractModules(unsatObjectProperties));
 			while(!unsatObjectProperties.isEmpty()){
-				//get frequency for each axiom
-				Map<OWLAxiom, Integer> axiom2CountMap = getAxiomFrequency(entity2Explanations);
-				
-				//get a sorted list of entries with the highest axiom count first
-				List<Entry<OWLAxiom, Integer>> sortedEntries = MapUtils.sortByValues(axiom2CountMap);
-				//we remove the most frequent axiom from the ontology
-				OWLAxiom toRemove = sortedEntries.get(0).getKey();
-				removeAxiom(toRemove);
+				//we remove the most appropriate axiom from the ontology
+				removeAppropriateAxiom();
 				
 				//recompute the unsatisfiable classes
 				logger.info("Reclassifying...");
@@ -324,17 +326,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		
 		while(!unsatClasses.isEmpty()){
-			//get frequency for each axiom
-			Map<OWLAxiom, Integer> axiom2CountMap = getAxiomFrequency(entity2Explanations);
-			
-			//get a sorted list of entries with the highest axiom count first
-			List<Entry<OWLAxiom, Integer>> sortedEntries = MapUtils.sortByValues(axiom2CountMap);
-			for(Entry<OWLAxiom, Integer> entry : sortedEntries){
-//				System.out.println(entry.getKey() + ":" + entry.getValue());
-			}
-			//we remove the most frequent axiom from the ontology
-			OWLAxiom toRemove = sortedEntries.get(0).getKey();
-			removeAxiom(toRemove);
+			//we remove the most appropriate axiom from the ontology
+			removeAppropriateAxiom();
 			
 			//recompute the unsatisfiable classes
 			logger.info("Reclassifying...");
@@ -375,13 +368,24 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		return getOntologyWithAnnotations(incoherentOntology);
 	}
 	
-	private void removeAxiom(OWLAxiom axiom){
-		logger.info("Removing axiom " + axiom + ".");
-		manager.removeAxiom(incoherentOntology, axiom);
-		manager.addAxiom(diffOntology, axiom);
-		manager.applyChange(new RemoveAxiom(incoherentOntology, axiom));
-		removeFromExplanations(entity2Explanations, axiom);
-		removeFromModules(axiom);
+	private void removeAppropriateAxiom(){
+		//get frequency for each axiom
+		Map<OWLAxiom, Integer> axiom2CountMap = getAxiomFrequency(entity2Explanations);
+		//get a sorted list of entries with the highest axiom count first
+		List<Entry<OWLAxiom, Integer>> sortedEntries = MapUtils.sortByValues(axiom2CountMap);
+		//we remove the most frequent axiom from the ontology which is not contained in the original DBpedia ontology
+		for(Entry<OWLAxiom, Integer> e : sortedEntries){
+			OWLAxiom axiom = e.getKey();
+			if(!dbpediaOntology.containsAxiomIgnoreAnnotations(axiom)){
+				logger.info("Removing axiom " + axiom + ".");
+				manager.removeAxiom(incoherentOntology, axiom);
+				manager.addAxiom(diffOntology, axiom);
+				manager.applyChange(new RemoveAxiom(incoherentOntology, axiom));
+				removeFromExplanations(entity2Explanations, axiom);
+				removeFromModules(axiom);
+				return;
+			}
+		}
 	}
 	
 	private void save(String fileName){
@@ -601,6 +605,28 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			e.printStackTrace();
 		}
 		return module;
+	}
+	
+	private OWLOntology loadDBpediaOntology() {
+		long startTime = System.currentTimeMillis();
+		logger.info("Loading DBpedia reference ontology...");
+		OWLOntology ontology = null;
+		try {
+			URL dbpediaURL = new URL("http://downloads.dbpedia.org/3.7/dbpedia_3.7.owl.bz2");
+			InputStream is = dbpediaURL.openStream();
+			is = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
+			ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(is);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (CompressorException e) {
+			e.printStackTrace();
+		}
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+		return ontology;
 	}
 	
 //	private Map<OWLClass, OWLOntology> extractModules(Set<OWLClass> classes){
