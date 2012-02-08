@@ -115,7 +115,9 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		this.ontology = ontology;
 		this.incoherentOntology = getOntologyWithoutAnnotations(ontology);
 		
-		File diffFile = new File(new File(ontology.getOWLOntologyManager().getOntologyDocumentIRI(ontology).toURI()).getParent() + "/" + DIFF_ONTOLOGY_NAME);
+		new File("log").mkdir();
+		
+		File diffFile = new File("log/" + DIFF_ONTOLOGY_NAME);
 		try {
 			if(diffFile.exists()){
 				diffOntology = manager.loadOntologyFromOntologyDocument(diffFile);
