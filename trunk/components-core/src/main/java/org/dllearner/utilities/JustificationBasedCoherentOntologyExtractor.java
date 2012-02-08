@@ -1,7 +1,9 @@
 package org.dllearner.utilities;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -682,8 +684,11 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		boolean computeParallel = Boolean.valueOf(args[3]);
 		
 		System.out.println("Loading ontology...");
-		File file = new File(filename);
-		OWLOntology schema = man.loadOntologyFromOntologyDocument(file);
+		InputStream is = new BufferedInputStream(new FileInputStream(filename));
+		if(args[0].endsWith("bz2")){
+			is = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
+		}
+		OWLOntology schema = man.loadOntologyFromOntologyDocument(is);
 		man.removeAxioms(schema, schema.getAxioms(AxiomType.TRANSITIVE_OBJECT_PROPERTY));
 		
 //		OWLOntology cleaned = man.createOntology(IRI.create("http://dbpedia_cleaned.owl"));
