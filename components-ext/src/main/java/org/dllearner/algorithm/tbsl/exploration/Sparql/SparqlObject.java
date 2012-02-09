@@ -58,7 +58,7 @@ public class SparqlObject {
 	static int explorationdepthwordnet=2;
 	static int iterationdepth =0;
 	static int numberofanswers=1;
-	static double LevenstheinMin = 0.9;
+	static double LevenstheinMin = 0.8;
 	static WordNet wordnet;
 	BasicTemplator btemplator;
 	Templator templator;
@@ -71,7 +71,8 @@ public class SparqlObject {
 	//change here and in getRessourcePropertys
 	//String Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
 	String Prefix="http://dbpedia.org/sparql";
-	//String Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8892/sparql";
+	//String Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
+	//String Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8890/sparql";
 		
 	
 	//Konstruktor
@@ -650,11 +651,20 @@ public class SparqlObject {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
+	  	 System.out.println(property_to_compare_with + " : "+property_to_compare_with_uri +" : "+uri_isA_Resource);
 	  	if(fall.contains("WORDNET")) new_queries=doWordnet(query,property_to_compare_with,property_to_compare_with_uri,list_of_properties);
 		if(fall.contains("LEVENSTHEIN")) new_queries=doLevensthein(query,property_to_compare_with_uri,property_to_compare_with_uri,list_of_properties);
 	  	 
 	  	 
-		 
+	/*	BufferedReader in1 = new BufferedReader(new InputStreamReader(System.in));
+		String line;
+		
+		try {
+			line = in1.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		 return new_queries;
 		 
 	 }
@@ -703,6 +713,9 @@ public class SparqlObject {
 		 
 		 //System.out.println("URI from Resource "+ resource +": "+getUriFromIndex(resource.toLowerCase(),0));
 		 System.out.println("URI from Resource "+ resource +": "+queryObject.getHashValue(resource.toLowerCase()));
+		 HashMap<String, String> bla = queryObject.getHashMap();
+		 System.out.println("INhalt Hasmap QueryObject:");
+		 for (String z: bla.keySet()) System.out.println(z);
 		 
 		 //gets Propertys left or right from the resource!
 		 try {
@@ -756,7 +769,7 @@ public class SparqlObject {
 			 double nld=Levenshtein.nld(property_to_compare_with.toLowerCase(), key);
 			 
 			 //check if nld is greater than Levensthein
-		     if(nld>=LevenstheinMin){
+		     if(nld>=LevenstheinMin||key.contains(lemmatiser.stem(property_to_compare_with))||property_to_compare_with.contains(lemmatiser.stem(key))){
 				 //if its so, replace old uri with the new one
 				 String querynew=query;
 				 //String replacement = getUriFromIndex(property_to_compare_with.toLowerCase(),1);
@@ -913,18 +926,30 @@ JWNLException {
 	 ArrayList<String> semantics=new ArrayList<String>();
 	 ArrayList<String> tmp_semantics=new ArrayList<String>();
 	 ArrayList<String> result_SemanticsMatchProperties=new ArrayList<String>();
-	 semantics.add(property);
+	 if(property.contains("_")){
+		 String[] fix = property.split("_");
+		 //here add also lemmatiser
+		 for(String s: fix) semantics.add(s);
+	 }
+	 else semantics.add(property);
 	 System.out.println("Semantics: "+ semantics);
 	 
-	 //first check, if there is a singular form in the wordnet dictionary.. eg children -> child
-	 String _temp_=myindex.getWordnetHelp(property);
-	 if(_temp_==null){
-		 tmp_semantics=semantics;
-	 }
-	 else{
-		 semantics.clear();
-		 semantics.add(_temp_);
-		 tmp_semantics=semantics;
+	 for(String s: semantics){
+		 //first check, if there is a singular form in the wordnet dictionary.. eg children -> child
+		 //String _temp_=myindex.getWordnetHelp(property);
+		 String _temp_=myindex.getWordnetHelp(s);
+		 if(_temp_!=null){
+			 //tmp_semantics=semantics;
+			 tmp_semantics.add(_temp_);
+			 tmp_semantics.add(s);
+		 }
+		 else tmp_semantics.add(s);
+		 /*
+		 else{
+			 semantics.clear();
+			 semantics.add(_temp_);
+			 tmp_semantics=semantics;
+		 }*/
 	 }
 	 
 	 System.out.println("tmp_semantics: "+ tmp_semantics);
@@ -965,11 +990,12 @@ JWNLException {
 			    key=key.replace("@en","");
 			    
 			for(String b : semantics){
-				if(key.contains(b.toLowerCase())){
+				if(key.contains(b.toLowerCase())||key.contains(lemmatiser.stem(b.toLowerCase()))||b.toLowerCase().contains(lemmatiser.stem(key))){
 					if(!result_SemanticsMatchProperties.contains(key)){
 					 result_SemanticsMatchProperties.add(key);
 					 String query_tmp=query;
 					 //String replacement = getUriFromIndex(property_to_compare_with.toLowerCase(),1);
+					 System.out.println("URI of property: "+uri_of_property);
 					 String replacement = uri_of_property;
 					 if(!query_tmp.contains(replacement)){
 						 replacement=replacement.replace("ontology", "property");
@@ -1765,6 +1791,21 @@ JWNLException {
 					 	}
 					 else{
 						 result="NONE";
+						 String tmp11=originalString;
+						 String hotfix ="http://dbpedia.org/resource/"+tmp11;
+							if(tmp11.contains("_")){
+								String[] newarraytmp=tmp11.split("_");
+								String tmpneu="";
+								for(String s :newarraytmp){
+									tmpneu+= "_"+ Character.toUpperCase(s.charAt(0)) + s.substring(1);
+								}
+								tmpneu=tmpneu.replaceFirst("_", "");
+								hotfix ="http://dbpedia.org/resource/"+tmpneu;
+								hotfix=hotfix.replace("/__", "/");
+								System.out.println("Hotfix: "+hotfix);
+							}
+						result=hotfix;
+							
 					 }
 				 }
 				 catch(Exception e){
