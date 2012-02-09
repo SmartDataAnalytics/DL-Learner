@@ -20,7 +20,8 @@ public class GetRessourcePropertys {
 	
 	//String Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
 	String Prefix="http://dbpedia.org/sparql";
-	//String Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8892/sparql";
+	//String Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8890/sparql";
+	//String Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
 	
 	public HashMap<String,String> getPropertys(String element, String side, int timeToTimeoutOnServer) throws IOException{
 			

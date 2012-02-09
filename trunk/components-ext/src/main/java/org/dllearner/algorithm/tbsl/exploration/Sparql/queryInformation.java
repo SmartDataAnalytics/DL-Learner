@@ -39,6 +39,8 @@ public class queryInformation {
 	
 	public String getHashValue(String key) {
 		key=key.toLowerCase();
+		key=key.replace("  ", "");
+		key=key.replace("_", " ");
 		String result ="NONE";
 		try{
 			result=this.hashMap.get(key);
@@ -51,6 +53,9 @@ public class queryInformation {
 	}
 	
 	public void setHashValue(String key, String value) {
+		key=key.replace("  ", "");
+		key=key.replace("_", " ");
+		value=value.replace("__", "");
 		this.hashMap.put(key.toLowerCase(), value);
 	}
 	

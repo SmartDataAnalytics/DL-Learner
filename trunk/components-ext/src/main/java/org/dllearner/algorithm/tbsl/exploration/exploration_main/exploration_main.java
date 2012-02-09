@@ -165,17 +165,17 @@ public class exploration_main {
 						//queryInformation tmpquery;
 						//only question, which are not yago files
 						if(s.isYago()==true)yago_querys=yago_querys+1;
-						if(s.isYago()==false){
+						//if(s.isYago()==false){
 							queryInformation tmpquery=sparql.create_Sparql_query(s);
 							if(!tmpquery.getResult().isEmpty()) {
 								list_of_resultstructs.add(sparql.create_Sparql_query(s));
 								anzahl_query_with_answers=anzahl_query_with_answers+1;
 							}
-						}
+						//}
 					}
 					
-				    /*
-				    //Print to Console
+				    
+				/*    //Print to Console
 					System.out.println("\n#############\n Result:");
 					for(queryInformation s : list_of_resultstructs){
 						System.out.println(s.getResult());
@@ -221,8 +221,14 @@ public class exploration_main {
 					queryInformation result = new queryInformation(line,"0","",false,false,false,"non",false);
 					result= sparql.create_Sparql_query(newQuery);
 					ArrayList<String> ergebnis = result.getResult();
+					//get eacht result only once!
+					Set<String> setString = new HashSet<String>();
 					for(String i: ergebnis){
-						System.out.println(i);
+						setString.add(i);
+						//System.out.println(i);
+					}
+					for(String z: setString){
+						System.out.println(z);
 					}
 					long endTime= System.currentTimeMillis();
 					System.out.println("\n The complete answering of the Question took "+(endTime-startTime)+" ms");
@@ -311,7 +317,13 @@ public class exploration_main {
 				xmlDocument="<?xml version=\"1.0\" ?><dataset id=\""+s.getXMLtype()+"\">";
 			}
 			tmp="<question id=\""+s.getId()+"\"><string>"+s.getQuery()+"</string>\n<answers>";
-			for(String i : s.getResult()){
+			
+			//to get all answers only once!
+			Set<String> setString = new HashSet<String>();
+			for(String z: s.getResult()){
+				setString.add(z);
+			}
+			for(String i : setString){
 				String input="";
 				if(i.contains("http")) input="<uri>"+i+"</uri>\n";
 				else if (i.contains("true")||i.contains("false")) input="<boolean>"+i+"</boolean>\n";
