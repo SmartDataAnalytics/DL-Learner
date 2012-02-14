@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -193,7 +194,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 		
 		String boaPatternIndexUrl = options.fetch("solr.boa.properties.url");
 		String boaPatternIndexSearchField = options.fetch("solr.boa.properties.searchfield");
-		SolrSearch patternBasedPropertyIndex = new SolrSearch(boaPatternIndexUrl, boaPatternIndexSearchField, "nlr");
+		SolrSearch patternBasedPropertyIndex = new SolrSearch(boaPatternIndexUrl, boaPatternIndexSearchField, "nlr-no-var");
 		
 		//first BOA pattern then label based
 //		property_index = new HierarchicalSolrSearch(patternBasedPropertyIndex, labelBasedPropertyIndex);
@@ -641,18 +642,37 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	
 	private Set<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
+		logger.info("Generating SPARQL query candidates...");
+		
+		Map<Slot, Set<Allocation>> slot2Allocations2 = new TreeMap<Slot, Set<Allocation>>(new Comparator<Slot>() {
+
+			@Override
+			public int compare(Slot o1, Slot o2) {
+				if(o1.getSlotType() == o2.getSlotType()){
+					return o1.getToken().compareTo(o2.getToken());
+				} else {
+					return -1;
+				}
+			}
+		});
+		
 		
 		Map<Slot, Set<Allocation>> slot2Allocations = new HashMap<Slot, Set<Allocation>>();
 		
 		Set<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
 		
 		Set<Allocation> allocations;
+		
 		for(Template t : templates){
+			logger.info("Processing template:\n" + t.toString());
 			allocations = new TreeSet<Allocation>();
 			
 			for(Slot slot : t.getSlots()){
-				allocations = computeAllocations(slot, 50);
-				
+				allocations = slot2Allocations2.get(slot);
+				if(allocations == null){
+					allocations = computeAllocations(slot, 20);
+					slot2Allocations2.put(slot, allocations);
+				}
 				slot2Allocations.put(slot, allocations);
 				
 				//for tests add the property URI with http://dbpedia.org/property/ namespace
@@ -702,14 +722,14 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				queries.addAll(tmp);
 				tmp.clear();
 			}
-			
+		
 			for(Slot slot : sortedSlots){
-				if(!slot2Allocations.get(slot).isEmpty()){System.out.println(slot2Allocations.get(slot));
+				if(!slot2Allocations.get(slot).isEmpty()){
 					for(Allocation a : slot2Allocations.get(slot)){
 						for(WeightedQuery query : queries){
 								Query q = new Query(query.getQuery());
 								
-								boolean drop = false;
+								boolean drop = false;/*
 								if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
 									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
 										String objectVar = triple.getValue().getName();
@@ -779,7 +799,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 											}
 										}
 									}
-								}
+								}*/
 								
 								
 								if(!drop){
@@ -811,6 +831,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			}
 			template2Queries.put(t, qList);
 		}
+		logger.info("...done in ");
 		return allQueries;
 	}
 
@@ -859,7 +880,6 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 //				}
 //			}
 			
-			System.out.println(word + "->" + rs);
 			for(SolrQueryResultItem item : rs.getItems()){
 				double similarity = Similarity.getSimilarity(word, item.getLabel());
 				//get the labels of the redirects and compute the highest similarity
@@ -885,9 +905,11 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	}
 	
 	private Set<Allocation> computeAllocations(Slot slot, int limit){
+		logger.info("Computing allocations for " + slot);
 		SortedSet<Allocation> allocations = computeAllocations(slot);
 		
 		if(allocations.isEmpty()){
+			logger.info("...done.");
 			return allocations;
 		}
 		
@@ -906,7 +928,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 				}
 			}
 		});
-		
+		logger.info("...done.");
 		return new TreeSet<Allocation>(l.subList(0, Math.min(limit, allocations.size())));
 	}
 	
