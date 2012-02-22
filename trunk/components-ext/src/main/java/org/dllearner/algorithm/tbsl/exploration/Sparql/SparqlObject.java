@@ -2204,16 +2204,7 @@ JWNLException {
 	}
 	
 	private String createAnswer(String string){
-		
-		/*Pattern p = Pattern.compile (".*<td>(.*)</td>.*");
-	    Matcher m = p.matcher (string);
-	    String result="";
 
-	  	while (m.find()) {
-	  		if(m.group(1)!=null) 
-	  		result = result+" "+ m.group(1);
-	  	}
-	  		*/
 		Pattern p = Pattern.compile (".*\\<td\\>(.*)\\</td\\>.*");
 		string = string.replace("<table class=\"sparql\" border=\"1\">", "").replace("<tr>","").replace("</tr>", "").replace("</table>", "");
 	    Matcher m = p.matcher (string);
@@ -2235,18 +2226,7 @@ JWNLException {
 
 	}
 	private ArrayList<String> createAnswerArray(String string){
-		//<td>Klaus Wowereit</td>
-		
-		//get with regex all between <td> </td>
-		
-		/*Pattern p = Pattern.compile (".*<td>(.*)</td>.*");
-	    Matcher m = p.matcher (string);
-	    ArrayList<String> result=new ArrayList<String>();
 
-	  	while (m.find()) {
-	  		if(m.group(1)!=null) 
-	  		result.add(m.group(1));
-	  	}*/
 		Pattern p = Pattern.compile (".*\\<td\\>(.*)\\</td\\>.*");
 		string = string.replace("<table class=\"sparql\" border=\"1\">", "").replace("<tr>","").replace("</tr>", "").replace("</table>", "");
 	    Matcher m = p.matcher (string);
@@ -2309,13 +2289,7 @@ JWNLException {
 	    return query;
 	}
 	
-	
-	
-	
-	
 }
-
-
 
 /*
  * Backup original Iteration function
