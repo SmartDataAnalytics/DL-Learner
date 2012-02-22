@@ -172,6 +172,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		StructureBasedRootClassFinder rootFinder = new StructureBasedRootClassFinder(reasoner);
 		Set<OWLClass> unsatClasses = rootFinder.getRootUnsatisfiableClasses();
 		Set<OWLClass> derivedUnsatClasses = rootFinder.getDerivedUnsatisfiableClasses();
+		
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		int rootCnt = unsatClasses.size();
 		int derivedCnt = derivedUnsatClasses.size();
@@ -179,6 +180,10 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		int cnt = rootCnt + derivedCnt;
 		int unsatPropCnt = unsatObjectProperties.size();
 		logger.info("Detected " + cnt + " unsatisfiable classes, " + rootCnt + " of them as root.");
+		
+		if(unsatClasses.isEmpty()){
+			unsatClasses = derivedUnsatClasses;
+		}
 		
 		//if the ontology is not incoherent we return it here
 		if(unsatClasses.isEmpty()){
@@ -225,6 +230,10 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 			
 			logger.info("Remaining unsatisfiable classes: " + (rootCnt + derivedCnt) + "(" + rootCnt + " roots).");
+			
+			if(unsatClasses.isEmpty()){
+				unsatClasses = derivedUnsatClasses;
+			}
 			
 			//recompute unsatisfiable object properties
 			if(computeParallel){
