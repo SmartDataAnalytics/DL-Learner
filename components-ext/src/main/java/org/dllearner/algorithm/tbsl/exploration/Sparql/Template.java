@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Template {
 
 	private ArrayList<ArrayList<String>> condition = new ArrayList<ArrayList<String>>();
-	private ArrayList<ArrayList<Hypothesis>> hypotesen = new ArrayList<ArrayList<Hypothesis>>();
+	private ArrayList<ArrayList<Hypothesis>> hypothesen = new ArrayList<ArrayList<Hypothesis>>();
 	private String selectTerm;
 	private String having;
 	private String filter;
@@ -59,22 +59,30 @@ public class Template {
 	public void setCondition(ArrayList<ArrayList<String>> condition) {
 		this.condition = condition;
 	}
-	public ArrayList<ArrayList<Hypothesis>> getHypotesen() {
-		return hypotesen;
+	public ArrayList<ArrayList<Hypothesis>> getHypothesen() {
+		return hypothesen;
 	}
-	public void setHypotesen(ArrayList<ArrayList<Hypothesis>> hypotesen) {
-		this.hypotesen = hypotesen;
+	public void setHypothesen(ArrayList<ArrayList<Hypothesis>> hypotesen) {
+		this.hypothesen = hypotesen;
 	}
 	
 	public void addHypothese(ArrayList<Hypothesis> ht){
-		this.hypotesen.add(ht);
+		this.hypothesen.add(ht);
 	}
 	
 	
 	public void printAll(){
 		System.out.println("###### Template ######");
 		System.out.println("condition: "+condition);
-		System.out.println("hypotesen: "+hypotesen);
+		//System.out.println("hypotesen: "+hypothesen);
+		int anzahl = 1;
+		for(ArrayList<Hypothesis> x : hypothesen){
+			System.out.println("\nSet of Hypothesen"+anzahl+":");
+			for ( Hypothesis z : x){
+				z.printAll();
+			}
+		}
+		System.out.print("\n");
 		System.out.println("selectTerm: "+selectTerm);
 		System.out.println("having: "+having);
 		System.out.println("filter: "+filter);

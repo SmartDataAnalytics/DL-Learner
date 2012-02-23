@@ -16,6 +16,15 @@ public class testClass_new {
 		TemplateBuilder testobject = new TemplateBuilder();
 		String question = "Which books are written by Daniele Steel?";
 		testobject.createTemplates(question);
+		
+		question = "Give me all german femal chancelors";
+		testobject.createTemplates(question);
+		
+		question = "Who owns Aldi?";
+		testobject.createTemplates(question);
+		
+		question = "In which programming language is \"GIMP\" written?";
+		testobject.createTemplates(question);
 	}
 
 }
