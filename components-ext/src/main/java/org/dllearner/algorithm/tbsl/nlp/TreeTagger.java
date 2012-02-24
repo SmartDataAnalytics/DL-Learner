@@ -1,6 +1,7 @@
 package org.dllearner.algorithm.tbsl.nlp;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
 
@@ -14,33 +15,35 @@ public class TreeTagger implements PartOfSpeechTagger {
 
 	TreeTaggerWrapper<String> tt;
 	
+	private String tagging;
+	
 	public TreeTagger() throws IOException {
-		System.setProperty("treetagger.home","/home/christina/Software/TreeTagger");
+		System.setProperty("treetagger.home","/home/lorenz/Downloads/TreeTagger");
 		tt = new TreeTaggerWrapper<String>();
-		tt.setModel("/home/christina/Software/TreeTagger/lib/english.par:iso8859-1");
+		tt.setModel(this.getClass().getClassLoader().getResource("tbsl/models/treetagger/english.par").getPath());
 	}
 	
 	public String tag(String s) {
-		
+		tagging = "";
 		List<String> input = Arrays.asList(s.split(" "));		
 		try {
 		     tt.setHandler(new TokenHandler<String>() {
 		         public void token(String token, String pos, String lemma) {
-		             System.out.println(token+"/"+pos+"/"+lemma);
+		             tagging += token+"/"+pos + " ";
 		         }
 		     });
-		     System.out.println("Tagged with TreeTagger:\n");
 		     tt.process(input);
-		     System.out.println(tt.getStatus());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (TreeTaggerException e) {
 			e.printStackTrace();
 		}
-		 finally {
-		     tt.destroy();
-		}
-		return "";
+		
+		return tagging.trim();
+	}
+	
+	public void close(){
+		tt.destroy();
 	}
 	
 	@Override
@@ -56,7 +59,6 @@ public class TreeTagger implements PartOfSpeechTagger {
 
 	@Override
 	public List<String> tagTopK(String sentence) {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.singletonList(tag(sentence));
 	}
 }
