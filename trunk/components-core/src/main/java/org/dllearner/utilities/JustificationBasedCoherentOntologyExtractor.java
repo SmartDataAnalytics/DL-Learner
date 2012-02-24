@@ -94,6 +94,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	
 	private OWLOntology dbpediaOntology;
 	
+	private String fileName;
+	
 	public JustificationBasedCoherentOntologyExtractor() {
 		try {
 			md5 = MessageDigest.getInstance("MD5");
@@ -114,6 +116,14 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	public OWLOntology getCoherentOntology(OWLOntology ontology, boolean preferRoots){
 		this.ontology = ontology;
 		this.incoherentOntology = getOntologyWithoutAnnotations(ontology);
+		
+		IRI iri = ontology.getOWLOntologyManager().getOntologyDocumentIRI(ontology);
+		fileName = "dbpedia";
+		if(iri != null){
+			fileName = iri.toString().substring( iri.toString().lastIndexOf('/')+1, iri.toString().length() );
+		} else {
+			
+		}
 		
 		new File("log").mkdir();
 		
@@ -176,6 +186,12 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		int rootCnt = unsatClasses.size();
 		int derivedCnt = derivedUnsatClasses.size();
+		
+		//if no roots are found we use all unsat classes
+				if(rootCnt == 0){
+					unsatClasses = derivedUnsatClasses;
+				}
+				
 //		Set<OWLClass> unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 		int cnt = rootCnt + derivedCnt;
 		int unsatPropCnt = unsatObjectProperties.size();
@@ -229,6 +245,11 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			derivedCnt = derivedUnsatClasses.size();
 			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 			
+			//if no roots are found we use all unsat classes
+			if(rootCnt == 0){
+				unsatClasses = derivedUnsatClasses;
+			}
+			
 			logger.info("Remaining unsatisfiable classes: " + (rootCnt + derivedCnt) + "(" + rootCnt + " roots).");
 			
 			if(unsatClasses.isEmpty()){
@@ -244,7 +265,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			//save
 			if(cnt - (rootCnt+derivedCnt) >= 1 || (unsatPropCnt - unsatObjectProperties.size()) >= 1){
 				cnt = rootCnt + derivedCnt;
-				save("log/dbpedia_" + cnt + "cls" + unsatPropCnt + "prop.owl");
+				save("log/" + fileName + "_" + cnt + "cls" + unsatPropCnt + "prop.owl");
 				cnt = rootCnt + derivedCnt;
 				unsatPropCnt = unsatObjectProperties.size();
 				if(computeParallel){
@@ -287,7 +308,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 				
 				//save
 				if((unsatPropCnt - unsatObjectProperties.size()) >= 1){
-					save("log/dbpedia_" + cnt + "cls" + unsatPropCnt + "prop.owl");
+					save("log/" + fileName + "_" + cnt + "cls" + unsatPropCnt + "prop.owl");
 					unsatPropCnt = unsatObjectProperties.size();
 				}
 				
@@ -338,7 +359,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		entity2Explanations.putAll(getInitialExplanations(unsatObjectProperties));
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		
-		while(!unsatClasses.isEmpty()){
+		while(!unsatClasses.isEmpty() && !unsatObjectProperties.isEmpty()){
 			//we remove the most appropriate axiom from the ontology
 			removeAppropriateAxiom();
 			
@@ -357,7 +378,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			//save
 			if(cnt - unsatClasses.size() >= 10){
 				cnt = unsatClasses.size();
-				save("log/dbpedia_" + cnt + ".owl");
+				save("log/" + fileName + "_" + cnt + "cls" + unsatObjectProperties.size() + "prop.owl");
 			}
 			
 			//recompute explanations if necessary
