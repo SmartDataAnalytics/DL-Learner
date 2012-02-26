@@ -94,7 +94,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	
 	private OWLOntology dbpediaOntology;
 	
-	private String fileName;
+	private String fileName = "dbpedia";
+	private String diffFileName = "diff.owl";
 	
 	public JustificationBasedCoherentOntologyExtractor() {
 		try {
@@ -116,14 +117,6 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	public OWLOntology getCoherentOntology(OWLOntology ontology, boolean preferRoots){
 		this.ontology = ontology;
 		this.incoherentOntology = getOntologyWithoutAnnotations(ontology);
-		
-		IRI iri = ontology.getOWLOntologyManager().getOntologyDocumentIRI(ontology);
-		fileName = "dbpedia";
-		if(iri != null){
-			fileName = iri.toString().substring( iri.toString().lastIndexOf('/')+1, iri.toString().length() );
-		} else {
-			
-		}
 		
 		new File("log").mkdir();
 		
@@ -163,6 +156,11 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		} else {
 			return computeCoherentOntology(incoherentOntology);
 		}
+	}
+	
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+		diffFileName = "diff_" + fileName;
 	}
 	
 	private OWLOntology computeCoherentOntologyRootBased(OWLOntology ontology) {
@@ -426,7 +424,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		OWLOntology toSave = getOntologyWithAnnotations(incoherentOntology);
 		try {
 			toSave.getOWLOntologyManager().saveOntology(incoherentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(fileName)));
-			toSave.getOWLOntologyManager().saveOntology(diffOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/diff.owl")));
+			toSave.getOWLOntologyManager().saveOntology(diffOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/" + diffFileName)));
 		} catch (OWLOntologyStorageException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
@@ -743,6 +741,11 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		JustificationBasedCoherentOntologyExtractor extractor = new JustificationBasedCoherentOntologyExtractor();
 		extractor.setNumberOfJustifications(numberOfJustifications);
 		extractor.setComputeParallel(computeParallel);
+		if(filename.indexOf('/') >= 0){
+			filename = filename.substring( filename.lastIndexOf('/')+1, filename.length() );
+		}
+		
+		extractor.setFileName(filename);
 		OWLOntology coherentOntology = extractor.getCoherentOntology(schema, preferRoots);
 		System.out.println("Coherent ontology contains " + coherentOntology.getLogicalAxiomCount() + " logical axioms.");
 	}
