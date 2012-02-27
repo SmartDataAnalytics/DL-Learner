@@ -31,6 +31,10 @@ public class GreedyCohaerencyExtractor {
 	private static final double STEP_SIZE = 0.001;
 	private static final int ALLOWED_UNSATISFIABLE_CLASSES = 5;
 	
+	private OWLOntologyManager manager;
+	private OWLOntology cohaerentOntology;
+	private IncrementalClassifier reasoner;
+	
 	public GreedyCohaerencyExtractor() {
 		// TODO Auto-generated constructor stub
 	}
@@ -55,11 +59,11 @@ public class GreedyCohaerencyExtractor {
 		}
 		
 		
-		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLOntology cohaerentOntology = man.createOntology();
+		manager = OWLManager.createOWLOntologyManager();
+		cohaerentOntology = manager.createOntology();
 		
-		IncrementalClassifier reasoner = new IncrementalClassifier(cohaerentOntology);
-		man.addOntologyChangeListener(reasoner);
+		reasoner = new IncrementalClassifier(cohaerentOntology);
+		manager.addOntologyChangeListener(reasoner);
 		reasoner.classify();
 		
 		
@@ -80,14 +84,20 @@ public class GreedyCohaerencyExtractor {
 //							break;
 //						}
 //					}
-					Set<OWLAxiom> toAdd = new HashSet<OWLAxiom>(axiomType2AxiomsMap.get(type[i]).subList(0, x));
-					man.addAxioms(cohaerentOntology, toAdd);
+					
+					/*Set<OWLAxiom> toAdd = new HashSet<OWLAxiom>(axiomType2AxiomsMap.get(type[i]).subList(0, x));
+					manager.addAxioms(cohaerentOntology, toAdd);
 					axiomType2AxiomsMap.get(type[i]).removeAll(toAdd);
 					isCohaerent = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size() <= ALLOWED_UNSATISFIABLE_CLASSES;
 					if(!isCohaerent){
-						man.removeAxioms(cohaerentOntology, toAdd);System.out.println("Incohaerency detected");
+						manager.removeAxioms(cohaerentOntology, toAdd);System.out.println("Incohaerency detected");
 						break;
-					}
+					}*/
+					
+					List<OWLAxiom> toAdd = axiomType2AxiomsMap.get(type[i]).subList(0, x);
+					addAxioms(toAdd);
+					axiomType2AxiomsMap.get(type[i]).removeAll(toAdd);
+					
 					cnt[i] = cnt[i] - x;
 				}
 			}
@@ -95,7 +105,7 @@ public class GreedyCohaerencyExtractor {
 			
 		}
 		try {
-			man.saveOntology(cohaerentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(new File("coherent.owl"))));
+			manager.saveOntology(cohaerentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(new File("coherent.owl"))));
 		} catch (OWLOntologyStorageException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
@@ -103,6 +113,36 @@ public class GreedyCohaerencyExtractor {
 			e.printStackTrace();
 		}
 		return cohaerentOntology;
+	}
+	
+	private Set<OWLAxiom> addAxioms(List<OWLAxiom> axioms){
+		Set<OWLAxiom> addedAxioms = new HashSet<OWLAxiom>();
+		
+		Set<OWLAxiom> axiomSet = new HashSet<OWLAxiom>(axioms);
+		manager.addAxioms(cohaerentOntology, axiomSet);
+		reasoner.classify();
+		boolean isCohaerent = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size() <= ALLOWED_UNSATISFIABLE_CLASSES;
+		if(!isCohaerent){
+			System.out.println("Incohaerency detected. Splitting...");
+			manager.removeAxioms(cohaerentOntology, axiomSet);
+			if(axioms.size() == 1){
+				return addedAxioms;
+			}
+			
+			int size = axioms.size();
+			int pivot = size/2;
+			
+			List<OWLAxiom> left = axioms.subList(0, pivot);
+			List<OWLAxiom> right = axioms.subList(pivot, size-1);
+			
+			addedAxioms.addAll(addAxioms(left));
+			addedAxioms.addAll(addAxioms(right));
+			
+		} else {
+			addedAxioms.addAll(axioms);
+		}
+		
+		return addedAxioms;
 	}
 	
 	public OWLOntology getCoharentOntology(OWLReasoner reasoner) throws OWLOntologyCreationException{
@@ -125,7 +165,7 @@ public class GreedyCohaerencyExtractor {
 	
 	public static void main(String[] args) throws Exception{
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("/home/lorenz/arbeit/dbpedia_0.75_no_datapropaxioms.owl"));
+		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("/home/lorenz/arbeit/papers/ESWC2012/dbpedia_0.75_no_datapropaxioms.owl"));
 		
 		GreedyCohaerencyExtractor ge = new GreedyCohaerencyExtractor();
 		ge.getCoharentOntology(schema);
