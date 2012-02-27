@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -76,10 +77,39 @@ public class StructureBasedRootClassFinder implements RootClassFinder, OWLClassE
     private Map<OWLClass, Set<OWLClass>> child2Parents;
     private Map<OWLClass, Set<OWLClass>> parent2Children;
     
+    private JustificationBasedCoherentOntologyExtractor extractor;
+    
 //    private Map<OWLClass, Map<OWLAxiom, Set<OWLClass>>> class2Dependency;
 	
 	public StructureBasedRootClassFinder(OWLReasoner reasoner){
 		
+		this.manager = OWLManager.createOWLOntologyManager();
+		this.reasoner = reasoner;
+		this.reasonerFactory = new PelletReasonerFactory();
+		try {
+			this.ontology = manager.createOntology(IRI.create("http://all"), reasoner.getRootOntology().getImportsClosure());
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		} catch (OWLOntologyChangeException e) {
+			e.printStackTrace();
+		}
+		rootClasses = new HashSet<OWLClass>();
+		derivedClasses = new HashSet<OWLClass>();
+		unsatClasses = new HashSet<OWLClass>();
+		
+		depend2Classes = new HashSet<OWLClass>();
+		depth2UniversalRestrictionPropertyMap = new HashMap<Integer, Set<OWLObjectAllValuesFrom>>();
+		depth2ExistsRestrictionPropertyMap = new HashMap<Integer, Set<OWLObjectPropertyExpression>>();
+		
+		child2Parents = new HashMap<OWLClass, Set<OWLClass>>();
+		parent2Children = new HashMap<OWLClass, Set<OWLClass>>();
+		
+//		class2Dependency = new HashMap<OWLClass, Map<OWLAxiom, Set<OWLClass>>>();
+		
+	}
+	
+	public StructureBasedRootClassFinder(OWLReasoner reasoner, JustificationBasedCoherentOntologyExtractor extractor){
+		this.extractor = extractor;
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.reasoner = reasoner;
 		this.reasonerFactory = new PelletReasonerFactory();
@@ -180,8 +210,7 @@ public class StructureBasedRootClassFinder implements RootClassFinder, OWLClassE
 			OWLReasoner checker = null;
 			for (OWLClass root : new ArrayList<OWLClass>(roots)) {
 				
-				checker = reasonerFactory.createNonBufferingReasoner(manager.createOntology(ModularityUtils.extractModule
-						(ontology, root.getSignature(), ModuleType.TOP_OF_BOT)));
+				checker = reasonerFactory.createNonBufferingReasoner(extractor.getModule(root));
 				if (!potentialRoots.contains(root) && checker.isSatisfiable(root)) {
 					rootClasses.remove(root);
 				}
@@ -195,10 +224,9 @@ public class StructureBasedRootClassFinder implements RootClassFinder, OWLClassE
 			}
 		} catch (OWLOntologyChangeException e) {
 			e.printStackTrace();
-		} catch (OWLOntologyCreationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
+		
+		
 	}
 	
 	private void reset(){
