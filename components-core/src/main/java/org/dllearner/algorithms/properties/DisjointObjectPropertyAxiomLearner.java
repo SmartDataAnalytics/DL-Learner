@@ -196,8 +196,6 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 			} else {
 				evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(1));
 			}
-			evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p),
-					new AxiomScore(1));
 			axioms.add(evalAxiom);
 		}
 		
