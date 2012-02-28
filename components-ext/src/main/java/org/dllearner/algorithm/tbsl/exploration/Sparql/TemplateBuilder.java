@@ -32,13 +32,13 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
 		Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(question);
      	for (BasicQueryTemplate bqt : querytemps) {
      		ArrayList<ArrayList<String>> condition = new ArrayList<ArrayList<String>>();
-     		ArrayList<ArrayList<Hypothesis>> hypotesen = new ArrayList<ArrayList<Hypothesis>>();
+     		//ArrayList<ArrayList<Hypothesis>> hypotesen = new ArrayList<ArrayList<Hypothesis>>();
      		String selectTerm = "";
      		String having= "";
      		String filter= "";
      		String OrderBy= "";
      		String limit= "";
-     		String condition_String = "";
+     		//String condition_String = "";
      		
      		boolean addTemplate=true;
      		try{
@@ -49,23 +49,24 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			addTemplate=false;
      		}
      		
-     		ArrayList<String> temp_array = new ArrayList<String>();
+     		//ArrayList<String> temp_array = new ArrayList<String>();
 			try{
-     			for(Path conditions1: bqt.getConditions()) condition_String=condition_String+(conditions1.toString())+".";
      			for(Path conditions1: bqt.getConditions()) {
-     				temp_array.clear();
+     				ArrayList<String> temp_array = new ArrayList<String>();
      				String[] tmp_array = conditions1.toString().split(" -- ");
      				for(String s: tmp_array){
+     					//System.out.println(s);
      					temp_array.add(s);
      				}
      				condition.add(temp_array);
-     			}
-     					
+         			
+     			}	
      		}
      		catch (Exception e){
-     			condition_String="";
+     			//condition_String="";
      			addTemplate=false;
      		}
+ 			
      		
      		try{
      			for(SPARQL_Filter tmp : bqt.getFilters()) filter=filter+tmp+" ";
@@ -108,17 +109,20 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      		
      		if(addTemplate!=false){
  
+     			
+     			/*
+     			 * SLOT_title: PROPERTY {title,name,label} mitfuehren
+     			 */
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			     		
      			Template template = new Template(condition, having, filter, selectTerm,OrderBy, limit);
      			//TODO: Iterate over slots
      			ArrayList<Hypothesis> list_of_hypothesis = new ArrayList<Hypothesis>();
      			for(Slot slot : bqt.getSlots()){
-	    			
-     				if(slot.toString().contains("USPEC")){
+     				if(slot.toString().contains("UNSPEC")){
      					String tmp= slot.toString().replace(" UNSPEC {", "");
      					tmp=tmp.replace("}","");
      					String[] tmp_array = tmp.split(":");
-     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1], "USPEC", 0);
+     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1], "UNSPEC", 0);
      					list_of_hypothesis.add(tmp_hypothesis);
      				}
      				if(slot.toString().contains("PROPERTY")){
@@ -138,7 +142,6 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      				}
      			}
      			ArrayList<ArrayList<Hypothesis>> final_list_set_hypothesis = new ArrayList<ArrayList<Hypothesis>>();
- 
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			
      			
      			for(Hypothesis x : list_of_hypothesis){
@@ -152,11 +155,16 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
 						}
      					for(String s : result){
      						ArrayList<Hypothesis> new_list = new ArrayList<Hypothesis>();
-     						new_list=list_of_hypothesis;
-     						for(Hypothesis z : new_list){
-     							if(z.getUri().equals(x.getUri())){
-     								z.setUri(s);
-     								z.setRank(1);
+     						
+     						//String variable, String uri, String type, float rank
+     						for(Hypothesis h : list_of_hypothesis){
+     							if (h.getUri().equals(x.getUri())){
+     								Hypothesis new_h = new Hypothesis(h.getVariable(), s, h.getType(), 1);
+     								new_list.add(new_h);
+     							}
+     							else{
+     								Hypothesis new_h = new Hypothesis(h.getVariable(), h.getUri(), h.getType(), h.getRank());
+     								new_list.add(new_h);
      							}
      						}
      						final_list_set_hypothesis.add(new_list);
@@ -165,10 +173,11 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			}
      			
      			
+     			
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  			
      			for(ArrayList<Hypothesis> x : final_list_set_hypothesis){
      				for(Hypothesis h : x){
-     					if(h.getType().contains("PROPERTY")){
+     					if(h.getType().contains("PROPERTY") || h.getType().contains("UNSPEC")){
          					ArrayList<String> result= new ArrayList<String>();
          					try {
     							result = utils_new.searchIndex(h.getUri(), 1, myindex);
@@ -178,6 +187,8 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
     							}
     							
     							else{
+    								String tmp = "http://dbpedia.org/ontology/"+h.getUri().toLowerCase();
+    								h.setUri(tmp);
     								h.setRank(0);
     							}
     						} catch (SQLException e) {
@@ -209,9 +220,9 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			resultArrayList.add(template_reverse_conditions);
      		}
      	}
-     	for(Template temp : resultArrayList){
+     	/*for(Template temp : resultArrayList){
      		temp.printAll();
-     	}
+     	}*/
 		return resultArrayList;
 	}
 }
