@@ -1,9 +1,12 @@
 package org.dllearner.utilities;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +17,12 @@ import java.util.Set;
 
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -28,31 +37,37 @@ import com.clarkparsia.modularity.IncrementalClassifier;
 
 public class GreedyCohaerencyExtractor {
 	
-	private static final double STEP_SIZE = 0.001;
+	private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JustificationBasedCoherentOntologyExtractor.class);
+	
+	private double stepSize = 0.001;
 	private static final int ALLOWED_UNSATISFIABLE_CLASSES = 5;
 	
 	private OWLOntologyManager manager;
-	private OWLOntology cohaerentOntology;
+	private OWLOntology coherentOntology;
 	private IncrementalClassifier reasoner;
 	
 	public GreedyCohaerencyExtractor() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public OWLOntology getCoharentOntology(OWLOntology ontology) throws OWLOntologyCreationException{
+	public OWLOntology getCoherentOntology(OWLOntology ontology, String target, double stepSize) throws OWLOntologyCreationException{
+		stepSize = stepSize/100;
 		BidiMap<AxiomType<? extends OWLAxiom>, Integer> axiomType2CountMap = getAxiomTypeCount(ontology);
 		
 		Map<AxiomType<? extends OWLAxiom>, List<OWLAxiom>> axiomType2AxiomsMap = new HashMap<AxiomType<? extends OWLAxiom>, List<OWLAxiom>>();
 		for(AxiomType<? extends OWLAxiom> type : AxiomType.AXIOM_TYPES){
 			axiomType2AxiomsMap.put(type, new ArrayList<OWLAxiom>(ontology.getAxioms(type)));
 		}
-		System.out.println(ontology.getLogicalAxiomCount());
-		double[] stepSize = new double[axiomType2CountMap.entrySet().size()];
+		//omit annotation axioms here
+		axiomType2AxiomsMap.remove(AxiomType.ANNOTATION_ASSERTION);
+		
+		logger.info("Source ontology contains " + ontology.getLogicalAxiomCount() + " logical axioms.");
+		double[] stepSizeArray = new double[axiomType2CountMap.entrySet().size()];
 		double[] cnt = new double[axiomType2CountMap.entrySet().size()];
 		AxiomType[] type = new AxiomType[axiomType2CountMap.entrySet().size()];
 		int i=0;
 		for(Entry<AxiomType<? extends OWLAxiom>, Integer> entry : axiomType2CountMap.entrySet()){
-			stepSize[i] = STEP_SIZE * entry.getValue();
+			stepSizeArray[i] = stepSize * entry.getValue();
 			type[i] = entry.getKey();
 			cnt[i] = 0;
 			i++;
@@ -60,71 +75,67 @@ public class GreedyCohaerencyExtractor {
 		
 		
 		manager = OWLManager.createOWLOntologyManager();
-		cohaerentOntology = manager.createOntology();
+		coherentOntology = manager.createOntology();
 		
-		reasoner = new IncrementalClassifier(cohaerentOntology);
-		manager.addOntologyChangeListener(reasoner);
+		reasoner = new IncrementalClassifier(coherentOntology);
+		reasoner.setMultiThreaded(false);
+//		manager.addOntologyChangeListener(reasoner);
 		reasoner.classify();
 		
 		
-		boolean isCohaerent = true;
-		for(double j = 0; j < 1; j += STEP_SIZE){System.out.println(j);
-			if(isCohaerent){
-				for(i = 0; i < stepSize.length; i++){
-					cnt[i] = cnt[i] + stepSize[i];
+		boolean isCoherent = true;
+		for(double j = 0; j < 1; j += stepSize){//increase by stepsize p until 100% 
+			if(isCoherent){
+				for(i = 0; i < stepSizeArray.length; i++){//for each axiomtype
+					cnt[i] = cnt[i] + stepSizeArray[i];//sum up value which was computed by p * #axioms
 					int x = (int)cnt[i];
-					System.out.println("Adding " + x + " " + type[i] + " axioms from " + axiomType2CountMap.get(type[i]));
-//					System.out.println(axiomType2AxiomsMap.get(type[i]).size());
-//					for(int k = 0; k < x; k++){
-//						OWLAxiom ax = axiomType2AxiomsMap.get(type[i]).remove(0);
-//						man.addAxiom(cohaerentOntology, ax);
-//						isCohaerent = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().isEmpty();
-//						if(!isCohaerent){
-//							man.removeAxiom(cohaerentOntology, ax);
+					if(x > 0){
+						logger.info("Adding " + x + " " + type[i] + " axioms from " + axiomType2CountMap.get(type[i]));
+						Set<OWLAxiom> toAdd = new HashSet<OWLAxiom>(axiomType2AxiomsMap.get(type[i]).subList(0, x));
+						manager.addAxioms(coherentOntology, toAdd);
+						axiomType2AxiomsMap.get(type[i]).removeAll(toAdd);
+						isCoherent = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size() <= ALLOWED_UNSATISFIABLE_CLASSES;
+						if(!isCoherent){
+							manager.removeAxioms(coherentOntology, toAdd);
+							logger.info("Incoherency detected. Undoing changes.");
+							isCoherent = true;
 //							break;
-//						}
-//					}
+						}
+					}
 					
-					/*Set<OWLAxiom> toAdd = new HashSet<OWLAxiom>(axiomType2AxiomsMap.get(type[i]).subList(0, x));
-					manager.addAxioms(cohaerentOntology, toAdd);
-					axiomType2AxiomsMap.get(type[i]).removeAll(toAdd);
-					isCohaerent = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size() <= ALLOWED_UNSATISFIABLE_CLASSES;
-					if(!isCohaerent){
-						manager.removeAxioms(cohaerentOntology, toAdd);System.out.println("Incohaerency detected");
-						break;
-					}*/
-					
-					List<OWLAxiom> toAdd = axiomType2AxiomsMap.get(type[i]).subList(0, x);
+					//same procedure with divide and conquer optimization
+					/*List<OWLAxiom> toAdd = axiomType2AxiomsMap.get(type[i]).subList(0, x);
 					addAxioms(toAdd);
 					axiomType2AxiomsMap.get(type[i]).removeAll(toAdd);
+					*/
 					
 					cnt[i] = cnt[i] - x;
 				}
 			}
-			System.out.println(cohaerentOntology.getLogicalAxiomCount());
+			logger.info("Coherent ontology contains " + coherentOntology.getLogicalAxiomCount() + " logical axioms.");
 			
 		}
 		try {
-			manager.saveOntology(cohaerentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(new File("coherent.owl"))));
+			manager.saveOntology(coherentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(new File(target))));
 		} catch (OWLOntologyStorageException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return cohaerentOntology;
+		return coherentOntology;
 	}
 	
 	private Set<OWLAxiom> addAxioms(List<OWLAxiom> axioms){
 		Set<OWLAxiom> addedAxioms = new HashSet<OWLAxiom>();
 		
 		Set<OWLAxiom> axiomSet = new HashSet<OWLAxiom>(axioms);
-		manager.addAxioms(cohaerentOntology, axiomSet);
+		manager.addAxioms(coherentOntology, axiomSet);
 		reasoner.classify();
 		boolean isCohaerent = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size() <= ALLOWED_UNSATISFIABLE_CLASSES;
 		if(!isCohaerent){
 			System.out.println("Incohaerency detected. Splitting...");
-			manager.removeAxioms(cohaerentOntology, axiomSet);
+			manager.removeAxioms(coherentOntology, axiomSet);
 			if(axioms.size() == 1){
 				return addedAxioms;
 			}
@@ -145,8 +156,8 @@ public class GreedyCohaerencyExtractor {
 		return addedAxioms;
 	}
 	
-	public OWLOntology getCoharentOntology(OWLReasoner reasoner) throws OWLOntologyCreationException{
-		return getCoharentOntology(reasoner.getRootOntology());
+	public OWLOntology getCoherentOntology(OWLReasoner reasoner, String target, double stepSize) throws OWLOntologyCreationException{
+		return getCoherentOntology(reasoner.getRootOntology(), target, stepSize);
 	}
 	
 	private BidiMap<AxiomType<? extends OWLAxiom>, Integer> getAxiomTypeCount(OWLOntology ontology){
@@ -164,11 +175,30 @@ public class GreedyCohaerencyExtractor {
 	}
 	
 	public static void main(String[] args) throws Exception{
+		Logger.getRootLogger().setLevel(Level.INFO);
+		Logger.getRootLogger().removeAllAppenders();
+		Logger.getRootLogger().addAppender(new ConsoleAppender(new SimpleLayout()));
+		Logger.getRootLogger().addAppender(new FileAppender(new SimpleLayout(), "log/greedy_out.log"));
+		
+		if(args.length != 3){
+			System.out.println("USAGE: GreedyCoherencyExtractor <incoherent.owl> <target.owl> <stepsizeInPercent>");
+			System.exit(0);
+		}
+		String filename = args[0];
+		String target = args[1];
+		double stepSize = Double.parseDouble(args[2]);
+		
+		System.out.println("Loading ontology...");
+		InputStream is = new BufferedInputStream(new FileInputStream(filename));
+		if(args[0].endsWith("bz2")){
+			is = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
+		}
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLOntology schema = man.loadOntologyFromOntologyDocument(new File("/home/lorenz/arbeit/papers/ESWC2012/dbpedia_0.75_no_datapropaxioms.owl"));
+		OWLOntology schema = man.loadOntologyFromOntologyDocument(is);
+		System.out.println("...done.");
 		
 		GreedyCohaerencyExtractor ge = new GreedyCohaerencyExtractor();
-		ge.getCoharentOntology(schema);
+		ge.getCoherentOntology(schema, target, stepSize);
 	}
 
 }
