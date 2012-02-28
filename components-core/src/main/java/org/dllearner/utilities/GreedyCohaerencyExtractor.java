@@ -58,8 +58,6 @@ public class GreedyCohaerencyExtractor {
 		for(AxiomType<? extends OWLAxiom> type : AxiomType.AXIOM_TYPES){
 			axiomType2AxiomsMap.put(type, new ArrayList<OWLAxiom>(ontology.getAxioms(type)));
 		}
-		//omit annotation axioms here
-		axiomType2AxiomsMap.remove(AxiomType.ANNOTATION_ASSERTION);
 		
 		logger.info("Source ontology contains " + ontology.getLogicalAxiomCount() + " logical axioms.");
 		double[] stepSizeArray = new double[axiomType2CountMap.entrySet().size()];
@@ -195,6 +193,7 @@ public class GreedyCohaerencyExtractor {
 		}
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLOntology schema = man.loadOntologyFromOntologyDocument(is);
+		man.removeAxioms(schema, schema.getAxioms(AxiomType.ANNOTATION_ASSERTION));
 		System.out.println("...done.");
 		
 		GreedyCohaerencyExtractor ge = new GreedyCohaerencyExtractor();
