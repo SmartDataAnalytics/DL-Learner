@@ -35,6 +35,7 @@ public class utils_new {
 			tmp2=myindex.getYagoURI(string.toLowerCase());
 			if(tmp1!=null) result_List.add(tmp1);
 			if(tmp2!=null) result_List.add(tmp2);
+			//result_List.add("www.TEST.de");
 		}
 
 

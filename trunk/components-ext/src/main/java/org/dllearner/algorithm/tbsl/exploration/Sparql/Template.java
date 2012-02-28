@@ -78,6 +78,7 @@ public class Template {
 		int anzahl = 1;
 		for(ArrayList<Hypothesis> x : hypothesen){
 			System.out.println("\nSet of Hypothesen"+anzahl+":");
+			anzahl+=1;
 			for ( Hypothesis z : x){
 				z.printAll();
 			}
