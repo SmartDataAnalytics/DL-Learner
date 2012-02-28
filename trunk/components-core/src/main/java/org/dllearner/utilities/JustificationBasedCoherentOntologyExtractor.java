@@ -238,7 +238,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			cnt += unsatPropCnt;
 		}
 		
-		while(cnt >= 0){
+		while(cnt > 0){
 			//we remove the most appropriate axiom from the ontology
 			removeAppropriateAxiom();
 			
@@ -301,6 +301,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		entity2Explanations.clear();
 		entity2ModuleMap.clear();
 		
+		save("log/" + fileName + "_" + cnt + "cls" + unsatPropCnt + "prop.owl");
+		
 		if(!computeParallel){
 			unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
 			logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
@@ -341,15 +343,9 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			}
 		}
 		
-		try {
-			incoherentOntology.getOWLOntologyManager().saveOntology(getOntologyWithAnnotations(incoherentOntology), new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/dbpedia_coherent.owl")));
-		} catch (OWLOntologyStorageException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		save("log/" + fileName + "_coherent.owl");
 		
-		return getOntologyWithAnnotations(incoherentOntology);
+		return ontology;
 	}
 	
 	private OWLOntology computeCoherentOntology(OWLOntology ontology) {
@@ -501,6 +497,10 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			if(!dbpediaOntology.containsAxiomIgnoreAnnotations(axiom)){
 				logger.info("Removing axiom " + axiom + ".");
 				manager.removeAxiom(incoherentOntology, axiom);
+				//remove the axiom also from the loaded ontology
+				OWLAxiom originalAnnotatedAxiom = ontology.getAxiomsIgnoreAnnotations(axiom).iterator().next();
+				ontology.getOWLOntologyManager().removeAxiom(ontology, originalAnnotatedAxiom);
+				
 				manager.addAxiom(diffOntology, axiom);
 				manager.applyChange(new RemoveAxiom(incoherentOntology, axiom));
 				removeFromExplanations(entity2Explanations, axiom);
@@ -511,10 +511,9 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	}
 	
 	private void save(String fileName){
-		OWLOntology toSave = getOntologyWithAnnotations(incoherentOntology);
 		try {
-			toSave.getOWLOntologyManager().saveOntology(toSave, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(fileName)));
-			toSave.getOWLOntologyManager().saveOntology(diffOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/" + diffFileName)));
+			ontology.getOWLOntologyManager().saveOntology(ontology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(fileName)));
+			diffOntology.getOWLOntologyManager().saveOntology(diffOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/" + diffFileName)));
 		} catch (OWLOntologyStorageException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
@@ -634,13 +633,14 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	}
 	
 	private OWLOntology getOntologyWithAnnotations(OWLOntology ontologyWithOutAnnotations){
+		logger.info("BEFORE: "+ ontology.getSubClassAxiomsForSubClass(factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Award"))));
 		OWLOntologyManager man = ontology.getOWLOntologyManager();
 		for (Iterator<OWLLogicalAxiom> iterator = ontology.getLogicalAxioms().iterator(); iterator.hasNext();) {
 			OWLLogicalAxiom axiom = iterator.next();
 			if(!ontologyWithOutAnnotations.containsAxiomIgnoreAnnotations(axiom)){
 				man.removeAxiom(ontology, axiom);
 			}
-		}
+		}logger.info("AFTER: "+ ontology.getSubClassAxiomsForSubClass(factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Award"))));
 		return ontology;
 	}
 	
@@ -677,9 +677,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		Set<OWLAxiom> axiomsWithAnnotations = ontology.getAxiomsIgnoreAnnotations(axiom);
 		if(axiomsWithAnnotations.isEmpty()){
 			logger.info("Axiom with annotations not found: " + axiom);
-			logger.info("Ontology contains axiom: " + incoherentOntology.containsAxiomIgnoreAnnotations(axiom));
-			logger.info("Original loaded ontology contains axiom: " + ontology.containsAxiomIgnoreAnnotations(axiom));
-			System.out.println(ontology.getSubClassAxiomsForSubClass(factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Award"))));
+			return 2;
 		}
 		OWLAxiom axiomWithAnnotations = axiomsWithAnnotations.iterator().next();
 		Set<OWLAnnotation> annotations = axiomWithAnnotations.getAnnotations(confidenceProperty);
@@ -694,38 +692,46 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	
 	
 	public OWLOntology getModule(OWLEntity entity){
-		OWLOntology module = entity2ModuleMap.get(entity);
-		new File("log").mkdir();
-		if(module == null){
-			md5.reset();
-			md5.update((ontology.getOWLOntologyManager().getOntologyDocumentIRI(ontology).toString() + entity.toStringID()).getBytes());
-			String hash = MD5.asHex(md5.digest());
-			String filename = "log/" + hash + ".owl";
-			File file = new File(filename);
-			boolean load = false;
-			if(load){//file.exists()){
-				module = loadModule(file);
-			} else {
-				try {
-					module = OWLManager.createOWLOntologyManager().createOntology(ModularityUtils.extractModule(incoherentOntology, Collections.singleton(entity), ModuleType.TOP_OF_BOT));
-				} catch (OWLOntologyCreationException e) {
-					e.printStackTrace();
-				}
-				/*
-				module = OntologyUtils.getOntologyFromAxioms(
-						ModularityUtils.extractModule(incoherentOntology, Collections.singleton(entity), ModuleType.TOP_OF_BOT));
-				
-				try {
-					manager.saveOntology(module, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(filename)));
-				} catch (OWLOntologyStorageException e) {
-					e.printStackTrace();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}*/
-			}
-			
-			//entity2ModuleMap.put(entity, module);
+		OWLOntology module = null;
+		try {
+			module = OWLManager.createOWLOntologyManager().createOntology(ModularityUtils.extractModule(incoherentOntology, Collections.singleton(entity), ModuleType.TOP_OF_BOT));
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
+//		OWLOntology module = entity2ModuleMap.get(entity);
+//		new File("log").mkdir();
+//		if(module == null){
+//			md5.reset();
+//			md5.update((ontology.getOWLOntologyManager().getOntologyDocumentIRI(ontology).toString() + entity.toStringID()).getBytes());
+//			String hash = MD5.asHex(md5.digest());
+//			String filename = "log/" + hash + ".owl";
+//			File file = new File(filename);
+//			boolean load = false;
+//			if(load){//file.exists()){
+//				module = loadModule(file);
+//			} else {
+//				try {
+//					module = OWLManager.createOWLOntologyManager().createOntology(ModularityUtils.extractModule(incoherentOntology, Collections.singleton(entity), ModuleType.TOP_OF_BOT));
+//				} catch (OWLOntologyCreationException e) {
+//					e.printStackTrace();
+//				}
+//				/*
+//				module = OntologyUtils.getOntologyFromAxioms(
+//						ModularityUtils.extractModule(incoherentOntology, Collections.singleton(entity), ModuleType.TOP_OF_BOT));
+//				
+//				try {
+//					manager.saveOntology(module, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(filename)));
+//				} catch (OWLOntologyStorageException e) {
+//					e.printStackTrace();
+//				} catch (FileNotFoundException e) {
+//					e.printStackTrace();
+//				}*/
+//			}
+//			
+//			//entity2ModuleMap.put(entity, module);
+//		}
 		return module;
 	}
 	
