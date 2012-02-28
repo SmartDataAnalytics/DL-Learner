@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -27,6 +29,8 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -40,18 +44,22 @@ public class GreedyCohaerencyExtractor {
 	private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JustificationBasedCoherentOntologyExtractor.class);
 	
 	private double stepSize = 0.001;
-	private static final int ALLOWED_UNSATISFIABLE_CLASSES = 5;
+	private int allowedUnsatClasses = 5;
+	private int allowedUnsatProperties = 5;
 	
 	private OWLOntologyManager manager;
 	private OWLOntology coherentOntology;
+	private OWLDataFactory factory;
 	private IncrementalClassifier reasoner;
 	
 	public GreedyCohaerencyExtractor() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public OWLOntology getCoherentOntology(OWLOntology ontology, String target, double stepSize) throws OWLOntologyCreationException{
+	public OWLOntology getCoherentOntology(OWLOntology ontology, String target, double stepSize, int allowedUnsatClasses, int allowedUnsatProperties) throws OWLOntologyCreationException{
 		stepSize = stepSize/100;
+		this.allowedUnsatClasses = allowedUnsatClasses;
+		this.allowedUnsatProperties = allowedUnsatProperties;
 		BidiMap<AxiomType<? extends OWLAxiom>, Integer> axiomType2CountMap = getAxiomTypeCount(ontology);
 		
 		Map<AxiomType<? extends OWLAxiom>, List<OWLAxiom>> axiomType2AxiomsMap = new HashMap<AxiomType<? extends OWLAxiom>, List<OWLAxiom>>();
@@ -73,6 +81,7 @@ public class GreedyCohaerencyExtractor {
 		
 		
 		manager = OWLManager.createOWLOntologyManager();
+		factory = manager.getOWLDataFactory();
 		coherentOntology = manager.createOntology();
 		
 		reasoner = new IncrementalClassifier(coherentOntology);
@@ -92,7 +101,7 @@ public class GreedyCohaerencyExtractor {
 						Set<OWLAxiom> toAdd = new HashSet<OWLAxiom>(axiomType2AxiomsMap.get(type[i]).subList(0, x));
 						manager.addAxioms(coherentOntology, toAdd);
 						axiomType2AxiomsMap.get(type[i]).removeAll(toAdd);
-						isCoherent = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size() <= ALLOWED_UNSATISFIABLE_CLASSES;
+						isCoherent = isCoherent();
 						if(!isCoherent){
 							manager.removeAxioms(coherentOntology, toAdd);
 							logger.info("Incoherency detected. Undoing changes.");
@@ -124,14 +133,35 @@ public class GreedyCohaerencyExtractor {
 		return coherentOntology;
 	}
 	
+	private boolean isCoherent(){
+		return (reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size() <= allowedUnsatClasses)
+				&& (getUnsatisfiableObjectProperties(reasoner).size() <= allowedUnsatProperties);
+	}
+	
+	private Set<OWLObjectProperty> getUnsatisfiableObjectProperties(IncrementalClassifier reasoner){
+		logger.info("Computing unsatisfiable object properties...");
+		long startTime = System.currentTimeMillis();
+		SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
+		OWLDataFactory f = OWLManager.createOWLOntologyManager().getOWLDataFactory();
+		for(OWLObjectProperty p : reasoner.getRootOntology().getObjectPropertiesInSignature()){
+//			boolean satisfiable = reasoner.isSatisfiable(f.getOWLObjectExactCardinality(1, p));
+			boolean satisfiable = reasoner.isSatisfiable(f.getOWLObjectSomeValuesFrom(p, factory.getOWLThing()));
+			if(!satisfiable){
+				properties.add(p);
+			}
+		}
+		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
+		return properties;
+	}
+	
 	private Set<OWLAxiom> addAxioms(List<OWLAxiom> axioms){
 		Set<OWLAxiom> addedAxioms = new HashSet<OWLAxiom>();
 		
 		Set<OWLAxiom> axiomSet = new HashSet<OWLAxiom>(axioms);
 		manager.addAxioms(coherentOntology, axiomSet);
 		reasoner.classify();
-		boolean isCohaerent = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size() <= ALLOWED_UNSATISFIABLE_CLASSES;
-		if(!isCohaerent){
+		boolean isCoherent = isCoherent();
+		if(!isCoherent){
 			System.out.println("Incohaerency detected. Splitting...");
 			manager.removeAxioms(coherentOntology, axiomSet);
 			if(axioms.size() == 1){
@@ -154,8 +184,8 @@ public class GreedyCohaerencyExtractor {
 		return addedAxioms;
 	}
 	
-	public OWLOntology getCoherentOntology(OWLReasoner reasoner, String target, double stepSize) throws OWLOntologyCreationException{
-		return getCoherentOntology(reasoner.getRootOntology(), target, stepSize);
+	public OWLOntology getCoherentOntology(OWLReasoner reasoner, String target, double stepSize, int allowedUnsatClasses, int allowedUnsatProperties) throws OWLOntologyCreationException{
+		return getCoherentOntology(reasoner.getRootOntology(), target, stepSize, allowedUnsatClasses, allowedUnsatProperties);
 	}
 	
 	private BidiMap<AxiomType<? extends OWLAxiom>, Integer> getAxiomTypeCount(OWLOntology ontology){
@@ -178,13 +208,15 @@ public class GreedyCohaerencyExtractor {
 		Logger.getRootLogger().addAppender(new ConsoleAppender(new SimpleLayout()));
 		Logger.getRootLogger().addAppender(new FileAppender(new SimpleLayout(), "log/greedy_out.log"));
 		
-		if(args.length != 3){
-			System.out.println("USAGE: GreedyCoherencyExtractor <incoherent.owl> <target.owl> <stepsizeInPercent>");
+		if(args.length != 5){
+			System.out.println("USAGE: GreedyCoherencyExtractor <incoherent.owl> <target.owl> <stepsizeInPercent> <nrOfallowedUnsatClasses> <nrOfallowedUnsatProperties>");
 			System.exit(0);
 		}
 		String filename = args[0];
 		String target = args[1];
 		double stepSize = Double.parseDouble(args[2]);
+		int nrOfallowedUnsatClasses = Integer.parseInt(args[3]);
+		int nrOfallowedUnsatProperties = Integer.parseInt(args[4]);
 		
 		System.out.println("Loading ontology...");
 		InputStream is = new BufferedInputStream(new FileInputStream(filename));
@@ -197,7 +229,7 @@ public class GreedyCohaerencyExtractor {
 		System.out.println("...done.");
 		
 		GreedyCohaerencyExtractor ge = new GreedyCohaerencyExtractor();
-		ge.getCoherentOntology(schema, target, stepSize);
+		ge.getCoherentOntology(schema, target, stepSize, nrOfallowedUnsatClasses, nrOfallowedUnsatProperties);
 	}
 
 }
