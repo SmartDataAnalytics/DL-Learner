@@ -27,8 +27,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import openlink.util.MD5;
-
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.log4j.ConsoleAppender;
@@ -58,6 +56,7 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.IllegalConfigurationException;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
@@ -70,6 +69,7 @@ import com.clarkparsia.modularity.ModularityUtils;
 import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 public class JustificationBasedCoherentOntologyExtractor implements CoherentOntologyExtractor{
@@ -78,7 +78,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	private static final String DIFF_ONTOLOGY_NAME = "diff.owl";
 	
 	private int numberOfJustifications = 10;
-//	private PelletReasoner reasoner;
+	private PelletReasoner propReasoner;
 	private IncrementalClassifier reasoner;
 	private Reasoner hermitReasoner;
 
@@ -129,7 +129,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	
 	@Override
 	public OWLOntology getCoherentOntology(OWLOntology ontology, boolean preferRoots){
-		ontology.getOWLOntologyManager().addAxioms(ontology, dbpediaOntology.getLogicalAxioms());
+//		ontology.getOWLOntologyManager().addAxioms(ontology, dbpediaOntology.getLogicalAxioms());
 		
 		this.ontology = ontology;
 		this.incoherentOntology = getOntologyWithoutAnnotations(ontology);
@@ -155,12 +155,13 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		factory = manager.getOWLDataFactory();
 		
 		long startTime = System.currentTimeMillis();
-		reasoner = new IncrementalClassifier(incoherentOntology);
-		reasoner.classify();
+		propReasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(incoherentOntology);
+		reasoner = new IncrementalClassifier(propReasoner);
+		reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		
 		//compute the unsatisfiable object properties and their corresponding modules
-		unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
+		unsatObjectProperties = getUnsatisfiableObjectProperties();
 		logger.info("Found unsatisfiable object properties: " + unsatObjectProperties.size());
 		if(computeParallel){
 			entity2ModuleMap.putAll(extractModules(unsatObjectProperties));
@@ -272,7 +273,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			
 			//recompute unsatisfiable object properties
 		//	if(computeParallel){
-				unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
+				unsatObjectProperties = getUnsatisfiableObjectProperties();
 				logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
 		//	}
 			
@@ -285,6 +286,11 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 				if(computeParallel){
 					cnt += unsatPropCnt;
 				}
+			}
+			if(unsatClasses.isEmpty() && (!computeParallel || (computeParallel && unsatObjectProperties.isEmpty()))){
+				cnt = 0;
+				unsatPropCnt = unsatObjectProperties.size();
+				break;
 			}
 			
 			//recompute explanations if necessary
@@ -304,10 +310,10 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		save("log/" + fileName + "_" + cnt + "cls" + unsatPropCnt + "prop.owl");
 		
 		if(!computeParallel){
-			unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
+			unsatObjectProperties = getUnsatisfiableObjectProperties();
 			logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
 			
-			entity2ModuleMap.putAll(extractModules(unsatObjectProperties));
+//			entity2ModuleMap.putAll(extractModules(unsatObjectProperties));
 			
 			logger.info("Recomputing explanations...");
 			startTime = System.currentTimeMillis();
@@ -317,18 +323,12 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 				//we remove the most appropriate axiom from the ontology
 				removeAppropriateAxiom();
 				
-				//recompute the unsatisfiable classes
-				logger.info("Reclassifying...");
-				startTime = System.currentTimeMillis();
-				reasoner.classify();
-				logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
-				
 				//recompute unsatisfiable object properties
-				unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
+				unsatObjectProperties = getUnsatisfiableObjectProperties();
 				logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
 				
 				//save
-				if((unsatPropCnt - unsatObjectProperties.size()) >= 1){
+				if((unsatPropCnt - unsatObjectProperties.size()) >= 5){
 					save("log/" + fileName + "_" + cnt + "cls" + unsatPropCnt + "prop.owl");
 					unsatPropCnt = unsatObjectProperties.size();
 				}
@@ -387,7 +387,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			logger.info("Remaining unsatisfiable classes: " + unsatClasses.size());
 			
 			//recompute unsatisfiable object properties
-			unsatObjectProperties = getUnsatisfiableObjectProperties(reasoner);
+			unsatObjectProperties = getUnsatisfiableObjectProperties();
 			logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
 			
 			//save
@@ -521,7 +521,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		}
 	}
 	
-	private Set<OWLObjectProperty> getUnsatisfiableObjectProperties(IncrementalClassifier reasoner){
+	private Set<OWLObjectProperty> getUnsatisfiableObjectProperties(){
 		logger.info("Computing unsatisfiable object properties...");
 		long startTime = System.currentTimeMillis();
 		SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
