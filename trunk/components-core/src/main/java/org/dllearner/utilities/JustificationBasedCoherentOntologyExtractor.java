@@ -78,8 +78,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	private static final String DIFF_ONTOLOGY_NAME = "diff.owl";
 	
 	private int numberOfJustifications = 10;
-	private PelletReasoner propReasoner;
-	private IncrementalClassifier reasoner;
+	private PelletReasoner baseReasoner;
+	private PelletReasoner reasoner;//IncrementalClassifier reasoner;
 	private Reasoner hermitReasoner;
 
 	private OWLOntology incoherentOntology;
@@ -155,8 +155,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		factory = manager.getOWLDataFactory();
 		
 		long startTime = System.currentTimeMillis();
-		propReasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(incoherentOntology);
-		reasoner = new IncrementalClassifier(propReasoner);
+		baseReasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(incoherentOntology);
+		reasoner = baseReasoner;//new IncrementalClassifier(baseReasoner);
 		reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		
@@ -246,7 +246,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			//recompute the unsatisfiable classes
 			logger.info("Reclassifying...");
 			startTime = System.currentTimeMillis();
-			reasoner.classify();
+			reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 //			hermitReasoner.classifyClasses();
 			//Set<OWLClass> unsatClasses2 = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
@@ -381,7 +381,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			//recompute the unsatisfiable classes
 			logger.info("Reclassifying...");
 			startTime = System.currentTimeMillis();
-			reasoner.classify();
+			reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 			unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 			logger.info("Remaining unsatisfiable classes: " + unsatClasses.size());
@@ -434,7 +434,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		//compute initial explanations for each unsatisfiable class
 		logger.info("Computing initial explanations...");
 		startTime = System.currentTimeMillis();
-		PelletExplanation expGen = new PelletExplanation(reasoner.getReasoner());
+		PelletExplanation expGen = new PelletExplanation(baseReasoner);
 		Set<Set<OWLAxiom>> explanations;
 		for(OWLClass unsatCls : unsatClasses){
 			explanations = expGen.getUnsatisfiableExplanations(unsatCls, numberOfJustifications);
@@ -450,7 +450,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			//recompute the unsatisfiable classes
 			logger.info("Reclassifying...");
 			startTime = System.currentTimeMillis();
-			reasoner.classify();
+			reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 			unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 			logger.info("Remaining unsatisfiable classes: " + unsatClasses.size());
