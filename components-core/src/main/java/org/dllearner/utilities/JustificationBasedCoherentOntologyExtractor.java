@@ -129,7 +129,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	
 	@Override
 	public OWLOntology getCoherentOntology(OWLOntology ontology, boolean preferRoots){
-//		ontology.getOWLOntologyManager().addAxioms(ontology, dbpediaOntology.getLogicalAxioms());
+		ontology.getOWLOntologyManager().addAxioms(ontology, dbpediaOntology.getLogicalAxioms());
 		
 		this.ontology = ontology;
 		this.incoherentOntology = getOntologyWithoutAnnotations(ontology);
