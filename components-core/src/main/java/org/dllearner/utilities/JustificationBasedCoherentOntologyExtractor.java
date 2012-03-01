@@ -106,6 +106,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	
 	private Set<OWLTransitiveObjectPropertyAxiom> removedTransitiveAxioms;
 	private Set<OWLObjectProperty> unsatObjectProperties;
+	private Set<OWLClass> unsatClasses;
 	
 	//whether to debug classes and properties in parallel
 	private boolean computeParallel = false;
@@ -196,7 +197,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		logger.info("Computing root/derived unsatisfiable classes...");
 		long startTime = System.currentTimeMillis();
 		StructureBasedRootClassFinder rootFinder = new StructureBasedRootClassFinder(reasoner, this);
-		Set<OWLClass> unsatClasses = rootFinder.getRootUnsatisfiableClasses();
+		unsatClasses = rootFinder.getRootUnsatisfiableClasses();
 		Set<OWLClass> derivedUnsatClasses = rootFinder.getDerivedUnsatisfiableClasses();
 		
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
@@ -347,8 +348,9 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 				System.gc();
 			}
 		}
-		
 		save("log/" + fileName + "_coherent.owl");
+		logger.info("Finished. \n Coherent ontology contains " + ontology.getLogicalAxiomCount() + " logical axioms." +
+				"Removed axioms: " + diffOntology.getLogicalAxiomCount());
 		
 		return ontology;
 	}
@@ -361,7 +363,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		//compute the unsatisfiable classes
 		logger.info("Computing unsatisfiable classes...");
 		long startTime = System.currentTimeMillis();
-		Set<OWLClass> unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
+		unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		logger.info("Detected " + unsatClasses.size() + " unsatisfiable classes.");
 		
@@ -384,7 +386,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			cnt += unsatObjectProperties.size();
 		}
 		
-		while(cnt > 0){
+		while(!runLocalDebugging() && cnt > 0){
 			//we remove the most appropriate axiom from the ontology
 			removeAppropriateAxiom();
 			
@@ -399,8 +401,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
 			
 			//save
-			if((!computeParallel && (cnt-unsatClasses.size()>= 5))
-					|| (computeParallel && (cnt-unsatClasses.size()+unsatObjectProperties.size())>=5)){
+			if((!computeParallel && (cnt-unsatClasses.size()>= 10))
+					|| (computeParallel && (cnt-unsatClasses.size()+unsatObjectProperties.size())>=10)){
 				cnt = unsatClasses.size();
 				save("log/" + fileName + "_" + unsatClasses.size() + "cls" + unsatObjectProperties.size() + "prop.owl");
 				if(computeParallel){
@@ -425,6 +427,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		}
 		entity2Explanations.clear();
 		entity2ModuleMap.clear();
+		entitiesWithLessExplanations.clear();
+		entity2ExpGen.clear();
 		
 		save("log/" + fileName + "_" + unsatClasses.size() + "cls" + unsatObjectProperties.size() + "prop.owl");
 		
@@ -434,11 +438,11 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 			int unsatPropCnt = unsatObjectProperties.size();
 			logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
 			
-			logger.info("Recomputing explanations...");
+			logger.info("Computing explanations...");
 			startTime = System.currentTimeMillis();
 			computeExplanations(unsatObjectProperties);
 			logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
-			while(unsatPropCnt > 0){
+			while(!runLocalDebugging() && unsatPropCnt > 0){
 				//we remove the most appropriate axiom from the ontology
 				removeAppropriateAxiom();
 				
@@ -447,7 +451,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 				logger.info("Remaining unsatisfiable object properties: " + unsatObjectProperties.size());
 				
 				//save
-				if((unsatPropCnt - unsatObjectProperties.size()) >= 5){
+				if((unsatPropCnt - unsatObjectProperties.size()) >= 10){
 					save("log/" + fileName + "_" + unsatClasses.size() + "cls" + unsatPropCnt + "prop.owl");
 					unsatPropCnt = unsatObjectProperties.size();
 				}
@@ -464,10 +468,50 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 				System.gc();
 			}
 		}
-		
 		save("log/" + fileName + "_coherent.owl");
+		logger.info("Finished. \n Coherent ontology contains " + ontology.getLogicalAxiomCount() + " logical axioms." +
+				"Removed axioms: " + diffOntology.getLogicalAxiomCount());
 		
 		return ontology;
+	}
+	
+	/*
+	 * check here if all explanations are found, i.e. for each entity the number of justifications is lower than the limit which was set
+	 */
+	private boolean allExplanationsFound(){
+		boolean allExplanationsFound = false;
+		if(computeParallel){
+			allExplanationsFound = entitiesWithLessExplanations.size() == (unsatClasses.size() + unsatObjectProperties.size()); 
+		} else {
+			allExplanationsFound = entitiesWithLessExplanations.size() == unsatClasses.size();
+		}
+		return allExplanationsFound;
+	}
+	
+	private boolean runLocalDebugging(){
+		if(allExplanationsFound()){
+			//add all explanations into one set
+			Set<Set<OWLAxiom>> explanations = new HashSet<Set<OWLAxiom>>();
+			for(Entry<OWLEntity, Set<Set<OWLAxiom>>> e: entity2Explanations.entrySet()){
+				explanations.addAll(e.getValue());
+			}
+			//get the frequency for each axiom
+			Map<OWLAxiom, Integer> axiom2CountMap = getAxiomFrequency(entity2Explanations);
+			//get a sorted list of entries with the highest axiom count first
+			List<Entry<OWLAxiom, Integer>> candidates = sort(axiom2CountMap);
+			//remove axioms until no further explanation exists
+			while(!explanations.isEmpty()){
+				removeAppropriateAxiomLocal(explanations, candidates);
+			}
+			if(computeParallel){
+				unsatClasses.clear();
+				unsatObjectProperties.clear();
+			} else {
+				unsatClasses.clear();
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	private OWLOntology computeCoherentOntology2(OWLOntology ontology) {
@@ -558,6 +602,40 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 				removeFromExplanations(entity2Explanations, axiom);
 				removeFromModules(axiom);
 				return;
+			}
+		}
+	}
+	
+	private void removeAppropriateAxiomLocal(Set<Set<OWLAxiom>> explanations, List<Entry<OWLAxiom, Integer>> candidates){
+		logger.info("Searching for appropriate axiom to remove...");
+		logger.info("Candidates: " + candidates.size());
+		if(candidates.size() >= 2){
+			logger.info("First: " + candidates.get(0) + "(" + getConfidence(candidates.get(0).getKey()) + ")");
+			logger.info("Second: " + candidates.get(1) + "(" + getConfidence(candidates.get(1).getKey()) + ")");
+		}
+		
+		//we remove the most frequent axiom from the ontology which is not contained in the original DBpedia ontology
+		for(Iterator<Entry<OWLAxiom, Integer>> iter = candidates.iterator(); iter.hasNext();){
+			OWLAxiom axiom = iter.next().getKey();
+			if(!dbpediaOntology.containsAxiomIgnoreAnnotations(axiom)){
+				iter.remove();
+				logger.info("Removing axiom " + axiom + ".");
+				manager.removeAxiom(incoherentOntology, axiom);
+				//remove the axiom also from the loaded ontology
+				OWLAxiom originalAnnotatedAxiom = ontology.getAxiomsIgnoreAnnotations(axiom).iterator().next();
+				ontology.getOWLOntologyManager().removeAxiom(ontology, originalAnnotatedAxiom);
+				//add the removed annotated axiom to the diff ontology
+				manager.addAxiom(diffOntology, originalAnnotatedAxiom);
+				//remove each explanation which contains the axiom
+				for (Iterator<Set<OWLAxiom>> iterator = explanations.iterator(); iterator.hasNext();) {
+					Set<OWLAxiom> explanation = iterator.next();
+					if(explanation.contains(axiom)){
+						iterator.remove();
+					}
+				}
+				return;
+			} else {
+				iter.remove();
 			}
 		}
 	}
@@ -951,7 +1029,6 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 
 		OWLOntology coherentOntology = extractor.getCoherentOntology(schema, preferRoots);
 		
-		System.out.println("Coherent ontology contains " + coherentOntology.getLogicalAxiomCount() + " logical axioms.");
 	}
 	
 	class HermiTReasonerFactory implements OWLReasonerFactory{
