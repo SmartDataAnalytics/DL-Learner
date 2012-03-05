@@ -19,23 +19,31 @@
 
 package org.dllearner.kb.sparql;
 
-import com.hp.hpl.jena.query.*;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.sparql.engine.http.HttpParams;
-import com.hp.hpl.jena.sparql.engine.http.Params;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.sparql.resultset.XMLInput;
-import com.hp.hpl.jena.sparql.util.Context;
-import com.hp.hpl.jena.sparql.util.graph.GraphFactory;
-import com.hp.hpl.jena.util.FileManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hp.hpl.jena.query.ARQ;
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.engine.http.HttpParams;
+import com.hp.hpl.jena.sparql.engine.http.Params;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.sparql.graph.GraphFactory;
+import com.hp.hpl.jena.sparql.resultset.XMLInput;
+import com.hp.hpl.jena.sparql.util.Context;
+import com.hp.hpl.jena.util.FileManager;
 
 /**
  * Created by Claus Stadler
@@ -364,6 +372,11 @@ public class ExtendedQueryEngineHTTP
     public Dataset getDataset() {
         return null;
     }
+
+	@Override
+	public Query getQuery() {
+		return QueryFactory.create(queryString);
+	}
 }
 
 /*
