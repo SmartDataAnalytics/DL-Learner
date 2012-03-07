@@ -1,18 +1,19 @@
-package org.dllearner.algorithm.tbsl.exploration.Sparql;
+package org.dllearner.algorithm.tbsl.exploration.Index;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class utils_new {
+
+public class Index_utils {
 
 	/**
 	 *  
 	 * @param string
 	 * @param fall 1=Property, 0=Resource, 2=OntologyClass/Yago, 2=resource+yago+ontlogy
-	 * @return
+	 * @return ArrayList with possible URIs gotten from the Index
 	 * @throws SQLException 
 	 */
-	public static ArrayList<String> searchIndex(String string, int fall, mySQLDictionary myindex) throws SQLException{
+	public static ArrayList<String> searchIndex(String string, int fall, SQLiteIndex myindex) throws SQLException{
 		
 		String originalString=string;
 		string=string.replace("_", " ");

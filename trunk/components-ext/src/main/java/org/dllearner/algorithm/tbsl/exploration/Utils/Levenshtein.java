@@ -1,4 +1,4 @@
-package org.dllearner.algorithm.tbsl.exploration.Sparql;
+package org.dllearner.algorithm.tbsl.exploration.Utils;
 
 
 import java.lang.Math;

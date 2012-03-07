@@ -27,7 +27,9 @@ import java.util.Set;
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.POS;
 
-import org.dllearner.algorithm.tbsl.exploration.sax.ParseXmlHtml;
+import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
+import org.dllearner.algorithm.tbsl.exploration.Utils.GetRessourcePropertys;
+import org.dllearner.algorithm.tbsl.exploration.Utils.Levenshtein;
 import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.sparql.BasicQueryTemplate;
@@ -62,7 +64,7 @@ public class SparqlObject {
 	static WordNet wordnet;
 	BasicTemplator btemplator;
 	Templator templator;
-	private static mySQLDictionary myindex; 
+	private static SQLiteIndex myindex; 
 	boolean only_best_levensthein_query;
 	static StanfordLemmatizer lemmatiser;
 	//one Minute
@@ -86,7 +88,7 @@ public class SparqlObject {
     	//templator = new Templator();
     	System.out.println("Loading SPARQL Templator Done\n");
     	System.out.println("Start Indexing");
-    	myindex = new mySQLDictionary();
+    	myindex = new SQLiteIndex();
     	
     	System.out.println("Done:Indexing");
     	

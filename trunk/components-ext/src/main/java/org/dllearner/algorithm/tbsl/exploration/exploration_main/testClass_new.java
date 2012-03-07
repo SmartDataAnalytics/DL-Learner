@@ -1,4 +1,4 @@
-package org.dllearner.algorithm.tbsl.exploration.Sparql;
+package org.dllearner.algorithm.tbsl.exploration.exploration_main;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,6 +13,11 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
+import org.dllearner.algorithm.tbsl.exploration.Sparql.Template;
+import org.dllearner.algorithm.tbsl.exploration.Sparql.TemplateBuilder;
+import org.dllearner.algorithm.tbsl.exploration.Sparql.queryInformation;
+
 public class testClass_new {
 
 	/**
@@ -26,15 +31,20 @@ public class testClass_new {
 		ArrayList<Template> temp_list_result = new ArrayList<Template>();
 		
 		TemplateBuilder testobject = new TemplateBuilder();
+		
+		String dateiname = "/home/swalter/Dokumente/Auswertung/";
+		long start = System.currentTimeMillis();
+		
+		
 		//String question = "Is the wife of president Obama called Michelle?";
-		//String question = "Who is the mayor of Berlin?";
-		//temp_list_result=testobject.createTemplates(question);
+		/*String question = "Which bridges are of the same type as the Manhattan Bridge?";
+		temp_list_result=testobject.createTemplates(question);*/
 		
 		
 		
 		ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
 		//if you dont want to use the hints in the questions, use false
-		list_of_structs=generateStruct("/home/swalter/Dokumente/dbpedia-train.xml");
+		list_of_structs=generateStruct(dateiname+"XMLDateien/dbpedia-train_small.xml");
 		System.out.println("Start Templating");
 		for(queryInformation s : list_of_structs){
 			System.out.println("In For Schleife");
@@ -46,10 +56,16 @@ public class testClass_new {
 			
 		}
 		
+		
+		long stop = System.currentTimeMillis();
+		System.out.println("Duration in ms: " + (stop - start));
+				
+				
 		String result ="";
 		for(Template t: temp_list_result){
 			//t.printAll();
 			result+="###### Template ######\n";
+			result+="question: "+t.getQuestion()+"\n";
 			result+="condition: "+t.getCondition()+"\n";
 			//System.out.println("hypotesen: "+hypothesen);
 			int anzahl = 1;
@@ -59,6 +75,7 @@ public class testClass_new {
 				for ( Hypothesis z : x){
 					result+="%%%%%%%%%%%"+"\n";
 					result+="Variable: "+z.getVariable()+"\n";
+					result+="Name: "+z.getName()+"\n";
 					result+="Uri: " + z.getUri()+"\n";
 					result+="Type: " + z.getType()+"\n";
 					result+="Rank: "+z.getRank()+"\n";
@@ -71,12 +88,17 @@ public class testClass_new {
 			result+="filter: "+t.getFilter()+"\n";
 			result+="OrderBy: "+t.getOrderBy()+"\n";
 			result+="limit: "+t.getLimit()+"\n";
-			result+="###### Template printed ######\n";
+			result+="Overalltime: "+t.getOverallTime()+"ms\n";
+			result+="Time for Templator: "+t.getTime_Templator()+"ms\n";
+			result+="////////////////////////////////////////////////////////////////////\n\n\n";
 		}
 		
+		result+="Time over generating All Templates: "+(stop-start)+"ms\n";
+		result+="Average Time for one Template: "+((stop-start)/temp_list_result.size())+"ms\n";
+		result+="Overall created Templates: "+temp_list_result.size();
 		//System.out.println(result);
 		
-		File file = new File("/home/swalter/Dokumente/Ausgabe_temp.txt");
+		File file = new File(dateiname+"Ausgabe"+stop+".txt");
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 
         bw.write(result);
@@ -160,9 +182,10 @@ private static ArrayList<queryInformation> generateStruct(String filename) {
 	    	Matcher m2 = p2.matcher(m1.group(1));
 	    	while(m2.find()){
 	    		System.out.println("Query: "+ m2.group(1));
-	    		query=m2.group(1).replace("<[CDATA[", "");
+	    		query=m2.group(1).replace("<![CDATA[", "");
 	    		query=query.replace("CDATA", "");
 	    		query=query.replace("CDATA", "");
+	    		query=query.replace("![", "");
 	    		query=query.replace("[", "");
 	    		query=query.replace("<", "");
 	    	}

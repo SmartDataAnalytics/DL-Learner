@@ -6,6 +6,7 @@ public class Hypothesis {
 private String variable;
 private String uri;
 private float rank;
+private String name;
 
 /**
  * RESOURCE,PROPERTY,UNSPEC
@@ -31,11 +32,12 @@ public void setRank(float rank) {
 	this.rank = rank;
 }
 
-public Hypothesis(String variable, String uri, String type, float rank){
-	setRank(rank);
-	setVariable(variable);
-	setUri(uri);
-	setType(type);
+public Hypothesis(String variable, String name, String uri, String type, float rank){
+	this.setRank(rank);
+	this.setVariable(variable);
+	this.setUri(uri);
+	this.setType(type);
+	this.setName(name);
 }
 
 public String getType() {
@@ -48,10 +50,17 @@ public void setType(String type) {
 public void printAll(){
 	System.out.println("%%%%%%%%%%%");
 	System.out.println("Variable: "+variable);
+	System.out.println("Name: "+name);
 	System.out.println("Uri: " + uri);
 	System.out.println("Type: " + type);
 	System.out.println("Rank: "+rank);
 	System.out.println("%%%%%%%%%%%");
+}
+public String getName() {
+	return name;
+}
+public void setName(String name) {
+	this.name = name;
 }
 
 }
