@@ -1,4 +1,4 @@
-package org.dllearner.algorithm.tbsl.exploration.Sparql;
+package org.dllearner.algorithm.tbsl.exploration.Index;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -15,11 +15,11 @@ import java.util.ArrayList;
 
 import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 
-public class mySQLDictionary {
+public class SQLiteIndex {
 	private Connection conn;
 	StanfordLemmatizer lemma;
 
-	public mySQLDictionary() throws ClassNotFoundException, SQLException {
+	public SQLiteIndex() throws ClassNotFoundException, SQLException {
 		// TODO Auto-generated constructor stub
 		Class.forName( "org.sqlite.JDBC" );
 		conn = DriverManager.getConnection("jdbc:sqlite::memory:");

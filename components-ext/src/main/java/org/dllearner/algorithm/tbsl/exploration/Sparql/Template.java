@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Template {
 
+	private ArrayList<ElementList_new> list_of_element_uri_pair = new ArrayList<ElementList_new>();
 	private ArrayList<ArrayList<String>> condition = new ArrayList<ArrayList<String>>();
 	private ArrayList<ArrayList<Hypothesis>> hypothesen = new ArrayList<ArrayList<Hypothesis>>();
 	private String selectTerm;
@@ -11,6 +12,9 @@ public class Template {
 	private String filter;
 	private String OrderBy;
 	private String limit;
+	private String question;
+	private float overallTime;
+	private float time_Templator;
 	
 	public String getHaving() {
 		return having;
@@ -45,13 +49,14 @@ public class Template {
 	}
 	
 	
-	public Template(ArrayList<ArrayList<String>>condition_new, String having_new, String filter_new, String SelectTerm_new, String OrderBy_new, String limit_new){
-		setCondition(condition_new);
-		setHaving(having_new);
-		setFilter(filter_new);
-		setOrderBy(OrderBy_new);
-		setLimit(limit_new);
-		setSelectTerm(SelectTerm_new);
+	public Template(ArrayList<ArrayList<String>>condition_new, String having_new, String filter_new, String SelectTerm_new, String OrderBy_new, String limit_new, String question_new){
+		this.setCondition(condition_new);
+		this.setHaving(having_new);
+		this.setFilter(filter_new);
+		this.setOrderBy(OrderBy_new);
+		this.setLimit(limit_new);
+		this.setSelectTerm(SelectTerm_new);
+		this.setQuestion(question_new);
 	}
 	public ArrayList<ArrayList<String>> getCondition() {
 		return condition;
@@ -73,6 +78,7 @@ public class Template {
 	
 	public void printAll(){
 		System.out.println("###### Template ######");
+		System.out.println("question: "+ question);
 		System.out.println("condition: "+condition);
 		//System.out.println("hypotesen: "+hypothesen);
 		int anzahl = 1;
@@ -91,6 +97,35 @@ public class Template {
 		System.out.println("limit: "+limit);
 		System.out.println("###### Template printed ######\n");
 	}
+	public String getQuestion() {
+		return question;
+	}
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+	public float getOverallTime() {
+		return overallTime;
+	}
+	public void setOverallTime(float overallTime) {
+		this.overallTime = overallTime;
+	}
+	public float getTime_Templator() {
+		return time_Templator;
+	}
+	public void setTime_Templator(float time_Templator) {
+		this.time_Templator = time_Templator;
+	}
+	public ArrayList<ElementList_new> getList_of_element_uri_pair() {
+		return list_of_element_uri_pair;
+	}
+	public void setList_of_element_uri_pair(ArrayList<ElementList_new> list_of_element_uri_pair) {
+		this.list_of_element_uri_pair = list_of_element_uri_pair;
+	}
+	
+	public void addToList_of_element_uri_pair(ElementList_new newElement) {
+		this.list_of_element_uri_pair.add(newElement);
+	}
+	
 
 }
 

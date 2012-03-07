@@ -1,10 +1,22 @@
 package org.dllearner.algorithm.tbsl.exploration.Sparql;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 
+import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
+import org.dllearner.algorithm.tbsl.exploration.Index.Index_utils;
 import org.dllearner.algorithm.tbsl.sparql.BasicQueryTemplate;
 import org.dllearner.algorithm.tbsl.sparql.Path;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Filter;
@@ -16,20 +28,54 @@ import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
 public class TemplateBuilder {
 
 static BasicTemplator btemplator;
-private static mySQLDictionary myindex;
+private static SQLiteIndex myindex;
 	
 	
 public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, SQLException{
 		
 		TemplateBuilder.btemplator = new BasicTemplator();
     	//btemplator.UNTAGGED_INPUT = false;
-		TemplateBuilder.myindex = new mySQLDictionary();
+		TemplateBuilder.myindex = new SQLiteIndex();
 	}
 		
 	
-	public ArrayList<Template> createTemplates(String question){
+	public ArrayList<Template> createTemplates(String question) throws IOException{
+		
+		long start = System.currentTimeMillis();
+		
 		ArrayList<Template> resultArrayList = new ArrayList<Template>();
-		Set<BasicQueryTemplate> querytemps = btemplator.buildBasicQueries(question);
+		Set<BasicQueryTemplate> querytemps =null;
+		querytemps = btemplator.buildBasicQueries(question);
+		
+		/*
+		 * check if templates were build, if not, safe the question and delete it for next time from the xml file.
+		 */
+		if(querytemps.contains("could not be parsed") || querytemps.isEmpty()){
+			String dateiname="/home/swalter/Dokumente/Auswertung/NotParsed.txt";
+			String result_string ="";
+			//Open the file for reading
+		     try {
+		       BufferedReader br = new BufferedReader(new FileReader(dateiname));
+		       String thisLine;
+			while ((thisLine = br.readLine()) != null) { // while loop begins here
+		         result_string+=thisLine+"\n";
+		       } // end while 
+		     } // end try
+		     catch (IOException e) {
+		       System.err.println("Error: " + e);
+		     }
+		     
+		     File file = new File(dateiname);
+		     BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+
+		        bw.write(result_string+"\n"+question);
+		        bw.flush();
+		        bw.close();
+    
+    
+		}
+		
+		long stop_template = System.currentTimeMillis();
      	for (BasicQueryTemplate bqt : querytemps) {
      		ArrayList<ArrayList<String>> condition = new ArrayList<ArrayList<String>>();
      		//ArrayList<ArrayList<Hypothesis>> hypotesen = new ArrayList<ArrayList<Hypothesis>>();
@@ -114,22 +160,24 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			 * SLOT_title: PROPERTY {title,name,label} mitfuehren
      			 */
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			     		
-     			Template template = new Template(condition, having, filter, selectTerm,OrderBy, limit);
+     			Template template = new Template(condition, having, filter, selectTerm,OrderBy, limit,question);
      			//TODO: Iterate over slots
      			ArrayList<Hypothesis> list_of_hypothesis = new ArrayList<Hypothesis>();
      			for(Slot slot : bqt.getSlots()){
+     				//System.out.println("Slot: "+slot.toString());
      				if(slot.toString().contains("UNSPEC")){
      					String tmp= slot.toString().replace(" UNSPEC {", "");
      					tmp=tmp.replace("}","");
      					String[] tmp_array = tmp.split(":");
-     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1], "UNSPEC", 0);
+     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "UNSPEC", 0);
+     					//tmp_hypothesis.printAll();
      					list_of_hypothesis.add(tmp_hypothesis);
      				}
      				if(slot.toString().contains("PROPERTY")){
      					String tmp= slot.toString().replace(" PROPERTY {", "");
      					tmp=tmp.replace("}","");
      					String[] tmp_array = tmp.split(":");
-     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1], "PROPERTY", 0);
+     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1],tmp_array[1], "PROPERTY", 0);
      					list_of_hypothesis.add(tmp_hypothesis);
      					
      				}
@@ -137,7 +185,7 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      					String tmp= slot.toString().replace(" RESOURCE {", "");
      					tmp=tmp.replace("}","");
      					String[] tmp_array = tmp.split(":");
-     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1], "RESOURCE", 0);
+     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "RESOURCE", 0);
      					list_of_hypothesis.add(tmp_hypothesis);
      				}
      			}
@@ -145,10 +193,13 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			
      			
      			for(Hypothesis x : list_of_hypothesis){
-     				if(x.getType().contains("RESOURCE")){
+     				if(x.getType().contains("RESOURCE")|| x.getType().contains("UNSPEC") ){
      					ArrayList<String> result= new ArrayList<String>();
      					try {
-							result = utils_new.searchIndex(x.getUri(), 3, myindex);
+     						/* here I have to check the hypothesis if I have an isA in my Condition,
+							* if so, only look up Yago and OntologyClass.
+							*/
+							result = Index_utils.searchIndex(x.getUri(), 3, myindex);
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -159,11 +210,18 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      						//String variable, String uri, String type, float rank
      						for(Hypothesis h : list_of_hypothesis){
      							if (h.getUri().equals(x.getUri())){
-     								Hypothesis new_h = new Hypothesis(h.getVariable(), s, h.getType(), 1);
-     								new_list.add(new_h);
+     								if(s!=null){
+     									Hypothesis new_h = new Hypothesis(h.getVariable(),h.getName(), s, h.getType(), 1);
+         								new_list.add(new_h);
+     								}
+     								else{
+     									Hypothesis new_h = new Hypothesis(h.getVariable(),h.getName(), h.getUri(), h.getType(), 1);
+         								new_list.add(new_h);
+     								}
+     								
      							}
      							else{
-     								Hypothesis new_h = new Hypothesis(h.getVariable(), h.getUri(), h.getType(), h.getRank());
+     								Hypothesis new_h = new Hypothesis(h.getVariable(),h.getName(), h.getUri(), h.getType(), h.getRank());
      								new_list.add(new_h);
      							}
      						}
@@ -174,20 +232,37 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			
      			
      			
- //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  			
+ //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+     			
+     			/*
+ 				 * safe lookups for properties, so we dont have to access sql database every time
+ 				 */
+ 				HashMap<String,String> hm = new HashMap<String, String>();
+ 				
      			for(ArrayList<Hypothesis> x : final_list_set_hypothesis){
+     				
+     				
      				for(Hypothesis h : x){
-     					if(h.getType().contains("PROPERTY") || h.getType().contains("UNSPEC")){
+     					
+     					//only if you have a Property or an Unspec, which still has no http:/dbpedia etc
+     					if(h.getType().contains("PROPERTY") || (h.getType().contains("UNSPEC")&& !h.getUri().contains("http"))){
          					ArrayList<String> result= new ArrayList<String>();
          					try {
-    							result = utils_new.searchIndex(h.getUri(), 1, myindex);
+         						if(hm.containsKey(h.getUri().toLowerCase())){
+         							result.add(hm.get(h.getUri().toLowerCase()));
+         						}
+         						else{
+         							result = Index_utils.searchIndex(h.getUri(), 1, myindex);
+         							if(!result.isEmpty())hm.put(h.getUri().toLowerCase(),result.get(0));
+         						}
     							if(!result.isEmpty()){
     								h.setUri(result.get(0));
         							h.setRank(1);
     							}
     							
     							else{
-    								String tmp = "http://dbpedia.org/ontology/"+h.getUri().toLowerCase();
+    								String tmp = "http://dbpedia.org/ontology/"+h.getUri().toLowerCase().replace(" ", "_");
+
     								h.setUri(tmp);
     								h.setRank(0);
     							}
@@ -200,8 +275,11 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			}
      			
      			template.setHypothesen(final_list_set_hypothesis);
+     			
+     			
+     			
      			//TODO: Take Template like it is and change Condition
-     			Template template_reverse_conditions = new Template(template.getCondition(), template.getHaving(), template.getFilter(), template.getSelectTerm(), template.getOrderBy(), template.getLimit());
+     			Template template_reverse_conditions = new Template(template.getCondition(), template.getHaving(), template.getFilter(), template.getSelectTerm(), template.getOrderBy(), template.getLimit(), template.getQuestion());
      			
      			//= template;
      			ArrayList<ArrayList<String>> condition_template_reverse_conditions = template_reverse_conditions.getCondition();
@@ -214,7 +292,15 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      				condition_reverse_new.add(new_list);
      			}
      			
+     			long stop = System.currentTimeMillis();
+     			template_reverse_conditions.setOverallTime(stop-start);
+     			template.setOverallTime(stop-start);
+     			
+     			template_reverse_conditions.setTime_Templator(stop_template-start);
+     			template.setTime_Templator(stop_template-start);
+     			
      			template_reverse_conditions.setCondition(condition_reverse_new);
+     			template_reverse_conditions.setHypothesen(template.getHypothesen());
 
      			resultArrayList.add(template);
      			resultArrayList.add(template_reverse_conditions);
