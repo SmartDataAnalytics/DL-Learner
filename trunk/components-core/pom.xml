@@ -102,6 +102,10 @@
 					<artifactId>arq</artifactId>
 					<groupId>com.hp.hpl.jena</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>xercesImpl</artifactId>
+					<groupId>xerces</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -131,6 +135,12 @@
 		<dependency>
 				<groupId>org.apache.jena</groupId>
 				<artifactId>jena-arq</artifactId>
+				<exclusions>
+				<exclusion>
+					<artifactId>xercesImpl</artifactId>
+					<groupId>xerces</groupId>
+				</exclusion>
+			</exclusions>
 			</dependency>
 
 		<!--JSON is in Central -->
@@ -178,6 +188,12 @@
 		<dependency>
 				<groupId>org.apache.jena</groupId>
 				<artifactId>jena-core</artifactId>
+				<exclusions>
+				<exclusion>
+					<artifactId>xercesImpl</artifactId>
+					<groupId>xerces</groupId>
+				</exclusion>
+			</exclusions>
 			</dependency>
 
 		<dependency>
@@ -236,7 +252,6 @@
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-core</artifactId>
-				<version>3.5.0</version>
 			</dependency>
 	</dependencies>
 </project>
