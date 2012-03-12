@@ -64,7 +64,6 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
     @ConfigOption(name = "fileName", description = "relative or absolute path to KB file")
     private String fileName;
 
-    private OWLOntology owlOntology;
 
     /**
      * Default constructor (needed for reflection in ComponentManager).
@@ -112,7 +111,6 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
                     kb = KBParser.parseKBFile(f);
                 }
 
-                owlOntology = createOWLOntology(kb);
                 logger.trace("KB File " + getUrl() + " parsed successfully.");
             } else {
                 throw new ComponentInitException("No URL option or kb object given. Cannot initialise KBFile component.");
@@ -127,16 +125,9 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
         }
     }
 
-    /**
-     * Create the OWL Ontology.
-     *
-     * @param kb The kb to create the ontology on top of.
-     * @return The OWL Ontology
-     */
-    private OWLOntology createOWLOntology(KB kb) {
-        //This call is potentially dangerous in a multi-threaded(web) environment - I believe it returns a singleton instance
-        // There are ways around this, but getting it to work single threaded first.
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+    @Override
+    public OWLOntology createOWLOntology(OWLOntologyManager manager) {
+
         IRI ontologyURI = IRI.create("http://example.com");
         OWLOntology ontology;
         try {
@@ -151,10 +142,10 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
     }
 
     /*
-      * (non-Javadoc)
-      *
-      * @see org.dllearner.core.KnowledgeSource#toDIG()
-      */
+    * (non-Javadoc)
+    *
+    * @see org.dllearner.core.KnowledgeSource#toDIG()
+    */
     @Override
     public String toDIG(URI kbURI) {
         return DIGConverter.getDIGString(kb, kbURI).toString();
@@ -201,10 +192,5 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }
-
-    @Override
-    public OWLOntology getOWLOntology() {
-        return owlOntology;
     }
 }

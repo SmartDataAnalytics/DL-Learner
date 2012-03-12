@@ -22,6 +22,7 @@ package org.dllearner.kb;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,7 +34,6 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
-import org.dllearner.core.config.ListStringEditor;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
@@ -41,6 +41,10 @@ import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.KB;
 import org.dllearner.reasoning.OWLAPIDIGConverter;
 import org.dllearner.utilities.URLencodeUTF8;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * @author Jens Lehmann
@@ -49,7 +53,7 @@ import org.dllearner.utilities.URLencodeUTF8;
  *         SH: I added SPARQL capabilities.  Either URL is set directly or the basedir and filename is set or the URL and the SPARQL query is set
  */
 @ComponentAnn(name = "OWL File", shortName = "owlfile", version = 0.9)
-public class OWLFile extends AbstractKnowledgeSource {
+public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource {
 
     private static Logger logger = Logger.getLogger(OWLFile.class);
 
@@ -133,8 +137,21 @@ public class OWLFile extends AbstractKnowledgeSource {
                 throw new RuntimeException(e);
             }
         }
+
     }
 
+    @Override
+    public OWLOntology createOWLOntology(OWLOntologyManager manager) {
+
+        try {
+            OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI.create(getURL().toURI()));
+            return ontology;
+        } catch (OWLOntologyCreationException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /*
     * (non-Javadoc)

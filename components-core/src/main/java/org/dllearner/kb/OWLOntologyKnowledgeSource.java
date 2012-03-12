@@ -1,6 +1,7 @@
 package org.dllearner.kb;
 
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,11 +13,11 @@ import org.semanticweb.owlapi.model.OWLOntology;
  */
 public interface OWLOntologyKnowledgeSource {
 
-
     /**
-     * Get the OWL Ontology that this object represents.
+     * Create an OWL Ontology associated with the specified manager.
      *
-     * @return The OWL ontology that this object represents.
+     * @param manager The manager to associate the new ontology with.
+     * @return The result ontology
      */
-    public OWLOntology getOWLOntology();
+    public OWLOntology createOWLOntology(OWLOntologyManager manager);
 }
