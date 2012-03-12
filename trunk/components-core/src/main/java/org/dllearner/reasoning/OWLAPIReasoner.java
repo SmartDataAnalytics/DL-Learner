@@ -30,6 +30,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.*;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.owl.*;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
@@ -209,17 +210,25 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                 // all other sources are converted to KB and then to an
                 // OWL API ontology
             } else {
+
+                //KB Files
                 KB kb = source.toKB();
+
+                if(source instanceof OWLOntologyKnowledgeSource){
+                    ontology = ((OWLOntologyKnowledgeSource) source).getOWLOntology();
+                } else {
+
 //				System.out.println(kb.toString(null,null));
 
-                IRI ontologyURI = IRI.create("http://example.com");
-                ontology = null;
-                try {
-                    ontology = manager.createOntology(ontologyURI);
-                } catch (OWLOntologyCreationException e) {
-                    throw new RuntimeException(e);
+                    IRI ontologyURI = IRI.create("http://example.com");
+                    ontology = null;
+                    try {
+                        ontology = manager.createOntology(ontologyURI);
+                    } catch (OWLOntologyCreationException e) {
+                        throw new RuntimeException(e);
+                    }
+                    OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
                 }
-                OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
                 owlAPIOntologies.add(ontology);
                 allImports.add(ontology);
                 atomicConcepts.addAll(kb.findAllAtomicConcepts());
