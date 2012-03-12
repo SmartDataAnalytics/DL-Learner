@@ -46,7 +46,6 @@ import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
@@ -153,25 +152,23 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         for (AbstractKnowledgeSource source : sources) {
 
-            if (source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof OWLAPIOntology) {
-                URL url = null;
-                if (source instanceof OWLFile) {
-                    url = ((OWLFile) source).getURL();
-                }
+            if (source instanceof OWLOntologyKnowledgeSource) {
+                ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
+                owlAPIOntologies.add(ontology);
+            }
 
-                try {
+            if (source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof OWLAPIOntology) {
 
                     if (source instanceof OWLAPIOntology) {
                         ontology = ((OWLAPIOntology) source).getOWLOntolgy();
                         manager = ontology.getOWLOntologyManager();
+                        owlAPIOntologies.add(ontology);
                     } else if (source instanceof SparqlKnowledgeSource) {
                         ontology = ((SparqlKnowledgeSource) source).getOWLAPIOntology();
                         manager = ontology.getOWLOntologyManager();
-                    } else {
-                        ontology = manager.loadOntologyFromOntologyDocument(IRI.create(url.toURI()));
+                        owlAPIOntologies.add(ontology);
                     }
 
-                    owlAPIOntologies.add(ontology);
                     directImports.addAll(ontology.getImportsDeclarations());
                     try {
                         // imports includes the ontology itself
@@ -180,33 +177,28 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                         allImports.addAll(imports);
 
 //					System.out.println(imports);
-                        for (OWLOntology ont : imports) {
-                            classes.addAll(ont.getClassesInSignature());
-                            owlObjectProperties.addAll(ont.getObjectPropertiesInSignature());
-                            owlDatatypeProperties.addAll(ont.getDataPropertiesInSignature());
-                            owlIndividuals.addAll(ont.getIndividualsInSignature());
-                        }
-
-                    } catch (UnknownOWLOntologyException uooe) {
-                        logger.error("UnknownOWLOntologyException occured, imports were not loaded! This is a bug, which has not been fixed yet.");
+                    for (OWLOntology ont : imports) {
+                        classes.addAll(ont.getClassesInSignature());
+                        owlObjectProperties.addAll(ont.getObjectPropertiesInSignature());
+                        owlDatatypeProperties.addAll(ont.getDataPropertiesInSignature());
+                        owlIndividuals.addAll(ont.getIndividualsInSignature());
                     }
 
-                    // if several knowledge sources are included, then we can only
-                    // guarantee that the base URI is from one of those sources (there
-                    // can't be more than one); but we will take care that all prefixes are
-                    // correctly imported
-                    OWLOntologyFormat format = manager.getOntologyFormat(ontology);
-                    if (format instanceof PrefixOWLOntologyFormat) {
-                        prefixes.putAll(((PrefixOWLOntologyFormat) format).getPrefixName2PrefixMap());
-                        baseURI = ((PrefixOWLOntologyFormat) format).getDefaultPrefix();
-                        prefixes.remove("");
-                    }
-
-                } catch (OWLOntologyCreationException e) {
-                    throw new RuntimeException(e);
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
+                } catch (UnknownOWLOntologyException uooe) {
+                    logger.error("UnknownOWLOntologyException occured, imports were not loaded! This is a bug, which has not been fixed yet.");
                 }
+
+                // if several knowledge sources are included, then we can only
+                // guarantee that the base URI is from one of those sources (there
+                // can't be more than one); but we will take care that all prefixes are
+                // correctly imported
+                OWLOntologyFormat format = manager.getOntologyFormat(ontology);
+                if (format instanceof PrefixOWLOntologyFormat) {
+                    prefixes.putAll(((PrefixOWLOntologyFormat) format).getPrefixName2PrefixMap());
+                    baseURI = ((PrefixOWLOntologyFormat) format).getDefaultPrefix();
+                    prefixes.remove("");
+                }
+
                 // all other sources are converted to KB and then to an
                 // OWL API ontology
             } else {
@@ -214,12 +206,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                 //KB Files
                 KB kb = source.toKB();
 
-                if(source instanceof OWLOntologyKnowledgeSource){
-                    ontology = ((OWLOntologyKnowledgeSource) source).getOWLOntology();
-                } else {
-
-//				System.out.println(kb.toString(null,null));
-
+                if (!(source instanceof OWLOntologyKnowledgeSource)) {
+                    //Not sure if this will ever get hit, but leaving in for backward compatibility.
                     IRI ontologyURI = IRI.create("http://example.com");
                     ontology = null;
                     try {
@@ -228,8 +216,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                         throw new RuntimeException(e);
                     }
                     OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
+                    owlAPIOntologies.add(ontology);
                 }
-                owlAPIOntologies.add(ontology);
+                
                 allImports.add(ontology);
                 atomicConcepts.addAll(kb.findAllAtomicConcepts());
                 atomicRoles.addAll(kb.findAllAtomicRoles());
@@ -238,6 +227,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             }
         }
         try {
+            //The following line illustrates a problem with using different OWLOntologyManagers.  This can manifest itself if we have multiple sources who were created with different manager instances.
+            //ontology = OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
             ontology = manager.createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
             //we have to add all import declarations manually here, because this are no axioms
             List<OWLOntologyChange> addImports = new ArrayList<OWLOntologyChange>();
