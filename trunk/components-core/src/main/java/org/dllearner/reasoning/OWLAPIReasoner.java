@@ -26,12 +26,14 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.*;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.SparqlSimpleExtractor;
 import org.dllearner.utilities.owl.*;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -150,14 +152,14 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         Set<OWLImportsDeclaration> directImports = new HashSet<OWLImportsDeclaration>();
 
-        for (AbstractKnowledgeSource source : sources) {
+        for (KnowledgeSource source : sources) {
 
             if (source instanceof OWLOntologyKnowledgeSource) {
                 ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
                 owlAPIOntologies.add(ontology);
             }
 
-            if (source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof OWLAPIOntology) {
+            if (source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof SparqlSimpleExtractor || source instanceof OWLAPIOntology) {
 
                     if (source instanceof OWLAPIOntology) {
                         ontology = ((OWLAPIOntology) source).getOWLOntolgy();
@@ -167,6 +169,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                         ontology = ((SparqlKnowledgeSource) source).getOWLAPIOntology();
                         manager = ontology.getOWLOntologyManager();
                         owlAPIOntologies.add(ontology);
+                    } else if(source instanceof SparqlSimpleExtractor) {
+                    	// TODO
                     }
 
                     directImports.addAll(ontology.getImportsDeclarations());
@@ -204,7 +208,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             } else {
 
                 //KB Files
-                KB kb = source.toKB();
+                KB kb = ((AbstractKnowledgeSource)source).toKB();
 
                 if (!(source instanceof OWLOntologyKnowledgeSource)) {
                     //Not sure if this will ever get hit, but leaving in for backward compatibility.

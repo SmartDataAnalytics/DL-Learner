@@ -57,8 +57,8 @@ public class OxtractorHelper {
 	 */
 	public static void main(String[] args) {
 		OxtractorHelper oh = new OxtractorHelper("http://live.dbpedia.org/sparql","http://dbpedia.org");
-		System.out.println(oh.getInstances("http://dbpedia.org/resource/Category:Cities_in_Saxony"));
-		System.out.println(oh.getCategories("room"));
+//		System.out.println(oh.getInstances("http://dbpedia.org/resource/Category:Cities_in_Saxony"));
+		System.out.println(oh.getCategories("Kitchen"));
 	}
 
 }

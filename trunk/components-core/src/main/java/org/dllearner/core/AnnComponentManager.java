@@ -79,6 +79,7 @@ public class AnnComponentManager {
             "org.dllearner.kb.OWLFile",
             "org.dllearner.kb.SparqlEndpointKS",
             "org.dllearner.kb.sparql.SparqlKnowledgeSource",
+            "org.dllearner.kb.sparql.SparqlSimpleExtractor",
             "org.dllearner.learningproblems.PosNegLPStandard",
             "org.dllearner.learningproblems.FuzzyPosNegLPStandard",
             "org.dllearner.learningproblems.PosOnlyLP",
