@@ -1780,7 +1780,7 @@ JWNLException {
 					/*
 					 * Third try lemmatised with like
 					 */ 
-				 ArrayList<String> tmp=myindex.getResourceURILike(lemmatiser.stem(string.toLowerCase()));
+				 ArrayList<String> tmp=myindex.getResourceURILike(lemmatiser.stem(string.toLowerCase()),string);
 				 double highestNLD=0;
 				 String bestWord="";
 				 try{
@@ -1830,7 +1830,7 @@ JWNLException {
 					/*
 					 * Third try lemmatised with like
 					 */ 
-				 ArrayList<String> tmp=myindex.getontologyClassURILike(lemmatiser.stem(string.toLowerCase()));
+				 ArrayList<String> tmp=myindex.getontologyClassURILike(lemmatiser.stem(string.toLowerCase()),string);
 				 double highestNLD=0;
 				 String bestWord="";
 				 try{
@@ -1866,7 +1866,7 @@ JWNLException {
 					/*
 					 * Third try lemmatised with like
 					 */ 
-				 ArrayList<String> tmp=myindex.getYagoURILike(lemmatiser.stem(string.toLowerCase()));
+				 ArrayList<String> tmp=myindex.getYagoURILike(lemmatiser.stem(string.toLowerCase()),string);
 				 double highestNLD=0;
 				 String bestWord="";
 				 try{

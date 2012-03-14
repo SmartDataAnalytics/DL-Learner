@@ -32,38 +32,60 @@ public class testClass_new {
 		
 		TemplateBuilder testobject = new TemplateBuilder();
 		
-		String dateiname = "/home/swalter/Dokumente/Auswertung/";
+		String filepath = "/home/swalter/Dokumente/Auswertung/";
+		//String file="very_small.xml";
+		String file="dbpedia-train.xml";
 		long start = System.currentTimeMillis();
 		
 		
 		//String question = "Is the wife of president Obama called Michelle?";
-		/*String question = "Which bridges are of the same type as the Manhattan Bridge?";
-		temp_list_result=testobject.createTemplates(question);*/
+		String question = "Who is the mayor of Berlin?";
+		temp_list_result=testobject.createTemplates(question);
+		for(Template t : temp_list_result){
+			t.printAll();
+		}
 		
 		
 		
 		ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
-		//if you dont want to use the hints in the questions, use false
-		list_of_structs=generateStruct(dateiname+"XMLDateien/dbpedia-train_small.xml");
-		System.out.println("Start Templating");
+		
+		/*
+		 * Generate Templates
+		 */
+		/*list_of_structs=generateStruct(filepath+"XMLDateien/"+file);
 		for(queryInformation s : list_of_structs){
-			System.out.println("In For Schleife");
 			ArrayList<Template> temp_list = new ArrayList<Template>();
 			temp_list=testobject.createTemplates(s.getQuery().replace("<[CDATA[", "").replace("]]>", ""));
 			for(Template t : temp_list){
 				temp_list_result.add(t);
 			}
 			
-		}
+		}*/
 		
+		
+		/*
+		 * Get Elements for Each Resource and Class
+		 */
 		
 		long stop = System.currentTimeMillis();
 		System.out.println("Duration in ms: " + (stop - start));
 				
-				
-		String result ="";
+		
+		/*
+		 * Write Results in File
+		 */
+		writeTemplatesInFile(temp_list_result,filepath,file,start,stop );
+        
+	}
+	
+
+	private static void writeTemplatesInFile(ArrayList<Template> temp_list_result, String filepath,String given_file, float start, float stop ) throws IOException{
+		File file = new File(filepath+"Ausgabe"+stop+given_file.replace(".xml", "")+".txt");
+        BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+        int anzahl1 =1;
 		for(Template t: temp_list_result){
 			//t.printAll();
+			String result ="";
 			result+="###### Template ######\n";
 			result+="question: "+t.getQuestion()+"\n";
 			result+="condition: "+t.getCondition()+"\n";
@@ -91,23 +113,23 @@ public class testClass_new {
 			result+="Overalltime: "+t.getOverallTime()+"ms\n";
 			result+="Time for Templator: "+t.getTime_Templator()+"ms\n";
 			result+="////////////////////////////////////////////////////////////////////\n\n\n";
+			bw.write(result+"\n");
+			//bw.flush();
+			System.out.println("Done "+anzahl1);
+			anzahl1 +=1;
+			
 		}
-		
+		String result="";
 		result+="Time over generating All Templates: "+(stop-start)+"ms\n";
 		result+="Average Time for one Template: "+((stop-start)/temp_list_result.size())+"ms\n";
 		result+="Overall created Templates: "+temp_list_result.size();
 		//System.out.println(result);
 		
-		File file = new File(dateiname+"Ausgabe"+stop+".txt");
-        BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 
         bw.write(result);
         bw.flush();
         bw.close();
-        
 	}
-	
-
 
 private static ArrayList<queryInformation> generateStruct(String filename) {
 	System.out.println("In generate Struct");
@@ -158,13 +180,13 @@ private static ArrayList<queryInformation> generateStruct(String filename) {
     }
     ArrayList<queryInformation> querylist = new ArrayList<queryInformation>();
     if(string.contains("</question><question")){
-    	System.out.println("true");
+    	//System.out.println("true");
     }
     else System.out.println("false");
     String [] bla = string.split("</question><question");
-    System.out.println(bla.length);
+    //System.out.println(bla.length);
     for(String s : bla){
-    	System.out.println("in bla");
+    	//System.out.println("in bla");
     	String query="";
     	String type="";
    	 	boolean fusion=false;
@@ -181,7 +203,7 @@ private static ArrayList<queryInformation> generateStruct(String filename) {
     		Pattern p2= Pattern.compile(".*><string>(.*)");
 	    	Matcher m2 = p2.matcher(m1.group(1));
 	    	while(m2.find()){
-	    		System.out.println("Query: "+ m2.group(1));
+	    		//System.out.println("Query: "+ m2.group(1));
 	    		query=m2.group(1).replace("<![CDATA[", "");
 	    		query=query.replace("CDATA", "");
 	    		query=query.replace("CDATA", "");

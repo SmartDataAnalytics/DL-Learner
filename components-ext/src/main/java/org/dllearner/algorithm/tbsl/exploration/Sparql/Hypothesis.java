@@ -1,6 +1,5 @@
 package org.dllearner.algorithm.tbsl.exploration.Sparql;
 
-import edu.stanford.nlp.io.EncodingPrintWriter.out;
 
 public class Hypothesis {
 private String variable;
