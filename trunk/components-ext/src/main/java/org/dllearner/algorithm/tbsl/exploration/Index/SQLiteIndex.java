@@ -13,11 +13,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import org.dllearner.algorithm.tbsl.exploration.Utils.Levenshtein;
 import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 
 public class SQLiteIndex {
 	private Connection conn;
 	StanfordLemmatizer lemma;
+	double lim_levensthein=0.84;
 
 	public SQLiteIndex() throws ClassNotFoundException, SQLException {
 		// TODO Auto-generated constructor stub
@@ -63,17 +65,20 @@ WHERE City LIKE '%tav%'
 		  
 	  }
 	
-	public ArrayList<String> getResourceURILike(String string) throws SQLException{
+	public ArrayList<String> getResourceURILike(String string, String original_string) throws SQLException{
 		/*  while(rs.next())
 	      {*/
 		  Statement stat = conn.createStatement();
 		  ResultSet rs;
 		  ArrayList<String> result= new ArrayList<String>();
 		try {
-			rs = stat.executeQuery("select uri from resource where name like'"+string.toLowerCase()+"%';");
+			rs = stat.executeQuery("select * from resource where name like'"+string.toLowerCase()+"%';");
 			while(rs.next()){
-				System.out.println("Next: "+rs.getString("uri"));
-				result.add(rs.getString("uri"));
+				if(Levenshtein.nld(rs.getString("name"), original_string)>lim_levensthein){
+					result.add(rs.getString("uri"));
+					System.out.print(rs.getString("name"));
+					System.out.print("  "+rs.getString("uri")+"\n");
+				}
 			}
 			return result;
 		} catch (Exception e) {
@@ -84,17 +89,21 @@ WHERE City LIKE '%tav%'
 		  
 	  }
 	
-	public ArrayList<String> getYagoURILike(String string) throws SQLException{
+	public ArrayList<String> getYagoURILike(String string, String original_string) throws SQLException{
 		/*  while(rs.next())
 	      {*/
 		  Statement stat = conn.createStatement();
 		  ResultSet rs;
 		  ArrayList<String> result= new ArrayList<String>();
 		try {
-			rs = stat.executeQuery("select uri from yago where name like'"+string.toLowerCase()+"%';");
+			rs = stat.executeQuery("select * from yago where name like'"+string.toLowerCase()+"%';");
 			while(rs.next()){
-				System.out.println("Next: "+rs.getString("uri"));
-				result.add(rs.getString("uri"));
+				//System.out.println("Next: "+rs.getString("uri"));
+				if(Levenshtein.nld(rs.getString("name"), original_string)>lim_levensthein){
+					result.add(rs.getString("uri"));
+					System.out.print(rs.getString("name"));
+					System.out.print("  "+rs.getString("uri")+"\n");
+				}
 			}
 			return result;
 		} catch (Exception e) {
@@ -167,15 +176,18 @@ WHERE City LIKE '%tav%'
 	
 		  
 	  }
-	public ArrayList<String> getontologyClassURILike(String string) throws SQLException{
+	public ArrayList<String> getontologyClassURILike(String string, String original_string) throws SQLException{
 		  Statement stat = conn.createStatement();
 		  ResultSet rs;
 		  ArrayList<String> result= new ArrayList<String>();
 		try {
-			rs = stat.executeQuery("select uri from ontologyClass where name like'"+string.toLowerCase()+"%';");
+			rs = stat.executeQuery("select * from ontologyClass where name like'"+string.toLowerCase()+"%';");
 			while(rs.next()){
-				System.out.println("Next: "+rs.getString("uri"));
-				result.add(rs.getString("uri"));
+				if(Levenshtein.nld(rs.getString("name"), original_string)>lim_levensthein){
+					result.add(rs.getString("uri"));
+					System.out.print(rs.getString("name"));
+					System.out.print("  "+rs.getString("uri")+"\n");
+				}
 			}
 			return result;
 		} catch (Exception e) {

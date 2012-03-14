@@ -161,7 +161,10 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			 */
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			     		
      			Template template = new Template(condition, having, filter, selectTerm,OrderBy, limit,question);
-     			//TODO: Iterate over slots
+     			
+     			boolean add_reverse_template = true;
+     			
+     			
      			ArrayList<Hypothesis> list_of_hypothesis = new ArrayList<Hypothesis>();
      			for(Slot slot : bqt.getSlots()){
      				//System.out.println("Slot: "+slot.toString());
@@ -169,9 +172,26 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      					String tmp= slot.toString().replace(" UNSPEC {", "");
      					tmp=tmp.replace("}","");
      					String[] tmp_array = tmp.split(":");
-     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "UNSPEC", 0);
-     					//tmp_hypothesis.printAll();
-     					list_of_hypothesis.add(tmp_hypothesis);
+     					for(ArrayList<String> x : condition){
+     						if(x.get(1).equals("isA") && x.get(2).equals("?"+tmp_array[0])){
+     							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "ISA", 0);
+     	     					//tmp_hypothesis.printAll();
+     	         				list_of_hypothesis.add(tmp_hypothesis);
+     	         				
+     	         				/*
+     	         				 * if you have already found an isA -Class-Pair, you dont have to creat the up-side-down, because it will be false
+     	         				 */
+     	            			add_reverse_template = false;
+     						}
+     						/*
+     						 * Make sure you dont have the case that a class is left of an isA
+     						 */
+     						else if (!x.get(1).equals("isA") && x.get(0).equals("?"+tmp_array[0])){
+     							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "UNSPEC", 0);
+     							//tmp_hypothesis.printAll();
+     							list_of_hypothesis.add(tmp_hypothesis);
+     						}
+     					}
      				}
      				if(slot.toString().contains("PROPERTY")){
      					String tmp= slot.toString().replace(" PROPERTY {", "");
@@ -193,13 +213,18 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			
      			
      			for(Hypothesis x : list_of_hypothesis){
-     				if(x.getType().contains("RESOURCE")|| x.getType().contains("UNSPEC") ){
+     				/*
+     				 * TODO: Change if ISA only ask classes, else resource
+     				 */
+     				if(x.getType().contains("RESOURCE")|| x.getType().contains("UNSPEC")|| x.getType().contains("ISA") ){
      					ArrayList<String> result= new ArrayList<String>();
      					try {
-     						/* here I have to check the hypothesis if I have an isA in my Condition,
-							* if so, only look up Yago and OntologyClass.
-							*/
-							result = Index_utils.searchIndex(x.getUri(), 3, myindex);
+     						if(x.getType().contains("ISA")){
+     							result = Index_utils.searchIndexForClass(x.getUri(), myindex);
+     						}
+     						else{
+     							result = Index_utils.searchIndexForResource(x.getUri(), myindex);
+     						}
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -252,7 +277,7 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
          							result.add(hm.get(h.getUri().toLowerCase()));
          						}
          						else{
-         							result = Index_utils.searchIndex(h.getUri(), 1, myindex);
+         							result = Index_utils.searchIndexForProperty(h.getUri(), myindex);
          							if(!result.isEmpty())hm.put(h.getUri().toLowerCase(),result.get(0));
          						}
     							if(!result.isEmpty()){
@@ -260,12 +285,12 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
         							h.setRank(1);
     							}
     							
-    							else{
+    					/*		else{
     								String tmp = "http://dbpedia.org/ontology/"+h.getUri().toLowerCase().replace(" ", "_");
 
     								h.setUri(tmp);
     								h.setRank(0);
-    							}
+    							}*/
     						} catch (SQLException e) {
     							// TODO Auto-generated catch block
     							e.printStackTrace();
@@ -278,18 +303,18 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			
      			
      			
-     			//TODO: Take Template like it is and change Condition
      			Template template_reverse_conditions = new Template(template.getCondition(), template.getHaving(), template.getFilter(), template.getSelectTerm(), template.getOrderBy(), template.getLimit(), template.getQuestion());
      			
-     			//= template;
      			ArrayList<ArrayList<String>> condition_template_reverse_conditions = template_reverse_conditions.getCondition();
      			ArrayList<ArrayList<String>> condition_reverse_new= new ArrayList<ArrayList<String>>();
-     			for (ArrayList<String> x : condition_template_reverse_conditions){
-     				ArrayList<String> new_list = new ArrayList<String>();
-     				new_list.add(x.get(2));
-     				new_list.add(x.get(1));
-     				new_list.add(x.get(0));
-     				condition_reverse_new.add(new_list);
+     			if(add_reverse_template){
+     				for (ArrayList<String> x : condition_template_reverse_conditions){
+         				ArrayList<String> new_list = new ArrayList<String>();
+         				new_list.add(x.get(2));
+         				new_list.add(x.get(1));
+         				new_list.add(x.get(0));
+         				condition_reverse_new.add(new_list);
+         			}
      			}
      			
      			long stop = System.currentTimeMillis();
@@ -303,7 +328,7 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			template_reverse_conditions.setHypothesen(template.getHypothesen());
 
      			resultArrayList.add(template);
-     			resultArrayList.add(template_reverse_conditions);
+     			if(add_reverse_template) resultArrayList.add(template_reverse_conditions);
      		}
      	}
      	/*for(Template temp : resultArrayList){

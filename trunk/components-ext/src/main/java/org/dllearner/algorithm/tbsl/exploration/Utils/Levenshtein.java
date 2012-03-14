@@ -2,7 +2,6 @@ package org.dllearner.algorithm.tbsl.exploration.Utils;
 
 
 import java.lang.Math;
-import java.math.BigDecimal;
 
 public class Levenshtein {
 
@@ -12,10 +11,8 @@ public class Levenshtein {
 		//System.out
 		double length=Math.max(orig.length(),eing.length());
 		
-		//if distance between both is zero, then the NLD must be one
-		//but because they are equal, return a very high value, so that that query will be taken.
 		if(result==0.0 ){
-			return 10.0;
+			return 1.0;
 		}
 		else{
 			
