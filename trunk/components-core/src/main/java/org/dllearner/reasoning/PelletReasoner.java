@@ -22,7 +22,6 @@ package org.dllearner.reasoning;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -78,6 +77,7 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -200,35 +200,30 @@ public class PelletReasoner extends AbstractReasonerComponent {
 
 		for (AbstractKnowledgeSource source : sources) {
 
+            if (source instanceof OWLOntologyKnowledgeSource) {
+                ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
+                owlAPIOntologies.add(ontology);
+            }
+
 			if (source instanceof OWLFile
 					|| source instanceof SparqlKnowledgeSource
 					|| source instanceof OWLAPIOntology) {
-				URL url = null;
-				if (source instanceof OWLFile) {
-					url = ((OWLFile) source).getURL();
-				}
 
-//				try {
+                if (source instanceof SparqlKnowledgeSource) {
+                    ontology = ((SparqlKnowledgeSource) source)
+                            .getOWLAPIOntology();
+                    manager = ontology.getOWLOntologyManager();
+                    owlAPIOntologies.add(ontology);
+                }
 
-					if (source instanceof OWLAPIOntology) {
-						ontology = ((OWLAPIOntology) source).getOWLOntolgy();
-						manager = ontology.getOWLOntologyManager();
-					} else if (source instanceof SparqlKnowledgeSource) {
-						ontology = ((SparqlKnowledgeSource) source)
-								.getOWLAPIOntology();
-						manager = ontology.getOWLOntologyManager();
-					} else {
-						ontology = manager.loadOntologyFromOntologyDocument(IRI.create(url));
-					}
-					
-					owlAPIOntologies.add(ontology);
-					// imports includes the ontology itself
-					Set<OWLOntology> imports = manager
-							.getImportsClosure(ontology);
-					allImports.addAll(imports);
-					loadedOntologies.addAll(imports);
-					// System.out.println(imports);
-				classes.addAll(ontology.getClassesInSignature(true));
+                // imports includes the ontology itself
+                Set<OWLOntology> imports = manager
+                        .getImportsClosure(ontology);
+                allImports.addAll(imports);
+                loadedOntologies.addAll(imports);
+
+                // System.out.println(imports);
+                classes.addAll(ontology.getClassesInSignature(true));
 				owlObjectProperties.addAll(ontology.getObjectPropertiesInSignature(true));
 				owlDatatypeProperties.addAll(ontology.getDataPropertiesInSignature(true));
 				owlIndividuals.addAll(ontology.getIndividualsInSignature(true));
@@ -474,42 +469,26 @@ public class PelletReasoner extends AbstractReasonerComponent {
 
 		for (AbstractKnowledgeSource source : sources) {
 
+            if (source instanceof OWLOntologyKnowledgeSource) {
+                ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
+                owlAPIOntologies.add(ontology);
+            }
 			if (source instanceof OWLFile
 					|| source instanceof SparqlKnowledgeSource
 					|| source instanceof OWLAPIOntology) {
-				URL url = null;
-				if (source instanceof OWLFile) {
-					url = ((OWLFile) source).getURL();
-				}
 
-//				try {
+                if (source instanceof SparqlKnowledgeSource) {
+                    ontology = ((SparqlKnowledgeSource) source).getOWLAPIOntology();
+                    manager = ontology.getOWLOntologyManager();
+                    owlAPIOntologies.add(ontology);
+                }
 
-					if (source instanceof OWLAPIOntology) {
-						ontology = ((OWLAPIOntology) source).getOWLOntolgy();
-						manager = ontology.getOWLOntologyManager();
-					} else if (source instanceof SparqlKnowledgeSource) {
-						ontology = ((SparqlKnowledgeSource) source).getOWLAPIOntology();
-						manager = ontology.getOWLOntologyManager();
-					} else {
-						try {
-							ontology = manager.loadOntologyFromOntologyDocument(IRI.create(url
-									.toURI()));
-						} catch (OWLOntologyCreationException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (URISyntaxException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					
-					owlAPIOntologies.add(ontology);
-					// imports includes the ontology itself
-					Set<OWLOntology> imports = manager
-							.getImportsClosure(ontology);
-					allImports.addAll(imports);
-					loadedOntologies.addAll(imports);
-					// System.out.println(imports);
+                // imports includes the ontology itself
+                Set<OWLOntology> imports = manager
+                        .getImportsClosure(ontology);
+                allImports.addAll(imports);
+                loadedOntologies.addAll(imports);
+                // System.out.println(imports);
 				classes.addAll(ontology.getClassesInSignature(true));
 				owlObjectProperties.addAll(ontology.getObjectPropertiesInSignature(true));
 				owlDatatypeProperties.addAll(ontology.getDataPropertiesInSignature(true));

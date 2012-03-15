@@ -21,55 +21,43 @@ package org.dllearner.kb;
 
 import java.io.File;
 import java.net.URI;
-import java.util.Iterator;
-import java.util.Set;
 
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.KB;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.dllearner.utilities.owl.OntologyToByteConverter;
+import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
+import org.semanticweb.owlapi.model.*;
 
-public class OWLAPIOntology extends AbstractKnowledgeSource {
+/**
+ * This class provides a wrapper around a single OWL Ontology.  However, due to threading issues it is not safe
+ * to allow access to ontologies created with an Ontology Manager which we do not control.
+ */
+public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource{
 	
-	private OWLOntology ontology;
-	private Set<OWLOntology> ontologies;
-	private Set<OWLClass> classes;
-	private Set<OWLObjectProperty> prop;
-	private Set<OWLDataProperty> dataProp;
-	private Set<OWLNamedIndividual> individuals;
+    private byte[] ontologyBytes;
+    private OntologyToByteConverter converter = new SimpleOntologyToByteConverter();
+
 	
-	public OWLAPIOntology() {
-		this(null);
-	}
-	
-	public OWLAPIOntology(OWLOntology onto)
-	{
-		this.ontology = onto;
-		classes = ontology.getClassesInSignature();
-		prop = ontology.getObjectPropertiesInSignature();
-		dataProp = ontology.getDataPropertiesInSignature();
-		individuals = ontology.getIndividualsInSignature();
-	}
+	public OWLAPIOntology(OWLOntology onto) {
+        ontologyBytes = converter.convert(onto);
+    }
 	
 	public static String getName() {
 		return "OWL API Ontology";
 	}
-	
-	@Override
+
+    @Override
+    public OWLOntology createOWLOntology(OWLOntologyManager manager) {
+        return converter.convert(ontologyBytes, manager);
+    }
+
+    @Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException 
 	{
 		
-	}
-	
-	public OWLOntology getOWLOntolgy()
-	{
-		return ontology;
 	}
 	
 	@Override
@@ -95,45 +83,22 @@ public class OWLAPIOntology extends AbstractKnowledgeSource {
 	{
 		return null;
 	}
-	
-	public void setOWLOntologies(Set<OWLOntology> onto) {
-		ontologies = onto;
-		System.out.println("ONTO: " + ontologies);
-		Iterator<OWLOntology> it = ontologies.iterator();
-		while(it.hasNext()) {
-			OWLOntology ont = it.next();
-			if(ont.getClassesInSignature() != null) {
-				classes.addAll(ont.getClassesInSignature());
-			}
-			if(ont.getObjectPropertiesInSignature() != null) {
-				prop.addAll(ont.getObjectPropertiesInSignature());
-			}
-			if(ont.getDataPropertiesInSignature() != null) {
-				dataProp.addAll(ont.getDataPropertiesInSignature());
-			}
-			if(ont.getIndividualsInSignature() != null) {
-				individuals.addAll(ont.getIndividualsInSignature());
-			}
-		}
-	}
-	
-	public Set<OWLOntology> getOWLOnntologies() {
-		return ontologies;
-	}
-	
-	public Set<OWLClass> getOWLClasses() {
-		return classes;
-	}
-	
-	public Set<OWLObjectProperty> getOWLObjectProperies() {
-		return prop;
-	}
-	
-	public Set<OWLDataProperty> getOWLDataProperies() {
-		return dataProp;
-	}
-	
-	public Set<OWLNamedIndividual> getOWLIndividuals() {
-		return individuals;
-	}
+
+    /**
+     * Get the OntologyToByteConverter associated with this object.
+     *
+     * @return The OntologyToByteConverter associated with this object.
+     */
+    public OntologyToByteConverter getConverter() {
+        return converter;
+    }
+
+    /**
+     * Set the OntologyToByteConverter associated with this object.
+     *
+     * @param converter the OntologyToByteConverter to associate with this object.
+     */
+    public void setConverter(OntologyToByteConverter converter) {
+        this.converter = converter;
+    }
 }

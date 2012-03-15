@@ -22,7 +22,6 @@ package org.dllearner.reasoning.fuzzydll;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,6 +65,7 @@ import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -74,7 +74,6 @@ import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.RoleComparator;
-import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
@@ -246,53 +245,43 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		prefixes = new TreeMap<String,String>();
 		
 		for(AbstractKnowledgeSource source : sources) {
-			
-			if(source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof OWLAPIOntology) {
-				URL url=null;
-				if(source instanceof OWLFile){
-					 url = ((OWLFile)source).getURL();
-				}
 
-				try {
-					
-					if(source instanceof OWLAPIOntology) {
-						ontology = ((OWLAPIOntology)source).getOWLOntolgy();
-					} else if (source instanceof SparqlKnowledgeSource) { 
-						ontology = ((SparqlKnowledgeSource)source).getOWLAPIOntology();
-						manager = ontology.getOWLOntologyManager();
-					} else {
-						ontology = manager.loadOntologyFromOntologyDocument(IRI.create(url.toURI()));
-					}
-					
-					owlAPIOntologies.add(ontology);
-					// imports includes the ontology itself
-					Set<OWLOntology> imports = manager.getImportsClosure(ontology);
-					allImports.addAll(imports);
+            if (source instanceof OWLOntologyKnowledgeSource) {
+                ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
+                owlAPIOntologies.add(ontology);
+            }
+
+			if(source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof OWLAPIOntology) {
+
+                if (source instanceof SparqlKnowledgeSource) {
+                    ontology = ((SparqlKnowledgeSource) source).getOWLAPIOntology();
+                    manager = ontology.getOWLOntologyManager();
+                    owlAPIOntologies.add(ontology);
+                }
+
+                // imports includes the ontology itself
+                Set<OWLOntology> imports = manager.getImportsClosure(ontology);
+                allImports.addAll(imports);
 //					System.out.println(imports);
-					for(OWLOntology ont : imports) {
-						classes.addAll(ont.getClassesInSignature());
-						owlObjectProperties.addAll(ont.getObjectPropertiesInSignature());
-						owlDatatypeProperties.addAll(ont.getDataPropertiesInSignature());			
-						owlIndividuals.addAll(ont.getIndividualsInSignature());
-					}
-					
-					// if several knowledge sources are included, then we can only
-					// guarantee that the base URI is from one of those sources (there
-					// can't be more than one); but we will take care that all prefixes are
-					// correctly imported
-					OWLOntologyFormat format = manager.getOntologyFormat(ontology);
-					if(format instanceof PrefixOWLOntologyFormat) {
-						prefixes.putAll(((PrefixOWLOntologyFormat)format).getPrefixName2PrefixMap());
-						baseURI = ((PrefixOWLOntologyFormat) format).getDefaultPrefix();
-						prefixes.remove("");						
-					}
-					
-				} catch (OWLOntologyCreationException e) {
-					e.printStackTrace();
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				}
-			// all other sources are converted to KB and then to an
+                for (OWLOntology ont : imports) {
+                    classes.addAll(ont.getClassesInSignature());
+                    owlObjectProperties.addAll(ont.getObjectPropertiesInSignature());
+                    owlDatatypeProperties.addAll(ont.getDataPropertiesInSignature());
+                    owlIndividuals.addAll(ont.getIndividualsInSignature());
+                }
+
+                // if several knowledge sources are included, then we can only
+                // guarantee that the base URI is from one of those sources (there
+                // can't be more than one); but we will take care that all prefixes are
+                // correctly imported
+                OWLOntologyFormat format = manager.getOntologyFormat(ontology);
+                if (format instanceof PrefixOWLOntologyFormat) {
+                    prefixes.putAll(((PrefixOWLOntologyFormat) format).getPrefixName2PrefixMap());
+                    baseURI = ((PrefixOWLOntologyFormat) format).getDefaultPrefix();
+                    prefixes.remove("");
+                }
+
+                // all other sources are converted to KB and then to an
 			// OWL API ontology
 			} else {
 				KB kb = source.toKB();
