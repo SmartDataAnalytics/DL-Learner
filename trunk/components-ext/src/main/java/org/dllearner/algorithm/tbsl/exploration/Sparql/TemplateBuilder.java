@@ -172,26 +172,40 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      					String tmp= slot.toString().replace(" UNSPEC {", "");
      					tmp=tmp.replace("}","");
      					String[] tmp_array = tmp.split(":");
+     					boolean no_iaA_found=true;
      					for(ArrayList<String> x : condition){
      						if(x.get(1).equals("isA") && x.get(2).equals("?"+tmp_array[0])){
+     							no_iaA_found=false;
      							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "ISA", 0);
      	     					//tmp_hypothesis.printAll();
      	         				list_of_hypothesis.add(tmp_hypothesis);
      	         				
      	         				/*
-     	         				 * if you have already found an isA -Class-Pair, you dont have to creat the up-side-down, because it will be false
+     	         				 * if you have already found an isA -Class-Pair, you don't have to create the up-side-down, because it will be false
      	         				 */
      	            			add_reverse_template = false;
      						}
      						/*
-     						 * Make sure you dont have the case that a class is left of an isA
+     						 * Make sure you don't have the case that a class is left of an isA
      						 */
-     						else if (!x.get(1).equals("isA") && x.get(0).equals("?"+tmp_array[0])){
-     							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "UNSPEC", 0);
-     							//tmp_hypothesis.printAll();
+     						/*else if (!x.get(1).equals("isA") && x.get(0).equals("?"+tmp_array[0])){
+     							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "PROPERTY", 0);
+     						//tmp_hypothesis.printAll();
      							list_of_hypothesis.add(tmp_hypothesis);
      						}
+     						else if(!x.get(1).equals("isA") && x.get(2).equals("?"+tmp_array[0]) ){
+     							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "PROPERTY", 0);
+     							//tmp_hypothesis.printAll();
+     							list_of_hypothesis.add(tmp_hypothesis);
+     						}*/
      					}
+     					
+     					if(no_iaA_found){
+     						Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "PROPERTY", 0);
+ 							//tmp_hypothesis.printAll();
+ 							list_of_hypothesis.add(tmp_hypothesis);
+     					}
+     					
      				}
      				if(slot.toString().contains("PROPERTY")){
      					String tmp= slot.toString().replace(" PROPERTY {", "");
@@ -212,6 +226,12 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			ArrayList<ArrayList<Hypothesis>> final_list_set_hypothesis = new ArrayList<ArrayList<Hypothesis>>();
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			
      			
+     			/*System.out.println("Alle Hypothesen VOR der Verarbeitung");
+     			for(Hypothesis x : list_of_hypothesis){
+     				x.printAll();
+     			}
+     			System.out.println("Alle Hypothesen VOR der Verarbeitung  -  Done \n\n");
+     			*/
      			for(Hypothesis x : list_of_hypothesis){
      				/*
      				 * TODO: Change if ISA only ask classes, else resource
@@ -268,9 +288,11 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      				
      				
      				for(Hypothesis h : x){
+     					   			
      					
      					//only if you have a Property or an Unspec, which still has no http:/dbpedia etc
-     					if(h.getType().contains("PROPERTY") || (h.getType().contains("UNSPEC")&& !h.getUri().contains("http"))){
+     					//if(h.getType().contains("PROPERTY") || (h.getType().contains("UNSPEC")&& !h.getUri().contains("http"))){
+     					if(h.getType().contains("PROPERTY")){
          					ArrayList<String> result= new ArrayList<String>();
          					try {
          						if(hm.containsKey(h.getUri().toLowerCase())){
