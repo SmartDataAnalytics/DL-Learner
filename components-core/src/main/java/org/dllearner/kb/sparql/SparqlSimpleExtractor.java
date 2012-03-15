@@ -6,9 +6,12 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.kb.OWLOntologyKnowledgeSource;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 @ComponentAnn(name="efficient SPARQL fragment extractor", shortName="sparqls", version=0.1)
-public class SparqlSimpleExtractor implements KnowledgeSource {
+public class SparqlSimpleExtractor implements KnowledgeSource, OWLOntologyKnowledgeSource {
 
 	@ConfigOption(name="endpointURL", description="URL of the SPARQL endpoint", required=true)
 	private URL endpointURL = null;
@@ -38,5 +41,10 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
 	public void setEndpointURL(URL endpointURL) {
 		this.endpointURL = endpointURL;
 	}
-	
+
+    @Override
+    public OWLOntology createOWLOntology(OWLOntologyManager manager) {
+        //TODO Update this to return an ontology representation of what the reasoners should work with.  Build with the passed in manager instance.
+        return null;
+    }
 }

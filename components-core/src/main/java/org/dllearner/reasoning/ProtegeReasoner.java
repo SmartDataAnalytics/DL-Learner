@@ -258,12 +258,6 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 					|| source instanceof SparqlKnowledgeSource
 					|| source instanceof OWLAPIOntology) {
 
-                if (source instanceof SparqlKnowledgeSource) {
-                    ontology = ((SparqlKnowledgeSource) source).getOWLAPIOntology();
-                    manager = ontology.getOWLOntologyManager();
-                    owlAPIOntologies.add(ontology);
-                }
-
                 classes.addAll(ontology.getClassesInSignature(true));
 				owlObjectProperties.addAll(ontology.getObjectPropertiesInSignature(true));
 				owlDatatypeProperties.addAll(ontology.getDataPropertiesInSignature(true));
