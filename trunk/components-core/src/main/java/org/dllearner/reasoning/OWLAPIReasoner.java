@@ -45,6 +45,7 @@ import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
 import java.net.URI;
@@ -130,8 +131,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         stringDatatypeProperties = new TreeSet<DatatypeProperty>();
         individuals = new TreeSet<Individual>();
 
-        // create OWL API ontology manager
-        manager = OWLManager.createOWLOntologyManager();
+        // create OWL API ontology manager - make sure we use a new data factory so that we don't default to the static one which can cause problems in a multi threaded environment.
+        manager = OWLManager.createOWLOntologyManager(new OWLDataFactoryImpl());
 
         // it is a bit cumbersome to obtain all classes, because there
         // are no reasoner queries to obtain them => hence we query them
