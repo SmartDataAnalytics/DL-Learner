@@ -161,14 +161,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
             if (source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof SparqlSimpleExtractor || source instanceof OWLAPIOntology) {
 
-                    if (source instanceof SparqlKnowledgeSource) {
-                        ontology = ((SparqlKnowledgeSource) source).getOWLAPIOntology();
-                        manager = ontology.getOWLOntologyManager();
-                        owlAPIOntologies.add(ontology);
-                    } else if(source instanceof SparqlSimpleExtractor) {
-                    	// TODO
-                    }
-
                     directImports.addAll(ontology.getImportsDeclarations());
                     try {
                         // imports includes the ontology itself

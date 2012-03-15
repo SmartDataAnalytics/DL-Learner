@@ -209,13 +209,6 @@ public class PelletReasoner extends AbstractReasonerComponent {
 					|| source instanceof SparqlKnowledgeSource
 					|| source instanceof OWLAPIOntology) {
 
-                if (source instanceof SparqlKnowledgeSource) {
-                    ontology = ((SparqlKnowledgeSource) source)
-                            .getOWLAPIOntology();
-                    manager = ontology.getOWLOntologyManager();
-                    owlAPIOntologies.add(ontology);
-                }
-
                 // imports includes the ontology itself
                 Set<OWLOntology> imports = manager
                         .getImportsClosure(ontology);
@@ -476,12 +469,6 @@ public class PelletReasoner extends AbstractReasonerComponent {
 			if (source instanceof OWLFile
 					|| source instanceof SparqlKnowledgeSource
 					|| source instanceof OWLAPIOntology) {
-
-                if (source instanceof SparqlKnowledgeSource) {
-                    ontology = ((SparqlKnowledgeSource) source).getOWLAPIOntology();
-                    manager = ontology.getOWLOntologyManager();
-                    owlAPIOntologies.add(ontology);
-                }
 
                 // imports includes the ontology itself
                 Set<OWLOntology> imports = manager

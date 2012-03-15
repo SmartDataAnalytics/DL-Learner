@@ -47,6 +47,7 @@ import org.dllearner.core.options.StringSetConfigOption;
 import org.dllearner.core.options.StringTupleListConfigOption;
 import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.KB;
+import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
@@ -60,11 +61,14 @@ import org.dllearner.kb.manipulator.Rule.Months;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.utilities.owl.OntologyToByteConverter;
+import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * Represents the SPARQL Endpoint Component.
@@ -74,12 +78,14 @@ import com.jamonapi.MonitorFactory;
  * @author Sebastian Hellmann
  */
 @ComponentAnn(name = "SPARQL endpoint fragment", shortName = "sparqlfrag", version = 0.5)
-public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
+public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource{
 
 	private ProgressMonitor mon;
 	
 	private static final boolean debugExitAfterExtraction = false; // switches
 
+    private byte[] ontologyBytes;
+    private OntologyToByteConverter converter = new SimpleOntologyToByteConverter();
 
 //	private SparqlKnowledgeSourceConfigurator configurator;
 
@@ -107,7 +113,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 	private URL ontologyFragmentURL;
 
 	
-	private OWLOntology fragment;
 	
 	private Manipulator manipulator = null;
 	
@@ -337,9 +342,10 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 			}*/
 			extractionTime.stop();
 		
-			
-			fragment = m.getOWLAPIOntologyForNodes(seedNodes, saveExtractedFragment);
-			
+			// Do this so that we can support the OWLOntologyKnowledgeSource
+            // and can be thread safe.
+			OWLOntology fragment = m.getOWLAPIOntologyForNodes(seedNodes, saveExtractedFragment);
+            ontologyBytes = getConverter().convert(fragment);
 
 			logger.info("Finished collecting fragment. needed "+extractionTime.getLastValue()+" ms");
 
@@ -362,8 +368,13 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 			System.exit(0);
 		}
 	}
-	
-	public List<Node> extractParallel(){
+
+    @Override
+    public OWLOntology createOWLOntology(OWLOntologyManager manager) {
+        return getConverter().convert(ontologyBytes, manager);
+    }
+
+    public List<Node> extractParallel(){
 		return null;
 	}
 	
@@ -537,10 +548,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 		return ontologyFragmentURL;
 	}
 	
-	public OWLOntology getOWLAPIOntology() {
-		return fragment;
-	}
-
 	public boolean isUseCache() {
 		return useCache;
 	}
@@ -733,6 +740,39 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource {
 		this.cacheDir = cacheDir;
 	}
 
-	
+    /**
+     * Get the OntologyToByteConverter associated with this object.
+     *
+     * @return The OntologyToByteConverter associated with this object.
+     */
+    public OntologyToByteConverter getConverter() {
+        return converter;
+    }
 
+    /**
+     * Set the OntologyToByteConverter associated with this object.
+     *
+     * @param converter the OntologyToByteConverter to associate with this object.
+     */
+    public void setConverter(OntologyToByteConverter converter) {
+        this.converter = converter;
+    }
+
+    /**
+     * Accessor for getting the Ontology Bytes
+     *
+     * @return Get the underlying ontology bytes.
+     */
+    byte[] getOntologyBytes() {
+        return ontologyBytes;
+    }
+
+    /**
+     * Set the ontology bytes.
+     *
+     * @param ontologyBytes The byte array representation of the fragment.
+     */
+    void setOntologyBytes(byte[] ontologyBytes) {
+        this.ontologyBytes = ontologyBytes;
+    }
 }
