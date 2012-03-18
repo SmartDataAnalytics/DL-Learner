@@ -2,6 +2,8 @@ package org.dllearner.algorithm.tbsl.exploration.Index;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Index_utils {
@@ -15,7 +17,7 @@ public class Index_utils {
 	 */
 	public static ArrayList<String> searchIndex(String string, int fall, SQLiteIndex myindex) throws SQLException{
 		
-		String originalString=string;
+        
 		string=string.replace("_", " ");
 		string=string.replace("-", " ");
 		string=string.replace(".", " ");
@@ -54,8 +56,8 @@ public class Index_utils {
 	
 
 public static ArrayList<String> searchIndexForResource(String string, SQLiteIndex myindex) throws SQLException{
-		
-		string=string.replace("_", " ");
+	HashMap<String,Float> hm = new HashMap<String,Float>();
+string=string.replace("_", " ");
 		string=string.replace("-", " ");
 		string=string.replace(".", " ");
 		String result=null;
@@ -82,6 +84,15 @@ public static ArrayList<String> searchIndexForResource(String string, SQLiteInde
 	}
 
 public static ArrayList<String> searchIndexForProperty(String string, SQLiteIndex myindex) throws SQLException{
+	HashMap<String,Float> hm = new HashMap<String,Float>();
+
+    // adding or set elements in Map by put method key and value pair
+    /*
+     * 
+     * // autoboxing takes care of that.  
+map.put(23, 2.5f);  
+map.put(64, 4.83f);  
+     */
 	
 	string=string.replace("_", " ");
 	string=string.replace("-", " ");
@@ -91,14 +102,17 @@ public static ArrayList<String> searchIndexForProperty(String string, SQLiteInde
 	result=myindex.getPropertyURI(string.toLowerCase());
 	if(result!=null){
 		result_List.add(result);
+		hm.put(result, 1.0f);
 	}
 	else{
 		result_List.add("http://dbpedia.org/ontology/"+string.toLowerCase().replace(" ", "_"));
+		hm.put(result, 0.0f);
 	}
 	
 
 	
 	return result_List;
+	//return hm;
 }
 
 

@@ -160,7 +160,7 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			 * SLOT_title: PROPERTY {title,name,label} mitfuehren
      			 */
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			     		
-     			Template template = new Template(condition, having, filter, selectTerm,OrderBy, limit,question);
+     			Template template = new Template(condition,bqt.getQt().toString(), having, filter, selectTerm,OrderBy, limit,question);
      			
      			boolean add_reverse_template = true;
      			
@@ -226,12 +226,12 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			ArrayList<ArrayList<Hypothesis>> final_list_set_hypothesis = new ArrayList<ArrayList<Hypothesis>>();
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			
      			
-     			/*System.out.println("Alle Hypothesen VOR der Verarbeitung");
+     		/*	System.out.println("Alle Hypothesen VOR der Verarbeitung");
      			for(Hypothesis x : list_of_hypothesis){
      				x.printAll();
      			}
-     			System.out.println("Alle Hypothesen VOR der Verarbeitung  -  Done \n\n");
-     			*/
+     			System.out.println("Alle Hypothesen VOR der Verarbeitung  -  Done \n\n");*/
+     			
      			for(Hypothesis x : list_of_hypothesis){
      				/*
      				 * TODO: Change if ISA only ask classes, else resource
@@ -258,16 +258,19 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      								if(s!=null){
      									Hypothesis new_h = new Hypothesis(h.getVariable(),h.getName(), s, h.getType(), 1);
          								new_list.add(new_h);
+         								//new_h.printAll();
      								}
      								else{
      									Hypothesis new_h = new Hypothesis(h.getVariable(),h.getName(), h.getUri(), h.getType(), 1);
          								new_list.add(new_h);
+         								//new_h.printAll();
      								}
      								
      							}
      							else{
      								Hypothesis new_h = new Hypothesis(h.getVariable(),h.getName(), h.getUri(), h.getType(), h.getRank());
      								new_list.add(new_h);
+     								//new_h.printAll();
      							}
      						}
      						final_list_set_hypothesis.add(new_list);
@@ -275,7 +278,13 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      				}
      			}
      			
-     			
+     			/*System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung");
+     			for(ArrayList<Hypothesis> lh : final_list_set_hypothesis){
+     				for(Hypothesis x : lh){
+         				x.printAll();
+         			}
+     			}
+     			System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung  -  Done \n\n");*/
      			
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
      			
@@ -288,7 +297,7 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      				
      				
      				for(Hypothesis h : x){
-     					   			
+     					//h.printAll();		
      					
      					//only if you have a Property or an Unspec, which still has no http:/dbpedia etc
      					//if(h.getType().contains("PROPERTY") || (h.getType().contains("UNSPEC")&& !h.getUri().contains("http"))){
@@ -321,11 +330,23 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      				}
      			}
      			
+     			/*System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung");
+     			for(ArrayList<Hypothesis> lh : final_list_set_hypothesis){
+     				for(Hypothesis x : lh){
+         				x.printAll();
+         			}
+     			}
+     			
+     			System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung  -  Done \n\n");*/
+     			
+     			
+     			
+     			
      			template.setHypothesen(final_list_set_hypothesis);
      			
      			
      			
-     			Template template_reverse_conditions = new Template(template.getCondition(), template.getHaving(), template.getFilter(), template.getSelectTerm(), template.getOrderBy(), template.getLimit(), template.getQuestion());
+     			Template template_reverse_conditions = new Template(template.getCondition(),template.getQueryType(), template.getHaving(), template.getFilter(), template.getSelectTerm(), template.getOrderBy(), template.getLimit(), template.getQuestion());
      			
      			ArrayList<ArrayList<String>> condition_template_reverse_conditions = template_reverse_conditions.getCondition();
      			ArrayList<ArrayList<String>> condition_reverse_new= new ArrayList<ArrayList<String>>();
@@ -353,9 +374,13 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			if(add_reverse_template) resultArrayList.add(template_reverse_conditions);
      		}
      	}
-     	/*for(Template temp : resultArrayList){
+     	
+     	/*System.out.println("Nach allen Verarbeitungsschritten:");
+     	for(Template temp : resultArrayList){
      		temp.printAll();
-     	}*/
+     	}
+     	
+     	System.out.println("Nach allen Verarbeitungsschritten  -  DONE");*/
 		return resultArrayList;
 	}
 }
