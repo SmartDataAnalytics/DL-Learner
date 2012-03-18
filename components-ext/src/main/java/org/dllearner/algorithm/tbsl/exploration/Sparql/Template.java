@@ -13,6 +13,7 @@ public class Template {
 	private String OrderBy;
 	private String limit;
 	private String question;
+	private String queryType;
 	private float overallTime;
 	private float time_Templator;
 	
@@ -49,7 +50,7 @@ public class Template {
 	}
 	
 	
-	public Template(ArrayList<ArrayList<String>>condition_new, String having_new, String filter_new, String SelectTerm_new, String OrderBy_new, String limit_new, String question_new){
+	public Template(ArrayList<ArrayList<String>>condition_new, String queryType_new, String having_new, String filter_new, String SelectTerm_new, String OrderBy_new, String limit_new, String question_new){
 		this.setCondition(condition_new);
 		this.setHaving(having_new);
 		this.setFilter(filter_new);
@@ -57,6 +58,7 @@ public class Template {
 		this.setLimit(limit_new);
 		this.setSelectTerm(SelectTerm_new);
 		this.setQuestion(question_new);
+		this.setQueryType(queryType_new);
 	}
 	public ArrayList<ArrayList<String>> getCondition() {
 		return condition;
@@ -90,6 +92,7 @@ public class Template {
 			}
 		}
 		System.out.print("\n");
+		System.out.println("QueryType "+queryType);
 		System.out.println("selectTerm: "+selectTerm);
 		System.out.println("having: "+having);
 		System.out.println("filter: "+filter);
@@ -124,6 +127,12 @@ public class Template {
 	
 	public void addToList_of_element_uri_pair(ElementList_new newElement) {
 		this.list_of_element_uri_pair.add(newElement);
+	}
+	public String getQueryType() {
+		return queryType;
+	}
+	public void setQueryType(String queryType) {
+		this.queryType = queryType;
 	}
 	
 

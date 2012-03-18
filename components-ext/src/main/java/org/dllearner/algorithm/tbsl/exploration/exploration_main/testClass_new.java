@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +19,8 @@ import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Template;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.TemplateBuilder;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.queryInformation;
+import org.dllearner.algorithm.tbsl.exploration.Utils.Query;
+import org.dllearner.algorithm.tbsl.exploration.Utils.QueryPair;
 
 public class testClass_new {
 
@@ -37,13 +41,24 @@ public class testClass_new {
 		String file="dbpedia-train.xml";
 		long start = System.currentTimeMillis();
 		
+		/*
+		 * TODO: WHy is there no Hypothese for the question: "Who is the mayor of Berlin?"
+		 */
+		/*String question = "Is the wife of president Obama called Michelle?";
+		//String question = "Who is the mayor of Berlin?";
+		//temp_list_result=testobject.createTemplates(question);
 		
-		//String question = "Is the wife of president Obama called Michelle?";
-		String question = "Who is the mayor of Berlin?";
-		temp_list_result=testobject.createTemplates(question);
+		Map<QueryPair,String> tm = new HashMap<QueryPair, String>();
+		
 		for(Template t : temp_list_result){
-			t.printAll();
+			//t.printAll();
+			ArrayList<QueryPair> qp = Query.returnSetOfQueries(t);
+			for(QueryPair p : qp){
+				tm.put(p, t.getQuestion());  
+			}
 		}
+		
+		writeQueriesInFile(tm,filepath,file,start,stop );*/
 		
 		
 		
@@ -52,7 +67,7 @@ public class testClass_new {
 		/*
 		 * Generate Templates
 		 */
-		/*list_of_structs=generateStruct(filepath+"XMLDateien/"+file);
+		list_of_structs=generateStruct(filepath+"XMLDateien/"+file);
 		for(queryInformation s : list_of_structs){
 			ArrayList<Template> temp_list = new ArrayList<Template>();
 			temp_list=testobject.createTemplates(s.getQuery().replace("<[CDATA[", "").replace("]]>", ""));
@@ -60,7 +75,21 @@ public class testClass_new {
 				temp_list_result.add(t);
 			}
 			
-		}*/
+		}
+		/*
+		 * Create Query for each Template
+		 */
+		
+		Map<QueryPair,String> tm = new HashMap<QueryPair, String>();
+		
+		for(Template t : temp_list_result){
+			//t.printAll();
+			ArrayList<QueryPair> qp = Query.returnSetOfQueries(t);
+			for(QueryPair p : qp){
+				tm.put(p, t.getQuestion());  
+			}
+		}
+		
 		
 		
 		/*
@@ -74,7 +103,8 @@ public class testClass_new {
 		/*
 		 * Write Results in File
 		 */
-		writeTemplatesInFile(temp_list_result,filepath,file,start,stop );
+		writeQueriesInFile(tm,filepath,file,start,stop );
+		//writeTemplatesInFile(temp_list_result,filepath,file,start,stop );
         
 	}
 	
@@ -105,6 +135,7 @@ public class testClass_new {
 				}
 			}
 			result+="\n";
+			result+="queryType: "+t.getQueryType()+"\n";
 			result+="selectTerm: "+t.getSelectTerm()+"\n";
 			result+="having: "+t.getHaving()+"\n";
 			result+="filter: "+t.getFilter()+"\n";
@@ -130,6 +161,30 @@ public class testClass_new {
         bw.flush();
         bw.close();
 	}
+	
+	
+	private static void writeQueriesInFile(Map<QueryPair,String> tm, String filepath,String given_file, float start, float stop ) throws IOException{
+		File file = new File(filepath+"Queries"+stop+given_file.replace(".xml", "")+".txt");
+        BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+        String result="";
+        /*
+         * for(String key : map.keySet())
+    {
+      System.out.print("Key: " + key + " - ");
+      System.out.print("Value: " + map.get(key) + "\n");
+    }
+         */
+		for(QueryPair key : tm.keySet()){
+			result+=tm.get(key)+": "+key.getQuery()+" "+key.getRank()+"\n";
+		}
+
+        bw.write(result);
+        bw.flush();
+        bw.close();
+	}
+	
+	
+	
 
 private static ArrayList<queryInformation> generateStruct(String filename) {
 	System.out.println("In generate Struct");

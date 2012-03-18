@@ -28,8 +28,8 @@ import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.POS;
 
 import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
-import org.dllearner.algorithm.tbsl.exploration.Utils.GetRessourcePropertys;
 import org.dllearner.algorithm.tbsl.exploration.Utils.Levenshtein;
+import org.dllearner.algorithm.tbsl.exploration.Utils.ServerUtil;
 import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.sparql.BasicQueryTemplate;
@@ -582,11 +582,11 @@ public class SparqlObject {
 			 if(tmpcounter <=number_of_x_used){
 				 HashMap<String,String> propertiesleft = new HashMap<String, String>();
 				 HashMap<String,String> propertiesright = new HashMap<String, String>();
-				 GetRessourcePropertys property = new GetRessourcePropertys();
+			//	 GetRessourcePropertys property = new GetRessourcePropertys();
 
 				 try {
-					 propertiesleft=property.getPropertys(s,"LEFT",timeToTimeoutOnServer);
-					 propertiesright=property.getPropertys(s,"RIGHT",timeToTimeoutOnServer);
+					 propertiesleft=ServerUtil.sendServerPropertyRequest(s,"LEFT");
+					 propertiesright=ServerUtil.sendServerPropertyRequest(s,"RIGHT");
 				 }
 				 catch (Exception e){
 					 
@@ -709,7 +709,6 @@ public class SparqlObject {
 		
 		
 		 HashMap<String,String> properties = new HashMap<String, String>();
-		 GetRessourcePropertys property = new GetRessourcePropertys();
 		 
 		 Boolean goOnAfterProperty = true;
 		 
@@ -721,7 +720,7 @@ public class SparqlObject {
 		 
 		 //gets Propertys left or right from the resource!
 		 try {
-			 properties=property.getPropertys(queryObject.getHashValue(resource.toLowerCase()),sideOfProperty,timeToTimeoutOnServer);
+			 properties=ServerUtil.sendServerPropertyRequest(queryObject.getHashValue(resource.toLowerCase()),sideOfProperty);
 			if (properties==null){
 				
 				System.out.println("Begin:\n"+query +"\nError in getting Properties \n End");
@@ -844,14 +843,13 @@ public class SparqlObject {
 		}
 		 HashMap<String,String> propertiesOne = new HashMap<String, String>();
 		 HashMap<String,String> propertiesTwo = new HashMap<String, String>();
-		 GetRessourcePropertys property = new GetRessourcePropertys();
 		 Boolean goOnAfterProperty = true;
 		 
 		 //Get Properties for Resource in condition One and Two from Server
 		 try {
 
-			 propertiesOne=property.getPropertys(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyOne,timeToTimeoutOnServer);
-			 propertiesTwo=property.getPropertys(getUriFromIndex(resourceTwo.toLowerCase(),0),sideOfPropertyTwo,timeToTimeoutOnServer);
+			 propertiesOne=ServerUtil.sendServerPropertyRequest(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyOne);
+			 propertiesTwo=ServerUtil.sendServerPropertyRequest(getUriFromIndex(resourceTwo.toLowerCase(),0),sideOfPropertyTwo);
 			 
 			if (propertiesOne==null){
 				System.out.println("Begin:\n"+query +"\nError in getting Properties \n End");
