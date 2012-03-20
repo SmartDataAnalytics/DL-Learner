@@ -585,8 +585,8 @@ public class SparqlObject {
 			//	 GetRessourcePropertys property = new GetRessourcePropertys();
 
 				 try {
-					 propertiesleft=ServerUtil.sendServerPropertyRequest(s,"LEFT");
-					 propertiesright=ServerUtil.sendServerPropertyRequest(s,"RIGHT");
+					 propertiesleft=ServerUtil.getPropertiesForGivenResource(s,"LEFT");
+					 propertiesright=ServerUtil.getPropertiesForGivenResource(s,"RIGHT");
 				 }
 				 catch (Exception e){
 					 
@@ -720,7 +720,7 @@ public class SparqlObject {
 		 
 		 //gets Propertys left or right from the resource!
 		 try {
-			 properties=ServerUtil.sendServerPropertyRequest(queryObject.getHashValue(resource.toLowerCase()),sideOfProperty);
+			 properties=ServerUtil.getPropertiesForGivenResource(queryObject.getHashValue(resource.toLowerCase()),sideOfProperty);
 			if (properties==null){
 				
 				System.out.println("Begin:\n"+query +"\nError in getting Properties \n End");
@@ -848,8 +848,8 @@ public class SparqlObject {
 		 //Get Properties for Resource in condition One and Two from Server
 		 try {
 
-			 propertiesOne=ServerUtil.sendServerPropertyRequest(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyOne);
-			 propertiesTwo=ServerUtil.sendServerPropertyRequest(getUriFromIndex(resourceTwo.toLowerCase(),0),sideOfPropertyTwo);
+			 propertiesOne=ServerUtil.getPropertiesForGivenResource(getUriFromIndex(resourceOne.toLowerCase(),0),sideOfPropertyOne);
+			 propertiesTwo=ServerUtil.getPropertiesForGivenResource(getUriFromIndex(resourceTwo.toLowerCase(),0),sideOfPropertyTwo);
 			 
 			if (propertiesOne==null){
 				System.out.println("Begin:\n"+query +"\nError in getting Properties \n End");

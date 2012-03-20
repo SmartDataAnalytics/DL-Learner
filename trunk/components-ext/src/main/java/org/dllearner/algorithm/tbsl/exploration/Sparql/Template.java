@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Template {
 
-	private ArrayList<ElementList_new> list_of_element_uri_pair = new ArrayList<ElementList_new>();
+	private ArrayList<ElementList> list_of_element_uri_pair = new ArrayList<ElementList>();
 	private ArrayList<ArrayList<String>> condition = new ArrayList<ArrayList<String>>();
 	private ArrayList<ArrayList<Hypothesis>> hypothesen = new ArrayList<ArrayList<Hypothesis>>();
 	private String selectTerm;
@@ -14,6 +14,7 @@ public class Template {
 	private String limit;
 	private String question;
 	private String queryType;
+	private Elements elm;
 	private float overallTime;
 	private float time_Templator;
 	
@@ -118,14 +119,14 @@ public class Template {
 	public void setTime_Templator(float time_Templator) {
 		this.time_Templator = time_Templator;
 	}
-	public ArrayList<ElementList_new> getList_of_element_uri_pair() {
+	public ArrayList<ElementList> getList_of_element_uri_pair() {
 		return list_of_element_uri_pair;
 	}
-	public void setList_of_element_uri_pair(ArrayList<ElementList_new> list_of_element_uri_pair) {
+	public void setList_of_element_uri_pair(ArrayList<ElementList> list_of_element_uri_pair) {
 		this.list_of_element_uri_pair = list_of_element_uri_pair;
 	}
 	
-	public void addToList_of_element_uri_pair(ElementList_new newElement) {
+	public void addToList_of_element_uri_pair(ElementList newElement) {
 		this.list_of_element_uri_pair.add(newElement);
 	}
 	public String getQueryType() {
@@ -133,6 +134,12 @@ public class Template {
 	}
 	public void setQueryType(String queryType) {
 		this.queryType = queryType;
+	}
+	public Elements getElm() {
+		return elm;
+	}
+	public void setElm(Elements elm) {
+		this.elm = elm;
 	}
 	
 

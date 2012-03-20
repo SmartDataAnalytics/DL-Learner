@@ -15,12 +15,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.dllearner.algorithm.tbsl.exploration.Sparql.Elements;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Template;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.TemplateBuilder;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.queryInformation;
 import org.dllearner.algorithm.tbsl.exploration.Utils.Query;
 import org.dllearner.algorithm.tbsl.exploration.Utils.QueryPair;
+import org.dllearner.algorithm.tbsl.exploration.modules.IterationModule;
 
 public class testClass_new {
 
@@ -37,28 +39,35 @@ public class testClass_new {
 		TemplateBuilder testobject = new TemplateBuilder();
 		
 		String filepath = "/home/swalter/Dokumente/Auswertung/";
-		//String file="very_small.xml";
-		String file="dbpedia-train.xml";
+		String file="very_small.xml";
+		//String file="dbpedia-train.xml";
 		long start = System.currentTimeMillis();
 		
-		/*
-		 * TODO: WHy is there no Hypothese for the question: "Who is the mayor of Berlin?"
-		 */
-		/*String question = "Is the wife of president Obama called Michelle?";
-		//String question = "Who is the mayor of Berlin?";
-		//temp_list_result=testobject.createTemplates(question);
+
+		//String question = "Is the wife of president Obama called Michelle?";
+		String question = "Who is the leader of Hamburg?";
+		temp_list_result=testobject.createTemplates(question);
 		
 		Map<QueryPair,String> tm = new HashMap<QueryPair, String>();
 		
-		for(Template t : temp_list_result){
+		/*for(Template t : temp_list_result){
 			//t.printAll();
+			try {
+				t.getElm().printAll();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
 			ArrayList<QueryPair> qp = Query.returnSetOfQueries(t);
 			for(QueryPair p : qp){
 				tm.put(p, t.getQuestion());  
 			}
+		}*/
+		for(Template t : temp_list_result){
+			t.getElm().getResources();
+			IterationModule.doIteration(t.getElm(),t.getHypothesen(),t.getCondition());
 		}
 		
-		writeQueriesInFile(tm,filepath,file,start,stop );*/
 		
 		
 		
@@ -67,20 +76,28 @@ public class testClass_new {
 		/*
 		 * Generate Templates
 		 */
-		list_of_structs=generateStruct(filepath+"XMLDateien/"+file);
+		/*list_of_structs=generateStruct(filepath+"XMLDateien/"+file);
+		String result="";
 		for(queryInformation s : list_of_structs){
 			ArrayList<Template> temp_list = new ArrayList<Template>();
 			temp_list=testobject.createTemplates(s.getQuery().replace("<[CDATA[", "").replace("]]>", ""));
 			for(Template t : temp_list){
 				temp_list_result.add(t);
+				try {
+					result+=t.getElm().printToString()+"\n";
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
 			}
 			
-		}
+		}*/
+		
 		/*
 		 * Create Query for each Template
 		 */
 		
-		Map<QueryPair,String> tm = new HashMap<QueryPair, String>();
+		/*Map<QueryPair,String> tm = new HashMap<QueryPair, String>();
 		
 		for(Template t : temp_list_result){
 			//t.printAll();
@@ -88,7 +105,7 @@ public class testClass_new {
 			for(QueryPair p : qp){
 				tm.put(p, t.getQuestion());  
 			}
-		}
+		}*/
 		
 		
 		
@@ -96,14 +113,14 @@ public class testClass_new {
 		 * Get Elements for Each Resource and Class
 		 */
 		
-		long stop = System.currentTimeMillis();
+		/*long stop = System.currentTimeMillis();
 		System.out.println("Duration in ms: " + (stop - start));
-				
+		writeStringToFile(result,filepath,file,start,stop);		*/
 		
 		/*
 		 * Write Results in File
 		 */
-		writeQueriesInFile(tm,filepath,file,start,stop );
+		//writeQueriesInFile(tm,filepath,file,start,stop );
 		//writeTemplatesInFile(temp_list_result,filepath,file,start,stop );
         
 	}
@@ -177,11 +194,20 @@ public class testClass_new {
 		for(QueryPair key : tm.keySet()){
 			result+=tm.get(key)+": "+key.getQuery()+" "+key.getRank()+"\n";
 		}
-
+		result+="OverAll Time: "+(stop-start)+"ms\n";
         bw.write(result);
         bw.flush();
         bw.close();
 	}
+	
+	private static void writeStringToFile(String result,String filepath,String given_file, float start, float stop ) throws IOException{
+		File file = new File(filepath+"Sonstiges"+stop+given_file.replace(".xml", "")+".txt");
+        BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+        bw.write(result);
+        bw.flush();
+        bw.close();
+	}
+	
 	
 	
 	
