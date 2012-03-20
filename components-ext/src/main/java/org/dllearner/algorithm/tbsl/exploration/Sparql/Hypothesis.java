@@ -4,7 +4,7 @@ package org.dllearner.algorithm.tbsl.exploration.Sparql;
 public class Hypothesis {
 private String variable;
 private String uri;
-private float rank;
+private double rank;
 private String name;
 
 /**
@@ -24,14 +24,14 @@ public String getVariable() {
 public void setVariable(String variable) {
 	this.variable = variable;
 }
-public float getRank() {
+public double getRank() {
 	return rank;
 }
-public void setRank(float rank) {
+public void setRank(double rank) {
 	this.rank = rank;
 }
 
-public Hypothesis(String variable, String name, String uri, String type, float rank){
+public Hypothesis(String variable, String name, String uri, String type, double rank){
 	this.setRank(rank);
 	this.setVariable(variable);
 	this.setUri(uri);

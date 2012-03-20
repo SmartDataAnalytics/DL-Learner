@@ -2,17 +2,17 @@ package org.dllearner.algorithm.tbsl.exploration.Utils;
 
 public class QueryPair {
 	private String Query;
-	private float rank;
+	private double rank;
 	public String getQuery() {
 		return Query;
 	}
 	public void setQuery(String query) {
 		Query = query;
 	}
-	public float getRank() {
+	public double getRank() {
 		return rank;
 	}
-	public void setRank(float rank) {
+	public void setRank(double rank) {
 		this.rank = rank;
 	}
 	
@@ -21,7 +21,7 @@ public class QueryPair {
 		System.out.println("Rank :"+this.getRank());
 	}
 	
-	public QueryPair(String query_new, float rank_new){
+	public QueryPair(String query_new, double rank_new){
 		this.setQuery(query_new);
 		this.setRank(rank_new);
 	}

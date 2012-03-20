@@ -176,7 +176,7 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      					for(ArrayList<String> x : condition){
      						if(x.get(1).equals("isA") && x.get(2).equals("?"+tmp_array[0])){
      							no_iaA_found=false;
-     							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "ISA", 0);
+     							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "ISA", 0.0);
      	     					//tmp_hypothesis.printAll();
      	         				list_of_hypothesis.add(tmp_hypothesis);
      	         				
@@ -185,23 +185,10 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      	         				 */
      	            			add_reverse_template = false;
      						}
-     						/*
-     						 * Make sure you don't have the case that a class is left of an isA
-     						 */
-     						/*else if (!x.get(1).equals("isA") && x.get(0).equals("?"+tmp_array[0])){
-     							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "PROPERTY", 0);
-     						//tmp_hypothesis.printAll();
-     							list_of_hypothesis.add(tmp_hypothesis);
-     						}
-     						else if(!x.get(1).equals("isA") && x.get(2).equals("?"+tmp_array[0]) ){
-     							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "PROPERTY", 0);
-     							//tmp_hypothesis.printAll();
-     							list_of_hypothesis.add(tmp_hypothesis);
-     						}*/
      					}
      					
      					if(no_iaA_found){
-     						Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "PROPERTY", 0);
+     						Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "PROPERTY", 0.0);
  							//tmp_hypothesis.printAll();
  							list_of_hypothesis.add(tmp_hypothesis);
      					}
@@ -211,7 +198,7 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      					String tmp= slot.toString().replace(" PROPERTY {", "");
      					tmp=tmp.replace("}","");
      					String[] tmp_array = tmp.split(":");
-     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1],tmp_array[1], "PROPERTY", 0);
+     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1],tmp_array[1], "PROPERTY", 0.0);
      					list_of_hypothesis.add(tmp_hypothesis);
      					
      				}
@@ -219,7 +206,7 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      					String tmp= slot.toString().replace(" RESOURCE {", "");
      					tmp=tmp.replace("}","");
      					String[] tmp_array = tmp.split(":");
-     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "RESOURCE", 0);
+     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "RESOURCE", 0.0);
      					list_of_hypothesis.add(tmp_hypothesis);
      				}
      			}
@@ -256,12 +243,12 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      						for(Hypothesis h : list_of_hypothesis){
      							if (h.getUri().equals(x.getUri())){
      								if(s!=null){
-     									Hypothesis new_h = new Hypothesis(h.getVariable(),h.getName(), s, h.getType(), 1);
+     									Hypothesis new_h = new Hypothesis(h.getVariable(),h.getName(), s, h.getType(), 1.0);
          								new_list.add(new_h);
          								//new_h.printAll();
      								}
      								else{
-     									Hypothesis new_h = new Hypothesis(h.getVariable(),h.getName(), h.getUri(), h.getType(), 1);
+     									Hypothesis new_h = new Hypothesis(h.getVariable(),h.getName(), h.getUri(), h.getType(), 1.0);
          								new_list.add(new_h);
          								//new_h.printAll();
      								}
@@ -297,10 +284,6 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      				
      				
      				for(Hypothesis h : x){
-     					//h.printAll();		
-     					
-     					//only if you have a Property or an Unspec, which still has no http:/dbpedia etc
-     					//if(h.getType().contains("PROPERTY") || (h.getType().contains("UNSPEC")&& !h.getUri().contains("http"))){
      					if(h.getType().contains("PROPERTY")){
          					ArrayList<String> result= new ArrayList<String>();
          					try {
@@ -313,15 +296,8 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
          						}
     							if(!result.isEmpty()){
     								h.setUri(result.get(0));
-        							h.setRank(1);
+        							h.setRank(0.0);
     							}
-    							
-    					/*		else{
-    								String tmp = "http://dbpedia.org/ontology/"+h.getUri().toLowerCase().replace(" ", "_");
-
-    								h.setUri(tmp);
-    								h.setRank(0);
-    							}*/
     						} catch (SQLException e) {
     							// TODO Auto-generated catch block
     							e.printStackTrace();
@@ -369,9 +345,25 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			
      			template_reverse_conditions.setCondition(condition_reverse_new);
      			template_reverse_conditions.setHypothesen(template.getHypothesen());
-
-     			resultArrayList.add(template);
-     			if(add_reverse_template) resultArrayList.add(template_reverse_conditions);
+     			
+     			/*
+     			 * Before adding Templates, generate for each Template a set of Properties and Elements
+     			 */
+     			Elements elm = new Elements(template.getCondition(),template.getHypothesen());
+     			/*
+     			 * If no Elements are created, dont add Template!
+     			 */
+     			//if(elm.isElementEmty()==false){
+     				template.setElm(elm);
+         			resultArrayList.add(template);
+     			//}
+     			if(add_reverse_template){
+     				Elements elm_reverse = new Elements(template_reverse_conditions.getCondition(),template_reverse_conditions.getHypothesen());
+     				//if(elm_reverse.isElementEmty()==false){
+     					template.setElm(elm_reverse);
+         				resultArrayList.add(template_reverse_conditions);
+     				//}
+     			}
      		}
      	}
      	

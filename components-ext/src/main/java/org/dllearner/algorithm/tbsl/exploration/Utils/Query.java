@@ -30,7 +30,7 @@ public class Query {
 		for(ArrayList<Hypothesis> hypothesenList : t.getHypothesen()){
 			String condition_new = condition;
 			//System.out.println("New_Condition before replacing "+condition_new);
-			float global_rank=0;
+			double global_rank=0;
 			boolean addQuery=true;
 			for(Hypothesis h : hypothesenList){
 				condition_new=condition_new.replace(h.getVariable(), "<"+h.getUri()+">");

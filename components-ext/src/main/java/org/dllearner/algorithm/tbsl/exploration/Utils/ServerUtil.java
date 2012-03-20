@@ -73,30 +73,82 @@ public class ServerUtil {
 	
 	
 	/**
-	 * Get an uri and saves the properties of this resource
-	 * @param vergleich
+	 * Uses an URI to get the properties of this resource
+	 * @param uri
 	 * @return 
 	 * @throws IOException
 	 */
-	public static HashMap<String,String> sendServerPropertyRequest(String vergleich, String side) throws IOException{
+	public static HashMap<String,String> getPropertiesForGivenResource(String uri, String side) throws IOException{
 		
-		String vergleichorig = vergleich;
 		
-		String tmp_left=ServerUtil.getServer_Prefix()+"?default-graph-uri=&query="+ServerUtil.createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {?y ?p <"+vergleichorig+">. ?p rdfs:label ?s.}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
+		String query_property_left=ServerUtil.getServer_Prefix()+"?default-graph-uri=&query="+ServerUtil.createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {?y ?p <"+uri+">. ?p rdfs:label ?s. FILTER (lang(?s) = 'en') }")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
 
-		String tmp_right=ServerUtil.getServer_Prefix()+"?default-graph-uri=&query="+ServerUtil.createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {<"+vergleichorig+"> ?p ?y. ?p rdfs:label ?s.}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
+		String query_property_right=ServerUtil.getServer_Prefix()+"?default-graph-uri=&query="+ServerUtil.createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {<"+uri+"> ?p ?y. ?p rdfs:label ?s. FILTER (lang(?s) = 'en') }")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
 
-		String tmp_both=ServerUtil.getServer_Prefix()+"?default-graph-uri=&query="+ServerUtil.createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {{?y ?p <"+vergleichorig+">. ?p rdfs:label ?s.} UNION {<"+vergleichorig+"> ?p ?y. ?p rdfs:label ?s.}}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
+		String query_property_leftANDright=ServerUtil.getServer_Prefix()+"?default-graph-uri=&query="+ServerUtil.createServerRequest("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?s ?p WHERE {{?y ?p <"+uri+">. ?p rdfs:label ?s. FILTER (lang(?s) = 'en') } UNION {<"+uri+"> ?p ?y. ?p rdfs:label ?s. FILTER (lang(?s) = 'en') }}")+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
 		String verarbeitungsurl=null;
 		
 		/*Original*/
-		if(side.contains("RIGHT")) verarbeitungsurl=tmp_right;
-		if(side.contains("LEFT")) verarbeitungsurl=tmp_left;
-		if(side.contains("BOTH")) verarbeitungsurl=tmp_both;
+		if(side.contains("RIGHT")) verarbeitungsurl=query_property_right;
+		if(side.contains("LEFT")) verarbeitungsurl=query_property_left;
+		if(side.contains("BOTH")) verarbeitungsurl=query_property_leftANDright;
 		 
-		if(!side.contains("LEFT") && !side.contains("RIGHT")) verarbeitungsurl=tmp_left;
+		if(!side.contains("LEFT") && !side.contains("RIGHT")) verarbeitungsurl=query_property_left;
 
 	    String result="";
+		result = getListOfElements(verarbeitungsurl);
+	    
+	    return generateList(result);
+	}
+
+	/**
+	 * Uses an URI of a Class to get the Elements of the Class and the related URIs
+	 * @param classUri
+	 * @return
+	 * @throws IOException
+	 */
+	public static HashMap<String,String> getElementsForGivenClass(String classUri) throws IOException{
+		
+		
+		String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s ?x WHERE { ?x rdf:type <"+classUri+">. ?x rdfs:label ?s. FILTER (lang(?s) = 'en') }";
+
+	    String result="";
+		result = getListOfElements(query);
+	    
+	    return generateList(result);
+	}
+
+	
+	
+	
+	
+	
+	private static HashMap<String, String> generateList(String result) {
+		HashMap<String,String> hm = new HashMap<String,String>();
+	    result=result.replace("<th>s</th>","");
+	    result=result.replace("<th>p</th>","");
+	    result=result.replace("<table class=\"sparql\" border=\"1\">","");
+	    result=result.replace("<tr>","");
+	    result=result.replace("</tr>","");
+	    result=result.replace("\n", "");
+	    result=result.replace(" ", "");
+	    result=result.replaceFirst("<td>", "");
+	    
+	    
+	    String[] tmp_array=result.split("</td><td>");
+	    
+	    for(int i =1; i<=tmp_array.length-2;i=i+2) {
+	    	hm.put(tmp_array[i-1].toLowerCase(), tmp_array[i]);
+	    }
+	    
+	    return hm;
+	}
+	
+	
+
+	private static String getListOfElements(String verarbeitungsurl) {
+		
+		String result="";
 		HttpURLConnection connection = null;
 	      BufferedReader rd  = null;
 	      StringBuilder sb = null;
@@ -139,25 +191,9 @@ public class ServerUtil {
 	          sb = null;
 	          connection = null;
 	      }
-	    
-	    HashMap<String,String> hm = new HashMap<String,String>();
-	    result=result.replace("<th>s</th>","");
-	    result=result.replace("<th>p</th>","");
-	    result=result.replace("<table class=\"sparql\" border=\"1\">","");
-	    result=result.replace("<tr>","");
-	    result=result.replace("</tr>","");
-	    result=result.replace("\n", "");
-	    result=result.replace(" ", "");
-	    result=result.replaceFirst("<td>", "");
-	    
-	    
-	    String[] tmp_array=result.split("</td><td>");
-	    
-	    for(int i =1; i<=tmp_array.length-2;i=i+2) {
-	    	hm.put(tmp_array[i-1].toLowerCase(), tmp_array[i]);
-	    }
-	    
-	    return hm;
+		return result;
 	}
+	
+	
 
 }

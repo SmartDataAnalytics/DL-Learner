@@ -19,7 +19,7 @@ import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 public class SQLiteIndex {
 	private Connection conn;
 	StanfordLemmatizer lemma;
-	double lim_levensthein=0.88;
+	double lim_levensthein=0.92;
 
 	public SQLiteIndex() throws ClassNotFoundException, SQLException {
 		// TODO Auto-generated constructor stub
@@ -76,8 +76,8 @@ WHERE City LIKE '%tav%'
 			while(rs.next()){
 				if(Levenshtein.nld(rs.getString("name"), original_string)>lim_levensthein){
 					result.add(rs.getString("uri"));
-					System.out.print(rs.getString("name"));
-					System.out.print("  "+rs.getString("uri")+"\n");
+					/*System.out.print(rs.getString("name"));
+					System.out.print("  "+rs.getString("uri")+"\n");*/
 				}
 			}
 			return result;
@@ -101,8 +101,8 @@ WHERE City LIKE '%tav%'
 				//System.out.println("Next: "+rs.getString("uri"));
 				if(Levenshtein.nld(rs.getString("name"), original_string)>lim_levensthein){
 					result.add(rs.getString("uri"));
-					System.out.print(rs.getString("name"));
-					System.out.print("  "+rs.getString("uri")+"\n");
+					/*System.out.print(rs.getString("name"));
+					System.out.print("  "+rs.getString("uri")+"\n");*/
 				}
 			}
 			return result;
@@ -185,8 +185,8 @@ WHERE City LIKE '%tav%'
 			while(rs.next()){
 				if(Levenshtein.nld(rs.getString("name"), original_string)>lim_levensthein){
 					result.add(rs.getString("uri"));
-					System.out.print(rs.getString("name"));
-					System.out.print("  "+rs.getString("uri")+"\n");
+					/*System.out.print(rs.getString("name"));
+					System.out.print("  "+rs.getString("uri")+"\n");*/
 				}
 			}
 			return result;
