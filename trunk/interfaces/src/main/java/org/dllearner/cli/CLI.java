@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Layout;
@@ -123,9 +124,12 @@ public class CLI {
 			AbstractCELA la = context.getBean(AbstractCELA.class);
 			new CrossValidation(la,lp,rs,nrOfFolds,false);
 		} else {
-			knowledgeSource = context.getBeansOfType(KnowledgeSource.class).entrySet().iterator().next().getValue();
-	    	algorithm = context.getBean(LearningAlgorithm.class);
-	        algorithm.start();
+//			knowledgeSource = context.getBeansOfType(Knowledge1Source.class).entrySet().iterator().next().getValue();
+			for(Entry<String, LearningAlgorithm> entry : context.getBeansOfType(LearningAlgorithm.class).entrySet()){
+				algorithm = entry.getValue();
+				logger.info("Running algorithm instance \"" + entry.getKey() + "\"(" + algorithm.getClass().getSimpleName() + ")");
+				algorithm.start();
+			}
 		}
 
     }

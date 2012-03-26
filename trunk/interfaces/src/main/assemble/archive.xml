@@ -1,6 +1,7 @@
 <assembly>
 	<id>archive</id>
 	<formats>
+		<format>zip</format>
 		<format>tar.gz</format>
 		<format>zip</format>
 	</formats>
@@ -33,6 +34,11 @@
 		<fileSet>
 			<directory>../examples</directory>
 			<outputDirectory>examples</outputDirectory>
+			<excludes>
+				<exclude>
+					**/qtl/
+				</exclude>
+			</excludes>
 		</fileSet>
 		<fileSet>
 			<directory>doc</directory>

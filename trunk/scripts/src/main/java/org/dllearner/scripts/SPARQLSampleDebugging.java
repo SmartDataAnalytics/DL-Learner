@@ -19,6 +19,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -78,7 +80,6 @@ import org.semanticweb.owlapi.reasoner.TimeOutException;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
-import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.hp.hpl.jena.query.Query;
@@ -121,6 +122,8 @@ public class SPARQLSampleDebugging {
 	private OWLReasoner dbpediaReasoner;
 	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	
+	private Random randomGen = new Random(2222343);
+	
 	static {PelletExplanation.setup();}
 	
 	public SPARQLSampleDebugging(SparqlEndpoint endpoint) {
@@ -158,6 +161,23 @@ public class SPARQLSampleDebugging {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private Set<OWLAxiom> getBlackList(){
+		Set<OWLAxiom> blacklist = new HashSet<OWLAxiom>();
+		OWLAxiom ax = factory.getOWLSubClassOfAxiom(
+				factory.getOWLObjectSomeValuesFrom(factory.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/leaderName")), factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Person"))),
+				factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Settlement")));
+		blacklist.add(ax);
+		ax = factory.getOWLSubClassOfAxiom(
+				factory.getOWLObjectSomeValuesFrom(factory.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/language")), factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Language"))),
+				factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Work")));
+		blacklist.add(ax);
+		ax = factory.getOWLSubClassOfAxiom(
+				factory.getOWLObjectSomeValuesFrom(factory.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/officialLanguage")), factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Language"))),
+				factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Country")));
+		blacklist.add(ax);
+		return blacklist;
 	}
 	
 	private void writeToDB(String resource, int fragementSize, boolean consistent, Set<Set<OWLAxiom>> explanations) {
@@ -225,25 +245,19 @@ public class SPARQLSampleDebugging {
 		return resources;
 	}
 	
-	private Set<String> extractSampleResourcesSingle(int size){
-		logger.info("Extracting " + sampleSize + " sample resources...");
+	private String extractSampleResource(int maxOffset){
 		long startTime = System.currentTimeMillis();
-		Set<String> resources = new HashSet<String>();
 		
-		String query = "SELECT COUNT(DISTINCT ?s) WHERE {?s a ?type}";
+		int random = randomGen.nextInt(maxOffset);
+		logger.info("Extracting sample resource (" + random + ")...");
+		
+		String query = String.format("SELECT DISTINCT ?s WHERE {?s a ?type} LIMIT 1 OFFSET %d", random);
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-		int max = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
-		
-		for(int i = 0; i < size; i++){
-			int random = (int)(Math.random() * max);
-			query = String.format("SELECT DISTINCT ?s WHERE {?s a ?type} LIMIT 1 OFFSET %d", random);
-			rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-			resources.add(rs.next().getResource("s").getURI());
-		}
+		String resource = rs.next().getResource("s").getURI();
 		
 		
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
-		return resources;
+		return resource;
 	}
 	
 	private OWLOntology extractSampleModule(Set<String> resources){
@@ -280,17 +294,12 @@ public class SPARQLSampleDebugging {
 		return explanations;
 	}
 	
-	private Set<Set<OWLAxiom>> computeExplanations(PelletReasoner reasoner){
+	private Set<Set<OWLAxiom>> computeExplanations(PelletReasoner reasoner) throws Exception{
 		logger.info("Computing explanations...");
 		long startTime = System.currentTimeMillis();
 		PelletExplanation expGen = new PelletExplanation(reasoner);
 		Set<Set<OWLAxiom>> explanations = new HashSet<Set<OWLAxiom>>(maxNrOfExplanations);
-		try {
-			explanations = expGen.getInconsistencyExplanations(maxNrOfExplanations);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
+		explanations = expGen.getInconsistencyExplanations(maxNrOfExplanations);
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		return explanations;
 	}
@@ -387,7 +396,7 @@ public class SPARQLSampleDebugging {
 			}
 		});
 		OWLDataFactory f = OWLManager.createOWLOntologyManager().getOWLDataFactory();
-		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
+		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer(dbpediaReasoner);
 		PrintWriter out = new PrintWriter( System.out );
 		for(OWLObjectProperty p : reasoner.getRootOntology().getObjectPropertiesInSignature()){
 			boolean satisfiable = reasoner.isSatisfiable(f.getOWLObjectExactCardinality(1, p));
@@ -427,9 +436,12 @@ public class SPARQLSampleDebugging {
 		
 	}
 	
-	public void run(OWLOntology reference) throws OWLOntologyCreationException{
-		Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
-		ontologies.add(reference);
+	
+	public void computeSampleExplanations(OWLOntology reference, int nrOfExplanations) throws OWLOntologyCreationException, IOException{
+		Set<Set<OWLAxiom>> sampleExplanations = new HashSet<Set<OWLAxiom>>();
+		manager = reference.getOWLOntologyManager();
+		manager.removeAxioms(reference, getBlackList());
+		
 		PelletReasoner reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(reference);
 		reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 		Set<OWLClass> unsatisfiableClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
@@ -438,25 +450,70 @@ public class SPARQLSampleDebugging {
 		logger.info("Unsatisfiable object properties(" + unsatisfiableObjectProperties.size() + "): " + unsatisfiableObjectProperties);
 		Set<OWLDataProperty> unsatisfiableDataProperties = getUnsatisfiableDataProperties(reasoner);
 		logger.info("Unsatisfiable data properties(" + unsatisfiableDataProperties.size() + "): " + unsatisfiableDataProperties);
-		OWLOntology merged;
 		OWLOntology module;
+		reasoner.isConsistent();
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		man.addOntologyChangeListener( reasoner );
+		Model model;
 		
-		Set<String> resources = extractSampleResourcesChunked(sampleSize);
-		for(String resource : resources){resource = "http://dbpedia.org/resource/Leipzig";
-			logger.info("Resource " + resource);
-			module = extractSampleModule(Collections.singleton(resource));
-			ontologies.add(module);
-			merged = OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://merged.en"), ontologies);
-			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(merged);
+		FileWriter out = new FileWriter( "log/alljustifications" + System.currentTimeMillis() + ".txt" );
+		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer(dbpediaReasoner);
+		renderer.startRendering(out );
+		
+		String query = "SELECT COUNT(DISTINCT ?s) WHERE {?s a ?type}";
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		int maxOffset = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
+		
+		while(sampleExplanations.size() < nrOfExplanations){
+			String resource = extractSampleResource(maxOffset);//resource = "http://dbpedia.org/resource/Pigeon_%28company%29";
+			logger.info("###################################################################");
+			logger.info("Resource " + resource);//resource = "http://dbpedia.org/resource/The_Man_Who_Wouldn%27t_Die";
+			module = extractSampleModule(resource);module.getOWLOntologyManager().removeAxioms(module, module.getAxioms(AxiomType.DATA_PROPERTY_ASSERTION));
+			manager.addAxioms(reference, module.getABoxAxioms(true));
+			manager.removeAxioms(reference, reference.getAxioms(AxiomType.DATA_PROPERTY_ASSERTION));
 			boolean isConsistent = reasoner.isConsistent();
 			logger.info("Consistent: " + isConsistent);
 			Set<Set<OWLAxiom>> explanations =  null;
 			if(!isConsistent){
-				explanations = computeExplanations(reasoner);
+				explanations = new HashSet<Set<OWLAxiom>>();
+				try {
+					explanations.addAll(computeExplanations(reasoner));
+				} catch (Exception e1) {
+					continue;
+				}
+				model = convert(reference);
+				explanations.addAll(computeInconsistencyExplanationsByAsymmetryPattern(reference, model));
+				explanations.addAll(computeInconsistencyExplanationsByIrreflexivityPattern(reference, model));
+				explanations.addAll(computeInconsistencyExplanationsByFunctionalityPattern(reference, model));
+				explanations.addAll(computeInconsistencyExplanationsByInverseFunctionalityPattern(reference, model));
 				logger.info("Found " + explanations.size() + " explanations.");
+				for(Set<OWLAxiom> exp : explanations){
+					logger.info(exp + "\n");
+					out.flush();
+					try {
+						renderer.render( Collections.singleton(exp) );
+					} catch (UnsupportedOperationException e) {
+						e.printStackTrace();
+					} catch (OWLException e) {
+						e.printStackTrace();
+					}
+				}
+				boolean addSample = true;
+				while(addSample){
+					int rnd = 0;
+					if(explanations.size() > 1){
+						rnd = new Random().nextInt(explanations.size()-1);
+					}
+					Set<OWLAxiom> sampleExplanation = new ArrayList<Set<OWLAxiom>>(explanations).get(rnd);
+					if(!containsUnsatisfiableObjectProperty(sampleExplanation)){
+						sampleExplanations.add(sampleExplanation);
+						addSample = false;
+					}
+					
+				}
+				
 				Map<AxiomType, Integer> axiomType2CountMap = new HashMap<AxiomType, Integer>();
 				for(Set<OWLAxiom> explanation : explanations){
-					logger.info(explanation);
 					for(OWLAxiom axiom : explanation){
 						Integer cnt = axiomType2CountMap.get(axiom.getAxiomType());
 						if(cnt == null){
@@ -466,19 +523,35 @@ public class SPARQLSampleDebugging {
 						axiomType2CountMap.put(axiom.getAxiomType(), cnt);
 					}
 				}
+				logger.info("Axiom type count:");
 				for(Entry<AxiomType, Integer> entry : axiomType2CountMap.entrySet()){
 					logger.info(entry.getKey() + "\t: " + entry.getValue());
 				}
 			}
-			ontologies.remove(module);
-			reasoner.dispose();
+			man.removeAxioms(reference, module.getABoxAxioms(true));
 //			writeToDB(resource, module.getLogicalAxiomCount(), isConsistent, explanations);
-			break;
 		}
+		renderer.endRendering();
+		
+		FileWriter sampleOut = new FileWriter( "log/sample_justifications" + System.currentTimeMillis() + ".txt" );
+		ManchesterSyntaxExplanationRenderer sampleRenderer = new ManchesterSyntaxExplanationRenderer(dbpediaReasoner);
+		sampleRenderer.startRendering(sampleOut);
+		for(Set<OWLAxiom> exp : sampleExplanations){
+			try {
+				sampleRenderer.render(Collections.singleton(exp));
+				
+			} catch (UnsupportedOperationException e) {
+				e.printStackTrace();
+			} catch (OWLException e) {
+				e.printStackTrace();
+			}
+		}
+		sampleRenderer.endRendering();
 		
 	}
 	
-	public void runOptimized(OWLOntology reference) throws OWLOntologyCreationException{
+	
+	public void runOptimized(OWLOntology reference) throws OWLOntologyCreationException, IOException{
 		PelletReasoner reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(reference);
 		reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 		Set<OWLClass> unsatisfiableClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
@@ -493,6 +566,12 @@ public class SPARQLSampleDebugging {
 		man.addOntologyChangeListener( reasoner );
 		Set<String> resources = extractSampleResourcesChunked(sampleSize);
 		Model model;
+		FileWriter sampleOut = new FileWriter( "log/sample_justifications.txt" );
+		FileWriter out = new FileWriter( "log/alljustifications.txt" );
+		ManchesterSyntaxExplanationRenderer sampleRenderer = new ManchesterSyntaxExplanationRenderer(dbpediaReasoner);
+		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer(dbpediaReasoner);
+		sampleRenderer.startRendering(sampleOut);
+		renderer.startRendering(out );
 		for(String resource : resources){
 			logger.info("###################################################################");
 			logger.info("Resource " + resource);//resource = "http://dbpedia.org/resource/The_Man_Who_Wouldn%27t_Die";
@@ -503,39 +582,55 @@ public class SPARQLSampleDebugging {
 			logger.info("Consistent: " + isConsistent);
 			Set<Set<OWLAxiom>> explanations =  null;
 			if(!isConsistent){
-				explanations = computeExplanations(reasoner);
+				explanations = new HashSet<Set<OWLAxiom>>();
+				try {
+					explanations.addAll(computeExplanations(reasoner));
+				} catch (Exception e1) {
+				}
 				model = convert(reference);
 				explanations.addAll(computeInconsistencyExplanationsByAsymmetryPattern(reference, model));
 				explanations.addAll(computeInconsistencyExplanationsByIrreflexivityPattern(reference, model));
 				explanations.addAll(computeInconsistencyExplanationsByFunctionalityPattern(reference, model));
+				explanations.addAll(computeInconsistencyExplanationsByInverseFunctionalityPattern(reference, model));
 				logger.info("Found " + explanations.size() + " explanations.");
-				Map<AxiomType, Integer> axiomType2CountMap = new HashMap<AxiomType, Integer>();
-				ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
-				try {
-					FileWriter out = new FileWriter( "log/justifications.txt" );
-					renderer.startRendering(out );
-					for(Set<OWLAxiom> explanation : explanations){
-						logger.info(explanation + "\n");
-						out.flush();
+				for(Set<OWLAxiom> exp : explanations){
+					logger.info(exp + "\n");
+					out.flush();
+					try {
+						renderer.render( Collections.singleton(exp) );
+					} catch (UnsupportedOperationException e) {
+						e.printStackTrace();
+					} catch (OWLException e) {
+						e.printStackTrace();
+					}
+				}
+				boolean writeSample = true;
+				while(writeSample){
+					int rnd = new Random().nextInt(explanations.size()-1);
+					Set<OWLAxiom> sampleExplanation = new ArrayList<Set<OWLAxiom>>(explanations).get(rnd);
+					if(!containsUnsatisfiableObjectProperty(sampleExplanation)){
 						try {
-							renderer.render( Collections.singleton(explanation) );
+							sampleRenderer.render(Collections.singleton(sampleExplanation));
+							writeSample = false;
 						} catch (UnsupportedOperationException e) {
 							e.printStackTrace();
 						} catch (OWLException e) {
 							e.printStackTrace();
 						}
-						for(OWLAxiom axiom : explanation){
-							Integer cnt = axiomType2CountMap.get(axiom.getAxiomType());
-							if(cnt == null){
-								cnt = Integer.valueOf(0);
-							}
-							cnt = Integer.valueOf(cnt + 1);
-							axiomType2CountMap.put(axiom.getAxiomType(), cnt);
-						}
 					}
-					renderer.endRendering();
-				} catch (IOException e) {
-					e.printStackTrace();
+					
+				}
+				
+				Map<AxiomType, Integer> axiomType2CountMap = new HashMap<AxiomType, Integer>();
+				for(Set<OWLAxiom> explanation : explanations){
+					for(OWLAxiom axiom : explanation){
+						Integer cnt = axiomType2CountMap.get(axiom.getAxiomType());
+						if(cnt == null){
+							cnt = Integer.valueOf(0);
+						}
+						cnt = Integer.valueOf(cnt + 1);
+						axiomType2CountMap.put(axiom.getAxiomType(), cnt);
+					}
 				}
 				logger.info("Axiom type count:");
 				for(Entry<AxiomType, Integer> entry : axiomType2CountMap.entrySet()){
@@ -544,8 +639,10 @@ public class SPARQLSampleDebugging {
 			}
 			man.removeAxioms(reference, module.getABoxAxioms(true));
 //			writeToDB(resource, module.getLogicalAxiomCount(), isConsistent, explanations);
-//			break;
+			break;
 		}
+		renderer.endRendering();
+		sampleRenderer.endRendering();
 		
 	}
 	
@@ -664,6 +761,36 @@ public class SPARQLSampleDebugging {
 					OWLAxiom ax = factory.getOWLObjectPropertyAssertionAxiom(prop, subject, object1);
 					explanation.add(ax);
 					ax = factory.getOWLObjectPropertyAssertionAxiom(prop, subject, object2);
+					explanation.add(ax);
+					explanations.add(explanation);
+				}
+			} finally {
+				qexec.close();
+			}
+		}
+		return explanations;
+	}
+	
+	private Set<Set<OWLAxiom>> computeInconsistencyExplanationsByInverseFunctionalityPattern(OWLOntology ontology, Model model){
+		Set<Set<OWLAxiom>> explanations = new HashSet<Set<OWLAxiom>>();
+		
+		for(OWLObjectProperty prop : extractObjectProperties(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY, ontology)){
+			OWLAxiom axiom = factory.getOWLInverseFunctionalObjectPropertyAxiom(prop);
+			String queryString = "SELECT DISTINCT * WHERE {?s1 <%s> ?o. ?s2 <%s> ?o. FILTER(?s1 != ?s2)}".replace("%s", prop.toStringID());
+			Query query = QueryFactory.create(queryString) ;
+			QueryExecution qexec = QueryExecutionFactory.create(query, model) ;
+			try {
+				ResultSet results = qexec.execSelect();
+				for (; results.hasNext();) {
+					Set<OWLAxiom> explanation = new HashSet<OWLAxiom>();
+					explanation.add(axiom);
+					QuerySolution qs = results.next();
+					OWLIndividual subject1 = factory.getOWLNamedIndividual(IRI.create(qs.getResource("s1").getURI()));
+					OWLIndividual subject2 = factory.getOWLNamedIndividual(IRI.create(qs.getResource("s2").getURI()));
+					OWLIndividual object = factory.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
+					OWLAxiom ax = factory.getOWLObjectPropertyAssertionAxiom(prop, subject1, object);
+					explanation.add(ax);
+					ax = factory.getOWLObjectPropertyAssertionAxiom(prop, subject2, object);
 					explanation.add(ax);
 					explanations.add(explanation);
 				}
@@ -815,7 +942,7 @@ public class SPARQLSampleDebugging {
 //		debug.checkIrreflexivityViolation(ontology);
 		
 		long s1 = System.currentTimeMillis();
-		debug.runOptimized(ontology);
+		debug.computeSampleExplanations(ontology, 10);
 		long s2 = System.currentTimeMillis()-s1;
 		System.out.println(s2);
 		

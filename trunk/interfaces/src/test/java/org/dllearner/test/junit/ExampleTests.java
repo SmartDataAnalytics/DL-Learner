@@ -81,7 +81,7 @@ public class ExampleTests {
 		
 		// setting for SPARQL based tests (0 = no special treatment, 1 = test only SPARQL
 		// examples, 2 = skip SPARQL tests)
-		int sparql = 0;
+		int sparql = 2;
 		
 		// we use a logger, which outputs few messages (warnings, errors)
 		SimpleLayout layout = new SimpleLayout();

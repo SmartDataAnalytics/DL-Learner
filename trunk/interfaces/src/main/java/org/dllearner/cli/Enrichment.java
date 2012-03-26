@@ -352,7 +352,7 @@ public class Enrichment {
 				System.out.println(resource + " appears to be a class. Running appropriate algorithms.\n");
 				try {
 					runClassLearningAlgorithms(ks, (NamedClass) resource);
-				} catch (Exception e) {
+				} catch (Exception e) {e.printStackTrace();
 					System.out.println(e.getCause());
 				} catch (Error e) {
 					System.out.println(e.getCause());

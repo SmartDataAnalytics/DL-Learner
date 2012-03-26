@@ -18,6 +18,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -307,9 +308,9 @@ public class PDBIdRdfModel {
 		while ( residuePosition.hasNext() ) {
 			RDFNode positionNode = residuePosition.next();
 			positionNodes.add(positionNode);
-			NodeIterator positionLabelNodes = _pdbIdModel.listObjectsOfProperty( positionNode.asResource(), hasValue );
+			NodeIterator positionLabelNodes = _pdbIdModel.listObjectsOfProperty( positionNode.as(Resource.class), hasValue );
 			while ( positionLabelNodes.hasNext() ) {
-				positionLabels.add(positionLabelNodes.next().asLiteral().getInt());
+				positionLabels.add(positionLabelNodes.next().as(Literal.class).getInt());
 			}
 		} 
 		

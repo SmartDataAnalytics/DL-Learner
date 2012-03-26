@@ -15,7 +15,7 @@
 	</parent>
 
 	<properties>
-		<release.name>1.0-beta-1</release.name>
+		<release.name>1.0-beta-2</release.name>
 	</properties>
 
 	<profiles>
@@ -312,6 +312,7 @@
         </dependency>
         <!--END Logging Dependencies-->
 
+       
 	</dependencies>
 
 
