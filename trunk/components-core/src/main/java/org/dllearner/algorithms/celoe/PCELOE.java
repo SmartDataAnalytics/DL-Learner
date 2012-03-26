@@ -66,6 +66,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.refinementoperators.SynchronizedRhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -295,15 +296,15 @@ public class PCELOE extends AbstractCELA {
 		// variables to it
 		if(operator == null) {
 			// we use a default operator and inject the class hierarchy for now
-			operator = new RhoDRDown();
-			((RhoDRDown)operator).setStartClass(startClass);
-			((RhoDRDown)operator).setReasoner(reasoner);
-			((RhoDRDown)operator).init();
+			operator = new SynchronizedRhoDRDown();
+			((SynchronizedRhoDRDown)operator).setStartClass(startClass);
+			((SynchronizedRhoDRDown)operator).setReasoner(reasoner);
+			((SynchronizedRhoDRDown)operator).init();
 		}
 		// TODO: find a better solution as this is quite difficult to debug
-		((RhoDRDown)operator).setSubHierarchy(classHierarchy);
-		((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		((SynchronizedRhoDRDown)operator).setSubHierarchy(classHierarchy);
+		((SynchronizedRhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+		((SynchronizedRhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
 		
 		
 //		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
@@ -996,6 +997,7 @@ public class PCELOE extends AbstractCELA {
 		return heuristic;
 	}
 
+	@Autowired(required=false)
 	public void setHeuristic(OEHeuristicRuntime heuristic) {
 		this.heuristic = heuristic;
 	}
@@ -1052,12 +1054,18 @@ public class PCELOE extends AbstractCELA {
 				}
 
 				// chose best node according to heuristics
+				if(logger.isDebugEnabled()){
+					logger.debug("Get next node to expand...");
+				}
 				nextNode = getNextNodeToExpand();
 				if(nextNode != null){
 					int horizExp = nextNode.getHorizontalExpansion();
 					
 					// apply operator
 					Monitor mon = MonitorFactory.start("refineNode");
+					if(logger.isDebugEnabled()){
+						logger.debug("Refining node...");
+					}
 					TreeSet<Description> refinements = refineNode(nextNode);
 					mon.stop();
 						
@@ -1081,6 +1089,9 @@ public class PCELOE extends AbstractCELA {
 							
 //							System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
 							Monitor mon2 = MonitorFactory.start("addNode");
+							if(logger.isDebugEnabled()){
+								logger.debug("Add node...");
+							}
 							addNode(refinement, nextNode);
 							mon2.stop();
 							// adding nodes is potentially computationally expensive, so we have

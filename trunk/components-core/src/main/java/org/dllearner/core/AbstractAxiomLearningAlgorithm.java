@@ -38,7 +38,6 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ExtendedQueryEngineHTTP;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
@@ -220,7 +219,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		logger.info("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
-			ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(),
+			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
 					query);
 			queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
@@ -236,7 +235,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		logger.info("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
-			ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(),
+			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
 					query);
 			queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
