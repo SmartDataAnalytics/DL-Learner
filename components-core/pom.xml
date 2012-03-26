@@ -132,6 +132,7 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 
+		<!-- Latest JENA ARQ - we have to exclude XercesImpl and use an older version here because use version bei JENA leads to some errors  -->
 		<dependency>
 				<groupId>org.apache.jena</groupId>
 				<artifactId>jena-arq</artifactId>
@@ -142,6 +143,11 @@
 				</exclusion>
 			</exclusions>
 			</dependency>
+			 <dependency>
+        	<groupId>xerces</groupId>
+        	<artifactId>xercesImpl</artifactId>
+        	<version>2.6.0</version>
+        </dependency>
 
 		<!--JSON is in Central -->
 		<dependency>
@@ -185,16 +191,6 @@
 		</dependency>
 
 
-		<dependency>
-				<groupId>org.apache.jena</groupId>
-				<artifactId>jena-core</artifactId>
-				<exclusions>
-				<exclusion>
-					<artifactId>xercesImpl</artifactId>
-					<groupId>xerces</groupId>
-				</exclusion>
-			</exclusions>
-			</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -253,5 +249,7 @@
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-core</artifactId>
 			</dependency>
+			
+			
 	</dependencies>
 </project>

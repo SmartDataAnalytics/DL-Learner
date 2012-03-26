@@ -50,7 +50,7 @@ public class AnnComponentManager {
     // components must be listed here if they should be supported in interfaces
     // (CLI, GUI, Web Service) and scripts (HTML documentation generator)
     private static List<String> componentClassNames = new ArrayList<String>  ( Arrays.asList(new String[]{
-            "org.dllearner.algorithms.celoe.CELOE",
+            "org.dllearner.algorithms.celoe.CELOE", 
             "org.dllearner.algorithms.celoe.PCELOE",
             "org.dllearner.algorithms.el.ELLearningAlgorithm",
             "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
@@ -91,6 +91,7 @@ public class AnnComponentManager {
             "org.dllearner.algorithms.ocel.MultiHeuristic",
             "org.dllearner.algorithms.celoe.OEHeuristicRuntime",
             "org.dllearner.refinementoperators.RhoDRDown",
+            "org.dllearner.refinementoperators.SynchronizedRhoDRDown",
     } ));
     private static Collection<Class<? extends Component>> components;
     private static BidiMap<Class<? extends Component>, String> componentNames;

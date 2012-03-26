@@ -19,7 +19,9 @@
 
 package org.dllearner.algorithms.properties;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -166,9 +168,10 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(
+				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
 		InverseFunctionalObjectPropertyAxiomLearner l = new InverseFunctionalObjectPropertyAxiomLearner(ks);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/starring"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/profession"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();

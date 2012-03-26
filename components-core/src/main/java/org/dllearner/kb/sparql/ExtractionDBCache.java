@@ -19,21 +19,28 @@
 
 package org.dllearner.kb.sparql;
 
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-import org.aksw.commons.jena.ExtendedQueryEngineHTTP;
-import org.dllearner.utilities.Helper;
-
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.*;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.dllearner.utilities.Helper;
+
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 /**
  * The class is used to cache information about resources to a database.
@@ -127,8 +134,8 @@ public class ExtractionDBCache {
 //			System.out.println("Posing new query");
 			
 //			String endpoint = "http://139.18.2.37:8890/sparql";
-			ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(), query);
-			queryExecution.setTimeOut(maxExecutionTimeInSeconds * 1000);
+			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+			queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 			for (String dgu : endpoint.getDefaultGraphURIs()) {
 				queryExecution.addDefaultGraph(dgu);
 			}
@@ -187,8 +194,8 @@ public class ExtractionDBCache {
 		} else {
 			mon.start();
 //			System.out.println("no-cache");
-			ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(), query);
-			queryExecution.setTimeOut(maxExecutionTimeInSeconds * 1000);
+			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+			queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
 			for (String dgu : endpoint.getDefaultGraphURIs()) {
 				queryExecution.addDefaultGraph(dgu);
 			}
