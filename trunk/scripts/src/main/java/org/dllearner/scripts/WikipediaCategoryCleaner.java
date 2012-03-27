@@ -37,6 +37,7 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.extraction.Manager;
@@ -303,7 +304,7 @@ public class WikipediaCategoryCleaner {
 			
 			
 			
-			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
+			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 			tmp.add(ks);
 			// reasoner
 			FastInstanceChecker f = new FastInstanceChecker(tmp);

@@ -28,6 +28,7 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
@@ -56,7 +57,7 @@ public class FastRetrievalReasoner extends AbstractReasonerComponent {
 	
 	AbstractReasonerComponent rc;
 	
-	public FastRetrievalReasoner(Set<AbstractKnowledgeSource> sources) {
+	public FastRetrievalReasoner(Set<KnowledgeSource> sources) {
 		super(sources);
 		
 		rc = new OWLAPIReasoner(sources);

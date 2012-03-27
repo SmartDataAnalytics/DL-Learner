@@ -37,6 +37,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Axiom;
@@ -150,8 +151,8 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id,
 			Map<DatatypeProperty, TreeSet<Individual>> bdPos,
 			Map<DatatypeProperty, TreeSet<Individual>> bdNeg,
-			AbstractKnowledgeSource... sources) {
-		super(new HashSet<AbstractKnowledgeSource>(Arrays.asList(sources)));
+			KnowledgeSource... sources) {
+		super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
 		this.individuals = individuals;
 		this.classInstancesPos = classInstancesPos;
 		this.opPos = opPos;
@@ -160,7 +161,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		this.bdNeg = bdNeg;
 		
 		if(rc == null){
-            rc = new OWLAPIReasoner(new HashSet<AbstractKnowledgeSource>(Arrays.asList(sources)));
+            rc = new OWLAPIReasoner(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
             try {
 				rc.init();
 			} catch (ComponentInitException e) {
@@ -202,12 +203,12 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		}
 	}
 
-	public FastInstanceChecker(Set<AbstractKnowledgeSource> sources) {
+	public FastInstanceChecker(Set<KnowledgeSource> sources) {
         super(sources);
     }
 
-    public FastInstanceChecker(AbstractKnowledgeSource... sources) {
-        super(new HashSet<AbstractKnowledgeSource>(Arrays.asList(sources)));
+    public FastInstanceChecker(KnowledgeSource... sources) {
+        super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
     }
     
     /**
@@ -270,9 +271,10 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			logger.debug("dematerialising object properties");
 
 			for (ObjectProperty atomicRole : atomicRoles) {
+//				System.out.println(atomicRole + " " + rc.getPropertyMembers(atomicRole));
 				opPos.put(atomicRole, rc.getPropertyMembers(atomicRole));
 			}
-
+			
 			logger.debug("dematerialising datatype properties");
 
 			for (DatatypeProperty dp : booleanDatatypeProperties) {

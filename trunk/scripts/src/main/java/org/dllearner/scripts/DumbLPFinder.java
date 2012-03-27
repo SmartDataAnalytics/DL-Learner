@@ -32,9 +32,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
@@ -225,7 +225,7 @@ public class DumbLPFinder {
 			ks.setPredefinedEndpoint("LOCALJOSEKIBIBLE");
 			ks.setUseLits(true);
 
-			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
+			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 			tmp.add(ks);
 			// reasoner
 			OWLAPIReasoner f = new OWLAPIReasoner(tmp);

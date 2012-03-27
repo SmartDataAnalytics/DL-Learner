@@ -46,6 +46,7 @@ import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.gui.Config;
@@ -466,7 +467,7 @@ public class SemanticBibleComparison {
 				ks.setRecursionDepth(3);
 			}
 			
-			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
+			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 			tmp.add(ks);
 			// reasoner
 			OWLAPIReasoner f = new OWLAPIReasoner(tmp);
@@ -505,7 +506,7 @@ public class SemanticBibleComparison {
 			}
 			OWLFile ks = new OWLFile( fileURL);
 					
-			Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
+			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 			tmp.add(ks);
 			
 			AbstractReasonerComponent f = null;

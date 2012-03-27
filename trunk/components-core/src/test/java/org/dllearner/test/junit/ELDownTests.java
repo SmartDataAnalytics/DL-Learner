@@ -35,10 +35,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
@@ -298,7 +297,7 @@ public class ELDownTests {
 		logger.addAppender(app);	
 		
 		String ont = "../test/galen2.owl";
-		AbstractKnowledgeSource source = new OWLFile(ont);
+		KnowledgeSource source = new OWLFile(ont);
 		source.init();
 		AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(source));
 		reasoner.init();
@@ -333,7 +332,7 @@ public class ELDownTests {
 	public void asTest() throws ComponentInitException, MalformedURLException {
 		
 		String ont = "../test/galen2.owl";
-		AbstractKnowledgeSource source = new OWLFile(ont);
+		KnowledgeSource source = new OWLFile(ont);
 		source.init();
 		AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(source));
 		reasoner.init();

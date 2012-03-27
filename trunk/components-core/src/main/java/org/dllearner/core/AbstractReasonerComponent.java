@@ -120,7 +120,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	/**
 	 * The underlying knowledge sources.
 	 */
-	protected Set<AbstractKnowledgeSource> sources;
+	protected Set<KnowledgeSource> sources;
 
 
     public AbstractReasonerComponent(){
@@ -132,7 +132,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 * @param sources
 	 *            The underlying knowledge sources.
 	 */
-	public AbstractReasonerComponent(Set<AbstractKnowledgeSource> sources) {
+	public AbstractReasonerComponent(Set<KnowledgeSource> sources) {
 		this.sources = sources;
 	}
 
@@ -141,16 +141,16 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 * 
 	 * @return The underlying knowledge sources.
 	 */
-	public Set<AbstractKnowledgeSource> getSources() {
+	public Set<KnowledgeSource> getSources() {
 		return sources;
 	}
 
-    public void setSources(Set<AbstractKnowledgeSource> sources){
+    public void setSources(Set<KnowledgeSource> sources){
         this.sources = sources;
     }
     
-    public void setSources(AbstractKnowledgeSource... sources) {
-    	this.sources = new HashSet<AbstractKnowledgeSource>(Arrays.asList(sources));
+    public void setSources(KnowledgeSource... sources) {
+    	this.sources = new HashSet<KnowledgeSource>(Arrays.asList(sources));
     }
 
 	/**
@@ -161,7 +161,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 * @param sources
 	 *            The new knowledge sources.
 	 */
-	public void changeSources(Set<AbstractKnowledgeSource> sources) {
+	public void changeSources(Set<KnowledgeSource> sources) {
 		this.sources = sources;
 	}
 

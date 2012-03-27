@@ -26,6 +26,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ComponentPool;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
@@ -444,8 +445,8 @@ public class TestIterativeLearning {
 
 	}
 
-	private static Set<AbstractKnowledgeSource> _getOWL(Examples ex) throws Exception {
-		Set<AbstractKnowledgeSource> tmp = new HashSet<AbstractKnowledgeSource>();
+	private static Set<KnowledgeSource> _getOWL(Examples ex) throws Exception {
+		Set <KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 		List<URL> urls = new ArrayList<URL>();
 		urls.add(new File(backgroundXML).toURI().toURL());
 		urls.addAll(ExampleDataCollector.convert(sentenceXMLFolder, ex.getPosTrain()));
@@ -499,11 +500,11 @@ public class TestIterativeLearning {
 	// }
 
 	public static FastInstanceChecker _getFastInstanceChecker(Examples ex) throws Exception {
-		Set<AbstractKnowledgeSource> tmp = _getOWL(ex);
+		Set<KnowledgeSource> tmp = _getOWL(ex);
 		// Set<KnowledgeSource> tmp = _getSPARQL(ex);
 
 		FastInstanceChecker rc = new FastInstanceChecker(tmp);
-		for (AbstractKnowledgeSource ks : tmp) {
+		for (KnowledgeSource ks : tmp) {
 			ks.init();
 		}
 		rc.init();

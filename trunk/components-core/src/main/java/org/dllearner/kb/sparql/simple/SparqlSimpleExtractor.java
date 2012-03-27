@@ -27,8 +27,9 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
     private List<String> filters = null;
     @ConfigOption(name = "recursionDepth", description = "recursion depth", required = true)
     private int recursionDepth = 0;
-    @ConfigOption(name = "defaultGraphURI", description = "default graph URI", required = true)
-    private String defaultGraphURIs=null;
+    
+	@ConfigOption(name = "defaultGraphURI", description = "default graph URI", required = true)
+    private String defaultGraphURI=null;
     private OWLOntology owlOntology;
     
     private static Logger log = LoggerFactory.getLogger(SparqlSimpleExtractor.class);
@@ -69,15 +70,15 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         for (int i = 0; i < recursionDepth - 1; i++) {
             queryString=aGenerator.createQuery(instances, model, filters);
             log.info("SPARQL: {}", queryString);
-            executor.executeQuery(queryString, endpointURL, model,defaultGraphURIs);   
+            executor.executeQuery(queryString, endpointURL, model,defaultGraphURI);   
         }
         queryString = aGenerator.createLastQuery(instances, model, filters);
         log.info("SPARQL: {}", queryString);
         
-        executor.executeQuery(queryString, endpointURL, model, defaultGraphURIs);
+        executor.executeQuery(queryString, endpointURL, model, defaultGraphURI);
         TBoxQueryGenerator tGenerator = new TBoxQueryGenerator();
         queryString = tGenerator.createQuery(model, filters, instances);
-        executor.executeQuery(queryString, endpointURL, model,defaultGraphURIs);
+        executor.executeQuery(queryString, endpointURL, model,defaultGraphURI);
         JenaToOwlapiConverter converter = new JenaToOwlapiConverter();
         owlOntology=converter.convert(this.model);
     }
@@ -89,6 +90,14 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
     public void setEndpointURL(String endpointURL) {
         this.endpointURL = endpointURL;
     }
+    
+    public String getDefaultGraphURI() {
+		return defaultGraphURI;
+	}
+
+	public void setDefaultGraphURI(String defaultGraphURI) {
+		this.defaultGraphURI = defaultGraphURI;
+	}    
     
     public Model getModel() {
         return model;
@@ -141,19 +150,6 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         this.recursionDepth = recursionDepth;
     }
 
-    /**
-     * @return the defaultGraphURI
-     */
-    public String getDefaultGraphURIs() {
-        return defaultGraphURIs;
-    }
-
-    /**
-     * @param defaultGraphURI the defaultGraphURI to set
-     */
-    public void setDefaultGraphURIs(String defaultGraphURI) {
-        this.defaultGraphURIs = defaultGraphURI;
-    }
 
     /**
      * @return

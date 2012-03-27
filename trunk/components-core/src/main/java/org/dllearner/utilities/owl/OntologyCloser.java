@@ -27,9 +27,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
@@ -64,7 +64,7 @@ public class OntologyCloser {
 		super();
 		this.kb = kb;
 		this.kbFile = new KBFile(this.kb);
-		Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
+		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
 		ks.add(this.kbFile);
 		OWLAPIReasoner owlapi = new OWLAPIReasoner();
         owlapi.setSources(ks);
@@ -85,7 +85,7 @@ public class OntologyCloser {
 		SimpleClock sc = new SimpleClock();
 		sc.printAndSet();
 		this.kbFile = new KBFile(this.kb);
-		Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
+		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
 		ks.add(this.kbFile);
 		
 		sc.printAndSet("updating reasoner");
