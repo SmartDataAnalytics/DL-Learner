@@ -42,6 +42,7 @@ import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
@@ -177,7 +178,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 
     }	
 	
-	public FuzzyOWLAPIReasoner(Set<AbstractKnowledgeSource> sources) {
+	public FuzzyOWLAPIReasoner(Set<KnowledgeSource> sources) {
 		super(sources);
 	}
 	
@@ -244,7 +245,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		prefixes = new TreeMap<String,String>();
 		
-		for(AbstractKnowledgeSource source : sources) {
+		for(KnowledgeSource source : sources) {
 
             if (source instanceof OWLOntologyKnowledgeSource) {
                 ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
@@ -278,7 +279,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
                 // all other sources are converted to KB and then to an
 			// OWL API ontology
 			} else {
-				KB kb = source.toKB();
+				KB kb = ((AbstractKnowledgeSource)source).toKB();
 //				System.out.println(kb.toString(null,null));
 				
 				IRI ontologyURI = IRI.create("http://example.com");

@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigOption;
@@ -163,11 +164,11 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
 	private boolean defaultNegation = true;
 
-	public ProtegeReasoner(Set<AbstractKnowledgeSource> sources) {
+	public ProtegeReasoner(Set<KnowledgeSource> sources) {
 		super(sources);
 	}
 	
-	public ProtegeReasoner(Set<AbstractKnowledgeSource> sources, OWLReasoner reasoner) {
+	public ProtegeReasoner(Set<KnowledgeSource> sources, OWLReasoner reasoner) {
 		this(sources);
 		this.reasoner = reasoner;
 	}
@@ -247,7 +248,7 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		prefixes = new TreeMap<String, String>();
 
-		for (AbstractKnowledgeSource source : sources) {
+		for (KnowledgeSource source : sources) {
 
             if (source instanceof OWLOntologyKnowledgeSource) {
                 ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
@@ -311,7 +312,7 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 				// all other sources are converted to KB and then to an
 				// OWL API ontology
 			} else {
-				KB kb = source.toKB();
+				KB kb = ((AbstractKnowledgeSource)source).toKB();
 				// System.out.println(kb.toString(null,null));
 
 				IRI ontologyIRI = IRI.create("http://example.com");

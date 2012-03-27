@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigOption;
@@ -177,7 +178,7 @@ public class PelletReasoner extends AbstractReasonerComponent {
 	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
 	private boolean defaultNegation = true;
 
-	public PelletReasoner(Set<AbstractKnowledgeSource> sources) {
+	public PelletReasoner(Set<KnowledgeSource> sources) {
 		super(sources);
 	}
 	
@@ -198,7 +199,7 @@ public class PelletReasoner extends AbstractReasonerComponent {
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		prefixes = new TreeMap<String, String>();
 
-		for (AbstractKnowledgeSource source : sources) {
+		for (KnowledgeSource source : sources) {
 
             if (source instanceof OWLOntologyKnowledgeSource) {
                 ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
@@ -274,7 +275,7 @@ public class PelletReasoner extends AbstractReasonerComponent {
 				// all other sources are converted to KB and then to an
 				// OWL API ontology
 			} else {
-				KB kb = source.toKB();
+				KB kb = ((AbstractKnowledgeSource)source).toKB();
 				// System.out.println(kb.toString(null,null));
 
 				IRI ontologyIRI = IRI.create("http://example.com");
@@ -460,7 +461,7 @@ public class PelletReasoner extends AbstractReasonerComponent {
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		prefixes = new TreeMap<String, String>();
 
-		for (AbstractKnowledgeSource source : sources) {
+		for (KnowledgeSource source : sources) {
 
             if (source instanceof OWLOntologyKnowledgeSource) {
                 ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
@@ -529,7 +530,7 @@ public class PelletReasoner extends AbstractReasonerComponent {
 				// all other sources are converted to KB and then to an
 				// OWL API ontology
 			} else {
-				KB kb = source.toKB();
+				KB kb = ((AbstractKnowledgeSource)source).toKB();
 				// System.out.println(kb.toString(null,null));
 
 				IRI ontologyIRI = IRI.create("http://example.com");

@@ -40,6 +40,7 @@ import org.apache.xmlbeans.XmlCursor;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigEntry;
@@ -106,7 +107,7 @@ public class DIGReasoner extends AbstractReasonerComponent {
 	
 	
 	
-	public DIGReasoner(Set<AbstractKnowledgeSource> sources) {
+	public DIGReasoner(Set<KnowledgeSource> sources) {
 		super(sources);
 		try {
 			reasonerURL = new URL("http://localhost:8081");
@@ -148,8 +149,8 @@ public class DIGReasoner extends AbstractReasonerComponent {
 		// "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
 		// "xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
 		// "http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">");
-		for (AbstractKnowledgeSource source : sources) {
-			sb.append(source.toDIG(kbURI));
+		for (KnowledgeSource source : sources) {
+			sb.append(((AbstractKnowledgeSource)source).toDIG(kbURI));
 
 			ResponseDocument rd = null;
 			try {

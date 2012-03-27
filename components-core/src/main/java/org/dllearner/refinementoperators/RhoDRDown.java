@@ -309,7 +309,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component {
 					}
 				}
 				frequentValues.put(op, frequentInds);
-				
+
 			}
 			
 		}

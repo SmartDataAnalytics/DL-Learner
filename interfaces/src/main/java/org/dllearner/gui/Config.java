@@ -28,14 +28,15 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.dllearner.cli.Start;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.kb.KBFile;
@@ -44,7 +45,6 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.parser.ParseException;
 
 /**
  * Config save all together used variables: ComponentManager, KnowledgeSource,
@@ -215,7 +215,7 @@ public class Config {
 	 */
 	public AbstractKnowledgeSource changeKnowledgeSource(Class<? extends AbstractKnowledgeSource> clazz) {
 		source = cm.knowledgeSource(clazz);
-		Set<AbstractKnowledgeSource> sources = new HashSet<AbstractKnowledgeSource>();
+		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		sources.add(source);
 		reasoner.changeSources(sources);
 		// logger.debug("knowledge source " + clazz + " changed");

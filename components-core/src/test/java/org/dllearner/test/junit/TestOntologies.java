@@ -19,14 +19,12 @@
 
 package org.dllearner.test.junit;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.Collections;
 
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
@@ -141,7 +139,7 @@ public final class TestOntologies {
 		
 		try {	
 			ComponentManager cm = ComponentManager.getInstance();
-			AbstractKnowledgeSource source;
+			KnowledgeSource source;
 			
 			// parse KB string if one has been specified
 			if(!kbString.isEmpty() || ont.equals(TestOntology.EMPTY)) {

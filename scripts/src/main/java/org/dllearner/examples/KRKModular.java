@@ -20,6 +20,7 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -249,7 +250,7 @@ public class KRKModular {
 		ComponentManager cm = ComponentManager.getInstance();
 		AbstractCELA la = null;
         try {
-            Set<AbstractKnowledgeSource> sources = new HashSet<AbstractKnowledgeSource>();
+            Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
             sources.add(new KBFile(kb));
             FastInstanceChecker r = new FastInstanceChecker();
             r.setSources(sources);
@@ -485,7 +486,7 @@ public class KRKModular {
 	
 	public void initReasonerFact(){
 		KBFile kbFile = new KBFile(this.kb);
-		Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
+		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
 		ks.add(kbFile);
 		
 		reasoner = new OWLAPIReasoner(ks);
@@ -500,7 +501,7 @@ public class KRKModular {
 	
 	public void initFIC(){
 		KBFile kbFile = new KBFile(this.kb);
-		Set<AbstractKnowledgeSource> ks = new HashSet<AbstractKnowledgeSource>();
+		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
 		ks.add(kbFile);
 		//System.out.println("blabla");
 		reasoner = new FastInstanceChecker();

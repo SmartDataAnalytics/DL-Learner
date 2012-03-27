@@ -179,7 +179,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     }
 
-    public OWLAPIReasoner(Set<AbstractKnowledgeSource> sources) {
+    public OWLAPIReasoner(Set<KnowledgeSource> sources) {
         super(sources);
     }
 
