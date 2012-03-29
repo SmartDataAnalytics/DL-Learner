@@ -25,6 +25,11 @@ public class ElementList {
 	 * HashMap with name -uri pairs.
 	 */
 	private HashMap<String,String> hm = new HashMap<String,String>();
+	
+	/**
+	 * Resource or Class!
+	 */
+	//private String type
 	public String getVariablename() {
 		return variablename;
 	}

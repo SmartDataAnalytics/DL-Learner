@@ -19,7 +19,7 @@ import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 public class SQLiteIndex {
 	private Connection conn;
 	StanfordLemmatizer lemma;
-	double lim_levensthein=0.92;
+	double lim_levensthein=0.99;
 
 	public SQLiteIndex() throws ClassNotFoundException, SQLException {
 		// TODO Auto-generated constructor stub

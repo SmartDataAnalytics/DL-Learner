@@ -77,6 +77,8 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
 		
 		long stop_template = System.currentTimeMillis();
      	for (BasicQueryTemplate bqt : querytemps) {
+     		
+     		long start_part1= System.currentTimeMillis();
      		ArrayList<ArrayList<String>> condition = new ArrayList<ArrayList<String>>();
      		//ArrayList<ArrayList<Hypothesis>> hypotesen = new ArrayList<ArrayList<Hypothesis>>();
      		String selectTerm = "";
@@ -153,8 +155,10 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			addTemplate=false;
      		}
      		
+     		long stop_part1= System.currentTimeMillis();
+     		
      		if(addTemplate!=false){
- 
+     			long start_part2= System.currentTimeMillis();
      			
      			/*
      			 * SLOT_title: PROPERTY {title,name,label} mitfuehren
@@ -162,6 +166,7 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			     		
      			Template template = new Template(condition,bqt.getQt().toString(), having, filter, selectTerm,OrderBy, limit,question);
      			
+     			template.setTime_part1(stop_part1-start_part1);
      			boolean add_reverse_template = true;
      			
      			
@@ -349,20 +354,34 @@ public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, S
      			/*
      			 * Before adding Templates, generate for each Template a set of Properties and Elements
      			 */
+     			long start_elements = System.currentTimeMillis();
      			Elements elm = new Elements(template.getCondition(),template.getHypothesen());
+     			long stop_elements = System.currentTimeMillis();
+     			template.setTime_generateElements(stop_elements-start_elements);
+     			
      			/*
      			 * If no Elements are created, dont add Template!
      			 */
-     			//if(elm.isElementEmty()==false){
+     			long stop_part2= System.currentTimeMillis();
+     			template.setTime_part2(stop_part2-start_part2);
+     			if(elm.isElementEmty()==false){
+     				//elm.printAll();
      				template.setElm(elm);
          			resultArrayList.add(template);
-     			//}
+     			}
      			if(add_reverse_template){
+     				start_elements = System.currentTimeMillis();
      				Elements elm_reverse = new Elements(template_reverse_conditions.getCondition(),template_reverse_conditions.getHypothesen());
-     				//if(elm_reverse.isElementEmty()==false){
-     					template.setElm(elm_reverse);
+     				stop_elements = System.currentTimeMillis();
+     				template_reverse_conditions.setTime_generateElements(stop_elements-start_elements);
+     				template_reverse_conditions.setTime_part1(stop_part1-start_part1);
+     				template_reverse_conditions.setTime_part2(stop_part2-start_part2);
+         			
+     				if(elm_reverse.isElementEmty()==false){
+     				//elm_reverse.printAll();
+     				template_reverse_conditions.setElm(elm_reverse);
          				resultArrayList.add(template_reverse_conditions);
-     				//}
+     				}
      			}
      		}
      	}

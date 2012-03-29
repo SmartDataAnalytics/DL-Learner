@@ -11,27 +11,17 @@ import org.dllearner.algorithm.tbsl.exploration.Utils.ServerUtil;
  *
  */
 public class Elements {
-	private ArrayList<ElementList> resources = new ArrayList<ElementList>();
-	private ArrayList<ElementList> classes = new ArrayList<ElementList>();
-	public ArrayList<ElementList> getResources() {
-		return resources;
+	private ArrayList<ElementList> elements = new ArrayList<ElementList>();
+	
+	public ArrayList<ElementList> getElements() {
+		return elements;
 	}
-	public void setResources(ArrayList<ElementList> resources) {
-		this.resources = resources;
-	}
-	public ArrayList<ElementList> getClasses() {
-		return classes;
-	}
-	public void setClasses(ArrayList<ElementList> classes) {
-		this.classes = classes;
+	public void setElements(ArrayList<ElementList> resources) {
+		this.elements = resources;
 	}
 	
-	private void addClasses(ElementList cl) {
-		this.classes.add(cl);
-	}
-	
-	private void addResources(ElementList cl) {
-		this.resources.add(cl);
+	private void addElements(ElementList cl) {
+		this.elements.add(cl);
 	}
 	
 	public Elements(ArrayList<ArrayList<String>> condition, ArrayList<ArrayList<Hypothesis>> hypothesen){
@@ -40,7 +30,8 @@ public class Elements {
 		 * first all Classes!
 		 */
 		try {
-			this.setClasses(createElementsOfClasses(hypothesen));
+			//this.setClasses(createElementsOfClasses(hypothesen));
+			createElementsOfClasses(hypothesen);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -50,7 +41,8 @@ public class Elements {
 		 * second all Resources
 		 */
 		try {
-			this.setResources(createElementsOfResources(hypothesen,condition));
+			//this.setResources(createElementsOfResources(hypothesen,condition));
+			createElementsOfResources(hypothesen,condition);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,8 +51,7 @@ public class Elements {
 		System.out.println("Created Elements");
 	}
 	
-	private ArrayList<ElementList> createElementsOfClasses(ArrayList<ArrayList<Hypothesis>> hypothesenList) throws IOException{
-		ArrayList<ElementList> classes = new ArrayList<ElementList>();
+	private void createElementsOfClasses(ArrayList<ArrayList<Hypothesis>> hypothesenList) throws IOException{
 		
 		/*
 		 * Iterate over all Hypothesis and look for an IsA
@@ -75,17 +66,17 @@ public class Elements {
 					 * TODO: improver performance, using geschicktes zwischenspeichern
 					 */
 					ElementList el = new ElementList(h.getName(),h.getUri(),ServerUtil.getElementsForGivenClass(h.getUri()));
-					classes.add(el);
+					//classes.add(el);
+					this.addElements(el);
 				}
 			}
 		}
 		
-		return classes;
+		//return classes;
 	}
 	
 	
-	private ArrayList<ElementList> createElementsOfResources(ArrayList<ArrayList<Hypothesis>> hypothesenList,ArrayList<ArrayList<String>> conditionList) throws IOException{
-		ArrayList<ElementList> resources = new ArrayList<ElementList>();
+	private void createElementsOfResources(ArrayList<ArrayList<Hypothesis>> hypothesenList,ArrayList<ArrayList<String>> conditionList) throws IOException{
 		/*
 		 * Iterate over all Hypothesis and look for an resource
 		 */
@@ -95,11 +86,17 @@ public class Elements {
 					for(ArrayList<String> cl : conditionList){
 						if(h.getVariable().equals(cl.get(0))) {
 							ElementList el = new ElementList(h.getName()+"RIGHT",h.getUri(),ServerUtil.getPropertiesForGivenResource(h.getUri(), "RIGHT"));
-							resources.add(el);
+							//resources.add(el);
+							this.addElements(el);
 						}
 						if(h.getVariable().equals(cl.get(2))) {
-							ElementList el = new ElementList(h.getName()+"LEFT",h.getUri(),ServerUtil.getPropertiesForGivenResource(h.getUri(), "LEFT"));
-							resources.add(el);
+							/*
+							 * TDO: Geht hier in die Schleife, aber die Liste wird nicht hinzugefügt....
+							 */
+							ElementList el_left = new ElementList(h.getName()+"LEFT",h.getUri(),ServerUtil.getPropertiesForGivenResource(h.getUri(), "LEFT"));
+							//resources.add(el);
+							//el_left.printAll();
+							this.addElements(el_left);
 						}
 					}
 					
@@ -108,29 +105,21 @@ public class Elements {
 			}
 		}
 		
-		return resources;
+		//return resources;
 	}
 
 	
 	public void printAll(){
-		System.out.println("Resources: ");
-		for(ElementList el: this.resources){
-			el.printAll();
-		}
-		System.out.println("\nClasses: ");
-		for(ElementList el: this.classes){
+		System.out.println("Elements: ");
+		for(ElementList el: this.elements){
 			el.printAll();
 		}
 	}
 	
 	public String printToString(){
 		String result="";
-		result+="Resources: \n";
-		for(ElementList el: this.resources){
-			result+=el.printToString()+"\n";
-		}
-		result+="\nClasses: \n";
-		for(ElementList el: this.classes){
+		result+="Elements: \n";
+		for(ElementList el: this.elements){
 			result+=el.printToString()+"\n";
 		}
 		return result;
@@ -139,7 +128,7 @@ public class Elements {
 	
 	public boolean isElementEmty(){
 		try {
-			if(this.getClasses().isEmpty()||this.getResources().isEmpty()) return true;
+			if(this.getElements().isEmpty()) return true;
 			else return false;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
