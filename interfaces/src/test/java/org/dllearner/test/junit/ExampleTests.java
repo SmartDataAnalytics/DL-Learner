@@ -163,13 +163,13 @@ public class ExampleTests {
 					// start example
 					CLI start = new CLI(new File(conf));
 					start.init();
-					start.run();
 //					System.out.println("algorithm: " + start.getLearningAlgorithm());
 					boolean isSparql = start.getKnowledgeSource() instanceof SparqlKnowledgeSource;
 //					boolean isSparql = false;
 					LearningAlgorithm algorithm = start.getLearningAlgorithm();
 					if((testGP || !(algorithm instanceof GP)) &&
 							(sparql == 0 || (sparql == 1 &&  isSparql) || (sparql == 2 && !isSparql) ) ) {
+						start.run();
 						started = true;
 //						start.start(false);
 						// test is successful if a concept was learned

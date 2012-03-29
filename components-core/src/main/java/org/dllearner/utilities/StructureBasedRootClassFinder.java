@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -47,10 +46,6 @@ import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
-import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
-
-import com.clarkparsia.modularity.ModularityUtils;
-import com.clarkparsia.owlapi.modularity.locality.LocalityClass;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 public class StructureBasedRootClassFinder implements RootClassFinder, OWLClassExpressionVisitor {
