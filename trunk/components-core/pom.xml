@@ -106,6 +106,10 @@
 					<artifactId>xercesImpl</artifactId>
 					<groupId>xerces</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>any23-core</artifactId>
+					<groupId>org.deri.any23</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 

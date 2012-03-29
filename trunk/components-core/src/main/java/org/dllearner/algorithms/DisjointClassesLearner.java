@@ -21,10 +21,8 @@ package org.dllearner.algorithms;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,11 +44,8 @@ import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
-import org.openrdf.model.vocabulary.OWL;
-import org.openrdf.model.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +56,8 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.OWL2;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * Learns disjoint classes using SPARQL queries.
@@ -340,7 +337,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		//secondly, create disjoint classexpressions with score 1 - (#occurence/#all)
 		for(Entry<NamedClass, Integer> entry : sortByValues(class2Count)){
 			//drop classes from OWL and RDF namespace
-			if(entry.getKey().getName().startsWith(OWL.NAMESPACE) || entry.getKey().getName().startsWith(RDF.NAMESPACE))continue;
+			if(entry.getKey().getName().startsWith(OWL2.getURI()) || entry.getKey().getName().startsWith(RDF.getURI()))continue;
 //			evalDesc = new EvaluatedDescription(entry.getKey(),
 //					new AxiomScore(1 - (entry.getValue() / (double)all)));
 			double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, entry.getValue());

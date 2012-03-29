@@ -44,9 +44,6 @@ import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.AxiomComparator;
-import org.openrdf.model.vocabulary.OWL;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.vocabulary.RDFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +55,9 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.util.iterator.Filter;
+import com.hp.hpl.jena.vocabulary.OWL2;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * @author Lorenz Bühmann
@@ -334,7 +334,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		@Override
 		public boolean accept(OntClass cls) {
 			if(!cls.isAnon()){
-				return cls.getURI().startsWith(OWL.NAMESPACE);
+				return cls.getURI().startsWith(OWL2.getURI());
 			}
 			return false;
 		}
@@ -346,7 +346,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		@Override
 		public boolean accept(OntClass cls) {
 			if(!cls.isAnon()){
-				return cls.getURI().startsWith(RDFS.NAMESPACE);
+				return cls.getURI().startsWith(RDFS.getURI());
 			}
 			return false;
 		}
@@ -358,7 +358,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		@Override
 		public boolean accept(OntClass cls) {
 			if(!cls.isAnon()){
-				return cls.getURI().startsWith(RDF.NAMESPACE);
+				return cls.getURI().startsWith(RDF.getURI());
 			}
 			return false;
 		}
