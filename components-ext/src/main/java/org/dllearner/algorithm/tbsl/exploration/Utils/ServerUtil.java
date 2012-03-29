@@ -13,8 +13,8 @@ public class ServerUtil {
 	
 	//String static server_Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
 	//private static String server_Prefix="http://dbpedia.org/sparql";
-	//private static String server_Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
-	private static String server_Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8890/sparql";
+	private static String server_Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
+	//private static String server_Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8890/sparql";
 	
 	private static int timeToTimeoutOnServer=30000;
 	

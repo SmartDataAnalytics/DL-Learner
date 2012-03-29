@@ -17,8 +17,10 @@ import java.util.regex.Pattern;
 
 import net.didion.jwnl.JWNLException;
 
+import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.SparqlObject;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.queryInformation;
+import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -46,15 +48,16 @@ public class exploration_main {
 	 */
 	public static void main(String[] args) throws IOException, JWNLException, InterruptedException, ClassNotFoundException, SQLException {
 		
-		/**
-		 * Do the starting initializing stuff
-		 */
+		System.out.println("Starting Main File");
 		long startInitTime = System.currentTimeMillis();
 
 		/*
-		 * Create Sparql Object
+		 * Initial Index and Templator
 		 */
-		SparqlObject sparql = new SparqlObject();
+		BasicTemplator btemplator = new BasicTemplator();
+    	//btemplator.UNTAGGED_INPUT = false;
+		SQLiteIndex myindex = new SQLiteIndex();
+		
 
 		long stopInitTime = System.currentTimeMillis();
 		System.out.println("Time for Initialising "+(stopInitTime-startInitTime)+" ms");
@@ -74,68 +77,7 @@ public class exploration_main {
 					System.out.println("Bye!");
 					System.exit(0);
 				}
-				if(line.contains(":setIterationdepth")){
-					String[] tmp=line.split(" ");
-					int i_zahl = new Integer(tmp[1]).intValue();
-					if(tmp.length>=2) sparql.setIterationdepth(i_zahl);
-					doing = false;
-				}
-				if(line.contains(":getIterationdepth")){
-					System.out.println(sparql.getIterationdepth());
-					doing = false;
-				}
-				if(line.contains(":setExplorationdepthwordnet")){
-					String[] tmp=line.split(" ");
-					int i_zahl = new Integer(tmp[1]).intValue();
-					if(tmp.length>=2) sparql.setExplorationdepthwordnet(i_zahl);
-					doing = false;
-				}
-				if(line.contains(":getExplorationdepthwordnet")){
-					System.out.println(sparql.getExplorationdepthwordnet());
-					doing = false;
-				}
-				if(line.contains(":setNumberofanswer")){
-					String[] tmp=line.split(" ");
-					int i_zahl = new Integer(tmp[1]).intValue();
-					if(tmp.length>=2) sparql.setNumberofanswers(i_zahl);
-					doing = false;
-				}
-				if(line.contains(":getNumberofanswer")){
-					System.out.println(sparql.getNumberofanswers());
-					doing = false;
-				}
 
-				if(line.contains(":textfile")&& schleife==true){
-					TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-
-
-					System.out.println("Please enter Path of txt. File:");
-					line=in.readLine();
-					
-					//Start Time measuring
-					long startTime = System.currentTimeMillis();
-					String s="";
-				    BufferedReader in_file = new BufferedReader(new InputStreamReader(new FileInputStream(line)));
-				    int anzahl=0;
-				    while( null != (s = in_file.readLine()) ) {
-				    		System.out.println(s);
-				    		anzahl++;
-				    		//get each line and send it to the parser
-				    		//String query1, String id1, String type1, boolean fusion1, boolean aggregation1, boolean yago1, String XMLtype1
-				    		queryInformation newQuery = new queryInformation(s,"0","",false,false,false,"non",false);
-				    		queryInformation result = new queryInformation(s,"0","",false,false,false,"non",false);
-				    		result=sparql.create_Sparql_query(newQuery);
-				    		ArrayList<String> ergebnis = result.getResult();
-							for(String i: ergebnis){
-								System.out.println(i);
-							}
-				    }
-				    long timeNow = System.currentTimeMillis();
-				    long diff = timeNow-startTime;
-				              
-				    System.out.println("Time for "+anzahl+" questions = "+diff+" ms.");
-				     
-				}
 				if(line.contains(":xml")&& schleife==true){
 					TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 
@@ -154,24 +96,16 @@ public class exploration_main {
 				    int anzahl=0;
 				    int anzahl_query_with_answers=0;
 				    int yago_querys=0;
-					for(queryInformation s : list_of_structs){
+					for(queryInformation qi : list_of_structs){
 						anzahl=anzahl+1;
 				    	System.out.println("");
-				    	if(s.getId()==""||s.getId()==null)System.out.println("NO");
-						System.out.println("ID: "+s.getId());
-						System.out.println("Query: "+s.getQuery());
-						System.out.println("Type: "+s.getType());
-						System.out.println("XMLType: "+s.getXMLtype());
-						//queryInformation tmpquery;
-						//only question, which are not yago files
-						if(s.isYago()==true)yago_querys=yago_querys+1;
-						//if(s.isYago()==false){
-							queryInformation tmpquery=sparql.create_Sparql_query(s);
-							if(!tmpquery.getResult().isEmpty()) {
-								list_of_resultstructs.add(sparql.create_Sparql_query(s));
-								anzahl_query_with_answers=anzahl_query_with_answers+1;
-							}
-						//}
+				    	if(qi.getId()==""||qi.getId()==null)System.out.println("NO");
+						System.out.println("ID: "+qi.getId());
+						System.out.println("Query: "+qi.getQuery());
+						System.out.println("Type: "+qi.getType());
+						System.out.println("XMLType: "+qi.getXMLtype());
+						String question = qi.getQuery();
+						MainInterface.startQuestioning(question,btemplator,myindex);
 					}
 					
 				    
@@ -217,9 +151,8 @@ public class exploration_main {
 				
 				else if(schleife==true && doing ==true){
 					long startTime = System.currentTimeMillis();
-					queryInformation newQuery = new queryInformation(line,"0","",false,false,false,"non",false);
 					queryInformation result = new queryInformation(line,"0","",false,false,false,"non",false);
-					result= sparql.create_Sparql_query(newQuery);
+					MainInterface.startQuestioning(line,btemplator,myindex);
 					ArrayList<String> ergebnis = result.getResult();
 					//get eacht result only once!
 					Set<String> setString = new HashSet<String>();

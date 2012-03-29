@@ -31,11 +31,11 @@ static BasicTemplator btemplator;
 private static SQLiteIndex myindex;
 	
 	
-public TemplateBuilder() throws MalformedURLException, ClassNotFoundException, SQLException{
+public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLException, ClassNotFoundException, SQLException{
 		
-		TemplateBuilder.btemplator = new BasicTemplator();
+		TemplateBuilder.btemplator = bt;
     	//btemplator.UNTAGGED_INPUT = false;
-		TemplateBuilder.myindex = new SQLiteIndex();
+		TemplateBuilder.myindex = sq;
 	}
 		
 	

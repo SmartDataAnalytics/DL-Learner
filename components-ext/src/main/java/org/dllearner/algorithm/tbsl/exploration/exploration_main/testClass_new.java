@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Elements;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Template;
@@ -23,6 +24,7 @@ import org.dllearner.algorithm.tbsl.exploration.Sparql.queryInformation;
 import org.dllearner.algorithm.tbsl.exploration.Utils.Query;
 import org.dllearner.algorithm.tbsl.exploration.Utils.QueryPair;
 import org.dllearner.algorithm.tbsl.exploration.modules.IterationModule;
+import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
 
 public class testClass_new {
 
@@ -36,7 +38,11 @@ public class testClass_new {
 		// TODO Auto-generated method stub
 		ArrayList<Template> temp_list_result = new ArrayList<Template>();
 		
-		TemplateBuilder testobject = new TemplateBuilder();
+		BasicTemplator btemplator = new BasicTemplator();
+    	//btemplator.UNTAGGED_INPUT = false;
+		SQLiteIndex myindex = new SQLiteIndex();
+		
+		TemplateBuilder testobject = new TemplateBuilder(btemplator, myindex);
 		
 		String filepath = "/home/swalter/Dokumente/Auswertung/";
 		//String file="very_small.xml";
@@ -53,7 +59,7 @@ public class testClass_new {
 		String question ="Who is the daughter of Bill Clinton married to?";
 		
 		long start_template = System.currentTimeMillis();
-		//temp_list_result=testobject.createTemplates(question);
+		temp_list_result=testobject.createTemplates(question);
 		
 		Map<QueryPair,String> tm = new HashMap<QueryPair, String>();
 		
