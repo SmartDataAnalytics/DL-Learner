@@ -12,7 +12,7 @@ public class Query {
 	 * @param t
 	 * @return
 	 */
-	public static ArrayList<QueryPair> returnSetOfQueries(Template t){
+	public static ArrayList<QueryPair> returnSetOfQueries(Template t, String type){
 		
 		ArrayList<QueryPair> queryList = new ArrayList<QueryPair>(); 
 		/*
@@ -27,7 +27,15 @@ public class Query {
 		/*
 		 * Now replacing varibale with the uri from the Hypot.
 		 */
-		for(ArrayList<Hypothesis> hypothesenList : t.getHypothesen()){
+		ArrayList<ArrayList<Hypothesis>> givenHypothesenList = new ArrayList<ArrayList<Hypothesis>>() ;
+		if(type.contains("LEVENSTHEIN")){
+			givenHypothesenList=t.getHypothesenLevensthein();
+		}
+		else{
+			givenHypothesenList=t.getHypothesen();
+		}
+		
+		for(ArrayList<Hypothesis> hypothesenList : givenHypothesenList){
 			String condition_new = condition;
 			//System.out.println("New_Condition before replacing "+condition_new);
 			double global_rank=0;

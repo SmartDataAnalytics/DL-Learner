@@ -13,8 +13,8 @@ public class ServerUtil {
 	
 	//String static server_Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
 	//private static String server_Prefix="http://dbpedia.org/sparql";
-	private static String server_Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
-	//private static String server_Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8890/sparql";
+	//private static String server_Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
+	private static String server_Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8890/sparql";
 	
 	private static int timeToTimeoutOnServer=30000;
 	
@@ -96,6 +96,8 @@ public class ServerUtil {
 		if(!side.contains("LEFT") && !side.contains("RIGHT")) verarbeitungsurl=query_property_left;
 
 	    String result="";
+	    /*System.out.println(verarbeitungsurl);
+	    System.out.println("side: "+ side);*/
 		result = getListOfElements(verarbeitungsurl);
 	    
 	    return generateList(result);
@@ -109,8 +111,24 @@ public class ServerUtil {
 	 */
 	public static HashMap<String,String> getElementsForGivenClass(String classUri) throws IOException{
 		
+		/*
+		PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT DISTINCT ?p WHERE {
+ { ?x ?p ?y . } UNION { ?y ?p ?x . }
+    { 
+      SELECT ?x {
+        ?x rdf:type dbo:Mountain . 
+      }
+      LIMIT 10
+    }
+}
+ORDER BY ?x 
+
+
+		TODO:Try with different Limits
+		 */
 		
-		String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s ?x WHERE { ?x rdf:type <"+classUri+">. ?x rdfs:label ?s. FILTER (lang(?s) = 'en') }";
+		String query="PREFIX dbo: <http://dbpedia.org/ontology/> SELECT ?s ?p WHERE {{?x ?p ?y. ?x rdfs:label ?s. FILTER (lang(?s) = 'en').}{?y ?p ?x. ?x rdfs:label ?s. FILTER (lang(?s) = 'en').} { SELECT ?x { ?x rdf:type <"+classUri+">.}LIMIT 10}}";
 
 	    String result="";
 		result = getListOfElements(query);

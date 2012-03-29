@@ -7,6 +7,7 @@ public class Template {
 	private ArrayList<ElementList> list_of_element_uri_pair = new ArrayList<ElementList>();
 	private ArrayList<ArrayList<String>> condition = new ArrayList<ArrayList<String>>();
 	private ArrayList<ArrayList<Hypothesis>> hypothesen = new ArrayList<ArrayList<Hypothesis>>();
+	private ArrayList<ArrayList<Hypothesis>> hypothesenLevensthein = new ArrayList<ArrayList<Hypothesis>>();
 	private String selectTerm;
 	private String having;
 	private String filter;
@@ -15,8 +16,11 @@ public class Template {
 	private String question;
 	private String queryType;
 	private Elements elm;
-	private float overallTime;
-	private float time_Templator;
+	private long overallTime;
+	private long time_Templator;
+	private long time_generateElements;
+	private long time_part1;
+	private long time_part2;
 	
 	public String getHaving() {
 		return having;
@@ -92,6 +96,17 @@ public class Template {
 				z.printAll();
 			}
 		}
+		
+		anzahl = 1;
+		for(ArrayList<Hypothesis> x : hypothesenLevensthein){
+			System.out.println("\nSet of HypothesenLevensthein"+anzahl+":");
+			anzahl+=1;
+			for ( Hypothesis z : x){
+				z.printAll();
+			}
+		}
+		
+		
 		System.out.print("\n");
 		System.out.println("QueryType "+queryType);
 		System.out.println("selectTerm: "+selectTerm);
@@ -107,16 +122,16 @@ public class Template {
 	public void setQuestion(String question) {
 		this.question = question;
 	}
-	public float getOverallTime() {
+	public long getOverallTime() {
 		return overallTime;
 	}
-	public void setOverallTime(float overallTime) {
+	public void setOverallTime(long overallTime) {
 		this.overallTime = overallTime;
 	}
-	public float getTime_Templator() {
+	public long getTime_Templator() {
 		return time_Templator;
 	}
-	public void setTime_Templator(float time_Templator) {
+	public void setTime_Templator(long time_Templator) {
 		this.time_Templator = time_Templator;
 	}
 	public ArrayList<ElementList> getList_of_element_uri_pair() {
@@ -140,6 +155,30 @@ public class Template {
 	}
 	public void setElm(Elements elm) {
 		this.elm = elm;
+	}
+	public long getTime_generateElements() {
+		return time_generateElements;
+	}
+	public void setTime_generateElements(long time_generateElements) {
+		this.time_generateElements = time_generateElements;
+	}
+	public long getTime_part1() {
+		return time_part1;
+	}
+	public void setTime_part1(long time_part1) {
+		this.time_part1 = time_part1;
+	}
+	public long getTime_part2() {
+		return time_part2;
+	}
+	public void setTime_part2(long time_part2) {
+		this.time_part2 = time_part2;
+	}
+	public ArrayList<ArrayList<Hypothesis>> getHypothesenLevensthein() {
+		return hypothesenLevensthein;
+	}
+	public void setHypothesenLevensthein(ArrayList<ArrayList<Hypothesis>> hypothesenLevensthein) {
+		this.hypothesenLevensthein = hypothesenLevensthein;
 	}
 	
 

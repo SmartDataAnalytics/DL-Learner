@@ -39,69 +39,95 @@ public class testClass_new {
 		TemplateBuilder testobject = new TemplateBuilder();
 		
 		String filepath = "/home/swalter/Dokumente/Auswertung/";
-		String file="very_small.xml";
-		//String file="dbpedia-train.xml";
+		//String file="very_small.xml";
+		String file="dbpedia-train.xml";
 		long start = System.currentTimeMillis();
 		
-
 		//String question = "Is the wife of president Obama called Michelle?";
-		String question = "Who is the leader of Hamburg?";
-		temp_list_result=testobject.createTemplates(question);
+		
+		//String question = "Who is the mayor of Berlin?";
+		
+		/*
+		 * Original eine resource zwei properties, nachher nur noch eine Resource und eine property
+		 */
+		String question ="Who is the daughter of Bill Clinton married to?";
+		
+		long start_template = System.currentTimeMillis();
+		//temp_list_result=testobject.createTemplates(question);
 		
 		Map<QueryPair,String> tm = new HashMap<QueryPair, String>();
-		
-		/*for(Template t : temp_list_result){
-			//t.printAll();
-			try {
-				t.getElm().printAll();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			}
-			ArrayList<QueryPair> qp = Query.returnSetOfQueries(t);
-			for(QueryPair p : qp){
-				tm.put(p, t.getQuestion());  
-			}
-		}*/
-		for(Template t : temp_list_result){
-			t.getElm().getResources();
-			IterationModule.doIteration(t.getElm(),t.getHypothesen(),t.getCondition());
-		}
-		
-		
-		
-		
-		ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
 		
 		/*
 		 * Generate Templates
 		 */
-		/*list_of_structs=generateStruct(filepath+"XMLDateien/"+file);
+	/*	ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
+		list_of_structs=generateStruct(filepath+"XMLDateien/"+file);
 		String result="";
 		for(queryInformation s : list_of_structs){
 			ArrayList<Template> temp_list = new ArrayList<Template>();
 			temp_list=testobject.createTemplates(s.getQuery().replace("<[CDATA[", "").replace("]]>", ""));
 			for(Template t : temp_list){
 				temp_list_result.add(t);
-				try {
+				/*try {
 					result+=t.getElm().printToString()+"\n";
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
-				}
-			}
+				}*/
+		//	}
 			
-		}*/
+		//}
+		
+		long stop_template = System.currentTimeMillis();
+		
+		long start_iteration = System.currentTimeMillis();
+		long time_generatingElements=0;
+		long time_part1=0;
+		long time_part2=0;
+		
+		for(Template t : temp_list_result){
+			time_generatingElements+=t.getTime_generateElements();
+			time_part1+=t.getTime_part1();
+			time_part2+=t.getTime_part2();
+			try{
+				//t.getElm().printAll();
+				ArrayList<ArrayList<Hypothesis>> blub = IterationModule.doIteration(t.getElm(),t.getHypothesen(),t.getCondition(),"LEVENSTHEIN");
+				t.setHypothesenLevensthein(blub);
+				
+				//t.printAll();
+			}
+			catch (Exception e){
+				
+			}
+		
+		}
+		long stop_iteration = System.currentTimeMillis();
+		System.out.println("The Iteration and Levensthein Mode took "+ (stop_iteration-start_iteration)+"ms");
+		System.out.println("The Iteration and Levensthein Mode took for one Template "+ (stop_iteration-start_iteration)/temp_list_result.size()+"ms");
+		float time_template =stop_template-start_template;
+		float time_Templator=temp_list_result.get(0).getTime_Templator();
+		System.out.println("Generating the Template took  "+ time_template+"ms");
+		System.out.println("Generating one Template took  "+ time_template/temp_list_result.size()+"ms");
+		System.out.println("Templator took "+ time_Templator+"ms");
+		System.out.println("Generating the Templates Without Parser "+ (time_template-time_Templator)+"ms");
+		System.out.println("Average Time getting Properties etc "+ (time_generatingElements/temp_list_result.size())+"ms");
+		System.out.println("Average Time part1 "+ (time_part1/temp_list_result.size())+"ms");
+		System.out.println("Average Time part2 "+ (time_part2/temp_list_result.size())+"ms");
+		System.out.println("Time getting Properties etc "+ (time_generatingElements)+"ms");
+		System.out.println("DONE");
+		
+		
+		
 		
 		/*
 		 * Create Query for each Template
 		 */
 		
-		/*Map<QueryPair,String> tm = new HashMap<QueryPair, String>();
+		//Map<QueryPair,String> tm = new HashMap<QueryPair, String>();
 		
-		for(Template t : temp_list_result){
+		/*for(Template t : temp_list_result){
 			//t.printAll();
-			ArrayList<QueryPair> qp = Query.returnSetOfQueries(t);
+			ArrayList<QueryPair> qp = Query.returnSetOfQueries(t, "LEVENSTHEIN");
 			for(QueryPair p : qp){
 				tm.put(p, t.getQuestion());  
 			}
@@ -113,15 +139,16 @@ public class testClass_new {
 		 * Get Elements for Each Resource and Class
 		 */
 		
-		/*long stop = System.currentTimeMillis();
+		/*
 		System.out.println("Duration in ms: " + (stop - start));
 		writeStringToFile(result,filepath,file,start,stop);		*/
 		
 		/*
 		 * Write Results in File
 		 */
-		//writeQueriesInFile(tm,filepath,file,start,stop );
-		//writeTemplatesInFile(temp_list_result,filepath,file,start,stop );
+		long stop = System.currentTimeMillis();
+	//	writeQueriesInFile(tm,filepath,file,start,stop );
+	//	writeTemplatesInFile(temp_list_result,filepath,file,start,stop );
         
 	}
 	
@@ -151,6 +178,22 @@ public class testClass_new {
 						result+="%%%%%%%%%%%"+"\n";
 				}
 			}
+			
+			anzahl = 1;
+			for(ArrayList<Hypothesis> x : t.getHypothesenLevensthein()){
+				result+="\nSet of LevenstheinHypothesen"+anzahl+":\n";
+				anzahl+=1;
+				for ( Hypothesis z : x){
+					result+="%%%%%%%%%%%"+"\n";
+					result+="Variable: "+z.getVariable()+"\n";
+					result+="Name: "+z.getName()+"\n";
+					result+="Uri: " + z.getUri()+"\n";
+					result+="Type: " + z.getType()+"\n";
+					result+="Rank: "+z.getRank()+"\n";
+						result+="%%%%%%%%%%%"+"\n";
+				}
+			}
+			
 			result+="\n";
 			result+="queryType: "+t.getQueryType()+"\n";
 			result+="selectTerm: "+t.getSelectTerm()+"\n";
