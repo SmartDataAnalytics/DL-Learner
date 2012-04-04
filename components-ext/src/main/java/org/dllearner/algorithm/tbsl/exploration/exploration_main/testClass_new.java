@@ -24,6 +24,7 @@ import org.dllearner.algorithm.tbsl.exploration.Sparql.queryInformation;
 import org.dllearner.algorithm.tbsl.exploration.Utils.Query;
 import org.dllearner.algorithm.tbsl.exploration.Utils.QueryPair;
 import org.dllearner.algorithm.tbsl.exploration.modules.IterationModule;
+import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
 
 public class testClass_new {
@@ -41,6 +42,8 @@ public class testClass_new {
 		BasicTemplator btemplator = new BasicTemplator();
     	//btemplator.UNTAGGED_INPUT = false;
 		SQLiteIndex myindex = new SQLiteIndex();
+		
+		WordNet wordnet = new WordNet();
 		
 		TemplateBuilder testobject = new TemplateBuilder(btemplator, myindex);
 		
@@ -84,7 +87,7 @@ public class testClass_new {
 			
 		//}
 		
-		long stop_template = System.currentTimeMillis();
+	/*	long stop_template = System.currentTimeMillis();
 		
 		long start_iteration = System.currentTimeMillis();
 		long time_generatingElements=0;
@@ -97,7 +100,7 @@ public class testClass_new {
 			time_part2+=t.getTime_part2();
 			try{
 				//t.getElm().printAll();
-				ArrayList<ArrayList<Hypothesis>> blub = IterationModule.doIteration(t.getElm(),t.getHypothesen(),t.getCondition(),"LEVENSTHEIN");
+				ArrayList<ArrayList<Hypothesis>> blub = IterationModule.doIteration(t.getElm(),t.getHypothesen(),t.getCondition(),"LEVENSTHEIN",myindex,wordnet);
 				t.setHypothesenLevensthein(blub);
 				
 				//t.printAll();
@@ -106,8 +109,8 @@ public class testClass_new {
 				
 			}
 		
-		}
-		long stop_iteration = System.currentTimeMillis();
+		}*/
+		/*long stop_iteration = System.currentTimeMillis();
 		System.out.println("The Iteration and Levensthein Mode took "+ (stop_iteration-start_iteration)+"ms");
 		System.out.println("The Iteration and Levensthein Mode took for one Template "+ (stop_iteration-start_iteration)/temp_list_result.size()+"ms");
 		float time_template =stop_template-start_template;
@@ -120,7 +123,7 @@ public class testClass_new {
 		System.out.println("Average Time part1 "+ (time_part1/temp_list_result.size())+"ms");
 		System.out.println("Average Time part2 "+ (time_part2/temp_list_result.size())+"ms");
 		System.out.println("Time getting Properties etc "+ (time_generatingElements)+"ms");
-		System.out.println("DONE");
+		System.out.println("DONE");*/
 		
 		
 		

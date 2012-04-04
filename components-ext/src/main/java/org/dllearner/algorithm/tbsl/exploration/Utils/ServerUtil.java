@@ -3,10 +3,14 @@ package org.dllearner.algorithm.tbsl.exploration.Utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ServerUtil {
 
@@ -128,10 +132,13 @@ ORDER BY ?x
 		TODO:Try with different Limits
 		 */
 		
-		String query="PREFIX dbo: <http://dbpedia.org/ontology/> SELECT ?s ?p WHERE {{?x ?p ?y. ?x rdfs:label ?s. FILTER (lang(?s) = 'en').}{?y ?p ?x. ?x rdfs:label ?s. FILTER (lang(?s) = 'en').} { SELECT ?x { ?x rdf:type <"+classUri+">.}LIMIT 10}}";
-
+		/*
+		 * TODO: Still a not "valid" url
+		 */
+		String query="SELECT DISTINCT ?s ?p WHERE {{?x ?p ?y. ?x rdfs:label ?s. FILTER (lang(?s) = 'en').} UNION {?y ?p ?x. ?x rdfs:label ?s. FILTER (lang(?s) = 'en').} { SELECT ?x { ?x rdf:type <"+classUri+">.}LIMIT 10}}";
+		String query_final=ServerUtil.getServer_Prefix()+"?default-graph-uri=&query="+ServerUtil.createServerRequest(query)+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
 	    String result="";
-		result = getListOfElements(query);
+		result = getListOfElements(query_final);
 	    
 	    return generateList(result);
 	}
@@ -197,7 +204,65 @@ ORDER BY ?x
 	          result=sb.toString();
 	                    
 	      } catch (MalformedURLException e) {
-		      System.out.println("Must enter a valid URL");
+		      //System.out.println("Must enter a valid URL");
+	    	  System.err.println("ATTENTION\n URL not valid : "+verarbeitungsurl+"\n");
+		    } catch (IOException e) {
+		    	System.err.println("Can not connect or timeout");
+		    }
+	      finally
+	      {
+	          //close the connection, set all objects to null
+	          try{
+	        	  connection.disconnect();
+	          }
+	          catch (Exception e){
+	        	  System.err.println("ATTENTION\n Error in disconecting Connection to Server in getListOfElements\n ");
+	          }
+	          rd = null;
+	          sb = null;
+	          connection = null;
+	      }
+		return result;
+	}
+	
+	public static ArrayList<String> requestAnswerFromServer(String query){
+		String query_url=server_Prefix+"?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
+
+		//System.out.println(tmp);
+		String result="";
+		HttpURLConnection connection = null;
+	      OutputStreamWriter wr = null;
+	      BufferedReader rd  = null;
+	      StringBuilder sb = null;
+	      String line = null;
+	    
+	      URL serverAddress = null;
+	    
+	      try {
+	          serverAddress = new URL(query_url);
+	          //set up out communications stuff
+	          connection = null;
+	        
+	          //Set up the initial connection
+	          connection = (HttpURLConnection)serverAddress.openConnection();
+	          connection.setRequestMethod("GET");
+	          connection.setDoOutput(true);
+	          connection.setReadTimeout(timeToTimeoutOnServer);
+	                    
+	          connection.connect();
+	          rd  = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	          sb = new StringBuilder();
+	        
+	          while ((line = rd.readLine()) != null)
+	          {
+	              sb.append(line + '\n');
+	          }
+	        
+	          //System.out.println(sb.toString());
+	          result=sb.toString();
+	                    
+	      } catch (MalformedURLException e) {
+	    	  System.err.println("ATTENTION\n URL not valid : "+query_url+"\n");
 		    } catch (IOException e) {
 		      System.out.println("Can not connect or timeout");
 		    }
@@ -207,11 +272,41 @@ ORDER BY ?x
 	          connection.disconnect();
 	          rd = null;
 	          sb = null;
+	          wr = null;
 	          connection = null;
 	      }
-		return result;
+	    
+	    
+	    
+		return createAnswerArray(result);
 	}
 	
+	private static ArrayList<String> createAnswerArray(String string){
+
+		Pattern p = Pattern.compile (".*\\<td\\>(.*)\\</td\\>.*");
+		string = string.replace("<table class=\"sparql\" border=\"1\">", "").replace("<tr>","").replace("</tr>", "").replace("</table>", "");
+	    Matcher m = p.matcher (string);
+	    String[] bla = string.split("   ");
+	    
+	    ArrayList<String> result= new ArrayList<String>();
+	  	for(String s: bla){
+	  		m=p.matcher(s);
+	  		while (m.find()) {
+	  			String temp = m.group(1);
+	  			temp = temp.replace("\"@en","");
+	  			temp = temp.replace("\"","");
+	  			//result.add(m.group(1));
+	  			result.add(temp);
+	  			  		
+	  		}
+	    }
+	  	
+	  		
+		//if (result.length()==0) result="EmtyAnswer";
+	  	if(string.matches("true")|| string.matches("false")) result.add(string);
+		return result;
+
+	}
 	
 
 }

@@ -31,7 +31,12 @@ public class Query {
 		if(type.contains("LEVENSTHEIN")){
 			givenHypothesenList=t.getHypothesenLevensthein();
 		}
-		else{
+		else if(type.contains("WORDNET")){
+			givenHypothesenList=t.getHypothesenWordnet();
+		}
+		
+		else {
+			if(!type.contains("NORMAL"))System.err.println("ATTENTION\n Given Type: "+type+" was not found in generating Queries!!\n");
 			givenHypothesenList=t.getHypothesen();
 		}
 		
@@ -48,6 +53,8 @@ public class Query {
 				if(!h.getUri().contains("http")){
 					addQuery=false;
 				}
+				condition_new=condition_new.replace("ISA", "rdf:type");
+				//just in case...
 				condition_new=condition_new.replace("isA", "rdf:type");
 				global_rank=global_rank+h.getRank();
 			}
