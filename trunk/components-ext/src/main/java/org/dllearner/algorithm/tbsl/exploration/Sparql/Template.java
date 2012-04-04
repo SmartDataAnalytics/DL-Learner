@@ -8,6 +8,7 @@ public class Template {
 	private ArrayList<ArrayList<String>> condition = new ArrayList<ArrayList<String>>();
 	private ArrayList<ArrayList<Hypothesis>> hypothesen = new ArrayList<ArrayList<Hypothesis>>();
 	private ArrayList<ArrayList<Hypothesis>> hypothesenLevensthein = new ArrayList<ArrayList<Hypothesis>>();
+	private ArrayList<ArrayList<Hypothesis>> hypothesenWordnet = new ArrayList<ArrayList<Hypothesis>>();
 	private String selectTerm;
 	private String having;
 	private String filter;
@@ -179,6 +180,12 @@ public class Template {
 	}
 	public void setHypothesenLevensthein(ArrayList<ArrayList<Hypothesis>> hypothesenLevensthein) {
 		this.hypothesenLevensthein = hypothesenLevensthein;
+	}
+	public ArrayList<ArrayList<Hypothesis>> getHypothesenWordnet() {
+		return hypothesenWordnet;
+	}
+	public void setHypothesenWordnet(ArrayList<ArrayList<Hypothesis>> hypothesenWordnet) {
+		this.hypothesenWordnet = hypothesenWordnet;
 	}
 	
 

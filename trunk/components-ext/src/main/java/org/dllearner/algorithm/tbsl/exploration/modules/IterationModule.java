@@ -3,9 +3,14 @@ package org.dllearner.algorithm.tbsl.exploration.modules;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import net.didion.jwnl.JWNLException;
+
+import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.ElementList;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Elements;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
+import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
+import org.dllearner.algorithm.tbsl.nlp.WordNet;
 
 /**
  * Gets Elements, Condition and Hypothesen and returns HypothesenSets.
@@ -23,7 +28,7 @@ public class IterationModule {
 	 * @return ArrayList<ArrayList<Hypothesis>>
 	 * @throws SQLException 
 	 */
-	public static ArrayList<ArrayList<Hypothesis>> doIteration(Elements elm,ArrayList<ArrayList<Hypothesis>> givenHypothesenList,ArrayList<ArrayList<String>> givenConditionList, String type) throws SQLException{
+	public static ArrayList<ArrayList<Hypothesis>> doIteration(Elements elm,ArrayList<ArrayList<Hypothesis>> givenHypothesenList,ArrayList<ArrayList<String>> givenConditionList, String type,SQLiteIndex myindex,WordNet wordnet,StanfordLemmatizer lemmatiser) throws SQLException{
 
 		boolean gotResource=true;
 		ArrayList<ElementList> resources = new ArrayList<ElementList>();
@@ -142,8 +147,12 @@ public class IterationModule {
 										 * Here start levenstehin, wordnet etc etc
 										 */
 										if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(propertyVariable,array[0],el.getHm());
+										if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(propertyVariable,array[0],el.getHm(),myindex,wordnet,lemmatiser);
 										if(!PL.contains(propertyVariable)) PL.add(propertyVariable+"::"+h.getVariable());
 									} catch (SQLException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									} catch (JWNLException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
@@ -159,7 +168,7 @@ public class IterationModule {
 					
 				}
 				
-				if(h.getType().contains("isA")){
+				if(h.getType().contains("ISA")){
 					/*
 					 * TODO:Add special case, if we have only one condition but with an isA in it. 
 					 */
@@ -180,7 +189,7 @@ public class IterationModule {
 								 * Dont look for line, where e.g. ?x isA ?y
 								 */
 								//get(1) is the middle Term and if there is an isa, than its there
-								if(!cl.get(1).contains("isA")){
+								if(!cl.get(1).contains("ISA")){
 									for(String s : cl){
 										if(s.contains(h.getVariable())){
 											propertyVariableList.add(s);
@@ -199,6 +208,7 @@ public class IterationModule {
 												 * Here start levenstehin, wordnet etc etc
 												 */
 												if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(propertyVariable,h_small.getName(),el.getHm());
+												if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(propertyVariable,h_small.getName(),el.getHm(),myindex,wordnet,lemmatiser);
 												if(!PL.contains(propertyVariable)) PL.add(propertyVariable);
 												for(Hypothesis h_temp : resultHypothesenList) HL.add(h_temp);
 											} catch (Exception e) {

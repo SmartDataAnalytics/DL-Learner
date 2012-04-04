@@ -104,6 +104,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				String[] tmp_array = conditions1.toString().split(" -- ");
      				for(String s: tmp_array){
      					//System.out.println(s);
+     					s=s.replace("isA", "ISA");
      					temp_array.add(s);
      				}
      				condition.add(temp_array);
@@ -166,6 +167,14 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			     		
      			Template template = new Template(condition,bqt.getQt().toString(), having, filter, selectTerm,OrderBy, limit,question);
      			
+     			for(ArrayList<String> al : condition){
+     				String con_temp="";
+     				for(String s : al){
+     					con_temp+=" " + s;
+     				}
+     				System.out.println("Condition: "+con_temp);
+     			}
+     			
      			template.setTime_part1(stop_part1-start_part1);
      			boolean add_reverse_template = true;
      			
@@ -179,7 +188,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      					String[] tmp_array = tmp.split(":");
      					boolean no_iaA_found=true;
      					for(ArrayList<String> x : condition){
-     						if(x.get(1).equals("isA") && x.get(2).equals("?"+tmp_array[0])){
+     						if(x.get(1).equals("ISA") && x.get(2).equals("?"+tmp_array[0])){
      							no_iaA_found=false;
      							Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0],tmp_array[1], tmp_array[1], "ISA", 0.0);
      	     					//tmp_hypothesis.printAll();
@@ -218,11 +227,11 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      			ArrayList<ArrayList<Hypothesis>> final_list_set_hypothesis = new ArrayList<ArrayList<Hypothesis>>();
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			
      			
-     		/*	System.out.println("Alle Hypothesen VOR der Verarbeitung");
+     		  System.out.println("Alle Hypothesen VOR der Verarbeitung");
      			for(Hypothesis x : list_of_hypothesis){
      				x.printAll();
      			}
-     			System.out.println("Alle Hypothesen VOR der Verarbeitung  -  Done \n\n");*/
+     			System.out.println("Alle Hypothesen VOR der Verarbeitung  -  Done \n\n");
      			
      			for(Hypothesis x : list_of_hypothesis){
      				/*
@@ -270,13 +279,13 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				}
      			}
      			
-     			/*System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung");
+     			System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung");
      			for(ArrayList<Hypothesis> lh : final_list_set_hypothesis){
      				for(Hypothesis x : lh){
          				x.printAll();
          			}
      			}
-     			System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung  -  Done \n\n");*/
+     			System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung  -  Done \n\n");
      			
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
      			
@@ -311,15 +320,48 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				}
      			}
      			
-     			/*System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung");
+     			
+     			
+     			
+     			/*
+     			 * BUGFIX: Before adding Hypothesis to template check, if each Hypothesis has an uri
+     			 * TODO: check all functions before
+     			 */
+     			/*for(ArrayList<Hypothesis> al:final_list_set_hypothesis){
+     				for(Hypothesis h : al){
+     					if(!h.getUri().contains("http")){
+     						if(h.getType().contains("ISA")){
+     							try {
+									ArrayList<String> tmp = Index_utils.searchIndexForClass(h.getUri(), myindex);
+									h.setUri(tmp.get(0));
+								} catch (SQLException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+     							
+     						}
+     						if(h.getType().contains("RESOURCE")){
+     							try {
+									ArrayList<String> tmp = Index_utils.searchIndexForResource(h.getUri(), myindex);
+									h.setUri(tmp.get(0));
+								} catch (SQLException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+     							
+     						}
+     					}
+     				}
+     			}
+     			*/
+     			System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung");
      			for(ArrayList<Hypothesis> lh : final_list_set_hypothesis){
      				for(Hypothesis x : lh){
          				x.printAll();
          			}
      			}
      			
-     			System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung  -  Done \n\n");*/
-     			
+     			System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung  -  Done \n\n");
      			
      			
      			

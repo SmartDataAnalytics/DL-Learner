@@ -1,6 +1,7 @@
 package org.dllearner.algorithm.tbsl.exploration.exploration_main;
 import java.io.BufferedReader;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,7 +21,10 @@ import net.didion.jwnl.JWNLException;
 import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.SparqlObject;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.queryInformation;
+import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
+import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
+import org.ibex.nestedvm.util.Seekable.InputStream;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -57,6 +61,8 @@ public class exploration_main {
 		BasicTemplator btemplator = new BasicTemplator();
     	//btemplator.UNTAGGED_INPUT = false;
 		SQLiteIndex myindex = new SQLiteIndex();
+		WordNet wordnet = new WordNet();
+		StanfordLemmatizer lemmatiser = new StanfordLemmatizer();
 		
 
 		long stopInitTime = System.currentTimeMillis();
@@ -82,13 +88,18 @@ public class exploration_main {
 					TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 
 
-					System.out.println("Please enter Path of xml File:");
-					line=in.readLine();
+					/*System.out.println("Please enter Path of xml File:");
+					line=in.readLine();*/
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-withoutnonparsed.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/very_small.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/berlin.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/vortragfragen.xml";
+					line="/home/swalter/Dokumente/Auswertung/XMLDateien/iteration-test.xml";
 					
 					//create Structs
 					ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
-					ArrayList<queryInformation> list_of_resultstructs = new ArrayList<queryInformation>();
-					//if you dont want to use the hints in the questions, use false
+					
 					list_of_structs=generateStruct(line,true);
 					//Start Time measuring
 					long startTime = System.currentTimeMillis();
@@ -100,12 +111,13 @@ public class exploration_main {
 						anzahl=anzahl+1;
 				    	System.out.println("");
 				    	if(qi.getId()==""||qi.getId()==null)System.out.println("NO");
-						System.out.println("ID: "+qi.getId());
+						/*System.out.println("ID: "+qi.getId());
 						System.out.println("Query: "+qi.getQuery());
 						System.out.println("Type: "+qi.getType());
-						System.out.println("XMLType: "+qi.getXMLtype());
+						System.out.println("XMLType: "+qi.getXMLtype());*/
 						String question = qi.getQuery();
-						MainInterface.startQuestioning(question,btemplator,myindex);
+						ArrayList<String> answers=MainInterface.startQuestioning(question,btemplator,myindex,wordnet,lemmatiser);
+						qi.setResult(answers);
 					}
 					
 				    
@@ -115,44 +127,28 @@ public class exploration_main {
 						System.out.println(s.getResult());
 					}*/
 					String systemid="";
-					systemid=createXML(list_of_resultstructs);
-					writeQueryInformation(list_of_structs,systemid);
-					writeTime(list_of_structs,systemid);
-					
-					//now create File with systemid for time and a file, which lists alle propertys and so on
-					
-				    long timeNow = System.currentTimeMillis();
-				    long diff = timeNow-startTime;
-				    String string1="Time for "+anzahl+" questions = "+diff+" ms.";
-				    System.out.println(string1);
-				    String string2="From "+anzahl_query_with_answers+" questions I got an answer";
-				    String string3=yago_querys+ " Yago Questions were skiped";
-				    System.out.println(string2);
-				    System.out.println(string3);
-				    String string4 ="Average time for one question : "+(diff/anzahl/1000)+"sek";
-				    File file;
-					FileWriter writer;
-					file = new File("../../generalInformation"+systemid+".txt");
-				     try {
-				       writer = new FileWriter(file ,true);    
-				       writer.write(string1+"\n"+string2+"\n"+string3+"\n"+string4);
-				       writer.flush();
-				       
-
-				       writer.close();
-				    } catch (IOException e) {
-				      e.printStackTrace();
-				    }
-				     
-				    System.out.println("Finished test");
-				    System.exit(0);
+					systemid=createXML(list_of_structs);
+				    String filename_for_evaluation="/home/swalter/Dokumente/Auswertung/ResultXml/result"+systemid.replace(" ", "_")+".xml";
+				    String execute = "python /home/swalter/Dokumente/Auswertung/Evaluation/Evaluation.py "+filename_for_evaluation+" 0";
+				    
+				    /*
+				     * First only for training
+				     */
+				    
+				    System.out.println("execute: "+execute);
+				    Runtime r = Runtime.getRuntime();
+				    Process p = r.exec(execute);
+				    
+				    String open_file="/home/swalter/Dokumente/Auswertung/Evaluation/upload/out"+systemid.replace(" ", "_")+".html";
+				    execute ="firefox "+ open_file;
+				    p = r.exec(execute);
 				     
 				}
 				
 				else if(schleife==true && doing ==true){
 					long startTime = System.currentTimeMillis();
 					queryInformation result = new queryInformation(line,"0","",false,false,false,"non",false);
-					MainInterface.startQuestioning(line,btemplator,myindex);
+					MainInterface.startQuestioning(line,btemplator,myindex,wordnet,lemmatiser);
 					ArrayList<String> ergebnis = result.getResult();
 					//get eacht result only once!
 					Set<String> setString = new HashSet<String>();
@@ -239,39 +235,43 @@ public class exploration_main {
 
 		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy HH.mm.ss");
 		String systemid = sdf.format(now);
-
+		System.out.println("In createXML");
 		
 		String xmlDocument="";
 		int counter=0;
+		System.out.println("Anzahl queryInformations: "+list.size());
 		for (queryInformation s : list){
-			String tmp;
-			if(counter==0){
-				counter=counter+1;
-				xmlDocument="<?xml version=\"1.0\" ?><dataset id=\""+s.getXMLtype()+"\">";
+			if(!s.getResult().isEmpty()){
+				String tmp;
+				if(counter==0){
+					counter=counter+1;
+					xmlDocument="<?xml version=\"1.0\" ?><dataset id=\""+s.getXMLtype()+"\">";
+				}
+				tmp="<question id=\""+s.getId()+"\"><string>"+s.getQuery()+"</string>\n<answers>";
+				
+				//to get all answers only once!
+				Set<String> setString = new HashSet<String>();
+				for(String z: s.getResult()){
+					setString.add(z);
+				}
+				for(String i : setString){
+					//System.out.println("i: "+i);
+					String input="";
+					if(i.contains("http")) input="<uri>"+i+"</uri>\n";
+					else if (i.contains("true")||i.contains("false")) input="<boolean>"+i+"</boolean>\n";
+					else if(i.matches("[0-9]*"))input="<number>"+i+"</number>\n";
+					else input="<string>"+i+"</string>\n";
+					tmp+="<answer>"+input+"</answer>\n";
+				}
+				tmp+="</answers></question>\n";
+				xmlDocument+=tmp;
 			}
-			tmp="<question id=\""+s.getId()+"\"><string>"+s.getQuery()+"</string>\n<answers>";
-			
-			//to get all answers only once!
-			Set<String> setString = new HashSet<String>();
-			for(String z: s.getResult()){
-				setString.add(z);
-			}
-			for(String i : setString){
-				String input="";
-				if(i.contains("http")) input="<uri>"+i+"</uri>\n";
-				else if (i.contains("true")||i.contains("false")) input="<boolean>"+i+"</boolean>\n";
-				else if(i.matches("[0-9]*"))input="<number>"+i+"</number>\n";
-				else input="<string>"+i+"</string>\n";
-				tmp+="<answer>"+input+"</answer>\n";
-			}
-			tmp+="</answers></question>\n";
-			xmlDocument+=tmp;
 			
 		}
 		xmlDocument+="</dataset>";
 		File file;
 		FileWriter writer;
-		file = new File("../../result"+systemid+".xml");
+		file = new File("/home/swalter/Dokumente/Auswertung/ResultXml/result"+systemid.replace(" ", "_")+".xml");
 	     try {
 	       writer = new FileWriter(file ,true);    
 	       writer.write(xmlDocument);
@@ -283,6 +283,7 @@ public class exploration_main {
 	      e.printStackTrace();
 	    }
 	     
+	   System.out.println("In createXML - Done");
 	   return systemid;
 	}
 	
@@ -318,18 +319,28 @@ public class exploration_main {
 		String string=tmp;
 	    Pattern p = Pattern.compile (".*\\<question(.*)\\</question\\>.*");
 	    Matcher m = p.matcher (string);
-	    
+	    /* string= string.replace(" answertype=\"number\"", "");
+	     string= string.replace(" answertype=\"string\"", "");
+	     string= string.replace(" answertype=\"date\"", "");
+	     string= string.replace(" answertype=\"resource\"", "");
+	     string= string.replace(" answertype=\"boolean\"", "");
+	     string = string.replace(" aggregation=\"true\"", "");
+	     string = string.replace(" aggregation=\"false\"", "");
+	     string = string.replace(" onlydbo=\"false\"", "");
+	     string = string.replace(" onlydbo=\"true\"", "");*/
 	    
 	    if(string.contains("id=\"dbpedia-train\"><question")){
 	    	string=string.replace("id=\"dbpedia-train\"><question", "");
 	    	XMLType="dbpedia-train";
 	    	System.out.println("dbpedia-train");
 	    }
-	    if(string.contains("id=\"dbpedia-test\"><question")){
+	    else if(string.contains("id=\"dbpedia-test\"><question")){
 	    	string=string.replace("id=\"dbpedia-test\"><question", "");
 	    	XMLType="dbpedia-test";
 	    	//System.out.println("dbpedia-test");
 	    }
+	    
+	    else XMLType="dbpedia-train";
 	    ArrayList<queryInformation> querylist = new ArrayList<queryInformation>();
 	    String [] bla = string.split("</question><question");
 	    for(String s : bla){
@@ -340,7 +351,10 @@ public class exploration_main {
 	   	 	boolean yago=false;
 	   	 	String id="";
 	   	 
-	    	Pattern p1= Pattern.compile("(id.*)\\</string\\>\\<query\\>.*");
+	   	 	/*
+	   	 	 * Pattern p1= Pattern.compile("(id.*)\\</string\\>\\<query\\>.*");
+	   	 	 */
+	    	Pattern p1= Pattern.compile("(id.*)\\</string\\>\\<keywords\\>.*");
 	    	Matcher m1 = p1.matcher(s);
 	    	//System.out.println("");
 	    	while(m1.find()){
@@ -349,7 +363,15 @@ public class exploration_main {
 		    	Matcher m2 = p2.matcher(m1.group(1));
 		    	while(m2.find()){
 		    		//System.out.println("Query: "+ m2.group(1));
+		    		
 		    		query=m2.group(1);
+		    		query=query.replace("<![CDATA[", "");
+		    		query=query.replace("]]>", "");
+		    		query=query.replace("CDATA", "");
+		    		query=query.replace("]", "");
+		    		query=query.replace("!", "");
+		    		query=query.replace(">", "");
+		    		query=query.replace("<", "");
 		    	}
 		    	Pattern p3= Pattern.compile("id=\"(.*)\" answer.*");
 		    	Matcher m3 = p3.matcher(m1.group(1));
@@ -395,14 +417,14 @@ public class exploration_main {
 	    	queryInformation blaquery=new queryInformation(query, id,type,fusion,aggregation,yago,XMLType,hint);
 	    	if(id!=""&&id!=null) querylist.add(blaquery);
 	    }
-	   /* for(queryInformation s : querylist){
+	    for(queryInformation s : querylist){
 	    	System.out.println("");
 	    	if(s.getId()==""||s.getId()==null)System.out.println("NO");
 			System.out.println("ID: "+s.getId());
 			System.out.println("Query: "+s.getQuery());
 			System.out.println("Type: "+s.getType());
 			System.out.println("XMLType: "+s.getXMLtype());
-		}*/
+		}
 	    return querylist;
 	}
 

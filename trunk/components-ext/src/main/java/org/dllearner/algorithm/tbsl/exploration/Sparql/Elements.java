@@ -61,10 +61,11 @@ public class Elements {
 				/*
 				 * if isA is found and if Class has uri, get Elements
 				 */
-				if(h.getType().contains("isA")&&h.getUri().contains("http")){
+				if(h.getType().contains("ISA")&&h.getUri().contains("http")){
 					/*
 					 * TODO: improver performance, using geschicktes zwischenspeichern
 					 */
+					System.out.println("Class Name: "+h.getName()+" Uri: "+h.getUri());
 					ElementList el = new ElementList(h.getName(),h.getUri(),ServerUtil.getElementsForGivenClass(h.getUri()));
 					//classes.add(el);
 					this.addElements(el);
@@ -83,6 +84,8 @@ public class Elements {
 		for(ArrayList<Hypothesis> hl : hypothesenList){
 			for(Hypothesis h : hl){
 				if(h.getType().contains("RESOURCE")&&h.getUri().contains("http")){
+					System.out.println("Resource Name: "+h.getName()+" Uri: "+h.getUri());
+					
 					for(ArrayList<String> cl : conditionList){
 						if(h.getVariable().equals(cl.get(0))) {
 							ElementList el = new ElementList(h.getName()+"RIGHT",h.getUri(),ServerUtil.getPropertiesForGivenResource(h.getUri(), "RIGHT"));

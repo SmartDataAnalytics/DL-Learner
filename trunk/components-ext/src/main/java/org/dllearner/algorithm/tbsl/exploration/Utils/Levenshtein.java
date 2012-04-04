@@ -17,7 +17,9 @@ public class Levenshtein {
 		else{
 			
 			double result_nld =result/length;
-			return result_nld;
+			double result1 = 1-result_nld;
+			//System.out.println(orig + " " + eing +" : "+result1);
+			return result1;
 		}
 	
 	}

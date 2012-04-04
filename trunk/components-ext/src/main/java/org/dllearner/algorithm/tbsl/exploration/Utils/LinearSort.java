@@ -20,9 +20,9 @@ public class LinearSort {
 			}
 		}
 		
-		for(QueryPair p : qp){
+		/*for(QueryPair p : qp){
 			p.printAll();
-		}
+		}*/
 
 	}
 	
