@@ -390,6 +390,17 @@
 				<groupId>com.dumontierlab</groupId>
 				<artifactId>pdb2rdf-parser</artifactId>
 				<version>0.0.8</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <!--This pom is including a modified version of Jena that is out of sync with what we're using-->
+                    <exclusion>
+                        <groupId>com.hp.hpl.jena</groupId>
+                        <artifactId>jena</artifactId>
+                    </exclusion>
+                </exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.dumontierlab</groupId>
@@ -535,30 +546,24 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<!-- This repository contains the jars for pdb2rdf -->
-		<repository>
-			<id>semanticscience.org</id>
-			<name>Semanticscience projects</name>
-			<url>http://s1.semanticscience.org:8080/nexus/content/groups/public/</url>
-		</repository>
-		
-		<repository>
-	<id>apache-repo-releases</id>
-	<url>https://repository.apache.org/content/repositories/releases/</url>
-	<releases>
-		<enabled>true</enabled>
-	</releases>
-</repository>
-	<repository>
-		<id>apache-repo-snapshots</id>
-		<url>https://repository.apache.org/content/repositories/snapshots/</url>
-		<releases>
-			<enabled>false</enabled>
-		</releases>
-		<snapshots>
-			<enabled>true</enabled>
-		</snapshots>
-	</repository>
+
+        <repository>
+            <id>apache-repo-releases</id>
+            <url>https://repository.apache.org/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>apache-repo-snapshots</id>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
 	</repositories>
 
 	<pluginRepositories>
