@@ -25,9 +25,13 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.ldap.ExtendedRequest;
 import java.util.*;
 
 
@@ -55,11 +59,24 @@ public class ClassIndexer {
     }
 
     public void index(OntModel from) {
-        Set<OntClass> classes = from.listClasses().toSet();
+
+       // Set<OntClass> classes = from.listClasses();
         int i = 0;
-        for (OntClass cl : classes) {
+        OntClass cl;
+        for (ExtendedIterator<OntClass> it = from.listClasses(); it.hasNext(); ) {
+            Monitor m0 = MonitorFactory.start("Indexer listClasses");
+            cl = it.next();
+            m0.stop();
+            //for (OntClass cl : classes) {
+            Monitor m1 = MonitorFactory.start("Indexer generating tree");
             Tree t = new Tree(cl);
-            classUriToClassHierarchy.put(cl.getURI(), t.toModel());
+            m1.stop();
+            Monitor m2 = MonitorFactory.start("Indexer generating model");
+            OntModel m = t.toModel();
+            m2.stop();
+            Monitor m3 = MonitorFactory.start("Indexer generating hashmap");
+            classUriToClassHierarchy.put(cl.getURI(), m);
+            m3.stop();
         }
 
     }

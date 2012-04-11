@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.dllearner.kb.sparql.simple;
 
@@ -10,13 +10,15 @@ import java.util.List;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 /**
  * @author didierc
- *
  */
 public class ABoxQueryGenerator {
     public String createQuery(List<String> individuals, OntModel model, List<String> filters) {
+        Monitor monABoxQueryGeneration = MonitorFactory.getTimeMonitor("ABox query generator").start();
         StringBuilder builder = new StringBuilder();
         builder.append("CONSTRUCT {?s ?p ?o} ");
         builder.append("{ ?s ?p ?o .");
@@ -41,14 +43,23 @@ public class ABoxQueryGenerator {
             }
         }
         builder.append("}");
+        monABoxQueryGeneration.stop();
         return builder.toString();
     }
-    
+
     public String createLastQuery(List<String> individuals, OntModel model, List<String> filters) {
+        Monitor monABoxQueryGeneration = MonitorFactory.getTimeMonitor("ABox query generator")
+                .start();
         StringBuilder builder = new StringBuilder();
-        builder.append("CONSTRUCT {?s ?p ?o . ?o a ?class} ");
-        builder.append("{ ?s ?p ?o .");
-        builder.append("?o a ?class");
+        if (false) {
+            builder.append("CONSTRUCT {?s ?p ?o . ?o a ?class} ");
+            builder.append("{ ?s ?p ?o .");
+            builder.append("?o a ?class");
+        } else {
+            builder.append("CONSTRUCT {?s ?p ?o } ");
+            builder.append("{ ?s ?p ?o ");
+        }
+
         List<String> curIndividuals;
         if (model.isEmpty()) {
             curIndividuals = individuals;
@@ -71,10 +82,13 @@ public class ABoxQueryGenerator {
             }
         }
         builder.append("}");
+        monABoxQueryGeneration.stop();
         return builder.toString();
     }
-    
-    private List<String> getIndividualsFromModel(OntModel model) {
+
+    private List<String> getIndividualsFromModel
+            (OntModel
+                     model) {
         ExtendedIterator<Individual> iterator = model.listIndividuals();
         LinkedList<String> result = new LinkedList<String>();
         while (iterator.hasNext()) {
@@ -82,8 +96,9 @@ public class ABoxQueryGenerator {
         }
         return result;
     }
-    
-    public List<String> difference(List<String> a, List<String> b) {
+
+    public List<String> difference
+            (List<String> a, List<String> b) {
         ArrayList<String> result = new ArrayList<String>(b);
         result.removeAll(a);
         return result;
