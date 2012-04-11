@@ -10,6 +10,8 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.utilities.JamonMonitorLogger;
+import org.dllearner.utilities.experiments.Jamon;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,6 +161,8 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         log.info("*******Simple SPARQL Extractor********");
         for (Monitor monitor : MonitorFactory.getRootMonitor().getMonitors()) {
             log.info("* {} *", monitor);
+            log.info(JamonMonitorLogger.getStringForAllSortedByLabel());
+
         }
         log.info("**************************************");
     }
