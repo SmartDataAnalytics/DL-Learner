@@ -135,12 +135,54 @@ WHERE City LIKE '%tav%'
 	public String getPropertyURI(String string) throws SQLException{
 		  Statement stat = conn.createStatement();
 		  ResultSet rs;
+		  ArrayList<String> al = new ArrayList<String>();
 		try {
 			rs = stat.executeQuery("select uri from property where name='"+string.toLowerCase()+"';");
-			return rs.getString("uri");
+			while(rs.next()){
+				String result_string= rs.getString("uri");
+				System.out.println("Property: "+result_string);
+				//check for double:
+				boolean found = false;
+				for(String s: al){
+					if(s.equals(result_string))found=true;
+				}
+				if(found==false)al.add(result_string);
+			}
+			
+			rs = stat.executeQuery("select uri from ontology where name='"+string.toLowerCase()+"';");
+			while(rs.next()){
+				String result_string= rs.getString("uri");
+				System.out.println("OntologyProperty: "+result_string);
+				//check for double:
+				boolean found = false;
+				for(String s: al){
+					if(s.equals(result_string))found=true;
+				}
+				if(found==false)al.add(result_string);
+			}
+			System.out.println("Anzahl ArrayList: "+al.size());
+			if(al.size()==1) return al.get(0);
+			//check if there is one with an ontology in it
+			else{
+				boolean found = false;
+				for(String s : al){
+					if(s.contains("ontology")){
+					    System.out.println("Return String: "+s);
+						found=true;
+						return s;
+					}
+				}
+				if(found==false){
+					System.out.println("Return String: "+al.get(0));
+					return al.get(0);
+				}
+			}
+			
+		  return null;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
+			System.err.println("Error in SQLiteIndex.getProperty!!");
 			return null;
 		}
 	
