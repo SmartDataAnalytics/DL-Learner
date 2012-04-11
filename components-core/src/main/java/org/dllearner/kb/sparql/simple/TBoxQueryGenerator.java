@@ -8,6 +8,8 @@ import java.util.List;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 /**
  * @author didierc
@@ -16,6 +18,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class TBoxQueryGenerator {
 	public String createQuery(OntModel model, List<String> filters,
 			List<String> individuals) {
+        Monitor monTquery = MonitorFactory.getTimeMonitor("TBox query generator")
+				.start();
 		StringBuilder builder = new StringBuilder(
 				"CONSTRUCT { ?example a ?class . } ");
 		builder.append("{ ?example a ?class . ");
@@ -34,6 +38,7 @@ public class TBoxQueryGenerator {
 			}
 		}
 		builder.append("}");
+        monTquery.stop();
 		return builder.toString();
 	}
 
