@@ -98,6 +98,7 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
 				.start();
 		Monitor monIndexer = MonitorFactory.start("Schema Indexer").start();
 		indexer = new SchemaIndexer();
+		indexer.setOntologySchema(ontologyFile);
 		indexer.init();
 		monIndexer.stop();
 
@@ -233,6 +234,14 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
 	 */
 	public OWLOntology getOWLOntology() {
 		return owlOntology;
+	}
+
+	public File getOntologyFile() {
+		return ontologyFile;
+	}
+
+	public void setOntologyFile(File ontologyFile) {
+		this.ontologyFile = ontologyFile;
 	}
 
 }
