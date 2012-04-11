@@ -295,6 +295,10 @@ ORDER BY ?x
 	  			String temp = m.group(1);
 	  			temp = temp.replace("\"@en","");
 	  			temp = temp.replace("\"","");
+	  			temp = temp.replace("^^<http://www.w3.org/2001/XMLSchema#date>","");
+	  			temp = temp.replace("^^<http://www.w3.org/2001/XMLSchema#int>","");
+	  			temp = temp.replace("^^<http://www.w3.org/2001/XMLSchema#number>","");
+	  			temp = temp.replace("\"","");
 	  			//result.add(m.group(1));
 	  			result.add(temp);
 	  			  		

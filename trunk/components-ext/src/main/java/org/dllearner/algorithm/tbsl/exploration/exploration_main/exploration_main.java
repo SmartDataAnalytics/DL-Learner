@@ -90,12 +90,12 @@ public class exploration_main {
 
 					/*System.out.println("Please enter Path of xml File:");
 					line=in.readLine();*/
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-withoutnonparsed.xml";
+					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train.xml";
+					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-withoutnonparsed.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/very_small.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/berlin.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/vortragfragen.xml";
-					line="/home/swalter/Dokumente/Auswertung/XMLDateien/iteration-test.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/iteration-test.xml";
 					
 					//create Structs
 					ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
@@ -260,6 +260,7 @@ public class exploration_main {
 					if(i.contains("http")) input="<uri>"+i+"</uri>\n";
 					else if (i.contains("true")||i.contains("false")) input="<boolean>"+i+"</boolean>\n";
 					else if(i.matches("[0-9]*"))input="<number>"+i+"</number>\n";
+					else if(i.matches("[0-9]*-[0-9][0-9]-[0-9]*"))input="<date>"+i+"</date>\n";
 					else input="<string>"+i+"</string>\n";
 					tmp+="<answer>"+input+"</answer>\n";
 				}

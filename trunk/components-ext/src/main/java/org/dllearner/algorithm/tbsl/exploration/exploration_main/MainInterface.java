@@ -199,6 +199,7 @@ public class MainInterface {
 				else{
 					//else go_on=false;
 					go_on=true;
+					//go_on=false;
 					for(String s : answer_tmp){
 						if(checkAnswer(s)){
 							boolean test = false;
@@ -224,7 +225,7 @@ public class MainInterface {
 	
 	
 	private static boolean checkAnswer(String answer){
-		if(answer.contains("File:")||answer.contains(".png")||answer.contains("upload.wikimedia.org")||answer.contains("dbpedia.org/datatype/")||answer.contains("http://www.w3.org/2001/XMLSchema")) return false;
+		if(answer.contains("File:")||answer.contains(".png")||answer.contains("upload.wikimedia.org")||answer.contains("dbpedia.org/datatype/")||answer.contains("http://www.w3.org/2001/XMLSchema")||answer.contains("flickerwrappr/photos/")) return false;
 		else return true;
 		
 	}

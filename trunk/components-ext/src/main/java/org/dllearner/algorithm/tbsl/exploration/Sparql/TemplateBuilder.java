@@ -227,12 +227,12 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      			ArrayList<ArrayList<Hypothesis>> final_list_set_hypothesis = new ArrayList<ArrayList<Hypothesis>>();
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			
      			
-     		  System.out.println("Alle Hypothesen VOR der Verarbeitung");
+     		/*  System.out.println("Alle Hypothesen VOR der Verarbeitung");
      			for(Hypothesis x : list_of_hypothesis){
      				x.printAll();
      			}
      			System.out.println("Alle Hypothesen VOR der Verarbeitung  -  Done \n\n");
-     			
+     			*/
      			for(Hypothesis x : list_of_hypothesis){
      				/*
      				 * TODO: Change if ISA only ask classes, else resource
@@ -279,14 +279,14 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				}
      			}
      			
-     			System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung");
+     		/*	System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung");
      			for(ArrayList<Hypothesis> lh : final_list_set_hypothesis){
      				for(Hypothesis x : lh){
          				x.printAll();
          			}
      			}
      			System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung  -  Done \n\n");
-     			
+     			*/
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
      			
      			/*
@@ -327,13 +327,14 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      			 * BUGFIX: Before adding Hypothesis to template check, if each Hypothesis has an uri
      			 * TODO: check all functions before
      			 */
-     			/*for(ArrayList<Hypothesis> al:final_list_set_hypothesis){
+     			for(ArrayList<Hypothesis> al:final_list_set_hypothesis){
      				for(Hypothesis h : al){
      					if(!h.getUri().contains("http")){
      						if(h.getType().contains("ISA")){
      							try {
 									ArrayList<String> tmp = Index_utils.searchIndexForClass(h.getUri(), myindex);
-									h.setUri(tmp.get(0));
+									System.out.println("Laenge tmp: "+tmp.size());
+									if(tmp.size()>0)h.setUri(tmp.get(0));
 								} catch (SQLException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -343,7 +344,8 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      						if(h.getType().contains("RESOURCE")){
      							try {
 									ArrayList<String> tmp = Index_utils.searchIndexForResource(h.getUri(), myindex);
-									h.setUri(tmp.get(0));
+									System.out.println("Laenge tmp: "+tmp.size());
+									if(tmp.size()>0)h.setUri(tmp.get(0));
 								} catch (SQLException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -353,8 +355,8 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      					}
      				}
      			}
-     			*/
-     			System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung");
+     			
+     			/*System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung");
      			for(ArrayList<Hypothesis> lh : final_list_set_hypothesis){
      				for(Hypothesis x : lh){
          				x.printAll();
@@ -362,7 +364,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      			}
      			
      			System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung  -  Done \n\n");
-     			
+     			*/
      			
      			
      			template.setHypothesen(final_list_set_hypothesis);
