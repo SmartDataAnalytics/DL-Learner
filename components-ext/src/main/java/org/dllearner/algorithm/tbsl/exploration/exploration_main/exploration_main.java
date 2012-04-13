@@ -40,7 +40,6 @@ import java.sql.Statement;
 
 
 public class exploration_main {
-
 	
 	/**
 	 * @param args
@@ -59,21 +58,26 @@ public class exploration_main {
 		 * Initial Index and Templator
 		 */
 		BasicTemplator btemplator = new BasicTemplator();
-    	//btemplator.UNTAGGED_INPUT = false;
+    	btemplator.UNTAGGED_INPUT = false;
+		
 		SQLiteIndex myindex = new SQLiteIndex();
 		WordNet wordnet = new WordNet();
 		StanfordLemmatizer lemmatiser = new StanfordLemmatizer();
 		
 
 		long stopInitTime = System.currentTimeMillis();
+		
+		Setting.setWaitModus(false);
+		Setting.setDebugModus(false);
+		
 		System.out.println("Time for Initialising "+(stopInitTime-startInitTime)+" ms");
 		
 		boolean schleife=true;
-		boolean doing = true;
+		boolean startQuestioning = true;
 		while(schleife==true){
 			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 			String line;
-			doing = true;
+			startQuestioning = true;
 			try {
 				System.out.println("\n\n");
 				System.out.println("Please enter a Question:");
@@ -83,6 +87,33 @@ public class exploration_main {
 					System.out.println("Bye!");
 					System.exit(0);
 				}
+				
+				if(line.contains(":wait on")){
+					Setting.setWaitModus(true);
+					startQuestioning=false;
+					if(Setting.isWaitModus()) System.out.println("WaitModus is now online");
+					else System.out.println("Wait Modus is now offline");
+				}
+				if(line.contains(":wait off")){
+					Setting.setWaitModus(false);
+					startQuestioning=false;
+					if(Setting.isWaitModus()) System.out.println("WaitModus is now online");
+					else System.out.println("Wait Modus is now offline");
+				}
+				if(line.contains(":debug on")){
+					Setting.setDebugModus(true);
+					startQuestioning=false;
+					if(Setting.isDebugModus()) System.out.println("DebugModus is now online");
+					else System.out.println("DebugModus is now offline");
+				}
+				if(line.contains(":debug off")){
+					Setting.setDebugModus(false);
+					startQuestioning=false;
+					if(Setting.isDebugModus()) System.out.println("DebugModus is now online");
+					else System.out.println("DebugModus is now offline");
+				}
+				
+				
 
 				if(line.contains(":xml")&& schleife==true){
 					TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
@@ -90,12 +121,14 @@ public class exploration_main {
 
 					/*System.out.println("Please enter Path of xml File:");
 					line=in.readLine();*/
-					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train.xml";
-					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-withoutnonparsed.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-withoutnonparsed.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/very_small.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/berlin.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/vortragfragen.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/iteration-test.xml";
+					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged.xml";
+					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-withoutNotparsed.xml";
 					
 					//create Structs
 					ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
@@ -145,7 +178,7 @@ public class exploration_main {
 				     
 				}
 				
-				else if(schleife==true && doing ==true){
+				else if(schleife==true && startQuestioning ==true){
 					long startTime = System.currentTimeMillis();
 					queryInformation result = new queryInformation(line,"0","",false,false,false,"non",false);
 					MainInterface.startQuestioning(line,btemplator,myindex,wordnet,lemmatiser);
@@ -241,7 +274,8 @@ public class exploration_main {
 		int counter=0;
 		System.out.println("Anzahl queryInformations: "+list.size());
 		for (queryInformation s : list){
-			if(!s.getResult().isEmpty()){
+			//why doing this? try that it doesnt matter if there is an answer or not....
+			//if(!s.getResult().isEmpty()){
 				String tmp;
 				if(counter==0){
 					counter=counter+1;
@@ -266,7 +300,7 @@ public class exploration_main {
 				}
 				tmp+="</answers></question>\n";
 				xmlDocument+=tmp;
-			}
+			//}
 			
 		}
 		xmlDocument+="</dataset>";

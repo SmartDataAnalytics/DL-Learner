@@ -17,6 +17,8 @@ import java.util.Set;
 
 import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
 import org.dllearner.algorithm.tbsl.exploration.Index.Index_utils;
+import org.dllearner.algorithm.tbsl.exploration.Utils.DebugMode;
+import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
 import org.dllearner.algorithm.tbsl.sparql.BasicQueryTemplate;
 import org.dllearner.algorithm.tbsl.sparql.Path;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Filter;
@@ -49,33 +51,38 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
 		
 		/*
 		 * check if templates were build, if not, safe the question and delete it for next time from the xml file.
+		 * Only in Debug Mode
 		 */
-		if(querytemps.contains("could not be parsed") || querytemps.isEmpty()){
-			String dateiname="/home/swalter/Dokumente/Auswertung/NotParsed.txt";
-			String result_string ="";
-			//Open the file for reading
-		     try {
-		       BufferedReader br = new BufferedReader(new FileReader(dateiname));
-		       String thisLine;
-			while ((thisLine = br.readLine()) != null) { // while loop begins here
-		         result_string+=thisLine+"\n";
-		       } // end while 
-		     } // end try
-		     catch (IOException e) {
-		       System.err.println("Error: " + e);
-		     }
-		     
-		     File file = new File(dateiname);
-		     BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+		if(Setting.isDebugModus()){
+			if(querytemps.contains("could not be parsed") || querytemps.isEmpty()){
+				String dateiname="/home/swalter/Dokumente/Auswertung/NotParsed.txt";
+				String result_string ="";
+				//Open the file for reading
+			     try {
+			       BufferedReader br = new BufferedReader(new FileReader(dateiname));
+			       String thisLine;
+				while ((thisLine = br.readLine()) != null) { // while loop begins here
+			         result_string+=thisLine+"\n";
+			       } // end while 
+			     } // end try
+			     catch (IOException e) {
+			       System.err.println("Error: " + e);
+			     }
+			     
+			     File file = new File(dateiname);
+			     BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 
-		        bw.write(result_string+"\n"+question);
-		        bw.flush();
-		        bw.close();
-    
-    
+			        bw.write(result_string+"\n"+question);
+			        bw.flush();
+			        bw.close();
+	    
+	    
+			}
 		}
 		
+		
 		long stop_template = System.currentTimeMillis();
+		if(Setting.isDebugModus())DebugMode.waitForButton();
      	for (BasicQueryTemplate bqt : querytemps) {
      		
      		long start_part1= System.currentTimeMillis();
@@ -172,7 +179,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				for(String s : al){
      					con_temp+=" " + s;
      				}
-     				System.out.println("Condition: "+con_temp);
+     				if(Setting.isDebugModus())DebugMode.debugPrint("Condition: "+con_temp);
      			}
      			
      			template.setTime_part1(stop_part1-start_part1);
@@ -225,14 +232,11 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				}
      			}
      			ArrayList<ArrayList<Hypothesis>> final_list_set_hypothesis = new ArrayList<ArrayList<Hypothesis>>();
- //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    			
+ //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    	
      			
-     		/*  System.out.println("Alle Hypothesen VOR der Verarbeitung");
-     			for(Hypothesis x : list_of_hypothesis){
-     				x.printAll();
-     			}
-     			System.out.println("Alle Hypothesen VOR der Verarbeitung  -  Done \n\n");
-     			*/
+     			if(Setting.isDebugModus())DebugMode.printHypothesen(list_of_hypothesis,"Alle Hypothesen VOR der Verarbeitung");
+
+     			
      			for(Hypothesis x : list_of_hypothesis){
      				/*
      				 * TODO: Change if ISA only ask classes, else resource
@@ -279,14 +283,9 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				}
      			}
      			
-     		/*	System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung");
-     			for(ArrayList<Hypothesis> lh : final_list_set_hypothesis){
-     				for(Hypothesis x : lh){
-         				x.printAll();
-         			}
-     			}
-     			System.out.println("Alle Hypothesen nach der ERSTEN Verarbeitung  -  Done \n\n");
-     			*/
+     			
+     			if(Setting.isDebugModus())DebugMode.printHypothesenSet(final_list_set_hypothesis,"Alle Hypothesen nach der ERSTEN Verarbeitung");
+     			
  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
      			
      			/*
@@ -356,16 +355,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				}
      			}
      			
-     			/*System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung");
-     			for(ArrayList<Hypothesis> lh : final_list_set_hypothesis){
-     				for(Hypothesis x : lh){
-         				x.printAll();
-         			}
-     			}
-     			
-     			System.out.println("Alle Hypothesen nach der ZWEITEN Verarbeitung  -  Done \n\n");
-     			*/
-     			
+     			if(Setting.isDebugModus())DebugMode.printHypothesenSet(final_list_set_hypothesis,"Alle Hypothesen nach der ZWEITEN Verarbeitung");
      			
      			template.setHypothesen(final_list_set_hypothesis);
      			
@@ -430,12 +420,10 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      		}
      	}
      	
-     	/*System.out.println("Nach allen Verarbeitungsschritten:");
-     	for(Template temp : resultArrayList){
-     		temp.printAll();
-     	}
      	
-     	System.out.println("Nach allen Verarbeitungsschritten  -  DONE");*/
+     	if(Setting.isDebugModus())DebugMode.printTemplateList(resultArrayList, "Templates nach allen Verarbeitungsschritten");
+     	
+     	
 		return resultArrayList;
 	}
 }

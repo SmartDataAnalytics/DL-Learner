@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dllearner.algorithm.tbsl.exploration.Utils.DebugMode;
+import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
+
 
 public class Index_utils {
 
@@ -78,15 +81,13 @@ string=string.replace("_", " ");
 			
 		}
 		
-
 		
 		return result_List;
 	}
 
 public static ArrayList<String> searchIndexForProperty(String string, SQLiteIndex myindex) throws SQLException{
 	HashMap<String,Float> hm = new HashMap<String,Float>();
-	System.err.println("########");
-	System.err.println("In search Index for Property");
+	if(Setting.isDebugModus())DebugMode.debugPrint("######\n In search Index for Property");
 
     // adding or set elements in Map by put method key and value pair
     /*
@@ -102,19 +103,20 @@ map.put(64, 4.83f);
 	String result=null;
 	ArrayList<String> result_List = new ArrayList<String>();
 	result=myindex.getPropertyURI(string.toLowerCase());
-	System.err.println("Result: "+result);
+	if(Setting.isDebugModus())DebugMode.debugPrint("Result: "+result);
 	if(result!=null){
 		result_List.add(result);
 		hm.put(result, 1.0f);
-		System.err.println("Found uri for: "+string.toLowerCase());
+		if(Setting.isDebugModus())DebugMode.debugPrint("Found uri for: "+string.toLowerCase());
 	}
 	else{
-		System.err.println("Didnt find uri for: "+string.toLowerCase());
+		if(Setting.isDebugModus())DebugMode.debugErrorPrint("Didnt find uri for: "+string.toLowerCase());
+		
 		result_List.add("http://dbpedia.org/ontology/"+string.toLowerCase().replace(" ", "_"));
 		hm.put(result, 0.0f);
 	}
 	
-	System.err.println("########");
+	if(Setting.isDebugModus())DebugMode.debugPrint("######\n");
 
 	
 	return result_List;

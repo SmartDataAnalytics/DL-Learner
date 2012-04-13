@@ -2,6 +2,8 @@ package org.dllearner.algorithm.tbsl.exploration.Utils;
 
 import java.util.ArrayList;
 
+import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
+
 public class LinearSort {
 
 	public static void doSort(ArrayList<QueryPair> qp){
@@ -20,9 +22,7 @@ public class LinearSort {
 			}
 		}
 		
-		/*for(QueryPair p : qp){
-			p.printAll();
-		}*/
+		if(Setting.isDebugModus())DebugMode.printQueryPair(qp);
 
 	}
 	
