@@ -109,6 +109,7 @@ public class GlobalEnrichment {
 	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args) throws MalformedURLException, IllegalArgumentException, SecurityException, ComponentInitException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, FileNotFoundException {
+		new File(baseDir).mkdirs();
 		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
@@ -288,6 +289,7 @@ public class GlobalEnrichment {
 	public static List<String> getErrorList(){
 		List<String> errorNames = new ArrayList<String>();
 		File dir = new File(baseDir + "/failed/");
+		dir.mkdirs();
 		for(File file : dir.listFiles()){
 			errorNames.add(file.getName().replace(".log", ""));
 		}
@@ -297,6 +299,7 @@ public class GlobalEnrichment {
 	public static List<String> getEmptyList(){
 		List<String> errorNames = new ArrayList<String>();
 		File dir = new File(baseDir + "/success/empty/");
+		dir.mkdirs();
 		for(File file : dir.listFiles()){
 			errorNames.add(file.getName().replace(".ttl", ""));
 		}
@@ -306,6 +309,7 @@ public class GlobalEnrichment {
 	public static List<String> getSuccessList(){
 		List<String> errorNames = new ArrayList<String>();
 		File dir = new File(baseDir + "/success/");
+		dir.mkdirs();
 		for(File file : dir.listFiles()){
 			errorNames.add(file.getName().replace(".ttl", ""));
 		}
