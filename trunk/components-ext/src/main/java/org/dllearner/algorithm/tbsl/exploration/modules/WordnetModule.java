@@ -95,9 +95,16 @@ public class WordnetModule {
 					if(key.contains(b.toLowerCase())||key.contains(lemmatiser.stem(b.toLowerCase()))||b.toLowerCase().contains(lemmatiser.stem(key))){
 						if(!result_SemanticsMatchProperties.contains(key)){
 						 result_SemanticsMatchProperties.add(key);
-						 double nld=Levenshtein.nld(property_to_compare_with.toLowerCase(), key);
-						 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", nld);
-						listOfNewHypothesen.add(h);
+						 if(key.toLowerCase().contains(property_to_compare_with.toLowerCase())){
+							 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 1.5); 
+							 listOfNewHypothesen.add(h);
+						 }
+						 else{
+							 double nld=Levenshtein.nld(property_to_compare_with.toLowerCase(), key);
+							 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", nld);
+							 listOfNewHypothesen.add(h);
+						 }
+						
 						}
 					}
 				}

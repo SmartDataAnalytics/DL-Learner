@@ -3,7 +3,9 @@ package org.dllearner.algorithm.tbsl.exploration.Sparql;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.dllearner.algorithm.tbsl.exploration.Utils.DebugMode;
 import org.dllearner.algorithm.tbsl.exploration.Utils.ServerUtil;
+import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
 
 /**
  * Creates Set of Classes and Resources with their properties
@@ -48,7 +50,7 @@ public class Elements {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Created Elements");
+		if(Setting.isDebugModus())DebugMode.debugPrint("Created Elements");
 	}
 	
 	private void createElementsOfClasses(ArrayList<ArrayList<Hypothesis>> hypothesenList) throws IOException{
@@ -65,7 +67,7 @@ public class Elements {
 					/*
 					 * TODO: improver performance, using geschicktes zwischenspeichern
 					 */
-					System.out.println("Class Name: "+h.getName()+" Uri: "+h.getUri());
+					if(Setting.isDebugModus())DebugMode.debugPrint("Create Elements for Class: "+h.getName()+" Uri: "+h.getUri());
 					ElementList el = new ElementList(h.getName(),h.getUri(),ServerUtil.getElementsForGivenClass(h.getUri()));
 					//classes.add(el);
 					this.addElements(el);
@@ -84,7 +86,7 @@ public class Elements {
 		for(ArrayList<Hypothesis> hl : hypothesenList){
 			for(Hypothesis h : hl){
 				if(h.getType().contains("RESOURCE")&&h.getUri().contains("http")){
-					System.out.println("Resource Name: "+h.getName()+" Uri: "+h.getUri());
+					if(Setting.isDebugModus())DebugMode.debugPrint("Create Elements for Resource: "+h.getName()+" Uri: "+h.getUri());
 					
 					for(ArrayList<String> cl : conditionList){
 						if(h.getVariable().equals(cl.get(0))) {

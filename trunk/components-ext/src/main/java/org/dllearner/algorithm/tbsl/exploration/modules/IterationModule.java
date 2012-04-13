@@ -9,6 +9,8 @@ import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.ElementList;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Elements;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
+import org.dllearner.algorithm.tbsl.exploration.Utils.DebugMode;
+import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
 import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 
@@ -37,7 +39,7 @@ public class IterationModule {
 		}
 		catch (Exception e){
 			gotResource=false;
-			System.out.println("Didnt get any Resource");
+			if(Setting.isDebugModus())DebugMode.debugErrorPrint("Didnt get any Resource");
 		}
 		
 		//System.out.println("Anzahl der Resource Listen: "+resources.size());
@@ -81,7 +83,7 @@ public class IterationModule {
 					String variable = h.getVariable();
 					String name = h.getName();
 					RL.add(h);
-					System.out.println("Found Resource");
+					if(Setting.isDebugModus())DebugMode.debugPrint("Found Resource "+h.getName() +" "+h.getUri());
 					
 					
 					/*
@@ -121,11 +123,6 @@ public class IterationModule {
 						for(String s : propertyNameList){
 							String[] array = s.split("::");
 							
-							System.out.println("String: "+s);
-							/*System.out.println("Array:");
-							for(String t : array){
-								System.out.println(t);
-							}*/
 							
 							/*
 							 * array[0] contains name of Property
@@ -173,7 +170,7 @@ public class IterationModule {
 					 * TODO:Add special case, if we have only one condition but with an isA in it. 
 					 */
 					RL.add(h);
-					System.out.println("Found Class");
+					if(Setting.isDebugModus())DebugMode.debugPrint("Found Class "+h.getName() +" "+h.getUri());
 					
 					for(ElementList el:resources){
 						/*
