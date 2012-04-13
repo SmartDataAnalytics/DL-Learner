@@ -15,6 +15,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 
@@ -34,6 +35,10 @@ public class SPARQLEndpointMetrics {
 		private static long keepAliveTime = 10;
 		
 		private static int queryTimeout = 30;
+		
+		private static ExtractionDBCache cache = new ExtractionDBCache("cache");
+		
+		private static boolean useCache = false;
 
 	/**
 	 * @param args
@@ -113,31 +118,39 @@ public class SPARQLEndpointMetrics {
 					
 					try {
 						//count classes
-//						String query = "SELECT (COUNT(DISTINCT ?type) AS ?cnt) WHERE {?s a ?type.}";
-//						int classCnt = executeQuery(query, se, 20).next().getLiteral("cnt").getInt();
-//						
-//						//count object properties
-//						query = "SELECT (COUNT(DISTINCT ?p) AS ?cnt) WHERE {?s ?p ?o.}";
-//						int opCnt = executeQuery(query, se, 20).next().getLiteral("cnt").getInt();
-//						
-//						//count data properties
-//						query = "SELECT (COUNT(DISTINCT ?p) AS ?cnt) WHERE {?s ?p ?o.}";
-//						int dpCnt = executeQuery(query, se, 20).next().getLiteral("cnt").getInt();
+						int classCnt = -1;
+						String query;
+						try {
+							query = "SELECT (COUNT(DISTINCT ?type) AS ?cnt) WHERE {?s a ?type. ?type a <http://www.w3.org/2002/07/owl#Class>}";
+							classCnt = executeQuery(query, se).next().getLiteral("cnt").getInt();
+						} catch (Exception e) {
+							query = "SELECT DISTINCT ?type WHERE {?s a ?type. ?type a <http://www.w3.org/2002/07/owl#Class>}";
+							classCnt = countEntities(query, se);
+						}
+						//count object properties
+						int opCnt = -1;
+						try {
+							query = "SELECT (COUNT(DISTINCT ?p) AS ?cnt) WHERE {?s ?p ?o. ?p a <http://www.w3.org/2002/07/owl#ObjectProperty>}";
+							opCnt = executeQuery(query, se).next().getLiteral("cnt").getInt();
+						} catch (Exception e) {
+							query = "SELECT DISTINCT ?p WHERE {?s ?p ?o. ?p a <http://www.w3.org/2002/07/owl#ObjectProperty>}";
+							opCnt = countEntities(query, se);
+						}
+						//count data properties
+						int dpCnt = -1;
+						try {
+							query = "SELECT (COUNT(DISTINCT ?p) AS ?cnt) WHERE {?s ?p ?o. ?p a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
+							dpCnt = executeQuery(query, se).next().getLiteral("cnt").getInt();
+						} catch (Exception e) {
+							query = "SELECT DISTINCT ?p WHERE {?s a ?type. ?type a <?s ?p ?o. ?p a <http://www.w3.org/2002/07/owl#DatatypeProperty>>}";
+							dpCnt = countEntities(query, se);
+						}
+						
 //						
 //						//count individuals
 //						query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type.}";
 //						int indCnt = executeQuery(query, se, 20).next().getLiteral("cnt").getInt();
 						
-						String query = "SELECT DISTINCT ?type WHERE {?s a ?type. ?type a <http://www.w3.org/2002/07/owl#Class>}";
-						int classCnt = countEntities(query, se);
-						
-						//count object properties
-						query = "SELECT DISTINCT ?p WHERE {?s ?p ?o. ?p a <http://www.w3.org/2002/07/owl#ObjectProperty>}";
-						int opCnt = countEntities(query, se);
-						
-						//count data properties
-						query = "SELECT DISTINCT ?p WHERE {?s ?p ?o. ?p a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
-						int dpCnt = countEntities(query, se);
 						
 						//count individuals
 //						query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type.}";
@@ -176,6 +189,7 @@ public class SPARQLEndpointMetrics {
 			});
 		}
 		threadPool.shutdown();
+		System.out.println("##########");
 		System.out.println(sb);
 		
 	}
@@ -202,11 +216,16 @@ public class SPARQLEndpointMetrics {
 	}
 	
 	private static ResultSet executeQuery(String queryString, SparqlEndpoint endpoint) throws Exception{
-		try {
-			QueryEngineHTTP qe = new QueryEngineHTTP(endpoint.getURL().toString(), queryString);
-			qe.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
-			qe.setTimeout(queryTimeout * 1000);
-			return qe.execSelect();
+		try {//System.out.println(queryString);
+			if(useCache){
+				return SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, queryString, queryTimeout));
+			} else {
+				QueryEngineHTTP qe = new QueryEngineHTTP(endpoint.getURL().toString(), queryString);
+				qe.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
+				qe.setTimeout(queryTimeout * 1000);
+				return qe.execSelect();
+			}
+			
 		} catch (Exception e) {
 			throw e;
 		}
