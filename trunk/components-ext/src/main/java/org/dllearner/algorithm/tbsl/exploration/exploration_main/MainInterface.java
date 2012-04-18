@@ -1,6 +1,10 @@
 package org.dllearner.algorithm.tbsl.exploration.exploration_main;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -22,7 +26,7 @@ import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
 
 public class MainInterface {
-	private static int anzahlAbgeschickterQueries = 10;
+	private static int anzahlAbgeschickterQueries = 100;
 	
 	
 	public static ArrayList<String> startQuestioning(String question,BasicTemplator btemplator,SQLiteIndex myindex, WordNet wordnet,StanfordLemmatizer lemmatiser) throws ClassNotFoundException, SQLException, IOException{
@@ -55,7 +59,9 @@ public class MainInterface {
 		ArrayList<QueryPair> qp = new ArrayList<QueryPair>();
 		
 		//generate QueryPair
+		String Question="";
 		for(Template t : template_list){
+			Question=t.getQuestion();
 			t.printAll();
 			ArrayList<QueryPair> qp_t = new ArrayList<QueryPair>();
 			qp_t = Query.returnSetOfQueries(t, "NORMAL");
@@ -72,7 +78,10 @@ public class MainInterface {
 		}
 		
 		//sort QueryPairs
-		LinearSort.doSort(qp);	
+		qp=LinearSort.doSort(qp);	
+		printQueries(qp, "NORMAL", Question);
+		
+		
 		int anzahl=1;
 		boolean go_on = true;
 		for(QueryPair q : qp){
@@ -128,7 +137,7 @@ public class MainInterface {
 			if(answers.isEmpty()){
 			
 				answers.clear();
-				answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"LEVENSTHEIN"));
+				answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"LEVENSTHEIN","neu"));
 				if(wait)DebugMode.waitForButton();
 		}
 		
@@ -139,7 +148,7 @@ public class MainInterface {
 		if(answers.isEmpty()){
 			
 			answers.clear();
-			answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"WORDNET"));
+			answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"WORDNET","neu"));
 			if(wait)DebugMode.waitForButton();
 		}
 		
@@ -171,7 +180,7 @@ public class MainInterface {
 	
 
 	private static ArrayList<String> doStart(SQLiteIndex myindex, WordNet wordnet,
-			StanfordLemmatizer lemmatiser, ArrayList<Template> template_list, String type) {
+			StanfordLemmatizer lemmatiser, ArrayList<Template> template_list, String type, String test) {
 		ArrayList<String> answers = new ArrayList<String>();
 		ArrayList<QueryPair> qp = new ArrayList<QueryPair>();
 		int anzahl;
@@ -179,9 +188,32 @@ public class MainInterface {
 		System.out.println("No answer from direkt match, start "+type+"Modul");
 		for(Template t : template_list){
 			try{
-				ArrayList<ArrayList<Hypothesis>> hypothesenSetList = IterationModule.doIteration(t.getElm(),t.getHypothesen(),t.getCondition(),type,myindex,wordnet,lemmatiser);
-				if(type.contains("WORDNET"))t.setHypothesenWordnet(hypothesenSetList);
-				if(type.contains("LEVENSTHEIN"))t.setHypothesenLevensthein(hypothesenSetList);
+				if(test.contains("alt")){
+					ArrayList<ArrayList<Hypothesis>> hypothesenSetList = IterationModule.doIteration(t.getElm(),t.getHypothesen(),t.getCondition(),type,myindex,wordnet,lemmatiser);
+					if(type.contains("WORDNET"))t.setHypothesenWordnet(hypothesenSetList);
+					if(type.contains("LEVENSTHEIN"))t.setHypothesenLevensthein(hypothesenSetList);
+				}
+				
+				if(test.contains("neu")){
+					System.err.println("IN NEU!!!!!");
+					ArrayList<ArrayList<Hypothesis>> hypothesenSetList  = new ArrayList<ArrayList<Hypothesis>>();
+					for(ArrayList<Hypothesis> l_h : t.getHypothesen()){
+						ArrayList<ArrayList<Hypothesis>> generated_hypothesis = new ArrayList<ArrayList<Hypothesis>>();
+						generated_hypothesis= IterationModule.new_iteration(t.getElm(),l_h,t.getCondition(),type,myindex,wordnet,lemmatiser);
+						for(ArrayList<Hypothesis> h_t : generated_hypothesis){
+							ArrayList<Hypothesis> new_hypothesen_set = new ArrayList<Hypothesis>();
+							for(Hypothesis bla : h_t){
+								new_hypothesen_set.add(bla);
+							}
+							hypothesenSetList.add(new_hypothesen_set);
+						}
+						
+						//hypothesenSetList.addAll(blub);
+					}
+					if(type.contains("WORDNET"))t.setHypothesenWordnet(hypothesenSetList);
+					if(type.contains("LEVENSTHEIN"))t.setHypothesenLevensthein(hypothesenSetList);
+				}
+				
 			}
 			catch (Exception e){
 				
@@ -193,8 +225,10 @@ public class MainInterface {
 		 * Generate Queries and test queries
 		 */
 		//generate QueryPair
+		String Question="";
 		for(Template t : template_list){
 			//t.printAll();
+			Question=t.getQuestion();
 			ArrayList<QueryPair> qp_t = new ArrayList<QueryPair>();
 			qp_t = Query.returnSetOfQueries(t, type);
 			for(QueryPair p : qp_t){
@@ -210,7 +244,9 @@ public class MainInterface {
 		}
 		
 		//sort QueryPairs
-		LinearSort.doSort(qp);	
+		qp=LinearSort.doSort(qp);	
+		
+		printQueries(qp, type, Question);
 		anzahl=1;
 		go_on = true;
 		for(QueryPair q : qp){
@@ -274,5 +310,64 @@ public class MainInterface {
 		if(query.contains("wikiPageWiki")||query.contains("wikiPageExternal")||query.contains("wikiPageRedirects")|| query.contains("thumbnail")||query.contains("wikiPage")) return false;
 		else return true;
 		
+	}
+	
+	private static void printQueries(ArrayList<QueryPair> qp, String type, String Question){
+		String dateiname="/home/swalter/Dokumente/Auswertung/CreatedQueryList.txt";
+		String result_string ="";
+		//Open the file for reading
+	     try {
+	       BufferedReader br = new BufferedReader(new FileReader(dateiname));
+	       String thisLine;
+		while ((thisLine = br.readLine()) != null) { // while loop begins here
+	         result_string+=thisLine+"\n";
+	       } // end while 
+	     } // end try
+	     catch (IOException e) {
+	       System.err.println("Error: " + e);
+	     }
+	     
+	     File file = new File(dateiname);
+	     BufferedWriter bw = null;
+		try {
+			bw = new BufferedWriter(new FileWriter(file));
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	      String querylist="";
+	      querylist="\n Modul: "+type+"\nfor Question: "+ Question+"\n";
+	      int anzahl= 0;
+	      /*
+	       * write only the first 10 queries:
+	       */
+	      for(QueryPair q : qp){
+	    	  if(anzahl<10){
+	    		  querylist+=q.getQuery()+"  "+q.getRank()+"\n";
+	    		  anzahl+=1;
+	    	  }
+	    	  
+	      }
+	     
+	     
+
+	        try {
+				bw.write(result_string+querylist);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        try {
+				bw.flush();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+	        try {
+				bw.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 }

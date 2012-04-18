@@ -22,6 +22,12 @@ public class ServerUtil {
 	
 	private static int timeToTimeoutOnServer=30000;
 	
+	public static HashMap<String, String> generatesQueryForOutsideClasses(String query){
+		String working_query= ServerUtil.getServer_Prefix()+"?default-graph-uri=&query="+ServerUtil.createServerRequest(query)+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
+	    
+	    return generateList(getListOfElements(working_query));
+	    
+	}
 		
 	public static String createServerRequest(String query){
 		String anfrage=null;
@@ -135,7 +141,9 @@ ORDER BY ?x
 		/*
 		 * TODO: Still a not "valid" url
 		 */
-		String query="SELECT DISTINCT ?s ?p WHERE {{?x ?p ?y. ?x rdfs:label ?s. FILTER (lang(?s) = 'en').} UNION {?y ?p ?x. ?x rdfs:label ?s. FILTER (lang(?s) = 'en').} { SELECT ?x { ?x rdf:type <"+classUri+">.}LIMIT 10}}";
+		String query="SELECT DISTINCT ?s ?p WHERE {{?x ?p ?y. ?p rdfs:label ?s. FILTER (lang(?s) = 'en').} UNION {?y ?p ?x. ?p rdfs:label ?s. FILTER (lang(?s) = 'en').} { SELECT ?x { ?x rdf:type <"+classUri+">.}LIMIT 10}}";
+		//System.out.println(query);
+		//DebugMode.waitForButton();
 		String query_final=ServerUtil.getServer_Prefix()+"?default-graph-uri=&query="+ServerUtil.createServerRequest(query)+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";
 	    String result="";
 		result = getListOfElements(query_final);

@@ -6,7 +6,10 @@ import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
 
 public class LinearSort {
 
-	public static void doSort(ArrayList<QueryPair> qp){
+	/*
+	 * TODO: test if the sorted queries are given back properly
+	 */
+	public static ArrayList<QueryPair> doSort(ArrayList<QueryPair> qp){
 		
 		boolean change=true;
 		while(change){
@@ -23,6 +26,8 @@ public class LinearSort {
 		}
 		
 		if(Setting.isDebugModus())DebugMode.printQueryPair(qp);
+		
+		return qp;
 
 	}
 	

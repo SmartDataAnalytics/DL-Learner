@@ -12,7 +12,9 @@ import net.didion.jwnl.data.POS;
 
 import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
+import org.dllearner.algorithm.tbsl.exploration.Utils.DebugMode;
 import org.dllearner.algorithm.tbsl.exploration.Utils.Levenshtein;
+import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
 import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 
@@ -90,19 +92,48 @@ public class WordnetModule {
 				    String value = entry.getValue();
 				    key=key.replace("\"","");
 				    key=key.replace("@en","");
+				    key=key.toLowerCase();
 				    
 				for(String b : semantics){
-					if(key.contains(b.toLowerCase())||key.contains(lemmatiser.stem(b.toLowerCase()))||b.toLowerCase().contains(lemmatiser.stem(key))){
+					/*
+					 * Error in StanfordLemmatizer, thats why first left out here
+					 */
+					//if(key.contains(b.toLowerCase())||key.contains(lemmatiser.stem(b.toLowerCase()))||b.toLowerCase().contains(lemmatiser.stem(key))){
+					//System.out.println("B: "+b +" Key: "+key);
+					if(key.contains(b.toLowerCase())||b.toLowerCase().contains(key)){
+						
+						/*System.out.println("Found: "+b);
+						if(Setting.isWaitModus())
+							try {
+								DebugMode.waitForButton();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}*/
 						if(!result_SemanticsMatchProperties.contains(key)){
 						 result_SemanticsMatchProperties.add(key);
-						 if(key.toLowerCase().contains(property_to_compare_with.toLowerCase())){
+						 if(key.toLowerCase().contains(property_to_compare_with.toLowerCase())||property_to_compare_with.toLowerCase().contains(key)){
+							 System.out.println("Variable: "+ variable+" key: "+key+" value : "+value);
 							 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 1.5); 
 							 listOfNewHypothesen.add(h);
+							try {
+								if(Setting.isWaitModus())DebugMode.waitForButton();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						 }
 						 else{
 							 double nld=Levenshtein.nld(property_to_compare_with.toLowerCase(), key);
 							 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", nld);
 							 listOfNewHypothesen.add(h);
+							 System.out.println("Found for key: "+key);
+							 try {
+								 if(Setting.isWaitModus())DebugMode.waitForButton();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						 }
 						
 						}
@@ -111,6 +142,13 @@ public class WordnetModule {
 			}
 			 
 		 }
+		 /*System.out.println("Anzahl listOfNewHypothesen: "+listOfNewHypothesen.size());
+		 try {
+			DebugMode.waitForButton();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		
 		 return listOfNewHypothesen;
 	}

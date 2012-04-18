@@ -70,6 +70,8 @@ public class exploration_main {
 		Setting.setWaitModus(false);
 		Setting.setDebugModus(false);
 		
+
+		
 		System.out.println("Time for Initialising "+(stopInitTime-startInitTime)+" ms");
 		
 		boolean schleife=true;
