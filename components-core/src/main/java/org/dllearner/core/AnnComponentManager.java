@@ -136,7 +136,25 @@ public class AnnComponentManager {
 	public Collection<Class<? extends Component>> getComponents() {
 		return components;
 	}
-	
+
+    /**
+     * Get registered components which are of the specified type.
+     *
+     * @param type The super type.
+     * @return All sub classes of type.
+     */
+    public Collection<Class<? extends Component>> getComponentsOfType(Class type) {
+
+        Collection<Class<? extends Component>> result = new ArrayList<Class<? extends Component>>();
+        for (Class<? extends Component> component : components) {
+            if (type.isAssignableFrom(component)) {
+                result.add(component);
+            }
+        }
+
+        return result;
+    }
+
 	/**
 	 * Convenience method, which returns a list of components along with 
 	 * their name.
