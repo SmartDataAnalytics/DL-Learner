@@ -1,7 +1,15 @@
 package org.dllearner.algorithm.tbsl.exploration.modules;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import net.didion.jwnl.JWNLException;
 
@@ -10,6 +18,7 @@ import org.dllearner.algorithm.tbsl.exploration.Sparql.ElementList;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Elements;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
 import org.dllearner.algorithm.tbsl.exploration.Utils.DebugMode;
+import org.dllearner.algorithm.tbsl.exploration.Utils.ServerUtil;
 import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
 import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
@@ -32,6 +41,9 @@ public class IterationModule {
 	 */
 	public static ArrayList<ArrayList<Hypothesis>> doIteration(Elements elm,ArrayList<ArrayList<Hypothesis>> givenHypothesenList,ArrayList<ArrayList<String>> givenConditionList, String type,SQLiteIndex myindex,WordNet wordnet,StanfordLemmatizer lemmatiser) throws SQLException{
 
+		
+		
+		
 		boolean gotResource=true;
 		ArrayList<ElementList> resources = new ArrayList<ElementList>();
 		try{
@@ -314,6 +326,440 @@ public class IterationModule {
 		System.out.println("######################DONE######################");
 			
 		return finalHypothesenList;
+		
+	}
+	
+	
+	/*
+	 * Use Here only one Hypothesen Set at each time, so for each "AusgangshypothesenSet" start this function
+	 */
+	public static ArrayList<ArrayList<Hypothesis>> new_iteration(Elements elm,ArrayList<Hypothesis> givenHypothesenList,ArrayList<ArrayList<String>> givenConditionList, String type,SQLiteIndex myindex,WordNet wordnet,StanfordLemmatizer lemmatiser) throws SQLException, JWNLException, IOException{
+		
+		//System.err.println("Startet new_iteration");
+		ArrayList<ArrayList<Hypothesis>> finalHypothesenList = new ArrayList<ArrayList<Hypothesis>>();
+		
+		boolean simple_structure = false;
+		
+		
+		/*	String dateiname="/home/swalter/Dokumente/Auswertung/ConditionsList.txt";
+			String result_string ="";
+			//Open the file for reading
+		     try {
+		       BufferedReader br = new BufferedReader(new FileReader(dateiname));
+		       String thisLine;
+			while ((thisLine = br.readLine()) != null) { // while loop begins here
+		         result_string+=thisLine+"\n";
+		       } // end while 
+		     } // end try
+		     catch (IOException e) {
+		       System.err.println("Error: " + e);
+		     }
+		     
+		     File file = new File(dateiname);
+		     BufferedWriter bw = null;
+			try {
+				bw = new BufferedWriter(new FileWriter(file));
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+		      String condition_string="";
+		     for(ArrayList<String> cl : givenConditionList){
+		    	 condition_string+="[";
+					for(String s : cl){
+						condition_string+=s+" ";
+					}
+					condition_string+="]";
+				}
+		     
+		     
+
+		        try {
+					bw.write(result_string+condition_string);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		        try {
+					bw.flush();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		        try {
+					bw.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+		
+		
+		
+		
+		
+		/*for(ArrayList<String> als : givenConditionList){
+			for(String s : als) System.err.println(s);
+		}*/
+		/*try {
+			DebugMode.waitForButton();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
+		if(givenConditionList.size()==1){
+			System.err.println("Only one Condition => simple Struktur");
+			simple_structure=true;
+			
+			boolean resource_case=false;
+			boolean isa_case=false;
+			
+			for(Hypothesis h : givenHypothesenList){
+				/*
+				 * if there is an ISA you cant to any thing, except returning HypothesenList to be send to the Server
+				 */
+				if(h.getType().contains("ISA")){
+					isa_case=true;
+					finalHypothesenList.add(givenHypothesenList);
+				}
+				if(h.getType().contains("RESOURCE")){
+					/*
+					 * Check if Property is left or right of oneself
+					 */
+					String  case_side = "RIGHT";
+						
+					ArrayList<String> condition = new ArrayList<String>();
+					condition = givenConditionList.get(0);
+					if(condition.get(2).contains(h.getVariable())) case_side="LEFT";
+					
+					ArrayList<ElementList> resources = new ArrayList<ElementList>();
+					boolean gotResource=true;
+					try{
+						resources = elm.getElements();
+					}
+					catch (Exception e){
+						gotResource=false;
+						if(Setting.isDebugModus())DebugMode.debugErrorPrint("Didnt get any Resource");
+					}
+					
+					if(gotResource){
+						for(ElementList el : resources){
+							if(el.getVariablename().contains(h.getName())&&el.getVariablename().contains(case_side)){
+								
+								String property_name="";
+								for(Hypothesis h_t : givenHypothesenList){
+									if(h_t.getVariable().contains(condition.get(1))){
+										property_name=h_t.getName();
+										break;
+									}
+								}
+								ArrayList<Hypothesis> resultHypothesenList=new ArrayList<Hypothesis>();
+								/*
+								 * Here start levenstehin, wordnet etc etc
+								 */
+								if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(condition.get(1),property_name,el.getHm());
+								if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(condition.get(1),property_name,el.getHm(),myindex,wordnet,lemmatiser);
+								for(Hypothesis h_temp : resultHypothesenList) {
+									ArrayList<Hypothesis> temp_al = new ArrayList<Hypothesis>();
+									temp_al.add(h);
+									temp_al.add(h_temp);
+									finalHypothesenList.add(temp_al);
+								}
+							}
+						}
+						
+					}
+					
+				}
+			}
+		
+			
+			
+			return finalHypothesenList;
+		}
+
+		
+		
+		
+		
+		/*
+		 * two conditions!
+		 */
+		if(givenConditionList.size()==2){
+			System.out.println("two Conditions => NOT simple Struktur");
+			ArrayList<ElementList> resources = new ArrayList<ElementList>();
+			boolean gotResource=true;
+			try{
+				resources = elm.getElements();
+			}
+			catch (Exception e){
+				gotResource=false;
+				if(Setting.isDebugModus())DebugMode.debugErrorPrint("Didnt get any Resource");
+			}
+			
+			
+			ArrayList<String> condition1 = givenConditionList.get(0);
+			ArrayList<String> condition2 = givenConditionList.get(1);
+			
+			/*
+			 * ISA
+			 */
+			boolean condition1_exists_isa = false;
+			boolean condition2_exists_isa = false;
+			if(condition1.get(1).contains("ISA")) condition1_exists_isa=true;
+			if(condition2.get(1).contains("ISA")) condition2_exists_isa=true;
+			
+			
+			/*
+			 * Resource: Find out the Resource, the Side of the depending Property and mark the Hypothesis for the Resource
+			 */
+			
+			boolean condition1_exists_resource = false;
+			boolean condition2_exists_resource = false;
+			String resource_variable=null;
+			Hypothesis resource_h=null;
+			
+			
+			String property_Side = "RIGHT";
+			for(Hypothesis h : givenHypothesenList){
+				if(h.getVariable().contains(condition1.get(0))&&h.getType().contains("RESOURCE")){
+					condition1_exists_resource=true;
+					property_Side="RIGHT";
+					resource_variable=h.getVariable();
+					resource_h=h;
+				}
+				if(h.getVariable().contains(condition1.get(2))&&h.getType().contains("RESOURCE")){
+					condition1_exists_resource=true;
+					property_Side="LEFT";
+					resource_variable=h.getVariable();
+					resource_h=h;
+				}
+				
+				if(h.getVariable().contains(condition2.get(0))&&h.getType().contains("RESOURCE")){
+					condition2_exists_resource=true;
+					property_Side="RIGHT";
+					resource_variable=h.getVariable();
+					resource_h=h;
+				}
+				if(h.getVariable().contains(condition2.get(2))&&h.getType().contains("RESOURCE")){
+					condition2_exists_resource=true;
+					property_Side="LEFT";
+					resource_variable=h.getVariable();
+					resource_h=h;
+				}
+				
+			}
+			
+			
+			/*
+			 * ISA
+			 */
+			if((condition1_exists_isa||condition2_exists_isa)&&gotResource){
+				
+				/*
+				 * get Hypothese for the Class
+				 */
+				String class_variable=null;
+				if(condition1_exists_isa)class_variable= condition1.get(2);
+				if(condition2_exists_isa)class_variable= condition2.get(2);
+				
+				Hypothesis class_h=null;
+				
+				for(Hypothesis h_t : givenHypothesenList){
+					if(h_t.getVariable().contains(class_variable)){
+						class_h=h_t;
+						break;
+					}
+				}
+				
+				System.out.println("class_variable: " + class_variable);
+				System.out.println("Class Hypothese: ");
+				class_h.printAll();
+				for(ElementList el : resources){
+					//System.out.println("el.getVariablename(): "+el.getVariablename());
+					if(el.getVariablename().contains(class_h.getName())){
+						System.out.println("In If Abfrage bei der Iteration ueber el");
+						String property_name="";
+						String property_variable="";
+						
+						if(condition1_exists_isa)property_variable= condition2.get(1);
+						if(condition2_exists_isa)property_variable= condition1.get(1);
+						
+						System.out.println("property_variable: " + property_variable);
+						
+						for(Hypothesis h_t : givenHypothesenList){
+							if(h_t.getVariable().contains(property_variable)){
+								property_name=h_t.getName();
+								break;
+							}
+						}
+						System.out.println("property_name: " + property_name);
+						ArrayList<Hypothesis> resultHypothesenList=new ArrayList<Hypothesis>();
+						for (Entry<String, String> entry : el.getHm().entrySet()) {
+							System.out.println(entry.getKey()+" "+entry.getValue());
+						}
+						/*
+						 * Here start levenstehin, wordnet etc etc
+						 */
+						if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(property_variable,property_name,el.getHm());
+						if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(property_variable,property_name,el.getHm(),myindex,wordnet,lemmatiser);
+						System.out.println("After generating new Hypothesen.\n "+resultHypothesenList.size()+" new were generated");
+						for(Hypothesis h_temp : resultHypothesenList) {
+							ArrayList<Hypothesis> temp_al = new ArrayList<Hypothesis>();
+							temp_al.add(class_h);
+							temp_al.add(h_temp);
+							System.out.println("Hypothesen:");
+							class_h.printAll();
+							h_temp.printAll();
+							finalHypothesenList.add(temp_al);
+						}
+					}
+				}
+				
+				
+/*				try {
+					DebugMode.waitForButton();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	*/			
+				return finalHypothesenList;
+				
+			}
+			
+			
+			
+			
+			/*
+			 * Resource
+			 */
+			
+			if((condition1_exists_resource||condition2_exists_resource)&&gotResource){
+				
+				System.out.println("IN RESOURCE NOT SIMPLE CASE!!!");
+				System.out.println("resource_variable: " + resource_variable);
+				System.out.println("Resource Hypothese: ");
+				resource_h.printAll();
+				
+				String property_name="";
+				String second_property_name="";
+				String property_variable="";
+				String second_property_variable="";
+				
+				if(condition1_exists_resource){
+					//property_variable= condition1.get(1);
+					//second_property_variable=condition2.get(1);
+					property_variable= condition2.get(1);
+					second_property_variable=condition1.get(1);
+				}
+				if(condition2_exists_resource){
+					//property_variable= condition2.get(1);
+					//second_property_variable=condition1.get(1);
+					property_variable= condition1.get(1);
+					second_property_variable=condition2.get(1);
+				}
+				
+				System.out.println("property_variable: " + property_variable);
+				System.out.println("scond_property_variable: " + second_property_variable);
+				for(ArrayList<String> al : givenConditionList){
+					for(String s : al) System.out.println(s);
+				}
+				for(Hypothesis h : givenHypothesenList){
+					h.printAll();
+				}
+				
+				for(Hypothesis h_t : givenHypothesenList){
+					if(h_t.getVariable().contains(property_variable)){
+						property_name=h_t.getName();
+						
+					}
+					if(h_t.getVariable().contains(second_property_variable)){
+						second_property_name=h_t.getName();
+						
+					}
+				}
+				System.out.println("property_name: " + property_name);
+				System.out.println("second_property_name: " + second_property_name);
+				
+				if(Setting.isWaitModus())DebugMode.waitForButton();
+				
+				
+				for(ElementList el : resources){
+					//System.out.println("el.getVariablename(): "+el.getVariablename());
+					if(el.getVariablename().contains(resource_h.getName())&&el.getVariablename().contains(property_Side)){
+						System.out.println("In If Abfrage bei der Iteration ueber el");
+						
+						
+						System.out.println("property_name: " + property_name);
+						ArrayList<Hypothesis> resultHypothesenList=new ArrayList<Hypothesis>();
+						/*for (Entry<String, String> entry : el.getHm().entrySet()) {
+							System.out.println(entry.getKey()+" "+entry.getValue());
+						}
+						
+						if(Setting.isWaitModus())
+							try {
+								DebugMode.waitForButton();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}*/
+						/*
+						 * Here start levenstehin, wordnet etc etc
+						 */
+						if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(property_variable,property_name,el.getHm());
+						if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(property_variable,property_name,el.getHm(),myindex,wordnet,lemmatiser);
+						System.out.println("After generating new Hypothesen.\n "+resultHypothesenList.size()+" new were generated");
+						for(Hypothesis h_temp : resultHypothesenList) {
+							String Query="";
+							if(property_Side.contains("LEFT")){
+								Query= "SELECT DISTINCT ?s ?x WHERE {<"+ resource_h.getUri()+"> <"+h_temp.getUri()+"> ?x. ?x rdfs:label ?s. FILTER (lang(?s) = 'en') }";
+
+							}
+							else{
+								Query= "SELECT DISTINCT ?s ?x WHERE {?x <"+h_temp.getUri()+"> <"+ resource_h.getUri()+"> . ?x rdfs:label ?s. FILTER (lang(?s) = 'en') }";
+
+							}
+							/*
+							 * Now use the variable from the second condition which does not has an Resource in the Hypothesis
+							 */
+							System.out.println("Query: "+Query);
+							HashMap<String, String> hm_newClasses=ServerUtil.generatesQueryForOutsideClasses(Query);
+							
+							
+							ArrayList<Hypothesis> second_resultHypothesenList=new ArrayList<Hypothesis>();
+							
+							
+							
+							if(type.contains("LEVENSTHEIN"))second_resultHypothesenList= LevenstheinModule.doLevensthein(second_property_variable,second_property_name,hm_newClasses);
+							if(type.contains("WORDNET"))second_resultHypothesenList= WordnetModule.doWordnet(second_property_variable,second_property_name,hm_newClasses,myindex,wordnet,lemmatiser);
+							System.out.println("SIze of second_resultHypothesenList: "+second_resultHypothesenList.size());
+							
+							for(Hypothesis second_h_temp : second_resultHypothesenList) {
+								ArrayList<Hypothesis> temp_al = new ArrayList<Hypothesis>();
+								temp_al.add(resource_h);
+								temp_al.add(h_temp);
+								temp_al.add(second_h_temp);
+								resource_h.printAll();
+								h_temp.printAll();
+								second_h_temp.printAll();
+								/*
+								 * for each hypothesis now get the x from the Server an generate for second condition depending on the x new Hypothesen Set.
+								 * afterwars add new_h_temp, h_temp, resource_h to the array Set temp_al and add temp_all to final Hypothesen Set
+								 */
+
+								finalHypothesenList.add(temp_al);
+							}
+							
+						}
+					}
+				}
+					
+				return finalHypothesenList;
+			}
+		}
+		
+		return finalHypothesenList;
+		
 		
 	}
 

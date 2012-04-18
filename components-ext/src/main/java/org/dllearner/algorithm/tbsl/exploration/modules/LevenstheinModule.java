@@ -9,7 +9,7 @@ import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
 import org.dllearner.algorithm.tbsl.exploration.Utils.Levenshtein;
 
 public class LevenstheinModule {
-	private final static double LevenstheinMin=0.85;
+	private final static double LevenstheinMin=0.65;
 	
 	public static ArrayList<Hypothesis> doLevensthein(String variable, String property_to_compare_with, HashMap<String, String> properties)
 			throws SQLException {

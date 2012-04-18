@@ -4,6 +4,7 @@ public class Setting {
 
 	private static boolean waitModus;
 	private static boolean debugModus;
+	
 	public static boolean isWaitModus() {
 		return waitModus;
 	}
@@ -16,6 +17,6 @@ public class Setting {
 	public static void setDebugModus(boolean debugModus) {
 		Setting.debugModus = debugModus;
 	}
-	
+
 	
 }
