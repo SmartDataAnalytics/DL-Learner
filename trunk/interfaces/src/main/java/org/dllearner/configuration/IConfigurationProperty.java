@@ -6,7 +6,9 @@ package org.dllearner.configuration;
  * Date: 8/27/11
  * Time: 8:57 AM
  *
- * Respresents a Configuraiton Option setting.
+ * This Represents a Configuration Option within a DL Learner Configuration.
+ *
+ * @see IConfiguration
  */
 public interface IConfigurationProperty {
 
