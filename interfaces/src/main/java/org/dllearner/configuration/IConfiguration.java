@@ -26,9 +26,15 @@ import java.util.Collection;
  * User: Chris
  * Date: 8/18/11
  * Time: 9:45 PM
+ * <p/>
+ * This interface represents on complete instance of a DL-Learner Configuration.
+ * <p/>
+ * Once an implementation of this interface is fully instantiated, it can be passed to an ApplicationContextBuilder in order
+ * to instantiate a Spring Application Context.
+ * <p/>
+ * Once the application context has been created, learning algorithms can be extracted and then executed.
  *
- * This interface defines our interaction with a DL-Learner specific configuration.
- *
+ * @see org.dllearner.configuration.spring.ApplicationContextBuilder
  */
 public interface IConfiguration {
 
