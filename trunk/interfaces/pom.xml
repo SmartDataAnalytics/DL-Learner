@@ -2,11 +2,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.dllearner</groupId>
+
 	<artifactId>interfaces</artifactId>
 	<packaging>jar</packaging>
 	<name>Interfaces: GUI, CLI, Web Service</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
+
 
 	<parent>
 		<groupId>org.dllearner</groupId>
@@ -16,6 +17,8 @@
 
 	<properties>
 		<release.name>1.0-beta-2</release.name>
+		<dist-dir>dl-learner-dist</dist-dir>
+		<install-dir>share/dl-learner</install-dir>
 	</properties>
 
 	<profiles>
@@ -36,7 +39,7 @@
 							</execution>
 						</executions>
 						<configuration>
-                            <repositoryLayout>flat</repositoryLayout>
+							<repositoryLayout>flat</repositoryLayout>
 							<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
 							<repoPath>lib</repoPath>
 							<repositoryName>lib</repositoryName>
@@ -56,9 +59,9 @@
 									<mainClass>org.dllearner.cli.Enrichment</mainClass>
 									<name>enrichment</name>
 								</program>
-								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass>
-									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass>
-									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass>
+								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> 
+									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
+									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
 									<name>ws</name> </program> -->
 							</programs>
 						</configuration>
@@ -87,10 +90,10 @@
 						<version>1.1</version>
 						<configuration>
 							<settings>
-								<!-- all tex main documents in this folder (including subfolders)
+								<!-- all tex main documents in this folder (including subfolders) 
 									will be processed -->
 								<texDirectory>${basedir}/doc/manual</texDirectory>
-								<!-- the generated artifacts will be copied to this folder relative
+								<!-- the generated artifacts will be copied to this folder relative 
 									to ${project.reporting.outputDirectory} -->
 								<outputDirectory>.</outputDirectory>
 								<!-- the working directory, for temporary files and LaTeX processing -->
@@ -123,28 +126,200 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>debpackage</id>
+			<build>
+				<finalName>dl-learner</finalName>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>appassembler-maven-plugin</artifactId>
+						<version>1.1.1</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>assemble</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<repositoryLayout>flat</repositoryLayout>
+							<assembleDirectory>${project.build.directory}/${dist-dir}</assembleDirectory>
+							<repoPath>/usr/share/dl-learner/lib</repoPath>
+							<repositoryName>${install-dir}/lib</repositoryName>
+							<extraJvmArguments>-Xms256m -Xmx1024m</extraJvmArguments>
+							<installArtifacts>false</installArtifacts>
+							<configurationDirectory>/</configurationDirectory>
+							<platforms>
+								<platform>unix</platform>
+							</platforms>
+							<programs>
+								<program>
+									<mainClass>org.dllearner.cli.CLI</mainClass>
+									<name>dl-learner-cli</name>
+								</program>
+								<program>
+									<mainClass>org.dllearner.cli.Enrichment</mainClass>
+									<name>dl-learner-enrichment</name>
+								</program>
+								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> 
+									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
+									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
+									<name>ws</name> </program> -->
+							</programs>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>de.akquinet.maven</groupId>
+						<artifactId>maven-latex-plugin</artifactId>
+						<version>1.1</version>
+						<configuration>
+							<settings>
+								<!-- all tex main documents in this folder (including subfolders) 
+									will be processed -->
+								<texDirectory>${basedir}/doc/manual</texDirectory>
+								<!-- the generated artifacts will be copied to this folder relative 
+									to ${project.reporting.outputDirectory} -->
+								<outputDirectory>.</outputDirectory>
+								<!-- the working directory, for temporary files and LaTeX processing -->
+								<tempDirectory>${project.build.directory}/m2latex</tempDirectory>
+								<!-- clean up the working directory in the end? May be used for debugging -->
+								<cleanUp>true</cleanUp>
+								<!-- path to the TeX scripts, if none, it must be on the system path -->
+								<texPath />
+								<!-- the latex command -->
+								<texCommand>pdflatex</texCommand>
+								<!-- the bibtex command -->
+								<bibtexCommand>bibtex</bibtexCommand>
+								<!-- the arguments to use when calling latex -->
+								<texCommandArgs>
+									<texCommandArg>-interaction=nonstopmode</texCommandArg>
+									<texCommandArg>--src-specials</texCommandArg>
+								</texCommandArgs>
+							</settings>
+						</configuration>
+						<executions>
+							<!-- execute latex goal automatically during the site phase -->
+							<execution>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>latex</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>jdeb</artifactId>
+						<groupId>org.vafer</groupId>
+						<version>0.9</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jdeb</goal>
+								</goals>
+								<configuration>
+									<deb>${basedir}/target/dl-learner-${release.name}.deb</deb>
+									<version>${release.name}</version>
+									<controlDir>${basedir}/src/debian</controlDir>
+									<dataSet>
+										<data>
+											<src>${project.build.directory}/${dist-dir}/${install-dir}/lib</src>
+											<type>directory</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/share/dl-learner/lib</prefix>
+											</mapper>
+										</data>
+										<data>
+											<src>${project.build.directory}/${dist-dir}/bin/dl-learner-cli</src>
+											<type>file</type>
+
+											<mapper>
+												<type>perm</type>
+												<filemode>777</filemode>
+												<prefix>/usr/bin</prefix>
+											</mapper>
+										</data>
+										<data>
+											<src>${project.build.directory}/${dist-dir}/bin/dl-learner-enrichment</src>
+											<type>file</type>
+
+											<mapper>
+												<type>perm</type>
+												<filemode>777</filemode>
+												<prefix>/usr/bin</prefix>
+											</mapper>
+										</data>
+										<data>
+											<src>${basedir}/log4j.properties</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<filemode>777</filemode>
+												<prefix>/usr/share/dl-learner/lib</prefix>
+											</mapper>
+										</data>
+										<data>
+											<src>${basedir}/log/interfaces.log</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<filemode>777</filemode>
+												<prefix>/var/log/dl-learner</prefix>
+											</mapper>
+										</data>
+									</dataSet>
+									<changesIn>${basedir}/CHANGES.txt</changesIn>
+									<changesOut>${basedir}/target/dl-learner-${release.name}.changes</changesOut>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
-
 	<build>
-		<finalName>interfaces</finalName>
+		<finalName>dl-learner</finalName>
 		<plugins>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>xmlbeans-maven-plugin</artifactId>
-                <version>2.3.3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>xmlbeans</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <inherited>true</inherited>
-                <configuration>
-                    <schemaDirectory>src/main/xsd</schemaDirectory>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>org.dllearner.cli.CLI</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xmlbeans-maven-plugin</artifactId>
+				<version>2.3.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>xmlbeans</goal>
+						</goals>
+					</execution>
+				</executions>
+				<inherited>true</inherited>
+				<configuration>
+					<schemaDirectory>src/main/xsd</schemaDirectory>
+				</configuration>
+			</plugin>
 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -171,10 +346,10 @@
 					</requestLog>
 				</configuration>
 				<!--execution is used for testing -->
-				<!--executions> <execution> <id>start-jetty</id> <phase>pre-integration-test</phase>
-					<goals> <goal>run</goal> </goals> <configuration> <scanIntervalSeconds>0</scanIntervalSeconds>
-					<daemon>true</daemon> <stopKey>stopKey</stopKey> <stopPort>9999</stopPort>
-					</configuration> </execution> <execution> <id>stop-jetty</id> <phase>post-integration-test</phase>
+				<!--executions> <execution> <id>start-jetty</id> <phase>pre-integration-test</phase> 
+					<goals> <goal>run</goal> </goals> <configuration> <scanIntervalSeconds>0</scanIntervalSeconds> 
+					<daemon>true</daemon> <stopKey>stopKey</stopKey> <stopPort>9999</stopPort> 
+					</configuration> </execution> <execution> <id>stop-jetty</id> <phase>post-integration-test</phase> 
 					<goals> <goal>stop</goal> </goals> </execution> </executions -->
 			</plugin>
 
@@ -185,10 +360,10 @@
 				<configuration>
 					<excludes>
 						<exclude>org/dllearner/test/junit/OWLlinkTest.java</exclude>
-                        <exclude>org/dllearner/configuration/spring/TestBean.java</exclude>
-                        <exclude>org/dllearner/test/SpringTest.java</exclude>
-                        <exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
-                        <exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
+						<exclude>org/dllearner/configuration/spring/TestBean.java</exclude>
+						<exclude>org/dllearner/test/SpringTest.java</exclude>
+						<exclude>org/dllearner/test/junit/GeizhalsTest.java</exclude>
+						<exclude>org/dllearner/cli/MoosiqueCLITest.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -202,11 +377,9 @@
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
 		</dependency>
-		<!--dependency>
-			<groupId>org.dllearner</groupId>
-			<artifactId>components-ext</artifactId>
-		</dependency-->
-		<!-- Added the dependency of the core tests so that they will be accessible
+		<!--dependency> <groupId>org.dllearner</groupId> <artifactId>components-ext</artifactId> 
+			</dependency -->
+		<!-- Added the dependency of the core tests so that they will be accessible 
 			from the tests in this component -->
 		<dependency>
 			<groupId>org.dllearner</groupId>
@@ -258,61 +431,64 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>org.apache.xmlbeans</groupId>
-            <artifactId>xmlbeans</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dllearner</groupId>
-            <artifactId>spring-xmlbeans-3.0</artifactId>
-            <version>1.0</version>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.dllearner</groupId>
+			<artifactId>spring-xmlbeans-3.0</artifactId>
+			<version>1.0</version>
+		</dependency>
 
-        <dependency>
-            <groupId>net.sf.jopt-simple</groupId>
-            <artifactId>jopt-simple</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>net.sf.jopt-simple</groupId>
+			<artifactId>jopt-simple</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
-        
-         <dependency>
-    <groupId>commons-lang</groupId>
-    <artifactId>commons-lang</artifactId>
-    <version>2.3</version>
-</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+		</dependency>
 
-        <!--BEGIN Logging Dependencies-->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.3</version>
+		</dependency>
 
-        <!--This is the api jar, it's needed at compile time-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
+		<!--BEGIN Logging Dependencies -->
 
-        <!--This is the bridge that ties calls to the slf4j api to the log4j framework.  This is a runtime dependency for programs which wish to use log4j as their implementation.-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+		<!--This is the api jar, it's needed at compile time -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
 
-        <!--Log4J dependency needed for the runtime as well as some specific compile time calls-->
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
+		<!--This is the bridge that ties calls to the slf4j api to the log4j framework. 
+			This is a runtime dependency for programs which wish to use log4j as their 
+			implementation. -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <!--END Logging Dependencies-->
+		<!--Log4J dependency needed for the runtime as well as some specific compile 
+			time calls -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
 
-       
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!--END Logging Dependencies -->
+
+
 	</dependencies>
 
 
