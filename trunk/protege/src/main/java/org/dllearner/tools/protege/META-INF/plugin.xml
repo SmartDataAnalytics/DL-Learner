@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
   <plugin>
   <extension id="org.dllearner.tools.protege.ProtegePlugin"
-              point="org.protege.editor.owl.ui_editor_description">
+              point="org.protege.editor.core.application.ViewComponent">
        <label value="DL-Learner"/>
        <class value="org.dllearner.tools.protege.ProtegePlugin"/>
        <index value="E"/>

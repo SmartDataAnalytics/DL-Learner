@@ -6,11 +6,8 @@ import java.util.SortedSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -18,6 +15,7 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.ProtegeReasoner;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.protege.editor.core.Disposable;
@@ -37,14 +35,6 @@ import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 
 public class Manager implements OWLModelManagerListener, OWLSelectionModelListener, Disposable{
 	
-	private final String[] components = { "org.dllearner.kb.OWLFile",
-			"org.dllearner.reasoning.OWLAPIReasoner",
-			"org.dllearner.reasoning.FastInstanceChecker",
-			"org.dllearner.reasoning.ProtegeReasoner",
-			"org.dllearner.reasoning.FastRetrievalReasoner",
-			"org.dllearner.algorithms.celoe.CELOE",
-			"org.dllearner.learningproblems.PosNegLPStandard", "org.dllearner.learningproblems.ClassLearningProblem"};
-	
 	private static Manager instance;
 	
 	private OWLEditorKit editorKit;
@@ -52,11 +42,10 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	
 	private boolean reinitNecessary = true;
 	
-	private ComponentManager cm;
-	private AbstractLearningProblem lp;
-	private AbstractCELA la;
+	private ClassLearningProblem lp;
+	private CELOE la;
 	private ProtegeReasoner reasoner;
-	private AbstractKnowledgeSource ks;
+	private KnowledgeSource ks;
 	
 	private LearningType learningType;
 	private int maxExecutionTimeInSeconds;
@@ -85,8 +74,6 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	
 	private Manager(OWLEditorKit editorKit){
 		this.editorKit = editorKit;
-		ComponentManager.setComponentClasses(components);
-		cm = ComponentManager.getInstance();
 	}
 	
 	public void setOWLEditorKit(OWLEditorKit editorKit){
@@ -110,20 +97,25 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	public void initLearningAlgorithm() throws Exception {
 		System.out.print("Initializing learning algorithm...");
 		long startTime = System.currentTimeMillis();
-		la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-		cm.applyConfigEntry(la, "useAllConstructor", useAllConstructor);
-		cm.applyConfigEntry(la, "useExistsConstructor", useExistsConstructor);
-		cm.applyConfigEntry(la, "useHasValueConstructor",
-				useHasValueConstructor);
-		cm.applyConfigEntry(la, "useNegation", useNegation);
-		cm.applyConfigEntry(la, "useCardinalityRestrictions",
-				useCardinalityRestrictions);
-		if (useCardinalityRestrictions) {
-			cm.applyConfigEntry(la, "cardinalityLimit", cardinalityLimit);
+		la = new CELOE(lp, reasoner);
+		
+		RhoDRDown op = new RhoDRDown();
+		op.setReasoner(reasoner);
+		op.setUseNegation(useNegation);
+		op.setUseHasValueConstructor(useAllConstructor);
+		op.setUseCardinalityRestrictions(useCardinalityRestrictions);
+		if(useCardinalityRestrictions){
+			op.setCardinalityLimit(cardinalityLimit);
 		}
-		cm.applyConfigEntry(la, "noisePercentage", noisePercentage);
-		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds",
-				maxExecutionTimeInSeconds);
+		op.setUseExistsConstructor(useExistsConstructor);
+		op.setUseHasValueConstructor(useHasValueConstructor);
+		op.init();
+		
+		la.setOperator(op);
+		
+		la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+		la.setNoisePercentage(noisePercentage);
+		la.setMaxNrOfResults(maxNrOfResults);
 
 		la.init();
 		System.out.println("done in " + (System.currentTimeMillis()-startTime) + "ms.");
@@ -133,16 +125,11 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	public void initLearningProblem() throws Exception {
 		System.out.print("Initializing learning problem...");
 		long startTime = System.currentTimeMillis();
-		lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-		cm.applyConfigEntry(lp, "classToDescribe", editorKit.getOWLWorkspace()
-				.getOWLSelectionModel().getLastSelectedClass().getIRI().toURI()
-				.toURL());
-		if (learningType == LearningType.EQUIVALENT) {
-			cm.applyConfigEntry(lp, "type", "equivalence");
-		} else if (learningType == LearningType.SUPER) {
-			cm.applyConfigEntry(lp, "type", "superClass");
-		}
-		cm.applyConfigEntry(lp, "checkConsistency", false);
+		lp = new ClassLearningProblem(reasoner);
+		lp.setClassToDescribe(new NamedClass(editorKit.getOWLWorkspace()
+				.getOWLSelectionModel().getLastSelectedClass().getIRI().toURI()));
+		lp.setEquivalence(learningType == LearningType.EQUIVALENT);
+		lp.setCheckConsistency(false);
 
 		lp.init();
 		System.out.println("Done in " + (System.currentTimeMillis()-startTime) + "ms.");
@@ -154,17 +141,16 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	}
 	
 	public void initReasoner() throws Exception{
-		System.out.print("Initializing reasoner...");
+		System.out.print("Initializing DL-Learner internal reasoner...");
 		long startTime = System.currentTimeMillis();
-		reasoner = cm.reasoner(ProtegeReasoner.class, ks);
-		reasoner.setOWLReasoner(editorKit.getOWLModelManager().getReasoner());
+		reasoner = new ProtegeReasoner(Collections.singleton(ks), editorKit.getOWLModelManager().getReasoner());
 		reasoner.setProgressMonitor(progressMonitor);
 		reasoner.init();
 		System.out.println("Done in " + (System.currentTimeMillis()-startTime) + "ms.");
 	}
 	
 	public void initReasonerAsynchronously(){
-		reasoner = cm.reasoner(ProtegeReasoner.class, ks);
+		reasoner = new ProtegeReasoner(Collections.singleton(ks), editorKit.getOWLModelManager().getReasoner());
 		reasoner.setOWLReasoner(editorKit.getOWLModelManager().getReasoner());
 		reasoner.setProgressMonitor(progressMonitor);
 		
@@ -372,7 +358,6 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	@Override
 	public void dispose() throws Exception {
 		reasoner.releaseKB();
-		cm.freeAllComponents();
 		editorKit.getOWLModelManager().removeListener(this);
 		editorKit.getOWLWorkspace().getOWLSelectionModel().removeListener(this);
 		
