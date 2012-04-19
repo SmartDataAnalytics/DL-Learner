@@ -778,251 +778,254 @@ public class ProtegeReasoner extends AbstractReasonerComponent {
 	return inds;
 }
 
-@SuppressWarnings("unchecked")
-public SortedSet<Individual> getIndividualsImplFast(Description description)
-		throws ReasoningMethodUnsupportedException {
-	// policy: returned sets are clones, i.e. can be modified
-	// (of course we only have to clone the leafs of a class description tree)
-	if (description instanceof NamedClass) {
-		return (TreeSet<Individual>) classInstancesPos.get((NamedClass) description).clone();
-	} else if (description instanceof Negation) {
-		if(description.getChild(0) instanceof NamedClass) {
-			return (TreeSet<Individual>) classInstancesNeg.get((NamedClass) description.getChild(0)).clone();
-		}
-		// implement retrieval as default negation
-		return Helper.difference((TreeSet<Individual>) individuals.clone(), getIndividualsImpl(description.getChild(0)));
-	} else if (description instanceof Thing) {
-		return (TreeSet<Individual>) individuals.clone();
-	} else if (description instanceof Nothing) {
-		return new TreeSet<Individual>();
-	} else if (description instanceof Union) {
-		// copy instances of first element and then subtract all others
-		SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
-		int childNr = 0;
-		for(Description child : description.getChildren()) {
-			if(childNr != 0) {
-				ret.addAll(getIndividualsImpl(child));
+	@SuppressWarnings("unchecked")
+	public SortedSet<Individual> getIndividualsImplFast(Description description)
+			throws ReasoningMethodUnsupportedException {
+		// policy: returned sets are clones, i.e. can be modified
+		// (of course we only have to clone the leafs of a class description tree)
+		if (description instanceof NamedClass) {
+			if(((NamedClass) description).getName().equals("http://www.w3.org/2002/07/owl#Nothing")){
+				return new TreeSet<Individual>();
 			}
-			childNr++;
-		}
-		return ret;
-	} else if (description instanceof Intersection) {
-		// copy instances of first element and then subtract all others
-		SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
-		int childNr = 0;
-		for(Description child : description.getChildren()) {
-			if(childNr != 0) {
-				ret.retainAll(getIndividualsImpl(child));
+			return (TreeSet<Individual>) classInstancesPos.get((NamedClass) description).clone();
+		} else if (description instanceof Negation) {
+			if(description.getChild(0) instanceof NamedClass) {
+				return (TreeSet<Individual>) classInstancesNeg.get((NamedClass) description.getChild(0)).clone();
 			}
-			childNr++;
-		}
-		return ret;
-	} else if (description instanceof ObjectSomeRestriction) {
-		SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
-		SortedSet<Individual> returnSet = new TreeSet<Individual>();
-		
-		ObjectPropertyExpression ope = ((ObjectSomeRestriction) description).getRole();
-		if (!(ope instanceof ObjectProperty)) {
-			throw new ReasoningMethodUnsupportedException("Retrieval for description "
-					+ description + " unsupported. Inverse object properties not supported.");
-		}
-		ObjectProperty op = (ObjectProperty) ope;
-		Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
-		
-		// each individual is connected to a set of individuals via the property;
-		// we loop through the complete mapping
-		for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
-			SortedSet<Individual> inds = entry.getValue();
-			for(Individual ind : inds) {
-				if(targetSet.contains(ind)) {
+			// implement retrieval as default negation
+			return Helper.difference((TreeSet<Individual>) individuals.clone(), getIndividualsImpl(description.getChild(0)));
+		} else if (description instanceof Thing) {
+			return (TreeSet<Individual>) individuals.clone();
+		} else if (description instanceof Nothing) {
+			return new TreeSet<Individual>();
+		} else if (description instanceof Union) {
+			// copy instances of first element and then subtract all others
+			SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
+			int childNr = 0;
+			for(Description child : description.getChildren()) {
+				if(childNr != 0) {
+					ret.addAll(getIndividualsImpl(child));
+				}
+				childNr++;
+			}
+			return ret;
+		} else if (description instanceof Intersection) {
+			// copy instances of first element and then subtract all others
+			SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
+			int childNr = 0;
+			for(Description child : description.getChildren()) {
+				if(childNr != 0) {
+					ret.retainAll(getIndividualsImpl(child));
+				}
+				childNr++;
+			}
+			return ret;
+		} else if (description instanceof ObjectSomeRestriction) {
+			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+			
+			ObjectPropertyExpression ope = ((ObjectSomeRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
+			
+			// each individual is connected to a set of individuals via the property;
+			// we loop through the complete mapping
+			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+				SortedSet<Individual> inds = entry.getValue();
+				for(Individual ind : inds) {
+					if(targetSet.contains(ind)) {
+						returnSet.add(entry.getKey());
+						// once we found an individual, we do not need to check the others
+						continue; 
+					}
+				}
+			}
+			return returnSet;
+		} else if (description instanceof ObjectAllRestriction) {
+			// \forall restrictions are difficult to handle; assume we want to check
+			// \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
+			// this is satisfied trivially (all of their non-existing children are male)
+//			if(!configurator.getForallRetrievalSemantics().equals("standard")) {
+//				throw new Error("Only forallExists semantics currently implemented.");
+//			}
+			
+			// problem: we need to make sure that \neg \exists r.\top \equiv \forall r.\bot
+			// can still be reached in an algorithm (\forall r.\bot \equiv \bot under forallExists
+			// semantics)
+			
+			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+						
+			ObjectPropertyExpression ope = ((ObjectAllRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+//			SortedSet<Individual> returnSet = new TreeSet<Individual>(mapping.keySet());
+			SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
+			
+			// each individual is connected to a set of individuals via the property;
+			// we loop through the complete mapping
+			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+				SortedSet<Individual> inds = entry.getValue();
+				for(Individual ind : inds) {
+					if(!targetSet.contains(ind)) {
+						returnSet.remove(entry.getKey());
+						continue; 
+					}
+				}
+			}
+			return returnSet;
+		} else if (description instanceof ObjectMinCardinalityRestriction) {
+			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+			SortedSet<Individual> targetSet = getIndividualsImpl(child);
+			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+
+			int number = ((ObjectCardinalityRestriction) description).getNumber();			
+
+			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+				int nrOfFillers = 0;
+				int index = 0;
+				SortedSet<Individual> inds = entry.getValue();
+				
+				// we do not need to run tests if there are not sufficiently many fillers
+				if(inds.size() < number) {
+					continue;
+				}
+				
+				for(Individual ind : inds) {
+					// stop inner loop when nr of fillers is reached
+					if(nrOfFillers >= number) {
+						returnSet.add(entry.getKey());
+						break;
+					}		
+					// early abort when too many instance checks failed
+					if (inds.size() - index < number) {
+						break;
+					}					
+					if(targetSet.contains(ind)) {
+						nrOfFillers++;
+					}
+					index++;
+				}
+			}			
+			
+			return returnSet;
+		} else if (description instanceof ObjectMaxCardinalityRestriction) {
+			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+			SortedSet<Individual> targetSet = getIndividualsImpl(child);
+			// initially all individuals are in the return set and we then remove those
+			// with too many fillers			
+			SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
+
+			int number = ((ObjectCardinalityRestriction) description).getNumber();			
+
+			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+				int nrOfFillers = 0;
+				int index = 0;
+				SortedSet<Individual> inds = entry.getValue();
+				
+				// we do not need to run tests if there are not sufficiently many fillers
+				if(number < inds.size()) {
 					returnSet.add(entry.getKey());
-					// once we found an individual, we do not need to check the others
-					continue; 
+					continue;
+				}
+				
+				for(Individual ind : inds) {
+					// stop inner loop when nr of fillers is reached
+					if(nrOfFillers >= number) {
+						break;
+					}		
+					// early abort when too many instance are true already
+					if (inds.size() - index < number) {
+						returnSet.add(entry.getKey());
+						break;
+					}					
+					if(targetSet.contains(ind)) {
+						nrOfFillers++;
+					}
+					index++;
+				}
+			}			
+			
+			return returnSet;
+		} else if (description instanceof ObjectValueRestriction) {
+			Individual i = ((ObjectValueRestriction)description).getIndividual();
+			ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
+			
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
+			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+			
+			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+				if(entry.getValue().contains(i)) {
+					returnSet.add(entry.getKey());
+				}
+			}
+			return returnSet;
+		} else if (description instanceof BooleanValueRestriction) {
+			DatatypeProperty dp = ((BooleanValueRestriction) description)
+					.getRestrictedPropertyExpression();
+			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
+
+			if (value) {
+				return (TreeSet<Individual>) bdPos.get(dp).clone();
+			} else {
+				return (TreeSet<Individual>) bdNeg.get(dp).clone();
+			}
+		} else if (description instanceof DatatypeSomeRestriction) {
+			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
+			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
+			DataRange dr = dsr.getDataRange();
+
+			Map<Individual, SortedSet<Double>> mapping = dd.get(dp);			
+			SortedSet<Individual> returnSet = new TreeSet<Individual>();			
+
+			if (dr instanceof DoubleMaxValue) {
+				for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+					if(entry.getValue().first() <= ((DoubleMaxValue)dr).getValue()) {
+						returnSet.add(entry.getKey());
+					}
+				}				
+			} else if (dr instanceof DoubleMinValue) {
+				for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+					if(entry.getValue().last() >= ((DoubleMinValue)dr).getValue()) {
+						returnSet.add(entry.getKey());
+					}
 				}
 			}
 		}
-		return returnSet;
-	} else if (description instanceof ObjectAllRestriction) {
-		// \forall restrictions are difficult to handle; assume we want to check
-		// \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
-		// this is satisfied trivially (all of their non-existing children are male)
-//		if(!configurator.getForallRetrievalSemantics().equals("standard")) {
-//			throw new Error("Only forallExists semantics currently implemented.");
+			
+		throw new ReasoningMethodUnsupportedException("Retrieval for description "
+					+ description + " unsupported.");		
+			
+		// return rs.retrieval(concept);
+//		SortedSet<Individual> inds = new TreeSet<Individual>();
+//		for (Individual i : individuals) {
+//			if (hasType(concept, i)) {
+//				inds.add(i);
+//			}
 //		}
-		
-		// problem: we need to make sure that \neg \exists r.\top \equiv \forall r.\bot
-		// can still be reached in an algorithm (\forall r.\bot \equiv \bot under forallExists
-		// semantics)
-		
-		SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
-					
-		ObjectPropertyExpression ope = ((ObjectAllRestriction) description).getRole();
-		if (!(ope instanceof ObjectProperty)) {
-			throw new ReasoningMethodUnsupportedException("Instance check for description "
-					+ description + " unsupported. Inverse object properties not supported.");
-		}
-		ObjectProperty op = (ObjectProperty) ope;
-		Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-//		SortedSet<Individual> returnSet = new TreeSet<Individual>(mapping.keySet());
-		SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
-		
-		// each individual is connected to a set of individuals via the property;
-		// we loop through the complete mapping
-		for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
-			SortedSet<Individual> inds = entry.getValue();
-			for(Individual ind : inds) {
-				if(!targetSet.contains(ind)) {
-					returnSet.remove(entry.getKey());
-					continue; 
-				}
-			}
-		}
-		return returnSet;
-	} else if (description instanceof ObjectMinCardinalityRestriction) {
-		ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
-		if (!(ope instanceof ObjectProperty)) {
-			throw new ReasoningMethodUnsupportedException("Instance check for description "
-					+ description + " unsupported. Inverse object properties not supported.");
-		}
-		ObjectProperty op = (ObjectProperty) ope;
-		Description child = description.getChild(0);
-		Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-		SortedSet<Individual> targetSet = getIndividualsImpl(child);
-		SortedSet<Individual> returnSet = new TreeSet<Individual>();
-
-		int number = ((ObjectCardinalityRestriction) description).getNumber();			
-
-		for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
-			int nrOfFillers = 0;
-			int index = 0;
-			SortedSet<Individual> inds = entry.getValue();
-			
-			// we do not need to run tests if there are not sufficiently many fillers
-			if(inds.size() < number) {
-				continue;
-			}
-			
-			for(Individual ind : inds) {
-				// stop inner loop when nr of fillers is reached
-				if(nrOfFillers >= number) {
-					returnSet.add(entry.getKey());
-					break;
-				}		
-				// early abort when too many instance checks failed
-				if (inds.size() - index < number) {
-					break;
-				}					
-				if(targetSet.contains(ind)) {
-					nrOfFillers++;
-				}
-				index++;
-			}
-		}			
-		
-		return returnSet;
-	} else if (description instanceof ObjectMaxCardinalityRestriction) {
-		ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
-		if (!(ope instanceof ObjectProperty)) {
-			throw new ReasoningMethodUnsupportedException("Instance check for description "
-					+ description + " unsupported. Inverse object properties not supported.");
-		}
-		ObjectProperty op = (ObjectProperty) ope;
-		Description child = description.getChild(0);
-		Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-		SortedSet<Individual> targetSet = getIndividualsImpl(child);
-		// initially all individuals are in the return set and we then remove those
-		// with too many fillers			
-		SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
-
-		int number = ((ObjectCardinalityRestriction) description).getNumber();			
-
-		for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
-			int nrOfFillers = 0;
-			int index = 0;
-			SortedSet<Individual> inds = entry.getValue();
-			
-			// we do not need to run tests if there are not sufficiently many fillers
-			if(number < inds.size()) {
-				returnSet.add(entry.getKey());
-				continue;
-			}
-			
-			for(Individual ind : inds) {
-				// stop inner loop when nr of fillers is reached
-				if(nrOfFillers >= number) {
-					break;
-				}		
-				// early abort when too many instance are true already
-				if (inds.size() - index < number) {
-					returnSet.add(entry.getKey());
-					break;
-				}					
-				if(targetSet.contains(ind)) {
-					nrOfFillers++;
-				}
-				index++;
-			}
-		}			
-		
-		return returnSet;
-	} else if (description instanceof ObjectValueRestriction) {
-		Individual i = ((ObjectValueRestriction)description).getIndividual();
-		ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
-		
-		Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
-		SortedSet<Individual> returnSet = new TreeSet<Individual>();
-		
-		for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
-			if(entry.getValue().contains(i)) {
-				returnSet.add(entry.getKey());
-			}
-		}
-		return returnSet;
-	} else if (description instanceof BooleanValueRestriction) {
-		DatatypeProperty dp = ((BooleanValueRestriction) description)
-				.getRestrictedPropertyExpression();
-		boolean value = ((BooleanValueRestriction) description).getBooleanValue();
-
-		if (value) {
-			return (TreeSet<Individual>) bdPos.get(dp).clone();
-		} else {
-			return (TreeSet<Individual>) bdNeg.get(dp).clone();
-		}
-	} else if (description instanceof DatatypeSomeRestriction) {
-		DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
-		DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
-		DataRange dr = dsr.getDataRange();
-
-		Map<Individual, SortedSet<Double>> mapping = dd.get(dp);			
-		SortedSet<Individual> returnSet = new TreeSet<Individual>();			
-
-		if (dr instanceof DoubleMaxValue) {
-			for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
-				if(entry.getValue().first() <= ((DoubleMaxValue)dr).getValue()) {
-					returnSet.add(entry.getKey());
-				}
-			}				
-		} else if (dr instanceof DoubleMinValue) {
-			for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
-				if(entry.getValue().last() >= ((DoubleMinValue)dr).getValue()) {
-					returnSet.add(entry.getKey());
-				}
-			}
-		}
+//		return inds;
 	}
-		
-	throw new ReasoningMethodUnsupportedException("Retrieval for description "
-				+ description + " unsupported.");		
-		
-	// return rs.retrieval(concept);
-//	SortedSet<Individual> inds = new TreeSet<Individual>();
-//	for (Individual i : individuals) {
-//		if (hasType(concept, i)) {
-//			inds.add(i);
-//		}
-//	}
-//	return inds;
-}
 	
 	@Override
 	public Set<NamedClass> getTypesImpl(Individual individual) {

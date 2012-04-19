@@ -25,6 +25,10 @@ import java.util.Set;
 import javax.swing.JComponent;
 
 import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
+import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.event.EventType;
+import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
+import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.model.inference.NoOpReasoner;
 import org.protege.editor.owl.ui.editor.AbstractOWLClassExpressionEditor;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -38,7 +42,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
  * @author Christian Koetteritzsch
  * 
  */
-public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
+public class ProtegePlugin extends AbstractOWLClassExpressionEditor implements OWLModelManagerListener{
 	private static final long serialVersionUID = 728362819273927L;
 	private DLLearnerView view;
 	
@@ -60,16 +64,22 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 			Manager.getInstance(getOWLEditorKit()).setLearningType(LearningType.SUPER);
 		}
 		view.reset();
+		checkReasonerStatus();
+		return true;
+	}
+	
+	private void checkReasonerStatus(){
 		OWLReasoner r = getOWLEditorKit().getModelManager().getReasoner();
 		if(r instanceof NoOpReasoner){
 			view.setHintMessage("<html><font size=\"3\" color=\"red\">You have to select a reasoner (click on menu \"Reasoner\"). We recommend to use Pellet. </font></html>");
 			view.setRunButtonEnabled(false);
 		} else {
+			view.setHintMessage("");
+			view.setRunButtonEnabled(true);
 			if(!Manager.getInstance().isPreparing() && Manager.getInstance().isReinitNecessary()){
 				new ReadingOntologyThread(view).start();
 			}
 		}
-		return true;
 	}
 
 	@Override
@@ -105,6 +115,7 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	}
 	
 	private void addListeners(){
+		getOWLEditorKit().getOWLModelManager().addListener(this);
 		getOWLEditorKit().getOWLModelManager().addListener(Manager.getInstance(getOWLEditorKit()));
 		getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().addListener(Manager.getInstance(getOWLEditorKit()));
 	}
@@ -112,5 +123,12 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	private void removeListeners(){
 		getOWLEditorKit().getOWLModelManager().removeListener(Manager.getInstance(getOWLEditorKit()));
 		getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().removeListener(Manager.getInstance(getOWLEditorKit()));
+	}
+
+	@Override
+	public void handleChange(OWLModelManagerChangeEvent event) {
+		if(event.isType(EventType.REASONER_CHANGED) || event.isType(EventType.ACTIVE_ONTOLOGY_CHANGED)){
+			checkReasonerStatus();
+		}
 	}
 }
