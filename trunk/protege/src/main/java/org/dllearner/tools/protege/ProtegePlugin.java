@@ -25,15 +25,15 @@ import java.util.Set;
 import javax.swing.JComponent;
 
 import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
-import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
-import org.protege.editor.owl.model.inference.NoOpReasoner;
+import org.protege.editor.owl.model.inference.OWLReasonerManager;
+import org.protege.editor.owl.model.inference.ReasonerStatus;
+import org.protege.editor.owl.model.inference.ReasonerUtilities;
 import org.protege.editor.owl.ui.editor.AbstractOWLClassExpressionEditor;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 /**
  * This is the class that must be implemented to get the plugin integrated in
@@ -43,7 +43,6 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
  * 
  */
 public class ProtegePlugin extends AbstractOWLClassExpressionEditor implements OWLModelManagerListener{
-	private static final long serialVersionUID = 728362819273927L;
 	private DLLearnerView view;
 	
 	@Override
@@ -69,13 +68,23 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor implements O
 	}
 	
 	private void checkReasonerStatus(){
-		OWLReasoner r = getOWLEditorKit().getModelManager().getReasoner();
-		if(r instanceof NoOpReasoner){
-			view.setHintMessage("<html><font size=\"3\" color=\"red\">You have to select a reasoner (click on menu \"Reasoner\"). We recommend to use Pellet. </font></html>");
-			view.setRunButtonEnabled(false);
-		} else {
-			view.setHintMessage("");
-			view.setRunButtonEnabled(true);
+		OWLReasonerManager reasonerManager = getOWLEditorKit().getOWLModelManager().getOWLReasonerManager();
+//        ReasonerUtilities.warnUserIfReasonerIsNotConfigured(getOWLEditorKit().getOWLWorkspace(), reasonerManager);
+        ReasonerStatus status = reasonerManager.getReasonerStatus();
+        boolean enable = true;
+        String message = "";
+        if(status == ReasonerStatus.INITIALIZED){
+        	if(status == ReasonerStatus.INCONSISTENT){
+            	message = "The loaded ontology is inconsistent. Learning is only supported for consistent ontologies.";
+            	enable = false;
+            }
+        } else {
+        	message = "You have to select a reasoner (click on menu \"Reasoner\"). We recommend to use Pellet.";
+        	enable = false;
+        }
+        view.setHintMessage("<html><font size=\"3\" color=\"red\">" + message + "</font></html>");
+		view.setRunButtonEnabled(enable);
+		if(enable){
 			if(!Manager.getInstance().isPreparing() && Manager.getInstance().isReinitNecessary()){
 				new ReadingOntologyThread(view).start();
 			}
@@ -127,7 +136,8 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor implements O
 
 	@Override
 	public void handleChange(OWLModelManagerChangeEvent event) {
-		if(event.isType(EventType.REASONER_CHANGED) || event.isType(EventType.ACTIVE_ONTOLOGY_CHANGED)){
+		System.out.println(event);
+		if(event.isType(EventType.REASONER_CHANGED) && !event.isType(EventType.ACTIVE_ONTOLOGY_CHANGED)){
 			checkReasonerStatus();
 		}
 	}
