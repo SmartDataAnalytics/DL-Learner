@@ -137,20 +137,15 @@
 		</dependency>
 
 		<!-- Latest JENA ARQ - we have to exclude XercesImpl and use an older version here because use version bei JENA leads to some errors  -->
-		<dependency>
-				<groupId>org.apache.jena</groupId>
-				<artifactId>jena-arq</artifactId>
-				<exclusions>
-				<exclusion>
-					<artifactId>xercesImpl</artifactId>
-					<groupId>xerces</groupId>
-				</exclusion>
-			</exclusions>
-			</dependency>
-			 <dependency>
-        	<groupId>xerces</groupId>
-        	<artifactId>xercesImpl</artifactId>
-        	<version>2.6.0</version>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xercesImpl</artifactId>
+                    <groupId>xerces</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
 		<!--JSON is in Central -->
@@ -159,15 +154,6 @@
 			<artifactId>json</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>net.sf.jopt-simple</groupId>
-			<artifactId>jopt-simple</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.ini4j</groupId>
-			<artifactId>ini4j</artifactId>
-		</dependency>
 
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
@@ -208,11 +194,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>fuzzydll</groupId>
 			<artifactId>fuzzydl</artifactId>
 			<version>1.0</version>
@@ -241,19 +222,10 @@
             <artifactId>spring-beans</artifactId>
         </dependency>
         <dependency>
-				<groupId>org.aksw.commons</groupId>
-				<artifactId>collections</artifactId>
-			</dependency>
-			<dependency>
-            <groupId>net.didion.jwnl</groupId>
-            <artifactId>jwnl</artifactId>
-            <version>1.4.1.RC2</version>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
         </dependency>
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-core</artifactId>
-			</dependency>
-			
-			
-	</dependencies>
+
+
+    </dependencies>
 </project>
