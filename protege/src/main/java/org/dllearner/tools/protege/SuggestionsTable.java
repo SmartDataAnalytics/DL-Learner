@@ -1,7 +1,11 @@
 package org.dllearner.tools.protege;
 
+import java.awt.event.MouseEvent;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.jdesktop.swingx.JXTable;
@@ -71,5 +75,22 @@ public class SuggestionsTable extends JXTable {
 	
 	public EvaluatedDescriptionClass getSelectedSuggestion(){	
 		return ((SuggestionsTableModel)getModel()).getSelectedValue(getSelectedRow());
+	}
+	
+	@Override
+	public String getToolTipText(MouseEvent event) {
+		int column = columnAtPoint(event.getPoint());
+		int row = rowAtPoint(event.getPoint());
+		if(column == 1 && row != -1){
+			EvaluatedDescriptionClass ec = ((SuggestionsTableModel)getModel()).getEntryAtRow(row);
+			String text = null;
+			if(ec.followsFromKB()){
+				text = "This axiom follows implicitly from knowledge base!";
+			} else if(DLLearnerPreferences.getInstance().isCheckConsistencyWhileLearning() && !ec.isConsistent()){
+				text = "Adding this axiom may laed to an inconsistent knowlegde base!";
+			} 
+			return text;
+		}
+		return super.getToolTipText(event);
 	}
 }

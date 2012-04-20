@@ -30,9 +30,9 @@ import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.model.inference.OWLReasonerManager;
 import org.protege.editor.owl.model.inference.ReasonerStatus;
-import org.protege.editor.owl.model.inference.ReasonerUtilities;
 import org.protege.editor.owl.ui.editor.AbstractOWLClassExpressionEditor;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
@@ -136,9 +136,11 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor implements O
 
 	@Override
 	public void handleChange(OWLModelManagerChangeEvent event) {
-		System.out.println(event);
-		if(event.isType(EventType.REASONER_CHANGED) && !event.isType(EventType.ACTIVE_ONTOLOGY_CHANGED)){
-			checkReasonerStatus();
-		}
+		OWLClass lastSelectedClass = getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
+        if (lastSelectedClass != null) {
+			if(event.isType(EventType.REASONER_CHANGED) && !event.isType(EventType.ACTIVE_ONTOLOGY_CHANGED)){
+				checkReasonerStatus();
+			}
+        }
 	}
 }

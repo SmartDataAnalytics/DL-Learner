@@ -6,5 +6,11 @@
        <class value="org.dllearner.tools.protege.ProtegePlugin"/>
        <index value="E"/>
    </extension>
+   
+   <extension id="org.dllearner.tools.protege.prefs"
+	               point="org.protege.editor.core.application.preferencespanel">
+	        <label value="DL-Learner"/>
+	        <class value="org.dllearner.tools.protege.DLLearnerPreferencesPanel"/>
+	    </extension>
 
   </plugin>

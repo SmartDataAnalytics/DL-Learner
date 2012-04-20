@@ -129,7 +129,7 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		lp.setClassToDescribe(new NamedClass(editorKit.getOWLWorkspace()
 				.getOWLSelectionModel().getLastSelectedClass().getIRI().toURI()));
 		lp.setEquivalence(learningType == LearningType.EQUIVALENT);
-		lp.setCheckConsistency(false);
+		lp.setCheckConsistency(DLLearnerPreferences.getInstance().isCheckConsistencyWhileLearning());
 
 		lp.init();
 		System.out.println("Done in " + (System.currentTimeMillis()-startTime) + "ms.");
