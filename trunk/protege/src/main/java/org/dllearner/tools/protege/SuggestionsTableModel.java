@@ -47,9 +47,12 @@ public class SuggestionsTableModel extends AbstractTableModel {
 		case 0:
 			return (int) (suggestionList.get(rowIndex).getAccuracy() * 100);
 		case 1:
-			if (!suggestionList.get(rowIndex).isConsistent()) {
-				return inconsistentIcon;
-			} else if(suggestionList.get(rowIndex).followsFromKB()){
+			if(DLLearnerPreferences.getInstance().isCheckConsistencyWhileLearning()){
+				if (!suggestionList.get(rowIndex).isConsistent()) {
+					return inconsistentIcon;
+				} 
+			}
+			if(suggestionList.get(rowIndex).followsFromKB()){
 				return followsIcon;
 			}break;
 		case 2:
@@ -81,6 +84,14 @@ public class SuggestionsTableModel extends AbstractTableModel {
 			return "Class expression";
 		} else {
 			return "";
+		}
+	}
+	
+	public EvaluatedDescriptionClass getEntryAtRow(int row){
+		if(suggestionList.size() >= row){
+			return suggestionList.get(row);
+		} else {
+			return null;
 		}
 	}
 	
