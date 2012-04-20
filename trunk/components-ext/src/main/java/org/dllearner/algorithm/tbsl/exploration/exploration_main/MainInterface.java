@@ -24,9 +24,10 @@ import org.dllearner.algorithm.tbsl.exploration.modules.IterationModule;
 import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
+import org.dllearner.algorithms.gp.GP;
 
 public class MainInterface {
-	private static int anzahlAbgeschickterQueries = 100;
+	private static int anzahlAbgeschickterQueries = 10;
 	
 	
 	public static ArrayList<String> startQuestioning(String question,BasicTemplator btemplator,SQLiteIndex myindex, WordNet wordnet,StanfordLemmatizer lemmatiser) throws ClassNotFoundException, SQLException, IOException{
@@ -93,6 +94,7 @@ public class MainInterface {
 
 				else{
 					go_on=false;
+					if(qp.size()<3)go_on=true;
 					System.out.println("Got Answer from Server with this Query: "+ q.getQuery());
 					//go_on=true;
 					boolean contains_uri=false;
@@ -249,6 +251,7 @@ public class MainInterface {
 		printQueries(qp, type, Question);
 		anzahl=1;
 		go_on = true;
+		int id=0;
 		for(QueryPair q : qp){
 			if(anzahl<anzahlAbgeschickterQueries&go_on){
 				ArrayList<String> answer_tmp = new ArrayList<String>();
@@ -261,6 +264,13 @@ public class MainInterface {
 					//go_on=true;
 					go_on=false;
 					System.out.println("Got Answer from Server with this Query: "+ q.getQuery());
+					if(qp.size()>(id+1)){
+						if(q.getRank()==qp.get(id+1).getRank()){
+							go_on=true;
+						}
+					}
+					
+						
 					boolean contains_uri=false;
 					for(String s : answer_tmp){
 						if(s.contains("http")){
@@ -288,6 +298,7 @@ public class MainInterface {
 				}
 			}
 			anzahl+=1;
+			id+=1;
 		}
 		System.out.println("\n Answer from Server: \n");
 		for(String answer:answers){

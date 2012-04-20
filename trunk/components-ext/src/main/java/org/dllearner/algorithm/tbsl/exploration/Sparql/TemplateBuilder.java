@@ -48,12 +48,13 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
 		ArrayList<Template> resultArrayList = new ArrayList<Template>();
 		Set<BasicQueryTemplate> querytemps =null;
 		querytemps = btemplator.buildBasicQueries(question);
+	
 		
 		/*
 		 * check if templates were build, if not, safe the question and delete it for next time from the xml file.
 		 * Only in Debug Mode
 		 */
-		if(Setting.isDebugModus()){
+		//if(Setting.isDebugModus()){
 			if(querytemps.contains("could not be parsed") || querytemps.isEmpty()){
 				String dateiname="/home/swalter/Dokumente/Auswertung/NotParsed.txt";
 				String result_string ="";
@@ -78,7 +79,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
 	    
 	    
 			}
-		}
+		//}
 		
 		
 		long stop_template = System.currentTimeMillis();
