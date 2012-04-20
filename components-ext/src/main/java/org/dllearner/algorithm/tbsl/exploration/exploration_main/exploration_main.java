@@ -130,7 +130,8 @@ public class exploration_main {
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/vortragfragen.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/iteration-test.xml";
 					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged.xml";
-					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-withoutNotparsed.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-withoutNotparsed.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-test-questions.xml";
 					
 					//create Structs
 					ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
@@ -161,6 +162,10 @@ public class exploration_main {
 					for(queryInformation s : list_of_resultstructs){
 						System.out.println(s.getResult());
 					}*/
+					
+					long stopTime = System.currentTimeMillis();
+					System.out.println("For "+anzahl+" Questions the QA_System took "+ ((stopTime-startTime)/1000)+"sek");
+					
 					String systemid="";
 					systemid=createXML(list_of_structs);
 				    String filename_for_evaluation="/home/swalter/Dokumente/Auswertung/ResultXml/result"+systemid.replace(" ", "_")+".xml";
