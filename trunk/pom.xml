@@ -264,13 +264,13 @@
 			<dependency>
 				<groupId>org.protege.editor.core</groupId>
 				<artifactId>org.protege.editor.core.application</artifactId>
-				<version>4.1</version>
+				<version>4.2</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.protege.editor.owl</groupId>
 				<artifactId>org.protege.editor.owl</artifactId>
-				<version>4.1</version>
+				<version>4.2</version>
 			</dependency>
 
 			<!--Dependencies that are generated as part of this parent pom -->
