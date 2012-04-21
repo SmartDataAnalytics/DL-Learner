@@ -70,14 +70,15 @@ string=string.replace("_", " ");
 			result_List.add(result);
 		}
 		else{
+			
+			
 			ArrayList<String> tmp_List = new ArrayList<String>();
 			String[] array_tmp= string.split(" ");
-			for(String s : array_tmp){
-				if(s.length()>4) tmp_List=myindex.getResourceURILike(s.toLowerCase(), string.toLowerCase());
-				for(String st : tmp_List){
-					result_List.add(st);
-				}
+			
+			if(array_tmp.length>1){
+				tmp_List=myindex.getListOfUriSpecialIndex(string);
 			}
+			if(tmp_List!=null)for(String st : tmp_List)result_List.add(st);
 			
 		}
 		
@@ -150,14 +151,29 @@ public static ArrayList<String> searchIndexForClass(String string, SQLiteIndex m
 			result_List.add(tmp1);
 		}
 		else{
+			
+			/*
+			 * doesnt contains to much classes right now
+			 */
 			ArrayList<String> tmp_List = new ArrayList<String>();
+			String[] array_tmp= string.split(" ");
+			
+			if(array_tmp.length>1){
+				tmp_List=myindex.getListOfUriSpecialIndex(string);
+			}
+			if(tmp_List!=null)for(String st : tmp_List){
+				if(st.contains("ontology")|| st.contains("yago"))result_List.add(st);
+			}
+			
+			
+			/*ArrayList<String> tmp_List = new ArrayList<String>();
 			String[] array_tmp= string.split(" ");
 			for(String s : array_tmp){
 				if(s.length()>4) tmp_List=myindex.getontologyClassURILike(s.toLowerCase(),string.toLowerCase());
 				for(String st : tmp_List){
 					result_List.add(st);
 				}
-			}
+			}*/
 			
 		}
 		
