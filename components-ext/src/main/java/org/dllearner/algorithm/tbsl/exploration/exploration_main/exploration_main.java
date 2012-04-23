@@ -69,6 +69,7 @@ public class exploration_main {
 		
 		Setting.setWaitModus(false);
 		Setting.setDebugModus(false);
+		Setting.setNewIndex(false);
 		
 
 		
@@ -112,6 +113,18 @@ public class exploration_main {
 					Setting.setDebugModus(false);
 					startQuestioning=false;
 					if(Setting.isDebugModus()) System.out.println("DebugModus is now online");
+					else System.out.println("DebugModus is now offline");
+				}
+				if(line.contains(":newIndex on")){
+					Setting.setNewIndex(true);
+					startQuestioning=false;
+					if(Setting.isDebugModus()) System.out.println("newIndex is now online");
+					else System.out.println("DebugModus is now offline");
+				}
+				if(line.contains(":newIndex off")){
+					Setting.setNewIndex(false);
+					startQuestioning=false;
+					if(Setting.isDebugModus()) System.out.println("newIndex is now online");
 					else System.out.println("DebugModus is now offline");
 				}
 				

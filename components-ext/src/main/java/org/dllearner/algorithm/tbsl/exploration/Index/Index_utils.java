@@ -150,12 +150,12 @@ public static ArrayList<String> searchIndexForClass(String string, SQLiteIndex m
 		if(tmp1!=null){
 			result_List.add(tmp1);
 		}
-		else{
+		/*else{
 			
 			/*
 			 * doesnt contains to much classes right now
 			 */
-			ArrayList<String> tmp_List = new ArrayList<String>();
+		/*	ArrayList<String> tmp_List = new ArrayList<String>();
 			String[] array_tmp= string.split(" ");
 			
 			if(array_tmp.length>1){
@@ -163,7 +163,7 @@ public static ArrayList<String> searchIndexForClass(String string, SQLiteIndex m
 			}
 			if(tmp_List!=null)for(String st : tmp_List){
 				if(st.contains("ontology")|| st.contains("yago"))result_List.add(st);
-			}
+			}*/
 			
 			
 			/*ArrayList<String> tmp_List = new ArrayList<String>();
@@ -175,7 +175,7 @@ public static ArrayList<String> searchIndexForClass(String string, SQLiteIndex m
 				}
 			}*/
 			
-		}
+		//}
 		
 
 		if(tmp2!=null) {
@@ -184,7 +184,7 @@ public static ArrayList<String> searchIndexForClass(String string, SQLiteIndex m
 		/*
 		 * if nothing is found, also try the like operator for each part of the string
 		 */
-		else{
+		/*else{
 			ArrayList<String> tmp_List = new ArrayList<String>();
 			String[] array_tmp= string.split(" ");
 			for(String s : array_tmp){
@@ -194,7 +194,7 @@ public static ArrayList<String> searchIndexForClass(String string, SQLiteIndex m
 				}
 			}
 			
-		}
+		}*/
 		
 		/*
 		 * also add String without the plural s at the end.

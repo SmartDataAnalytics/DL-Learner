@@ -13,7 +13,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import org.dllearner.algorithm.tbsl.exploration.Utils.DebugMode;
 import org.dllearner.algorithm.tbsl.exploration.Utils.Levenshtein;
+import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
 import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 
 public class SQLiteIndex {
@@ -650,6 +652,8 @@ private void createIndexofYago() throws ClassNotFoundException, SQLException{
 	  }
 
 public ArrayList<String> getListOfUriSpecialIndex(String string){
+	
+	if(!Setting.isNewIndex())return null;
 	string= string.toLowerCase();
 	String[] temp_list = string.split(" ");
 	ArrayList<String> first_result=new ArrayList<String>();
@@ -696,7 +700,13 @@ public ArrayList<String> getListOfUriSpecialIndex(String string){
 			return null;
 		}
 		
-	
+	System.out.println(result.size() + " URI's over new Index were found!");
+	try {
+		DebugMode.waitForButton();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	
 	return result;
 }
