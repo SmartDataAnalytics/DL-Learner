@@ -3,9 +3,7 @@
  */
 package org.dllearner.kb.sparql.simple;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -22,11 +20,11 @@ public class ABoxQueryGenerator {
         StringBuilder builder = new StringBuilder();
         builder.append("CONSTRUCT {?s ?p ?o} ");
         builder.append("{ ?s ?p ?o .");
-        List<String> curIndividuals;
+        Set<String> curIndividuals;
         if (model.isEmpty()) {
-            curIndividuals = individuals;
+            curIndividuals = new HashSet<String>(individuals);
         } else {
-            curIndividuals = this.difference(individuals, this.getIndividualsFromModel(model));
+            curIndividuals = this.difference2(individuals, model);
         }
         builder.append(" FILTER (?s IN( ");
         for (String individual : curIndividuals) {
@@ -57,14 +55,14 @@ public class ABoxQueryGenerator {
             builder.append("?o a ?class");
         } else {
             builder.append("CONSTRUCT {?s ?p ?o } ");
-            builder.append("{ ?s ?p ?o ");
+            builder.append("{ ?s ?p ?o . ");
         }
 
-        List<String> curIndividuals;
+        Set<String> curIndividuals;
         if (model.isEmpty()) {
-            curIndividuals = individuals;
+            curIndividuals = new HashSet<String>(individuals);
         } else {
-            curIndividuals = this.difference(individuals, this.getIndividualsFromModel(model));
+            curIndividuals = this.difference2(individuals, model);
         }
         builder.append(" FILTER ( ?s IN( ");
         for (String individual : curIndividuals) {
@@ -86,7 +84,20 @@ public class ABoxQueryGenerator {
         return builder.toString();
     }
 
-    private List<String> getIndividualsFromModel
+    public Set<String> difference2
+            (List<String> a, OntModel model) {
+        Set<String> inds = new HashSet<String>(a);
+        Set<String> result = new HashSet<String>();
+        for (ExtendedIterator<Individual> it = model.listIndividuals(); it.hasNext(); ) {
+            String individual = it.next().getURI();
+            if (!inds.contains(individual)) {
+                result.add(individual);
+            }
+        }
+        return result;
+    }
+
+    /*private List<String> getIndividualsFromModel
             (OntModel
                      model) {
         ExtendedIterator<Individual> iterator = model.listIndividuals();
@@ -102,5 +113,5 @@ public class ABoxQueryGenerator {
         ArrayList<String> result = new ArrayList<String>(b);
         result.removeAll(a);
         return result;
-    }
+    } */
 }
