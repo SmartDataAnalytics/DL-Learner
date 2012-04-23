@@ -33,6 +33,10 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
     private List<String> instances = null;
     @ConfigOption(name = "filters", description = "List of the filters to use", required = true)
     private List<String> filters = null;
+
+    @ConfigOption(name = "tboxfilter", description = "Filter for the tbox, can use variable ?example and ?class", required = false)
+    private String tboxfilter = null;
+
     @ConfigOption(name = "recursionDepth", description = "recursion depth", required = true)
     private int recursionDepth = 0;
 
@@ -113,6 +117,7 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
 
                 queryString = aGenerator.createQuery(instances, model, filters);
                 log.debug("SPARQL: {}", queryString);
+
                 monQueryingABox = MonitorFactory.start("ABox query time");
                 executor.executeQuery(queryString, endpointURL, model,
                         defaultGraphURI);
@@ -121,7 +126,6 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
 
 
             queryString = aGenerator.createLastQuery(instances, model, filters);
-
             log.debug("SPARQL: {}", queryString);
 
             monQueryingABox = MonitorFactory.start("ABox query time");
@@ -140,9 +144,10 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         TBoxQueryGenerator tGenerator = new TBoxQueryGenerator();
 
         //TODO check if all instances are queried. model.listIndividuals().toSet()
-        queryString = tGenerator.createQuery(model, filters, instances);
+        queryString = tGenerator.createQuery(model, tboxfilter, instances);
 
         Monitor monQueryingTBox = MonitorFactory.start("TBox query time");
+
         executor.executeQuery(queryString, endpointURL, model, defaultGraphURI);
         monQueryingTBox.stop();
 
@@ -246,5 +251,13 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
 
     public void setOntologySchemaUrls(List<String> ontologySchemaUrls) {
         this.ontologySchemaUrls = ontologySchemaUrls;
+    }
+
+    public String getTboxfilter() {
+        return tboxfilter;
+    }
+
+    public void setTboxfilter(String tboxfilter) {
+        this.tboxfilter = tboxfilter;
     }
 }

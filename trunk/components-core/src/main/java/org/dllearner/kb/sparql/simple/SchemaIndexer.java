@@ -43,7 +43,7 @@ public class SchemaIndexer {
                     model.read(url, null);
                     classIndexer.index(model);
                     m0.stop();
-                    log.info("indexed ontology in ms:" + m0.getTotal());
+                    log.info("indexed ontology in ms: " + m0.getTotal());
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }
