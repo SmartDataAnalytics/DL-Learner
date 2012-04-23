@@ -34,36 +34,27 @@ public class SchemaIndexer {
     public synchronized void init() {
 
         for (String url : ontologySchemaUrls) {
-            if (!alreadyIndexed.add(url)) {
+            log.info("Testing, if indexed: " + url);
+            if (alreadyIndexed.add(url)) {
+                log.info("Ontology not found, start indexing");
                 try {
                     Monitor m0 = MonitorFactory.start("Indexer parsing ontology");
                     model = ModelFactory.createOntologyModel();
                     model.read(url, null);
                     classIndexer.index(model);
                     m0.stop();
-                    log.debug("indexed " + url + " " + url);
+                    log.info("indexed ontology in ms:" + m0.getTotal());
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }
+            } else {
+                //not so important output
+                log.debug("Already indexed: " + url + " " + alreadyIndexed);
             }
         }
 
 
     }
-
-
-    /*public void init() {
-       classIndexer = new ClassIndexer();
-       model = ModelFactory.createOntologyModel();
-       try {
-           Monitor m0 = MonitorFactory.start("Indexer parsing ontology");
-           model.read(new FileInputStream(ontologySchema), null);
-           m0.stop();
-       } catch (FileNotFoundException e) {
-           log.error(e.getMessage(), e);
-       }
-       classIndexer.index(model);
-   } */
 
     public OntModel getHierarchyForURI(String classUri) {
         if (classIndexer == null) {
