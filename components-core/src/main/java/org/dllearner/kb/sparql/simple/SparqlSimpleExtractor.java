@@ -160,11 +160,10 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         monIndexing.stop();
         monComp.stop();
         log.info("*******Simple SPARQL Extractor********");
-        for (Monitor monitor : MonitorFactory.getRootMonitor().getMonitors()) {
+        /*for (Monitor monitor : MonitorFactory.getRootMonitor().getMonitors()) {
             log.info("* {} *", monitor);
-            log.info(JamonMonitorLogger.getStringForAllSortedByLabel());
-
-        }
+        }*/
+        log.info(JamonMonitorLogger.getStringForAllSortedByLabel());
         log.info("**************************************");
     }
 
