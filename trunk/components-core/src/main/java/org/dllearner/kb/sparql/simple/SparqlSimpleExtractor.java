@@ -40,8 +40,9 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
     private String defaultGraphURI = null;
     @ConfigOption(name = "sparqlQuery", description = "Sparql Query", required = false)
     private String sparqlQuery = null;
-    @ConfigOption(name = "ontologyFile", description = "Ontology Schema File", required = true)
-    private File ontologyFile = null;
+    @ConfigOption(name = "ontologySchemaUrls", description = "List of Ontology Schema URLs", required = true)
+    private List<String> ontologySchemaUrls = null;
+
     private OWLOntology owlOntology;
     private SchemaIndexer indexer;
 
@@ -91,7 +92,7 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
             throw new ComponentInitException(
                     "A value bigger than 0 is required for parameter recursionDepth");
         }
-        if (ontologyFile == null) {
+        if (ontologySchemaUrls == null) {
             throw new ComponentInitException(
                     "An ontology schema description file (ontologyFile) in RDF ist required");
         }
@@ -99,7 +100,7 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
                 .start();
         Monitor monIndexer = MonitorFactory.start("Schema Indexer").start();
         indexer = new SchemaIndexer();
-        indexer.setOntologySchema(ontologyFile);
+        indexer.setOntologySchemaUrls(ontologySchemaUrls);
         indexer.init();
         monIndexer.stop();
 
@@ -240,12 +241,11 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         return owlOntology;
     }
 
-    public File getOntologyFile() {
-        return ontologyFile;
+    public List<String> getOntologySchemaUrls() {
+        return ontologySchemaUrls;
     }
 
-    public void setOntologyFile(File ontologyFile) {
-        this.ontologyFile = ontologyFile;
+    public void setOntologySchemaUrls(List<String> ontologySchemaUrls) {
+        this.ontologySchemaUrls = ontologySchemaUrls;
     }
-
 }
