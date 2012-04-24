@@ -1,27 +1,21 @@
 package org.dllearner.kb.sparql.simple;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.QueryParseException;
+import com.hp.hpl.jena.rdf.model.*;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.JamonMonitorLogger;
-import org.dllearner.utilities.experiments.Jamon;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.util.*;
 
 @ComponentAnn(name = "efficient SPARQL fragment extractor", shortName = "sparqls", version = 0.1)
 public class SparqlSimpleExtractor implements KnowledgeSource {
@@ -31,9 +25,8 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
     private OntModel model = null;
     @ConfigOption(name = "instances", description = "List of the instances to use", required = true)
     private List<String> instances = null;
-    @ConfigOption(name = "filters", description = "List of the filters to use", required = true)
-    private List<String> filters = null;
-
+    @ConfigOption(name = "aboxfilter", description = "Filter for the tbox, can use variable ?s, ?p amd ?o", required = false)
+    private String aboxfilter = null;
     @ConfigOption(name = "tboxfilter", description = "Filter for the tbox, can use variable ?example and ?class", required = false)
     private String tboxfilter = null;
 
@@ -83,8 +76,33 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         // System.out.println(extractor.createQuery());
     }
 
+    public Set<String> difference(Set<String> alreadyQueriedIndividuals, OntModel model) {
+        Set<String> candidates = new HashSet<String>();
+        Set<String> result = new HashSet<String>();
+        for (ResIterator it = model.listSubjects(); it.hasNext(); ) {
+            candidates.add(it.next().getURI());
+        }
+        for (NodeIterator it = model.listObjects(); it.hasNext(); ) {
+            RDFNode cur = it.next();
+            if (cur.isURIResource() && !cur.isAnon()) {
+                candidates.add(((Resource) cur).getURI());
+            }
+        }
+
+        for (String candidate : candidates) {
+            if (!alreadyQueriedIndividuals.contains(candidate)) {
+                System.out.println(candidate);
+                result.add(candidate);
+            }
+        }
+
+        return result;
+    }
+
+
     @Override
     public void init() throws ComponentInitException {
+
         if (endpointURL == null) {
             throw new ComponentInitException(
                     "Parameter endpoint URL is required");
@@ -111,32 +129,43 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         Monitor monQueryingABox;
         QueryExecutor executor = new QueryExecutor();
         String queryString;
+        Set<String> instancesSet = new HashSet<String>(instances);
+        Set<String> alreadyQueried = new HashSet<String>();
         if (sparqlQuery == null) {
             ABoxQueryGenerator aGenerator = new ABoxQueryGenerator();
-            for (int i = 0; i < recursionDepth - 1; i++) {
+            for (int i = 0; i < recursionDepth; i++) {
+                if (instancesSet.isEmpty()) {
+                    log.warn("no new instances found more recursions (recursion " + i + ")  " + instancesSet.size() + " new instances");
 
-                queryString = aGenerator.createQuery(instances, model, filters);
+                }
+
+                log.info("processing (recursion " + i + ")  " + instancesSet.size() + " new instances");
+                queryString = aGenerator.createQuery(instancesSet, aboxfilter);
                 log.debug("SPARQL: {}", queryString);
 
                 monQueryingABox = MonitorFactory.start("ABox query time");
-                executor.executeQuery(queryString, endpointURL, model,
-                        defaultGraphURI);
+                executor.executeQuery(queryString, endpointURL, model, defaultGraphURI);
                 monQueryingABox.stop();
+
+                alreadyQueried.addAll(instancesSet);
+                instancesSet = difference(alreadyQueried, model);
+
+
             }
 
 
-            queryString = aGenerator.createLastQuery(instances, model, filters);
-            log.debug("SPARQL: {}", queryString);
+            //queryString = aGenerator.createLastQuery(instances, model, filters);
+            //log.debug("SPARQL: {}", queryString);
 
-            monQueryingABox = MonitorFactory.start("ABox query time");
-            Monitor monQueryingABox2 = MonitorFactory.start("ABox query time last query");
-            executor.executeQuery(queryString, endpointURL, model, defaultGraphURI);
-            monQueryingABox.stop();
-            monQueryingABox2.stop();
+            //monQueryingABox = MonitorFactory.start("ABox query time");
+            //Monitor monQueryingABox2 = MonitorFactory.start("ABox query time last query");
+            //executor.executeQuery(queryString, endpointURL, model, defaultGraphURI);
+            //monQueryingABox.stop();
+            //monQueryingABox2.stop();
 
         } else {
             monQueryingABox = MonitorFactory.getTimeMonitor("ABox query time").start();
-            executor.executeQuery(sparqlQuery, endpointURL, model);
+            executor.executeQuery(sparqlQuery, endpointURL, model, null);
             monQueryingABox.stop();
         }
 
@@ -144,7 +173,7 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         TBoxQueryGenerator tGenerator = new TBoxQueryGenerator();
 
         //TODO check if all instances are queried. model.listIndividuals().toSet()
-        queryString = tGenerator.createQuery(model, tboxfilter, instances);
+        queryString = tGenerator.createQuery(alreadyQueried, tboxfilter);
 
         Monitor monQueryingTBox = MonitorFactory.start("TBox query time");
 
@@ -196,18 +225,12 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         this.model = model;
     }
 
-    /**
-     * @return the filters
-     */
-    public List<String> getFilters() {
-        return filters;
+    public String getAboxfilter() {
+        return aboxfilter;
     }
 
-    /**
-     * @param filters the filters to set
-     */
-    public void setFilters(List<String> filters) {
-        this.filters = filters;
+    public void setAboxfilter(String aboxfilter) {
+        this.aboxfilter = aboxfilter;
     }
 
     /**
