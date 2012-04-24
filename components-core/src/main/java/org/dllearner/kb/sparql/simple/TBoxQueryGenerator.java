@@ -4,7 +4,9 @@
 package org.dllearner.kb.sparql.simple;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -15,8 +17,7 @@ import com.jamonapi.MonitorFactory;
  * @author didierc
  */
 public class TBoxQueryGenerator {
-    public String createQuery(OntModel model, String filter,
-                              List<String> individuals) {
+    public String createQuery(Set<String> individuals, String filter) {
         Monitor monTquery = MonitorFactory.getTimeMonitor("TBox query generator")
                 .start();
         StringBuilder builder = new StringBuilder(
@@ -42,7 +43,7 @@ public class TBoxQueryGenerator {
     public static void main(String... args) {
         TBoxQueryGenerator generator = new TBoxQueryGenerator();
         OntModel model = ModelFactory.createOntologyModel();
-        List<String> individuals = new ArrayList<String>();
+        Set<String> individuals = new HashSet<String>();
 
 
         individuals.add("http://dbpedia.org/resource/JB_Carlson");
@@ -1046,10 +1047,10 @@ public class TBoxQueryGenerator {
         individuals.add("http://dbpedia.org/resource/Percy_Jackson");
         individuals.add("http://dbpedia.org/resource/Glynis_Barber");
 
-        String queryString = generator.createQuery(model, null, individuals);
+        String queryString = generator.createQuery(individuals, null);
         System.out.println(queryString);
         QueryExecutor executor = new QueryExecutor();
-        executor.executeQuery(queryString, "http://live.dbpedia.org/sparql", model);
+        executor.executeQuery(queryString, "http://live.dbpedia.org/sparql", model, null);
         model.write(System.out);
     }
 }
