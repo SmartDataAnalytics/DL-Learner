@@ -33,7 +33,7 @@ public class EnrichmentVocabulary {
 	private static final OWLDataFactory factory = new OWLDataFactoryImpl();
 	
 	//the default namespace
-	public static final String NS = "http://www.dl-learner.org/enrichment.owl#";
+	public static final String NS = "http://www.dl-learner.org/ontologies/enrichment.owl#";
 	
 	
 	//the classes
