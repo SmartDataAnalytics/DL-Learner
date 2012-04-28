@@ -1,21 +1,32 @@
 package org.dllearner.kb.sparql.simple;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.query.QueryParseException;
-import com.hp.hpl.jena.rdf.model.*;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.JamonMonitorLogger;
+import org.dllearner.utilities.analyse.TypeOntology;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 @ComponentAnn(name = "efficient SPARQL fragment extractor", shortName = "sparqls", version = 0.1)
 public class SparqlSimpleExtractor implements KnowledgeSource {
@@ -118,6 +129,10 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
             throw new ComponentInitException(
                     "An ontology schema description file (ontologyFile) in RDF ist required");
         }
+        
+        for(String instance:instances){
+        	model.createIndividual(instance, OWL.Thing);
+        }
         Monitor monComp = MonitorFactory.start("Simple SPARQL Component")
                 .start();
         Monitor monIndexer = MonitorFactory.start("Schema Indexer").start();
@@ -125,12 +140,15 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         indexer.setOntologySchemaUrls(ontologySchemaUrls);
         indexer.init();
         monIndexer.stop();
+        
+        TypeOntology typeOntology = new TypeOntology();
 
         Monitor monQueryingABox;
         QueryExecutor executor = new QueryExecutor();
         String queryString;
         Set<String> instancesSet = new HashSet<String>(instances);
         Set<String> alreadyQueried = new HashSet<String>();
+        Monitor typizeModel;
         if (sparqlQuery == null) {
             ABoxQueryGenerator aGenerator = new ABoxQueryGenerator();
             for (int i = 0; i < recursionDepth; i++) {
@@ -141,12 +159,21 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
 
                 log.info("processing (recursion " + i + ")  " + instancesSet.size() + " new instances");
                 queryString = aGenerator.createQuery(instancesSet, aboxfilter);
+                System.out.println(queryString);
                 log.debug("SPARQL: {}", queryString);
 
                 monQueryingABox = MonitorFactory.start("ABox query time");
+                try{
                 executor.executeQuery(queryString, endpointURL, model, defaultGraphURI);
+                } catch (Throwable t){
+                	t.printStackTrace();
+                }
                 monQueryingABox.stop();
 
+                typizeModel=MonitorFactory.start("Typize the model");
+                typeOntology.addTypes(model);
+                typizeModel.stop();
+                
                 alreadyQueried.addAll(instancesSet);
                 instancesSet = difference(alreadyQueried, model);
 
