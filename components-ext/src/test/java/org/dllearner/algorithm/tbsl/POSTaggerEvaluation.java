@@ -11,8 +11,6 @@ import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.LingPipePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
-import org.nlp2rdf.ontology.olia.OLiAManager;
-import org.nlp2rdf.ontology.olia.OLiAOntology;
 
 import com.aliasi.corpus.ObjectHandler;
 import com.aliasi.corpus.StringParser;
@@ -24,7 +22,9 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
 
-public class POSTaggerEvaluation extends StringParser<ObjectHandler<Tagging<String>>>{
+// commented out because the NIF dependency was removed
+public class POSTaggerEvaluation { /* extends StringParser<ObjectHandler<Tagging<String>>>{
+	
 	
 	private List<PartOfSpeechTagger> taggers = Arrays.asList(new PartOfSpeechTagger[]{
 			new ApachePartOfSpeechTagger(), new StanfordPartOfSpeechTagger(), new LingPipePartOfSpeechTagger()});
@@ -44,8 +44,8 @@ public class POSTaggerEvaluation extends StringParser<ObjectHandler<Tagging<Stri
 	
 	
 	public POSTaggerEvaluation() {
-    	brown = m.getOLiAOntology("http://purl.org/olia/brown-link.rdf");
-    	penn = m.getOLiAOntology("http://purl.org/olia/penn-link.rdf");
+//    	brown = m.getOLiAOntology("http://purl.org/olia/brown-link.rdf");
+//    	penn = m.getOLiAOntology("http://purl.org/olia/penn-link.rdf");
 	}
 	
 	public void run(File directory){
@@ -178,9 +178,9 @@ public class POSTaggerEvaluation extends StringParser<ObjectHandler<Tagging<Stri
         }
     }
     
-    /*
-     * Returns TRUE if in the OLia hierarchy is somewhere a common class.
-     */
+    //
+    //  Returns TRUE if in the OLia hierarchy is somewhere a common class.
+    //
     private boolean matchesOLiaClass(String brownTag, String pennTag){
     	Set<String> brownClasses = brown.getClassURIsForTag(brownTag.toUpperCase());
     	Set<String> pennClasses = penn.getClassURIsForTag(pennTag);
@@ -215,5 +215,5 @@ public class POSTaggerEvaluation extends StringParser<ObjectHandler<Tagging<Stri
 		eval.run(new File(args[0]));
 	}
     
-
+*/
 }
