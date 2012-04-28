@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -88,12 +87,8 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.reasoner.Reasoner;
-import com.hp.hpl.jena.reasoner.ValidityReport;
-import com.hp.hpl.jena.reasoner.ValidityReport.Report;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -302,19 +297,6 @@ public class SPARQLSampleDebugging {
 		explanations = expGen.getInconsistencyExplanations(maxNrOfExplanations);
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		return explanations;
-	}
-	
-	private void computeExplanations(Model model){
-		logger.info("Computing explanations...");
-		Reasoner reasoner = org.mindswap.pellet.jena.PelletReasonerFactory.theInstance().create();
-        InfModel infModel = ModelFactory.createInfModel(reasoner, model);
-		long startTime = System.currentTimeMillis();
-		ValidityReport report = infModel.validate();
-		Iterator<Report> i = report.getReports();
-		while(i.hasNext()){
-			System.out.println(i.next());
-		}
-		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 	}
 	
 	private OWLOntology loadReferenceOntology() throws OWLOntologyCreationException{
