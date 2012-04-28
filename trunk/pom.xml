@@ -161,6 +161,7 @@
                 </exclusions>
             </dependency>
 
+			<!-- 
             <dependency>
                 <groupId>org.nlp2rdf</groupId>
                 <artifactId>nif</artifactId>
@@ -172,6 +173,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+             -->
 
 			<!--Available via central, we use the latest with minor mods to DL Learner
 				source (IE Dig related code) -->
