@@ -27,24 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.apache.xmlbeans.XmlObject;
-import org.dllearner.Info;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.confparser3.ParseException;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.*;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Files;
 import org.springframework.context.ApplicationContext;
@@ -170,10 +162,10 @@ public class CLI {
 		
 		List<Resource> springConfigResources = new ArrayList<Resource>();
 
-        //DL-Learner Configuration Object
-        IConfiguration configuration = new ConfParserConfiguration(confFile);
-
         try {
+            //DL-Learner Configuration Object
+            IConfiguration configuration = new ConfParserConfiguration(confFile);
+
             ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
             ApplicationContext context =  builder.buildApplicationContext(configuration,springConfigResources);
 
@@ -191,7 +183,15 @@ public class CLI {
             cli.run();
         } catch (Exception e) {
             String stacktraceFileName = "log/error.log";
-            logger.error("An Error Occurred During Processing.  Terminating DL-Learner...and writing stacktrace to: " + stacktraceFileName);
+
+            //Find the primary cause of the exception.
+            Throwable primaryCause = findPrimaryCause(e);
+
+            // Get the Root Error Message
+            logger.error("An Error Has Occurred During Processing.");
+            logger.error(primaryCause.getMessage());
+
+            logger.error("Terminating DL-Learner...and writing stacktrace to: " + stacktraceFileName);
             FileOutputStream fos = new FileOutputStream(stacktraceFileName);
             PrintStream ps = new PrintStream(fos);
             e.printStackTrace(ps);
@@ -199,7 +199,30 @@ public class CLI {
 
     }
 
-	public void setContext(ApplicationContext context) {
+    /**
+     * Find the primary cause of the specified exception.
+     *
+     * @param e The exception to analyze
+     * @return The primary cause of the exception.
+     */
+    private static Throwable findPrimaryCause(Exception e) {
+        // The throwables from the stack of the exception
+        Throwable[] throwables = ExceptionUtils.getThrowables(e);
+
+        //Look For a Component Init Exception and use that as the primary cause of failure, if we find it
+        int componentInitExceptionIndex = ExceptionUtils.indexOfThrowable(e, ComponentInitException.class);
+
+        Throwable primaryCause;
+        if(componentInitExceptionIndex > -1) {
+            primaryCause = throwables[componentInitExceptionIndex];
+        }else {
+            //No Component Init Exception on the Stack Trace, so we'll use the root as the primary cause.
+            primaryCause = ExceptionUtils.getRootCause(e);
+        }
+        return primaryCause;
+    }
+
+    public void setContext(ApplicationContext context) {
 		this.context = context;
 	}
 
