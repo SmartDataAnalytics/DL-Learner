@@ -156,6 +156,7 @@ public class IterationModule {
 										 * Here start levenstehin, wordnet etc etc
 										 */
 										if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(propertyVariable,array[0],el.getHm());
+										if(type.contains("RELATE"))resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(propertyVariable,array[0],el.getHm());
 										if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(propertyVariable,array[0],el.getHm(),myindex,wordnet,lemmatiser);
 										if(!PL.contains(propertyVariable)) PL.add(propertyVariable+"::"+h.getVariable());
 									} catch (SQLException e) {
@@ -217,6 +218,7 @@ public class IterationModule {
 												 * Here start levenstehin, wordnet etc etc
 												 */
 												if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(propertyVariable,h_small.getName(),el.getHm());
+												if(type.contains("RELATE"))resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(propertyVariable,h_small.getName(),el.getHm());
 												if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(propertyVariable,h_small.getName(),el.getHm(),myindex,wordnet,lemmatiser);
 												if(!PL.contains(propertyVariable)) PL.add(propertyVariable);
 												for(Hypothesis h_temp : resultHypothesenList) HL.add(h_temp);
@@ -458,6 +460,7 @@ public class IterationModule {
 								 */
 								if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(condition.get(1),property_name,el.getHm());
 								if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(condition.get(1),property_name,el.getHm(),myindex,wordnet,lemmatiser);
+								if(type.contains("RELATE"))resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(condition.get(1),property_name,el.getHm());
 								for(Hypothesis h_temp : resultHypothesenList) {
 									ArrayList<Hypothesis> temp_al = new ArrayList<Hypothesis>();
 									temp_al.add(h);
@@ -577,14 +580,14 @@ public class IterationModule {
 				for(ElementList el : resources){
 					//System.out.println("el.getVariablename(): "+el.getVariablename());
 					if(el.getVariablename().contains(class_h.getName())){
-						System.out.println("In If Abfrage bei der Iteration ueber el");
+						//System.out.println("In If Abfrage bei der Iteration ueber el");
 						String property_name="";
 						String property_variable="";
 						
 						if(condition1_exists_isa)property_variable= condition2.get(1);
 						if(condition2_exists_isa)property_variable= condition1.get(1);
 						
-						System.out.println("property_variable: " + property_variable);
+						//System.out.println("property_variable: " + property_variable);
 						
 						for(Hypothesis h_t : givenHypothesenList){
 							if(h_t.getVariable().contains(property_variable)){
@@ -592,15 +595,17 @@ public class IterationModule {
 								break;
 							}
 						}
-						System.out.println("property_name: " + property_name);
+						//System.out.println("property_name: " + property_name);
 						ArrayList<Hypothesis> resultHypothesenList=new ArrayList<Hypothesis>();
-						for (Entry<String, String> entry : el.getHm().entrySet()) {
+						/*for (Entry<String, String> entry : el.getHm().entrySet()) {
 							System.out.println(entry.getKey()+" "+entry.getValue());
-						}
+						}*/
 						/*
 						 * Here start levenstehin, wordnet etc etc
 						 */
 						if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(property_variable,property_name,el.getHm());
+						if(type.contains("RELATE"))resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(property_variable,property_name,el.getHm());
+
 						if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(property_variable,property_name,el.getHm(),myindex,wordnet,lemmatiser);
 						System.out.println("After generating new Hypothesen.\n "+resultHypothesenList.size()+" new were generated");
 						for(Hypothesis h_temp : resultHypothesenList) {
@@ -687,10 +692,10 @@ public class IterationModule {
 				for(ElementList el : resources){
 					//System.out.println("el.getVariablename(): "+el.getVariablename());
 					if(el.getVariablename().contains(resource_h.getName())&&el.getVariablename().contains(property_Side)){
-						System.out.println("In If Abfrage bei der Iteration ueber el");
+						//System.out.println("In If Abfrage bei der Iteration ueber el");
 						
 						
-						System.out.println("property_name: " + property_name);
+						//System.out.println("property_name: " + property_name);
 						ArrayList<Hypothesis> resultHypothesenList=new ArrayList<Hypothesis>();
 						/*for (Entry<String, String> entry : el.getHm().entrySet()) {
 							System.out.println(entry.getKey()+" "+entry.getValue());
@@ -707,6 +712,8 @@ public class IterationModule {
 						 * Here start levenstehin, wordnet etc etc
 						 */
 						if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(property_variable,property_name,el.getHm());
+						if(type.contains("RELATE"))resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(property_variable,property_name,el.getHm());
+
 						if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(property_variable,property_name,el.getHm(),myindex,wordnet,lemmatiser);
 						System.out.println("After generating new Hypothesen.\n "+resultHypothesenList.size()+" new were generated");
 						for(Hypothesis h_temp : resultHypothesenList) {
@@ -731,6 +738,8 @@ public class IterationModule {
 							
 							
 							if(type.contains("LEVENSTHEIN"))second_resultHypothesenList= LevenstheinModule.doLevensthein(second_property_variable,second_property_name,hm_newClasses);
+							if(type.contains("RELATE"))second_resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(second_property_variable,second_property_name,hm_newClasses);
+
 							if(type.contains("WORDNET"))second_resultHypothesenList= WordnetModule.doWordnet(second_property_variable,second_property_name,hm_newClasses,myindex,wordnet,lemmatiser);
 							System.out.println("SIze of second_resultHypothesenList: "+second_resultHypothesenList.size());
 							

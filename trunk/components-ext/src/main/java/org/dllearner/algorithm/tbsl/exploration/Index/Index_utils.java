@@ -104,25 +104,50 @@ map.put(64, 4.83f);
 	String result=null;
 	String result2 = null;
 	ArrayList<String> result_List = new ArrayList<String>();
-	result=myindex.getPropertyURI(string.toLowerCase());
-	result2=myindex.getontologyURI(string.toLowerCase());
-	if(Setting.isDebugModus())DebugMode.debugPrint("Result: "+result);
-	if(result2!=null){
-		result_List.add(result2);
-		hm.put(result, 1.0f);
-		if(Setting.isDebugModus())DebugMode.debugPrint("Found uri for: "+string.toLowerCase());
-	}
-	else if(result!=null){
-		result_List.add(result);
-		hm.put(result, 1.0f);
-		if(Setting.isDebugModus())DebugMode.debugPrint("Found uri for: "+string.toLowerCase());
+	
+	if(string.substring(string.length()-1).contains("s")){
+		String neuer_string = string.substring(0, string.length() -1);
+		result=myindex.getPropertyURI(neuer_string.toLowerCase());
+		result2=myindex.getontologyURI(neuer_string.toLowerCase());
+		//tmp2=myindex.getYagoURI(neuer_string.toLowerCase());
+		if(result2!=null){
+			result_List.add(result2);
+			hm.put(result, 1.0f);
+		}
+		else if(result!=null){
+			result_List.add(result);
+			hm.put(result, 1.0f);
+			if(Setting.isDebugModus())DebugMode.debugPrint("Found uri for: "+string.toLowerCase());
+		}
+		else{
+			if(Setting.isDebugModus())DebugMode.debugErrorPrint("Didnt find uri for: "+string.toLowerCase());
+			
+			result_List.add("http://dbpedia.org/ontology/"+string.toLowerCase().replace(" ", "_"));
+			hm.put(result, 0.0f);
+		}
 	}
 	else{
-		if(Setting.isDebugModus())DebugMode.debugErrorPrint("Didnt find uri for: "+string.toLowerCase());
-		
-		result_List.add("http://dbpedia.org/ontology/"+string.toLowerCase().replace(" ", "_"));
-		hm.put(result, 0.0f);
+		result=myindex.getPropertyURI(string.toLowerCase());
+		result2=myindex.getontologyURI(string.toLowerCase());
+		if(Setting.isDebugModus())DebugMode.debugPrint("Result: "+result);
+		if(result2!=null){
+			result_List.add(result2);
+			hm.put(result, 1.0f);
+			if(Setting.isDebugModus())DebugMode.debugPrint("Found uri for: "+string.toLowerCase());
+		}
+		else if(result!=null){
+			result_List.add(result);
+			hm.put(result, 1.0f);
+			if(Setting.isDebugModus())DebugMode.debugPrint("Found uri for: "+string.toLowerCase());
+		}
+		else{
+			if(Setting.isDebugModus())DebugMode.debugErrorPrint("Didnt find uri for: "+string.toLowerCase());
+			
+			result_List.add("http://dbpedia.org/ontology/"+string.toLowerCase().replace(" ", "_"));
+			hm.put(result, 0.0f);
+		}
 	}
+	
 	
 	if(Setting.isDebugModus())DebugMode.debugPrint("######\n");
 
@@ -146,7 +171,7 @@ public static ArrayList<String> searchIndexForClass(String string, SQLiteIndex m
 		ArrayList<String> result_List = new ArrayList<String>();
 
 		tmp1=myindex.getontologyClassURI(string.toLowerCase());
-		tmp2=myindex.getYagoURI(string.toLowerCase());
+		//tmp2=myindex.getYagoURI(string.toLowerCase());
 		if(tmp1!=null){
 			result_List.add(tmp1);
 		}
@@ -178,9 +203,9 @@ public static ArrayList<String> searchIndexForClass(String string, SQLiteIndex m
 		//}
 		
 
-		if(tmp2!=null) {
+		/*if(tmp2!=null) {
 			result_List.add(tmp2);
-		}
+		}*/
 		/*
 		 * if nothing is found, also try the like operator for each part of the string
 		 */
@@ -202,13 +227,13 @@ public static ArrayList<String> searchIndexForClass(String string, SQLiteIndex m
 		if(string.substring(string.length()-1).contains("s")){
 			String neuer_string = string.substring(0, string.length() -1);
 			tmp1=myindex.getontologyClassURI(neuer_string.toLowerCase());
-			tmp2=myindex.getYagoURI(neuer_string.toLowerCase());
+			//tmp2=myindex.getYagoURI(neuer_string.toLowerCase());
 			if(tmp1!=null){
 				result_List.add(tmp1);
 			}
-			if(tmp2!=null){
+			/*if(tmp2!=null){
 				result_List.add(tmp1);
-			}
+			}*/
 		}
 		
 		if(string.length()>3){
@@ -216,13 +241,13 @@ public static ArrayList<String> searchIndexForClass(String string, SQLiteIndex m
 				String neuer_string = string.substring(0, string.length() -3);
 				neuer_string+="y";
 				tmp1=myindex.getontologyClassURI(neuer_string.toLowerCase());
-				tmp2=myindex.getYagoURI(neuer_string.toLowerCase());
+				//tmp2=myindex.getYagoURI(neuer_string.toLowerCase());
 				if(tmp1!=null){
 					result_List.add(tmp1);
 				}
-				if(tmp2!=null){
+				/*if(tmp2!=null){
 					result_List.add(tmp1);
-				}
+				}*/
 				
 			}
 		}

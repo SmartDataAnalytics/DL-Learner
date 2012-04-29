@@ -290,17 +290,63 @@ ORDER BY ?x
 	}
 	
 	private static ArrayList<String> createAnswerArray(String string){
+		/*
+		 * <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><table class="sparql" border="1">
+  <tbody><tr>
+    <th>x</th>
+    <th>string</th>
+  </tr>
+  <tr>
+    <td>http://dbpedia.org/resource/John_A._Roebling</td>
+    <td>"John A. Roebling"@en</td>
+  </tr>
+</tbody></table></body></html>
+		 */
 
 		Pattern p = Pattern.compile (".*\\<td\\>(.*)\\</td\\>.*");
 		string = string.replace("<table class=\"sparql\" border=\"1\">", "").replace("<tr>","").replace("</tr>", "").replace("</table>", "");
-	    Matcher m = p.matcher (string);
+	    
+		//System.out.println("Nach erster Bearbeitung: "+string);
+		
+		Matcher m = p.matcher (string);
 	    String[] bla = string.split("   ");
 	    
 	    ArrayList<String> result= new ArrayList<String>();
 	  	for(String s: bla){
-	  		m=p.matcher(s);
+	  		//System.out.println("s von bla: "+s);
+	  		s=s.replace("<td>\"", "");
+	  		s=s.replace("\"@en</td>", "");
+	  		s=s.replace("<td>", "");
+	  		s=s.replace("</td>", "");
+	  		
+	  		//System.out.println("s new von bla: "+s);
+	  		
+	  		s = s.replace("\"@en","");
+  			s = s.replace("\"","");
+  			s = s.replace("\n","");
+  			s = s.replace("^^<http://www.w3.org/2001/XMLSchema#date>","");
+  			s = s.replace("^^<http://www.w3.org/2001/XMLSchema#int>","");
+  			s = s.replace("^^<http://www.w3.org/2001/XMLSchema#number>","");
+  			s = s.replace("\"","");
+  			s=s.replace("  ", "");
+  			for(int i =0; i<s.length();i++){
+  				s=s.replace("  ","");
+  			}
+  			
+  			if(s.length()>1){
+  				if(s.substring(0,1).contains(" ")){
+  	  				s = s.substring(1, s.length());
+  	  			}
+  			}
+  			
+  			if(!s.contains("<th>")&&!s.matches(" ")&&s.length()>0){
+  				//System.out.println("add :"+s+"DONE");
+  				result.add(s);
+  			}
+	  		/*m=p.matcher(s);
 	  		while (m.find()) {
 	  			String temp = m.group(1);
+	  			System.out.println("temp: "+temp);
 	  			temp = temp.replace("\"@en","");
 	  			temp = temp.replace("\"","");
 	  			temp = temp.replace("^^<http://www.w3.org/2001/XMLSchema#date>","");
@@ -310,7 +356,7 @@ ORDER BY ?x
 	  			//result.add(m.group(1));
 	  			result.add(temp);
 	  			  		
-	  		}
+	  		}*/
 	    }
 	  	
 	  		

@@ -32,12 +32,12 @@ public class SQLiteIndex {
 		createWordnetHelp();
 		createIndexOntology();
 		createIndexOntologyClass();
-		createIndexofYago();
+		//createIndexofYago();
 		
-		System.out.println("start IndexNumber");
+		/*System.out.println("start IndexNumber");
 		createNewSpecialIndexNumber();
 		System.out.println("start SpecialIndex");
-		createNewSpecialIndex();
+		createNewSpecialIndex();*/
 		
 		lemma = new StanfordLemmatizer();
 		
@@ -148,7 +148,7 @@ WHERE City LIKE '%tav%'
 			rs = stat.executeQuery("select uri from property where name='"+string.toLowerCase()+"';");
 			while(rs.next()){
 				String result_string= rs.getString("uri");
-				System.out.println("Property: "+result_string);
+				//System.out.println("Property: "+result_string);
 				//check for double:
 				boolean found = false;
 				for(String s: al){
@@ -160,7 +160,7 @@ WHERE City LIKE '%tav%'
 			rs = stat.executeQuery("select uri from ontology where name='"+string.toLowerCase()+"';");
 			while(rs.next()){
 				String result_string= rs.getString("uri");
-				System.out.println("OntologyProperty: "+result_string);
+				//System.out.println("OntologyProperty: "+result_string);
 				//check for double:
 				boolean found = false;
 				for(String s: al){
@@ -168,7 +168,7 @@ WHERE City LIKE '%tav%'
 				}
 				if(found==false)al.add(result_string);
 			}
-			System.out.println("Anzahl ArrayList: "+al.size());
+			//System.out.println("Anzahl ArrayList: "+al.size());
 			if(al.size()==1) return al.get(0);
 			//check if there is one with an ontology in it
 			else{

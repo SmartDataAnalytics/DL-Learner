@@ -16,6 +16,7 @@ import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Template;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.TemplateBuilder;
 import org.dllearner.algorithm.tbsl.exploration.Utils.DebugMode;
+import org.dllearner.algorithm.tbsl.exploration.Utils.HeuristicSort;
 import org.dllearner.algorithm.tbsl.exploration.Utils.LinearSort;
 import org.dllearner.algorithm.tbsl.exploration.Utils.Query;
 import org.dllearner.algorithm.tbsl.exploration.Utils.QueryPair;
@@ -27,7 +28,7 @@ import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
 import org.dllearner.algorithms.gp.GP;
 
 public class MainInterface {
-	private static int anzahlAbgeschickterQueries = 10;
+	//private static int anzahlAbgeschickterQueries = 10;
 	
 	
 	public static ArrayList<String> startQuestioning(String question,BasicTemplator btemplator,SQLiteIndex myindex, WordNet wordnet,StanfordLemmatizer lemmatiser) throws ClassNotFoundException, SQLException, IOException{
@@ -37,6 +38,7 @@ public class MainInterface {
 		 * false, goes through all
 		 */
 		boolean wait = false;
+		Setting.setThresholdSelect(0.5);
 		
 		if(Setting.isWaitModus())wait=true;
 		
@@ -80,13 +82,15 @@ public class MainInterface {
 		
 		//sort QueryPairs
 		qp=LinearSort.doSort(qp);	
+		qp=HeuristicSort.doSort(qp, Question);
+		//if(Setting.isDebugModus())printQueries(qp, "NORMAL", Question);
 		printQueries(qp, "NORMAL", Question);
-		
+		Setting.setAnzahlAbgeschickterQueries(10);
 		
 		int anzahl=1;
 		boolean go_on = true;
 		for(QueryPair q : qp){
-			if(anzahl<anzahlAbgeschickterQueries&go_on){
+			if(anzahl<10&go_on &!q.getQuery().contains("ASK")){
 				ArrayList<String> answer_tmp = new ArrayList<String>();
 				System.out.println("Sending Query to Server: "+q.getQuery());
 				answer_tmp=ServerUtil.requestAnswerFromServer(q.getQuery());
@@ -94,7 +98,7 @@ public class MainInterface {
 
 				else{
 					go_on=false;
-					if(qp.size()<3)go_on=true;
+					//if(qp.size()<3)go_on=true;
 					System.out.println("Got Answer from Server with this Query: "+ q.getQuery());
 					//go_on=true;
 					boolean contains_uri=false;
@@ -106,18 +110,21 @@ public class MainInterface {
 					}
 					for(String s : answer_tmp){
 						if(checkAnswer(s)){
-							boolean double_result = false;
-							for(String s_t : answers){
-								if(s_t.contains(s)) double_result=true;
-							}
-							//TODO Test!!!!!!
-							//if in one answer is an http, only add uri's 
-							if(!double_result){
-								if(contains_uri){
-									if(s.contains("http"))answers.add(s);
+							if(!s.equals("0")){
+								boolean double_result = false;
+								for(String s_t : answers){
+									if(s_t.contains(s)) double_result=true;
 								}
-								else answers.add(s);
+								//TODO Test!!!!!!
+								//if in one answer is an http, only add uri's 
+								if(!double_result){
+									if(contains_uri){
+										if(s.contains("http"))answers.add(s);
+									}
+									else answers.add(s);
+								}
 							}
+							
 						}
 					}
 					//if(checkAnswer(answer_tmp))answers.addAll(answer_tmp);
@@ -136,9 +143,11 @@ public class MainInterface {
 		/*
 		 * If there is no answer, start IterationMode with Levensthein
 		 */
-			if(answers.isEmpty()){
+			if(answers.isEmpty()&&Setting.getModuleStep()>=2){
 			
 				answers.clear();
+				//Setting.setLevenstheinMin(0.65);
+				//Setting.setAnzahlAbgeschickterQueries(10);
 				answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"LEVENSTHEIN","neu"));
 				if(wait)DebugMode.waitForButton();
 		}
@@ -147,19 +156,40 @@ public class MainInterface {
 		 * still no answer, start IterationMode with Wordnet
 		 */
 		
-		if(answers.isEmpty()){
+		if(answers.isEmpty()&&Setting.getModuleStep()>=3){
 			
 			answers.clear();
+			//Setting.setAnzahlAbgeschickterQueries(10);
 			answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"WORDNET","neu"));
 			if(wait)DebugMode.waitForButton();
 		}
 		
+		if(answers.isEmpty()&&Setting.getModuleStep()>=4){
+			
+			answers.clear();
+			//Setting.setAnzahlAbgeschickterQueries(10);
+			//Setting.setThresholdSelect(0.2);
+			answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"RELATE","neu"));
+			if(wait)DebugMode.waitForButton();
+		}
+		
+
+		/*if(answers.isEmpty()){
+			
+			answers.clear();
+			Setting.setLevenstheinMin(0.25);
+			Setting.setAnzahlAbgeschickterQueries(20);
+			answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"SPECIAL","neu"));
+			if(wait)DebugMode.waitForButton();
+		}*/
+
 		
 		
-		if(answers.isEmpty()){
+		
+		/*if(answers.isEmpty()){
 			System.out.println("");
 			//answers.add("No answers were found with the three Modules");
-		}
+		}*/
 		
 		
 		/*
@@ -185,8 +215,14 @@ public class MainInterface {
 			StanfordLemmatizer lemmatiser, ArrayList<Template> template_list, String type, String test) {
 		ArrayList<String> answers = new ArrayList<String>();
 		ArrayList<QueryPair> qp = new ArrayList<QueryPair>();
+		boolean special=false;
 		int anzahl;
 		boolean go_on;
+		if(type.contains("SPECIAL")){
+			type ="LEVENSTHEIN";
+			special=true;
+		}
+		
 		System.out.println("No answer from direkt match, start "+type+"Modul");
 		for(Template t : template_list){
 			try{
@@ -194,11 +230,14 @@ public class MainInterface {
 					ArrayList<ArrayList<Hypothesis>> hypothesenSetList = IterationModule.doIteration(t.getElm(),t.getHypothesen(),t.getCondition(),type,myindex,wordnet,lemmatiser);
 					if(type.contains("WORDNET"))t.setHypothesenWordnet(hypothesenSetList);
 					if(type.contains("LEVENSTHEIN"))t.setHypothesenLevensthein(hypothesenSetList);
+					if(type.contains("RELATE"))t.setHypothesenRelate(hypothesenSetList);
 				}
 				
 				if(test.contains("neu")){
 					System.err.println("IN NEU!!!!!");
 					ArrayList<ArrayList<Hypothesis>> hypothesenSetList  = new ArrayList<ArrayList<Hypothesis>>();
+					
+					
 					for(ArrayList<Hypothesis> l_h : t.getHypothesen()){
 						ArrayList<ArrayList<Hypothesis>> generated_hypothesis = new ArrayList<ArrayList<Hypothesis>>();
 						generated_hypothesis= IterationModule.new_iteration(t.getElm(),l_h,t.getCondition(),type,myindex,wordnet,lemmatiser);
@@ -214,6 +253,8 @@ public class MainInterface {
 					}
 					if(type.contains("WORDNET"))t.setHypothesenWordnet(hypothesenSetList);
 					if(type.contains("LEVENSTHEIN"))t.setHypothesenLevensthein(hypothesenSetList);
+					if(type.contains("RELATE"))t.setHypothesenRelate(hypothesenSetList);
+					
 				}
 				
 			}
@@ -247,13 +288,23 @@ public class MainInterface {
 		
 		//sort QueryPairs
 		qp=LinearSort.doSort(qp);	
-		
 		printQueries(qp, type, Question);
+		/*
+		 * Only for test!
+		 */
+		qp=HeuristicSort.doSort(qp, Question);
+		
+		System.out.println("Following Querries were created:");
+		for(QueryPair z : qp){
+			System.out.println(z.getQuery()+" "+z.getRank());
+		}
+		if(Setting.isDebugModus())printQueries(qp, type, Question);
+		//printQueries(qp, type, Question);
 		anzahl=1;
 		go_on = true;
 		int id=0;
 		for(QueryPair q : qp){
-			if(anzahl<anzahlAbgeschickterQueries&go_on){
+			if(q.getRank()>Setting.getThresholdSelect()&go_on &!q.getQuery().contains("ASK")){
 				ArrayList<String> answer_tmp = new ArrayList<String>();
 				answer_tmp=ServerUtil.requestAnswerFromServer(q.getQuery());
 				System.out.println("Sending Query to Server: "+q.getQuery());
@@ -263,6 +314,63 @@ public class MainInterface {
 					//else go_on=false;
 					//go_on=true;
 					go_on=false;
+					if(special) go_on=true;
+					System.out.println("Got Answer from Server with this Query: "+ q.getQuery());
+					if(qp.size()>(id+1)){
+						//&&anzahl<2
+						if(q.getRank()==qp.get(id+1).getRank()){
+							go_on=true;
+						}
+					}
+					
+						
+					boolean contains_uri=false;
+					for(String s : answer_tmp){
+						if(s.contains("http")){
+							contains_uri=true;
+							break;
+						}
+					}
+					/*System.out.println("\n Answer from Server Befor check answer: \n");
+					for(String answer:answer_tmp){
+						System.out.println(answer);
+					}*/
+					
+					
+					for(String s : answer_tmp){
+						if(checkAnswer(s)){
+							boolean double_result = false;
+							for(String s_t : answers){
+								if(s_t.contains(s)) double_result=true;
+							}
+							//TODO Test!!!!!!
+							//if in one answer is an http, only add uri's 
+							if(!double_result){
+								if (Question.toLowerCase().contains("who")){
+									if(!s.contains("http"))answers.add(s);
+								}
+								else if(contains_uri){
+									if(s.contains("http"))answers.add(s);
+								}
+								else answers.add(s);
+							}
+						}
+					}
+					//if(checkAnswer(answer_tmp))answers.addAll(answer_tmp);
+				}
+			}
+			
+			else if(q.getRank()>Setting.getThresholdAsk()&go_on &q.getQuery().contains("ASK")){
+				ArrayList<String> answer_tmp = new ArrayList<String>();
+				answer_tmp=ServerUtil.requestAnswerFromServer(q.getQuery());
+				System.out.println("Sending Query to Server: "+q.getQuery());
+				if(answer_tmp.isEmpty()) go_on=true;
+
+				else{
+					//else go_on=false;
+					//go_on=true;
+					go_on=false;
+					if(special) go_on=true;
 					System.out.println("Got Answer from Server with this Query: "+ q.getQuery());
 					if(qp.size()>(id+1)){
 						if(q.getRank()==qp.get(id+1).getRank()){
@@ -278,6 +386,8 @@ public class MainInterface {
 							break;
 						}
 					}
+					
+					
 					for(String s : answer_tmp){
 						if(checkAnswer(s)){
 							boolean double_result = false;
@@ -300,6 +410,15 @@ public class MainInterface {
 			anzahl+=1;
 			id+=1;
 		}
+		/*
+		 * here Filter answer
+		 */
+		/*System.out.println("\n Answer from Server: \n");
+		for(String answer:answers){
+			System.out.println(answer);
+		}*/
+		//System.out.println("FILTER NOW!!");
+		answers=filterAnswer(answers,Question);
 		System.out.println("\n Answer from Server: \n");
 		for(String answer:answers){
 			System.out.println(answer);
@@ -310,7 +429,31 @@ public class MainInterface {
 	
 	
 	
-	
+	private static ArrayList<String> filterAnswer(ArrayList<String> answers, String Question){
+		if(Question.toLowerCase().contains("who")){
+			boolean contains_only_uri=true;
+			for(String s: answers){
+				if(!s.contains("http")) contains_only_uri=false;
+			}
+			if(contains_only_uri==false){
+				ArrayList<String> new_answer= new ArrayList<String>();
+				for(String s: answers){
+					if(!s.contains("http")) {
+						System.out.println("s :"+s);
+						new_answer.add(s);
+					}
+				}
+				
+				return new_answer;
+			}
+			else{
+				return answers;
+			}
+		}
+		
+		
+		return answers;
+	}
 	private static boolean checkAnswer(String answer){
 		if(answer.contains("File:")||answer.contains(".png")||answer.contains("upload.wikimedia.org")||answer.contains("dbpedia.org/datatype/")||answer.contains("http://www.w3.org/2001/XMLSchema")||answer.contains("flickerwrappr/photos/")) return false;
 		else return true;
@@ -324,7 +467,7 @@ public class MainInterface {
 	}
 	
 	private static void printQueries(ArrayList<QueryPair> qp, String type, String Question){
-		String dateiname="/home/swalter/Dokumente/Auswertung/CreatedQueryList.txt";
+		String dateiname="/home/swalter/Dokumente/Auswertung/CreatedQueryListNLD"+Setting.getLevenstheinMin()+".txt";
 		String result_string ="";
 		//Open the file for reading
 	     try {
