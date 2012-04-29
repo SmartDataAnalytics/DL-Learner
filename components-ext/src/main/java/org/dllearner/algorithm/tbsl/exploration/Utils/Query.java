@@ -34,7 +34,9 @@ public class Query {
 		else if(type.contains("WORDNET")){
 			givenHypothesenList=t.getHypothesenWordnet();
 		}
-		
+		else if(type.contains("RELATE")){
+			givenHypothesenList=t.getHypothesenRelate();
+		}
 		else {
 			if(!type.contains("NORMAL"))System.err.println("ATTENTION\n Given Type: "+type+" was not found in generating Queries!!\n");
 			givenHypothesenList=t.getHypothesen();
@@ -58,10 +60,34 @@ public class Query {
 				condition_new=condition_new.replace("isA", "rdf:type");
 				global_rank=global_rank+h.getRank();
 			}
+			
+			/*
+			 * normalise Rank!
+			 */
+			
+			global_rank = global_rank/hypothesenList.size();
+			
 			//System.out.println("New_Condition after replacing "+condition_new);
-	    	String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+t.getQueryType()+" "+t.getSelectTerm()+" WHERE {"+ condition_new+" "+ t.getFilter()+"}"+t.getOrderBy()+" "+t.getHaving() +" "+t.getLimit();
-	    	QueryPair qp = new QueryPair(query,global_rank);
-	    	if(addQuery)queryList.add(qp);
+			if(t.getQuestion().toLowerCase().contains("who")){
+				/*
+				 * PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?uri ?string 
+WHERE {
+        res:Brooklyn_Bridge dbp:designer ?uri .
+        OPTIONAL { ?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
+				 */
+				
+				String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "+t.getQueryType()+" "+t.getSelectTerm()+"?string WHERE {"+ condition_new+" OPTIONAL { "+ t.getSelectTerm()+" rdfs:label ?string. FILTER (lang(?string) = 'en') }"+ t.getFilter()+"}"+t.getOrderBy()+" "+t.getHaving() +" "+t.getLimit();
+				QueryPair qp = new QueryPair(query,global_rank);
+				if(addQuery)queryList.add(qp);
+				
+			}
+			else{
+				String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+t.getQueryType()+" "+t.getSelectTerm()+" WHERE {"+ condition_new+" "+ t.getFilter()+"}"+t.getOrderBy()+" "+t.getHaving() +" "+t.getLimit();
+		    	QueryPair qp = new QueryPair(query,global_rank);
+		    	if(addQuery)queryList.add(qp);
+			}
+	    	
 		}
     	
 		

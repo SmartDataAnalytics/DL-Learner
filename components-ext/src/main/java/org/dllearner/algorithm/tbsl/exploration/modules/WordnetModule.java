@@ -20,7 +20,7 @@ import org.dllearner.algorithm.tbsl.nlp.WordNet;
 
 public class WordnetModule {
 	
-	private static int explorationdepthwordnet =2;
+	private static int explorationdepthwordnet =1;
 	
 	public static ArrayList<Hypothesis> doWordnet(String variable, String property_to_compare_with, HashMap<String, String> properties, SQLiteIndex myindex,WordNet wordnet,StanfordLemmatizer lemmatiser) throws SQLException,
 	JWNLException {
@@ -100,7 +100,60 @@ public class WordnetModule {
 					 */
 					//if(key.contains(b.toLowerCase())||key.contains(lemmatiser.stem(b.toLowerCase()))||b.toLowerCase().contains(lemmatiser.stem(key))){
 					//System.out.println("B: "+b +" Key: "+key);
-					if(key.contains(b.toLowerCase())||b.toLowerCase().contains(key)){
+					if(key.equals(b)){
+						//System.out.println("EQUALS");
+						//System.out.println("B: " +b);
+						//System.out.println("key: " +key);
+						
+						Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 1.0); 
+						 
+						
+						 listOfNewHypothesen.add(h);
+						
+					}
+					else if(key.contains(b.toLowerCase())||b.toLowerCase().contains(key)){
+						
+						//System.out.println("B: " +b);
+						//System.out.println("key: " +key);
+						
+						/*if(b.length()>key.length()) {
+							Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", (key.length()/b.length())); 
+							listOfNewHypothesen.add(h);
+						}
+						else{
+							Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", (b.length()/key.length())); 
+							listOfNewHypothesen.add(h);
+						}*/
+						if(b.length()>4&&key.length()>4) {
+							double score=0;
+							if(b.length()>key.length()){
+								score = 0.8+(key.length()/b.length());
+							}
+							else{
+								score=0.8+(b.length()/key.length());
+							}
+							//0.95
+							Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", score); 
+							listOfNewHypothesen.add(h);
+						}
+						else{
+							Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 0.7); 
+							listOfNewHypothesen.add(h);
+						}
+						 
+						 
+						 
+					
+						 
+						 
+					}
+					
+					else if(Levenshtein.nld(key.toLowerCase(), b.toLowerCase())>Setting.getLevenstheinMin()){
+						Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", (Levenshtein.nld(key.toLowerCase(), b.toLowerCase()))); 
+						 
+						
+						 listOfNewHypothesen.add(h);
+					}
 						
 						/*System.out.println("Found: "+b);
 						if(Setting.isWaitModus())
@@ -110,11 +163,11 @@ public class WordnetModule {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}*/
-						if(!result_SemanticsMatchProperties.contains(key)){
+						/*if(!result_SemanticsMatchProperties.contains(key)){
 						 result_SemanticsMatchProperties.add(key);
 						 if(key.toLowerCase().contains(property_to_compare_with.toLowerCase())||property_to_compare_with.toLowerCase().contains(key)){
-							 System.out.println("Variable: "+ variable+" key: "+key+" value : "+value);
-							 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 1.5); 
+							 //System.out.println("Variable: "+ variable+" key: "+key+" value : "+value);
+							 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", (key.length()/property_to_compare_with.length())); 
 							 listOfNewHypothesen.add(h);
 							try {
 								if(Setting.isWaitModus())DebugMode.waitForButton();
@@ -127,7 +180,7 @@ public class WordnetModule {
 							 double nld=Levenshtein.nld(property_to_compare_with.toLowerCase(), key);
 							 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", nld);
 							 listOfNewHypothesen.add(h);
-							 System.out.println("Found for key: "+key);
+							 //System.out.println("Found for key: "+key);
 							 try {
 								 if(Setting.isWaitModus())DebugMode.waitForButton();
 							} catch (IOException e) {
@@ -136,8 +189,8 @@ public class WordnetModule {
 							}
 						 }
 						
-						}
-					}
+						}*/
+					//}
 				}
 			}
 			 

@@ -70,6 +70,16 @@ public class exploration_main {
 		Setting.setWaitModus(false);
 		Setting.setDebugModus(false);
 		Setting.setNewIndex(false);
+		Setting.setLevenstheinMin(0.95);
+		Setting.setAnzahlAbgeschickterQueries(10);
+		Setting.setThresholdAsk(0.9);
+		Setting.setThresholdSelect(0.5);
+		/*
+		 * 1= only "Normal"
+		 * 2= "Normal" + Levensthein
+		 * 3= Normal+Levensthein+Wordnet
+		 */
+		Setting.setModuleStep(2);
 		
 
 		
@@ -133,7 +143,14 @@ public class exploration_main {
 				if(line.contains(":xml")&& schleife==true){
 					TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 
-
+					for(int i = 0; i<1;i++){
+						double min = 0.95;
+						min+=(i*0.05);
+						
+						//Setting.setLevenstheinMin(min);
+						Setting.setLevenstheinMin(0.95);
+						
+					
 					/*System.out.println("Please enter Path of xml File:");
 					line=in.readLine();*/
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train.xml";
@@ -142,9 +159,12 @@ public class exploration_main {
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/berlin.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/vortragfragen.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/iteration-test.xml";
-					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-withoutNotparsed.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-test-questions.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-onlyWithWorking.xml";
+					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-new.xml";
+					
 					
 					//create Structs
 					ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
@@ -160,21 +180,11 @@ public class exploration_main {
 						anzahl=anzahl+1;
 				    	System.out.println("");
 				    	if(qi.getId()==""||qi.getId()==null)System.out.println("NO");
-						/*System.out.println("ID: "+qi.getId());
-						System.out.println("Query: "+qi.getQuery());
-						System.out.println("Type: "+qi.getType());
-						System.out.println("XMLType: "+qi.getXMLtype());*/
 						String question = qi.getQuery();
 						ArrayList<String> answers=MainInterface.startQuestioning(question,btemplator,myindex,wordnet,lemmatiser);
 						qi.setResult(answers);
 					}
 					
-				    
-				/*    //Print to Console
-					System.out.println("\n#############\n Result:");
-					for(queryInformation s : list_of_resultstructs){
-						System.out.println(s.getResult());
-					}*/
 					
 					long stopTime = System.currentTimeMillis();
 					System.out.println("For "+anzahl+" Questions the QA_System took "+ ((stopTime-startTime)/1000)+"sek");
@@ -183,7 +193,7 @@ public class exploration_main {
 					systemid=createXML(list_of_structs);
 				    String filename_for_evaluation="/home/swalter/Dokumente/Auswertung/ResultXml/result"+systemid.replace(" ", "_")+".xml";
 				    String execute = "python /home/swalter/Dokumente/Auswertung/Evaluation/Evaluation.py "+filename_for_evaluation+" 0";
-				    
+				    System.out.println(filename_for_evaluation);
 				    /*
 				     * First only for training
 				     */
@@ -192,9 +202,13 @@ public class exploration_main {
 				    Runtime r = Runtime.getRuntime();
 				    Process p = r.exec(execute);
 				    
-				    String open_file="/home/swalter/Dokumente/Auswertung/Evaluation/upload/out"+systemid.replace(" ", "_")+".html";
+				   /* String open_file="/home/swalter/Dokumente/Auswertung/Evaluation/upload/out"+systemid.replace(" ", "_")+".html";
 				    execute ="firefox "+ open_file;
-				    p = r.exec(execute);
+				    p = r.exec(execute);*/
+					}
+					schleife=false;
+					System.out.println("Bye!");
+					System.exit(0);
 				     
 				}
 				
@@ -293,9 +307,12 @@ public class exploration_main {
 		String xmlDocument="";
 		int counter=0;
 		System.out.println("Anzahl queryInformations: "+list.size());
+		int anzahl = 0;
 		for (queryInformation s : list){
 			//why doing this? try that it doesnt matter if there is an answer or not....
-			//if(!s.getResult().isEmpty()){
+			anzahl+=1;
+			System.out.println("Number "+anzahl);
+			if(!s.getResult().isEmpty()){
 				String tmp;
 				if(counter==0){
 					counter=counter+1;
@@ -315,18 +332,18 @@ public class exploration_main {
 					else if (i.contains("true")||i.contains("false")) input="<boolean>"+i+"</boolean>\n";
 					else if(i.matches("[0-9]*"))input="<number>"+i+"</number>\n";
 					else if(i.matches("[0-9]*-[0-9][0-9]-[0-9]*"))input="<date>"+i+"</date>\n";
-					else input="<string>"+i+"</string>\n";
+					else if(i.length()>=1 && !i.equals(" "))input="<string>"+i+"</string>\n";
 					tmp+="<answer>"+input+"</answer>\n";
 				}
 				tmp+="</answers></question>\n";
 				xmlDocument+=tmp;
-			//}
+			}
 			
 		}
 		xmlDocument+="</dataset>";
 		File file;
 		FileWriter writer;
-		file = new File("/home/swalter/Dokumente/Auswertung/ResultXml/result"+systemid.replace(" ", "_")+".xml");
+		file = new File("/home/swalter/Dokumente/Auswertung/ResultXml/result"+systemid.replace(" ", "_")+"NLD"+Setting.getLevenstheinMin()+".xml");
 	     try {
 	       writer = new FileWriter(file ,true);    
 	       writer.write(xmlDocument);

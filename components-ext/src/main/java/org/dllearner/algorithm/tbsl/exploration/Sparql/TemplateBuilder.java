@@ -54,7 +54,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
 		 * check if templates were build, if not, safe the question and delete it for next time from the xml file.
 		 * Only in Debug Mode
 		 */
-		//if(Setting.isDebugModus()){
+		if(Setting.isDebugModus()){
 			if(querytemps.contains("could not be parsed") || querytemps.isEmpty()){
 				String dateiname="/home/swalter/Dokumente/Auswertung/NotParsed.txt";
 				String result_string ="";
@@ -79,7 +79,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
 	    
 	    
 			}
-		//}
+		}
 		
 		
 		long stop_template = System.currentTimeMillis();
@@ -310,7 +310,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
          						}
     							if(!result.isEmpty()){
     								h.setUri(result.get(0));
-        							h.setRank(0.0);
+        							h.setRank(1.0);
     							}
     						} catch (SQLException e) {
     							// TODO Auto-generated catch block
@@ -334,7 +334,10 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      							try {
 									ArrayList<String> tmp = Index_utils.searchIndexForClass(h.getUri(), myindex);
 									System.out.println("Laenge tmp: "+tmp.size());
-									if(tmp.size()>0)h.setUri(tmp.get(0));
+									if(tmp.size()>0){
+										h.setUri(tmp.get(0));
+										h.setRank(1.0);
+									}
 								} catch (SQLException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -345,7 +348,10 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      							try {
 									ArrayList<String> tmp = Index_utils.searchIndexForResource(h.getUri(), myindex);
 									System.out.println("Laenge tmp: "+tmp.size());
-									if(tmp.size()>0)h.setUri(tmp.get(0));
+									if(tmp.size()>0){
+										h.setUri(tmp.get(0));
+										h.setRank(1.0);
+									}
 								} catch (SQLException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -369,10 +375,20 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      			if(add_reverse_template){
      				for (ArrayList<String> x : condition_template_reverse_conditions){
          				ArrayList<String> new_list = new ArrayList<String>();
-         				new_list.add(x.get(2));
-         				new_list.add(x.get(1));
-         				new_list.add(x.get(0));
-         				condition_reverse_new.add(new_list);
+         				if(x.get(1).contains("ISA")){
+         					new_list.add(x.get(0));
+             				new_list.add(x.get(1));
+             				new_list.add(x.get(2));
+             				condition_reverse_new.add(new_list);
+             				if(condition_template_reverse_conditions.size()>=2) add_reverse_template=true;
+         				}
+         				else{
+         					new_list.add(x.get(2));
+             				new_list.add(x.get(1));
+             				new_list.add(x.get(0));
+             				condition_reverse_new.add(new_list);
+         				}
+         				
          			}
      			}
      			
@@ -404,7 +420,10 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				template.setElm(elm);
          			resultArrayList.add(template);
      			}
-     			if(add_reverse_template){
+     			/*
+     			 * Also change the condition, if you have two Conditions in which is one an isa 
+     			 */
+     			//if(add_reverse_template ||template_reverse_conditions.getCondition().size()>1 ){
      				start_elements = System.currentTimeMillis();
      				Elements elm_reverse = new Elements(template_reverse_conditions.getCondition(),template_reverse_conditions.getHypothesen());
      				stop_elements = System.currentTimeMillis();
@@ -417,7 +436,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				template_reverse_conditions.setElm(elm_reverse);
          				resultArrayList.add(template_reverse_conditions);
      				}
-     			}
+     			//}
      		}
      	}
      	
