@@ -554,9 +554,98 @@ public class IterationModule {
 			
 			
 			/*
+			 * for the case: [?y rdf:type Klasse][?y Proptery Resource]
+			 * or: [?y rdf:type Klasse][Resource Proptery ?y]
+			 * 
+			 */
+			if((condition1_exists_isa||condition2_exists_isa)&&gotResource&&(condition1_exists_resource||condition2_exists_resource)){
+				String class_variable=null;
+				String class_property_variable=null;
+				ArrayList<String> working_condition=new ArrayList<String>();
+				/*
+				 * selcet "working_condition"
+				 */
+				if(condition1_exists_isa){
+					class_variable= condition1.get(2);
+					class_property_variable=condition1.get(0);
+					working_condition= condition2;
+				}
+				if(condition2_exists_isa){
+					class_variable= condition2.get(2);
+					class_property_variable=condition2.get(0);
+					working_condition= condition1;
+				}
+				
+				Hypothesis class_h=null;
+				
+				for(Hypothesis h_t : givenHypothesenList){
+					if(h_t.getVariable().contains(class_variable)){
+						class_h=h_t;
+						break;
+					}
+				}
+				
+				System.out.println("class_variable: " + class_variable);
+				System.out.println("Class Hypothese: ");
+				
+				/*
+				 * check now, which side the classVariable is in the other condition
+				 * 
+				 */
+				
+				String property_variable_local=null;
+				String resource_variable_local=null;
+				String side_of_property=null;
+				
+				if(working_condition.get(0).contains(class_property_variable)){
+					property_variable_local=working_condition.get(1);
+					resource_variable_local=working_condition.get(2);
+					side_of_property="RIGHT";
+				}
+				else{
+					property_variable_local=working_condition.get(1);
+					resource_variable_local=working_condition.get(2);
+					side_of_property="LEFT";
+				}
+				
+				String property_name=null;
+				for(Hypothesis h_t : givenHypothesenList){
+					if(h_t.getVariable().contains(property_variable_local)){
+						property_name=h_t.getName();
+						
+					}
+				}
+				for(ElementList el : resources){
+					//System.out.println("el.getVariablename(): "+el.getVariablename());
+					if(el.getVariablename().contains(resource_h.getName())&&el.getVariablename().contains(side_of_property)){
+						ArrayList<Hypothesis> resultHypothesenList=new ArrayList<Hypothesis>();
+						
+						if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(property_variable_local,property_name,el.getHm());
+						if(type.contains("RELATE"))resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(property_variable_local,property_name,el.getHm());
+
+						if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(property_variable_local,property_name,el.getHm(),myindex,wordnet,lemmatiser);
+						System.out.println("After generating new Hypothesen.\n "+resultHypothesenList.size()+" new were generated");
+						for(Hypothesis h_temp : resultHypothesenList) {
+							ArrayList<Hypothesis> temp_al = new ArrayList<Hypothesis>();
+							temp_al.add(class_h);
+							temp_al.add(h_temp);
+							temp_al.add(resource_h);
+							System.out.println("Hypothesen:");
+							class_h.printAll();
+							h_temp.printAll();
+							finalHypothesenList.add(temp_al);
+						}
+					}
+				}
+				
+				
+			}
+				
+			
+			/*
 			 * ISA
 			 */
-			if((condition1_exists_isa||condition2_exists_isa)&&gotResource){
+			else if((condition1_exists_isa||condition2_exists_isa)&&gotResource){
 				
 				/*
 				 * get Hypothese for the Class
@@ -639,7 +728,7 @@ public class IterationModule {
 			 * Resource
 			 */
 			
-			if((condition1_exists_resource||condition2_exists_resource)&&gotResource){
+			else if((condition1_exists_resource||condition2_exists_resource)&&gotResource){
 				
 				System.out.println("IN RESOURCE NOT SIMPLE CASE!!!");
 				System.out.println("resource_variable: " + resource_variable);
