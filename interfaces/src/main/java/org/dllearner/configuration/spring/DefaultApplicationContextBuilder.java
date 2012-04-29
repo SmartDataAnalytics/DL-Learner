@@ -59,7 +59,6 @@ public class DefaultApplicationContextBuilder implements ApplicationContextBuild
         try {
             context.refresh();
         } catch (BeanCreationException e) {
-            logger.error("There was a problem creating the bean named \"" + e.getBeanName() + "\" - Check your configuration file and try again.");
             throw new RuntimeException(e);
         } catch (Exception e) {
             logger.error("There was a problem initializing the components...shutting down.");
