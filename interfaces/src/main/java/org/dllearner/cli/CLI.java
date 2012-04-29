@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
@@ -39,6 +38,8 @@ import org.dllearner.confparser3.ParseException;
 import org.dllearner.core.*;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Files;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -52,9 +53,8 @@ import org.springframework.core.io.Resource;
  */
 public class CLI {
 
-	private static Logger logger = Logger.getLogger(CLI.class);
-	private static Logger rootLogger = Logger.getRootLogger();
-	
+	private static Logger logger = LoggerFactory.getLogger(CLI.class);
+
 	private ApplicationContext context;
 	private IConfiguration configuration;
 	private File confFile;
@@ -190,7 +190,7 @@ public class CLI {
             // Get the Root Error Message
             logger.error("An Error Has Occurred During Processing.");
             logger.error(primaryCause.getMessage());
-
+            logger.debug("Stack Trace: ", e);
             logger.error("Terminating DL-Learner...and writing stacktrace to: " + stacktraceFileName);
             FileOutputStream fos = new FileOutputStream(stacktraceFileName);
             PrintStream ps = new PrintStream(fos);
