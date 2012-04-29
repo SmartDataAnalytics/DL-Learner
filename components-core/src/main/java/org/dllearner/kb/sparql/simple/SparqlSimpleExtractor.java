@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -57,7 +58,7 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
     private static Logger log = LoggerFactory.getLogger(SparqlSimpleExtractor.class);
 
     public SparqlSimpleExtractor() {
-        model = ModelFactory.createOntologyModel();
+        model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
     }
 
     /**
