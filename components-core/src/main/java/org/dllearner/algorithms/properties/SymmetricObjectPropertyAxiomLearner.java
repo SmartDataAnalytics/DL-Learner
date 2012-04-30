@@ -96,7 +96,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		while(newModel.size() != 0){
 			model.add(newModel);
 			// get number of instances of s with <s p o>
-			query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
@@ -105,7 +105,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 				qs = rs.next();
 				total = qs.getLiteral("total").getInt();
 			}
-			query = "SELECT (COUNT(?s) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s}";
+			query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			rs = executeSelectQuery(query);
 			int symmetric = 0;
@@ -127,7 +127,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	}
 	
 	private void runSPARQL1_1_Mode(){
-		String query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+		String query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -136,7 +136,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			qs = rs.next();
 			total = qs.getLiteral("total").getInt();
 		}
-		query = "SELECT (COUNT(?s) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s}";
+		query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
 		int symmetric = 0;

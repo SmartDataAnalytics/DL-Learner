@@ -213,8 +213,9 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	}
 	
 	public static void main(String[] args) throws Exception{
-		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(
-				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));//.getEndpointDBpediaLiveAKSW()));
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+//		endpoint = new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
+		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(endpoint));//.getEndpointDBpediaLiveAKSW()));
 		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/stateOfOrigin"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();

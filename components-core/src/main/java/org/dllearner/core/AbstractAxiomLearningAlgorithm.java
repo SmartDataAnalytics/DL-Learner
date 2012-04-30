@@ -19,6 +19,7 @@
 
 package org.dllearner.core;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,7 +54,10 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import com.hp.hpl.jena.sparql.resultset.ResultSetMem;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -221,10 +225,19 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
 			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
 					query);
-			queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
+			queryExecution.setTimeout(getRemainingRuntimeInMilliSeconds());
 			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
 			queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
-			return queryExecution.execConstruct();
+			try {
+				return queryExecution.execConstruct();
+			} catch (QueryExceptionHTTP e) {
+				if(e.getCause() instanceof SocketTimeoutException){
+					logger.warn("Got timeout", e);
+				} else {
+					logger.error("Exception executing query", e);
+				}
+				return ModelFactory.createDefaultModel();
+			}
 		} else {
 			QueryExecution qexec = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
 			return qexec.execConstruct();
@@ -237,10 +250,19 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
 			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
 					query);
-			queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
+			queryExecution.setTimeout(getRemainingRuntimeInMilliSeconds());
 			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
 			queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
-			return queryExecution.execSelect();
+			try {
+				return queryExecution.execSelect();
+			} catch (QueryExceptionHTTP e) {
+				if(e.getCause() instanceof SocketTimeoutException){
+					logger.warn("Got timeout", e);
+				} else {
+					logger.error("Exception executing query", e);
+				}
+				return new ResultSetMem();
+			}
 		} else {
 			return executeSelectQuery(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}
@@ -280,8 +302,12 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
         return entries;
 	}
 	
+	private long getRemainingRuntimeInMilliSeconds(){
+		return Math.max(0, (maxExecutionTimeInSeconds * 1000) - (System.currentTimeMillis() - startTime));
+	}
+	
 	protected boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : (System.currentTimeMillis() - startTime) >= maxExecutionTimeInSeconds * 1000;
+		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : getRemainingRuntimeInMilliSeconds() <= 0;
 		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}

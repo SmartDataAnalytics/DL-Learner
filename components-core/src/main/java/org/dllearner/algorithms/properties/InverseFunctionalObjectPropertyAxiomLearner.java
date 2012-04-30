@@ -110,7 +110,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 				all = qs.getLiteral("all").getInt();
 			}
 			// get number of instances of s with <s p o> <s p o1> where o != o1
-			query = "SELECT (COUNT(DISTINCT ?s1) AS ?noninversefunctional) WHERE {?s1 <%s> ?o. ?s2 <%s> ?o. FILTER(?s1 != ?s2) }";
+			query = "SELECT (COUNT(DISTINCT ?o) AS ?noninversefunctional) WHERE {?s1 <%s> ?o. ?s2 <%s> ?o. FILTER(?s1 != ?s2) }";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			rs = executeSelectQuery(query);
 			int notInverseFunctional = 1;
@@ -148,7 +148,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 			all = qs.getLiteral("all").getInt();
 		}
 		// get number of instances of s with <s p o> <s p o1> where o != o1
-		query = "SELECT (COUNT(DISTINCT ?s1) AS ?noninversefunctional) WHERE {?s1 <%s> ?o. ?s2 <%s> ?o. FILTER(?s1 != ?s2) }";
+		query = "SELECT (COUNT(DISTINCT ?o) AS ?noninversefunctional) WHERE {?s1 <%s> ?o. ?s2 <%s> ?o. FILTER(?s1 != ?s2) }";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
 		int notInverseFunctional = 1;
@@ -168,8 +168,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(
-				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		InverseFunctionalObjectPropertyAxiomLearner l = new InverseFunctionalObjectPropertyAxiomLearner(ks);
 		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/profession"));
 		l.setMaxExecutionTimeInSeconds(10);

@@ -98,7 +98,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		while(newModel.size() != 0){
 			model.add(newModel);
 			// get number of instances of s with <s p o>
-			query = "SELECT (COUNT(?o) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1.}";
+			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
@@ -107,7 +107,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 				qs = rs.next();
 				total = qs.getLiteral("total").getInt();
 			}
-			query = "SELECT (COUNT(?o) AS ?transitive) WHERE {?s <%s> ?o. ?o <%s> ?o1. ?s <%s> ?o1.}";
+			query = "SELECT (COUNT(*) AS ?transitive) WHERE {?s <%s> ?o. ?o <%s> ?o1. ?s <%s> ?o1.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			rs = executeSelectQuery(query);
 			int transitive = 0;
@@ -128,7 +128,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	}
 	
 	private void runSPARQL1_1_Mode(){
-		String query = "SELECT (COUNT(?o) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1.}";
+		String query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -137,7 +137,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			qs = rs.next();
 			total = qs.getLiteral("total").getInt();
 		}
-		query = "SELECT (COUNT(?o) AS ?transitive) WHERE {?s <%s> ?o. ?o <%s> ?o1. ?s <%s> ?o1.}";
+		query = "SELECT (COUNT(*) AS ?transitive) WHERE {?s <%s> ?o. ?o <%s> ?o1. ?s <%s> ?o1.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
 		int transitive = 0;

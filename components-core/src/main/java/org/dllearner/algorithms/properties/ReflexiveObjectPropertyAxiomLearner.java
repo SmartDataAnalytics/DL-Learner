@@ -97,7 +97,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		while(newModel.size() != 0){
 			model.add(newModel);
 			// get fraction of instances s with <s p s>
-			query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+			query = "SELECT (COUNT(DISTINCT ?s) AS ?total) WHERE {?s <%s> ?o.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
@@ -106,7 +106,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 				qs = rs.next();
 				total = qs.getLiteral("total").getInt();
 			}
-			query = "SELECT (COUNT(?s) AS ?reflexive) WHERE {?s <%s> ?s.}";
+			query = "SELECT (COUNT(DISTINCT ?s) AS ?reflexive) WHERE {?s <%s> ?s.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			rs = executeSelectQuery(query);
 			int reflexive = 0;
@@ -130,7 +130,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	
 	private void runSPARQL1_1_Mode() {
 		// get fraction of instances s with <s p s>
-		String query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+		String query = "SELECT (COUNT(DISTINCT ?s) AS ?total) WHERE {?s <%s> ?o.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -139,7 +139,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			qs = rs.next();
 			total = qs.getLiteral("total").getInt();
 		}
-		query = "SELECT (COUNT(?s) AS ?reflexive) WHERE {?s <%s> ?s.}";
+		query = "SELECT (COUNT(DISTINCT ?s) AS ?reflexive) WHERE {?s <%s> ?s.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
 		int reflexive = 0;
