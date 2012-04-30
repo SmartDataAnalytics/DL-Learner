@@ -84,6 +84,7 @@ import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
+import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
@@ -306,15 +307,15 @@ public class EnrichmentEvaluation {
 		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		ks.init();
 		
-//		evaluateObjectProperties(ks);
-//		
-//		Thread.sleep(20000);
+		evaluateObjectProperties(ks);
+		
+		Thread.sleep(20000);
 		
 //		evaluateDataProperties(ks);
 //		
 //		Thread.sleep(20000);
 		
-		evaluateClasses(ks);
+//		evaluateClasses(ks);
 		
 		System.out.println("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
 
@@ -344,8 +345,7 @@ public class EnrichmentEvaluation {
 						int attempt = 0;
 						long startTime = 0;
 						boolean timeout = true;
-						while(timeout && attempt++ < maxAttempts){
-							timeout = false;
+						while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
 							if(attempt > 1){
 								try {
 									System.out.println("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
@@ -358,8 +358,8 @@ public class EnrichmentEvaluation {
 							startTime = System.currentTimeMillis();
 							try {
 								learner.start();
+								timeout = false;
 							} catch (Exception e) {
-								timeout = true;
 								if(e.getCause() instanceof SocketTimeoutException){
 									
 								} else {
@@ -422,8 +422,7 @@ public class EnrichmentEvaluation {
 				int attempt = 0;
 				long startTime = 0;
 				boolean timeout = true;
-				while(timeout && attempt++ < maxAttempts){
-					timeout = false;
+				while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
 					if(attempt > 1){
 						try {
 							Thread.sleep(delayInMilliseconds);
@@ -435,8 +434,8 @@ public class EnrichmentEvaluation {
 					startTime = System.currentTimeMillis();
 					try {
 						learner.start();
+						timeout = false;
 					} catch (Exception e) {
-						timeout = true;
 						if(e.getCause() instanceof SocketTimeoutException){
 							
 						} else {
@@ -506,8 +505,7 @@ public class EnrichmentEvaluation {
 						int attempt = 0;
 						
 						timeout = true;
-						while(timeout && attempt++ < maxAttempts){
-							timeout = false;
+						while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
 							if(attempt > 1){
 								try {
 									Thread.sleep(delayInMilliseconds);
@@ -519,17 +517,12 @@ public class EnrichmentEvaluation {
 							startTime = System.currentTimeMillis();
 							try {
 								learner.start();
+								timeout = false;
 							} catch (Exception e) {
-								timeout = true;
-								if(e.getCause() instanceof SocketTimeoutException){
-									
-								} else {
-									e.printStackTrace();
-								}
+								e.printStackTrace();
 							}
 						}
-						learnedAxioms = ((AxiomLearningAlgorithm)learner)
-						.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+						learnedAxioms = ((AxiomLearningAlgorithm)learner).getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 					}
 					
 					
@@ -1090,8 +1083,8 @@ public class EnrichmentEvaluation {
 		SPARQLReasoner r = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
 		dbPediaOntology = convert(r.loadSchema());
 		System.out.println("Preparing reasoner ...");
-		reasoner = new Reasoner(dbPediaOntology);
-//		 reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbPediaOntology);
+//		reasoner = new Reasoner(dbPediaOntology);
+		 reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbPediaOntology);
 		 reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 	}
 	
