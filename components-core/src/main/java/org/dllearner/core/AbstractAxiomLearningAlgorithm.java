@@ -89,6 +89,8 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	protected long startTime;
 	protected int limit = 1000;
 	
+	private boolean timeout = true;
+	
 	public AbstractAxiomLearningAlgorithm() {
 		existingAxioms = new TreeSet<Axiom>(new AxiomComparator());
 	}
@@ -154,6 +156,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		if(reasoner == null){
 			reasoner = new SPARQLReasoner((SparqlEndpointKS) ks);
 		}
+		timeout = true;
 	}
 
 	@Override
@@ -163,6 +166,10 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
 		return getCurrentlyBestAxioms(nrOfAxioms, 0.0);
+	}
+	
+	public boolean isTimeout() {
+		return timeout;
 	}
 	
 	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms,
@@ -229,7 +236,9 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
 			queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
 			try {
-				return queryExecution.execConstruct();
+				Model model = queryExecution.execConstruct();
+				timeout = false;
+				return model;
 			} catch (QueryExceptionHTTP e) {
 				if(e.getCause() instanceof SocketTimeoutException){
 					logger.warn("Got timeout", e);
@@ -254,7 +263,9 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
 			queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
 			try {
-				return queryExecution.execSelect();
+				ResultSet rs = queryExecution.execSelect();
+				timeout = false;
+				return rs;
 			} catch (QueryExceptionHTTP e) {
 				if(e.getCause() instanceof SocketTimeoutException){
 					logger.warn("Got timeout", e);
