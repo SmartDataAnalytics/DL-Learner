@@ -116,7 +116,7 @@ public class EquivalentDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 			
 			
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 		
@@ -184,7 +184,7 @@ public class EquivalentDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 	public static void main(String[] args) throws Exception{
 		EquivalentDataPropertyAxiomLearner l = new EquivalentDataPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
 		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/birthDate"));
-		l.setMaxExecutionTimeInSeconds(100);
+		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));

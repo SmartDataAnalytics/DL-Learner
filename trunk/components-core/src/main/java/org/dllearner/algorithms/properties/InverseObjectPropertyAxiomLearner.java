@@ -96,7 +96,7 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 		while(newModel.size() != 0){
 			model.add(newModel);
 			// get number of instances of s with <s p o>
-			query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
@@ -106,7 +106,7 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 				total = qs.getLiteral("total").getInt();
 			}
 			
-			query = String.format("SELECT ?p (COUNT(?s) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p", propertyToDescribe.getName());
+			query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p", propertyToDescribe.getName());
 			rs = executeSelectQuery(query);
 			while(rs.hasNext()){
 				qs = rs.next();
@@ -121,7 +121,7 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 	}
 	
 	private void runSPARQL1_1_Mode(){
-		String query = "SELECT (COUNT(?s) AS ?total) WHERE {?s <%s> ?o.}";
+		String query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -131,7 +131,7 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 			total = qs.getLiteral("total").getInt();
 		}
 		
-		query = String.format("SELECT ?p (COUNT(?s) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p", propertyToDescribe.getName());
+		query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p", propertyToDescribe.getName());
 		rs = executeSelectQuery(query);
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -146,14 +146,10 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(
 				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));//.getEndpointDBpediaLiveAKSW()));
 		
-		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
-		reasoner.prepareSubsumptionHierarchy();
-		
 		
 		InverseObjectPropertyAxiomLearner l = new InverseObjectPropertyAxiomLearner(ks);
-		l.setReasoner(reasoner);
 		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/officialLanguage"));
-		l.setMaxExecutionTimeInSeconds(10);
+		l.setMaxExecutionTimeInSeconds(100);
 //		l.setReturnOnlyNewAxioms(true);
 		l.init();
 		l.start();
