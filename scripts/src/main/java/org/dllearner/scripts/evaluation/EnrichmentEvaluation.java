@@ -24,7 +24,9 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -125,6 +127,7 @@ import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -135,6 +138,7 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 import org.semanticweb.owlapi.reasoner.InferenceType;
@@ -178,7 +182,7 @@ public class EnrichmentEvaluation {
 	// only axioms with a score above this threshold will be considered
 	private double threshold = 0.7;
 	
-	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 //	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 
 	// can be used to only evaluate a part of DBpedia
@@ -229,7 +233,7 @@ public class EnrichmentEvaluation {
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
 //		classAlgorithms.add(CELOE.class);
-//		classAlgorithms.add(DisjointClassesLearner.class);
+		classAlgorithms.add(DisjointClassesLearner.class);
 		classAlgorithms.add(SimpleSubclassLearner.class);
 		
 		
@@ -307,7 +311,7 @@ public class EnrichmentEvaluation {
 		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		ks.init();
 		
-		evaluateObjectProperties(ks);
+//		evaluateObjectProperties(ks);
 		
 		Thread.sleep(20000);
 		
@@ -315,7 +319,7 @@ public class EnrichmentEvaluation {
 //		
 //		Thread.sleep(20000);
 		
-//		evaluateClasses(ks);
+		evaluateClasses(ks);
 		
 		System.out.println("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
 
@@ -1079,9 +1083,30 @@ public class EnrichmentEvaluation {
 	}
 	
 	private void loadCurrentDBpediaOntology2(){
-		System.out.println("Loading schema ...");
-		SPARQLReasoner r = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
-		dbPediaOntology = convert(r.loadSchema());
+		dbPediaOntology = null;
+		try {
+			dbPediaOntology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new FileInputStream(new File("evaluation/currentDBpediaSchema.owl")));
+		} catch (OWLOntologyCreationException e1) {
+			e1.printStackTrace();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		if(dbPediaOntology == null){
+			System.out.println("Loading schema ...");
+			SPARQLReasoner r = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
+			dbPediaOntology = convert(r.loadSchema());
+			try {
+				new File("evaluation").mkdir();
+				new File("evaluation/currentDBpediaSchema.owl").createNewFile();
+				OWLManager.createOWLOntologyManager().saveOntology(dbPediaOntology, new RDFXMLOntologyFormat(), new FileOutputStream(new File("evaluation/currentDBpediaSchema.owl")));
+			} catch (OWLOntologyStorageException e) {
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		System.out.println("Preparing reasoner ...");
 //		reasoner = new Reasoner(dbPediaOntology);
 		 reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbPediaOntology);
