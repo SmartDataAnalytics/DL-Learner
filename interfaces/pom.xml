@@ -85,9 +85,9 @@
 						</configuration>
 					</plugin>
 					<plugin>
-						<groupId>de.akquinet.maven</groupId>
+						<groupId>de.akquinet.jbosscc.latex</groupId>
 						<artifactId>maven-latex-plugin</artifactId>
-						<version>1.1</version>
+						<version>1.2</version>
 						<configuration>
 							<settings>
 								<!-- all tex main documents in this folder (including subfolders) 
@@ -170,9 +170,9 @@
 						</configuration>
 					</plugin>
 					<plugin>
-						<groupId>de.akquinet.maven</groupId>
+						<groupId>de.akquinet.jbosscc.latex</groupId>
 						<artifactId>maven-latex-plugin</artifactId>
-						<version>1.1</version>
+						<version>1.2</version>
 						<configuration>
 							<settings>
 								<!-- all tex main documents in this folder (including subfolders) 
@@ -488,6 +488,11 @@
 		</dependency>
 		<!--END Logging Dependencies -->
 
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.8.0</version>
+		</dependency>
 
 	</dependencies>
 
