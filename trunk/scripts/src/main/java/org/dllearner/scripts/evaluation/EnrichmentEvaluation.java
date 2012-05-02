@@ -197,9 +197,9 @@ public class EnrichmentEvaluation {
 	private SparqlEndpoint endpoint;
 
 	// can be used to only evaluate a part of DBpedia
-	private int maxObjectProperties = 1;
-	private int maxDataProperties = 1;
-	private int maxClasses = 1;
+	private int maxObjectProperties = 0;
+	private int maxDataProperties = 0;
+	private int maxClasses = 0;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
@@ -328,7 +328,9 @@ public class EnrichmentEvaluation {
 		
 		sparqlReasoner = new SPARQLReasoner(ks);
 		sparqlReasoner.setCache(new ExtractionDBCache("cache"));
+		sparqlReasoner.setUseCache(true);
 		sparqlReasoner.prepareSubsumptionHierarchy();
+		sparqlReasoner.precomputeClassPopularity();
 		
 		Thread.sleep(20000);
 		if(runClassAlgorithms){
