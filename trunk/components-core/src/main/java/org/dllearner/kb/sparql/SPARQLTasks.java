@@ -702,6 +702,10 @@ public class SPARQLTasks {
 	public Set<NamedClass> getAllClasses() {
 		Set<NamedClass> classes = new TreeSet<NamedClass>();
 		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?c WHERE {?c a owl:Class} LIMIT 1000";
+		/*
+		 * String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> " +
+				"SELECT ?c WHERE {{?c a owl:Class} UNION {?c rdfs:subClassOf ?d} UNION {?d rdfs:subClassOf ?c}} LIMIT 1000";
+		 */
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
 		ResultSet q = sq.send(false);
 		while (q.hasNext()) {

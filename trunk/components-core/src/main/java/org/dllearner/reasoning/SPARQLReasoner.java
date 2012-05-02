@@ -93,6 +93,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	private ClassHierarchy hierarchy;
 	private OntModel model;
 	
+	private Map<NamedClass, Integer> classPopularityMap;
+	
 	
 	public SPARQLReasoner(SparqlEndpointKS ks) {
 		this.ks = ks;
@@ -109,6 +111,36 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	
 	public SPARQLReasoner(OntModel model) {
 		this.model = model;
+	}
+	
+	public void precomputeClassPopularity(){
+		logger.info("Precomputing class popularity ...");
+		classPopularityMap = new HashMap<NamedClass, Integer>();
+		
+		Set<NamedClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+		String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s a <%s>}";
+		
+		ResultSet rs;
+		for(NamedClass nc : classes){
+			rs = executeSelectQuery(String.format(queryTemplate, nc.getName()));
+			int cnt = rs.next().getLiteral("cnt").getInt();
+			classPopularityMap.put(nc, cnt);
+		}
+	}
+	
+	public int getPopularity(NamedClass nc){
+		if(classPopularityMap.containsKey(nc)){
+			return classPopularityMap.get(nc);
+		} else {
+			System.out.println("Cache miss: " + nc);
+			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s a <%s>}";
+			
+			ResultSet rs = executeSelectQuery(String.format(queryTemplate, nc.getName()));
+			int cnt = rs.next().getLiteral("cnt").getInt();
+			classPopularityMap.put(nc, cnt);
+			return cnt;
+		}
+		
 	}
 	
 	public final ClassHierarchy prepareSubsumptionHierarchy() {
@@ -913,6 +945,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	
 	public void setCache(ExtractionDBCache cache) {
 		this.cache = cache;
+	}
+	
+	public void setUseCache(boolean useCache) {
+		this.useCache = useCache;
 	}
 	
 	private boolean executeAskQuery(String query){
