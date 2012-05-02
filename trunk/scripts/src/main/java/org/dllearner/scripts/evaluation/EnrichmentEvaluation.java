@@ -34,7 +34,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -138,6 +137,9 @@ import org.dllearner.utilities.owl.DLLearnerAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
+import org.semanticweb.HermiT.Configuration;
+import org.semanticweb.HermiT.Reasoner;
+import org.semanticweb.HermiT.examples.HermiTConfigurations;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -1156,7 +1158,9 @@ public class EnrichmentEvaluation {
 			}
 		}
 		System.out.println("Preparing reasoner ...");
-//		reasoner = new Reasoner(dbPediaOntology);
+//		Configuration conf = new Configuration();
+//		conf.ignoreUnsupportedDatatypes = true;
+//		reasoner = new Reasoner(conf, dbPediaOntology);
 		 reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbPediaOntology);
 		 reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 	}
