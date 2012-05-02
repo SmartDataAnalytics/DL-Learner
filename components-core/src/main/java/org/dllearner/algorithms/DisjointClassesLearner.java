@@ -21,6 +21,7 @@ package org.dllearner.algorithms;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.slf4j.Logger;
@@ -84,6 +86,8 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	
 	private Set<NamedClass> allClasses;
 	
+	private int popularity;
+	
 	public DisjointClassesLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
@@ -119,9 +123,13 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		fetchedRows = 0;
 		currentlyBestEvaluatedDescriptions = new ArrayList<EvaluatedDescription>();
 		
-		//TODO
+		//we return here if the class contains no instances
+		popularity = reasoner.getPopularity(classToDescribe);
+		if(popularity == 0){
+			return;
+		}
 		
-		//at first get all existing classes in knowledgebase
+		//at first get all existing classes in knowledge base
 		allClasses = getAllClasses();
 		allClasses.remove(classToDescribe);
 		
@@ -316,17 +324,24 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		//firstly, create disjoint classexpressions which not occur and give score of 1
 		for(NamedClass cls : completeDisjointclasses){
 			if(useClassPopularity){
-				int popularity = 0;
+				int overlap = 0;
+				int pop;
 				if(ks.isRemote()){
-					popularity = reasoner.getIndividualsCount(cls);
+					pop = reasoner.getPopularity(cls);
 				} else {
-					popularity = ((LocalModelBasedSparqlEndpointKS)ks).getModel().getOntClass(cls.getName()).listInstances().toSet().size();
+					pop = ((LocalModelBasedSparqlEndpointKS)ks).getModel().getOntClass(cls.getName()).listInstances().toSet().size();
 				}
 				//we skip classes with no instances
-				if(popularity == 0) continue;
-				double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(popularity, 0);
-				double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
-				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1- accuracy));
+				if(pop == 0) continue;
+				
+				//we compute the estimated precision
+				double precision = accuracy(pop, overlap);
+				//we compute the estimated recall
+				double recall = accuracy(popularity, overlap);
+				//compute the overall score
+				double score = 1 - fMEasure(precision, recall);
+				
+				evalDesc = new EvaluatedDescription(cls, new AxiomScore(score));
 			} else {
 				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1));
 			}
@@ -335,22 +350,50 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		}
 		
 		//secondly, create disjoint classexpressions with score 1 - (#occurence/#all)
-		for(Entry<NamedClass, Integer> entry : sortByValues(class2Count)){
-			//drop classes from OWL and RDF namespace
-			if(entry.getKey().getName().startsWith(OWL2.getURI()) || entry.getKey().getName().startsWith(RDF.getURI()))continue;
-//			evalDesc = new EvaluatedDescription(entry.getKey(),
-//					new AxiomScore(1 - (entry.getValue() / (double)all)));
-			double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, entry.getValue());
-			double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
-			evalDesc = new EvaluatedDescription(entry.getKey(),
-					new AxiomScore(1 - accuracy));
-			evalDescs.add(evalDesc);
+		for (Entry<NamedClass, Integer> entry : sortByValues(class2Count)) {
+			NamedClass cls = entry.getKey();
+			// drop classes from OWL and RDF namespace
+			if (cls.getName().startsWith(OWL2.getURI()) || cls.getName().startsWith(RDF.getURI()))
+				continue;
+			if (useClassPopularity) {
+				int overlap = entry.getValue();
+				int pop;
+				if (ks.isRemote()) {
+					pop = reasoner.getPopularity(cls);
+				} else {
+					pop = ((LocalModelBasedSparqlEndpointKS) ks).getModel()
+							.getOntClass(cls.getName()).listInstances().toSet()
+							.size();
+				}
+				// we skip classes with no instances
+				if (pop == 0)
+					continue;
+
+				// we compute the estimated precision
+				double precision = accuracy(pop, overlap);
+				// we compute the estimated recall
+				double recall = accuracy(popularity, overlap);
+				// compute the overall score
+				double score = 1 - fMEasure(precision, recall);
+
+				evalDesc = new EvaluatedDescription(cls, new AxiomScore(score));
+			} else {
+				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1));
+			}
 		}
 		
 		class2Count.put(classToDescribe, total);
 		return evalDescs;
 	}
 	
+	private double accuracy(int total, int success){
+		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
+		return (confidenceInterval[0] + confidenceInterval[1]) / 2;
+	}
+	
+	private double fMEasure(double precision, double recall){
+		return 2 * precision * recall / (precision + recall);
+	}
 	
 	private void keepMostGeneralClasses(Set<NamedClass> classes){
 		if(ks.isRemote()){
@@ -384,12 +427,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	}
 	
 	public static void main(String[] args) throws Exception{
-//		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
-		SparqlEndpointKS ks = new LocalModelBasedSparqlEndpointKS(new URL("http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/examples/swore/swore.rdf?revision=2217"));
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
+		ks = new LocalModelBasedSparqlEndpointKS(new URL("http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/examples/swore/swore.rdf?revision=2217"));
+		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		DisjointClassesLearner l = new DisjointClassesLearner(ks);
-		l.setClassToDescribe(new NamedClass("http://ns.softwiki.de/req/CustomerRequirement"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Book"));
 		l.init();
-//		l.getReasoner().prepareSubsumptionHierarchy();
+		l.getReasoner().prepareSubsumptionHierarchy();
+		l.getReasoner().precomputeClassPopularity();
 //		System.out.println(l.getReasoner().getClassHierarchy().getSubClasses(new NamedClass("http://dbpedia.org/ontology/Athlete"), false));System.exit(0);
 		l.start();
 		
