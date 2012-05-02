@@ -19,7 +19,10 @@
  */
 package org.dllearner.scripts.evaluation;
 
+import static java.util.Arrays.asList;
+
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,9 +34,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -60,6 +65,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -70,14 +79,17 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.InverseObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
@@ -107,6 +119,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -125,7 +138,6 @@ import org.dllearner.utilities.owl.DLLearnerAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
-import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -182,13 +194,12 @@ public class EnrichmentEvaluation {
 	// only axioms with a score above this threshold will be considered
 	private double threshold = 0.7;
 	
-	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-//	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	private SparqlEndpoint endpoint;
 
 	// can be used to only evaluate a part of DBpedia
-	private int maxObjectProperties = 0;
-	private int maxDataProperties = 0;
-	private int maxClasses = 0;
+	private int maxObjectProperties = 1;
+	private int maxDataProperties = 1;
+	private int maxClasses = 1;
 	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
 	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
@@ -202,16 +213,19 @@ public class EnrichmentEvaluation {
 	private OWLOntology dbPediaOntology;
 	private OWLReasoner reasoner;
 	private OWLDataFactory factory = new OWLDataFactoryImpl();
-
-	public EnrichmentEvaluation() {
-
+	
+	private SPARQLReasoner sparqlReasoner;
+	
+	public EnrichmentEvaluation(SparqlEndpoint endpoint) {
+		this.endpoint = endpoint;
+		
 		prefixes = new HashMap<String,String>();
 		prefixes.put("dbp","http://dbpedia.org/property/");
 		prefixes.put("dbo","http://dbpedia.org/ontology/");
 		prefixes.put("yago", "http://dbpedia.org/class/");
 		
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-//		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
@@ -219,12 +233,14 @@ public class EnrichmentEvaluation {
 		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
 		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
 		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(AsymmetricObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(InverseObjectPropertyAxiomLearner.class);
 
 		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-//		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
 		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
 		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
 		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
@@ -301,25 +317,35 @@ public class EnrichmentEvaluation {
 
 	}
 
-	public void start() throws IllegalArgumentException, SecurityException, InstantiationException,
+	public void start(boolean runClassAlgorithms, boolean runObjectPropertyAlgorithms, boolean runDataPropertyAlgorithms) throws IllegalArgumentException, SecurityException, InstantiationException,
 			IllegalAccessException, InvocationTargetException, NoSuchMethodException,
 			ComponentInitException, InterruptedException {
-//		dropAndCreateTable();
 		
 		long overallStartTime = System.currentTimeMillis();
 
 		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		ks.init();
 		
-//		evaluateObjectProperties(ks);
+		sparqlReasoner = new SPARQLReasoner(ks);
+		sparqlReasoner.setCache(new ExtractionDBCache("cache"));
+		sparqlReasoner.prepareSubsumptionHierarchy();
+		
+		Thread.sleep(20000);
+		if(runClassAlgorithms){
+			evaluateClasses(ks);
+		}
 		
 		Thread.sleep(20000);
 		
-//		evaluateDataProperties(ks);
-//		
-//		Thread.sleep(20000);
+		if(runObjectPropertyAlgorithms){
+			evaluateObjectProperties(ks);
+		}
 		
-		evaluateClasses(ks);
+		Thread.sleep(20000);
+		
+		if(runDataPropertyAlgorithms){
+			evaluateDataProperties(ks);
+		}
 		
 		System.out.println("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
 
@@ -338,6 +364,7 @@ public class EnrichmentEvaluation {
 						// dynamically invoke constructor with SPARQL knowledge source
 						AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
 								SparqlEndpointKS.class).newInstance(ks);
+						((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
 						ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
 						ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 								maxExecutionTimeInSeconds);
@@ -390,7 +417,7 @@ public class EnrichmentEvaluation {
 							}
 						}
 						objectProperties++;
-						if (maxObjectProperties != 0 && objectProperties > maxObjectProperties) {
+						if (maxObjectProperties != 0 && objectProperties == maxObjectProperties) {
 							break;
 						}
 					
@@ -410,11 +437,12 @@ public class EnrichmentEvaluation {
 			Thread.sleep(10000);
 			String algName = "";
 			for (DatatypeProperty property : properties) {
-
+				Thread.sleep(1000);
 				try{
 				// dynamically invoke constructor with SPARQL knowledge source
 				AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
 						SparqlEndpointKS.class).newInstance(ks);
+				((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
 				ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
 				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 						maxExecutionTimeInSeconds);
@@ -466,7 +494,7 @@ public class EnrichmentEvaluation {
 					}
 				}
 				dataProperties++;
-				if (maxDataProperties != 0 && dataProperties > maxDataProperties) {
+				if (maxDataProperties != 0 && dataProperties == maxDataProperties) {
 					break;
 				}
 				
@@ -499,6 +527,7 @@ public class EnrichmentEvaluation {
 						// dynamically invoke constructor with SPARQL knowledge source
 						LearningAlgorithm learner = algorithmClass.getConstructor(
 								SparqlEndpointKS.class).newInstance(ks);
+						((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
 						ConfigHelper.configure(learner, "classToDescribe", cls.toString());
 						ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 								maxExecutionTimeInSeconds);
@@ -548,7 +577,7 @@ public class EnrichmentEvaluation {
 					}
 					
 					classesCnt++;
-					if (maxClasses != 0 && classesCnt > maxClasses) {
+					if (maxClasses != 0 && classesCnt == maxClasses) {
 						break;
 					}
 					
@@ -689,7 +718,7 @@ public class EnrichmentEvaluation {
 			int numberOfEntitiesWithTimeout = rs.getInt(1);
 			
 			//compute average number of suggestions above threshold
-			ps = conn.prepareStatement("SELECT AVG(cnt) FROM (SELECT entity, COUNT(axiom) AS cnt FROM (SELECT * FROM evaluation WHERE algorithm=? AND score >=?) AS A GROUP BY entity) AS B");
+			ps = conn.prepareStatement("SELECT AVG(cnt) FROM (SELECT entity, COUNT(DISTINCT axiom) AS cnt FROM (SELECT * FROM evaluation WHERE algorithm=? AND score >=?) AS A GROUP BY entity) AS B");
 			ps.setString(1, algoName);
 			ps.setDouble(2, threshold);
 			rs = ps.executeQuery();
@@ -734,6 +763,7 @@ public class EnrichmentEvaluation {
 		}
 		table1.append("\\bottomrule\n\\end{tabulary}");
 		System.out.println(table1.toString());
+		write2Disk(table1.toString(), "evaluation/table1.tex");
 		
 		
 		//second part of evaluation
@@ -821,6 +851,7 @@ public class EnrichmentEvaluation {
 		
 		table2.append("\\end{tabulary}");
 		System.out.println(table2.toString());
+		write2Disk(table2.toString(), "evaluation/table2.tex");
 	}
 	
 	private void writeToDisk(AxiomType<? extends OWLAxiom> axiomType, Map<String, Double> axiomsWithAccurracy){
@@ -859,6 +890,19 @@ public class EnrichmentEvaluation {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+	
+	private void write2Disk(String content, String file){
+		try {
+			new File(file).createNewFile();
+			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+			bos.write(content.getBytes());
+			bos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -920,8 +964,10 @@ public class EnrichmentEvaluation {
 		axiomType2Algorithm.put(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{FunctionalObjectPropertyAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{InverseFunctionalObjectPropertyAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.SYMMETRIC_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{SymmetricObjectPropertyAxiomLearner.class}));
+		axiomType2Algorithm.put(AxiomType.ASYMMETRIC_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{AsymmetricObjectPropertyAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.REFLEXIVE_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{ReflexiveObjectPropertyAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.IRREFLEXIVE_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{IrreflexiveObjectPropertyAxiomLearner.class}));
+		axiomType2Algorithm.put(AxiomType.INVERSE_OBJECT_PROPERTIES, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{InverseObjectPropertyAxiomLearner.class}));
 		
 		axiomType2Algorithm.put(AxiomType.SUB_DATA_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{SubDataPropertyOfAxiomLearner.class}));
 		axiomType2Algorithm.put(AxiomType.EQUIVALENT_DATA_PROPERTIES, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{EquivalentDataPropertyAxiomLearner.class}));
@@ -1127,18 +1173,99 @@ public class EnrichmentEvaluation {
 	}
 
 	public static void main(String[] args) throws Exception
-	
+
 	{
-		EnrichmentEvaluation ee = new EnrichmentEvaluation();
-		ee.dropAndCreateTable();
-		ee.start();
-		// ee.printResultsPlain();
-		ee.printResultsLaTeX();
-		Files.createFile(new File("enrichment_eval.html"), ee.printHTMLTable());
-		FileAppender app = new FileAppender(new SimpleLayout(), "log/enrichmentEvalErrors.log");
-		Logger.getRootLogger().setLevel(Level.ERROR);
-		Logger.getRootLogger().removeAllAppenders();
-		Logger.getRootLogger().addAppender(app);
+		OptionParser parser = new OptionParser();
+		parser.acceptsAll(asList("h", "?", "help"), "Show help.");
+		parser.acceptsAll(asList("e", "endpoint"),
+				"SPARQL endpoint URL to be used.").withRequiredArg()
+				.ofType(URL.class);
+		parser.acceptsAll(asList("g", "graph"),
+				"URI of default graph for queries on SPARQL endpoint.")
+				.withOptionalArg().ofType(URI.class);
+		parser.acceptsAll(asList("c", "classes"),
+				"Run class axiom algorithms")
+				.withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+		parser.acceptsAll(asList("o", "objectProperties"),
+				"Run object property axiom algorithms")
+				.withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+		parser.acceptsAll(asList("d", "dataProperties"),
+				"Run data property axiom algorithms")
+				.withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+		parser.acceptsAll(asList("drop"),
+				"Drop and create tables where data for evaluation is stored.")
+				.withOptionalArg().ofType(Boolean.class).defaultsTo(false);
+		
+
+		// parse options and display a message for the user in case of problems
+		OptionSet options = null;
+		try {
+			options = parser.parse(args);
+		} catch (Exception e) {
+			System.out.println("Error: " + e.getMessage()
+					+ ". Use -? to get help.");
+			System.exit(0);
+		}
+
+		// print help screen
+		if (options.has("?")) {
+			parser.printHelpOn(System.out);
+			// main script
+		} else {
+			// check that endpoint was specified
+			if (!options.hasArgument("endpoint")) {
+				System.out
+						.println("Please specify a SPARQL endpoint (using the -e option).");
+				System.exit(0);
+			}
+
+			// create SPARQL endpoint object (check that indeed a URL was given)
+			URL endpoint = null;
+			try {
+				endpoint = (URL) options.valueOf("endpoint");
+			} catch (OptionException e) {
+				System.out
+						.println("The specified endpoint appears not to be a proper URL.");
+				System.exit(0);
+			}
+			URI graph = null;
+			try {
+				graph = (URI) options.valueOf("graph");
+			} catch (OptionException e) {
+				System.out
+						.println("The specified graph appears not to be a proper URL.");
+				System.exit(0);
+			}
+
+			LinkedList<String> defaultGraphURIs = new LinkedList<String>();
+			if (graph != null) {
+				defaultGraphURIs.add(graph.toString());
+			}
+
+			SparqlEndpoint se = new SparqlEndpoint(endpoint, defaultGraphURIs,
+					new LinkedList<String>());
+			
+			boolean runClassAlgorithms = (Boolean) options.valueOf("classes");
+			boolean runObjectPropertyAlgorithms = (Boolean) options.valueOf("objectProperties");
+			boolean runDataPropertyAlgorithms = (Boolean) options.valueOf("dataProperties");
+			
+			boolean dropTables = (Boolean) options.valueOf("drop");
+
+			EnrichmentEvaluation ee = new EnrichmentEvaluation(se);
+			if(dropTables){
+				ee.dropAndCreateTable();
+			}
+			ee.start(runClassAlgorithms, runObjectPropertyAlgorithms, runDataPropertyAlgorithms);
+			// ee.printResultsPlain();
+			ee.printResultsLaTeX();
+			Files.createFile(new File("enrichment_eval.html"),
+					ee.printHTMLTable());
+			FileAppender app = new FileAppender(new SimpleLayout(),
+					"log/enrichmentEvalErrors.log");
+			Logger.getRootLogger().setLevel(Level.ERROR);
+			Logger.getRootLogger().removeAllAppenders();
+			Logger.getRootLogger().addAppender(app);
+		}
 	}
 
 }
