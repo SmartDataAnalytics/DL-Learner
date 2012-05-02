@@ -199,7 +199,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		Model model = ModelFactory.createDefaultModel();
 		
 		//load class hierarchy
-		String query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?o} WHERE {?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?o}";
+		String query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?o} WHERE {?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?o.FILTER(!REGEX(STR(?s), 'http://dbpedia.org/class/yago/'))}";
 		model.add(loadIncrementally(query));
 		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#equivalentClass> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#equivalentClass> ?o}";
 		model.add(loadIncrementally(query));
@@ -277,6 +277,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 //			System.exit(0);
 			f = new QueryExecutionFactoryPaginated(f, 1000);
 			Model model = f.createQueryExecution(query).execConstruct();
+			System.out.println(query);
+			System.out.println("Got " + model.size() + " triple.");
 			return model;
 //		} catch (ClassNotFoundException e) {
 //			e.printStackTrace();
