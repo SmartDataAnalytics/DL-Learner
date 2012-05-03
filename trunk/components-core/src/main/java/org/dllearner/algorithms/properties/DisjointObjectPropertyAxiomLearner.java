@@ -94,7 +94,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		allObjectProperties = new SPARQLTasks(ks.getEndpoint()).getAllObjectProperties();
 		allObjectProperties.remove(propertyToDescribe);
 		
-		if(ks.supportsSPARQL_1_1()){
+		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
 			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();
