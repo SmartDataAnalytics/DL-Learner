@@ -71,6 +71,7 @@ import joptsimple.OptionSet;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -137,18 +138,18 @@ import org.dllearner.utilities.owl.DLLearnerAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
-import org.semanticweb.HermiT.Configuration;
-import org.semanticweb.HermiT.Reasoner;
-import org.semanticweb.HermiT.examples.HermiTConfigurations;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -332,35 +333,33 @@ public class EnrichmentEvaluation {
 		sparqlReasoner.setCache(new ExtractionDBCache("cache"));
 		sparqlReasoner.setUseCache(true);
 		sparqlReasoner.prepareSubsumptionHierarchy();
-		sparqlReasoner.precomputeClassPopularity();
+		sparqlReasoner.precomputePopularity();
 		
-		Thread.sleep(20000);
 		if(runClassAlgorithms){
 			evaluateClasses(ks);
+			Thread.sleep(20000);
 		}
-		
-		Thread.sleep(20000);
 		
 		if(runObjectPropertyAlgorithms){
 			evaluateObjectProperties(ks);
+			Thread.sleep(20000);
 		}
-		
-		Thread.sleep(20000);
 		
 		if(runDataPropertyAlgorithms){
 			evaluateDataProperties(ks);
 		}
 		
-		System.out.println("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
+		logger.info("Overall runtime: " + (System.currentTimeMillis()-overallStartTime)/1000 + "s.");
 
 	}
 	
 	private void evaluateObjectProperties(SparqlEndpointKS ks)throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
 		Set<ObjectProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllObjectProperties();
+		logger.info("Evaluating " + properties.size() + " object properties...");
 
 		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
 			int objectProperties = 0;
-			Thread.sleep(10000);
+			Thread.sleep(5000);
 			String algName = "";
 				for (ObjectProperty property : properties) {
 					
@@ -383,13 +382,13 @@ public class EnrichmentEvaluation {
 						while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
 							if(attempt > 1){
 								try {
-									System.out.println("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
+									logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
 									Thread.sleep(delayInMilliseconds);
 								} catch (InterruptedException e) {
 									e.printStackTrace();
 								}
 							}
-							System.out.println("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
+							logger.info("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
 							startTime = System.currentTimeMillis();
 							try {
 								learner.start();
@@ -435,10 +434,10 @@ public class EnrichmentEvaluation {
 	
 	private void evaluateDataProperties(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
 		Set<DatatypeProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
-
+		logger.info("Evaluating " + properties.size() + " data properties...");
 		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
 			int dataProperties = 0;
-			Thread.sleep(10000);
+			Thread.sleep(5000);
 			String algName = "";
 			for (DatatypeProperty property : properties) {
 				Thread.sleep(1000);
@@ -461,12 +460,13 @@ public class EnrichmentEvaluation {
 				while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
 					if(attempt > 1){
 						try {
+							logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
 							Thread.sleep(delayInMilliseconds);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 					}
-					System.out.println("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
+					logger.info("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
 					startTime = System.currentTimeMillis();
 					try {
 						learner.start();
@@ -511,10 +511,10 @@ public class EnrichmentEvaluation {
 	
 	private void evaluateClasses(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
 		Set<NamedClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
-
+		logger.info("Evaluating " + classes.size() + " classes...");
 		for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
 			int classesCnt = 0;
-			Thread.sleep(10000);
+			Thread.sleep(5000);
 			for (NamedClass cls : classes) {
 
 				try{
@@ -524,7 +524,7 @@ public class EnrichmentEvaluation {
 					String algName;
 					if(algorithmClass == CELOE.class){
 						algName = CELOE.class.getAnnotation(ComponentAnn.class).name();
-						System.out.println("Applying " + algName + " on " + cls + " ... ");
+						logger.info("Applying " + algName + " on " + cls + " ... ");
 						learnedAxioms = applyCELOE(ks, cls, false);
 					} else {
 						
@@ -545,12 +545,13 @@ public class EnrichmentEvaluation {
 						while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
 							if(attempt > 1){
 								try {
+									logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
 									Thread.sleep(delayInMilliseconds);
 								} catch (InterruptedException e) {
 									e.printStackTrace();
 								}
 							}
-							System.out.println("Applying " + algName + " on " + cls + " ... (Attempt " + attempt + ")");
+							logger.info("Applying " + algName + " on " + cls + " ... (Attempt " + attempt + ")");
 							startTime = System.currentTimeMillis();
 							try {
 								learner.start();
@@ -783,16 +784,22 @@ public class EnrichmentEvaluation {
 		// get all entities in database because we compute recall only for axioms of entities which we have tested
 		// we use only entities for which triples in the endpoint are contained
 		java.sql.ResultSet rs = conn.prepareStatement("SELECT DISTINCT entity FROM evaluation WHERE axiom != 'NULL'").executeQuery();
-		Set<OWLEntity> entities = new HashSet<OWLEntity>();
+		Set<OWLEntity> allEntities = new HashSet<OWLEntity>();
+		Set<OWLEntity> classes = new HashSet<OWLEntity>();
+		Set<OWLEntity> objectProperties = new HashSet<OWLEntity>();
+		Set<OWLEntity> dataProperties = new HashSet<OWLEntity>();
 		IRI iri;
 		while(rs.next()){
 			iri = IRI.create("http://dbpedia.org/ontology/" + rs.getString(1).substring(4));
 			if(dbPediaOntology.containsClassInSignature(iri)){
-				entities.add(factory.getOWLClass(iri));
+				allEntities.add(factory.getOWLClass(iri));
+				classes.add(factory.getOWLClass(iri));
 			} else if(dbPediaOntology.containsObjectPropertyInSignature(iri)){
-				entities.add(factory.getOWLObjectProperty(iri));
+				allEntities.add(factory.getOWLObjectProperty(iri));
+				objectProperties.add(factory.getOWLObjectProperty(iri));
 			} else if(dbPediaOntology.containsDataPropertyInSignature(iri)){
-				entities.add(factory.getOWLDataProperty(iri));
+				allEntities.add(factory.getOWLDataProperty(iri));
+				dataProperties.add(factory.getOWLDataProperty(iri));
 			}
 		}
 
@@ -800,9 +807,17 @@ public class EnrichmentEvaluation {
 		
 		//compute recall for each axiom type
 		ps = conn.prepareStatement("SELECT axiom, entailed, score FROM evaluation WHERE algorithm=? AND score>=?");
+		Set<OWLEntity> entities = null;
 		for(Entry<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> entry : axiomType2Algorithm.entrySet()){
 			AxiomType<? extends OWLAxiom> type = entry.getKey();
 			algorithms = entry.getValue();
+			if(classAlgorithms.containsAll(algorithms)){
+				entities = classes;
+			} else if(objectPropertyAlgorithms.containsAll(algorithms)){
+				entities = objectProperties;
+			} else if(dataPropertyAlgorithms.containsAll(algorithms)){
+				entities = dataProperties;
+			}
 			
 			ps.setString(1, algorithms.get(0).getAnnotation(ComponentAnn.class).name());
 			ps.setDouble(2, threshold);
@@ -826,10 +841,9 @@ public class EnrichmentEvaluation {
 			}
 			
 			//get all axioms in the reference ontology for a specific axiom type
-			Set<String> relevantAxioms = getRelevantAxioms(type, entities);
+			Set<String> relevantAxioms = getRelevantAxioms2(type, entities);
 			//compute the axioms which are in the reference ontology, but not be computed by the learning algorithm
 			Set<String> missedAxioms = org.mindswap.pellet.utils.SetUtils.difference(relevantAxioms, foundAxioms);
-			System.out.println(missedAxioms);
 			//compute the additional found axioms which were not entailed
 			for(String relAxiom : relevantAxioms){
 				foundAndNotEntailedAxioms.remove(relAxiom);
@@ -956,8 +970,8 @@ public class EnrichmentEvaluation {
 	
 	private Map<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> getAxiomTypesWithLearningAlgorithms(){
 		Map<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> axiomType2Algorithm = new LinkedHashMap<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>>();
-		axiomType2Algorithm.put(AxiomType.SUBCLASS_OF, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{SimpleSubclassLearner.class, CELOE.class}));
-		axiomType2Algorithm.put(AxiomType.EQUIVALENT_CLASSES, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{CELOE.class}));
+		axiomType2Algorithm.put(AxiomType.SUBCLASS_OF, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{SimpleSubclassLearner.class}));//, CELOE.class}));
+//		axiomType2Algorithm.put(AxiomType.EQUIVALENT_CLASSES, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{CELOE.class}));
 		axiomType2Algorithm.put(AxiomType.DISJOINT_CLASSES, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{DisjointClassesLearner.class}));
 		
 		axiomType2Algorithm.put(AxiomType.SUB_OBJECT_PROPERTY, Arrays.asList((Class<? extends LearningAlgorithm>[])new Class[]{SubObjectPropertyOfAxiomLearner.class}));
@@ -989,6 +1003,31 @@ public class EnrichmentEvaluation {
 					String axiomString = DLLearnerAxiomConvertVisitor.getDLLearnerAxiom(axiom).toManchesterSyntaxString(baseURI, prefixes);
 					relevantAxioms.add(axiomString);
 				}
+			}
+		}
+		return relevantAxioms;
+	}
+	
+	private Set<String> getRelevantAxioms2(AxiomType<? extends OWLAxiom> axiomType, Set<OWLEntity> entities){
+		Set<String> relevantAxioms = new HashSet<String>();
+		if(entities.isEmpty()){
+			return relevantAxioms;
+		}
+		Set<OWLAxiom> entityAxioms = new HashSet<OWLAxiom>();
+		for(OWLEntity entity : entities){
+			if(entity.isOWLDataProperty()){
+				entityAxioms.addAll(dbPediaOntology.getAxioms((OWLDataProperty)entity));
+			} else if(entity.isOWLObjectProperty()){
+				entityAxioms.addAll(dbPediaOntology.getAxioms((OWLObjectProperty)entity));
+			} else if(entity.isOWLClass()){
+				entityAxioms.addAll(dbPediaOntology.getAxioms((OWLClass)entity));
+			}
+		}
+		
+		for(OWLAxiom axiom : entityAxioms){
+			if(axiom.getAxiomType() == axiomType && !axiom.getClassesInSignature().contains(factory.getOWLThing())){
+				String axiomString = DLLearnerAxiomConvertVisitor.getDLLearnerAxiom(axiom).toManchesterSyntaxString(baseURI, prefixes);
+				relevantAxioms.add(axiomString);
 			}
 		}
 		return relevantAxioms;
@@ -1139,10 +1178,10 @@ public class EnrichmentEvaluation {
 		} catch (OWLOntologyCreationException e1) {
 			e1.printStackTrace();
 		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
+			
 		}
 		if(dbPediaOntology == null){
-			System.out.println("Loading schema ...");
+			logger.info("Loading schema ...");
 			SPARQLReasoner r = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
 			dbPediaOntology = convert(r.loadSchema());
 			try {
@@ -1157,12 +1196,14 @@ public class EnrichmentEvaluation {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Preparing reasoner ...");
+		
+		logger.info("Preparing reasoner ...");
 //		Configuration conf = new Configuration();
 //		conf.ignoreUnsupportedDatatypes = true;
 //		reasoner = new Reasoner(conf, dbPediaOntology);
 		 reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbPediaOntology);
 		 reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+		 logger.info("done.");
 	}
 	
 	private OWLOntology convert(Model model){
@@ -1178,9 +1219,24 @@ public class EnrichmentEvaluation {
 		return ontology;
 	}
 
-	public static void main(String[] args) throws Exception
-
-	{
+	public static void main(String[] args) throws Exception {
+		Logger.getRootLogger().setLevel(Level.INFO);
+		Logger.getRootLogger().removeAllAppenders();
+		
+		FileAppender app = new FileAppender(new SimpleLayout(),
+				"evaluation/errors.log");
+		app.setThreshold(Level.ERROR);
+		Logger.getRootLogger().addAppender(app);
+		
+		FileAppender app2 = new FileAppender(new SimpleLayout(),
+				"evaluation/enrichment.log");
+		app2.setThreshold(Level.INFO);
+		Logger.getRootLogger().addAppender(app);
+		
+		ConsoleAppender consApp = new ConsoleAppender(new SimpleLayout());
+		Logger.getRootLogger().addAppender(consApp);
+		
+		
 		OptionParser parser = new OptionParser();
 		parser.acceptsAll(asList("h", "?", "help"), "Show help.");
 		parser.acceptsAll(asList("e", "endpoint"),
@@ -1266,11 +1322,9 @@ public class EnrichmentEvaluation {
 			ee.printResultsLaTeX();
 			Files.createFile(new File("enrichment_eval.html"),
 					ee.printHTMLTable());
-			FileAppender app = new FileAppender(new SimpleLayout(),
-					"log/enrichmentEvalErrors.log");
-			Logger.getRootLogger().setLevel(Level.ERROR);
-			Logger.getRootLogger().removeAllAppenders();
-			Logger.getRootLogger().addAppender(app);
+			
+			
+			
 		}
 	}
 
