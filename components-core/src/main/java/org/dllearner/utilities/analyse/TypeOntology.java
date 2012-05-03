@@ -33,7 +33,8 @@ public class TypeOntology {
 		Set<String> individuals = new HashSet<String>();
 		Set<Triple> triples = model.getGraph().find(Triple.ANY).toSet();
 
-		ExtendedIterator<OntClass> itClass = model.listClasses();
+
+		ExtendedIterator<OntClass> itClass = model.listNamedClasses();
 		while (itClass.hasNext()) {
 			classes.add(itClass.next().getURI());
 		}
@@ -58,7 +59,7 @@ public class TypeOntology {
 		String sUri;
 		String pUri;
 		String oUri;
-		System.out.println(individuals);
+		//System.out.println(individuals);
 
 		// foreach triple in the model
 		for (Triple triple : triples) {
@@ -72,16 +73,16 @@ public class TypeOntology {
 
 			// if subject is an Individual
 			if (individuals.contains(sUri)) {
-				log.debug("Subject is an individuals {}",triple);
+				log.trace("Subject is an individual {}",triple);
 
 				// if predicate is rdf:type
 				if (pUri.equals(RDF.type.getURI())) {
 
 					// if object is not in the list of class and not equals
 					// owl:thing
-					if (!classes.contains(model.getResource(oUri))
+					if (!classes.contains(oUri)
 							&& !oUri.equals(OWL.Thing.getURI())) {
-						model.getResource(oUri).addProperty(RDFS.subClassOf, OWL.Thing);
+						model.getResource(oUri).addProperty(RDF.type,OWL.Class);
 						classes.add(oUri);
 						changes++;
 						log.debug("{} is a class",oUri);
@@ -133,9 +134,16 @@ public class TypeOntology {
 				}
 				// if subject is an owl:class
 			} else if (classes.contains(sUri)) {
-				model.getResource(oUri).addProperty(
-						com.hp.hpl.jena.vocabulary.RDFS.subClassOf, OWL.Thing);
-				changes++;
+                log.trace("Subject is a class {}",triple);
+
+                //TODO check this assumption
+                //if s is owl:class, then o is owl:class too ????
+                if(!classes.contains(oUri) ){
+				    model.getResource(oUri).addProperty(RDF.type, OWL.Class);
+                    classes.add(oUri);
+                    log.debug("{} is a class",oUri);
+				    changes++;
+                }
 			}
 		}
 		return changes;
@@ -156,11 +164,8 @@ public class TypeOntology {
 			}
 		}
 //		model.write(System.out);
-		int changes;
-		do{
-			changes=this.addTypes(model);
-		} while(changes!=0);
-		
+		while(this.addTypes(model)!=0);
+
 		return model;
 	}
 
