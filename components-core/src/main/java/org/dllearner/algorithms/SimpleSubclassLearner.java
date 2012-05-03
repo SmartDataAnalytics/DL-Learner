@@ -170,7 +170,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		boolean notEmpty = false;
 		String query;
 		if(ks.supportsSPARQL_1_1()){
-			query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}", classToDescribe.getName(), limit, offset);
+			query = String.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT DISTINCT ?ind ?type WHERE {?ind a ?type.?type a owl:Class. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}", classToDescribe.getName(), limit, offset);
 		} else {
 			query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d", classToDescribe.getName(), limit, offset);
 		}

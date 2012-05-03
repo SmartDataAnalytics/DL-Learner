@@ -210,7 +210,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	private void runSPARQL1_1_Mode(){
 		int limit = 1000;
 		int offset = 0;
-		String queryTemplate = "SELECT ?type (COUNT(?s) AS ?count) WHERE {?s a ?type." +
+		String queryTemplate = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(?s) AS ?count) WHERE {?s a ?type. ?type a owl:Class" +
 		"{SELECT ?s WHERE {?s a <%s>.} LIMIT %d OFFSET %d} " +
 		"} GROUP BY ?type";
 		String query;
@@ -220,7 +220,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		boolean repeat = true;
 		
 		while(!terminationCriteriaSatisfied() && repeat){
-			query = String.format(queryTemplate, classToDescribe, limit, offset);
+			query = String.format(queryTemplate, classToDescribe, limit, offset);System.out.println(query);
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
 			repeat = false;
@@ -350,8 +350,9 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		}
 		
 		//secondly, create disjoint classexpressions with score 1 - (#occurence/#all)
+		NamedClass cls;
 		for (Entry<NamedClass, Integer> entry : sortByValues(class2Count)) {
-			NamedClass cls = entry.getKey();
+			cls = entry.getKey();
 			// drop classes from OWL and RDF namespace
 			if (cls.getName().startsWith(OWL2.getURI()) || cls.getName().startsWith(RDF.getURI()))
 				continue;
@@ -384,15 +385,6 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		
 		class2Count.put(classToDescribe, total);
 		return evalDescs;
-	}
-	
-	private double accuracy(int total, int success){
-		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
-		return (confidenceInterval[0] + confidenceInterval[1]) / 2;
-	}
-	
-	private double fMEasure(double precision, double recall){
-		return 2 * precision * recall / (precision + recall);
 	}
 	
 	private void keepMostGeneralClasses(Set<NamedClass> classes){

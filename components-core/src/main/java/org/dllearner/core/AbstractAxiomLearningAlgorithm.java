@@ -227,7 +227,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected Model executeConstructQuery(String query) {
-		logger.info("Sending query\n{} ...", query);
+		logger.debug("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
 			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
@@ -241,7 +241,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 				return model;
 			} catch (QueryExceptionHTTP e) {
 				if(e.getCause() instanceof SocketTimeoutException){
-					logger.warn("Got timeout", e);
+					logger.warn("Got timeout");
 				} else {
 					logger.error("Exception executing query", e);
 				}
@@ -254,7 +254,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected ResultSet executeSelectQuery(String query) {
-		logger.info("Sending query\n{} ...", query);
+		logger.debug("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
 			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
@@ -268,7 +268,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 				return rs;
 			} catch (QueryExceptionHTTP e) {
 				if(e.getCause() instanceof SocketTimeoutException){
-					logger.warn("Got timeout", e);
+					logger.warn("Got timeout");
 				} else {
 					logger.error("Exception executing query", e);
 				}
@@ -280,7 +280,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected ResultSet executeSelectQuery(String query, Model model) {
-		logger.info("Sending query on local model\n{} ...", query);
+		logger.debug("Sending query on local model\n{} ...", query);
 		QueryExecution qexec = QueryExecutionFactory.create(query, model);
 		ResultSet rs = qexec.execSelect();;
 
@@ -364,6 +364,15 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		double confidence = confidenceInterval[1] - confidenceInterval[0];
 		
 		return new AxiomScore(accuracy, confidence);
+	}
+	
+	protected double accuracy(int total, int success){
+		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
+		return (confidenceInterval[0] + confidenceInterval[1]) / 2;
+	}
+	
+	protected double fMEasure(double precision, double recall){
+		return 2 * precision * recall / (precision + recall);
 	}
 	
 	class OWLFilter extends Filter<OntClass>{

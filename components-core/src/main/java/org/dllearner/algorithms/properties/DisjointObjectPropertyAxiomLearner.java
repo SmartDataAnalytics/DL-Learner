@@ -19,9 +19,7 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,17 +30,15 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.DisjointObjectPropertyAxiom;
-import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.Heuristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +46,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 @ComponentAnn(name="disjoint objectproperty axiom learner", shortName="opldisjoint", version=0.1)
 public class DisjointObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
@@ -62,6 +59,8 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	private Set<ObjectProperty> allObjectProperties;
 	
 	private boolean usePropertyPopularity = true;
+	
+	private int popularity;
 	
 	public DisjointObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -82,9 +81,16 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
+		//we return here if the class contains no instances
+		popularity = reasoner.getPopularity(propertyToDescribe);
+		if(popularity == 0){
+			return;
+		}
+		
 		//TODO detect existing axioms
 		
-		//at first get all existing objectproperties in knowledgebase
+		
+		//at first get all existing objectproperties in knowledge base
 		allObjectProperties = new SPARQLTasks(ks.getEndpoint()).getAllObjectProperties();
 		allObjectProperties.remove(propertyToDescribe);
 		
@@ -139,7 +145,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	private void runSPARQL1_1_Mode() {
 		//get properties and how often they occur
 		int offset = 0;
-		String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?s ?p ?o." +
+		String queryTemplate = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p COUNT(?s) AS ?count WHERE {?p a owl:ObjectProperty. ?s ?p ?o." +
 		"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
 		"}";
 		String query;
@@ -187,12 +193,25 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		//first create disjoint axioms with properties which not occur and give score of 1
 		for(ObjectProperty p : completeDisjointProperties){
 			if(usePropertyPopularity){
-				int popularity = reasoner.getPropertyCount(p);
-				//skip if property is not used in kb
-				if(popularity == 0) continue;
-				double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(popularity, 0);
-				double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
-				evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(1- accuracy));
+				int overlap = 0;
+				int pop;
+				if(ks.isRemote()){
+					pop = reasoner.getPopularity(p);
+				} else {
+					Model model = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
+					pop = model.listStatements(null, model.getProperty(p.getName()), (RDFNode)null).toSet().size();
+				}
+				//we skip classes with no instances
+				if(pop == 0) continue;
+				
+				//we compute the estimated precision
+				double precision = accuracy(pop, overlap);
+				//we compute the estimated recall
+				double recall = accuracy(popularity, overlap);
+				//compute the overall score
+				double score = 1 - fMEasure(precision, recall);
+				
+				evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(score));
 			} else {
 				evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(1));
 			}
@@ -200,12 +219,28 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		}
 		
 		//second create disjoint axioms with other properties and score 1 - (#occurence/#all)
+		ObjectProperty p;
 		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
-			double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(all, entry.getValue());
-			double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;//System.out.println(entry + ": " + accuracy);
-			evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, entry.getKey()),
-					new AxiomScore(1 - accuracy));
-			axioms.add(evalAxiom);
+			p = entry.getKey();
+			int overlap = entry.getValue();
+			int pop;
+			if(ks.isRemote()){
+				pop = reasoner.getPopularity(p);
+			} else {
+				Model model = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
+				pop = model.listStatements(null, model.getProperty(p.getName()), (RDFNode)null).toSet().size();
+			}
+			//we skip classes with no instances
+			if(pop == 0) continue;
+			
+			//we compute the estimated precision
+			double precision = accuracy(pop, overlap);
+			//we compute the estimated recall
+			double recall = accuracy(popularity, overlap);
+			//compute the overall score
+			double score = 1 - fMEasure(precision, recall);
+			
+			evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(score));
 		}
 		
 		property2Count.put(propertyToDescribe, all);
@@ -216,9 +251,10 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 //		endpoint = new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
 		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(endpoint));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/stateOfOrigin"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/birthPlace"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
+		l.getReasoner().precomputeObjectPropertyPopularity();
 		l.start();
 		for(EvaluatedAxiom ax : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE)){
 			System.out.println(ax);
