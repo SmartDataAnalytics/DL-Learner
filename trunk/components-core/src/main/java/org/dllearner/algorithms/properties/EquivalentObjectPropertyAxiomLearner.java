@@ -129,7 +129,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	private void runSPARQL1_1_Mode() {
 		//get subjects with types
 				int offset = 0;
-				String queryTemplate = "SELECT ?p (COUNT(?s) AS ?count) WHERE {?s ?p ?o." +
+				String queryTemplate = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(?s) AS ?count) WHERE {?s ?p ?o.?p a owl:ObjectProperty." +
 				"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
 				"}";
 				String query;

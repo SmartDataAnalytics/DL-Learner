@@ -77,13 +77,13 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 		
 		if(reasoner.isPrepared()){
 			//get existing ranges
-			Description existingDomain = reasoner.getRange(propertyToDescribe);
-			if(existingDomain != null){
-				existingAxioms.add(new ObjectPropertyRangeAxiom(propertyToDescribe, existingDomain));
+			Description existingRange = reasoner.getRange(propertyToDescribe);
+			if(existingRange != null){
+				existingAxioms.add(new ObjectPropertyRangeAxiom(propertyToDescribe, existingRange));
 				if(reasoner.isPrepared()){
-					if(reasoner.getClassHierarchy().contains(existingDomain)){
-						for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
-							existingAxioms.add(new ObjectPropertyRangeAxiom(propertyToDescribe, existingDomain));
+					if(reasoner.getClassHierarchy().contains(existingRange)){
+						for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingRange)){
+							existingAxioms.add(new ObjectPropertyRangeAxiom(propertyToDescribe, existingRange));
 							logger.info("Existing range(inferred): " + sup);
 						}
 					}
@@ -138,7 +138,7 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	}
 	
 	private int addIndividualsWithTypes(Map<Individual, SortedSet<Description>> ind2Types, int limit, int offset){
-		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?s <%s> ?ind. ?ind a ?type.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
+		String query = String.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT DISTINCT ?ind ?type WHERE {?s <%s> ?ind. ?ind a ?type. ?type a owl:Class} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
 		
 //		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind <%s> ?o.} LIMIT %d OFFSET %d}}", propertyToDescribe.getName(), limit, offset);
 		
@@ -179,9 +179,9 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 		
 		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/author"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/routeTypeAbbreviation"));
 		l.setMaxExecutionTimeInSeconds(10);
-		l.setReturnOnlyNewAxioms(true);
+//		l.setReturnOnlyNewAxioms(true);
 		l.init();
 		l.start();
 		

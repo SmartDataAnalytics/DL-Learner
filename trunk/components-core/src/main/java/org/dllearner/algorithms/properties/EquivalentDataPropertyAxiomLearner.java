@@ -126,7 +126,7 @@ public class EquivalentDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		// get subjects with types
 		int limit = 1000;
 		int offset = 0;
-		String queryTemplate = "SELECT ?p COUNT(?s) AS ?count WHERE {?s ?p ?o."
+		String queryTemplate = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p COUNT(?s) AS ?count WHERE {?s ?p ?o.?p a owl:DatatypeProperty."
 				+ "{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" + "}";
 		String query;
 		Map<DatatypeProperty, Integer> result = new HashMap<DatatypeProperty, Integer>();

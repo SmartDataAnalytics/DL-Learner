@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -33,6 +34,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DisjointDatatypePropertyAxiom;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -44,6 +46,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 @ComponentAnn(name="disjoint dataproperty axiom learner", shortName="dpldisjoint", version=0.1)
 public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
@@ -54,6 +57,10 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 	private DatatypeProperty propertyToDescribe;
 	
 	private Set<DatatypeProperty> allDataProperties;
+	
+	private boolean usePropertyPopularity = true;
+	
+	private int popularity;
 	
 	public DisjointDataPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -74,7 +81,13 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
-		//TODO
+		// we return here if the class contains no instances
+		popularity = reasoner.getPopularity(propertyToDescribe);
+		if (popularity == 0) {
+			return;
+		}
+		
+		//TODO detect existing axioms
 		
 		//at first get all existing dataproperties in knowledgebase
 		allDataProperties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
@@ -132,7 +145,7 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		//get properties and how often they occur
 		int limit = 1000;
 		int offset = 0;
-		String queryTemplate = "SELECT ?p (COUNT(?s) as ?count) WHERE {?s ?p ?o." +
+		String queryTemplate = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(?s) as ?count) WHERE {?p a owl:DatatypeProperty. ?s ?p ?o." +
 		"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
 		"}";
 		String query;
@@ -178,19 +191,62 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		Integer all = property2Count.get(propertyToDescribe);
 		property2Count.remove(propertyToDescribe);
 		
+		//get complete disjoint properties
+		Set<DatatypeProperty> completeDisjointProperties = new TreeSet<DatatypeProperty>(allProperties);
+		completeDisjointProperties.removeAll(property2Count.keySet());
+		
 		EvaluatedAxiom evalAxiom;
 		//first create disjoint axioms with properties which not occur and give score of 1
-		for(DatatypeProperty p : allProperties){
-			evalAxiom = new EvaluatedAxiom(new DisjointDatatypePropertyAxiom(propertyToDescribe, p),
-					new AxiomScore(1));
+		for(DatatypeProperty p : completeDisjointProperties){
+			if(usePropertyPopularity){
+				int overlap = 0;
+				int pop;
+				if(ks.isRemote()){
+					pop = reasoner.getPopularity(p);
+				} else {
+					Model model = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
+					pop = model.listStatements(null, model.getProperty(p.getName()), (RDFNode)null).toSet().size();
+				}
+				//we skip classes with no instances
+				if(pop == 0) continue;
+				
+				//we compute the estimated precision
+				double precision = accuracy(pop, overlap);
+				//we compute the estimated recall
+				double recall = accuracy(popularity, overlap);
+				//compute the overall score
+				double score = 1 - fMEasure(precision, recall);
+				
+				evalAxiom = new EvaluatedAxiom(new DisjointDatatypePropertyAxiom(propertyToDescribe, p), new AxiomScore(score));
+			} else {
+				evalAxiom = new EvaluatedAxiom(new DisjointDatatypePropertyAxiom(propertyToDescribe, p), new AxiomScore(1));
+			}
 			axioms.add(evalAxiom);
 		}
 		
 		//second create disjoint axioms with other properties and score 1 - (#occurence/#all)
+		DatatypeProperty p;
 		for(Entry<DatatypeProperty, Integer> entry : sortByValues(property2Count)){
-			evalAxiom = new EvaluatedAxiom(new DisjointDatatypePropertyAxiom(propertyToDescribe, entry.getKey()),
-					new AxiomScore(1 - (entry.getValue() / (double)all)));
-			axioms.add(evalAxiom);
+			p = entry.getKey();
+			int overlap = entry.getValue();
+			int pop;
+			if(ks.isRemote()){
+				pop = reasoner.getPopularity(p);
+			} else {
+				Model model = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
+				pop = model.listStatements(null, model.getProperty(p.getName()), (RDFNode)null).toSet().size();
+			}
+			//we skip classes with no instances
+			if(pop == 0) continue;
+			
+			//we compute the estimated precision
+			double precision = accuracy(pop, overlap);
+			//we compute the estimated recall
+			double recall = accuracy(popularity, overlap);
+			//compute the overall score
+			double score = 1 - fMEasure(precision, recall);
+			
+			evalAxiom = new EvaluatedAxiom(new DisjointDatatypePropertyAxiom(propertyToDescribe, p), new AxiomScore(score));
 		}
 		
 		property2Count.put(propertyToDescribe, all);
@@ -202,6 +258,7 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/position"));
 		l.setMaxExecutionTimeInSeconds(20);
 		l.init();
+		l.getReasoner().precomputeDataPropertyPopularity();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}

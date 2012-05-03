@@ -94,6 +94,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	private OntModel model;
 	
 	private Map<NamedClass, Integer> classPopularityMap;
+	private Map<ObjectProperty, Integer> objectPropertyPopularityMap;
+	private Map<DatatypeProperty, Integer> dataPropertyPopularityMap;
 	
 	
 	public SPARQLReasoner(SparqlEndpointKS ks) {
@@ -113,6 +115,12 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		this.model = model;
 	}
 	
+	public void precomputePopularity(){
+		precomputeClassPopularity();
+		precomputeDataPropertyPopularity();
+		precomputeObjectPropertyPopularity();
+	}
+	
 	public void precomputeClassPopularity(){
 		logger.info("Precomputing class popularity ...");
 		classPopularityMap = new HashMap<NamedClass, Integer>();
@@ -128,6 +136,36 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		}
 	}
 	
+	public void precomputeObjectPropertyPopularity(){
+		logger.info("Precomputing object property popularity ...");
+		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
+		
+		Set<ObjectProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllObjectProperties();
+		String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
+		
+		ResultSet rs;
+		for(ObjectProperty op : properties){
+			rs = executeSelectQuery(String.format(queryTemplate, op.getName()));
+			int cnt = rs.next().getLiteral("cnt").getInt();
+			objectPropertyPopularityMap.put(op, cnt);
+		}
+	}
+	
+	public void precomputeDataPropertyPopularity(){
+		logger.info("Precomputing data property popularity ...");
+		dataPropertyPopularityMap = new HashMap<DatatypeProperty, Integer>();
+		
+		Set<DatatypeProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
+		String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
+		
+		ResultSet rs;
+		for(DatatypeProperty dp : properties){
+			rs = executeSelectQuery(String.format(queryTemplate, dp.getName()));
+			int cnt = rs.next().getLiteral("cnt").getInt();
+			dataPropertyPopularityMap.put(dp, cnt);
+		}
+	}
+	
 	public int getPopularity(NamedClass nc){
 		if(classPopularityMap.containsKey(nc)){
 			return classPopularityMap.get(nc);
@@ -138,6 +176,36 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			ResultSet rs = executeSelectQuery(String.format(queryTemplate, nc.getName()));
 			int cnt = rs.next().getLiteral("cnt").getInt();
 			classPopularityMap.put(nc, cnt);
+			return cnt;
+		}
+		
+	}
+	
+	public int getPopularity(ObjectProperty op){
+		if(objectPropertyPopularityMap.containsKey(op)){
+			return objectPropertyPopularityMap.get(op);
+		} else {
+			System.out.println("Cache miss: " + op);
+			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
+			
+			ResultSet rs = executeSelectQuery(String.format(queryTemplate, op.getName()));
+			int cnt = rs.next().getLiteral("cnt").getInt();
+			objectPropertyPopularityMap.put(op, cnt);
+			return cnt;
+		}
+		
+	}
+	
+	public int getPopularity(DatatypeProperty dp){
+		if(dataPropertyPopularityMap.containsKey(dp)){
+			return dataPropertyPopularityMap.get(dp);
+		} else {
+			System.out.println("Cache miss: " + dp);
+			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
+			
+			ResultSet rs = executeSelectQuery(String.format(queryTemplate, dp.getName()));
+			int cnt = rs.next().getLiteral("cnt").getInt();
+			dataPropertyPopularityMap.put(dp, cnt);
 			return cnt;
 		}
 		
@@ -252,7 +320,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		propertyCharacteristics.add(OWL2.AsymmetricProperty);
 
 		for(Resource propChar : propertyCharacteristics){
-			query = "CONSTRUCT {?s a <%s>} WHERE {?s a <%s>}".replaceAll("%s", propChar.getURI());
+			query = "CONSTRUCT {?s a <%s>. ?s a <http://www.w3.org/2002/07/owl#ObjectProperty>} WHERE {?s a <%s>.}".replaceAll("%s", propChar.getURI());
 			model.add(loadIncrementally(query));
 		}
 		//for functional properties we have to distinguish between data and object properties, 
@@ -914,7 +982,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	}
 	
 	private ResultSet executeSelectQuery(String query){
-		logger.info("Sending query \n {}", query);
+		logger.debug("Sending query \n {}", query);
 		ResultSet rs = null;
 		if(ks.isRemote()){
 			if(useCache){

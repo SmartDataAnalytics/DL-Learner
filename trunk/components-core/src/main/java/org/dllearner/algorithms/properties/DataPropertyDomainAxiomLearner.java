@@ -138,7 +138,7 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 	}
 	
 	private int addIndividualsWithTypes(Map<Individual, SortedSet<Description>> ind2Types, int limit, int offset){
-		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind <%s> ?o. ?ind a ?type} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
+		String query = String.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT DISTINCT ?ind ?type WHERE {?ind <%s> ?o. ?ind a ?type. ?type a owl:Class} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
 		
 //		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind <%s> ?o.} LIMIT %d OFFSET %d}}", propertyToDescribe.getName(), limit, offset);
 		
