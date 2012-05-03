@@ -376,55 +376,59 @@ public class EnrichmentEvaluation {
 						// learner.setMaxExecutionTimeInSeconds(10);
 						algName = AnnComponentManager.getName(learner);
 						
-						int attempt = 0;
-						long startTime = 0;
 						boolean emptyEntity = sparqlReasoner.getPopularity(property) == 0;
 						if(emptyEntity){
 							logger.warn("Empty entity: " + property);
 						}
-						boolean timeout = true;
-						while(!emptyEntity && ((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
-							if(attempt > 1){
+						
+						if(emptyEntity){
+							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0, false);
+						} else {
+							int attempt = 0;
+							long startTime = 0;
+							boolean timeout = true;
+							while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
+								if(attempt > 1){
+									try {
+										logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
+										Thread.sleep(delayInMilliseconds);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+								}
+								logger.info("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
+								startTime = System.currentTimeMillis();
 								try {
-									logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
-									Thread.sleep(delayInMilliseconds);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
+									learner.start();
+									timeout = false;
+								} catch (Exception e) {
+									if(e.getCause() instanceof SocketTimeoutException){
+										
+									} else {
+										e.printStackTrace();
+									}
 								}
 							}
-							logger.info("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
-							startTime = System.currentTimeMillis();
-							try {
-								learner.start();
-								timeout = false;
-							} catch (Exception e) {
-								if(e.getCause() instanceof SocketTimeoutException){
-									
-								} else {
-									e.printStackTrace();
+							
+							long runTime = System.currentTimeMillis() - startTime;
+							List<EvaluatedAxiom> learnedAxioms = learner
+									.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+							if(timeout && learnedAxioms.isEmpty()){
+								writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
+							} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
+								writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
+							} else {
+								for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+									double score = learnedAxiom.getScore().getAccuracy();
+									if (Double.isNaN(score)) {
+										score = -1;
+									}
+									writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
+											score, runTime, isEntailed(learnedAxiom));
 								}
 							}
 						}
 						
-						long runTime = System.currentTimeMillis() - startTime;
-						List<EvaluatedAxiom> learnedAxioms = learner
-								.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-						if(emptyEntity){
-							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0, false);
-						} else if(timeout && learnedAxioms.isEmpty()){
-							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
-						} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
-							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
-						} else {
-							for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
-								double score = learnedAxiom.getScore().getAccuracy();
-								if (Double.isNaN(score)) {
-									score = -1;
-								}
-								writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
-										score, runTime, isEntailed(learnedAxiom));
-							}
-						}
 						objectProperties++;
 						if (maxObjectProperties != 0 && objectProperties == maxObjectProperties) {
 							break;
@@ -464,52 +468,54 @@ public class EnrichmentEvaluation {
 				if(emptyEntity){
 					logger.warn("Empty entity: " + property);
 				}
-				
-				int attempt = 0;
-				long startTime = 0;
-				boolean timeout = true;
-				while(!emptyEntity && ((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
-					if(attempt > 1){
-						try {
-							logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
-							Thread.sleep(delayInMilliseconds);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					logger.info("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
-					startTime = System.currentTimeMillis();
-					try {
-						learner.start();
-						timeout = false;
-					} catch (Exception e) {
-						if(e.getCause() instanceof SocketTimeoutException){
-							
-						} else {
-							e.printStackTrace();
-						}
-					}
-				}
-				
-				long runTime = System.currentTimeMillis() - startTime;
-				List<EvaluatedAxiom> learnedAxioms = learner
-						.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 				if(emptyEntity){
 					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0, false);
-				} else 	if(timeout && learnedAxioms.isEmpty()){
-					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
-				} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
-					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
 				} else {
-					for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
-						double score = learnedAxiom.getScore().getAccuracy();
-						if (Double.isNaN(score)) {
-							score = -1;
+					int attempt = 0;
+					long startTime = 0;
+					boolean timeout = true;
+					while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
+						if(attempt > 1){
+							try {
+								logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
+								Thread.sleep(delayInMilliseconds);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
-						writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
-								score, runTime, isEntailed(learnedAxiom));
+						logger.info("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
+						startTime = System.currentTimeMillis();
+						try {
+							learner.start();
+							timeout = false;
+						} catch (Exception e) {
+							if(e.getCause() instanceof SocketTimeoutException){
+								
+							} else {
+								e.printStackTrace();
+							}
+						}
+					}
+					
+					long runTime = System.currentTimeMillis() - startTime;
+					List<EvaluatedAxiom> learnedAxioms = learner
+							.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+					if(timeout && learnedAxioms.isEmpty()){
+						writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
+					} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
+						writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
+					} else {
+						for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+							double score = learnedAxiom.getScore().getAccuracy();
+							if (Double.isNaN(score)) {
+								score = -1;
+							}
+							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
+									score, runTime, isEntailed(learnedAxiom));
+						}
 					}
 				}
+				
 				dataProperties++;
 				if (maxDataProperties != 0 && dataProperties == maxDataProperties) {
 					break;
@@ -531,76 +537,80 @@ public class EnrichmentEvaluation {
 			for (NamedClass cls : classes) {
 
 				try{
-					List<EvaluatedAxiom> learnedAxioms = null;
+					String algName = "";
+					if(algorithmClass == CELOE.class){
+						algName = CELOE.class.getAnnotation(ComponentAnn.class).name();
+					} else {
+						LearningAlgorithm learner = algorithmClass.getConstructor(
+								SparqlEndpointKS.class).newInstance(ks);
+						algName = AnnComponentManager.getName(learner);
+					}
+					List<EvaluatedAxiom> learnedAxioms = new ArrayList<EvaluatedAxiom>();
 					boolean emptyEntity = sparqlReasoner.getPopularity(cls) == 0;
 					if(emptyEntity){
 						logger.warn("Empty entity: " + cls);
-					}
-					long startTime = System.currentTimeMillis();
-					boolean timeout = false;
-					String algName;
-					if(algorithmClass == CELOE.class){
-						algName = CELOE.class.getAnnotation(ComponentAnn.class).name();
-						logger.info("Applying " + algName + " on " + cls + " ... ");
-						if(!emptyEntity){
-							learnedAxioms = applyCELOE(ks, cls, false);
-						}
+						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0, false);
 					} else {
-						
-						// dynamically invoke constructor with SPARQL knowledge source
-						LearningAlgorithm learner = algorithmClass.getConstructor(
-								SparqlEndpointKS.class).newInstance(ks);
-						((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
-						ConfigHelper.configure(learner, "classToDescribe", cls.toString());
-						ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
-								maxExecutionTimeInSeconds);
-						learner.init();
-						// learner.setPropertyToDescribe(property);
-						// learner.setMaxExecutionTimeInSeconds(10);
-						algName = AnnComponentManager.getName(learner);
-						int attempt = 0;
-						
-						timeout = true;
-						while(!emptyEntity && ((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
-							if(attempt > 1){
+						long startTime = System.currentTimeMillis();
+						boolean timeout = false;
+						if(algorithmClass == CELOE.class){
+							logger.info("Applying " + algName + " on " + cls + " ... ");
+							learnedAxioms = applyCELOE(ks, cls, false);
+						} else {
+							
+							// dynamically invoke constructor with SPARQL knowledge source
+							LearningAlgorithm learner = algorithmClass.getConstructor(
+									SparqlEndpointKS.class).newInstance(ks);
+							((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
+							ConfigHelper.configure(learner, "classToDescribe", cls.toString());
+							ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
+									maxExecutionTimeInSeconds);
+							learner.init();
+							// learner.setPropertyToDescribe(property);
+							// learner.setMaxExecutionTimeInSeconds(10);
+							int attempt = 0;
+							
+							timeout = true;
+							while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
+								if(attempt > 1){
+									try {
+										logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
+										Thread.sleep(delayInMilliseconds);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+								}
+								logger.info("Applying " + algName + " on " + cls + " ... (Attempt " + attempt + ")");
+								startTime = System.currentTimeMillis();
 								try {
-									logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
-									Thread.sleep(delayInMilliseconds);
-								} catch (InterruptedException e) {
+									learner.start();
+									timeout = false;
+								} catch (Exception e) {
 									e.printStackTrace();
 								}
 							}
-							logger.info("Applying " + algName + " on " + cls + " ... (Attempt " + attempt + ")");
-							startTime = System.currentTimeMillis();
-							try {
-								learner.start();
-								timeout = false;
-							} catch (Exception e) {
-								e.printStackTrace();
+							learnedAxioms = ((AxiomLearningAlgorithm)learner).getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+						}
+						
+						
+						long runTime = System.currentTimeMillis() - startTime;
+						
+						if(timeout && learnedAxioms.isEmpty()){
+							writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
+						} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
+							writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
+						} else {
+							for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+								double score = learnedAxiom.getScore().getAccuracy();
+								if (Double.isNaN(score)) {
+									score = -1;
+								}
+								writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
+										score, runTime, isEntailed(learnedAxiom));
 							}
 						}
-						learnedAxioms = ((AxiomLearningAlgorithm)learner).getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
 					}
 					
-					
-					long runTime = System.currentTimeMillis() - startTime;
-					
-					if(emptyEntity){
-						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0, false);
-					} else if(timeout && learnedAxioms.isEmpty()){
-						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
-					} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
-						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
-					} else {
-						for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
-							double score = learnedAxiom.getScore().getAccuracy();
-							if (Double.isNaN(score)) {
-								score = -1;
-							}
-							writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
-									score, runTime, isEntailed(learnedAxiom));
-						}
-					}
 					
 					classesCnt++;
 					if (maxClasses != 0 && classesCnt == maxClasses) {
