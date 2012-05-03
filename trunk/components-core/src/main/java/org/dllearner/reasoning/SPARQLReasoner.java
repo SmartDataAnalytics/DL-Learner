@@ -19,6 +19,7 @@
 
 package org.dllearner.reasoning;
 
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +75,8 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import com.hp.hpl.jena.sparql.resultset.ResultSetMem;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -166,6 +169,19 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		}
 	}
 	
+	public int getSubjectCountForProperty(ObjectProperty p, long timeout){
+		int cnt = -1;
+		String query = String.format(
+				"SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}",
+				p.getName());
+		ResultSet rs = executeSelectQuery(query, timeout);
+		if(rs.hasNext()){
+			cnt = rs.next().getLiteral("cnt").getInt();
+		}
+		
+		return cnt;
+	}
+	
 	public int getPopularity(NamedClass nc){
 		if(classPopularityMap.containsKey(nc)){
 			return classPopularityMap.get(nc);
@@ -182,7 +198,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	}
 	
 	public int getPopularity(ObjectProperty op){
-		if(objectPropertyPopularityMap.containsKey(op)){
+		if(objectPropertyPopularityMap != null && objectPropertyPopularityMap.containsKey(op)){
 			return objectPropertyPopularityMap.get(op);
 		} else {
 			System.out.println("Cache miss: " + op);
@@ -1001,6 +1017,33 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			QueryExecution qExec = com.hp.hpl.jena.query.QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
 			rs = qExec.execSelect();
 			
+		}
+		return rs;
+	}
+	
+	private ResultSet executeSelectQuery(String query, long timeout){
+		logger.debug("Sending query \n {}", query);
+		ResultSet rs = null;
+		if(ks.isRemote()){
+			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
+			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
+					query);
+			queryExecution.setTimeout(timeout);
+			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
+			queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
+			try {
+				rs = queryExecution.execSelect();
+			} catch (QueryExceptionHTTP e) {
+				if(e.getCause() instanceof SocketTimeoutException){
+					logger.warn("Got timeout");
+				} else {
+					logger.error("Exception executing query", e);
+				}
+				rs = new ResultSetMem();
+			}
+		} else {
+			QueryExecution qExec = com.hp.hpl.jena.query.QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
+			rs = qExec.execSelect();
 		}
 		return rs;
 	}

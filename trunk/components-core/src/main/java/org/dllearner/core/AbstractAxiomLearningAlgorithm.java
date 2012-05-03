@@ -89,7 +89,9 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	protected long startTime;
 	protected int limit = 1000;
 	
-	private boolean timeout = true;
+	protected boolean timeout = true;
+	
+	protected boolean forceSPARQL_1_0_Mode = false;
 	
 	public AbstractAxiomLearningAlgorithm() {
 		existingAxioms = new TreeSet<Axiom>(new AxiomComparator());
@@ -136,6 +138,10 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 
 	public void setMaxFetchedRows(int maxFetchedRows) {
 		this.maxFetchedRows = maxFetchedRows;
+	}
+	
+	public void setForceSPARQL_1_0_Mode(boolean forceSPARQL_1_0_Mode) {
+		this.forceSPARQL_1_0_Mode = forceSPARQL_1_0_Mode;
 	}
 
 	@Override
@@ -313,7 +319,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
         return entries;
 	}
 	
-	private long getRemainingRuntimeInMilliSeconds(){
+	protected long getRemainingRuntimeInMilliSeconds(){
 		return Math.max(0, (maxExecutionTimeInSeconds * 1000) - (System.currentTimeMillis() - startTime));
 	}
 	
