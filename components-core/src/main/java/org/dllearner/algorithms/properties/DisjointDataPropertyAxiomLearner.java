@@ -93,7 +93,7 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		allDataProperties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
 		allDataProperties.remove(propertyToDescribe);
 		
-		if(ks.supportsSPARQL_1_1()){
+		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
 			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();

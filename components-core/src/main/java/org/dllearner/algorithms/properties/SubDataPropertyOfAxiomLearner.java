@@ -73,7 +73,7 @@ public class SubDataPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorith
 		SortedSet<DatatypeProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
 		logger.debug("Existing super properties: " + existingSuperProperties);
 		
-		if(ks.supportsSPARQL_1_1()){
+		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
 			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();
