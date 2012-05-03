@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
@@ -41,7 +42,8 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
  *
  */
 public abstract class PosNegLP extends AbstractLearningProblem {
-	
+	private static Logger logger = Logger.getLogger(PosNegLP.class);
+
 	protected Set<Individual> positiveExamples = new TreeSet<Individual>();
 	protected Set<Individual> negativeExamples = new TreeSet<Individual>();
 	protected Set<Individual> allExamples = new TreeSet<Individual>();
@@ -114,10 +116,18 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 		allExamples = Helper.union(positiveExamples, negativeExamples);
 		
 		if(!reasoner.getIndividuals().containsAll(allExamples)) {
-			String str = "The examples below are not contained in the knowledge base (check spelling and prefixes)\n";
-			Set<Individual> inds = Helper.difference(allExamples, reasoner.getIndividuals());
-			str += inds.toString();
-			throw new ComponentInitException(str);
+            Set<Individual> missing = Helper.difference(allExamples, reasoner.getIndividuals());
+            double percentage = (double) (missing.size()/allExamples.size());
+            percentage = Math.round(percentage * 1000) / 1000 ;
+			String str = "The examples ("+percentage+" % of total) below are not contained in the knowledge base (check spelling and prefixes)\n";
+			str += missing.toString();
+            if(missing.size()==allExamples.size())    {
+                throw new ComponentInitException(str);
+            } if(percentage < 0.10) {
+                logger.warn(str);
+            } else {
+                logger.error(str);
+            }
 		}
 	}
 	
