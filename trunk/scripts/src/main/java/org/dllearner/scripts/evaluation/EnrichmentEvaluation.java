@@ -183,6 +183,8 @@ public class EnrichmentEvaluation {
 	// max. number of attempts per algorithm and entity, because to many queries 
 	// in a short time could cause blocking by the endpoint
 	private final int maxAttempts = 5; 
+	//after 2 attempts we force the iterative SPARQL 1.1 mode
+	private final int nrOfAttemptsBeforeForceToSPARQL1_0_Mode = 2;
 	
 	//delay between 2 attempts
 	private final int delayInMilliseconds = 15000;
@@ -399,6 +401,7 @@ public class EnrichmentEvaluation {
 								logger.info("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
 								startTime = System.currentTimeMillis();
 								try {
+									((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
 									learner.start();
 									timeout = false;
 								} catch (Exception e) {
@@ -486,6 +489,7 @@ public class EnrichmentEvaluation {
 						logger.info("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
 						startTime = System.currentTimeMillis();
 						try {
+							((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
 							learner.start();
 							timeout = false;
 						} catch (Exception e) {
@@ -583,6 +587,7 @@ public class EnrichmentEvaluation {
 								logger.info("Applying " + algName + " on " + cls + " ... (Attempt " + attempt + ")");
 								startTime = System.currentTimeMillis();
 								try {
+									((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
 									learner.start();
 									timeout = false;
 								} catch (Exception e) {
