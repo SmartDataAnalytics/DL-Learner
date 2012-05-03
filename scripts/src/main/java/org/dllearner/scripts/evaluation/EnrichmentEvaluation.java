@@ -378,8 +378,12 @@ public class EnrichmentEvaluation {
 						
 						int attempt = 0;
 						long startTime = 0;
+						boolean emptyEntity = sparqlReasoner.getPopularity(property) == 0;
+						if(emptyEntity){
+							logger.warn("Empty entity: " + property);
+						}
 						boolean timeout = true;
-						while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
+						while(!emptyEntity && ((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
 							if(attempt > 1){
 								try {
 									logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
@@ -405,7 +409,9 @@ public class EnrichmentEvaluation {
 						long runTime = System.currentTimeMillis() - startTime;
 						List<EvaluatedAxiom> learnedAxioms = learner
 								.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-						if(timeout && learnedAxioms.isEmpty()){
+						if(emptyEntity){
+							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0, false);
+						} else if(timeout && learnedAxioms.isEmpty()){
 							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
 						} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
 							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
@@ -454,10 +460,15 @@ public class EnrichmentEvaluation {
 				// learner.setMaxExecutionTimeInSeconds(10);
 				algName = AnnComponentManager.getName(learner);
 				
+				boolean emptyEntity = sparqlReasoner.getPopularity(property) == 0;
+				if(emptyEntity){
+					logger.warn("Empty entity: " + property);
+				}
+				
 				int attempt = 0;
 				long startTime = 0;
 				boolean timeout = true;
-				while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
+				while(!emptyEntity && ((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
 					if(attempt > 1){
 						try {
 							logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
@@ -483,7 +494,9 @@ public class EnrichmentEvaluation {
 				long runTime = System.currentTimeMillis() - startTime;
 				List<EvaluatedAxiom> learnedAxioms = learner
 						.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-				if(timeout && learnedAxioms.isEmpty()){
+				if(emptyEntity){
+					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0, false);
+				} else 	if(timeout && learnedAxioms.isEmpty()){
 					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
 				} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
 					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
@@ -519,13 +532,19 @@ public class EnrichmentEvaluation {
 
 				try{
 					List<EvaluatedAxiom> learnedAxioms = null;
+					boolean emptyEntity = sparqlReasoner.getPopularity(cls) == 0;
+					if(emptyEntity){
+						logger.warn("Empty entity: " + cls);
+					}
 					long startTime = System.currentTimeMillis();
 					boolean timeout = false;
 					String algName;
 					if(algorithmClass == CELOE.class){
 						algName = CELOE.class.getAnnotation(ComponentAnn.class).name();
 						logger.info("Applying " + algName + " on " + cls + " ... ");
-						learnedAxioms = applyCELOE(ks, cls, false);
+						if(!emptyEntity){
+							learnedAxioms = applyCELOE(ks, cls, false);
+						}
 					} else {
 						
 						// dynamically invoke constructor with SPARQL knowledge source
@@ -542,7 +561,7 @@ public class EnrichmentEvaluation {
 						int attempt = 0;
 						
 						timeout = true;
-						while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
+						while(!emptyEntity && ((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
 							if(attempt > 1){
 								try {
 									logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
@@ -566,7 +585,9 @@ public class EnrichmentEvaluation {
 					
 					long runTime = System.currentTimeMillis() - startTime;
 					
-					if(timeout && learnedAxioms.isEmpty()){
+					if(emptyEntity){
+						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0, false);
+					} else if(timeout && learnedAxioms.isEmpty()){
 						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
 					} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
 						writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
