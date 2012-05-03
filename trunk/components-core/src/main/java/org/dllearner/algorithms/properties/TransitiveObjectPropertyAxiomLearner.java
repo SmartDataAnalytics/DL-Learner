@@ -100,7 +100,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			// get number of instances of s with <s p o>
 			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			ResultSet rs = executeSelectQuery(query);
+			ResultSet rs = executeSelectQuery(query, model);
 			QuerySolution qs;
 			int total = 0;
 			while(rs.hasNext()){
@@ -109,7 +109,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			}
 			query = "SELECT (COUNT(*) AS ?transitive) WHERE {?s <%s> ?o. ?o <%s> ?o1. ?s <%s> ?o1.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query);
+			rs = executeSelectQuery(query, model);
 			int transitive = 0;
 			while(rs.hasNext()){
 				qs = rs.next();

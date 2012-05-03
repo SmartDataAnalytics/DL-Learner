@@ -99,7 +99,7 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			// get number of instances of s with <s p o>
 			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			ResultSet rs = executeSelectQuery(query);
+			ResultSet rs = executeSelectQuery(query, model);
 			QuerySolution qs;
 			int total = 0;
 			while(rs.hasNext()){
@@ -108,7 +108,7 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			}
 			query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query);
+			rs = executeSelectQuery(query, model);
 			int symmetric = 0;
 			while(rs.hasNext()){
 				qs = rs.next();
