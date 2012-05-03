@@ -53,6 +53,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.core.owl.Property;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -169,10 +170,23 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		}
 	}
 	
-	public int getSubjectCountForProperty(ObjectProperty p, long timeout){
+	public int getSubjectCountForProperty(Property p, long timeout){
 		int cnt = -1;
 		String query = String.format(
 				"SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}",
+				p.getName());
+		ResultSet rs = executeSelectQuery(query, timeout);
+		if(rs.hasNext()){
+			cnt = rs.next().getLiteral("cnt").getInt();
+		}
+		
+		return cnt;
+	}
+	
+	public int getObjectCountForProperty(ObjectProperty p, long timeout){
+		int cnt = -1;
+		String query = String.format(
+				"SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}",
 				p.getName());
 		ResultSet rs = executeSelectQuery(query, timeout);
 		if(rs.hasNext()){

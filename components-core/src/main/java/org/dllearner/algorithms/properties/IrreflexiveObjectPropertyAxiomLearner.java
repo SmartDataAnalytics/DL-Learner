@@ -101,7 +101,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 			query = String.format(
 					"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
 					propertyToDescribe);
-			ResultSet rs = executeSelectQuery(query);
+			ResultSet rs = executeSelectQuery(query, model);
 			QuerySolution qs;
 			int all = 0;
 			while (rs.hasNext()) {
@@ -113,7 +113,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 			// get number of instances s where not exists <s p s>
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER(?s != ?o)}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query);
+			rs = executeSelectQuery(query, model);
 			int irreflexive = 0;
 			while (rs.hasNext()) {
 				qs = rs.next();

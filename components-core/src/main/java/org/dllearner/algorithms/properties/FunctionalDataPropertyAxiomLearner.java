@@ -97,7 +97,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 			query = String.format(
 					"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
 					propertyToDescribe.getName());
-			ResultSet rs = executeSelectQuery(query);
+			ResultSet rs = executeSelectQuery(query, model);
 			QuerySolution qs;
 			int all = 1;
 			while (rs.hasNext()) {
@@ -107,7 +107,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 			// get number of instances of s with <s p o> <s p o1> where o != o1
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o1)} }";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query);
+			rs = executeSelectQuery(query, model);
 			int functional = 1;
 			while (rs.hasNext()) {
 				qs = rs.next();
@@ -129,29 +129,25 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 	
 	private void runSPARQL1_1_Mode() {
 		// get number of instances of s with <s p o>
-		String query = String.format(
-				"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
-				propertyToDescribe.getName());
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		int all = 1;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			all = qs.getLiteral("all").getInt();
+		int numberOfSubjects = reasoner.getSubjectCountForProperty(propertyToDescribe, getRemainingRuntimeInMilliSeconds());
+		if(numberOfSubjects == -1){
+			logger.warn("Early termination: Got timeout while counting number of distinct subjects for given property.");
+			return;
 		}
 		// get number of instances of s with <s p o> <s p o1> where o != o1
-		query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o1)} }";
+		String query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o1)} }";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		rs = executeSelectQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		int functional = 1;
+		QuerySolution qs;
 		while (rs.hasNext()) {
 			qs = rs.next();
 			functional = qs.getLiteral("functional").getInt();
 		}
-		if (all > 0) {
+		if (numberOfSubjects > 0) {
 			currentlyBestAxioms.add(new EvaluatedAxiom(
 					new FunctionalDatatypePropertyAxiom(propertyToDescribe),
-					computeScore(all, functional),
+					computeScore(numberOfSubjects, functional),
 					declaredAsFunctional));
 		}
 	}

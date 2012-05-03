@@ -99,7 +99,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			// get fraction of instances s with <s p s>
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?total) WHERE {?s <%s> ?o.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			ResultSet rs = executeSelectQuery(query);
+			ResultSet rs = executeSelectQuery(query, model);
 			QuerySolution qs;
 			int total = 0;
 			while (rs.hasNext()) {
@@ -108,7 +108,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			}
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?reflexive) WHERE {?s <%s> ?s.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query);
+			rs = executeSelectQuery(query, model);
 			int reflexive = 0;
 			while (rs.hasNext()) {
 				qs = rs.next();
