@@ -76,6 +76,7 @@ public class Rest extends HttpServlet {
                 learningResult.put("manchester", manchester);
                 learningResult.put("kbsyntax", "other syntax");
                 learningResult.put("sparql", sparql);
+                learningResult.put("accuracy", 1.0);
                 learningResult.put("truePositives", "uri1, uri2");
                 learningResult.put("truePositives", "uri1, uri2");
                 learningResult.put("trueNegatives", "uri1, uri2");
@@ -91,6 +92,7 @@ public class Rest extends HttpServlet {
                 learningResult.put("manchester", ed.getDescription().toManchesterSyntaxString(null, null));
                 learningResult.put("kbsyntax", ed.getDescription().toKBSyntaxString());
                 learningResult.put("sparql", sqd.getSparqlQuery(ed.getDescription()));
+                learningResult.put("accuracy", ed.getAccuracy());
                 learningResult.put("truePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredPositives()));
                 learningResult.put("falsePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredPositives()));
                 learningResult.put("trueNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredNegatives()));
