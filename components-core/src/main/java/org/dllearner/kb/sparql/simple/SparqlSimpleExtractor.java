@@ -103,7 +103,7 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
 
         for (String candidate : candidates) {
             if (!alreadyQueriedIndividuals.contains(candidate)) {
-                System.out.println(candidate);
+//                System.out.println(candidate);
                 result.add(candidate);
             }
         }
@@ -128,12 +128,9 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         }
         if (ontologySchemaUrls == null) {
             throw new ComponentInitException(
-                    "An ontology schema description file (ontologyFile) in RDF ist required");
+                    "An ontology schema description file (ontologyFile) in RDF is required");
         }
         
-        for(String instance:instances){
-        	model.createIndividual(instance, OWL.Thing);
-        }
         Monitor monComp = MonitorFactory.start("Simple SPARQL Component")
                 .start();
         Monitor monIndexer = MonitorFactory.start("Schema Indexer").start();
@@ -160,7 +157,7 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
 
                 log.info("processing (recursion " + i + ")  " + instancesSet.size() + " new instances");
                 queryString = aGenerator.createQuery(instancesSet, aboxfilter);
-                System.out.println(queryString);
+//                System.out.println(queryString);
                 log.debug("SPARQL: {}", queryString);
 
                 monQueryingABox = MonitorFactory.start("ABox query time");
@@ -172,7 +169,7 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
                 monQueryingABox.stop();
 
                 typizeModel=MonitorFactory.start("Typize the model");
-                typeOntology.addTypes(model);
+                model=typeOntology.addTypetoJena(model, instances, null);
                 typizeModel.stop();
                 
                 alreadyQueried.addAll(instancesSet);
