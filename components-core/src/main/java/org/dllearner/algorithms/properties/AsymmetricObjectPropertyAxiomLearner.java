@@ -78,7 +78,7 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			logger.info("Property is already declared as symmetric in knowledge base.");
 		}
 		
-		if(ks.supportsSPARQL_1_1()){
+		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
 			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();
@@ -94,7 +94,7 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
-		while(newModel.size() != 0){
+		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			model.add(newModel);
 			// get number of instances of s with <s p o>
 			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";

@@ -75,7 +75,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 			logger.info("Property is already declared as functional in knowledge base.");
 		}
 		
-		if(ks.supportsSPARQL_1_1()){
+		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
 			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();
@@ -91,7 +91,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
-		while(newModel.size() != 0){
+		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			model.add(newModel);
 			// get number of instances of s with <s p o>
 			query = String.format(
@@ -105,19 +105,19 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 				all = qs.getLiteral("all").getInt();
 			}
 			// get number of instances of s with <s p o> <s p o1> where o != o1
-			query = "SELECT (COUNT(DISTINCT ?s) AS ?notfunctional) WHERE {?s <%s> ?o. ?s <%s> ?o1. FILTER(?o != ?o1) }";
+			query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o1)} }";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			rs = executeSelectQuery(query);
-			int notFunctional = 1;
+			int functional = 1;
 			while (rs.hasNext()) {
 				qs = rs.next();
-				notFunctional = qs.getLiteral("notfunctional").getInt();
+				functional = qs.getLiteral("functional").getInt();
 			}
 			if (all > 0) {
 				currentlyBestAxioms.clear();
 				currentlyBestAxioms.add(new EvaluatedAxiom(
 						new FunctionalDatatypePropertyAxiom(propertyToDescribe),
-						computeScore(all, all - notFunctional),
+						computeScore(all, functional),
 						declaredAsFunctional));
 			}
 			
@@ -140,18 +140,18 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 			all = qs.getLiteral("all").getInt();
 		}
 		// get number of instances of s with <s p o> <s p o1> where o != o1
-		query = "SELECT (COUNT(DISTINCT ?s) AS ?notfunctional) WHERE {?s <%s> ?o. ?s <%s> ?o1. FILTER(?o != ?o1) }";
+		query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o1)} }";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		rs = executeSelectQuery(query);
-		int notFunctional = 1;
+		int functional = 1;
 		while (rs.hasNext()) {
 			qs = rs.next();
-			notFunctional = qs.getLiteral("notfunctional").getInt();
+			functional = qs.getLiteral("functional").getInt();
 		}
 		if (all > 0) {
 			currentlyBestAxioms.add(new EvaluatedAxiom(
 					new FunctionalDatatypePropertyAxiom(propertyToDescribe),
-					computeScore(all, all - notFunctional),
+					computeScore(all, functional),
 					declaredAsFunctional));
 		}
 	}

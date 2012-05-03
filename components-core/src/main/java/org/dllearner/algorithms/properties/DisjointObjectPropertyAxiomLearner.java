@@ -251,7 +251,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 //		endpoint = new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
 		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(endpoint));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/birthPlace"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/aircraftTransport"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.getReasoner().precomputeObjectPropertyPopularity();
