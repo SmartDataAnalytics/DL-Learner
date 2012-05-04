@@ -187,7 +187,7 @@ public class EnrichmentEvaluation {
 	private final int nrOfAttemptsBeforeForceToSPARQL1_0_Mode = 2;
 	
 	//delay between 2 attempts
-	private final int delayInMilliseconds = 15000;
+	private final int delayInMilliseconds = 5000;
 
 	// max. execution time for each learner for each entity
 	private int maxExecutionTimeInSeconds = 10;
@@ -403,7 +403,7 @@ public class EnrichmentEvaluation {
 								try {
 									((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
 									learner.start();
-									timeout = false;
+									timeout = ((AbstractAxiomLearningAlgorithm)learner).isTimeout();
 								} catch (Exception e) {
 									if(e.getCause() instanceof SocketTimeoutException){
 										
@@ -491,7 +491,7 @@ public class EnrichmentEvaluation {
 						try {
 							((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
 							learner.start();
-							timeout = false;
+							timeout = ((AbstractAxiomLearningAlgorithm)learner).isTimeout();
 						} catch (Exception e) {
 							if(e.getCause() instanceof SocketTimeoutException){
 								
@@ -589,7 +589,7 @@ public class EnrichmentEvaluation {
 								try {
 									((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
 									learner.start();
-									timeout = false;
+									timeout = ((AbstractAxiomLearningAlgorithm)learner).isTimeout();
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
