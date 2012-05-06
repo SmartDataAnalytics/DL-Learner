@@ -372,10 +372,16 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      			
      			ArrayList<ArrayList<String>> condition_template_reverse_conditions = template_reverse_conditions.getCondition();
      			ArrayList<ArrayList<String>> condition_reverse_new= new ArrayList<ArrayList<String>>();
+     			if(add_reverse_template==false){
+     				if(template.getCondition().size()>=2) add_reverse_template=true;
+     			}
      			if(add_reverse_template){
      				for (ArrayList<String> x : condition_template_reverse_conditions){
          				ArrayList<String> new_list = new ArrayList<String>();
          				if(x.get(1).contains("ISA")){
+         					//System.out.println(x.get(1));
+         					//DebugMode.waitForButton();
+         					//System.out.println(x.get(1));
          					new_list.add(x.get(0));
              				new_list.add(x.get(1));
              				new_list.add(x.get(2));
@@ -423,7 +429,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      			/*
      			 * Also change the condition, if you have two Conditions in which is one an isa 
      			 */
-     			//if(add_reverse_template ||template_reverse_conditions.getCondition().size()>1 ){
+     			if(add_reverse_template){
      				start_elements = System.currentTimeMillis();
      				Elements elm_reverse = new Elements(template_reverse_conditions.getCondition(),template_reverse_conditions.getHypothesen());
      				stop_elements = System.currentTimeMillis();
@@ -436,7 +442,7 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      				template_reverse_conditions.setElm(elm_reverse);
          				resultArrayList.add(template_reverse_conditions);
      				}
-     			//}
+     			}
      		}
      	}
      	

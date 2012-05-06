@@ -27,15 +27,30 @@ public class WordnetModule {
 		ArrayList<Hypothesis> listOfNewHypothesen = new ArrayList<Hypothesis>();
 
 		 System.out.println("Start Iterating Wordnet with "+property_to_compare_with+" and deept of "+explorationdepthwordnet);
+		// StanfordLemmatizer lemmatiser = new StanfordLemmatizer();
 		 ArrayList<String> semantics=new ArrayList<String>();
 		 ArrayList<String> tmp_semantics=new ArrayList<String>();
 		 ArrayList<String> result_SemanticsMatchProperties=new ArrayList<String>();
 		 if(property_to_compare_with.contains("_")){
 			 String[] fix = property_to_compare_with.split("_");
 			 //here add also lemmatiser
-			 for(String s: fix) semantics.add(s);
+			 for(String s: fix) {
+				 semantics.add(s);
+				 try{
+					 semantics.add(lemmatiser.stem(s));
+				 }
+				 catch (Exception e){
+					 
+				 }
+			 }
 		 }
-		 else semantics.add(property_to_compare_with);
+		 semantics.add(property_to_compare_with);
+		 try{
+			 semantics.add(lemmatiser.stem(property_to_compare_with));
+		 }
+		 catch (Exception e){
+			 
+		 }
 		 System.out.println("Semantics: "+ semantics);
 		 
 		 for(String s: semantics){

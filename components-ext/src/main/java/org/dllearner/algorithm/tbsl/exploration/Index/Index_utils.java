@@ -1,5 +1,6 @@
 package org.dllearner.algorithm.tbsl.exploration.Index;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +32,12 @@ public class Index_utils {
 		
 		if(fall==0 || fall==3){
 			
-			result=myindex.getResourceURI(string.toLowerCase());
+			try {
+				result=myindex.getResourceURI(string.toLowerCase());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			result_List.add(result);
 
 		}
@@ -46,7 +52,12 @@ public class Index_utils {
 
 
 		if(fall==1){
-			tmp1=myindex.getPropertyURI(string.toLowerCase());
+			try {
+				tmp1=myindex.getPropertyURI(string.toLowerCase());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			tmp2=myindex.getontologyURI(string.toLowerCase());
 			if(tmp1!=null) result_List.add(tmp1);
 			if(tmp2!=null) result_List.add(tmp2);
@@ -65,7 +76,12 @@ string=string.replace("_", " ");
 		string=string.replace(".", " ");
 		String result=null;
 		ArrayList<String> result_List = new ArrayList<String>();
-		result=myindex.getResourceURI(string.toLowerCase());
+		try {
+			result=myindex.getResourceURI(string.toLowerCase());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(result!=null){
 			result_List.add(result);
 		}
@@ -107,7 +123,12 @@ map.put(64, 4.83f);
 	
 	if(string.substring(string.length()-1).contains("s")){
 		String neuer_string = string.substring(0, string.length() -1);
-		result=myindex.getPropertyURI(neuer_string.toLowerCase());
+		try {
+			result=myindex.getPropertyURI(neuer_string.toLowerCase());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		result2=myindex.getontologyURI(neuer_string.toLowerCase());
 		//tmp2=myindex.getYagoURI(neuer_string.toLowerCase());
 		if(result2!=null){
@@ -127,7 +148,12 @@ map.put(64, 4.83f);
 		}
 	}
 	else{
-		result=myindex.getPropertyURI(string.toLowerCase());
+		try {
+			result=myindex.getPropertyURI(string.toLowerCase());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		result2=myindex.getontologyURI(string.toLowerCase());
 		if(Setting.isDebugModus())DebugMode.debugPrint("Result: "+result);
 		if(result2!=null){

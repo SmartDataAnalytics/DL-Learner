@@ -559,6 +559,7 @@ public class IterationModule {
 			 * 
 			 */
 			if((condition1_exists_isa||condition2_exists_isa)&&gotResource&&(condition1_exists_resource||condition2_exists_resource)){
+				System.err.println("CASE1");
 				String class_variable=null;
 				String class_property_variable=null;
 				ArrayList<String> working_condition=new ArrayList<String>();
@@ -585,8 +586,8 @@ public class IterationModule {
 					}
 				}
 				
-				System.out.println("class_variable: " + class_variable);
-				System.out.println("Class Hypothese: ");
+				//System.out.println("class_variable: " + class_variable);
+				//System.out.println("Class Hypothese: ");
 				
 				/*
 				 * check now, which side the classVariable is in the other condition
@@ -620,19 +621,17 @@ public class IterationModule {
 					if(el.getVariablename().contains(resource_h.getName())&&el.getVariablename().contains(side_of_property)){
 						ArrayList<Hypothesis> resultHypothesenList=new ArrayList<Hypothesis>();
 						
-						if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(property_variable_local,property_name,el.getHm());
-						if(type.contains("RELATE"))resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(property_variable_local,property_name,el.getHm());
-
-						if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(property_variable_local,property_name,el.getHm(),myindex,wordnet,lemmatiser);
-						System.out.println("After generating new Hypothesen.\n "+resultHypothesenList.size()+" new were generated");
+						resultHypothesenList = creatNewPropertyList(type,
+								myindex, wordnet, lemmatiser,
+								property_variable_local, property_name, el);
 						for(Hypothesis h_temp : resultHypothesenList) {
 							ArrayList<Hypothesis> temp_al = new ArrayList<Hypothesis>();
 							temp_al.add(class_h);
 							temp_al.add(h_temp);
 							temp_al.add(resource_h);
 							System.out.println("Hypothesen:");
-							class_h.printAll();
-							h_temp.printAll();
+							//class_h.printAll();
+							//h_temp.printAll();
 							finalHypothesenList.add(temp_al);
 						}
 					}
@@ -646,7 +645,7 @@ public class IterationModule {
 			 * ISA
 			 */
 			else if((condition1_exists_isa||condition2_exists_isa)&&gotResource){
-				
+				System.err.println("CASE2");
 				/*
 				 * get Hypothese for the Class
 				 */
@@ -663,9 +662,9 @@ public class IterationModule {
 					}
 				}
 				
-				System.out.println("class_variable: " + class_variable);
-				System.out.println("Class Hypothese: ");
-				class_h.printAll();
+				//System.out.println("class_variable: " + class_variable);
+				//System.out.println("Class Hypothese: ");
+				//class_h.printAll();
 				for(ElementList el : resources){
 					//System.out.println("el.getVariablename(): "+el.getVariablename());
 					if(el.getVariablename().contains(class_h.getName())){
@@ -686,24 +685,16 @@ public class IterationModule {
 						}
 						//System.out.println("property_name: " + property_name);
 						ArrayList<Hypothesis> resultHypothesenList=new ArrayList<Hypothesis>();
-						/*for (Entry<String, String> entry : el.getHm().entrySet()) {
-							System.out.println(entry.getKey()+" "+entry.getValue());
-						}*/
-						/*
-						 * Here start levenstehin, wordnet etc etc
-						 */
-						if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(property_variable,property_name,el.getHm());
-						if(type.contains("RELATE"))resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(property_variable,property_name,el.getHm());
-
-						if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(property_variable,property_name,el.getHm(),myindex,wordnet,lemmatiser);
-						System.out.println("After generating new Hypothesen.\n "+resultHypothesenList.size()+" new were generated");
+						resultHypothesenList = creatNewPropertyList(type,
+								myindex, wordnet, lemmatiser,
+								property_variable, property_name, el);
 						for(Hypothesis h_temp : resultHypothesenList) {
 							ArrayList<Hypothesis> temp_al = new ArrayList<Hypothesis>();
 							temp_al.add(class_h);
 							temp_al.add(h_temp);
-							System.out.println("Hypothesen:");
-							class_h.printAll();
-							h_temp.printAll();
+							//System.out.println("Hypothesen:");
+							//class_h.printAll();
+							//h_temp.printAll();
 							finalHypothesenList.add(temp_al);
 						}
 					}
@@ -730,11 +721,7 @@ public class IterationModule {
 			
 			else if((condition1_exists_resource||condition2_exists_resource)&&gotResource){
 				
-				System.out.println("IN RESOURCE NOT SIMPLE CASE!!!");
-				System.out.println("resource_variable: " + resource_variable);
-				System.out.println("Resource Hypothese: ");
-				resource_h.printAll();
-				
+				System.err.println("CASE3");
 				String property_name="";
 				String second_property_name="";
 				String property_variable="";
@@ -753,14 +740,14 @@ public class IterationModule {
 					second_property_variable=condition2.get(1);
 				}
 				
-				System.out.println("property_variable: " + property_variable);
-				System.out.println("scond_property_variable: " + second_property_variable);
-				for(ArrayList<String> al : givenConditionList){
+				//System.out.println("property_variable: " + property_variable);
+				//System.out.println("scond_property_variable: " + second_property_variable);
+				/*for(ArrayList<String> al : givenConditionList){
 					for(String s : al) System.out.println(s);
 				}
 				for(Hypothesis h : givenHypothesenList){
 					h.printAll();
-				}
+				}*/
 				
 				for(Hypothesis h_t : givenHypothesenList){
 					if(h_t.getVariable().contains(property_variable)){
@@ -772,8 +759,8 @@ public class IterationModule {
 						
 					}
 				}
-				System.out.println("property_name: " + property_name);
-				System.out.println("second_property_name: " + second_property_name);
+			//	System.out.println("property_name: " + property_name);
+			//	System.out.println("second_property_name: " + second_property_name);
 				
 				if(Setting.isWaitModus())DebugMode.waitForButton();
 				
@@ -786,25 +773,9 @@ public class IterationModule {
 						
 						//System.out.println("property_name: " + property_name);
 						ArrayList<Hypothesis> resultHypothesenList=new ArrayList<Hypothesis>();
-						/*for (Entry<String, String> entry : el.getHm().entrySet()) {
-							System.out.println(entry.getKey()+" "+entry.getValue());
-						}
-						
-						if(Setting.isWaitModus())
-							try {
-								DebugMode.waitForButton();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}*/
-						/*
-						 * Here start levenstehin, wordnet etc etc
-						 */
-						if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(property_variable,property_name,el.getHm());
-						if(type.contains("RELATE"))resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(property_variable,property_name,el.getHm());
-
-						if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(property_variable,property_name,el.getHm(),myindex,wordnet,lemmatiser);
-						System.out.println("After generating new Hypothesen.\n "+resultHypothesenList.size()+" new were generated");
+						resultHypothesenList = creatNewPropertyList(type,
+								myindex, wordnet, lemmatiser,
+								property_variable, property_name, el);
 						for(Hypothesis h_temp : resultHypothesenList) {
 							String Query="";
 							if(property_Side.contains("LEFT")){
@@ -830,16 +801,19 @@ public class IterationModule {
 							if(type.contains("RELATE"))second_resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(second_property_variable,second_property_name,hm_newClasses);
 
 							if(type.contains("WORDNET"))second_resultHypothesenList= WordnetModule.doWordnet(second_property_variable,second_property_name,hm_newClasses,myindex,wordnet,lemmatiser);
-							System.out.println("SIze of second_resultHypothesenList: "+second_resultHypothesenList.size());
+							//System.out.println("SIze of second_resultHypothesenList: "+second_resultHypothesenList.size());
+							second_resultHypothesenList = creatNewPropertyList(type,
+									myindex, wordnet, lemmatiser, second_property_variable,
+									second_property_name,el);
 							
 							for(Hypothesis second_h_temp : second_resultHypothesenList) {
 								ArrayList<Hypothesis> temp_al = new ArrayList<Hypothesis>();
 								temp_al.add(resource_h);
 								temp_al.add(h_temp);
 								temp_al.add(second_h_temp);
-								resource_h.printAll();
-								h_temp.printAll();
-								second_h_temp.printAll();
+								//resource_h.printAll();
+								//h_temp.printAll();
+								//second_h_temp.printAll();
 								/*
 								 * for each hypothesis now get the x from the Server an generate for second condition depending on the x new Hypothesen Set.
 								 * afterwars add new_h_temp, h_temp, resource_h to the array Set temp_al and add temp_all to final Hypothesen Set
@@ -854,11 +828,164 @@ public class IterationModule {
 					
 				return finalHypothesenList;
 			}
+			
+			
 		}
+		
+		/*
+		 * 3Conditions!!
+		 * 
+		 * PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?x0  WHERE {?x0 <http://dbpedia.org/property/cave> ?y0 .?x0 <http://dbpedia.org/ontology/place> ?y .?x0 rdf:type <http://dbpedia.org/ontology/Country> . } HAVING (COUNT(?y0) > 2)    1.0
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?x0  WHERE {?y0 <http://dbpedia.org/property/cave> ?x0 .?y <http://dbpedia.org/ontology/place> ?x0 .?x0 rdf:type <http://dbpedia.org/ontology/Country> . } HAVING (COUNT(?y0) > 2)    1.0
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?x0  WHERE {?x0 <http://dbpedia.org/property/cave> ?y0 .?x0 <http://dbpedia.org/ontology/place> ?y .?x0 rdf:type <http://dbpedia.org/ontology/Country> . FILTER(?y0 > 2) }    1.0
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?x0  WHERE {?y0 <http://dbpedia.org/property/cave> ?x0 .?y <http://dbpedia.org/ontology/place> ?x0 .?x0 rdf:type <http://dbpedia.org/ontology/Country> . FILTER(?y0 > 2) }    1.0
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?x  WHERE {?y <http://dbpedia.org/property/cave> ?y0 .?x rdf:type <http://dbpedia.org/ontology/Country> .?x <http://dbpedia.org/ontology/place> ?y . FILTER(?y0 > 2) }    1.0
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?x  WHERE {?y0 <http://dbpedia.org/property/cave> ?y .?x rdf:type <http://dbpedia.org/ontology/Country> .?y <http://dbpedia.org/ontology/place> ?x . FILTER(?y0 > 2) }    1.0
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?x  WHERE {?y <http://dbpedia.org/property/cave> ?y0 .?x rdf:type <http://dbpedia.org/ontology/Country> .?x <http://dbpedia.org/ontology/place> ?y . } HAVING (COUNT(?y0) > 2)    1.0
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?x  WHERE {?y0 <http://dbpedia.org/property/cave> ?y .?x rdf:type <http://dbpedia.org/ontology/Country> .?y <http://dbpedia.org/ontology/place> ?x . } HAVING (COUNT(?y0) > 2)
+
+[[?y1, ISA, ?y177], [?y2, ?p76, ?y], [?y2, ?p75, ?y0]] one clase, one resource depending on two properties
+[[?y1, ISA, ?y177], [?y, ?p76, ?y2], [?y0, ?p75, ?y2]]
+		 */
+		if(givenConditionList.size()==3){
+			boolean gotResource=true;
+			ArrayList<ElementList> resources = new ArrayList<ElementList>();
+			try{
+				resources = elm.getElements();
+			}
+			catch (Exception e){
+				gotResource=false;
+				if(Setting.isDebugModus())DebugMode.debugErrorPrint("Didnt get any Resource");
+			}
+			
+			/*
+			 * First one Class and two Properties
+			 */
+			
+			boolean class_condition1=false;
+			boolean class_condition2=false;
+			boolean class_condition3=false;
+			ArrayList<String> condition1=givenConditionList.get(0);
+			ArrayList<String> condition2=givenConditionList.get(1);
+			ArrayList<String> condition3=givenConditionList.get(2);
+			
+			String class_variable=null;
+			String property_variable1=null;
+			String property_variable2=null;
+			String class_name=null;
+			String property_name1=null;
+			String property_name2=null;
+			
+			Hypothesis class_hypothesis=null;
+			Hypothesis proptery1_hypothesis=null;
+			Hypothesis property2_hypothesis=null;
+			
+			if(condition1.get(1).contains("ISA")){
+				class_condition1=true;
+				class_variable=condition1.get(0);
+				property_variable1=condition2.get(1);
+				property_variable2=condition3.get(1);
+			}
+			if(condition2.get(1).contains("ISA")){
+				class_condition2=true;
+				class_variable=condition2.get(0);
+				property_variable1=condition1.get(1);
+				property_variable2=condition3.get(1);
+			}
+			if(condition3.get(1).contains("ISA")) {
+				class_condition3=true;
+				class_variable=condition3.get(0);
+				property_variable1=condition1.get(1);
+				property_variable2=condition2.get(1);
+			}
+			
+			
+			for(Hypothesis h : givenHypothesenList){
+				if(h.getVariable().contains(class_variable)&&h.getType().contains("ISA")){
+					class_hypothesis=h;
+				}
+				if(h.getVariable().contains(property_variable1)&&h.getType().contains("PROPERTY")){
+					proptery1_hypothesis=h;
+				}
+				if(h.getVariable().contains(property_variable2)&&h.getType().contains("PROPERTY")){
+					property2_hypothesis=h;
+				}
+			}
+			
+		
+		/*
+		 * get a list with properties for property one
+		 */
+		ArrayList<Hypothesis> resultHypothesenListPropertyOne=new ArrayList<Hypothesis>();
+		for(ElementList el : resources){
+			//System.out.println("el.getVariablename(): "+el.getVariablename());
+			if(el.getVariablename().contains(class_hypothesis.getName())){
+				
+				property_name1=proptery1_hypothesis.getName();
+				resultHypothesenListPropertyOne = creatNewPropertyList(type,
+						myindex, wordnet, lemmatiser, property_variable1,
+						property_name1, el);
+			}
+		}
+	
+		
+		
+		/*
+		 * get a list with properties for property two
+		 */
+		ArrayList<Hypothesis> resultHypothesenListPropertyTwo=new ArrayList<Hypothesis>();
+		for(ElementList el : resources){
+			//System.out.println("el.getVariablename(): "+el.getVariablename());
+			if(el.getVariablename().contains(class_hypothesis.getName())){
+				
+				property_name1=property2_hypothesis.getName();
+				resultHypothesenListPropertyTwo = creatNewPropertyList(type,
+						myindex, wordnet, lemmatiser, property_variable2,
+						property_name2, el);
+			}
+		}
+		
+		if(resultHypothesenListPropertyTwo.size()>0 &&resultHypothesenListPropertyOne.size()>0){
+			for(Hypothesis h_1 : resultHypothesenListPropertyOne){
+				for(Hypothesis h_2 : resultHypothesenListPropertyTwo){
+					ArrayList<Hypothesis> temp_al = new ArrayList<Hypothesis>();
+					temp_al.add(h_1);
+					temp_al.add(h_2);
+					temp_al.add(class_hypothesis);
+
+					finalHypothesenList.add(temp_al);
+				}
+			}
+		}
+		
+		/*
+		 * create new HypothesisSet combining properties from one and two with the class hypothesis.
+		 */
+		
+		
+	}
 		
 		return finalHypothesenList;
 		
 		
+	}
+
+
+	private static ArrayList<Hypothesis> creatNewPropertyList(String type,
+			SQLiteIndex myindex, WordNet wordnet,
+			StanfordLemmatizer lemmatiser, String property_variable,
+			String property_name,
+			ElementList el) throws SQLException, JWNLException {
+		/*
+		 * Here start levenstehin, wordnet etc etc
+		 */
+		ArrayList<Hypothesis> resultHypothesenList = new ArrayList<Hypothesis>();
+		if(type.contains("LEVENSTHEIN"))resultHypothesenList= LevenstheinModule.doLevensthein(property_variable,property_name,el.getHm());
+		if(type.contains("RELATE"))resultHypothesenList= SemanticRelatenes.doSemanticRelatenes(property_variable,property_name,el.getHm());
+
+		if(type.contains("WORDNET"))resultHypothesenList= WordnetModule.doWordnet(property_variable,property_name,el.getHm(),myindex,wordnet,lemmatiser);
+		//System.out.println("After generating new Hypothesen.\n "+resultHypothesenList.size()+" new were generated");
+		return resultHypothesenList;
 	}
 
 	

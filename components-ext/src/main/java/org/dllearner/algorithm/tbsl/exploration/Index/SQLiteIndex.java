@@ -1,8 +1,12 @@
 package org.dllearner.algorithm.tbsl.exploration.Index;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -54,7 +58,7 @@ SELECT * FROM Persons
 WHERE City LIKE '%tav%'
 	 */
 	
-	public String getResourceURI(String string) throws SQLException{
+	public String getResourceURI(String string) throws SQLException, IOException{
 		/*  while(rs.next())
 	      {*/
 		  Statement stat = conn.createStatement();
@@ -68,7 +72,9 @@ WHERE City LIKE '%tav%'
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
+		        
 			return null;
+			
 		}
 		  
 	  }
@@ -140,7 +146,7 @@ WHERE City LIKE '%tav%'
 	  }
 	
 
-	public String getPropertyURI(String string) throws SQLException{
+	public String getPropertyURI(String string) throws SQLException, IOException{
 		  Statement stat = conn.createStatement();
 		  ResultSet rs;
 		  ArrayList<String> al = new ArrayList<String>();
@@ -175,13 +181,13 @@ WHERE City LIKE '%tav%'
 				boolean found = false;
 				for(String s : al){
 					if(s.contains("ontology")){
-					    System.out.println("Return String: "+s);
+					    //System.out.println("Return String: "+s);
 						found=true;
 						return s;
 					}
 				}
 				if(found==false){
-					System.out.println("Return String: "+al.get(0));
+					//System.out.println("Return String: "+al.get(0));
 					return al.get(0);
 				}
 			}
@@ -190,7 +196,9 @@ WHERE City LIKE '%tav%'
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
-			System.err.println("Error in SQLiteIndex.getProperty!!");
+			//System.err.println("Error in SQLiteIndex.getProperty!!");
+    
+		        
 			return null;
 		}
 	

@@ -171,8 +171,17 @@ ORDER BY ?x
 	    String[] tmp_array=result.split("</td><td>");
 	    
 	    for(int i =1; i<=tmp_array.length-2;i=i+2) {
+	    	//System.out.println("i-1: " +tmp_array[i-1]);
+	    	//System.out.println("i: " +tmp_array[i]);
+	    	//System.out.println("\n");
 	    	hm.put(tmp_array[i-1].toLowerCase(), tmp_array[i]);
 	    }
+	    /*try {
+			DebugMode.waitForButton();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	    
 	    return hm;
 	}

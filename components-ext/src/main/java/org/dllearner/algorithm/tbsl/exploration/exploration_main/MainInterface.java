@@ -56,6 +56,29 @@ public class MainInterface {
 		 */
 		template_list=templateObject.createTemplates(question);
 		
+		answers = singleSteps(myindex, wordnet, lemmatiser, wait, template_list);
+		
+		return answers;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+	private static ArrayList<String> singleSteps(SQLiteIndex myindex, WordNet wordnet,
+			StanfordLemmatizer lemmatiser, boolean wait,
+			ArrayList<Template> template_list)
+			throws IOException {
+		
+		ArrayList<String> answers = new ArrayList<String>();
 		/*
 		 * generate Queries and test the first Time
 		 */
@@ -84,7 +107,7 @@ public class MainInterface {
 		qp=LinearSort.doSort(qp);	
 		qp=HeuristicSort.doSort(qp, Question);
 		//if(Setting.isDebugModus())printQueries(qp, "NORMAL", Question);
-		printQueries(qp, "NORMAL", Question);
+		//printQueries(qp, "NORMAL", Question);
 		Setting.setAnzahlAbgeschickterQueries(10);
 		
 		int anzahl=1;
@@ -173,17 +196,16 @@ public class MainInterface {
 			if(wait)DebugMode.waitForButton();
 		}
 		
-
-		/*if(answers.isEmpty()){
-			
+		if(answers.isEmpty()&&Setting.getModuleStep()>=5){
+			System.out.println("Stufe 5");
+			DebugMode.waitForButton();
 			answers.clear();
-			Setting.setLevenstheinMin(0.25);
-			Setting.setAnzahlAbgeschickterQueries(20);
-			answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"SPECIAL","neu"));
+			//Setting.setAnzahlAbgeschickterQueries(10);
+			//Setting.setThresholdSelect(0.2);
+			//ArrayList<String>
+			answers.addAll(stufe5(myindex,wordnet,lemmatiser,wait,template_list));
 			if(wait)DebugMode.waitForButton();
-		}*/
-
-		
+		}
 		
 		
 		/*if(answers.isEmpty()){
@@ -288,7 +310,7 @@ public class MainInterface {
 		
 		//sort QueryPairs
 		qp=LinearSort.doSort(qp);	
-		printQueries(qp, type, Question);
+		//printQueries(qp, type, Question);
 		/*
 		 * Only for test!
 		 */
@@ -523,5 +545,110 @@ public class MainInterface {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+	}
+	
+	
+	
+	private static ArrayList<String> stufe5(SQLiteIndex myindex, WordNet wordnet,StanfordLemmatizer lemmatiser, boolean wait,ArrayList<Template> template_list){
+		
+		ArrayList<Template> new_template_list=new ArrayList<Template>();
+		ArrayList<String> answers=new ArrayList<String>();
+		/*
+		 * iterate over Templates to create new one's but only if you have [isa][resource] and condition.size=2;
+		 */
+		for(Template t: template_list){
+			/*
+			 * only if condition.size==2
+			 */
+			if(t.getCondition().size()==2){
+				/*
+				 * now look if one have the [isa][resource] or [resource][isa] case
+				 */
+				ArrayList<String> condition1=new ArrayList<String>();
+				ArrayList<String> condition2=new ArrayList<String>();
+				
+				condition1=t.getCondition().get(0);
+				condition2=t.getCondition().get(1);
+				
+				boolean go_on=false;
+				
+				if(condition1.get(1).toLowerCase().contains("isa")&&!condition2.get(1).toLowerCase().contains("isa")){
+					if(condition2.get(0).contains("resource/")||condition2.get(2).contains("resource/")){
+						go_on=true;
+					}
+					else go_on=false;
+				}
+				
+				else if(!condition1.get(1).toLowerCase().contains("isa")&&condition2.get(1).toLowerCase().contains("isa")){
+					if(condition1.get(0).contains("resource/")||condition1.get(2).contains("resource/")){
+						go_on=true;
+					}
+					else go_on=false;
+				}
+				else go_on=false;
+				
+				if(go_on==true){
+					
+					/*
+					 * use now only the conditions WITHOUT the class
+					 */
+					ArrayList<ArrayList<Hypothesis>> new_hypothesen_list = new ArrayList<ArrayList<Hypothesis>>();
+					
+					String resource_variable=null;
+					for(ArrayList<Hypothesis> h_l :t.getHypothesen()){
+						ArrayList<Hypothesis> t_h_l = new ArrayList<Hypothesis>();
+						
+						for(Hypothesis h : h_l){
+							if(!h.getType().toLowerCase().contains("isa"))t_h_l.add(h);
+							if(h.getType().toLowerCase().contains("resource"))resource_variable=h.getVariable();
+						}
+						
+						if(t_h_l.size()>0) new_hypothesen_list.add(t_h_l);
+					}
+					
+					/*
+					 * create new ArrayList for Conditions, only with the
+					 */
+					ArrayList<String> new_condition= new ArrayList<String>();
+					if(!condition1.get(1).toLowerCase().contains("isa")) new_condition=condition1;
+					else new_condition=condition2;
+					
+					String new_SelectTerm=null;
+					
+					if(new_condition.get(0).contains(resource_variable)) new_SelectTerm=new_condition.get(2);
+					else new_SelectTerm=new_condition.get(0);
+					
+					ArrayList<ArrayList<String>> new_c_list = new ArrayList<ArrayList<String>>();
+					new_c_list.add(new_condition);
+					/*
+					 * Template template_reverse_conditions = new Template(template.getCondition(),template.getQueryType(), template.getHaving(), template.getFilter(), template.getSelectTerm(), template.getOrderBy(), template.getLimit(), template.getQuestion());
+					 */
+					Template new_Template = new Template(new_c_list, t.getQueryType(), "","" , new_SelectTerm, "", "", t.getQuestion());
+					new_Template.setHypothesen(new_hypothesen_list);
+					/*
+					 * Elements can still be the same
+					 */
+					new_Template.setElm(t.getElm());
+					
+				}
+				
+				
+			}
+		}
+		
+		/*
+		 * if there are new templates, start rescursive call;
+		 */
+		if(new_template_list.size()>0){
+			try {
+				return singleSteps(myindex, wordnet, lemmatiser, wait,new_template_list);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+				return answers;
+			}
+		}
+		
+		return answers;
 	}
 }
