@@ -37,9 +37,14 @@ public class LevenstheinModule {
 				// System.out.println("compare_property: "+compare_property);
 				 double nld=Levenshtein.nld(compare_property.toLowerCase(), key);
 				 
-				 //if(nld>=LevenstheinMin||key.contains(lemmatiser.stem(property_to_compare_with))||property_to_compare_with.contains(lemmatiser.stem(key))){
-				 
-				 if((key.contains(compare_property)||compare_property.contains(key))){
+				 /*
+				  * At the beginning first realy test with the original Property, to make sure, if there is a match, that only this one is taken.
+				  */
+				 if(key.toLowerCase().equals(property_to_compare_with.toLowerCase())||key.toLowerCase().equals(property_to_compare_with.replace(" ", "").toLowerCase()) ){
+					 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 2.0); 
+					 listOfNewHypothesen.add(h);
+				 }
+				 else if((key.contains(compare_property)||compare_property.contains(key))){
 					 
 					 double score=0;
 						if(compare_property.length()>key.length()){

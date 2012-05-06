@@ -9,9 +9,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,18 +16,11 @@ import java.util.regex.Pattern;
 import net.didion.jwnl.JWNLException;
 
 import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
-import org.dllearner.algorithm.tbsl.exploration.Sparql.SparqlObject;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.queryInformation;
 import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.templator.BasicTemplator;
-import org.ibex.nestedvm.util.Seekable.InputStream;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /*
  * 
@@ -73,13 +63,13 @@ public class exploration_main {
 		Setting.setLevenstheinMin(0.95);
 		Setting.setAnzahlAbgeschickterQueries(10);
 		Setting.setThresholdAsk(0.9);
-		Setting.setThresholdSelect(0.5);
+		Setting.setThresholdSelect(0.6);
 		/*
 		 * 1= only "Normal"
 		 * 2= "Normal" + Levensthein
 		 * 3= Normal+Levensthein+Wordnet
 		 */
-		Setting.setModuleStep(2);
+		Setting.setModuleStep(4);
 		
 
 		
@@ -143,12 +133,13 @@ public class exploration_main {
 				if(line.contains(":xml")&& schleife==true){
 					TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 
-					for(int i = 0; i<1;i++){
+					for(int i = 1; i<2;i++){
 						double min = 0.95;
 						min+=(i*0.05);
 						
 						//Setting.setLevenstheinMin(min);
 						Setting.setLevenstheinMin(0.95);
+						//Setting.setModuleStep(i);
 						
 					
 					/*System.out.println("Please enter Path of xml File:");
@@ -162,8 +153,9 @@ public class exploration_main {
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-withoutNotparsed.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-test-questions.xml";
+					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-test-new-tagged2.xml";
 					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-onlyWithWorking.xml";
-					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-new.xml";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-new.xml";
 					
 					
 					//create Structs
@@ -206,9 +198,9 @@ public class exploration_main {
 				    execute ="firefox "+ open_file;
 				    p = r.exec(execute);*/
 					}
-					schleife=false;
+					/*schleife=false;
 					System.out.println("Bye!");
-					System.exit(0);
+					System.exit(0);*/
 				     
 				}
 				
@@ -306,16 +298,18 @@ public class exploration_main {
 		
 		String xmlDocument="";
 		int counter=0;
+		String xmltype=null;
 		System.out.println("Anzahl queryInformations: "+list.size());
 		int anzahl = 0;
 		for (queryInformation s : list){
 			//why doing this? try that it doesnt matter if there is an answer or not....
 			anzahl+=1;
-			System.out.println("Number "+anzahl);
+			//System.out.println("Number "+anzahl);
 			if(!s.getResult().isEmpty()){
 				String tmp;
 				if(counter==0){
 					counter=counter+1;
+					xmltype=s.getXMLtype();
 					xmlDocument="<?xml version=\"1.0\" ?><dataset id=\""+s.getXMLtype()+"\">";
 				}
 				tmp="<question id=\""+s.getId()+"\"><string>"+s.getQuery()+"</string>\n<answers>";
@@ -343,7 +337,7 @@ public class exploration_main {
 		xmlDocument+="</dataset>";
 		File file;
 		FileWriter writer;
-		file = new File("/home/swalter/Dokumente/Auswertung/ResultXml/result"+systemid.replace(" ", "_")+"NLD"+Setting.getLevenstheinMin()+".xml");
+		file = new File("/home/swalter/Dokumente/Auswertung/ResultXml/result"+systemid.replace(" ", "_")+"NLD"+Setting.getLevenstheinMin()+"Stufe"+Setting.getModuleStep()+"Type"+xmltype+"Anzahl"+anzahl+".xml");
 	     try {
 	       writer = new FileWriter(file ,true);    
 	       writer.write(xmlDocument);
@@ -430,7 +424,7 @@ public class exploration_main {
 	    	Matcher m1 = p1.matcher(s);
 	    	//System.out.println("");
 	    	while(m1.find()){
-	    		//System.out.println(m1.group(1));
+	    		System.out.println(m1.group(1));
 	    		Pattern p2= Pattern.compile(".*><string>(.*)");
 		    	Matcher m2 = p2.matcher(m1.group(1));
 		    	while(m2.find()){
@@ -445,13 +439,13 @@ public class exploration_main {
 		    		query=query.replace(">", "");
 		    		query=query.replace("<", "");
 		    	}
-		    	Pattern p3= Pattern.compile("id=\"(.*)\" answer.*");
+		    	Pattern p3= Pattern.compile("id=\"(.*)\" .*");
 		    	Matcher m3 = p3.matcher(m1.group(1));
 		    	while(m3.find()){
-		    		//System.out.println("Id: "+ m3.group(1));
+		    		System.out.println("Id: "+ m3.group(1));
 		    		id=m3.group(1);
 		    	}
-		    	
+		    	/*
 		    	Pattern p4= Pattern.compile(".*answertype=\"(.*)\" fusion.*");
 		    	Matcher m4 = p4.matcher(m1.group(1));
 		    	while(m4.find()){
@@ -481,7 +475,7 @@ public class exploration_main {
 		    		//System.out.println("yago: "+ m7.group(1));
 		    		if(m7.group(1).contains("true"))yago=true;
 		    		else yago=false;
-		    	}
+		    	}*/
 		    	
 		    	
 		    	

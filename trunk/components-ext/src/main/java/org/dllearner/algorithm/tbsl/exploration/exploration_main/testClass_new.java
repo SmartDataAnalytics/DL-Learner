@@ -5,9 +5,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +41,16 @@ public class testClass_new {
 		// TODO Auto-generated method stub
 		ArrayList<Template> temp_list_result = new ArrayList<Template>();
 		
+		/*
+		 * nice
+		 * 
+		 */
+		/*PrintStream out = new PrintStream(new FileOutputStream("/home/swalter/Dokumente/outputTEST.txt"));
+		System.setOut(out);
+		*/
+		
 		BasicTemplator btemplator = new BasicTemplator();
-    	//btemplator.UNTAGGED_INPUT = false;
+    	btemplator.UNTAGGED_INPUT = false;
 		SQLiteIndex myindex = new SQLiteIndex();
 		
 		WordNet wordnet = new WordNet();
@@ -49,7 +59,8 @@ public class testClass_new {
 		
 		String filepath = "/home/swalter/Dokumente/Auswertung/";
 		//String file="very_small.xml";
-		String file="dbpedia-train.xml";
+		String file="XMLDateien/dbpedia-train-tagged-new.xml";
+		//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-new.xml";
 		long start = System.currentTimeMillis();
 		
 		//String question = "Is the wife of president Obama called Michelle?";
@@ -59,33 +70,37 @@ public class testClass_new {
 		/*
 		 * Original eine resource zwei properties, nachher nur noch eine Resource und eine property
 		 */
-		String question ="Who is the daughter of Bill Clinton married to?";
+		//String question ="Who is the daughter of Bill Clinton married to?";
 		
 		long start_template = System.currentTimeMillis();
-		temp_list_result=testobject.createTemplates(question);
+		//temp_list_result=testobject.createTemplates(question);
 		
 		Map<QueryPair,String> tm = new HashMap<QueryPair, String>();
 		
 		/*
 		 * Generate Templates
 		 */
-	/*	ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
-		list_of_structs=generateStruct(filepath+"XMLDateien/"+file);
+		ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
+		list_of_structs=generateStruct(filepath+file);
 		String result="";
 		for(queryInformation s : list_of_structs){
 			ArrayList<Template> temp_list = new ArrayList<Template>();
+			if(!s.getQuery().contains("Natalie/NNP Portman/NNP")){
+				
+			
 			temp_list=testobject.createTemplates(s.getQuery().replace("<[CDATA[", "").replace("]]>", ""));
-			for(Template t : temp_list){
+			
+			/*for(Template t : temp_list){
 				temp_list_result.add(t);
 				/*try {
 					result+=t.getElm().printToString()+"\n";
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
-				}*/
-		//	}
-			
-		//}
+			}*/
+			//}*/
+			}
+		}
 		
 	/*	long stop_template = System.currentTimeMillis();
 		
@@ -157,13 +172,13 @@ public class testClass_new {
 		 */
 		long stop = System.currentTimeMillis();
 	//	writeQueriesInFile(tm,filepath,file,start,stop );
-	//	writeTemplatesInFile(temp_list_result,filepath,file,start,stop );
+		writeTemplatesInFile(temp_list_result,filepath,file,start,stop );
         
 	}
 	
 
 	private static void writeTemplatesInFile(ArrayList<Template> temp_list_result, String filepath,String given_file, float start, float stop ) throws IOException{
-		File file = new File(filepath+"Ausgabe"+stop+given_file.replace(".xml", "")+".txt");
+		File file = new File(filepath+"Ausgabe"+stop+".txt");
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
         int anzahl1 =1;
 		for(Template t: temp_list_result){

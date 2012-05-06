@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
+import org.dllearner.algorithm.tbsl.nlp.StanfordLemmatizer;
 
 
 
@@ -22,6 +23,7 @@ public class SemanticRelatenes {
 				 String key = entry.getKey();
 				 key=key.replace("\"","");
 				 key=key.replace("@en","");
+				 key=key.replace("<th>x</th>","");
 				 key=key.toLowerCase();
 				 String value = entry.getValue();
 				 
@@ -32,18 +34,24 @@ public class SemanticRelatenes {
 					 String[] array_temp = property_to_compare_with.split(" ");
 					 for(String s : array_temp) property_array.add(s);
 				 }
+				 property_array.add(property_to_compare_with.replace(" ", ""));
 				 for(String compare_property :property_array ){
 					 
 					
 					 
 					 double score=0;
 					try {
+						//System.out.println("key: "+key);
+						//System.out.println("compare_property: "+compare_property);
 						//score = CallSemRelatNess.returnSemRelat(key, compare_property);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println("key: "+key);
+						System.out.println("compare_property: "+compare_property);
+						//e.printStackTrace();
+						score=0;
 					}
-					 if(score>0){
+					 if(score>0.5){
 						 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", score);
 						 listOfNewHypothesen.add(h);
 					 }
