@@ -23,12 +23,14 @@ public class JenaToOwlapiConverter {
     private static Logger log = LoggerFactory.getLogger(JenaToOwlapiConverter.class);
     
     /**
-     * 
-     * @param model
-     * @return
+     * Convert a Jena Model to an OWL Ontology.
+     *
+     * @param model The model to convert
+     * @param manager The OWL Ontology Manager - this has to be passed in rather than using the default one in order to be thread safe.
+     * @return The converted OWL Ontology linked to the specified OWL Ontology Manager.
      */
-    public OWLOntology convert(Model model) {
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+    public OWLOntology convert(Model model, OWLOntologyManager manager) {
+
         OWLOntology ontology=null;
         try {
             StringWriter writer = new StringWriter();

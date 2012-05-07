@@ -1,5 +1,6 @@
 package org.dllearner.kb;
 
+import org.dllearner.core.KnowledgeSource;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
@@ -11,7 +12,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
  *
  * This interface represents objects which can return an OWLOntology representation of itself.
  */
-public interface OWLOntologyKnowledgeSource {
+public interface OWLOntologyKnowledgeSource extends KnowledgeSource{
 
     /**
      * Create an OWL Ontology associated with the specified manager.

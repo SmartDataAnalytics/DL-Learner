@@ -227,71 +227,45 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             if (source instanceof OWLOntologyKnowledgeSource) {
                 ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
                 owlAPIOntologies.add(ontology);
-            } else if(source instanceof SparqlSimpleExtractor) {
-                ontology=((SparqlSimpleExtractor) source).getOWLOntology();
-                manager=ontology.getOWLOntologyManager();
-                owlAPIOntologies.add(ontology);
+            }else{
+                //This reasoner requires an ontology to process
+                throw new ComponentInitException("OWL API Reasoner Requires an OWLKnowledgeSource.  Received a KS of type: " + source.getClass().getName());
             }
 
-            if (source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof SparqlSimpleExtractor || source instanceof OWLAPIOntology) {
+            directImports.addAll(ontology.getImportsDeclarations());
 
-                    directImports.addAll(ontology.getImportsDeclarations());
-                    try {
-                        // imports includes the ontology itself
-                        //FIXME this line throws the strange error
-                        Set<OWLOntology> imports = manager.getImportsClosure(ontology);
-                        allImports.addAll(imports);
+            try {
+                // imports includes the ontology itself
+                //FIXME this line throws the strange error
+                Set<OWLOntology> imports = manager.getImportsClosure(ontology);
+                allImports.addAll(imports);
 
 //					System.out.println(imports);
-                    for (OWLOntology ont : imports) {
-                        classes.addAll(ont.getClassesInSignature());
-                        owlObjectProperties.addAll(ont.getObjectPropertiesInSignature());
-                        owlDatatypeProperties.addAll(ont.getDataPropertiesInSignature());
-                        owlIndividuals.addAll(ont.getIndividualsInSignature());
-                    }
-
-                } catch (UnknownOWLOntologyException uooe) {
-                    logger.error("UnknownOWLOntologyException occured, imports were not loaded! This is a bug, which has not been fixed yet.");
+                for (OWLOntology ont : imports) {
+                    classes.addAll(ont.getClassesInSignature());
+                    owlObjectProperties.addAll(ont.getObjectPropertiesInSignature());
+                    owlDatatypeProperties.addAll(ont.getDataPropertiesInSignature());
+                    owlIndividuals.addAll(ont.getIndividualsInSignature());
                 }
 
-                // if several knowledge sources are included, then we can only
-                // guarantee that the base URI is from one of those sources (there
-                // can't be more than one); but we will take care that all prefixes are
-                // correctly imported
-                OWLOntologyFormat format = manager.getOntologyFormat(ontology);
-                if (format instanceof PrefixOWLOntologyFormat) {
-                    prefixes.putAll(((PrefixOWLOntologyFormat) format).getPrefixName2PrefixMap());
-                    baseURI = ((PrefixOWLOntologyFormat) format).getDefaultPrefix();
-                    prefixes.remove("");
-                }
-
-                // all other sources are converted to KB and then to an
-                // OWL API ontology
-            } else {
-
-                //KB Files
-                KB kb = ((AbstractKnowledgeSource)source).toKB();
-
-                if (!(source instanceof OWLOntologyKnowledgeSource)) {
-                    //Not sure if this will ever get hit, but leaving in for backward compatibility.
-                    IRI ontologyURI = IRI.create("http://example.com");
-                    ontology = null;
-                    try {
-                        ontology = manager.createOntology(ontologyURI);
-                    } catch (OWLOntologyCreationException e) {
-                        throw new RuntimeException(e);
-                    }
-                    OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
-                    owlAPIOntologies.add(ontology);
-                }
-                
-                allImports.add(ontology);
-                atomicConcepts.addAll(kb.findAllAtomicConcepts());
-                atomicRoles.addAll(kb.findAllAtomicRoles());
-                individuals.addAll(kb.findAllIndividuals());
-                // TODO: add method to find datatypes
+            } catch (UnknownOWLOntologyException uooe) {
+                logger.error("UnknownOWLOntologyException occured, imports were not loaded! This is a bug, which has not been fixed yet.");
             }
+
+            // if several knowledge sources are included, then we can only
+            // guarantee that the base URI is from one of those sources (there
+            // can't be more than one); but we will take care that all prefixes are
+            // correctly imported
+            OWLOntologyFormat format = manager.getOntologyFormat(ontology);
+            if (format instanceof PrefixOWLOntologyFormat) {
+                prefixes.putAll(((PrefixOWLOntologyFormat) format).getPrefixName2PrefixMap());
+                baseURI = ((PrefixOWLOntologyFormat) format).getDefaultPrefix();
+                prefixes.remove("");
+            }
+
         }
+
+        //Now merge all of the knowledge sources into one ontology instance.
         try {
             //The following line illustrates a problem with using different OWLOntologyManagers.  This can manifest itself if we have multiple sources who were created with different manager instances.
             //ontology = OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
