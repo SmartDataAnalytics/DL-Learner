@@ -89,7 +89,8 @@ DominanceConstraint DominanceConstraint() :
 }
 {
 	label1 = Label() "<" label2 = Label()
-    {	dc = new DominanceConstraint(label1,label2);
+    {
+	dc = new DominanceConstraint(label1,label2);
 	return dc;
     }
 
@@ -104,7 +105,8 @@ DominanceConstraint DominanceConstraint() :
    | 
 
     label1 = Label() "=" label2 = Label()
-    {         	dc = new DominanceConstraint(label1,label2);
+    {
+         	dc = new DominanceConstraint(label1,label2);
   			dc.setType(DomType.equal);
   			return dc;
   	}
@@ -125,13 +127,15 @@ Label Label() :
     |
 
     "res(" label = <LABEL> ")"   
-	{	  return new Label(label.toString(),Position.res);
+	{
+	  return new Label(label.toString(),Position.res);
 	}
 
 	|
 
 	"scope(" label = <LABEL> ")"
-	{	  return new Label(label.toString(),Position.scope);
+	{
+	  return new Label(label.toString(),Position.scope);
     }
 }
 
@@ -280,13 +284,16 @@ Set<DiscourseReferent> DR_Set() :
       {
          dr_set= new HashSet<DiscourseReferent>();
       }
-      if (dr.toString().startsWith("?"))      {         dr_set.add(new DiscourseReferent(dr.toString().substring(1),true,false));
+      if (dr.toString().startsWith("?"))
+      {
+         dr_set.add(new DiscourseReferent(dr.toString().substring(1),true,false));
       }
       else if (dr.toString().startsWith("!"))
       {
          dr_set.add(new DiscourseReferent(dr.toString().substring(1),false,true));
       }
-      else      {
+      else
+      {
 		 dr_set.add(new DiscourseReferent(dr.toString(),false,false));
       }
       return dr_set;
@@ -438,12 +445,16 @@ Slot Slot() :
 {
     ref = <WORD> "/" type = <WORD> "/" (words = Word_List())?
    {
-     if (words == null)     {       words = new ArrayList<String>();
+     if (words == null)
+     {
+       words = new ArrayList<String>();
      }
 	 if (type.toString().equals("CLASS")) { slottype = SlotType.CLASS; }
-	 else if (type.toString().equals("RESOURCE")) { slottype = SlotType.RESOURCE; }	 else if (type.toString().equals("PROPERTY")) { slottype = SlotType.PROPERTY; }
+	 else if (type.toString().equals("RESOURCE")) { slottype = SlotType.RESOURCE; }
+	 else if (type.toString().equals("PROPERTY")) { slottype = SlotType.PROPERTY; }
 	 else if (type.toString().equals("SYMPROPERTY")) { slottype = SlotType.SYMPROPERTY; }
-	 else { slottype = SlotType.UNSPEC; }	   
+	 else { slottype = SlotType.UNSPEC; }
+	   
      return new Slot(ref.toString(),slottype,words);
    }
 }
@@ -487,7 +498,7 @@ TOKEN: {<HOWMANY: "HOWMANY">}
 
 TOKEN: {<LABEL: "l"(["0"-"9"])+>}
 
-TOKEN: {<WORD: (["a"-"z","A"-"Z","_",".","#",":"])+>}
+TOKEN: {<WORD: (["a"-"z","A"-"Z","_",".","#",":","0"-"9"])+>}
 
 TOKEN: {<DR: (["?","!"])?(["a"-"z","A"-"Z","0"-"9","."])+>}
 

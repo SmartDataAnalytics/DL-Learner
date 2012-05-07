@@ -1,9 +1,6 @@
 package org.dllearner.algorithm.tbsl.converter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.dllearner.algorithm.tbsl.sem.drs.Complex_DRS_Condition;
 import org.dllearner.algorithm.tbsl.sem.drs.DRS;
@@ -241,6 +238,35 @@ public class DRS2BasicSPARQL_Converter {
             		p.setTarget(simple.getArguments().get(1).getValue());
             		temp.addConditions(p);
             	}
+                else if (simple.getArguments().size() == 3) {
+                        Path p = new Path();
+            		p.setStart(simple.getArguments().get(0).getValue());
+                        p.setVia(predicate);
+                        String newword = null;
+                        Slot del = null;
+                        for (Slot s : slots) {
+                            if (s.getAnchor().equals(simple.getArguments().get(1).getValue())) {
+                                newword = s.getWords().get(0);
+                                del = s;
+                                break;
+                            }
+                        }
+                        if (newword != null) {
+                            for (Slot s : slots) {
+                                if (s.getAnchor().equals(predicate)) {
+                                    boolean date = false;
+                                    if (s.getWords().get(0).endsWith(" date")) date = true;
+                                    newword = s.getWords().get(0).replace(" date","") + " " + newword; 
+                                    if (date) newword += " date";
+                                    s.setWords(Arrays.asList(newword));
+                                    break;
+                                }
+                            }
+                            if (del != null) slots.remove(del);
+                        }
+            		p.setTarget(simple.getArguments().get(2).getValue());
+            		temp.addConditions(p);
+                }
             }
             else if (predicate.equals("count")) {
             	if (simple.getArguments().size() == 1) {
