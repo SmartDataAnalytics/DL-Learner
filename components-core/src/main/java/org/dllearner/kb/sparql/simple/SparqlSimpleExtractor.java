@@ -11,9 +11,11 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.analyse.TypeOntology;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +32,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 @ComponentAnn(name = "efficient SPARQL fragment extractor", shortName = "sparqls", version = 0.1)
-public class SparqlSimpleExtractor implements KnowledgeSource {
+public class SparqlSimpleExtractor implements KnowledgeSource, OWLOntologyKnowledgeSource {
 
     @ConfigOption(name = "endpointURL", description = "URL of the SPARQL endpoint", required = true)
     private String endpointURL = null;
@@ -52,7 +54,6 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
     @ConfigOption(name = "ontologySchemaUrls", description = "List of Ontology Schema URLs", required = true)
     private List<String> ontologySchemaUrls = null;
 
-    private OWLOntology owlOntology;
     private SchemaIndexer indexer;
 
     private static Logger log = LoggerFactory.getLogger(SparqlSimpleExtractor.class);
@@ -214,8 +215,7 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
                 log.debug("{}", model);
             }
         }
-        JenaToOwlapiConverter converter = new JenaToOwlapiConverter();
-        owlOntology = converter.convert(this.model);
+
         monIndexing.stop();
         monComp.stop();
         log.info("*******Simple SPARQL Extractor********");
@@ -286,13 +286,6 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
         this.recursionDepth = recursionDepth;
     }
 
-    /**
-     * @return
-     */
-    public OWLOntology getOWLOntology() {
-        return owlOntology;
-    }
-
     public List<String> getOntologySchemaUrls() {
         return ontologySchemaUrls;
     }
@@ -307,5 +300,11 @@ public class SparqlSimpleExtractor implements KnowledgeSource {
 
     public void setTboxfilter(String tboxfilter) {
         this.tboxfilter = tboxfilter;
+    }
+
+    @Override
+    public OWLOntology createOWLOntology(OWLOntologyManager manager) {
+        JenaToOwlapiConverter converter = new JenaToOwlapiConverter();
+        return converter.convert(this.model,manager);
     }
 }
