@@ -117,6 +117,15 @@ public class AnnComponentManager {
 	}
 	
 	/**
+	 * Explicitly sets the list of components to use. This will (re-)initialise the
+	 * component manager the next time the singleton instance is retrieved.
+	 */
+	public static void setComponentClassNames(List<String> componentClassNames) {
+		AnnComponentManager.componentClassNames = componentClassNames;
+		cm = null;
+	}
+	
+	/**
 	 * Gets the singleton instance of <code>ComponentManager</code>.
 	 * @return The singleton <code>ComponentManager</code> instance.
 	 */
@@ -175,13 +184,10 @@ public class AnnComponentManager {
 	 */
 	public BidiMap<Class<? extends Component>, String> getComponentsNamedShort() {
 		return componentNamesShort;
-	}	
-	
-	public boolean isCompatible() {
-		return false;
 	}
 
 	// gets all components which this component can be plugged into
+	@Deprecated
 	public Collection<Class<? extends Component>> getPluggableComponents(Class<? extends Component> component) {
 		Collection<Class<? extends Component>> pluggableComponents = new LinkedList<Class<? extends Component>>();
 		for(Class<? extends Component> comp : components) {
@@ -193,7 +199,8 @@ public class AnnComponentManager {
 	}
 	
 	// should return true if there exists a constructor in "compound" which can take
-	// "component" as argument (in any argument positions) 
+	// "component" as argument (in any argument positions)
+	@Deprecated
 	public boolean isPluggable(Class<? extends Component> compound, Class<? extends Component> argument) {
 		try {
 			Constructor<?>[] constructors = compound.getDeclaredConstructors();
@@ -211,6 +218,7 @@ public class AnnComponentManager {
 		return false;
 	}
 	
+	@Deprecated
 	public boolean isCompatible(Class<? extends Component> compound, Class<? extends Component>... arguments) {
 		if(areValidComponentConstructorArguments(arguments)) {
 			throw new Error("Please order arguments by their class names.");
@@ -218,6 +226,7 @@ public class AnnComponentManager {
 		return hasMatchingConstructor(compound, arguments);
 	}
 	
+	@Deprecated
 	private boolean hasMatchingConstructor(Class<? extends Component> compound, Class<? extends Component>... arguments) {
 		try {
 			Constructor<?>[] constructors = compound.getDeclaredConstructors();
@@ -251,6 +260,7 @@ public class AnnComponentManager {
 	 * @param arguments Argument classes.
 	 * @return True of the order of arguments is correct and false otherwise.
 	 */
+	@Deprecated
 	public boolean areValidComponentConstructorArguments(Class<? extends Component>... arguments) {
 		for(int i=0; i<arguments.length; i++) {
 			if(arguments[i].getName().compareTo(arguments[i+1].getName())<0) {
@@ -260,8 +270,13 @@ public class AnnComponentManager {
 		return true;
 	}
 
-	// method lists all core interfaces implemented by a component (directly or indirectly)
-	// TODO: incomplete
+	/**
+	 * Convenience method to retrieve core types of a component. The main use case for this
+	 * is for automatic documentation generation.
+	 * 
+	 * @param component A component.
+	 * @return The list of core interfaces the component implemnets.
+	 */
 	public static List<Class<? extends Component>> getCoreComponentTypes(Class<? extends Component> component) {
 		List<Class<? extends Component>> types = new LinkedList<Class<? extends Component>>();
 		if(KnowledgeSource.class.isAssignableFrom(component)) {
