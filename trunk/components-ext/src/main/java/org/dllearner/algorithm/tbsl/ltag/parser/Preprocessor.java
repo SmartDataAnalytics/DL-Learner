@@ -195,8 +195,13 @@ public class Preprocessor {
 		}
 		m = whenPattern.matcher(condensedstring);
 		while (m.find()) {
+                    if (m.group(5).equals("VPREP")) {
+                        if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHENPREP");
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2) + m.group(3)+"/WHENPREP");
+                    } else {
 			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHEN");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2) + m.group(3)+"/WHEN");
+                    }
 		}
 		m = wherePattern.matcher(condensedstring);
 		while (m.find()) {
@@ -210,13 +215,13 @@ public class Preprocessor {
 		}		
 		m = adjnounPattern.matcher(condensedstring); 
 		while (m.find()) {
-			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNN");
-			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNN");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/NN");
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/NN");
 		}
 		m = adjnprepPattern.matcher(condensedstring); 
 		while (m.find()) {
-			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNPREP");
-			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNPREP");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/NPREP");
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/NPREP");
 		}
 		
 		return condensedstring;

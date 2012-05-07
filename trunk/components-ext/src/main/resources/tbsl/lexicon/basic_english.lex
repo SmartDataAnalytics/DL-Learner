@@ -18,8 +18,12 @@
 
 	is there  || (S V:'is' C:'there' DP[dp])  || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
 	are there || (S V:'are' C:'there' DP[dp]) || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
+        has there been  || (S V:'has' C:'there' V:'been' DP[dp]) || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
+        have there been || (S V:'have' C:'there' V:'been' DP[dp]) || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
 	is there  || (S DP[dp] (VP V:'is' C:'there'))  || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
 	are there || (S DP[dp] (VP V:'are' C:'there')) || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
+        have there been || (S DP[dp] (VP V:'have' C:'there' V:'been'))  || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
+        has there been  || (S DP[dp] (VP V:'has' C:'there' V:'been'))  || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
 
 // TO BE: YES/NO QUESTIONS
 
@@ -75,8 +79,9 @@
 	
 	least || (ADJ DET:'least' ADJ*) || <x,l1,<e,t>,[ l1:[ | minimum(a,x,x) ] ], [],[],[]>
 	
-  	how many || (DET DET:'how' DET:'many') || <x,l1,e, [ l1:[ ?x | ] ], [],[],[]>
-  	how many || (DET DET:'how' DET:'many') || <x,l1,e, [ l1:[ | count(x) ] ], [],[],[]>
+  	how many  || (DET DET:'how' DET:'many')  || <x,l1,e, [ l1:[ ?x | ] ], [],[],[]>
+  	how many  || (DET DET:'how' DET:'many')  || <x,l1,e, [ l1:[ | count(x) ] ], [],[],[]>
+  	how often || (DP DET:'how' DET:'often') || <x,l1,<<e,t>,t>, [ l1:[ | count(x) ] ], [],[],[]>
 	a  || (DET DET:'a') || <x,l1,e, [ l1:[ x |] ], [],[],[]>
 	an || (DET DET:'an') || <x,l1,e, [ l1:[ x |] ], [],[],[]>
 	which || (DET DET:'which') || <x,l1,e, [ l1:[ ?x |] ], [],[],[]>
@@ -102,13 +107,17 @@
 	also || (DP ADV:'also' DP*) || <x,l1,<<e,t>,t>,[ l1:[|] ],[],[],[]>
 	
 	has  || (S DP[subject] (VP V:'has' DP[object]))  || <x, l1, t, [ l1:[ | ], l2:[ | empty(x,y) ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
-	have || (S DP[subject] (VP V:'have' DP[object]))  || <x, l1, t, [ l1:[ | ], l2:[ | empty(x,y) ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
-	had  || (S DP[subject] (VP V:'had' DP[object]))  || <x, l1, t, [ l1:[ | ], l2:[ | empty(x,y) ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
+	have || (S DP[subject] (VP V:'have' DP[object])) || <x, l1, t, [ l1:[ | ], l2:[ | empty(x,y) ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
+	have || (S DP[object] (VP DP[subject] V:'have')) || <x, l1, t, [ l1:[ | ], l2:[ | empty(x,y) ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
+        had  || (S DP[subject] (VP V:'had' DP[object]))  || <x, l1, t, [ l1:[ | ], l2:[ | empty(x,y) ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
 	
 //	with || (NP NP* (PP P:'with' DP[dp])) || <x,l1,<e,t>,[ l1:[| empty(x,y) ] ],[(l2,y,dp,<<e,t>,t>)],[l2=l1],[]>
-	
+//      of   || (NP NP* (PP P:'of' DP[dp])) || <x,l1,<e,t>,[ l1:[| empty(x,y) ] ],[(l2,y,dp,<<e,t>,t>)],[l2=l1],[]>
+
 	people || (NP N:'people') || <x,l1,<e,t>,[ l1:[|] ],[],[],[]>
 	
+        still || (ADJ ADJ:'still' ADJ*) || <x,l1,<e,t>,[l1:[|]],[],[],[]>
+
 
 // WH WORDS
 // --------
@@ -172,7 +181,7 @@
 	eight || (NP NUM:'eight' NP*) || <x,l1,<e,t>,[l1:[x|count(x,8)]],[],[],[]>
 	nine  || (NP NUM:'nine' NP*)  || <x,l1,<e,t>,[l1:[x|count(x,9)]],[],[],[]>
 	ten   || (NP NUM:'ten' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,10)]],[],[],[]>
-	
+
 	one   || (NUM NUM:'one')   || <x,l1,e,[l1:[x|equal(x,1)]],[],[],[]>
 	two   || (NUM NUM:'two')   || <x,l1,e,[l1:[x|equal(x,2)]],[],[],[]>
 	three || (NUM NUM:'three') || <x,l1,e,[l1:[x|equal(x,3)]],[],[],[]>

@@ -11,7 +11,7 @@ public class BasicSlotBuilder {
 	
 	private String[] noun = {"NN","NNS","NNP","NNPS","NPREP","JJNN","JJNPREP"};
 	private String[] adjective = {"JJ","JJR","JJS","JJH"};
-	private String[] verb = {"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN","GERUNDIN","VPREP","WHEN","WHERE"};
+	private String[] verb = {"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN","GERUNDIN","VPREP","WHEN","WHENPREP","WHERE"};
 	private String[] preps = {"IN","TO"};
 	
 	public BasicSlotBuilder() {
@@ -206,11 +206,16 @@ public class BasicSlotBuilder {
 					result.add(vEntry);
 				} 
 				else if (pos.equals("VB")) {
-					String[] whEntry = {token,
+					String[] whEntry1 = {token,
 							"(S DP[obj] (VP DP[subj] V:'" + token + "'))",
 							"<x,l1,t,[ l1:[|], l4:[ p | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>" +
 									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
-					result.add(whEntry);
+                                        String[] whEntry2 = {token,
+							"(S DP[subj] (VP V:'" + token + "' DP[obj] ))",
+							"<x,l1,t,[ l1:[|], l4:[ p | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>" +
+									" ;; <x,l1,t,[ l1:[|], l4:[ | empty(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[]>"};
+					result.add(whEntry1);
+					result.add(whEntry2);
 				} 
 				else if (pos.equals("VBG") || pos.equals("VBN")) {
 					String[] gerEntry = {token,
@@ -225,10 +230,26 @@ public class BasicSlotBuilder {
 				}
 				else if (pos.equals("WHEN")) {
 					slot = "SLOT_" + token + "/PROPERTY/" + token + "_date";
-					String[] whenEntry = {token,
+					String[] whenEntry1 = {token,
 							"(S DP[subj] (VP V:'" + token + "'))",
 							"<x,l1,t,[ l1:[ ?y,p | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>)],[ l2=l1 ],[ " + slot + " ]>"};
-					result.add(whenEntry);
+                                        String[] whenEntry2 = {token,
+							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
+							"<x,l1,t,[ l1:[ ?y,p | SLOT_" + token + "(x,z,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,z,obj,<<e,t>,t>)],[ l2=l1,l3=l1 ],[ " + slot + " ]>"};
+					result.add(whenEntry1);
+					result.add(whenEntry2);
+				}
+                                else if (pos.equals("WHENPREP")) {
+                                    System.out.println(" >>>> " + token); // DEBUG
+					slot = "SLOT_" + token + "/PROPERTY/" + token + "_date";
+					String[] whenprepEntry1 = {token,
+							"(S DP[subj] (VP V:'" + token + "' DP[pobj]))",
+							"<x,l1,t,[ l1:[ ?y,p | SLOT_" + token + "(x,z,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,z,pobj,<<e,t>,t>)],[ l2=l1,l3=l1 ],[ " + slot + " ]>"};
+                                        String[] whenprepEntry2 = {token,
+							"(S DP[subj] (VP V:'" + token + "' NP[pobj]))",
+							"<x,l1,t,[ l1:[ ?y,p,z | SLOT_" + token + "(x,z,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,z,pobj,<e,t>)],[ l2=l1,l3=l1 ],[ " + slot + " ]>"};
+					result.add(whenprepEntry1);
+					result.add(whenprepEntry2);
 				}
 				else if (pos.equals("WHERE")) {
 					slot = "SLOT_" + token + "/PROPERTY/" + token + "_place";
@@ -245,10 +266,18 @@ public class BasicSlotBuilder {
 				slot = "SLOT_" + token + "/PROPERTY/" + token;
 				/* ADJECTIVE */
 				if (pos.equals("JJ")) {
-					String[] adjEntry = {token,
+					String[] adjEntry1 = {token,
 							"(NP ADJ:'" + token.toLowerCase() + "' NP*)",
-							"<x,l1,<e,t>,[ l1:[ j | SLOT_" + token + "(x,j) ] ],[],[],["+slot+"]>"};			
-					result.add(adjEntry);
+							"<x,l1,<e,t>,[ l1:[ j | SLOT_" + token + "(x,j) ] ],[],[],["+slot+"]>"};	
+//                                        String[] adjEntry2 = {"is .+ " + token,
+//							"(S DP[subject] (VP V:'is' ADJ:'" + token.toLowerCase() + "'))",
+//							"<x,l1,<e,t>,[ l1:[ | SLOT_" + token + "(x) ] ],[(l2,x,subject,<<e,t>,t>)],[l2=l1],["+slot+"]>"};
+//                                        String[] adjEntry3 = {"is .+ " + token,
+//							"(S (VP V:'is' DP[subject] ADJ:'" + token.toLowerCase() + "'))",
+//							"<x,l1,<e,t>,[ l1:[ | SLOT_" + token + "(x) ] ],[(l2,x,subject,<<e,t>,t>)],[l2=l1],["+slot+"]>"};			
+					result.add(adjEntry1);
+//					result.add(adjEntry2);
+//					result.add(adjEntry3);
 				}
 				if (pos.equals("JJH")) {
 					String[] howEntry = {"how "+token,

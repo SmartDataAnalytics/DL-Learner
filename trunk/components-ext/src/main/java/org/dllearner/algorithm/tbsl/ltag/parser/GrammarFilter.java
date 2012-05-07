@@ -151,11 +151,11 @@ class GrammarFilter {
 					 */
 					String[] tokenParts = token.split(" ");
 					if (tokenParts.length > 2) {
-						
+						                                            
 						for (String anchor : grammar.getWildCardAnchors()) {
 							
 							if (token.matches(anchor)) {
-								
+                                                            								
 								foundCandidates = true;
 								coveredTokens.add(token);
 								

@@ -45,7 +45,7 @@ public class BasicTemplator {
 		}
 		
         g = LTAG_Constructor.construct(grammarFiles);
-
+        
         tagger = new StanfordPartOfSpeechTagger();
 //      tagger = new ApachePartOfSpeechTagger();
 		
