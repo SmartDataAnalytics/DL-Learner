@@ -255,8 +255,8 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 	
 	public static void main(String[] args) throws Exception{
 		DisjointDataPropertyAxiomLearner l = new DisjointDataPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/position"));
-		l.setMaxExecutionTimeInSeconds(20);
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/accessDate"));
+		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.getReasoner().precomputeDataPropertyPopularity();
 		l.start();

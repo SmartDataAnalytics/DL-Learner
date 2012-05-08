@@ -21,6 +21,7 @@ package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,6 +29,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.SimpleLayout;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
@@ -42,9 +46,11 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.semanticweb.owlapi.model.IRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -56,8 +62,14 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
 	private DatatypeProperty propertyToDescribe;
 	
+	private static final ParameterizedSparqlString singleQueryTemplate = new ParameterizedSparqlString("SELECT ?type (COUNT(DISTINCT ?ind) AS ?cnt) WHERE {?ind <%s> ?o. ?ind a ?type.}");
+	
+	private Map<Individual, SortedSet<Description>> individual2Types;
+	
 	public DataPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		super.iterativeQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?ind ?type WHERE {?ind ?p ?o. ?ind a ?type.}");
+		
 	}
 	
 	public DatatypeProperty getPropertyToDescribe() {
@@ -70,6 +82,7 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 	
 	@Override
 	public void start() {
+		iterativeQueryTemplate.setIri("p", propertyToDescribe.getName());
 		logger.info("Start learning...");
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
@@ -92,20 +105,49 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 			}
 		}
 		
-		//get subjects with types
-		Map<Individual, SortedSet<Description>> individual2Types = new HashMap<Individual, SortedSet<Description>>();
-		boolean repeat = true;
-		int limit = 1000;
-		while(!terminationCriteriaSatisfied() && repeat){
-			int ret = addIndividualsWithTypes(individual2Types, limit, fetchedRows);
-			currentlyBestAxioms = buildEvaluatedAxioms(individual2Types);
-			fetchedRows += 1000;
-			repeat = (ret == limit);
-		}
+		runIterativeQueryMode();
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
+	
+	private void runSingleQueryMode(){
+		
+	}
+	
+	private void runIterativeQueryMode(){
+		individual2Types = new HashMap<Individual, SortedSet<Description>>();
+		while(!terminationCriteriaSatisfied() && !fullDataLoaded){
+			ResultSet rs = fetchData();
+			processData(rs);
+			buildEvaluatedAxioms();
+		}
+	}
+	
+	private void processData(ResultSet rs){
+		QuerySolution qs;
+		Individual ind;
+		Description type;
+		SortedSet<Description> types;
+		int cnt = 0;
+		while(rs.hasNext()){
+			cnt++;
+			qs = rs.next();
+			if(qs.get("type").isURIResource()){
+				types = new TreeSet<Description>();
+				ind = new Individual(qs.getResource("ind").getURI());
+				type = new NamedClass(qs.getResource("type").getURI());
+				types.add(type);
+				if(reasoner.isPrepared()){
+					if(reasoner.getClassHierarchy().contains(type)){
+						types.addAll(reasoner.getClassHierarchy().getSuperClasses(type));
+					}
+				}
+				addToMap(individual2Types, ind, types);
+			}
+		}
+		lastRowCount = cnt;
+	}
 
-	private List<EvaluatedAxiom> buildEvaluatedAxioms(Map<Individual, SortedSet<Description>> individual2Types){
+	private void buildEvaluatedAxioms(){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
 		Map<Description, Integer> result = new HashMap<Description, Integer>();
 		for(Entry<Individual, SortedSet<Description>> entry : individual2Types.entrySet()){
@@ -134,46 +176,14 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 			axioms.add(evalAxiom);
 		}
 		
-		return axioms;
-	}
-	
-	private int addIndividualsWithTypes(Map<Individual, SortedSet<Description>> ind2Types, int limit, int offset){
-		String query = String.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT DISTINCT ?ind ?type WHERE {?ind <%s> ?o. ?ind a ?type. ?type a owl:Class} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
-		
-//		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind <%s> ?o.} LIMIT %d OFFSET %d}}", propertyToDescribe.getName(), limit, offset);
-		
-		ResultSet rs = executeSelectQuery(query);
-		Individual ind;
-		Description newType;
-		QuerySolution qs;
-		SortedSet<Description> types;
-		int cnt = 0;
-		while(rs.hasNext()){
-			cnt++;
-			qs = rs.next();
-			if(qs.get("type").isURIResource()){
-				ind = new Individual(qs.getResource("ind").getURI());
-				newType = new NamedClass(qs.getResource("type").getURI());
-				types = ind2Types.get(ind);
-				if(types == null){
-					types = new TreeSet<Description>();
-					ind2Types.put(ind, types);
-				}
-				types.add(newType);
-				Set<Description> superClasses;
-				if(reasoner.isPrepared()){
-					if(reasoner.getClassHierarchy().contains(newType)){
-						superClasses = reasoner.getClassHierarchy().getSuperClasses(newType);
-						types.addAll(superClasses);
-					}
-					
-				}
-			}
-		}
-		return cnt;
+		currentlyBestAxioms = axioms;
 	}
 	
 	public static void main(String[] args) throws Exception{
+		org.apache.log4j.Logger.getRootLogger().addAppender(new ConsoleAppender(new SimpleLayout()));
+		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
+		org.apache.log4j.Logger.getLogger(DataPropertyDomainAxiomLearner.class).setLevel(Level.INFO);		
+		
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
@@ -181,9 +191,10 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		
 		DataPropertyDomainAxiomLearner l = new DataPropertyDomainAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/birthDate"));
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/AutomobileEngine/height"));
 		l.setMaxExecutionTimeInSeconds(10);
-		l.setReturnOnlyNewAxioms(true);
+		l.addFilterNamespace("http://dbpedia.org/ontology/");
+//		l.setReturnOnlyNewAxioms(true);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));

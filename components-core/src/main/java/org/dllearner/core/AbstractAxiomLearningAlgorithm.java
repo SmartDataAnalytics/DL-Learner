@@ -21,6 +21,7 @@ package org.dllearner.core;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -49,7 +50,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
@@ -57,7 +61,15 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import com.hp.hpl.jena.sparql.expr.E_Equals;
+import com.hp.hpl.jena.sparql.expr.E_Regex;
+import com.hp.hpl.jena.sparql.expr.E_Str;
+import com.hp.hpl.jena.sparql.expr.ExprVar;
+import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.resultset.ResultSetMem;
+import com.hp.hpl.jena.sparql.syntax.ElementFilter;
+import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.util.NodeFactory;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -92,6 +104,17 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	protected boolean timeout = true;
 	
 	protected boolean forceSPARQL_1_0_Mode = false;
+	
+	protected int chunkCount = 0;
+	protected int chunkSize = 1000;
+	protected int offset = 0;
+	protected int lastRowCount = 0;
+	
+	protected boolean fullDataLoaded = false;
+	
+	private List<String> filterNamespaces = new ArrayList<String>();
+	
+	protected ParameterizedSparqlString iterativeQueryTemplate;
 	
 	public AbstractAxiomLearningAlgorithm() {
 		existingAxioms = new TreeSet<Axiom>(new AxiomComparator());
@@ -259,7 +282,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		}
 	}
 	
-	protected ResultSet executeSelectQuery(String query) {
+	protected ResultSet executeSelectQuery(String query) {System.out.println(query);
 		logger.debug("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
@@ -274,7 +297,12 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 				return rs;
 			} catch (QueryExceptionHTTP e) {
 				if(e.getCause() instanceof SocketTimeoutException){
-					logger.warn("Got timeout");
+					if(timeout){
+						logger.warn("Got timeout");
+					} else {
+						logger.trace("Got local timeout");
+					}
+					
 				} else {
 					logger.error("Exception executing query", e);
 				}
@@ -379,6 +407,87 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	protected double fMEasure(double precision, double recall){
 		return 2 * precision * recall / (precision + recall);
+	}
+	
+	protected ResultSet fetchData(){
+		setChunkConditions();
+		if(!fullDataLoaded){
+			Query query = buildQuery();
+			offset += chunkSize;
+			ResultSet rs = executeSelectQuery(query.toString());
+			chunkCount++;
+			return rs;
+		}
+		return new ResultSetMem();
+	}
+	
+	private void setChunkConditions() {
+		// adapt chunk size if needed
+		if (chunkCount == 1 && lastRowCount < chunkSize) {
+			logger.info("Adapting chunk size from " + chunkSize + " to " + lastRowCount);
+			chunkSize = lastRowCount;
+			offset = lastRowCount;
+		}
+
+		// check if full data was loaded
+		if(chunkCount != 0){
+			fullDataLoaded = (lastRowCount == 0) || (lastRowCount < chunkSize);
+			if (fullDataLoaded) {
+				logger.info("Loaded whole data. Early termination.");
+			}
+		}
+	}
+	
+	private Query buildQuery(){
+		Query query = iterativeQueryTemplate.asQuery();
+		for(String ns : filterNamespaces){
+			((ElementGroup)query.getQueryPattern()).addElementFilter(
+					new ElementFilter(
+							new E_Regex(
+									new E_Str(new ExprVar(Node.createVariable("type"))),
+									ns, "")));
+		}
+		query.setLimit(chunkSize);
+		query.setOffset(offset);
+		return query;
+	}
+	
+	public void addFilterNamespace(String namespace){
+		filterNamespaces.add(namespace);
+	}
+	
+	protected <K,T extends Set<V>, V> void addToMap(Map<K, T> map, K key, V value ){
+		T values = map.get(key);
+		if(values == null){
+			try {
+				values = (T) values.getClass().newInstance();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			values.add(value);
+		}
+		values.add(value);
+	}
+	
+	protected <K,T extends Set<V>, V> void addToMap(Map<K, T> map, K key, Collection<V> newValues ){
+		T values = map.get(key);
+		if(values == null){
+			try {
+				values = (T) newValues.getClass().newInstance();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			map.put(key, values);
+		}
+		values.addAll(newValues);
+	}
+	
+	private void adaptChunkCount(){
+		
 	}
 	
 	class OWLFilter extends Filter<OntClass>{

@@ -219,6 +219,8 @@ public class EnrichmentEvaluation {
 	private OWLReasoner reasoner;
 	private OWLDataFactory factory = new OWLDataFactoryImpl();
 	
+	private static final String NAMESPACE = "http://dbpedia.org/ontology";
+	
 	private SPARQLReasoner sparqlReasoner;
 	
 	public EnrichmentEvaluation(SparqlEndpoint endpoint) {
@@ -370,6 +372,7 @@ public class EnrichmentEvaluation {
 						AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
 								SparqlEndpointKS.class).newInstance(ks);
 						((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
+						((AbstractAxiomLearningAlgorithm)learner).addFilterNamespace(NAMESPACE);
 						ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
 						ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 								maxExecutionTimeInSeconds);
@@ -459,6 +462,7 @@ public class EnrichmentEvaluation {
 				AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
 						SparqlEndpointKS.class).newInstance(ks);
 				((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
+				((AbstractAxiomLearningAlgorithm)learner).addFilterNamespace(NAMESPACE);
 				ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
 				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 						maxExecutionTimeInSeconds);

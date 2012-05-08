@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -52,6 +51,7 @@ import com.hp.hpl.jena.query.ResultSet;
 public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyRangeAxiomLearner.class);
+	private Map<Individual, SortedSet<Description>> individual2Types;
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
@@ -70,12 +70,13 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 
 	@Override
 	public void start() {
+		iterativeQueryTemplate.setIri("p", propertyToDescribe.getName());
 		logger.info("Start learning...");
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		
-		if(reasoner.isPrepared()){
+		if(returnOnlyNewAxioms){
 			//get existing ranges
 			Description existingRange = reasoner.getRange(propertyToDescribe);
 			if(existingRange != null){
@@ -92,20 +93,49 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 			}
 		}
 		
-		//get objects with types
-		Map<Individual, SortedSet<Description>> individual2Types = new HashMap<Individual, SortedSet<Description>>();
-		boolean repeat = true;
-		int limit = 1000;
-		while(!terminationCriteriaSatisfied() && repeat){
-			int ret = addIndividualsWithTypes(individual2Types, limit, fetchedRows);
-			currentlyBestAxioms = buildEvaluatedAxioms(individual2Types);
-			fetchedRows += 1000;
-			repeat = (ret == limit);
-		}
+		runIterativeQueryMode();
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
-	private List<EvaluatedAxiom> buildEvaluatedAxioms(Map<Individual, SortedSet<Description>> individual2Types){
+	private void runSingleQueryMode(){
+		
+	}
+	
+	private void runIterativeQueryMode(){
+		individual2Types = new HashMap<Individual, SortedSet<Description>>();
+		while(!terminationCriteriaSatisfied() && !fullDataLoaded){
+			ResultSet rs = fetchData();
+			processData(rs);
+			buildEvaluatedAxioms();
+		}
+	}
+	
+	private void processData(ResultSet rs){
+		QuerySolution qs;
+		Individual ind;
+		Description type;
+		SortedSet<Description> types;
+		int cnt = 0;
+		while(rs.hasNext()){
+			cnt++;
+			qs = rs.next();
+			if(qs.get("type").isURIResource()){
+				types = new TreeSet<Description>();
+				ind = new Individual(qs.getResource("ind").getURI());
+				type = new NamedClass(qs.getResource("type").getURI());
+				types.add(type);
+				if(reasoner.isPrepared()){
+					if(reasoner.getClassHierarchy().contains(type)){
+						types.addAll(reasoner.getClassHierarchy().getSuperClasses(type));
+					}
+				}
+				addToMap(individual2Types, ind, types);
+			}
+		}
+		lastRowCount = cnt;
+	}
+
+	private void buildEvaluatedAxioms(){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
 		Map<Description, Integer> result = new HashMap<Description, Integer>();
 		for(Entry<Individual, SortedSet<Description>> entry : individual2Types.entrySet()){
@@ -134,52 +164,18 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 			axioms.add(evalAxiom);
 		}
 		
-		return axioms;
-	}
-	
-	private int addIndividualsWithTypes(Map<Individual, SortedSet<Description>> ind2Types, int limit, int offset){
-		String query = String.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT DISTINCT ?ind ?type WHERE {?s <%s> ?ind. ?ind a ?type. ?type a owl:Class} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
-		
-//		String query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a ?type. {SELECT ?ind {?ind <%s> ?o.} LIMIT %d OFFSET %d}}", propertyToDescribe.getName(), limit, offset);
-		
-		ResultSet rs = executeSelectQuery(query);
-		Individual ind;
-		Description newType;
-		QuerySolution qs;
-		SortedSet<Description> types;
-		int cnt = 0;
-		while(rs.hasNext()){
-			cnt++;
-			qs = rs.next();
-			ind = new Individual(qs.getResource("ind").getURI());
-			newType = new NamedClass(qs.getResource("type").getURI());
-			types = ind2Types.get(ind);
-			if(types == null){
-				types = new TreeSet<Description>();
-				ind2Types.put(ind, types);
-			}
-			types.add(newType);
-			Set<Description> superClasses;
-			if(reasoner.isPrepared()){
-				if(reasoner.getClassHierarchy().contains(newType)){
-					superClasses = reasoner.getClassHierarchy().getSuperClasses(newType);
-					types.addAll(superClasses);
-				}
-				
-			}
-		}
-		return cnt;
+		currentlyBestAxioms = axioms;
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
 		reasoner.prepareSubsumptionHierarchy();
 		
 		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/routeTypeAbbreviation"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/ideology"));
 		l.setMaxExecutionTimeInSeconds(10);
 //		l.setReturnOnlyNewAxioms(true);
 		l.init();
