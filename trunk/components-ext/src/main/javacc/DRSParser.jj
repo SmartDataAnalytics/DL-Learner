@@ -1,0 +1,257 @@
+
+options {
+  LOOKAHEAD = 2;
+  CHOICE_AMBIGUITY_CHECK = 2;
+  OTHER_AMBIGUITY_CHECK = 1;
+  STATIC = false;
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+  ERROR_REPORTING = true;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = false;
+  IGNORE_CASE = false;
+  USER_TOKEN_MANAGER = false;
+  USER_CHAR_STREAM = false;
+  BUILD_PARSER = true;
+  BUILD_TOKEN_MANAGER = true;
+  SANITY_CHECK = true;
+  FORCE_LA_CHECK = false;
+}
+
+PARSER_BEGIN(DRSParser)
+
+package org.dllearner.algorithm.tbsl.sem.drs.reader;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.dllearner.algorithm.tbsl.sem.drs.*;
+import org.dllearner.algorithm.tbsl.sem.util.Label;
+
+public class DRSParser {
+
+  /** Main entry point. */
+  public static void main(String args[]) throws ParseException {
+    DRSParser parser = new DRSParser(System.in);
+    parser.Input();
+  }
+
+}
+
+PARSER_END(DRSParser)
+
+/** Root production. */
+void Input() :
+{}
+{
+  DRS() <EOF>
+}
+
+/** DRS */
+DRS DRS() :
+{
+	Set<DiscourseReferent> dr_set = null;
+  	Set<DRS_Condition> conditions = null;
+	DRS drs;
+    Token label = null;
+
+}
+{
+   (label=<LABEL> ":")? "[" (dr_set=DR_Set())? "|" (conditions=Condition_List())? "]"
+    {
+       if (dr_set == null)
+       {
+          dr_set = new HashSet<DiscourseReferent>();
+       }
+       drs = new DRS();
+       if (label != null)       {
+          drs.setLabel(label.toString());
+       }
+       drs.setDiscourseReferents(dr_set);
+       if (conditions != null)       {
+       	  drs.setDRSConditions(conditions);
+       }
+       return drs;
+    }
+}
+
+/** DR_Set*/
+Set<DiscourseReferent> DR_Set() :
+{
+   Token dr;
+   Set<DiscourseReferent> dr_set=null;
+}
+{
+   dr = dr() ("," dr_set=DR_Set())?
+   {
+      if (dr_set == null)
+      {
+         dr_set= new HashSet<DiscourseReferent>();
+      }
+      if (dr.toString().startsWith("?"))
+      {
+         dr_set.add(new DiscourseReferent(dr.toString().substring(1),true,false));
+      }
+      else if (dr.toString().startsWith("!"))
+      {
+         dr_set.add(new DiscourseReferent(dr.toString().substring(1),false,true));
+      }
+      else
+      {
+		 dr_set.add(new DiscourseReferent(dr.toString(),false,false));
+      }
+      return dr_set;
+   }
+}
+
+Set<DRS_Condition> Condition_List() :
+{
+    DRS_Condition condition= null;
+    Set<DRS_Condition> conditions = null;
+}
+{
+    condition=Condition() ("," conditions=Condition_List())?
+    {
+    if (conditions == null)
+      {
+         conditions = new HashSet<DRS_Condition>();
+      }
+ 	  conditions.add(condition);
+      return conditions;
+  }
+}
+
+DRS_Condition Condition() :
+{
+      List<DiscourseReferent> dr_list;
+      Token dr1;
+      Token dr2;
+      Token dr;
+      Token predicate;
+      Token quantifier;
+      DRS drs1;
+      DRS drs2;	
+}    
+{
+
+    predicate=<WORD> "(" dr_list=DR_List() ")"
+    {
+        Simple_DRS_Condition condition;
+
+        condition = new Simple_DRS_Condition();
+        condition.setPredicate(predicate.toString());
+        condition.setArguments(dr_list);
+        return condition;
+    }
+    
+    |
+   
+    dr1 = dr() "=" dr2 = dr() 
+    {	
+        Simple_DRS_Condition condition;
+
+        condition = new Simple_DRS_Condition();
+        condition.setPredicate("equal");
+        condition.addArgument(new DiscourseReferent(dr1.toString()));
+		condition.addArgument(new DiscourseReferent(dr2.toString()));
+        return condition;
+    }
+
+    |
+
+    "NOT" drs1=DRS()
+    {
+       Negated_DRS drs = new Negated_DRS();
+       drs.setDRS(drs1);
+       return drs;
+    }
+
+    |
+
+    drs1=DRS()  (quantifier=<EVERY> | quantifier=<SOME> | quantifier=<AFEW> | quantifier=<MOST> | quantifier=<THEMOST> | quantifier=<THELEAST> |
+                 quantifier=<HOWMANY> | quantifier=<MANY> | quantifier=<NO>) dr=dr() drs2=DRS()
+    {
+		Complex_DRS_Condition drs;
+        drs = new Complex_DRS_Condition();
+		drs.setRestrictor(drs1);
+        drs.setScope(drs2);	
+		drs.setReferent(new DiscourseReferent(dr.toString()));
+	
+		if (quantifier.toString().equals("EVERY")) {drs.setQuantifier(DRS_Quantifier.EVERY);}
+		if (quantifier.toString().equals("SOME")) {drs.setQuantifier(DRS_Quantifier.SOME);}
+		if (quantifier.toString().equals("MOST")) {drs.setQuantifier(DRS_Quantifier.MOST);}
+		if (quantifier.toString().equals("THEMOST")) {drs.setQuantifier(DRS_Quantifier.THEMOST);}
+		if (quantifier.toString().equals("THELEAST")) {drs.setQuantifier(DRS_Quantifier.THELEAST);}
+		if (quantifier.toString().equals("AFEW")) {drs.setQuantifier(DRS_Quantifier.FEW);}
+		if (quantifier.toString().equals("MANY")) {drs.setQuantifier(DRS_Quantifier.MANY);}
+		if (quantifier.toString().equals("HOWMANY")) {drs.setQuantifier(DRS_Quantifier.HOWMANY);}
+		if (quantifier.toString().equals("NO")) {drs.setQuantifier(DRS_Quantifier.NO);}
+
+	return drs;
+
+    }
+}
+
+/** DR_List*/
+List<DiscourseReferent> DR_List() :
+{
+   Token dr;
+   List<DiscourseReferent> dr_list=null;
+}
+{
+   dr = dr() ("," dr_list=DR_List())?
+   {
+      if (dr_list == null)
+      {
+         dr_list= new ArrayList<DiscourseReferent>();
+      }
+
+      if (dr.toString().startsWith("?")) {
+         dr_list.add(0,new DiscourseReferent(dr.toString().substring(1),true,false));
+      }
+      else if (dr.toString().startsWith("?")) {
+         dr_list.add(0,new DiscourseReferent(dr.toString().substring(1),false,true));
+      }
+      else {
+		 dr_list.add(0,new DiscourseReferent(dr.toString(),false,false));
+      }
+
+      return dr_list;
+   }
+}
+
+
+TOKEN: {<EVERY: "EVERY">}
+
+TOKEN: {<MOST: "MOST">}
+
+TOKEN: {<SOME: "SOME">}
+
+TOKEN: {<THEMOST: "THEMOST">}
+
+TOKEN: {<THELEAST: "THELEAST">}
+
+TOKEN: {<AFEW: "AFEW">}
+
+TOKEN: {<MANY: "MANY">}
+
+TOKEN: {<NO: "NO">}
+
+TOKEN: {<HOWMANY: "HOWMANY">}
+
+TOKEN: {<LABEL: "l"(["0"-"9"])+>}
+
+TOKEN: {<WORD: (["a"-"z","A"-"Z","_",".","#",":"])+>}
+
+TOKEN: {<DR: (["?","!"])?(["a"-"z","A"-"Z","0"-"9","."])+>}
+
+TOKEN: {<QUOTED_STRING: "\'" (~["\'"])+ "\'" >}
+
+Token dr() : { Token t; }{ (t=<WORD> | t=<DR> | t=<QUOTED_STRING>) { return t; } }
+
+SKIP : { " " | "\t" | "\n" | "\r" }
+
+

@@ -1,0 +1,210 @@
+
+options {
+  LOOKAHEAD = 5;
+  CHOICE_AMBIGUITY_CHECK = 2;
+  OTHER_AMBIGUITY_CHECK = 1;
+  STATIC = false;
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+  ERROR_REPORTING = true;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = false;
+  IGNORE_CASE = false;
+  USER_TOKEN_MANAGER = false;
+  USER_CHAR_STREAM = false;
+  BUILD_PARSER = true;
+  BUILD_TOKEN_MANAGER = true;
+  SANITY_CHECK = true;
+  FORCE_LA_CHECK = false;
+}
+
+PARSER_BEGIN(LTAGTreeParser)
+
+package org.dllearner.algorithm.tbsl.ltag.reader;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.dllearner.algorithm.tbsl.ltag.data.*;
+import org.dllearner.algorithm.tbsl.ltag.agreement.*;
+
+public class LTAGTreeParser {
+
+  /** Main entry point. */
+  public static void main(String args[]) throws ParseException {
+    LTAGTreeParser parser = new LTAGTreeParser(System.in);
+    parser.Input();
+  }
+
+}
+
+PARSER_END(LTAGTreeParser)
+
+/** Root production. */
+void Input() :
+{}
+{
+  Tree() <EOF>
+}
+
+/** Tree */
+TreeNode Tree() :
+{
+  Category category;
+  String terminal = "";
+  List<TreeNode> treelist;
+  Token word;
+  Feature feature = null;
+}
+
+{
+   // SubstNode with case constraints (e.g. DP[subj]|nom)
+   category = Cat() "[" word=<WORD> "]" ("{" feature=Feat() "}")?         
+   {
+	SubstNode substnode = new SubstNode(word.toString(),category,feature);
+ 	return substnode;
+   }
+
+   |
+
+   // FootNode (e.g. S*)
+   category = Cat() "*"
+   {
+	FootNode footnode = new FootNode(category);
+        return footnode;
+   }
+
+   |
+
+   // FootNode with no adjunction allowed (e.g. ^S*)
+   "^" category = Cat() "*"
+   {
+	FootNode footnode = new FootNode(category);
+	footnode.setAdjConstraint(true);
+        return footnode;
+   }
+
+   |
+
+   // TreeNode which has case feature marked (e.g. (S|nom ...))
+   "(" category = Cat()  ("{" feature=Feat() "}")? treelist=TreeList() ")"
+    {
+       TreeNode tree = new Tree();
+       tree.setCategory(category);
+       tree.setChildren(treelist);
+       tree.setParentForTree();
+       tree.setFeature(feature);
+       return tree;
+    }
+    
+   |
+
+   // TreeNode with no case feature an no adjunction allowed (e.g. (^S DP...))
+   "(" "^" category = Cat() treelist=TreeList() ")"
+    {
+       TreeNode tree = new Tree();
+       tree.setCategory(category);
+       tree.setChildren(treelist);
+       tree.setParentForTree();
+       tree.setAdjConstraint(true);
+       return tree;
+    }
+    
+   |
+
+   // TerminalNode with case feature (e.g. N|nom:'house')
+   category = Cat()  ("{" feature=Feat() "}")? ":" "'" (terminal = Terminal())? "'"
+   {
+        TerminalNode node = new TerminalNode(terminal, category);
+        node.setCategory(category);
+        node.setFeature(feature);
+        return node;
+   }
+			   
+}
+
+
+String Terminal() :
+{
+  Token word;
+  String terminal=null;
+}
+{
+   word = <WORD> (terminal=Terminal())? 
+   {
+       if (terminal != null) return word.toString() + " " + terminal;
+       return word.toString();
+   }
+}
+
+List<TreeNode> TreeList() :
+{
+   List<TreeNode> treelist = null;
+   TreeNode tree;
+}
+{
+
+    tree = Tree() (treelist=TreeList())?
+    {
+        if (treelist == null)
+        {
+          treelist = new ArrayList<TreeNode>();
+        }
+
+        treelist.add(0,tree);
+        return treelist;
+    }
+}
+
+
+Category Cat() :
+{
+  Token cat;
+}
+{
+   cat=<CATEGORY>
+   {
+      if (cat.toString().equals("DP")) return Category.DP;
+      if (cat.toString().equals("NP")) return Category.NP;
+      if (cat.toString().equals("N")) return Category.N;
+      if (cat.toString().equals("S")) return Category.S;
+      if (cat.toString().equals("V")) return Category.V;
+      if (cat.toString().equals("P")) return Category.P;
+      if (cat.toString().equals("VP")) return Category.VP;
+      if (cat.toString().equals("PP")) return Category.PP;
+      if (cat.toString().equals("DET")) return Category.DET;
+      if (cat.toString().equals("WH")) return Category.WH;
+      if (cat.toString().equals("ADV")) return Category.ADV;
+      if (cat.toString().equals("ADJ")) return Category.ADJ;
+      if (cat.toString().equals("ADJCOMP")) return Category.ADJCOMP;
+      if (cat.toString().equals("PART")) return Category.PART;
+      if (cat.toString().equals("PUNCT")) return Category.PUNCT;
+      if (cat.toString().equals("CC")) return Category.CC;
+      if (cat.toString().equals("EX")) return Category.EX;
+      if (cat.toString().equals("NUM")) return Category.NUM;
+      if (cat.toString().equals("C")) return Category.C;
+      if (cat.toString().equals("NEG")) return Category.NEG;
+   }
+
+}
+
+Feature Feat() :
+{
+  Token raw;
+}
+{
+	raw=<WORD>
+	{	  
+   	return Feature.construct(raw.toString());
+   }
+}
+
+TOKEN: {<WORD: (["a"-"z"]|["0"-"9"]|["?"]|["-"]|["_"]|["!"]|[","]|[";"]|["."]|[":"]|["/"])+>}
+
+TOKEN: {<CATEGORY: (["A"-"Z"])+>}
+
+SKIP : { " " | "\t" | "\n" | "\r" }
+
+
+
