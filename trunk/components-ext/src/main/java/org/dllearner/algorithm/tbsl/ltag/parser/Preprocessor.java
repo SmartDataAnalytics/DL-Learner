@@ -88,8 +88,8 @@ public class Preprocessor {
 		Pattern vpassinPattern    = Pattern.compile("\\s((\\w+)/VPASS.\\w+/IN)");
 		Pattern gerundinPattern   = Pattern.compile("\\s((\\w+)/((VBG)|(VBN)).\\w+/IN)");
 		Pattern vprepPattern      = Pattern.compile("\\s((\\w+)(?<!have)/V[A-Z]+\\s\\w+/(IN|TO))");
-		Pattern whenPattern       = Pattern.compile("(?i)(when/WRB\\s(.+\\s)(\\w+)/((V[A-Z]+)|(PASS[A-Z]+)))");
-		Pattern wherePattern      = Pattern.compile("(?i)(where/WRB\\s(.+\\s)(\\w+)/((V[A-Z]+)|(PASS[A-Z]+)))");
+		Pattern whenPattern       = Pattern.compile("\\A(when/WRB\\s(.+\\s)(\\w+)/((V[A-Z]+)|(PASS[A-Z]+)))");
+		Pattern wherePattern      = Pattern.compile("\\A(where/WRB\\s(.+\\s)(\\w+)/((V[A-Z]+)|(PASS[A-Z]+)))");
 		Pattern adjsPattern       = Pattern.compile("((\\w+)/JJ.(\\w+)/JJ)");
 		Pattern adjnounPattern    = Pattern.compile("((\\w+)(?<!many)/JJ.(\\w+)/NN(S)?)");
 		Pattern adjnprepPattern   = Pattern.compile("((\\w+)(?<!many)/JJ.(\\w+)/NPREP)");
@@ -195,7 +195,7 @@ public class Preprocessor {
 		}
 		m = whenPattern.matcher(condensedstring);
 		while (m.find()) {
-                    if (m.group(5).equals("VPREP")) {
+                    if (m.group(4).equals("VPREP")) {
                         if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+m.group(3)+"/WHENPREP");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2) + m.group(3)+"/WHENPREP");
                     } else {
