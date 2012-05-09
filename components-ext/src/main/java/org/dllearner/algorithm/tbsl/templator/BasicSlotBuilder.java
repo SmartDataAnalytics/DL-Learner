@@ -35,6 +35,14 @@ public class BasicSlotBuilder {
 			String type = "UNSPEC";
 			String slot;
 			
+                        /* PRONOUN HACK */
+                        if (pos.equals("PRP") || pos.equals("PRP$")) {
+                            String[] pronEntry = {token,
+                                        "(DET DET:'" + token.toLowerCase() + "')",
+                                        "<x,l1,e,[ l1:[ x | ] ],[],[],[]>"};
+                            result.add(pronEntry);
+                        }
+                        
 			/* NOUNS */
 			if (equalsOneOf(pos,noun)) {
 				
@@ -329,12 +337,12 @@ public class BasicSlotBuilder {
 				slot = "SLOT_" + token + "/PROPERTY/";
 				String[] npAdjunct = {token,
 						"(NP NP* (PP P:'" + token.toLowerCase() + "' DP[pobj]))",
-						// "<x,l1,<e,t>,[ l1:[ | SLOT_" + token + "(p), p(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],["+slot+"]>" +
-								"<x,l1,<e,t>,[ l1:[ | empty(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[]>"};
+						"<x,l1,<e,t>,[ l1:[ | SLOT_" + token + "(p), p(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],["+slot+"]>" +
+								" ;; <x,l1,<e,t>,[ l1:[ | empty(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[]>"};
 				String[] vpAdjunct = {token,
 						"(VP VP* (PP P:'" + token.toLowerCase() + "' DP[pobj]))",
-						// "<x,l1,t,[ l1:[ | SLOT_" + token + "(p), p(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],["+slot+"]>" +
-								"<x,l1,t,[ l1:[ | empty(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[]>"};
+						"<x,l1,t,[ l1:[ | SLOT_" + token + "(p), p(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],["+slot+"]>" +
+								" ;; <x,l1,t,[ l1:[ | empty(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[]>"};
 				result.add(npAdjunct);
 				result.add(vpAdjunct);
 			}

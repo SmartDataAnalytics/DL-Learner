@@ -498,19 +498,14 @@ TOKEN: {<HOWMANY: "HOWMANY">}
 
 TOKEN: {<LABEL: "l"(["0"-"9"])+>}
 
-//TOKEN: {<WORD: (["a"-"z","A"-"Z","_",".","#",":","0"-"9"])+>}
-//TOKEN: {<DR: (["?","!"])?(["a"-"z","A"-"Z","0"-"9","."])+>}
+TOKEN: {<WORD: (["a"-"z","A"-"Z","_",".","#",":","0"-"9"])+>}
 
-TOKEN: {<A: (["a"-"z","A"-"Z","0"-"9"])+>}
-TOKEN: {<B: (["a"-"z","A"-"Z","_",".","#","0"-"9"])+":"(["a"-"z","A"-"Z","_",".","#","0"-"9"])+>}
-TOKEN: {<C: ["?","!"](["a"-"z","A"-"Z","0"-"9"])+>}
-
-Token dr() : { Token t; }{ (t=<A> | t=<C>) { return t; } }
-Token word() : { Token t; }{ (t=<A> | t=<B>) { return t; } }
-
-// Token label() : { Token t; }{ (t=<A> | t=<B> | t=<LABEL>) { return t; } }
+TOKEN: {<DR: (["?","!"])?(["a"-"z","A"-"Z","0"-"9","."])+>}
 
 TOKEN: {<QUOTED_STRING: "\'" (~["\'"])+ "\'" >}
+
+Token dr() : { Token t; }{ (t=<WORD> | t=<DR> | t=<QUOTED_STRING>) { return t; } }
+Token word() : { Token t; }{ (t=<WORD> | t=<DR> | t=<QUOTED_STRING>) { return t; } }
 
 SKIP : { " " | "\t" | "\n" | "\r" }
 
