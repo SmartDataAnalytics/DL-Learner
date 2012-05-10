@@ -22,10 +22,13 @@ package org.dllearner.algorithm.qtl.datastructures.impl;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,15 +36,21 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.dllearner.algorithm.qtl.datastructures.NodeRenderer;
 import org.dllearner.algorithm.qtl.datastructures.QueryTree;
 import org.dllearner.algorithm.qtl.filters.Filters;
 
 import com.hp.hpl.jena.datatypes.BaseDatatype;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.Syntax;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 
@@ -72,6 +81,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     private boolean isLiteralNode = false;
     private boolean isResourceNode = false;
     
+    private List<Literal> literals = new ArrayList<Literal>();
+    
 
     public QueryTreeImpl(N userObject) {
         this.userObject = userObject;
@@ -80,7 +91,13 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         edge2ChildrenMap = new HashMap<String, List<QueryTree<N>>>();
         toStringRenderer = new NodeRenderer<N>() {
             public String render(QueryTree<N> object) {
-                return object.toString() + "(" + object.getId() + ")";
+            	String label = object.toString() + "(" + object.getId() + ")";
+            	if(object.isLiteralNode()){
+            		if(!object.getLiterals().isEmpty()){
+            			label += "Values: " + object.getLiterals();
+            		}
+            	}
+                return  label;
             }
         };
     }
@@ -672,6 +689,10 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return true;
     }
     
+    @Override
+    public Query toSPARQLQuery() {
+    	return QueryFactory.create(toSPARQLQueryString(), Syntax.syntaxARQ);
+    }
     
     @Override
     public String toSPARQLQueryString() {
@@ -680,8 +701,12 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	}
     	cnt = 0;
     	StringBuilder sb = new StringBuilder();
-    	sb.append("SELECT ?x0 WHERE {\n");
-    	buildSPARQLQueryString(this, sb, false);
+    	sb.append("SELECT DISTINCT ?x0 WHERE {\n");
+    	List<String> filters = new ArrayList<String>();
+    	buildSPARQLQueryString(this, sb, false, filters);
+    	for(String filter : filters){
+    		sb.append(filter).append("\n");
+    	}
     	sb.append("}");
     	return sb.toString();
     }
@@ -693,16 +718,23 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	}
     	cnt = 0;
     	StringBuilder sb = new StringBuilder();
-    	sb.append("SELECT ?x0 WHERE {\n");
-    	buildSPARQLQueryString(this, sb, filtered);
+    	List<String> filters = new ArrayList<String>();
+    	sb.append("SELECT DISTINCT ?x0 WHERE {\n");
+    	buildSPARQLQueryString(this, sb, filtered, filters);
+    	for(String filter : filters){
+    		sb.append(filter).append("\n");
+    	}
     	sb.append("}");
     	return sb.toString();
     }
     
-    private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb, boolean filtered){
+    private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb, boolean filtered, List<String> filters){
     	Object subject = null;
     	if(tree.getUserObject().equals("?")){
     		subject = "?x" + cnt++;
+    		if(tree.isLiteralNode() && !tree.getLiterals().isEmpty()){
+    			filters.add(getFilter(subject.toString(), tree.getLiterals()));
+    		}
     	} else {
     		subject = "<" + tree.getUserObject() + ">";
     	}
@@ -725,10 +757,59 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         		}
         		sb.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
         		if(!objectIsResource){
-        			buildSPARQLQueryString(child, sb, filtered);
+        			buildSPARQLQueryString(child, sb, filtered, filters);
         		}
         	}
     	} 
+    }
+    
+    private String getFilter(String varName, List<Literal> literals){
+    	String filter = "FILTER(";
+    	
+    	Literal min = getMin(literals);
+    	filter += varName + ">=\"" + min.getLexicalForm() + "\"^^<" + min.getDatatypeURI() + ">";
+    	
+    	filter += " && ";
+    	
+    	Literal max = getMax(literals);
+    	filter += varName + "<=\"" + max.getLexicalForm() + "\"^^<" + min.getDatatypeURI() + ">";
+    	
+    	filter += ")";
+    	return filter;
+    }
+    
+    private Literal getMin(List<Literal> literals){
+    	Iterator<Literal> iter = literals.iterator();
+    	Literal min = iter.next();
+    	Literal l;
+    	while(iter.hasNext()){
+    		l = iter.next();
+    		if(l.getDatatype() == XSDDatatype.XSDinteger){
+    			min = (l.getInt() < min.getInt()) ? l : min;
+    		} else if(l.getDatatype() == XSDDatatype.XSDdouble){
+    			min = (l.getDouble() < min.getDouble()) ? l : min;
+    		} else if(l.getDatatype() == XSDDatatype.XSDdate){
+    			min = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(min.getLexicalForm())) == -1) ? l : min;
+    		} 
+    	}
+    	return min;
+    }
+    
+    private Literal getMax(List<Literal> literals){
+    	Iterator<Literal> iter = literals.iterator();
+    	Literal max = iter.next();
+    	Literal l;
+    	while(iter.hasNext()){
+    		l = iter.next();
+    		if(l.getDatatype() == XSDDatatype.XSDinteger){
+    			max = (l.getInt() > max.getInt()) ? l : max;
+    		} else if(l.getDatatype() == XSDDatatype.XSDdouble){
+    			max = (l.getDouble() > max.getDouble()) ? l : max;
+    		} else if(l.getDatatype() == XSDDatatype.XSDdate){
+    			max = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(max.getLexicalForm())) == 1) ? l : max;
+    		} 
+    	}
+    	return max;
     }
     
     public Query toQuery(){
@@ -795,6 +876,30 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		}
     	}
     	return triples;
+    }
+    
+    public void addLiteral(Literal l){
+    	literals.add(l);
+    }
+    
+    public List<Literal> getLiterals() {
+		return literals;
+	}
+    
+    public void addLiterals(Collection<Literal> literals) {
+    	this.literals.addAll(literals);
+	}
+    
+    public RDFDatatype getDatatype(){
+    	if(isLiteralNode){
+    		if(!literals.isEmpty()){
+    			return literals.get(0).getDatatype();
+    		} else {
+    			return null;
+    		}
+    	} else {
+    		throw new UnsupportedOperationException("Node ist not a literal");
+    	}
     }
     
 

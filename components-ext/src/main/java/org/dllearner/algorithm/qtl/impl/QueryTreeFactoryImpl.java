@@ -35,6 +35,8 @@ import org.dllearner.algorithm.qtl.filters.Filters;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedStatementFilter;
 import org.dllearner.algorithm.qtl.filters.ZeroFilter;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -59,6 +61,8 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	private Filter objectFilter = new ZeroFilter();
 	private Selector statementSelector = new SimpleSelector();
 	private com.hp.hpl.jena.util.iterator.Filter<Statement> keepFilter;
+	
+	private int maxDepth = 3;
 	
 	public QueryTreeFactoryImpl(){
 		comparator = new StatementComparator();
@@ -139,7 +143,8 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		
 		
 		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
-		fillTree(tree, resource2Statements);
+		int depth = 0;
+		fillTree(tree, resource2Statements, depth);
 				
 		tree.setUserObject("?");
 		return tree;
@@ -160,7 +165,8 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		fillMap(s, model, resource2Statements);	
 		
 		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
-		fillTree(tree, resource2Statements);
+		int depth = 0;
+		fillTree(tree, resource2Statements, depth);
 				
 		tree.setUserObject("?");
 		return tree;
@@ -178,7 +184,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 				resource2Statements.put(st.getSubject().toString(), statements);
 			}
 			statements.add(st);
-			if(st.getObject().isURIResource() && !resource2Statements.containsKey(st.getObject().asResource().getURI())){
+			if((st.getObject().isResource()) && !resource2Statements.containsKey(st.getObject().toString())){
 				fillMap(st.getObject().asResource(), model, resource2Statements);
 			}
 		}
@@ -201,54 +207,73 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 			statements.add(st);
 		}
 		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
-		fillTree(tree, resource2Statements);
+		int depth = 0;
+		fillTree(tree, resource2Statements, depth);
 				
 		tree.setUserObject("?");
 		return tree;
 	}
 	
-	private void fillTree(QueryTreeImpl<String> tree, SortedMap<String, SortedSet<Statement>> resource2Statements){
-		tree.setId(nodeId++);
-		if(resource2Statements.containsKey(tree.getUserObject())){
-			QueryTreeImpl<String> subTree;
-			Property predicate;
-			RDFNode object;
-			for(Statement st : resource2Statements.get(tree.getUserObject())){
-				predicate = st.getPredicate();
-				object = st.getObject();
-				if(!predicateFilter.isRelevantResource(predicate.getURI())){
-					continue;
-				}
-				if(predicateFilters.contains(st.getPredicate().toString())){
-					continue;
-				}
-				if(object.isLiteral()){
-					Literal lit = st.getLiteral();
-					String escapedLit = lit.getLexicalForm().replace("\"", "\\\"");
-					StringBuilder sb = new StringBuilder();
-					sb.append("\"").append(escapedLit).append("\"");
-					if(lit.getDatatypeURI() != null){
-						sb.append("^^<").append(lit.getDatatypeURI()).append(">");
+	private void fillTree(QueryTreeImpl<String> tree, SortedMap<String, SortedSet<Statement>> resource2Statements, int depth){
+		depth++;
+			tree.setId(nodeId++);
+			if(resource2Statements.containsKey(tree.getUserObject())){
+				QueryTreeImpl<String> subTree;
+				Property predicate;
+				RDFNode object;
+				for(Statement st : resource2Statements.get(tree.getUserObject())){
+					predicate = st.getPredicate();
+					object = st.getObject();
+					if(!predicateFilter.isRelevantResource(predicate.getURI())){
+						continue;
 					}
-					if(!lit.getLanguage().isEmpty()){
-						sb.append("@").append(lit.getLanguage());
+					if(predicateFilters.contains(st.getPredicate().toString())){
+						continue;
 					}
-					subTree = new QueryTreeImpl<String>(sb.toString());
-//					subTree = new QueryTreeImpl<String>(lit.toString());
-					subTree.setId(nodeId++);
-					subTree.setLiteralNode(true);
-					tree.addChild(subTree, st.getPredicate().toString());
-				} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
-					if(tree.getUserObjectPathToRoot().size() < 3 && 
-							!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
-						subTree = new QueryTreeImpl<String>(st.getObject().toString());
-						subTree.setResourceNode(true);
+					if(object.isLiteral()){
+						Literal lit = st.getLiteral();
+						String escapedLit = lit.getLexicalForm().replace("\"", "\\\"");
+						StringBuilder sb = new StringBuilder();
+						sb.append("\"").append(escapedLit).append("\"");
+						if(lit.getDatatypeURI() != null){
+							sb.append("^^<").append(lit.getDatatypeURI()).append(">");
+						}
+						if(!lit.getLanguage().isEmpty()){
+							sb.append("@").append(lit.getLanguage());
+						}
+						subTree = new QueryTreeImpl<String>(sb.toString());
+//						subTree = new QueryTreeImpl<String>(lit.toString());
+						subTree.setId(nodeId++);
+						subTree.setLiteralNode(true);
+						if(lit.getDatatype() == XSDDatatype.XSDinteger || lit.getDatatype() == XSDDatatype.XSDdouble || lit.getDatatype() == XSDDatatype.XSDdate){
+							subTree.addLiteral(lit);
+						}
 						tree.addChild(subTree, st.getPredicate().toString());
-						fillTree(subTree, resource2Statements);
+					} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
+						if(object.asResource().isAnon()){
+							System.out.println(object);
+						}
+						if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
+							subTree = new QueryTreeImpl<String>(st.getObject().toString());
+							subTree.setResourceNode(true);
+							tree.addChild(subTree, st.getPredicate().toString());
+							if(depth < maxDepth){
+								fillTree(subTree, resource2Statements, depth);
+							}
+							
+						}
+					} else if(object.isAnon()){
+						if(depth < maxDepth &&
+								!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
+							subTree = new QueryTreeImpl<String>(st.getObject().toString());
+							subTree.setResourceNode(true);
+							tree.addChild(subTree, st.getPredicate().toString());
+							fillTree(subTree, resource2Statements, depth);
+						}
 					}
 				}
 			}
-		}
+		depth--;
 	}
 	
 	class StatementComparator implements Comparator<Statement>{

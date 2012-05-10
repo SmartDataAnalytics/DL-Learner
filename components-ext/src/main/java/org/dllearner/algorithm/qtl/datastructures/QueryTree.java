@@ -26,7 +26,9 @@ import java.util.Set;
 
 import org.dllearner.algorithm.qtl.datastructures.impl.QueryTreeImpl;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.rdf.model.Literal;
 
 /**
  * 
@@ -129,8 +131,14 @@ public interface QueryTree<N> {
     
     String toSPARQLQueryString(boolean filtered);
     
+    Query toSPARQLQuery();
+    
     int getTriplePatternCount();
     
     Query toQuery();
+    
+    RDFDatatype getDatatype();
+    
+    List<Literal> getLiterals();
     
 }
