@@ -19,7 +19,11 @@
  */
 package org.dllearner.algorithm.qtl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,14 +43,23 @@ import org.dllearner.algorithm.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithm.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.sparql.util.ModelUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -60,6 +73,64 @@ import com.jamonapi.MonitorFactory;
 public class LGGTest {
 	
 	private static final Logger logger = Logger.getLogger(LGGTest.class);
+	
+//	@Test
+	public void testOxfordData(){
+		Model model = ModelFactory.createOntologyModel();
+		int depth = 3;
+		try {
+			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/ontology.ttl")), null, "TURTLE");
+			System.out.println(model.size());
+			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/finders.ttl")), "http://diadem.cs.ox.ac.uk/ontologies/real-estate#", "TURTLE");
+			System.out.println(model.size());
+//			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/martinco.ttl")), null, "TURTLE");
+//			System.out.println(model.size());
+//			model.write(new FileOutputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/all.ttl")), "TURTLE", null);
+//			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/all.ttl")), null, "TURTLE");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+//		for(Statement s : model.listStatements().toList()){
+//			System.out.println(s);
+//		}
+//		
+//		ResultSet rs1 = QueryExecutionFactory.create("SELECT * WHERE {?s <http://diadem.cs.ox.ac.uk/ontologies/real-estate#rooms> ?o. ?o ?p ?o1}", model).execSelect();
+//		System.out.println(ResultSetFormatter.asText(rs1));
+		
+		ConciseBoundedDescriptionGenerator cbd = new ConciseBoundedDescriptionGeneratorImpl(model);
+		QueryTreeFactory<String> qtf = new QueryTreeFactoryImpl();
+		
+		List<String> posExamples = Arrays.asList("http://diadem.cs.ox.ac.uk/ontologies/real-estate#inst004",
+				"http://diadem.cs.ox.ac.uk/ontologies/real-estate#inst005");
+		
+		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
+		
+		//get the trees for the positive examples of depth 3
+		QueryTree<String> tree;
+		for(String ex : posExamples){
+			tree = qtf.getQueryTree(ex, cbd.getConciseBoundedDescription(ex, depth));
+			trees.add(tree);
+			System.out.println(tree.getStringRepresentation());
+		}
+		
+		//compute the LGG
+		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
+		QueryTree<String> lgg = lggGen.getLGG(trees);
+		System.out.println("LGG:\n" + lgg.getStringRepresentation());
+		Query q = lgg.toSPARQLQuery();
+		System.out.println("Query:\n" + q);
+		
+		//run the SPARQL query against the data - should be return at least the positive examples
+		List<String> result = new ArrayList<String>();
+		ResultSet rs = QueryExecutionFactory.create(q, model).execSelect();
+		while(rs.hasNext()){
+			result.add(rs.next().getResource("x0").getURI());
+		}
+		System.out.println(result);
+		Assert.assertTrue(result.containsAll(posExamples));
+		
+	}
 	
 	@Test
 	public void testLGGWithDBpediaExample(){
