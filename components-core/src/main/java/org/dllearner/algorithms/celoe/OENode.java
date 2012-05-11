@@ -43,14 +43,14 @@ import org.dllearner.core.owl.Description;
  */
 public class OENode implements SearchTreeNode {
 
-	private Description description;
+	protected Description description;
 	
-	private double accuracy;
+	protected double accuracy;
 	
-	private int horizontalExpansion;
+	protected int horizontalExpansion;
 	
-	private OENode parent;
-	private List<OENode> children = new LinkedList<OENode>();
+	protected OENode parent;
+	protected List<OENode> children = new LinkedList<OENode>();
 	
 	// the refinement count corresponds to the number of refinements of the
 	// description in this node - it is a better heuristic indicator than child count
