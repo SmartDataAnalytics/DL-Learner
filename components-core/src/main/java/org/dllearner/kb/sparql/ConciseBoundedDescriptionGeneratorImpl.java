@@ -8,6 +8,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -18,10 +19,11 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	private static final Logger logger = Logger.getLogger(ConciseBoundedDescriptionGeneratorImpl.class);
 	
 	private static final int CHUNK_SIZE = 1000;
-	private static final int DEFAULT_DEPTH = 1;
+	private static final int DEFAULT_DEPTH = 2;
 	
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
+	private Model baseModel;
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
@@ -30,6 +32,10 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint) {
 		this(endpoint, null);
+	}
+	
+	public ConciseBoundedDescriptionGeneratorImpl(Model model) {
+		this.baseModel = model;
 	}
 	
 	public Model getConciseBoundedDescription(String resourceURI){
@@ -68,6 +74,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		} catch (SQLException e) {
 			logger.error(e);
 		}
+		
 		return all;
 	}
 	
@@ -80,19 +87,19 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		StringBuilder sb = new StringBuilder();
 		sb.append("CONSTRUCT {\n");
 		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
-		sb.append("?p0 a ?type0.\n");
+//		sb.append("?p0 a ?type0.\n");
 		for(int i = 1; i < depth; i++){
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
-			sb.append("?p").append(i).append(" ").append("a").append(" ").append("?type").append(i).append(".\n");
+//			sb.append("?p").append(i).append(" ").append("a").append(" ").append("?type").append(i).append(".\n");
 		}
 		sb.append("}\n");
 		sb.append("WHERE {\n");
 		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
-		sb.append("?p0 a ?type0.\n");
+//		sb.append("?p0 a ?type0.\n");
 		for(int i = 1; i < depth; i++){
 			sb.append("OPTIONAL{\n");
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
-			sb.append("?p").append(i).append(" ").append("a").append(" ").append("?type").append(i).append(".\n");
+//			sb.append("?p").append(i).append(" ").append("a").append(" ").append("?type").append(i).append(".\n");
 		}
 		for(int i = 1; i < depth; i++){
 			sb.append("}");
@@ -110,18 +117,23 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		}
 
 		Model model;
-		if(cache == null){
-			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
-			for (String dgu : endpoint.getDefaultGraphURIs()) {
-				queryExecution.addDefaultGraph(dgu);
+		if(baseModel == null){
+			if(cache == null){
+				QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+				for (String dgu : endpoint.getDefaultGraphURIs()) {
+					queryExecution.addDefaultGraph(dgu);
+				}
+				for (String ngu : endpoint.getNamedGraphURIs()) {
+					queryExecution.addNamedGraph(ngu);
+				}			
+				model = queryExecution.execConstruct();
+			} else {
+				model = cache.executeConstructQuery(endpoint, query);
 			}
-			for (String ngu : endpoint.getNamedGraphURIs()) {
-				queryExecution.addNamedGraph(ngu);
-			}			
-			model = queryExecution.execConstruct();
 		} else {
-			model = cache.executeConstructQuery(endpoint, query);
+			model = QueryExecutionFactory.create(query, baseModel).execConstruct();
 		}
+		
 		if(logger.isDebugEnabled()){
 			logger.debug("Got " + model.size() + " new triples in.");
 		}
