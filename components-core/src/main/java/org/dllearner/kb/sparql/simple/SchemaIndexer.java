@@ -10,7 +10,6 @@ import java.util.Set;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.nlp2rdf.ontology.ClassIndexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
