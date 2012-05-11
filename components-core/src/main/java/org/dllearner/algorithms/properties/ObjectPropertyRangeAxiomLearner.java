@@ -44,6 +44,7 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -58,6 +59,7 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	
 	public ObjectPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		super.iterativeQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?ind ?type WHERE {?s ?p ?ind. ?ind a ?type.}");
 	}
 	
 	public ObjectProperty getPropertyToDescribe() {
