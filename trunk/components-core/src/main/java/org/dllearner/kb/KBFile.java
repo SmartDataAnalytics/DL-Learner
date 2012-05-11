@@ -37,7 +37,6 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -106,7 +105,16 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
                     /** Leave it as is */
                     kb = KBParser.parseKBFile(getUrl());
                 } else {
-                    File f = new File(new URI(baseDir + File.separator + getUrl()));
+                	
+                	//this check is for eliminating the redundancy
+                	//if the baseDir has separator at the end, do not add one more between baseDir and KB filename (or url)
+                	String fullFilepath;
+                	if (baseDir.endsWith("\\") || baseDir.endsWith("/"))
+                		fullFilepath = baseDir + getUrl();
+                	else 
+                		fullFilepath = baseDir + File.separator + getUrl();
+                	
+                    File f = new File(new URI(fullFilepath));
                     setUrl(f.toURI().toString());
                     kb = KBParser.parseKBFile(f);
                 }
