@@ -20,7 +20,6 @@
 package org.dllearner.cli;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,20 +28,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.statistics.Stat;
@@ -57,18 +49,27 @@ import org.dllearner.utilities.Files;
  */
 public class CrossValidation {
 
-	private static Logger logger = Logger.getRootLogger();	
-	
 	// statistical values
-	private Stat runtime = new Stat();
-	private Stat accuracy = new Stat();
-	private Stat length = new Stat();
-	private Stat accuracyTraining = new Stat();
-	private Stat fMeasure = new Stat();
-	private Stat fMeasureTraining = new Stat();
-	private static boolean writeToFile = false;
-	private static File outputFile;
-					
+	protected Stat runtime = new Stat();
+	protected Stat accuracy = new Stat();
+	protected Stat length = new Stat();
+	protected Stat accuracyTraining = new Stat();
+	protected Stat fMeasure = new Stat();
+	protected Stat fMeasureTraining = new Stat(); 
+	protected static boolean writeToFile = false;
+	protected static File outputFile;
+	
+	
+	protected Stat trainingCompletenessStat = new Stat();
+	protected Stat trainingCorrectnessStat = new Stat();
+	
+	protected Stat testingCompletenessStat = new Stat();
+	protected Stat testingCorrectnessStat = new Stat();
+	
+	public CrossValidation() {
+		
+	}
+	
 	public CrossValidation(AbstractCELA la, PosNegLP lp, AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {		
 		
 		DecimalFormat df = new DecimalFormat();	
@@ -211,11 +212,11 @@ public class CrossValidation {
 			
 	}
 	
-	private int getCorrectPosClassified(AbstractReasonerComponent rs, Description concept, Set<Individual> testSetPos) {
+	protected int getCorrectPosClassified(AbstractReasonerComponent rs, Description concept, Set<Individual> testSetPos) {
 		return rs.hasType(concept, testSetPos).size();
 	}
 	
-	private int getCorrectNegClassified(AbstractReasonerComponent rs, Description concept, Set<Individual> testSetNeg) {
+	protected int getCorrectNegClassified(AbstractReasonerComponent rs, Description concept, Set<Individual> testSetNeg) {
 		return testSetNeg.size() - rs.hasType(concept, testSetNeg).size();
 	}
 	
@@ -273,7 +274,7 @@ public class CrossValidation {
 		return runtime;
 	}
 	
-	private void outputWriter(String output) {
+	protected void outputWriter(String output) {
 		if(writeToFile) {
 			Files.appendToFile(outputFile, output +"\n");
 			System.out.println(output);
