@@ -1,0 +1,1228 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY abd "http://abd.muse.massey.ac.nz#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://abd.muse.massey.ac.nz#"
+     xml:base="http://abd.muse.massey.ac.nz"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:abd="http://abd.muse.massey.ac.nz#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#">
+    <owl:Ontology rdf:about="http://abd.muse.massey.ac.nz"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#activityHasDuration -->
+
+    <owl:ObjectProperty rdf:about="&abd;activityHasDuration">
+        <rdfs:domain rdf:resource="&abd;Activity"/>
+        <rdfs:range rdf:resource="&abd;Duration"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#activityHasOtherContext -->
+
+    <owl:ObjectProperty rdf:about="&abd;activityHasOtherContext">
+        <rdfs:domain rdf:resource="&abd;Activity"/>
+        <rdfs:range rdf:resource="&abd;OtherContext"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#activityHasStarttime -->
+
+    <owl:ObjectProperty rdf:about="&abd;activityHasStarttime">
+        <rdfs:domain rdf:resource="&abd;Activity"/>
+        <rdfs:range rdf:resource="&abd;Timepoint"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasTemperature -->
+
+    <owl:ObjectProperty rdf:about="&abd;hasTemperature">
+        <rdfs:range rdf:resource="&abd;Temperature"/>
+        <rdfs:domain rdf:resource="&abd;Timepoint"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#placedAt -->
+
+    <owl:ObjectProperty rdf:about="&abd;placedAt">
+        <rdfs:domain rdf:resource="&abd;Furniture"/>
+        <rdfs:range rdf:resource="&abd;Location"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#takeActivity -->
+
+    <owl:ObjectProperty rdf:about="&abd;takeActivity">
+        <rdfs:range rdf:resource="&abd;Activity"/>
+        <rdfs:domain rdf:resource="&abd;People"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#takenAt -->
+
+    <owl:ObjectProperty rdf:about="&abd;takenAt">
+        <rdfs:domain rdf:resource="&abd;Activity"/>
+        <rdfs:range rdf:resource="&abd;Location"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasDayValue -->
+
+    <owl:DatatypeProperty rdf:about="&abd;hasDayValue">
+        <rdfs:domain rdf:resource="&abd;Timepoint"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasDisturbedNightValue -->
+
+    <owl:DatatypeProperty rdf:about="&abd;hasDisturbedNightValue">
+        <rdfs:domain rdf:resource="&abd;DisturbedNight"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasDurationValue -->
+
+    <owl:DatatypeProperty rdf:about="&abd;hasDurationValue">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&abd;Duration"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasHourValue -->
+
+    <owl:DatatypeProperty rdf:about="&abd;hasHourValue">
+        <rdfs:domain rdf:resource="&abd;Timepoint"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasMinuteValue -->
+
+    <owl:DatatypeProperty rdf:about="&abd;hasMinuteValue">
+        <rdfs:domain rdf:resource="&abd;Timepoint"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasMonthValue -->
+
+    <owl:DatatypeProperty rdf:about="&abd;hasMonthValue">
+        <rdfs:domain rdf:resource="&abd;Timepoint"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasScheduledValue -->
+
+    <owl:DatatypeProperty rdf:about="&abd;hasScheduledValue">
+        <rdfs:domain rdf:resource="&abd;Scheduled"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasSecondValue -->
+
+    <owl:DatatypeProperty rdf:about="&abd;hasSecondValue">
+        <rdfs:domain rdf:resource="&abd;Timepoint"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasTemperatureValue -->
+
+    <owl:DatatypeProperty rdf:about="&abd;hasTemperatureValue">
+        <rdfs:domain rdf:resource="&abd;Temperature"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#hasYearValue -->
+
+    <owl:DatatypeProperty rdf:about="&abd;hasYearValue">
+        <rdfs:domain rdf:resource="&abd;Timepoint"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#AbnormalActivity -->
+
+    <owl:Class rdf:about="&abd;AbnormalActivity">
+        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
+        <owl:disjointWith rdf:resource="&abd;NormalActivity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Activity -->
+
+    <owl:Class rdf:about="&abd;Activity"/>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Afternoon -->
+
+    <owl:Class rdf:about="&abd;Afternoon">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasHourValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minInclusive rdf:datatype="&xsd;double">12</xsd:minInclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasHourValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:maxExclusive rdf:datatype="&xsd;double">18</xsd:maxExclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;QualitativeTimeOfDay"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Autumn -->
+
+    <owl:Class rdf:about="&abd;Autumn">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasMonthValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minInclusive rdf:datatype="&xsd;double">3</xsd:minInclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasMonthValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:maxInclusive rdf:datatype="&xsd;double">5</xsd:maxInclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;SeasonOfYear"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#BackYard -->
+
+    <owl:Class rdf:about="&abd;BackYard">
+        <rdfs:subClassOf rdf:resource="&abd;Outdoor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Bathroom -->
+
+    <owl:Class rdf:about="&abd;Bathroom">
+        <rdfs:subClassOf rdf:resource="&abd;Indoor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Bed -->
+
+    <owl:Class rdf:about="&abd;Bed">
+        <rdfs:subClassOf rdf:resource="&abd;Furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Bedroom -->
+
+    <owl:Class rdf:about="&abd;Bedroom">
+        <rdfs:subClassOf rdf:resource="&abd;Indoor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Carer -->
+
+    <owl:Class rdf:about="&abd;Carer">
+        <rdfs:subClassOf rdf:resource="&abd;People"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Carpark -->
+
+    <owl:Class rdf:about="&abd;Carpark">
+        <rdfs:subClassOf rdf:resource="&abd;Outdoor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Cold -->
+
+    <owl:Class rdf:about="&abd;Cold">
+        <rdfs:subClassOf rdf:resource="&abd;QualitativeTemperature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Context -->
+
+    <owl:Class rdf:about="&abd;Context"/>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Cool -->
+
+    <owl:Class rdf:about="&abd;Cool">
+        <rdfs:subClassOf rdf:resource="&abd;QualitativeTemperature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#DayOfWeek -->
+
+    <owl:Class rdf:about="&abd;DayOfWeek">
+        <rdfs:subClassOf rdf:resource="&abd;Time"/>
+        <rdfs:comment>This property can be derived from day/month/year value. Howver, in this context, this property will be assigned to a timepoint. For example, Monday (t).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#DisturbedNight -->
+
+    <owl:Class rdf:about="&abd;DisturbedNight">
+        <rdfs:subClassOf rdf:resource="&abd;OtherContext"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#DoingLaundry -->
+
+    <owl:Class rdf:about="&abd;DoingLaundry">
+        <rdfs:subClassOf rdf:resource="&abd;DomesticWork"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#DomesticWork -->
+
+    <owl:Class rdf:about="&abd;DomesticWork">
+        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Duration -->
+
+    <owl:Class rdf:about="&abd;Duration">
+        <rdfs:subClassOf rdf:resource="&abd;Time"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#DurationAbnormality -->
+
+    <owl:Class rdf:about="&abd;DurationAbnormality">
+        <rdfs:subClassOf rdf:resource="&abd;TemporalAbnormality"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Elderly -->
+
+    <owl:Class rdf:about="&abd;Elderly">
+        <rdfs:subClassOf rdf:resource="&abd;People"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Evening -->
+
+    <owl:Class rdf:about="&abd;Evening">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasHourValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minInclusive rdf:datatype="&xsd;double">18</xsd:minInclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasHourValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:maxExclusive rdf:datatype="&xsd;double">6</xsd:maxExclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;QualitativeTimeOfDay"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Floor -->
+
+    <owl:Class rdf:about="&abd;Floor">
+        <rdfs:subClassOf rdf:resource="&abd;Indoor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Friday -->
+
+    <owl:Class rdf:about="&abd;Friday">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasDayValue"/>
+                        <owl:hasValue rdf:datatype="&xsd;double">6</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;Weekday"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Fridge -->
+
+    <owl:Class rdf:about="&abd;Fridge">
+        <rdfs:subClassOf rdf:resource="&abd;Furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#FrontYard -->
+
+    <owl:Class rdf:about="&abd;FrontYard">
+        <rdfs:subClassOf rdf:resource="&abd;Outdoor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Furniture -->
+
+    <owl:Class rdf:about="&abd;Furniture"/>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#GoingOutForWork -->
+
+    <owl:Class rdf:about="&abd;GoingOutForWork">
+        <rdfs:subClassOf rdf:resource="&abd;Other"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#GoingToChurch -->
+
+    <owl:Class rdf:about="&abd;GoingToChurch">
+        <rdfs:subClassOf rdf:resource="&abd;Other"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Hot -->
+
+    <owl:Class rdf:about="&abd;Hot">
+        <rdfs:subClassOf rdf:resource="&abd;QualitativeTemperature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Indoor -->
+
+    <owl:Class rdf:about="&abd;Indoor">
+        <rdfs:subClassOf rdf:resource="&abd;Location"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Kitchen -->
+
+    <owl:Class rdf:about="&abd;Kitchen">
+        <rdfs:subClassOf rdf:resource="&abd;Indoor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Leisure -->
+
+    <owl:Class rdf:about="&abd;Leisure">
+        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Livingroom -->
+
+    <owl:Class rdf:about="&abd;Livingroom">
+        <rdfs:subClassOf rdf:resource="&abd;Indoor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Location -->
+
+    <owl:Class rdf:about="&abd;Location">
+        <rdfs:subClassOf rdf:resource="&abd;Context"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Microwave -->
+
+    <owl:Class rdf:about="&abd;Microwave">
+        <rdfs:subClassOf rdf:resource="&abd;Furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Monday -->
+
+    <owl:Class rdf:about="&abd;Monday">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasDayValue"/>
+                        <owl:hasValue rdf:datatype="&xsd;double">2</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;Weekday"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Morning -->
+
+    <owl:Class rdf:about="&abd;Morning">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasHourValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minExclusive rdf:datatype="&xsd;double">6</xsd:minExclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasHourValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:maxExclusive rdf:datatype="&xsd;double">12</xsd:maxExclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;QualitativeTimeOfDay"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Napping -->
+
+    <owl:Class rdf:about="&abd;Napping">
+        <rdfs:subClassOf rdf:resource="&abd;PersonalNeed"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Night -->
+
+    <owl:Class rdf:about="&abd;Night">
+        <rdfs:subClassOf rdf:resource="&abd;QualitativeTimeOfDay"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#NormalActivity -->
+
+    <owl:Class rdf:about="&abd;NormalActivity">
+        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Other -->
+
+    <owl:Class rdf:about="&abd;Other">
+        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#OtherContext -->
+
+    <owl:Class rdf:about="&abd;OtherContext">
+        <rdfs:subClassOf rdf:resource="&abd;Context"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Outdoor -->
+
+    <owl:Class rdf:about="&abd;Outdoor">
+        <rdfs:subClassOf rdf:resource="&abd;Location"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#People -->
+
+    <owl:Class rdf:about="&abd;People"/>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#PersonalNeed -->
+
+    <owl:Class rdf:about="&abd;PersonalNeed">
+        <rdfs:subClassOf rdf:resource="&abd;Activity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#PreparingBreakfast -->
+
+    <owl:Class rdf:about="&abd;PreparingBreakfast">
+        <rdfs:subClassOf rdf:resource="&abd;DomesticWork"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#PreparingDinner -->
+
+    <owl:Class rdf:about="&abd;PreparingDinner">
+        <rdfs:subClassOf rdf:resource="&abd;DomesticWork"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#PreparingLunch -->
+
+    <owl:Class rdf:about="&abd;PreparingLunch">
+        <rdfs:subClassOf rdf:resource="&abd;DomesticWork"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#QualitativeTemperature -->
+
+    <owl:Class rdf:about="&abd;QualitativeTemperature">
+        <rdfs:subClassOf rdf:resource="&abd;Temperature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#QualitativeTimeOfDay -->
+
+    <owl:Class rdf:about="&abd;QualitativeTimeOfDay">
+        <rdfs:subClassOf rdf:resource="&abd;Time"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Saturday -->
+
+    <owl:Class rdf:about="&abd;Saturday">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasDayValue"/>
+                        <owl:hasValue rdf:datatype="&xsd;double">7</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;Weekend"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Scheduled -->
+
+    <owl:Class rdf:about="&abd;Scheduled">
+        <rdfs:subClassOf rdf:resource="&abd;OtherContext"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#SeasonOfYear -->
+
+    <owl:Class rdf:about="&abd;SeasonOfYear">
+        <rdfs:subClassOf rdf:resource="&abd;Time"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Shed -->
+
+    <owl:Class rdf:about="&abd;Shed">
+        <rdfs:subClassOf rdf:resource="&abd;Outdoor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Showering -->
+
+    <owl:Class rdf:about="&abd;Showering">
+        <rdfs:subClassOf rdf:resource="&abd;PersonalNeed"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#SpatialAbnormality -->
+
+    <owl:Class rdf:about="&abd;SpatialAbnormality">
+        <rdfs:subClassOf rdf:resource="&abd;AbnormalActivity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Spring -->
+
+    <owl:Class rdf:about="&abd;Spring">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasMonthValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minInclusive rdf:datatype="&xsd;double">9</xsd:minInclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasMonthValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:maxInclusive rdf:datatype="&xsd;double">11</xsd:maxInclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;SeasonOfYear"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#StarttimeAbnormality -->
+
+    <owl:Class rdf:about="&abd;StarttimeAbnormality">
+        <rdfs:subClassOf rdf:resource="&abd;TemporalAbnormality"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Stove -->
+
+    <owl:Class rdf:about="&abd;Stove">
+        <rdfs:subClassOf rdf:resource="&abd;Furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Summer -->
+
+    <owl:Class rdf:about="&abd;Summer">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="&abd;hasMonthValue"/>
+                                <owl:someValuesFrom>
+                                    <rdfs:Datatype>
+                                        <owl:onDatatype rdf:resource="&xsd;double"/>
+                                        <owl:withRestrictions rdf:parseType="Collection">
+                                            <rdf:Description>
+                                                <xsd:minInclusive rdf:datatype="&xsd;double">12</xsd:minInclusive>
+                                            </rdf:Description>
+                                        </owl:withRestrictions>
+                                    </rdfs:Datatype>
+                                </owl:someValuesFrom>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="&abd;hasMonthValue"/>
+                                <owl:someValuesFrom>
+                                    <rdfs:Datatype>
+                                        <owl:onDatatype rdf:resource="&xsd;double"/>
+                                        <owl:withRestrictions rdf:parseType="Collection">
+                                            <rdf:Description>
+                                                <xsd:maxInclusive rdf:datatype="&xsd;double">2</xsd:maxInclusive>
+                                            </rdf:Description>
+                                        </owl:withRestrictions>
+                                    </rdfs:Datatype>
+                                </owl:someValuesFrom>
+                            </owl:Restriction>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;SeasonOfYear"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Sunday -->
+
+    <owl:Class rdf:about="&abd;Sunday">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasDayValue"/>
+                        <owl:hasValue rdf:datatype="&xsd;double">8</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;Weekend"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#TakingMedicine -->
+
+    <owl:Class rdf:about="&abd;TakingMedicine">
+        <rdfs:subClassOf rdf:resource="&abd;PersonalNeed"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Temperature -->
+
+    <owl:Class rdf:about="&abd;Temperature">
+        <rdfs:subClassOf rdf:resource="&abd;Context"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#TemporalAbnormality -->
+
+    <owl:Class rdf:about="&abd;TemporalAbnormality">
+        <rdfs:subClassOf rdf:resource="&abd;AbnormalActivity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Thursday -->
+
+    <owl:Class rdf:about="&abd;Thursday">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasDayValue"/>
+                        <owl:hasValue rdf:datatype="&xsd;double">5</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;Weekday"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Time -->
+
+    <owl:Class rdf:about="&abd;Time">
+        <rdfs:subClassOf rdf:resource="&abd;Context"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Timepoint -->
+
+    <owl:Class rdf:about="&abd;Timepoint">
+        <rdfs:subClassOf rdf:resource="&abd;Time"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Toileting -->
+
+    <owl:Class rdf:about="&abd;Toileting">
+        <rdfs:subClassOf rdf:resource="&abd;PersonalNeed"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Tuesday -->
+
+    <owl:Class rdf:about="&abd;Tuesday">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasDayValue"/>
+                        <owl:hasValue rdf:datatype="&xsd;double">3</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;Weekday"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#UsingHeater -->
+
+    <owl:Class rdf:about="&abd;UsingHeater">
+        <rdfs:subClassOf rdf:resource="&abd;OtherContext"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#VeryCold -->
+
+    <owl:Class rdf:about="&abd;VeryCold">
+        <rdfs:subClassOf rdf:resource="&abd;QualitativeTemperature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#VeryHot -->
+
+    <owl:Class rdf:about="&abd;VeryHot">
+        <rdfs:subClassOf rdf:resource="&abd;QualitativeTemperature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Warm -->
+
+    <owl:Class rdf:about="&abd;Warm">
+        <rdfs:subClassOf rdf:resource="&abd;QualitativeTemperature"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#WatchingTV -->
+
+    <owl:Class rdf:about="&abd;WatchingTV">
+        <rdfs:subClassOf rdf:resource="&abd;Leisure"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Wednesday -->
+
+    <owl:Class rdf:about="&abd;Wednesday">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasDayValue"/>
+                        <owl:hasValue rdf:datatype="&xsd;double">4</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;Weekday"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Weekday -->
+
+    <owl:Class rdf:about="&abd;Weekday">
+        <rdfs:subClassOf rdf:resource="&abd;DayOfWeek"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Weekend -->
+
+    <owl:Class rdf:about="&abd;Weekend">
+        <rdfs:subClassOf rdf:resource="&abd;DayOfWeek"/>
+    </owl:Class>
+    
+
+
+    <!-- http://abd.muse.massey.ac.nz#Winter -->
+
+    <owl:Class rdf:about="&abd;Winter">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&abd;Timepoint"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasMonthValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minInclusive rdf:datatype="&xsd;double">6</xsd:minInclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&abd;hasMonthValue"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="&xsd;double"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:maxInclusive rdf:datatype="&xsd;double">8</xsd:maxInclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&abd;SeasonOfYear"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&abd;DomesticWork"/>
+            <rdf:Description rdf:about="&abd;Leisure"/>
+            <rdf:Description rdf:about="&abd;Other"/>
+            <rdf:Description rdf:about="&abd;PersonalNeed"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&abd;Cold"/>
+            <rdf:Description rdf:about="&abd;Cool"/>
+            <rdf:Description rdf:about="&abd;Hot"/>
+            <rdf:Description rdf:about="&abd;VeryCold"/>
+            <rdf:Description rdf:about="&abd;VeryHot"/>
+            <rdf:Description rdf:about="&abd;Warm"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&abd;Afternoon"/>
+            <rdf:Description rdf:about="&abd;Evening"/>
+            <rdf:Description rdf:about="&abd;Morning"/>
+            <rdf:Description rdf:about="&abd;Night"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&abd;Autumn"/>
+            <rdf:Description rdf:about="&abd;Spring"/>
+            <rdf:Description rdf:about="&abd;Summer"/>
+            <rdf:Description rdf:about="&abd;Winter"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&abd;Friday"/>
+            <rdf:Description rdf:about="&abd;Monday"/>
+            <rdf:Description rdf:about="&abd;Saturday"/>
+            <rdf:Description rdf:about="&abd;Sunday"/>
+            <rdf:Description rdf:about="&abd;Thursday"/>
+            <rdf:Description rdf:about="&abd;Tuesday"/>
+            <rdf:Description rdf:about="&abd;Wednesday"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.2.3.22702) http://owlapi.sourceforge.net -->
+
