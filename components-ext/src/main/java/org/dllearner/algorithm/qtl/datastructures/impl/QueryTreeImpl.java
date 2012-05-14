@@ -784,7 +784,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	Literal l;
     	while(iter.hasNext()){
     		l = iter.next();
-    		if(l.getDatatype() == XSDDatatype.XSDinteger){
+    		if(l.getDatatype() == XSDDatatype.XSDinteger || l.getDatatype() == XSDDatatype.XSDint){
     			min = (l.getInt() < min.getInt()) ? l : min;
     		} else if(l.getDatatype() == XSDDatatype.XSDdouble){
     			min = (l.getDouble() < min.getDouble()) ? l : min;
@@ -801,7 +801,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	Literal l;
     	while(iter.hasNext()){
     		l = iter.next();
-    		if(l.getDatatype() == XSDDatatype.XSDinteger){
+    		if(l.getDatatype() == XSDDatatype.XSDinteger || l.getDatatype() == XSDDatatype.XSDint){
     			max = (l.getInt() > max.getInt()) ? l : max;
     		} else if(l.getDatatype() == XSDDatatype.XSDdouble){
     			max = (l.getDouble() > max.getDouble()) ? l : max;

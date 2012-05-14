@@ -245,7 +245,10 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 //						subTree = new QueryTreeImpl<String>(lit.toString());
 						subTree.setId(nodeId++);
 						subTree.setLiteralNode(true);
-						if(lit.getDatatype() == XSDDatatype.XSDinteger || lit.getDatatype() == XSDDatatype.XSDdouble || lit.getDatatype() == XSDDatatype.XSDdate){
+						if(lit.getDatatype() == XSDDatatype.XSDinteger 
+								|| lit.getDatatype() == XSDDatatype.XSDdouble 
+								|| lit.getDatatype() == XSDDatatype.XSDdate
+								|| lit.getDatatype() == XSDDatatype.XSDint){
 							subTree.addLiteral(lit);
 						}
 						tree.addChild(subTree, st.getPredicate().toString());
