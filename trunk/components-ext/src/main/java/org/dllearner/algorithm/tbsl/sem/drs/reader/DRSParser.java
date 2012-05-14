@@ -126,7 +126,7 @@ public class DRSParser implements DRSParserConstants {
       DRS drs1;
       DRS drs2;
     if (jj_2_15(2)) {
-      predicate = jj_consume_token(WORD);
+      predicate = word();
       jj_consume_token(6);
       dr_list = DR_List();
       jj_consume_token(7);
@@ -236,16 +236,28 @@ public class DRSParser implements DRSParserConstants {
   final public Token dr() throws ParseException {
                Token t;
     if (jj_2_20(2)) {
-      t = jj_consume_token(WORD);
+      t = jj_consume_token(A);
     } else if (jj_2_21(2)) {
-      t = jj_consume_token(DR);
-    } else if (jj_2_22(2)) {
-      t = jj_consume_token(QUOTED_STRING);
+      t = jj_consume_token(C);
     } else {
       jj_consume_token(-1);
       throw new ParseException();
     }
-                                                                     {if (true) return t;}
+                                             {if (true) return t;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Token word() throws ParseException {
+                 Token t;
+    if (jj_2_22(2)) {
+      t = jj_consume_token(A);
+    } else if (jj_2_23(2)) {
+      t = jj_consume_token(B);
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+                                               {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
@@ -403,13 +415,20 @@ public class DRSParser implements DRSParserConstants {
     finally { jj_save(21, xla); }
   }
 
+  private boolean jj_2_23(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_23(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(22, xla); }
+  }
+
   private boolean jj_3_2() {
     if (jj_3R_1()) return true;
     return false;
   }
 
   private boolean jj_3_18() {
-    if (jj_3R_4()) return true;
+    if (jj_3R_5()) return true;
     return false;
   }
 
@@ -420,13 +439,13 @@ public class DRSParser implements DRSParserConstants {
 
   private boolean jj_3_19() {
     if (jj_scan_token(5)) return true;
-    if (jj_3R_5()) return true;
+    if (jj_3R_6()) return true;
     return false;
   }
 
   private boolean jj_3_17() {
     if (jj_scan_token(9)) return true;
-    if (jj_3R_4()) return true;
+    if (jj_3R_5()) return true;
     return false;
   }
 
@@ -436,7 +455,7 @@ public class DRSParser implements DRSParserConstants {
   }
 
   private boolean jj_3R_2() {
-    if (jj_3R_6()) return true;
+    if (jj_3R_7()) return true;
     return false;
   }
 
@@ -445,13 +464,8 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
-  private boolean jj_3R_5() {
-    if (jj_3R_3()) return true;
-    return false;
-  }
-
-  private boolean jj_3_22() {
-    if (jj_scan_token(QUOTED_STRING)) return true;
+  private boolean jj_3R_6() {
+    if (jj_3R_4()) return true;
     return false;
   }
 
@@ -466,7 +480,7 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
-  private boolean jj_3R_4() {
+  private boolean jj_3R_5() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_1()) jj_scanpos = xsp;
@@ -483,7 +497,7 @@ public class DRSParser implements DRSParserConstants {
   }
 
   private boolean jj_3_16() {
-    if (jj_3R_3()) return true;
+    if (jj_3R_4()) return true;
     if (jj_scan_token(8)) return true;
     return false;
   }
@@ -493,8 +507,13 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
+  private boolean jj_3_23() {
+    if (jj_scan_token(B)) return true;
+    return false;
+  }
+
   private boolean jj_3_21() {
-    if (jj_scan_token(DR)) return true;
+    if (jj_scan_token(C)) return true;
     return false;
   }
 
@@ -509,7 +528,7 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
-  private boolean jj_3R_6() {
+  private boolean jj_3R_7() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_15()) {
@@ -525,8 +544,13 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
+  private boolean jj_3_22() {
+    if (jj_scan_token(A)) return true;
+    return false;
+  }
+
   private boolean jj_3_15() {
-    if (jj_scan_token(WORD)) return true;
+    if (jj_3R_3()) return true;
     if (jj_scan_token(6)) return true;
     return false;
   }
@@ -536,9 +560,24 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
+  private boolean jj_3R_3() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_22()) {
+    jj_scanpos = xsp;
+    if (jj_3_23()) return true;
+    }
+    return false;
+  }
+
   private boolean jj_3_5() {
     if (jj_scan_token(5)) return true;
     if (jj_3R_2()) return true;
+    return false;
+  }
+
+  private boolean jj_3_20() {
+    if (jj_scan_token(A)) return true;
     return false;
   }
 
@@ -547,26 +586,18 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
-  private boolean jj_3_20() {
-    if (jj_scan_token(WORD)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_3() {
+  private boolean jj_3R_4() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_20()) {
     jj_scanpos = xsp;
-    if (jj_3_21()) {
-    jj_scanpos = xsp;
-    if (jj_3_22()) return true;
-    }
+    if (jj_3_21()) return true;
     }
     return false;
   }
 
   private boolean jj_3R_1() {
-    if (jj_3R_3()) return true;
+    if (jj_3R_4()) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_4()) jj_scanpos = xsp;
@@ -597,7 +628,7 @@ public class DRSParser implements DRSParserConstants {
    private static void jj_la1_init_0() {
       jj_la1_0 = new int[] {};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[22];
+  final private JJCalls[] jj_2_rtns = new JJCalls[23];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -781,7 +812,7 @@ public class DRSParser implements DRSParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[27];
+    boolean[] la1tokens = new boolean[28];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -795,7 +826,7 @@ public class DRSParser implements DRSParserConstants {
         }
       }
     }
-    for (int i = 0; i < 27; i++) {
+    for (int i = 0; i < 28; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -822,7 +853,7 @@ public class DRSParser implements DRSParserConstants {
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 22; i++) {
+    for (int i = 0; i < 23; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -851,6 +882,7 @@ public class DRSParser implements DRSParserConstants {
             case 19: jj_3_20(); break;
             case 20: jj_3_21(); break;
             case 21: jj_3_22(); break;
+            case 22: jj_3_23(); break;
           }
         }
         p = p.next;

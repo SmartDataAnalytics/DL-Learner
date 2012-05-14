@@ -67,11 +67,13 @@ DRS DRS() :
           dr_set = new HashSet<DiscourseReferent>();
        }
        drs = new DRS();
-       if (label != null)       {
+       if (label != null)
+       {
           drs.setLabel(label.toString());
        }
        drs.setDiscourseReferents(dr_set);
-       if (conditions != null)       {
+       if (conditions != null)
+       {
        	  drs.setDRSConditions(conditions);
        }
        return drs;
@@ -137,7 +139,7 @@ DRS_Condition Condition() :
 }    
 {
 
-    predicate=<WORD> "(" dr_list=DR_List() ")"
+    predicate=word() "(" dr_list=DR_List() ")"
     {
         Simple_DRS_Condition condition;
 
@@ -244,13 +246,17 @@ TOKEN: {<HOWMANY: "HOWMANY">}
 
 TOKEN: {<LABEL: "l"(["0"-"9"])+>}
 
-TOKEN: {<WORD: (["a"-"z","A"-"Z","_",".","#",":"])+>}
+//TOKEN: {<WORD: (["a"-"z","A"-"Z","_",".","#",":"])+>}
+//TOKEN: {<DR: (["?","!"])?(["a"-"z","A"-"Z","0"-"9","."])+>}
 
-TOKEN: {<DR: (["?","!"])?(["a"-"z","A"-"Z","0"-"9","."])+>}
+TOKEN: {<A: (["a"-"z","A"-"Z","0"-"9"])+>}
+TOKEN: {<B: "SLOT_"(["a"-"z","A"-"Z","_",".","#","0"-"9"])+>}
+TOKEN: {<C: ["?","!"](["a"-"z","A"-"Z","0"-"9"])+>}
+
+Token dr() : { Token t; }{ (t=<A> | t=<C>) { return t; } }
+Token word() : { Token t; }{ (t=<A> | t=<B>) { return t; } }
 
 TOKEN: {<QUOTED_STRING: "\'" (~["\'"])+ "\'" >}
-
-Token dr() : { Token t; }{ (t=<WORD> | t=<DR> | t=<QUOTED_STRING>) { return t; } }
 
 SKIP : { " " | "\t" | "\n" | "\r" }
 
