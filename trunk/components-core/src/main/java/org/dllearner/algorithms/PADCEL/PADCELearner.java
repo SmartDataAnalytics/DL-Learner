@@ -39,7 +39,6 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
@@ -52,29 +51,11 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@ComponentAnn(name = "PDCCEL", shortName = "PDCCEL", version = 0.1, description = "Parallel and Devide&Conquer Class Exprerssion Learner")
+@ComponentAnn(name = "PADCEL", shortName = "PADCEL", version = 0.1, description = "Parallel and Devide&Conquer Exprerssion Learning")
 public class PADCELearner extends PADCELAbstract implements PADCELearnerMBean {
 
-	// ----------------------------------
-	// configuration options
-	// ----------------------------------
-	@ConfigOption(name = "numberOfWorkers", defaultValue = "2", description = "This option is used to set the number of workers will be created to serve the leaner. This should be = 2 * total number of cores of CPUs")
-	private int numberOfWorkers = 4; // max number of workers will be created
 
-	@ConfigOption(name = "maxExecutionTimeInSeconds", defaultValue = "0", description = "maximum execution of the algorithm in seconds")
-	private int maxExecutionTimeInSeconds = 0;
-
-	@ConfigOption(name = "noisePercentage", defaultValue = "0.0", description = "The percentage of noise within the examples")
-	private double noisePercentage = 0.0;
-
-	@ConfigOption(name = "maxNoOfSplits", defaultValue = "10", description = "Max number of splits will be applied for data properties with double range")
-	private int maxNoOfSplits = 10;
-
-	// set of concepts that will not be used in learning the target concept
-	private Set<NamedClass> ignoredConcepts = null;
-
-	private RefinementOperator refinementOperator = null; // auto-wired will be used for this
-															// property
+	private RefinementOperator refinementOperator = null; 
 
 	private PADCELDoubleSplitterAbstract splitter = null;
 
@@ -671,6 +652,7 @@ public class PADCELearner extends PADCELAbstract implements PADCELearnerMBean {
 			
 			//wait until all workers are terminated
 			try {
+				//System.out.println("-------------Waiting for worker pool----------------");
 				workerPool.awaitTermination(0, TimeUnit.SECONDS);
 			}
 			catch (InterruptedException ie) {
@@ -872,34 +854,6 @@ public class PADCELearner extends PADCELAbstract implements PADCELearnerMBean {
 		return miliLearningTime;
 	}
 
-	// ------------------------------------------------
-	// setters and getters for configuration options
-	// ------------------------------------------------
-
-	public void setNumberOfWorkers(int numberOfWorkers) {
-		this.numberOfWorkers = numberOfWorkers;
-	}
-
-	public int getNumberOfWorkers() {
-		return numberOfWorkers;
-	}
-
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTime) {
-		this.maxExecutionTimeInSeconds = maxExecutionTime;
-	}
-
-	public int getMaxExecutionTimeInSeconds() {
-		return maxExecutionTimeInSeconds;
-	}
-
-	public void setNoisePercentage(double noise) {
-		this.noisePercentage = noise;
-	}
-
-	public double getNoisePercentage() {
-		return this.noisePercentage;
-	}
-
 	@Autowired(required = false)
 	public void setRefinementOperator(RefinementOperator refinementOp) {
 		this.refinementOperator = refinementOp;
@@ -914,25 +868,10 @@ public class PADCELearner extends PADCELAbstract implements PADCELearnerMBean {
 		this.splitter = splitter;
 	}
 
-	public int getMaxNoOfSplits() {
-		return maxNoOfSplits;
-	}
-
-	public void setMaxNoOfSplits(int maxNoOfSplits) {
-		this.maxNoOfSplits = maxNoOfSplits;
-	}
-
-	public Set<NamedClass> getIgnoredConcepts() {
-		return ignoredConcepts;
-	}
-
-	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
-		this.ignoredConcepts = ignoredConcepts;
-	}
-
 	public int getNoOfCompactedPartialDefinition() {
 		return this.noOfCompactedPartialDefinition;
 	}
+	
 
 	// =============== MBean section =====================
 	public int getActiveCount() {

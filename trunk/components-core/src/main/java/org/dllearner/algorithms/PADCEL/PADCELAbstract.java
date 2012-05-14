@@ -6,7 +6,9 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.NamedClass;
 
 /**
  * Abstract class for all PDL-Learner algorithms family
@@ -16,6 +18,25 @@ import org.dllearner.core.owl.Description;
  */
 public abstract class PADCELAbstract extends AbstractCELA {
 
+	// ----------------------------------
+	// configuration options
+	// ----------------------------------
+	@ConfigOption(name = "numberOfWorkers", defaultValue = "2", description = "This option is used to set the number of workers will be created to serve the leaner. This should be = 2 * total number of cores of CPUs")
+	protected int numberOfWorkers = 4; // max number of workers will be created
+
+	@ConfigOption(name = "maxExecutionTimeInSeconds", defaultValue = "0", description = "maximum execution of the algorithm in seconds")
+	protected int maxExecutionTimeInSeconds = 0;
+
+	@ConfigOption(name = "noisePercentage", defaultValue = "0.0", description = "The percentage of noise within the examples")
+	protected double noisePercentage = 0.0;
+
+	@ConfigOption(name = "maxNoOfSplits", defaultValue = "10", description = "Max number of splits will be applied for data properties with double range")
+	protected int maxNoOfSplits = 10;
+
+	@ConfigOption(name = "ignoredConcepts", defaultValue = "", description = "set of concepts that will be ignored in learning the target concept")
+	protected Set<NamedClass> ignoredConcepts = null;
+
+	
 	/**
 	 * All generated descriptions thread-safe set is used to avoid concurrently
 	 * accessing
@@ -70,5 +91,52 @@ public abstract class PADCELAbstract extends AbstractCELA {
 	public long getNumberOfPartialDefinitions() {
 		return this.partialDefinitions.size();
 	}
+
+	
+	// ------------------------------------------------
+	// setters and getters for configuration options
+	// ------------------------------------------------
+
+	public void setNumberOfWorkers(int numberOfWorkers) {
+		this.numberOfWorkers = numberOfWorkers;
+	}
+
+	public int getNumberOfWorkers() {
+		return numberOfWorkers;
+	}
+
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTime) {
+		this.maxExecutionTimeInSeconds = maxExecutionTime;
+	}
+
+	public int getMaxExecutionTimeInSeconds() {
+		return maxExecutionTimeInSeconds;
+	}
+
+	public void setNoisePercentage(double noise) {
+		this.noisePercentage = noise;
+	}
+
+	public double getNoisePercentage() {
+		return this.noisePercentage;
+	}
+
+
+	public int getMaxNoOfSplits() {
+		return maxNoOfSplits;
+	}
+
+	public void setMaxNoOfSplits(int maxNoOfSplits) {
+		this.maxNoOfSplits = maxNoOfSplits;
+	}
+
+	public Set<NamedClass> getIgnoredConcepts() {
+		return ignoredConcepts;
+	}
+
+	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+		this.ignoredConcepts = ignoredConcepts;
+	}
+
 
 }
