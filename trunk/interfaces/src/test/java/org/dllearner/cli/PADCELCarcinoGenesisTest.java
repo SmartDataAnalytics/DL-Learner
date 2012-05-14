@@ -15,7 +15,7 @@ public class PADCELCarcinoGenesisTest extends PADCELCLITestAbstract {
 
 	@Override
 	public String getConfigurationFilePath() {		
-		return "../examples/carcinogenesis/carcinogenesis_pdll.conf";
+		return "../examples/carcinogenesis/carcinogenesis_padcel.conf";
 	}
 	
 }
