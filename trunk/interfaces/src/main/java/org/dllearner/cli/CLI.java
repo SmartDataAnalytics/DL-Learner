@@ -27,8 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.xmlbeans.XmlObject;
+import org.dllearner.algorithms.PADCEL.PADCELPosNegLP;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
@@ -40,6 +42,7 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -91,7 +94,7 @@ public class CLI {
 	
     public void run() throws IOException {
     	
-		if(writeSpringConfiguration) {
+		if (writeSpringConfiguration) {
         	SpringConfigurationXMLBeanConverter converter = new SpringConfigurationXMLBeanConverter();
         	XmlObject xml;
         	if(configuration == null) {
@@ -110,16 +113,25 @@ public class CLI {
         	}		
 		}    	
     	
-		if(performCrossValidation) {
+		if (performCrossValidation) {
 			AbstractReasonerComponent rs = context.getBean(AbstractReasonerComponent.class);
-			PosNegLP lp = context.getBean(PosNegLP.class);
 			AbstractCELA la = context.getBean(AbstractCELA.class);
-			new CrossValidation(la,lp,rs,nrOfFolds,false);
+			
+			//this test is added for PDLL algorithm since it does not use the PosNegLP			
+			try {
+				PADCELPosNegLP lp = context.getBean(PADCELPosNegLP.class);
+				new PDLLCrossValidation(la, lp, rs, nrOfFolds, false);
+			}
+			catch (BeansException be) {
+				PosNegLP lp = context.getBean(PosNegLP.class);
+				new CrossValidation(la,lp,rs,nrOfFolds,false);				
+			}
+			
 		} else {
 //			knowledgeSource = context.getBeansOfType(Knowledge1Source.class).entrySet().iterator().next().getValue();
 			for(Entry<String, LearningAlgorithm> entry : context.getBeansOfType(LearningAlgorithm.class).entrySet()){
 				algorithm = entry.getValue();
-				logger.info("Running algorithm instance \"" + entry.getKey() + "\"(" + algorithm.getClass().getSimpleName() + ")");
+				logger.info("Running algorithm instance \"" + entry.getKey() + "\" (" + algorithm.getClass().getSimpleName() + ")");
 				algorithm.start();
 			}
 		}
@@ -205,7 +217,7 @@ public class CLI {
      * @param e The exception to analyze
      * @return The primary cause of the exception.
      */
-    private static Throwable findPrimaryCause(Exception e) {
+	private static Throwable findPrimaryCause(Exception e) {
         // The throwables from the stack of the exception
         Throwable[] throwables = ExceptionUtils.getThrowables(e);
 
