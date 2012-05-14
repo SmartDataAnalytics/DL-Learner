@@ -35,9 +35,11 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_LogicalNot;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
@@ -62,6 +64,7 @@ public class NBR<N> {
 	
 	private ExtractionDBCache selectCache;
 	private SparqlEndpoint endpoint;
+	private Model model;
 	
 	private String query;
 	private int limit;
@@ -90,6 +93,12 @@ public class NBR<N> {
 	public NBR(SparqlEndpoint endpoint, ExtractionDBCache selectCache){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
+		
+		noSequences = new ArrayList<List<QueryTreeChange>>();
+	}
+	
+	public NBR(Model model){
+		this.model = model;
 		
 		noSequences = new ArrayList<List<QueryTreeChange>>();
 	}
@@ -1385,16 +1394,22 @@ public class NBR<N> {
     }
     
     private ResultSet executeSelectQuery(String query){
-    	ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(), query);
-		queryExecution.setTimeOut(maxExecutionTimeInSeconds * 1000);
-		for (String dgu : endpoint.getDefaultGraphURIs()) {
-			queryExecution.addDefaultGraph(dgu);
-		}
-		for (String ngu : endpoint.getNamedGraphURIs()) {
-			queryExecution.addNamedGraph(ngu);
-		}			
-		ResultSet resultset = queryExecution.execSelect();
-		return resultset;
+    	ResultSet rs;
+    	if(model == null){
+    		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(), query);
+    		queryExecution.setTimeOut(maxExecutionTimeInSeconds * 1000);
+    		for (String dgu : endpoint.getDefaultGraphURIs()) {
+    			queryExecution.addDefaultGraph(dgu);
+    		}
+    		for (String ngu : endpoint.getNamedGraphURIs()) {
+    			queryExecution.addNamedGraph(ngu);
+    		}			
+    		rs = queryExecution.execSelect();
+    	} else {
+    		rs = QueryExecutionFactory.create(query, model).execSelect();
+    	}
+    	
+		return rs;
     }
 
 }

@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,6 +19,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
@@ -37,7 +42,6 @@ import org.dllearner.algorithm.tbsl.sparql.Query;
 import org.dllearner.algorithm.tbsl.sparql.RatedQuery;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_Prefix;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_QueryType;
-import org.dllearner.algorithm.tbsl.sparql.SPARQL_Triple;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
@@ -60,14 +64,36 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Options;
 
+import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.sparql.syntax.Element;
+import com.hp.hpl.jena.sparql.syntax.ElementAssign;
+import com.hp.hpl.jena.sparql.syntax.ElementBind;
+import com.hp.hpl.jena.sparql.syntax.ElementDataset;
+import com.hp.hpl.jena.sparql.syntax.ElementExists;
+import com.hp.hpl.jena.sparql.syntax.ElementFetch;
+import com.hp.hpl.jena.sparql.syntax.ElementFilter;
+import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.syntax.ElementMinus;
+import com.hp.hpl.jena.sparql.syntax.ElementNamedGraph;
+import com.hp.hpl.jena.sparql.syntax.ElementNotExists;
+import com.hp.hpl.jena.sparql.syntax.ElementOptional;
+import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
+import com.hp.hpl.jena.sparql.syntax.ElementService;
+import com.hp.hpl.jena.sparql.syntax.ElementSubQuery;
+import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
+import com.hp.hpl.jena.sparql.syntax.ElementUnion;
+import com.hp.hpl.jena.sparql.syntax.ElementVisitor;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -667,10 +693,29 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			logger.info("Processing template:\n" + t.toString());
 			allocations = new TreeSet<Allocation>();
 			
-			for(Slot slot : t.getSlots()){
+			ExecutorService executor = Executors.newFixedThreadPool(t.getSlots().size());
+			List<Future<SortedSet<Allocation>>> list = new ArrayList<Future<SortedSet<Allocation>>>();
+			
+			for (Slot slot : t.getSlots()) {
+				Callable<SortedSet<Allocation>> worker = new SlotProcessor(slot);
+				Future<SortedSet<Allocation>> submit = executor.submit(worker);
+				list.add(submit);
+			}
+			
+//			for (Future<SortedSet<Allocation>> future : list) {
+//				try {
+//					future.get();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				} catch (ExecutionException e) {
+//					e.printStackTrace();
+//				}
+//			}
+			
+			/*for(Slot slot : t.getSlots()){
 				allocations = slot2Allocations2.get(slot);
 				if(allocations == null){
-					allocations = computeAllocations(slot, 20);
+					allocations = computeAllocations(slot, 10);
 					slot2Allocations2.put(slot, allocations);
 				}
 				slot2Allocations.put(slot, allocations);
@@ -687,7 +732,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 					}
 				}
 				allocations.addAll(tmp);
-			}
+			}*/
 			
 			
 			Set<WeightedQuery> queries = new HashSet<WeightedQuery>();
@@ -868,7 +913,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 			if(slot.getSlotType() == SlotType.RESOURCE){
 				rs = index.getResourcesWithScores(word, 250);
 			} else {
-				rs = index.getResourcesWithScores(word, 30);
+				rs = index.getResourcesWithScores(word, 20);
 			}
 			
 			
@@ -1514,7 +1559,7 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	 * @throws InvalidFileFormatException 
 	 */
 	public static void main(String[] args) throws NoTemplateFoundException, InvalidFileFormatException, FileNotFoundException, IOException {
-//		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
+		//		Logger.getLogger(DefaultHttpParams.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpClient.class).setLevel(Level.OFF);
 //		Logger.getLogger(HttpMethodBase.class).setLevel(Level.OFF);
 //		String question = "Who/WP was/VBD the/DT wife/NN of/IN president/NN Lincoln/NNP";
@@ -1576,6 +1621,21 @@ public class SPARQLTemplateBasedLearner implements SparqlQueryLearningAlgorithm{
 	@Override
 	public void setLearningProblem(LearningProblem learningProblem) {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	class SlotProcessor implements Callable<SortedSet<Allocation>>{
+		
+		private Slot slot;
+		
+		public SlotProcessor(Slot slot) {
+			this.slot = slot;
+		}
+
+		@Override
+		public SortedSet<Allocation> call() throws Exception {
+			return computeAllocations(slot);
+		}
 		
 	}
 

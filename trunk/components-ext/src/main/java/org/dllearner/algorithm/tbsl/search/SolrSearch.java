@@ -165,7 +165,13 @@ public class SolrSearch implements Search{
 			lastTotalHits = (int) docList.getNumFound();
 			
 			for(SolrDocument d : docList){
-				items.add(new SolrQueryResultItem((String) d.get(labelField), (String) d.get("uri"), (Float) d.get("score")));
+				float score = 0;
+				if(d.get("score") instanceof ArrayList){
+					score = ((Float)((ArrayList)d.get("score")).get(1));
+				} else {
+					score = (Float) d.get("score");
+				}
+				items.add(new SolrQueryResultItem((String) d.get(labelField), (String) d.get("uri"), score));
 			}
 		} catch (SolrServerException e) {
 			e.printStackTrace();
@@ -181,6 +187,10 @@ public class SolrSearch implements Search{
 	@Override
 	public void setHitsPerPage(int hitsPerPage) {
 		this.hitsPerPage = hitsPerPage;
+	}
+	
+	public static void main(String[] args) {
+		new SolrSearch("http://139.18.2.173:8080/apache-solr-3.3.0/dbpedia_classes").getResources("Leipzig");
 	}
 	
 }
