@@ -120,7 +120,7 @@ public class CLI {
 			//this test is added for PDLL algorithm since it does not use the PosNegLP			
 			try {
 				PADCELPosNegLP lp = context.getBean(PADCELPosNegLP.class);
-				new PDLLCrossValidation(la, lp, rs, nrOfFolds, false);
+				new PADCELCrossValidation(la, lp, rs, nrOfFolds, false);
 			}
 			catch (BeansException be) {
 				PosNegLP lp = context.getBean(PosNegLP.class);

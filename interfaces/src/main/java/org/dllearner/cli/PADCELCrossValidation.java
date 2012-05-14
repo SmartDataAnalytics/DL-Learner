@@ -34,7 +34,7 @@ import org.dllearner.utilities.statistics.Stat;
  * 
  */
 
-public class PDLLCrossValidation extends CrossValidation {
+public class PADCELCrossValidation extends CrossValidation {
 
 	protected Stat noOfPartialDef = new Stat();
 	protected Stat partialDefinitionLength = new Stat();
@@ -47,7 +47,7 @@ public class PDLLCrossValidation extends CrossValidation {
 	 * Default constructor
 	 */
 
-	public PDLLCrossValidation(AbstractCELA la, PosNegLP lp, AbstractReasonerComponent rs,
+	public PADCELCrossValidation(AbstractCELA la, PosNegLP lp, AbstractReasonerComponent rs,
 			int folds, boolean leaveOneOut) {
 		super(la, lp, rs, folds, leaveOneOut);
 	}
@@ -61,7 +61,7 @@ public class PDLLCrossValidation extends CrossValidation {
 	 * @param folds
 	 * @param leaveOneOut
 	 */
-	public PDLLCrossValidation(AbstractCELA la, PADCELPosNegLP lp, AbstractReasonerComponent rs,
+	public PADCELCrossValidation(AbstractCELA la, PADCELPosNegLP lp, AbstractReasonerComponent rs,
 			int folds, boolean leaveOneOut) {
 
 		super(); // do nothing
