@@ -211,8 +211,8 @@ public class RhoDRDown2008 extends RefinementOperatorAdapter {
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
 
-		if (logger.isDebugEnabled())
-			logger.debug("[Refinement operator] " + this.getClass().getSimpleName() + " created (splits: " + (splits!=null?"using Splitter":"fix split="+maxNrOfSplits) + ")");		//actran
+		if (logger.isTraceEnabled())
+			logger.trace("[Refinement operator] " + this.getClass().getSimpleName() + " created (splits: " + (splits!=null?"using Splitter":"fix split="+maxNrOfSplits) + ")");		//actran
 		
 
 		for(ObjectProperty op : rs.getObjectProperties()) {
