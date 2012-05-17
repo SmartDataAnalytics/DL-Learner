@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.xmlbeans.XmlObject;
-import org.dllearner.algorithms.PADCEL.PADCELPosNegLP;
+import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
@@ -69,7 +69,9 @@ public class CLI {
 	private boolean writeSpringConfiguration = false;
 	private boolean performCrossValidation = false;
 	private int nrOfFolds = 10;
-	
+	private int noOfRuns = 1;
+
+
 	public CLI() {
 		
 	}
@@ -119,8 +121,8 @@ public class CLI {
 			
 			//this test is added for PDLL algorithm since it does not use the PosNegLP			
 			try {
-				PADCELPosNegLP lp = context.getBean(PADCELPosNegLP.class);
-				new PADCELCrossValidation(la, lp, rs, nrOfFolds, false);
+				ParCELPosNegLP lp = context.getBean(ParCELPosNegLP.class);
+				new ParCELCrossValidation(la, lp, rs, nrOfFolds, false, noOfRuns);
 			}
 			catch (BeansException be) {
 				PosNegLP lp = context.getBean(PosNegLP.class);
@@ -272,6 +274,15 @@ public class CLI {
 	
 	public KnowledgeSource getKnowledgeSource() {
 		return knowledgeSource;
+	}
+	
+	
+	public int getNoOfRuns() {
+		return noOfRuns;
+	}
+
+	public void setNoOfRuns(int noOfRuns) {
+		this.noOfRuns = noOfRuns;
 	}
 
 }
