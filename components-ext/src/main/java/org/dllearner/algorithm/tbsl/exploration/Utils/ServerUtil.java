@@ -20,7 +20,7 @@ public class ServerUtil {
 	private static String server_Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
 	//private static String server_Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8890/sparql";
 	
-	private static int timeToTimeoutOnServer=30000;
+	private static int timeToTimeoutOnServer=3000;
 	
 	public static HashMap<String, String> generatesQueryForOutsideClasses(String query){
 		String working_query= ServerUtil.getServer_Prefix()+"?default-graph-uri=&query="+ServerUtil.createServerRequest(query)+"%0D%0A&format=text%2Fhtml&debug=on&timeout=";

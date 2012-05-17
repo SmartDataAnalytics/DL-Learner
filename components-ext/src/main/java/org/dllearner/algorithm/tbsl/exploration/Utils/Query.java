@@ -42,12 +42,19 @@ public class Query {
 			givenHypothesenList=t.getHypothesen();
 		}
 		
+		int anzahl_globalrank=0;
 		for(ArrayList<Hypothesis> hypothesenList : givenHypothesenList){
 			String condition_new = condition;
+			String Resource=null;
 			//System.out.println("New_Condition before replacing "+condition_new);
 			double global_rank=0;
 			boolean addQuery=true;
 			for(Hypothesis h : hypothesenList){
+				if(h.getType().toLowerCase().contains("resource")){
+					Resource=h.getName();
+				}
+				
+				
 				condition_new=condition_new.replace(h.getVariable(), "<"+h.getUri()+">");
 				/*
 				 * Dont create a Query with variables, which dont have a correct uri
@@ -59,6 +66,11 @@ public class Query {
 				//just in case...
 				condition_new=condition_new.replace("isA", "rdf:type");
 				global_rank=global_rank+h.getRank();
+				/*if(h.getType().toLowerCase().contains("property")){
+					global_rank=global_rank+h.getRank();
+					anzahl_globalrank+=1;
+				}*/
+				
 			}
 			
 			/*
@@ -66,25 +78,21 @@ public class Query {
 			 */
 			
 			global_rank = global_rank/hypothesenList.size();
-			
+			//global_rank=global_rank/anzahl_globalrank;
 			//System.out.println("New_Condition after replacing "+condition_new);
-			if(t.getQuestion().toLowerCase().contains("who")){
-				/*
-				 * PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT DISTINCT ?uri ?string 
-WHERE {
-        res:Brooklyn_Bridge dbp:designer ?uri .
-        OPTIONAL { ?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
-				 */
+			if(t.getQuestion().toLowerCase().contains("who")&&!t.getSelectTerm().toLowerCase().contains("count")){
+				
 				
 				String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "+t.getQueryType()+" "+t.getSelectTerm()+"?string WHERE {"+ condition_new+" OPTIONAL { "+ t.getSelectTerm()+" rdfs:label ?string. FILTER (lang(?string) = 'en') }"+ t.getFilter()+"}"+t.getOrderBy()+" "+t.getHaving() +" "+t.getLimit();
 				QueryPair qp = new QueryPair(query,global_rank);
+				qp.setResource(Resource);
 				if(addQuery)queryList.add(qp);
 				
 			}
 			else{
 				String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+t.getQueryType()+" "+t.getSelectTerm()+" WHERE {"+ condition_new+" "+ t.getFilter()+"}"+t.getOrderBy()+" "+t.getHaving() +" "+t.getLimit();
 		    	QueryPair qp = new QueryPair(query,global_rank);
+		    	qp.setResource(Resource);
 		    	if(addQuery)queryList.add(qp);
 			}
 	    	

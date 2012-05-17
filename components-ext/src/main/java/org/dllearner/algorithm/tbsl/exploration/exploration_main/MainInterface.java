@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
+import org.dllearner.algorithm.tbsl.exploration.Sparql.Elements;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Template;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.TemplateBuilder;
@@ -38,7 +39,7 @@ public class MainInterface {
 		 * false, goes through all
 		 */
 		boolean wait = false;
-		Setting.setThresholdSelect(0.5);
+		//Setting.setThresholdSelect(0.5);
 		
 		if(Setting.isWaitModus())wait=true;
 		
@@ -105,7 +106,7 @@ public class MainInterface {
 		
 		//sort QueryPairs
 		qp=LinearSort.doSort(qp);	
-		qp=HeuristicSort.doSort(qp, Question);
+		qp=HeuristicSort.doHeuristicSort(qp, Question);
 		//if(Setting.isDebugModus())printQueries(qp, "NORMAL", Question);
 		//printQueries(qp, "NORMAL", Question);
 		Setting.setAnzahlAbgeschickterQueries(10);
@@ -162,22 +163,14 @@ public class MainInterface {
 		}
 		if(wait)DebugMode.waitForButton();
 
-		
-		/*
-		 * If there is no answer, start IterationMode with Levensthein
-		 */
-			if(answers.isEmpty()&&Setting.getModuleStep()>=2){
+		if(answers.isEmpty()&&Setting.getModuleStep()>=2){
 			
-				answers.clear();
-				//Setting.setLevenstheinMin(0.65);
-				//Setting.setAnzahlAbgeschickterQueries(10);
-				answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"LEVENSTHEIN","neu"));
-				if(wait)DebugMode.waitForButton();
+			answers.clear();
+			//Setting.setLevenstheinMin(0.65);
+			//Setting.setAnzahlAbgeschickterQueries(10);
+			answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"LEVENSTHEIN","neu"));
+			if(wait)DebugMode.waitForButton();
 		}
-		
-		/*
-		 * still no answer, start IterationMode with Wordnet
-		 */
 		
 		if(answers.isEmpty()&&Setting.getModuleStep()>=3){
 			
@@ -186,7 +179,8 @@ public class MainInterface {
 			answers.addAll(doStart(myindex, wordnet, lemmatiser, template_list,"WORDNET","neu"));
 			if(wait)DebugMode.waitForButton();
 		}
-		
+
+
 		if(answers.isEmpty()&&Setting.getModuleStep()>=4){
 			
 			answers.clear();
@@ -197,21 +191,16 @@ public class MainInterface {
 		}
 		
 		if(answers.isEmpty()&&Setting.getModuleStep()>=5){
-			System.out.println("Stufe 5");
-			DebugMode.waitForButton();
+			System.out.println("NO Answer from Server =>Start Query Manipulation");
 			answers.clear();
-			//Setting.setAnzahlAbgeschickterQueries(10);
-			//Setting.setThresholdSelect(0.2);
-			//ArrayList<String>
 			answers.addAll(stufe5(myindex,wordnet,lemmatiser,wait,template_list));
 			if(wait)DebugMode.waitForButton();
 		}
 		
 		
-		/*if(answers.isEmpty()){
-			System.out.println("");
-			//answers.add("No answers were found with the three Modules");
-		}*/
+		
+		
+		
 		
 		
 		/*
@@ -240,23 +229,23 @@ public class MainInterface {
 		boolean special=false;
 		int anzahl;
 		boolean go_on;
-		if(type.contains("SPECIAL")){
+		/*if(type.contains("SPECIAL")){
 			type ="LEVENSTHEIN";
 			special=true;
-		}
+		}*/
 		
 		System.out.println("No answer from direkt match, start "+type+"Modul");
 		for(Template t : template_list){
 			try{
-				if(test.contains("alt")){
+				/*if(test.contains("alt")){
 					ArrayList<ArrayList<Hypothesis>> hypothesenSetList = IterationModule.doIteration(t.getElm(),t.getHypothesen(),t.getCondition(),type,myindex,wordnet,lemmatiser);
 					if(type.contains("WORDNET"))t.setHypothesenWordnet(hypothesenSetList);
 					if(type.contains("LEVENSTHEIN"))t.setHypothesenLevensthein(hypothesenSetList);
 					if(type.contains("RELATE"))t.setHypothesenRelate(hypothesenSetList);
-				}
+				}*/
 				
-				if(test.contains("neu")){
-					System.err.println("IN NEU!!!!!");
+				//if(test.contains("neu")){
+				//	System.err.println("IN NEU!!!!!");
 					ArrayList<ArrayList<Hypothesis>> hypothesenSetList  = new ArrayList<ArrayList<Hypothesis>>();
 					
 					
@@ -279,7 +268,7 @@ public class MainInterface {
 					
 				}
 				
-			}
+			//}
 			catch (Exception e){
 				
 			}
@@ -311,10 +300,7 @@ public class MainInterface {
 		//sort QueryPairs
 		qp=LinearSort.doSort(qp);	
 		//printQueries(qp, type, Question);
-		/*
-		 * Only for test!
-		 */
-		qp=HeuristicSort.doSort(qp, Question);
+		qp=HeuristicSort.doHeuristicSort(qp, Question);
 		
 		System.out.println("Following Querries were created:");
 		for(QueryPair z : qp){
@@ -336,7 +322,7 @@ public class MainInterface {
 					//else go_on=false;
 					//go_on=true;
 					go_on=false;
-					if(special) go_on=true;
+					
 					System.out.println("Got Answer from Server with this Query: "+ q.getQuery());
 					if(qp.size()>(id+1)){
 						//&&anzahl<2
@@ -344,6 +330,11 @@ public class MainInterface {
 							go_on=true;
 						}
 					}
+					/*
+					 * in which queries with an answer, dont accept a second Query, is there is already an answer. 
+					 */
+					if(Question.toLowerCase().contains("which")) go_on=false;
+					if(Question.toLowerCase().contains("who")) go_on=false;
 					
 						
 					boolean contains_uri=false;
@@ -557,10 +548,112 @@ public class MainInterface {
 		 * iterate over Templates to create new one's but only if you have [isa][resource] and condition.size=2;
 		 */
 		for(Template t: template_list){
+			//t.printAll();
+			if(t.getCondition().size()==1){
+				System.out.println("Nur eine Condition");
+				ArrayList<String> condition=t.getCondition().get(0);
+				boolean go_on=false;
+				if(condition.get(1).toLowerCase().equals("isa")) go_on=true;
+				System.out.println("go_on:"+go_on);
+				if(go_on){
+					
+					String resource_variable=condition.get(0);
+					String class_variable=condition.get(2);
+					Hypothesis resource_h = null;
+					Hypothesis class_h = null;
+					boolean go_on_resource=false;
+					for(ArrayList<Hypothesis> h_l :t.getHypothesen()){
+						for(Hypothesis h : h_l){
+							if(h.getVariable().equals(resource_variable)){
+								if(h.getType().toLowerCase().contains("resource")) {
+									go_on_resource=true;
+									resource_h=h;
+								}
+							}
+							if(h.getVariable().equals(class_variable)){
+								class_h=h;
+							}
+						}
+						
+					}
+					System.out.println("go_on_resource:"+go_on_resource);
+					if(go_on_resource){
+						
+						/*
+						 * manipulate Class variable to make a property from it
+						 */
+						class_h.setType("PROPERTY");
+						class_h.setUri(class_h.getUri().toLowerCase());
+						class_h.setVariable("?y");
+						resource_h.setVariable("?x");
+						ArrayList<ArrayList<Hypothesis>> new_hypothesen_list = new ArrayList<ArrayList<Hypothesis>>();
+						ArrayList<Hypothesis> small_h_list = new ArrayList<Hypothesis>();
+						small_h_list.add(resource_h);
+						small_h_list.add(class_h);
+						new_hypothesen_list.add(small_h_list);
+						
+						ArrayList<String> condition_new = new ArrayList<String>();
+						condition_new.add("?x");
+						condition_new.add("?y");
+						condition_new.add("?z");
+						
+						ArrayList<ArrayList<String>> new_c_list = new ArrayList<ArrayList<String>>();
+						new_c_list.add(condition_new);
+						
+						Template new_Template = new Template(new_c_list, t.getQueryType(), "","" , "?z", "", "", t.getQuestion());
+						
+						new_Template.setHypothesen(new_hypothesen_list);
+						Elements elm = new Elements(new_Template.getCondition(),new_Template.getHypothesen());
+		     			if(elm.isElementEmty()==false){
+		     				//elm.printAll();
+		     				new_Template.setElm(elm);
+		     				new_template_list.add(new_Template);
+		     			}
+		     			
+		     			Template template_reverse_conditions = new Template(new_Template.getCondition(),new_Template.getQueryType(), new_Template.getHaving(), new_Template.getFilter(), new_Template.getSelectTerm(), new_Template.getOrderBy(), new_Template.getLimit(), new_Template.getQuestion());
+		     			template_reverse_conditions.setHypothesen(new_hypothesen_list);
+		     			
+		     			ArrayList<ArrayList<String>> condition_template_reverse_conditions = template_reverse_conditions.getCondition();
+		     			ArrayList<ArrayList<String>> condition_reverse_new= new ArrayList<ArrayList<String>>();
+
+
+		     				for (ArrayList<String> x : condition_template_reverse_conditions){
+		         				ArrayList<String> new_list = new ArrayList<String>();
+		         				new_list.add(x.get(2));
+		             			new_list.add(x.get(1));
+		             			new_list.add(x.get(0));
+		             			condition_reverse_new.add(new_list);
+		         			}
+		     				
+		     				
+		     				template_reverse_conditions.setCondition(condition_reverse_new);
+		     			
+		     				Elements elm_reverse = new Elements(template_reverse_conditions.getCondition(),template_reverse_conditions.getHypothesen());
+			     			if(elm_reverse.isElementEmty()==false){
+			     				//elm.printAll();
+			     				template_reverse_conditions.setElm(elm_reverse);
+			     				new_template_list.add(template_reverse_conditions);
+			     			}
+		     			
+						
+						
+					}
+					
+					
+					
+					
+				}
+			}
+			
+			
+			
+			
 			/*
 			 * only if condition.size==2
 			 */
 			if(t.getCondition().size()==2){
+				System.out.println("Yeah, found two Conditions!");
+				
 				/*
 				 * now look if one have the [isa][resource] or [resource][isa] case
 				 */
@@ -569,24 +662,55 @@ public class MainInterface {
 				
 				condition1=t.getCondition().get(0);
 				condition2=t.getCondition().get(1);
+				System.out.println("condition1:"+condition1);
+				System.out.println("condition2:"+condition2);
 				
 				boolean go_on=false;
 				
 				if(condition1.get(1).toLowerCase().contains("isa")&&!condition2.get(1).toLowerCase().contains("isa")){
-					if(condition2.get(0).contains("resource/")||condition2.get(2).contains("resource/")){
+					String resource1_variable=condition2.get(0);
+					String resource2_variable=condition2.get(2);
+					for(ArrayList<Hypothesis> h_l :t.getHypothesen()){
+						for(Hypothesis h : h_l){
+							if(h.getVariable().equals(resource2_variable)||h.getVariable().equals(resource1_variable)){
+								if(h.getType().toLowerCase().contains("resource")) go_on=true;
+							}
+						}
+						
+					}
+					
+					/*if(condition2.get(0).contains("resource/")||condition2.get(2).contains("resource/")){
 						go_on=true;
 					}
-					else go_on=false;
+					else go_on=false;*/
 				}
 				
-				else if(!condition1.get(1).toLowerCase().contains("isa")&&condition2.get(1).toLowerCase().contains("isa")){
-					if(condition1.get(0).contains("resource/")||condition1.get(2).contains("resource/")){
+				else if(condition2.get(1).toLowerCase().contains("isa")){
+					
+					String resource1_variable=condition1.get(0);
+					String resource2_variable=condition1.get(2);
+					for(ArrayList<Hypothesis> h_l :t.getHypothesen()){
+						for(Hypothesis h : h_l){
+							if(h.getVariable().equals(resource2_variable)||h.getVariable().equals(resource1_variable)){
+								if(h.getType().toLowerCase().contains("resource")) go_on=true;
+							}
+						}
+						
+					}
+					
+					
+					/*
+					 * in the conditions there is for sure no resource!!!
+					 */
+					/*if(condition1.get(0).contains("resource/")||condition1.get(2).contains("resource/")){
 						go_on=true;
 					}
-					else go_on=false;
+					else go_on=false;*/
 				}
 				else go_on=false;
 				
+				
+				System.out.println("Go_on:"+go_on);
 				if(go_on==true){
 					
 					/*
@@ -606,6 +730,13 @@ public class MainInterface {
 						if(t_h_l.size()>0) new_hypothesen_list.add(t_h_l);
 					}
 					
+					/*
+					 * New HypothesenList
+					 */
+					System.out.println("New Hypothesen List");
+					for(ArrayList<Hypothesis> h_blub : new_hypothesen_list){
+						for(Hypothesis blub:h_blub) blub.printAll();
+					}
 					/*
 					 * create new ArrayList for Conditions, only with the
 					 */
@@ -629,6 +760,8 @@ public class MainInterface {
 					 * Elements can still be the same
 					 */
 					new_Template.setElm(t.getElm());
+					new_template_list.add(new_Template);
+					//new_Template.printAll();
 					
 				}
 				
@@ -640,6 +773,7 @@ public class MainInterface {
 		 * if there are new templates, start rescursive call;
 		 */
 		if(new_template_list.size()>0){
+			System.out.println("Generated new Templates");
 			try {
 				return singleSteps(myindex, wordnet, lemmatiser, wait,new_template_list);
 			} catch (IOException e) {
