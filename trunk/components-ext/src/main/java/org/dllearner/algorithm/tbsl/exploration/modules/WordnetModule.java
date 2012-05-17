@@ -20,7 +20,7 @@ import org.dllearner.algorithm.tbsl.nlp.WordNet;
 
 public class WordnetModule {
 	
-	private static int explorationdepthwordnet =1;
+	private static int explorationdepthwordnet =0;
 	
 	public static ArrayList<Hypothesis> doWordnet(String variable, String property_to_compare_with, HashMap<String, String> properties, SQLiteIndex myindex,WordNet wordnet,StanfordLemmatizer lemmatiser) throws SQLException,
 	JWNLException {
@@ -63,12 +63,7 @@ public class WordnetModule {
 				 tmp_semantics.add(s);
 			 }
 			 else tmp_semantics.add(s);
-			 /*
-			 else{
-				 semantics.clear();
-				 semantics.add(_temp_);
-				 tmp_semantics=semantics;
-			 }*/
+
 		 }
 		 
 		 System.out.println("tmp_semantics: "+ tmp_semantics);
@@ -110,15 +105,8 @@ public class WordnetModule {
 				    key=key.toLowerCase();
 				    
 				for(String b : semantics){
-					/*
-					 * Error in StanfordLemmatizer, thats why first left out here
-					 */
-					//if(key.contains(b.toLowerCase())||key.contains(lemmatiser.stem(b.toLowerCase()))||b.toLowerCase().contains(lemmatiser.stem(key))){
-					//System.out.println("B: "+b +" Key: "+key);
 					if(key.equals(b)){
-						//System.out.println("EQUALS");
-						//System.out.println("B: " +b);
-						//System.out.println("key: " +key);
+
 						
 						Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 1.0); 
 						 
@@ -128,17 +116,9 @@ public class WordnetModule {
 					}
 					else if(key.contains(b.toLowerCase())||b.toLowerCase().contains(key)){
 						
-						//System.out.println("B: " +b);
-						//System.out.println("key: " +key);
-						
-						/*if(b.length()>key.length()) {
-							Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", (key.length()/b.length())); 
-							listOfNewHypothesen.add(h);
-						}
-						else{
-							Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", (b.length()/key.length())); 
-							listOfNewHypothesen.add(h);
-						}*/
+						System.out.println("Key:"+key);
+						System.out.println("b:"+b);
+
 						if(b.length()>4&&key.length()>4) {
 							double score=0;
 							if(b.length()>key.length()){
@@ -170,53 +150,12 @@ public class WordnetModule {
 						 listOfNewHypothesen.add(h);
 					}
 						
-						/*System.out.println("Found: "+b);
-						if(Setting.isWaitModus())
-							try {
-								DebugMode.waitForButton();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}*/
-						/*if(!result_SemanticsMatchProperties.contains(key)){
-						 result_SemanticsMatchProperties.add(key);
-						 if(key.toLowerCase().contains(property_to_compare_with.toLowerCase())||property_to_compare_with.toLowerCase().contains(key)){
-							 //System.out.println("Variable: "+ variable+" key: "+key+" value : "+value);
-							 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", (key.length()/property_to_compare_with.length())); 
-							 listOfNewHypothesen.add(h);
-							try {
-								if(Setting.isWaitModus())DebugMode.waitForButton();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						 }
-						 else{
-							 double nld=Levenshtein.nld(property_to_compare_with.toLowerCase(), key);
-							 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", nld);
-							 listOfNewHypothesen.add(h);
-							 //System.out.println("Found for key: "+key);
-							 try {
-								 if(Setting.isWaitModus())DebugMode.waitForButton();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						 }
 						
-						}*/
-					//}
 				}
 			}
 			 
 		 }
-		 /*System.out.println("Anzahl listOfNewHypothesen: "+listOfNewHypothesen.size());
-		 try {
-			DebugMode.waitForButton();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+		 
 		
 		 return listOfNewHypothesen;
 	}
@@ -228,36 +167,25 @@ public class WordnetModule {
 		
 		ArrayList<String> semantics = new ArrayList<String>();
 		semantics=semanticsOrig;
-		//also look at the stemmt part!
-		/*for(String s: semanticsOrig){
-			String bla=lemmatiser.stem(s);
-			semantics.add(bla);
-			semantics.add(s);
-		}*/
 		
 		try{
 			for(String id :semantics){
-				//System.out.println("in String id : semantics");
-				//System.out.println("ID :"+id);
-				
-				//add id also to the result, if its not already in there
 				if(!result.contains(id))result.add(id);
 				List<String> array_relatedNouns=null;
 				List<String> array_bestsynonyms=null;
+				List<String> array_bestsynonyms_verb=null;
+				List<String> array_bestsynonyms_adj=null;
 				
-				//System.out.println("Wordnet Word: "+id);
 				try{
 					array_relatedNouns =wordnet.getRelatedNouns(id);
 				}
 				catch(Exception e){
 					//array_relatedNouns.clear();
 				}
-				//System.out.println("array_relatedNouns: "+ array_relatedNouns);
-				//System.out.println("after relatedNouns");
-
 				try{
 					array_bestsynonyms=wordnet.getBestSynonyms(POS.NOUN, id);
-					//System.out.println("array_bestsynonyms: "+ array_bestsynonyms);
+					array_bestsynonyms_verb=wordnet.getBestSynonyms(POS.VERB, id);
+					array_bestsynonyms_adj=wordnet.getBestSynonyms(POS.ADJECTIVE, id);
 				}
 				catch(Exception e){
 					//
@@ -275,6 +203,16 @@ public class WordnetModule {
 						if(!result.contains(i))result.add(i);
 					}
 				}
+				if(array_bestsynonyms_verb!=null){
+					for(String i:array_bestsynonyms_verb){
+						if(!result.contains(i))result.add(i);
+					}
+				}
+				if(array_bestsynonyms_adj!=null){
+					for(String i:array_bestsynonyms_adj){
+						if(!result.contains(i))result.add(i);
+					}
+				}
 				
 				
 					
@@ -286,20 +224,15 @@ public class WordnetModule {
 
 		if(!result.isEmpty()) return result;
 		else{
-			//System.out.println("Didnt find ")
-			/*this is the case, if the first time nothing was found.
-			 * but sometimes wordnet doesnt find anything e.g. die place... bzt you have also die and place
-			 * so we try to find the seperate words and test them as well
-			 */
 			try{
 				for(String id :semantics){
-					//System.out.println("in String id : semantics TWO");
 					String[] tmp_array=id.split(" ");
-					//System.out.println("ID TWO:"+id);
 					if(tmp_array.length>=2){
 						for(String advanced_id : tmp_array){
 							List<String> array_relatedNouns=null;
 							List<String> array_bestsynonyms=null;
+							List<String> array_bestsynonyms_verb=null;
+							List<String> array_bestsynonyms_adj=null;
 							//add id also to the result, if its not already in there
 							if(!result.contains(advanced_id))result.add(advanced_id);
 							
@@ -309,12 +242,10 @@ public class WordnetModule {
 							catch(Exception e){
 								//array_relatedNouns.clear();
 							}
-							//System.out.println("array_relatedNouns: "+ array_relatedNouns);
-							//System.out.println("after relatedNouns");
-
 							try{
 								array_bestsynonyms=wordnet.getBestSynonyms(POS.NOUN, advanced_id);
-							//	System.out.println("array_bestsynonyms: "+ array_bestsynonyms);
+								array_bestsynonyms_verb=wordnet.getBestSynonyms(POS.VERB, advanced_id);
+								array_bestsynonyms_adj=wordnet.getBestSynonyms(POS.ADJECTIVE, advanced_id);
 							}
 							catch(Exception e){
 								//
@@ -327,6 +258,16 @@ public class WordnetModule {
 							}
 							if(array_bestsynonyms!=null){
 								for(String i:array_bestsynonyms){
+									if(!result.contains(i))result.add(i);
+								}
+							}
+							if(array_bestsynonyms_verb!=null){
+								for(String i:array_bestsynonyms_verb){
+									if(!result.contains(i))result.add(i);
+								}
+							}
+							if(array_bestsynonyms_adj!=null){
+								for(String i:array_bestsynonyms_adj){
 									if(!result.contains(i))result.add(i);
 								}
 							}

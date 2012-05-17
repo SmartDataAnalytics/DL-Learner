@@ -10,6 +10,10 @@ public class Setting {
 	private static double thresholdSelect;
 	private static double thresholdAsk;
 	private static int moduleStep;
+	private static double EsaMin;
+	private static boolean loadedProperties;
+	private static int version;
+	private static boolean saveAnsweredQueries;
 	
 	
 	
@@ -61,6 +65,30 @@ public class Setting {
 	}
 	public static void setModuleStep(int moduleStep) {
 		Setting.moduleStep = moduleStep;
+	}
+	public static double getEsaMin() {
+		return EsaMin;
+	}
+	public static void setEsaMin(double esaMin) {
+		EsaMin = esaMin;
+	}
+	public static boolean isLoadedProperties() {
+		return loadedProperties;
+	}
+	public static void setLoadedProperties(boolean loadedProperties) {
+		Setting.loadedProperties = loadedProperties;
+	}
+	public static int getVersion() {
+		return version;
+	}
+	public static void setVersion(int version) {
+		Setting.version = version;
+	}
+	public static boolean isSaveAnsweredQueries() {
+		return saveAnsweredQueries;
+	}
+	public static void setSaveAnsweredQueries(boolean saveAnsweredQueries) {
+		Setting.saveAnsweredQueries = saveAnsweredQueries;
 	}
 
 	

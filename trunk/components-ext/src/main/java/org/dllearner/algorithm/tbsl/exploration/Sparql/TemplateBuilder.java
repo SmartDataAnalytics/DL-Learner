@@ -217,11 +217,18 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      					
      				}
      				if(slot.toString().contains("PROPERTY")){
+     					System.out.println("Slot.toString(): "+slot.toString());
      					String tmp= slot.toString().replace(" PROPERTY {", "");
      					tmp=tmp.replace("}","");
+     					System.out.println(tmp);
      					String[] tmp_array = tmp.split(":");
-     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1],tmp_array[1], "PROPERTY", 0.0);
-     					list_of_hypothesis.add(tmp_hypothesis);
+     					if(tmp_array.length>1){
+	     					System.out.println("tmp_array[0]:"+tmp_array[0]);
+	     					System.out.println("tmp_array[1]:"+tmp_array[1]);
+	     					
+	     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1],tmp_array[1], "PROPERTY", 0.0);
+	     					list_of_hypothesis.add(tmp_hypothesis);
+     					}
      					
      				}
      				if(slot.toString().contains("RESOURCE")){

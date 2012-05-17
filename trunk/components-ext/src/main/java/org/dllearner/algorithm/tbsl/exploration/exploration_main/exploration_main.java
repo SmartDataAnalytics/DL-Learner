@@ -63,13 +63,18 @@ public class exploration_main {
 		Setting.setLevenstheinMin(0.95);
 		Setting.setAnzahlAbgeschickterQueries(10);
 		Setting.setThresholdAsk(0.9);
-		Setting.setThresholdSelect(0.6);
+		Setting.setThresholdSelect(0.5);
+		Setting.setLoadedProperties(false);
+		Setting.setSaveAnsweredQueries(false);
+		//default
+		//Setting.setVersion(1);
 		/*
 		 * 1= only "Normal"
 		 * 2= "Normal" + Levensthein
 		 * 3= Normal+Levensthein+Wordnet
 		 */
-		Setting.setModuleStep(4);
+		Setting.setModuleStep(5);
+		Setting.setEsaMin(0.4);
 		
 
 		
@@ -133,71 +138,106 @@ public class exploration_main {
 				if(line.contains(":xml")&& schleife==true){
 					TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 
-					for(int i = 1; i<2;i++){
-						double min = 0.95;
-						min+=(i*0.05);
+					//for(int i = 1; i<2;i++){
+						//double min = 0.95;
+						//min+=(i*0.05);
+					
+					/*if(i==1){
+						line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-new.xml";
+					}
+					if(i==2){
+						line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-test-new-tagged2.xml";
+					}*/
+					
+					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-new.xml";
+					
+					for(int j=1;j<2;j++){
 						
-						//Setting.setLevenstheinMin(min);
-						Setting.setLevenstheinMin(0.95);
-						//Setting.setModuleStep(i);
+						Setting.setVersion(1);
 						
-					
-					/*System.out.println("Please enter Path of xml File:");
-					line=in.readLine();*/
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-withoutnonparsed.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/very_small.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/berlin.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/vortragfragen.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/iteration-test.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-withoutNotparsed.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-test-questions.xml";
-					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-test-new-tagged2.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-onlyWithWorking.xml";
-					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-new.xml";
-					
-					
-					//create Structs
-					ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
-					
-					list_of_structs=generateStruct(line,true);
-					//Start Time measuring
-					long startTime = System.currentTimeMillis();
-				    
-				    int anzahl=0;
-				    int anzahl_query_with_answers=0;
-				    int yago_querys=0;
-					for(queryInformation qi : list_of_structs){
-						anzahl=anzahl+1;
-				    	System.out.println("");
-				    	if(qi.getId()==""||qi.getId()==null)System.out.println("NO");
-						String question = qi.getQuery();
-						ArrayList<String> answers=MainInterface.startQuestioning(question,btemplator,myindex,wordnet,lemmatiser);
-						qi.setResult(answers);
+						for(int z=1;z<7;z++){
+							//Setting.setLevenstheinMin(min);
+							Setting.setLevenstheinMin(0.95);
+							//Setting.setThresholdSelect(0.4);
+							Setting.setModuleStep(2);
+							Setting.setThresholdSelect(0.5);
+							Setting.setEsaMin(0.0+(z/10.0));
+							Setting.setLoadedProperties(false);
+							/*if(i==2)Setting.setLoadedProperties(true);
+							else Setting.setLoadedProperties(false);
+							*/
+							
+							
+						
+							
+							//create Structs
+							ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
+							
+							list_of_structs=generateStruct(line,true);
+							//Start Time measuring
+							long startTime = System.currentTimeMillis();
+						    
+						    int anzahl=0;
+						    int anzahl_query_with_answers=0;
+						    int yago_querys=0;
+							for(queryInformation qi : list_of_structs){
+								anzahl=anzahl+1;
+						    	System.out.println("");
+						    	if(qi.getId()==""||qi.getId()==null)System.out.println("NO");
+								String question = qi.getQuery();
+								ArrayList<String> answers=MainInterface.startQuestioning(question,btemplator,myindex,wordnet,lemmatiser);
+								qi.setResult(answers);
+							}
+							
+							
+							long stopTime = System.currentTimeMillis();
+							System.out.println("For "+anzahl+" Questions the QA_System took "+ ((stopTime-startTime)/1000)+"sek");
+							
+							String filename="";
+							filename=createXML(list_of_structs,((stopTime-startTime)/1000));
+						    String filename_for_evaluation="/home/swalter/Dokumente/Auswertung/ResultXml/"+filename;
+						    String execute="";
+						    if(filename_for_evaluation.contains("train")){
+						    	execute = "python /home/swalter/Dokumente/Auswertung/Evaluation/Evaluation-C.py  "+filename_for_evaluation+" 0";
+						    }
+						    else{
+						    	execute = "python /home/swalter/Dokumente/Auswertung/Evaluation/Evaluation-C.py "+filename_for_evaluation+" 1";
+						    
+						    }
+						    System.out.println(filename_for_evaluation);
+						    /*
+						     * First only for training
+						     */
+						    
+						    System.out.println("execute: "+execute);
+						    
+						    
+						    try
+					        {
+					            Runtime r = Runtime.getRuntime();
+					            Process p = r.exec(execute);
+					            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+					            p.waitFor();
+					            while (br.ready())
+					                System.out.println(br.readLine());
+
+					        }
+					        catch (Exception e)
+					        {
+							String cause = e.getMessage();
+							if (cause.equals("python: not found"))
+								System.out.println("No python interpreter found.");
+					        }
+						    
+						   
+						}
+						
+						
 					}
 					
+
 					
-					long stopTime = System.currentTimeMillis();
-					System.out.println("For "+anzahl+" Questions the QA_System took "+ ((stopTime-startTime)/1000)+"sek");
-					
-					String systemid="";
-					systemid=createXML(list_of_structs);
-				    String filename_for_evaluation="/home/swalter/Dokumente/Auswertung/ResultXml/result"+systemid.replace(" ", "_")+".xml";
-				    String execute = "python /home/swalter/Dokumente/Auswertung/Evaluation/Evaluation.py "+filename_for_evaluation+" 0";
-				    System.out.println(filename_for_evaluation);
-				    /*
-				     * First only for training
-				     */
-				    
-				    System.out.println("execute: "+execute);
-				    Runtime r = Runtime.getRuntime();
-				    Process p = r.exec(execute);
-				    
-				   /* String open_file="/home/swalter/Dokumente/Auswertung/Evaluation/upload/out"+systemid.replace(" ", "_")+".html";
-				    execute ="firefox "+ open_file;
-				    p = r.exec(execute);*/
-					}
+				//	}
 					/*schleife=false;
 					System.out.println("Bye!");
 					System.exit(0);*/
@@ -288,13 +328,14 @@ public class exploration_main {
 	}
 	
 	
-	private static String createXML(ArrayList<queryInformation> list){
+	private static String createXML(ArrayList<queryInformation> list, double average_time){
 		
 		java.util.Date now = new java.util.Date();
 
 		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy HH.mm.ss");
 		String systemid = sdf.format(now);
 		System.out.println("In createXML");
+		String filename=null;
 		
 		String xmlDocument="";
 		int counter=0;
@@ -325,6 +366,8 @@ public class exploration_main {
 					if(i.contains("http")) input="<uri>"+i+"</uri>\n";
 					else if (i.contains("true")||i.contains("false")) input="<boolean>"+i+"</boolean>\n";
 					else if(i.matches("[0-9]*"))input="<number>"+i+"</number>\n";
+					else if(i.matches("[0-9][.][0-9]"))input="<number>"+i+"</number>\n";
+						//<number>1.8</number>
 					else if(i.matches("[0-9]*-[0-9][0-9]-[0-9]*"))input="<date>"+i+"</date>\n";
 					else if(i.length()>=1 && !i.equals(" "))input="<string>"+i+"</string>\n";
 					tmp+="<answer>"+input+"</answer>\n";
@@ -337,7 +380,8 @@ public class exploration_main {
 		xmlDocument+="</dataset>";
 		File file;
 		FileWriter writer;
-		file = new File("/home/swalter/Dokumente/Auswertung/ResultXml/result"+systemid.replace(" ", "_")+"NLD"+Setting.getLevenstheinMin()+"Stufe"+Setting.getModuleStep()+"Type"+xmltype+"Anzahl"+anzahl+".xml");
+		filename="result"+systemid.replace(" ", "_")+"NLD"+Setting.getLevenstheinMin()+"Stufe"+Setting.getModuleStep()+"Type"+xmltype+"Anzahl"+anzahl+"Time"+average_time+"Threshold"+Setting.getThresholdSelect()+"ESA"+Setting.getEsaMin()+"LoadedProperty"+Setting.isLoadedProperties()+"Version"+Setting.getVersion()+".xml";
+		file = new File("/home/swalter/Dokumente/Auswertung/ResultXml/"+filename);
 	     try {
 	       writer = new FileWriter(file ,true);    
 	       writer.write(xmlDocument);
@@ -350,7 +394,7 @@ public class exploration_main {
 	    }
 	     
 	   System.out.println("In createXML - Done");
-	   return systemid;
+	   return filename;
 	}
 	
 	private static ArrayList<queryInformation> generateStruct(String filename, boolean hint) {
