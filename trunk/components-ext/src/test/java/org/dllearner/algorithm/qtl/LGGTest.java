@@ -38,11 +38,14 @@ import org.dllearner.algorithm.qtl.datastructures.QueryTree;
 import org.dllearner.algorithm.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithm.qtl.examples.DBpediaExample;
 import org.dllearner.algorithm.qtl.examples.LinkedGeoDataExample;
+import org.dllearner.algorithm.qtl.exception.TimeOutException;
 import org.dllearner.algorithm.qtl.impl.QueryTreeFactoryImpl;
+import org.dllearner.algorithm.qtl.operations.NBR;
 import org.dllearner.algorithm.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithm.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.ExtractionDBCache;
@@ -51,6 +54,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -74,9 +78,9 @@ public class LGGTest {
 	
 	private static final Logger logger = Logger.getLogger(LGGTest.class);
 	
-//	@Test
+	@Test
 	public void testOxfordData(){
-		Model model = ModelFactory.createOntologyModel();
+		OntModel model = ModelFactory.createOntologyModel();
 		int depth = 3;
 		try {
 			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/ontology.ttl")), null, "TURTLE");
@@ -97,6 +101,8 @@ public class LGGTest {
 //		
 //		ResultSet rs1 = QueryExecutionFactory.create("SELECT * WHERE {?s <http://diadem.cs.ox.ac.uk/ontologies/real-estate#rooms> ?o. ?o ?p ?o1}", model).execSelect();
 //		System.out.println(ResultSetFormatter.asText(rs1));
+		
+		LocalModelBasedSparqlEndpointKS ks = new LocalModelBasedSparqlEndpointKS(model);
 		
 		ConciseBoundedDescriptionGenerator cbd = new ConciseBoundedDescriptionGeneratorImpl(model);
 		QueryTreeFactory<String> qtf = new QueryTreeFactoryImpl();
@@ -121,7 +127,7 @@ public class LGGTest {
 		Query q = lgg.toSPARQLQuery();
 		System.out.println("Query:\n" + q);
 		
-		//run the SPARQL query against the data - should be return at least the positive examples
+		//run the SPARQL query against the data - should be returned at least the positive examples
 		List<String> result = new ArrayList<String>();
 		ResultSet rs = QueryExecutionFactory.create(q, model).execSelect();
 		while(rs.hasNext()){
@@ -129,6 +135,15 @@ public class LGGTest {
 		}
 		System.out.println(result);
 		Assert.assertTrue(result.containsAll(posExamples));
+		
+		NBR<String> nbr = new NBR<String>(model);
+		try {
+			nbr.setLGGInstances(new HashSet<String>(posExamples));
+			String question = nbr.getQuestion(lgg, new ArrayList<QueryTree<String>>(), posExamples);
+			System.out.println(question);
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	

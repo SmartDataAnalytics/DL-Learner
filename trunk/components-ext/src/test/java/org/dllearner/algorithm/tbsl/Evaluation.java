@@ -29,6 +29,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
@@ -479,7 +480,7 @@ public class Evaluation{
 				}
 				latex.addSummaryTableEntry(questionId, extractSentence(question), precision, recall, errorCode);
 				
-			} catch (NoTemplateFoundException e) {
+			} catch (NoTemplateFoundException e) {cnt++;
 				e.printStackTrace();
 				logger.error("Template generation failed");
 				errorCode = "NT";
@@ -770,7 +771,7 @@ public class Evaluation{
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-		Logger.getLogger(SPARQLTemplateBasedLearner.class).setLevel(Level.OFF);
+		Logger.getLogger(SPARQLTemplateBasedLearner.class).setLevel(Level.INFO);
 		Logger.getLogger(Evaluation.class).setLevel(Level.INFO);
 		Logger.getRootLogger().removeAllAppenders();
 		Layout layout = new PatternLayout("%m%n");
@@ -778,12 +779,12 @@ public class Evaluation{
 				layout, "log/evaluation.log", false);
 		fileAppender.setThreshold(Level.INFO);
 		Logger.getRootLogger().addAppender(fileAppender);
+		Logger.getRootLogger().addAppender(new ConsoleAppender(layout));
 		
 		if(args.length == 0){
 			System.out.println("Usage: Evaluation <file>");
 			System.exit(0);
 		}
-		
 		File file = new File(Evaluation.class.getClassLoader().getResource(args[0]).getPath());
 		
 //		System.out.println(Evaluation.extractEntities("SELECT DISTINCT ?uri ?string WHERE {" +
