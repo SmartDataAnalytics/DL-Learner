@@ -116,9 +116,9 @@ public class Start {
 	 */
 	public static void main(String[] args) {
 
-		System.out.println("********************************************************************************");
-		System.out.println("* Caution: The command line interface is currently unlikely to work correctly. *");
-		System.out.println("********************************************************************************");
+		System.out.println("************************************************************************************************************");
+		System.out.println("* Please use the new CLI interfach: org.dllearner.cli.CLI - this interface is unlikely to work as expected *");
+		System.out.println("************************************************************************************************************");
 		
 		System.out.println("DL-Learner " + Info.build + " command line interface");
 		
