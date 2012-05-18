@@ -8,8 +8,10 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
@@ -24,7 +26,13 @@ public class SPARQLIndex implements Index{
 
 	private Model model;
 	
-	protected String queryTemplate = "SELECT DISTINCT(?uri) WHERE {\n" +
+	protected String queryTemplate = "SELECT DISTINCT ?uri WHERE {\n" +
+			"?uri a ?type.\n" + 
+			"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label\n" +
+			"FILTER(REGEX(STR(?label), '%s'))}\n" +
+			"LIMIT %d OFFSET %d";
+	
+	protected String queryWithLabelTemplate = "SELECT DISTINCT * WHERE {\n" +
 			"?uri a ?type.\n" + 
 			"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label\n" +
 			"FILTER(REGEX(STR(?label), '%s'))}\n" +
@@ -45,36 +53,26 @@ public class SPARQLIndex implements Index{
 	}
 	
 	@Override
-	public List<String> getResources(String queryString) {
-		return getResources(queryString, DEFAULT_LIMIT);
+	public List<String> getResources(String searchTerm) {
+		return getResources(searchTerm, DEFAULT_LIMIT);
 	}
 
 	@Override
-	public List<String> getResources(String queryString, int limit) {
-		return getResources(queryString, limit, DEFAULT_OFFSET);
+	public List<String> getResources(String searchTerm, int limit) {
+		return getResources(searchTerm, limit, DEFAULT_OFFSET);
 	}
 	
 	@Override
-	public List<String> getResources(String queryString, int limit, int offset) {
+	public List<String> getResources(String searchTerm, int limit, int offset) {
 		List<String> resources = new ArrayList<String>();
 		
-		String query = buildResourcesQuery(queryString, limit, offset);
+		String query = String.format(queryTemplate, searchTerm, limit, offset);
 		
-		ResultSet rs;
-		if(model == null){
-			if(cache == null){
-				QueryEngineHTTP qe = new QueryEngineHTTP(endpoint.getURL().toString(), queryString);
-				qe.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
-				rs = qe.execSelect();
-			} else {
-				rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-			}
-		} else {
-			rs = QueryExecutionFactory.create(queryString, model).execSelect();
-		}
+		ResultSet rs = executeSelect(query);
+		
 		QuerySolution qs;
 		while(rs.hasNext()){
-			qs = rs.next();
+			qs = rs.next();System.out.println(qs);
 			RDFNode uriNode = qs.get("uri");
 			if(uriNode.isURIResource()){
 				resources.add(uriNode.asResource().getURI());
@@ -83,8 +81,54 @@ public class SPARQLIndex implements Index{
 		return resources;
 	}
 	
-	protected String buildResourcesQuery(String searchTerm, int limit, int offset){
-		return String.format(queryTemplate, searchTerm, limit, offset);
+	@Override
+	public IndexResultSet getResourcesWithScores(String searchTerm) {
+		return getResourcesWithScores(searchTerm, DEFAULT_LIMIT);
+	}
+
+	@Override
+	public IndexResultSet getResourcesWithScores(String searchTerm, int limit) {
+		return getResourcesWithScores(searchTerm, limit, DEFAULT_OFFSET);
+	}
+
+	@Override
+	public IndexResultSet getResourcesWithScores(String searchTerm, int limit, int offset) {
+		IndexResultSet irs = new IndexResultSet();
+		
+		String query = String.format(queryWithLabelTemplate, searchTerm, limit, offset);
+		
+		ResultSet rs = executeSelect(query);
+		
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			RDFNode uriNode = qs.get("uri");
+			if(uriNode.isURIResource()){
+				RDFNode labelNode = qs.get("label");
+				
+				String uri = uriNode.asResource().getURI();
+				String label = labelNode.asLiteral().getLexicalForm();
+				irs.addItem(new IndexResultItem(uri, label, 1f));
+			}
+		}
+		
+		return irs;
+	}
+	
+	private ResultSet executeSelect(String query){System.out.println(query);
+		ResultSet rs;
+		if(model == null){
+			if(cache == null){
+				QueryEngineHTTP qe = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+				qe.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
+				rs = qe.execSelect();
+			} else {
+				rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+			}
+		} else {
+			rs = QueryExecutionFactory.create(QueryFactory.create(query, Syntax.syntaxARQ), model).execSelect();
+		}
+		return rs;
 	}
 	
 }
