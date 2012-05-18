@@ -20,6 +20,7 @@ public class AnnComponentManagerTest {
     public void testGetComponentsOfType() {
 
         Collection<Class<? extends Component>> components = AnnComponentManager.getInstance().getComponentsOfType(ReasonerComponent.class);
+//        System.out.println(components);
         Assert.assertEquals(3,components.size());
     }
 }
