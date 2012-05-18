@@ -486,7 +486,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                case 4:
                   if ((0x7fffffe87fffffeL & l) != 0L)
                      jjCheckNAddTwoStates(3, 4);
-                  if ((0x7fffffe07fffffeL & l) != 0L)
+                  if ((0x7fffffe87fffffeL & l) != 0L)
                   {
                      if (kind > 26)
                         kind = 26;
@@ -496,7 +496,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                case 0:
                   if ((0x7fffffe87fffffeL & l) != 0L)
                      jjCheckNAddTwoStates(3, 4);
-                  if ((0x7fffffe07fffffeL & l) != 0L)
+                  if ((0x7fffffe87fffffeL & l) != 0L)
                   {
                      if (kind > 26)
                         kind = 26;
@@ -506,7 +506,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                      jjstateSet[jjnewStateCnt++] = 1;
                   break;
                case 2:
-                  if ((0x7fffffe07fffffeL & l) == 0L)
+                  if ((0x7fffffe87fffffeL & l) == 0L)
                      break;
                   if (kind > 26)
                      kind = 26;
