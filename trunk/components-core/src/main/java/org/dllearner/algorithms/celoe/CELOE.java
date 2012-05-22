@@ -21,7 +21,6 @@ package org.dllearner.algorithms.celoe;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -193,7 +192,13 @@ public class CELOE extends AbstractCELA {
 	@ConfigOption(name = "maxDepth", defaultValue="7", description="maximum depth of description")
 	private double maxDepth = 7;
 
+	@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
+	private boolean stopOnFirstDefinition = false;
+	
 	private int expressionTestCountLastImprovement;
+	
+	
+	@SuppressWarnings("unused")
 	private long timeLastImprovement = 0;
 	
 //	public CELOEConfigurator getConfigurator() {
@@ -787,7 +792,8 @@ public class CELOE extends AbstractCELA {
 		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
 		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement*1000000000l))) ||
 		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l))) ||
-		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage));
+		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage)) ||
+		(stopOnFirstDefinition && (getCurrentlyBestAccuracy() >= 1));
 	}
 	
 	private void reset() {
@@ -1071,6 +1077,15 @@ public class CELOE extends AbstractCELA {
 
 	public void setMaxDepth(double maxDepth) {
 		this.maxDepth = maxDepth;
+	}
+	
+	
+	public boolean isStopOnFirstDefinition() {
+		return stopOnFirstDefinition;
+	}
+
+	public void setStopOnFirstDefinition(boolean stopOnFirstDefinition) {
+		this.stopOnFirstDefinition = stopOnFirstDefinition;
 	}
 
 	public static void main(String[] args) throws Exception{
