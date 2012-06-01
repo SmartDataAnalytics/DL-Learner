@@ -72,7 +72,7 @@ public class SPARQLIndex implements Index{
 		
 		QuerySolution qs;
 		while(rs.hasNext()){
-			qs = rs.next();System.out.println(qs);
+			qs = rs.next();
 			RDFNode uriNode = qs.get("uri");
 			if(uriNode.isURIResource()){
 				resources.add(uriNode.asResource().getURI());

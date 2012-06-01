@@ -15,8 +15,9 @@ public class SPARQLPropertiesIndex extends SPARQLIndex{
 				"FILTER(REGEX(STR(?label), '%s', 'i'))}\n" +
 				"LIMIT %d OFFSET %d";
 		
-		super.queryWithLabelTemplate = "SELECT DISTINCT * WHERE {\n" +
-				"?s ?uri ?o.\n" + 
+		super.queryWithLabelTemplate = "PREFIX owl:<http://www.w3.org/2002/07/owl#>  SELECT DISTINCT * WHERE {\n" +
+//				"?s ?uri ?o.\n" + 
+				"{?uri a owl:DatatypeProperty.} UNION {?uri a owl:ObjectProperty.} " + 
 				"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label\n" +
 				"FILTER(REGEX(STR(?label), '%s', 'i'))}\n" +
 				"LIMIT %d OFFSET %d";
@@ -31,8 +32,9 @@ public class SPARQLPropertiesIndex extends SPARQLIndex{
 				"FILTER(REGEX(STR(?label), '%s', 'i'))}\n" +
 				"LIMIT %d OFFSET %d";
 		
-		super.queryWithLabelTemplate = "SELECT DISTINCT * WHERE {\n" +
-				"?s ?uri ?o.\n" + 
+		super.queryWithLabelTemplate = "PREFIX owl:<http://www.w3.org/2002/07/owl#>  SELECT DISTINCT * WHERE {\n" +
+//				"?s ?uri ?o.\n" + 
+				"{?uri a owl:DatatypeProperty.} UNION {?uri a owl:ObjectProperty.} " + 
 				"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label\n" +
 				"FILTER(REGEX(STR(?label), '%s', 'i'))}\n" +
 				"LIMIT %d OFFSET %d";
