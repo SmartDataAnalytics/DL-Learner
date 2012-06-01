@@ -140,12 +140,17 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex, PartOfSpeechTagger posTagger, WordNet wordNet, Options options){
+		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, posTagger, wordNet, options, new ExtractionDBCache("cache"));
+	}
+	
+	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex, PartOfSpeechTagger posTagger, WordNet wordNet, Options options, ExtractionDBCache cache){
 		this.endpoint = endpoint;
 		this.resourcesIndex = resourcesIndex;
 		this.classesIndex = classesIndex;
 		this.propertiesIndex = propertiesIndex;
 		this.posTagger = posTagger;
 		this.wordNet = wordNet;
+		this.cache = cache;
 		
 		setOptions(options);
 	}
@@ -163,12 +168,17 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 	
 	public SPARQLTemplateBasedLearner2(Model model, Index resourcesIndex, Index classesIndex, Index propertiesIndex, PartOfSpeechTagger posTagger, WordNet wordNet, Options options){
+		this(model, resourcesIndex, classesIndex, propertiesIndex, posTagger, wordNet, options, new ExtractionDBCache("cache"));
+	}
+	
+	public SPARQLTemplateBasedLearner2(Model model, Index resourcesIndex, Index classesIndex, Index propertiesIndex, PartOfSpeechTagger posTagger, WordNet wordNet, Options options, ExtractionDBCache cache){
 		this.model = model;
 		this.resourcesIndex = resourcesIndex;
 		this.classesIndex = classesIndex;
 		this.propertiesIndex = propertiesIndex;
 		this.posTagger = posTagger;
 		this.wordNet = wordNet;
+		this.cache = cache;
 		
 		setOptions(options);
 	}
@@ -1406,31 +1416,6 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		return rs;
 	}
 	
-	private List<String> getResultFromRemoteEndpoint(String query){
-		List<String> resources = new ArrayList<String>();
-		try {
-			String queryString = query;
-			if(!query.contains("LIMIT") && !query.contains("ASK")){
-				queryString = query + " LIMIT 10";
-			}
-			ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, queryString));
-			QuerySolution qs;
-			String projectionVar;
-			while(rs.hasNext()){
-				qs = rs.next();
-				projectionVar = qs.varNames().next();
-				if(qs.get(projectionVar).isLiteral()){
-					resources.add(qs.get(projectionVar).asLiteral().getLexicalForm());
-				} else if(qs.get(projectionVar).isURIResource()){
-					resources.add(qs.get(projectionVar).asResource().getURI());
-				}
-				
-			}
-		} catch (Exception e) {e.printStackTrace();
-			logger.error("Query execution failed.", e);
-		}
-		return resources;
-	}
 	
 	public int getLearnedPosition() {
 		if(learnedPos >= 0){
@@ -1438,14 +1423,6 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		}
 		return learnedPos;
 	}
-	
-	
-	
-	
-	
-	
-
-	
 
 	@Override
 	public void start() {
