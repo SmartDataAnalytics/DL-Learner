@@ -119,6 +119,11 @@
 			as version is retrieved from the parent. - - Remember, default scope is compile
 			in Maven. -->
 		<dependencies>
+		<dependency>
+   <groupId>org.apache.jena</groupId>
+      <artifactId>jena-iri</artifactId>
+      <version>0.9.1-incubating-20120305.120450-12</version>
+    </dependency>
 			<dependency>
 				<groupId>net.sourceforge.owlapi</groupId>
 				<artifactId>owlapi</artifactId>
