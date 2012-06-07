@@ -69,6 +69,14 @@ public class ExtractionDBCache {
 	
 	private Monitor mon = MonitorFactory.getTimeMonitor("Query");
 	
+	public ExtractionDBCache(Connection conn) throws SQLException
+	{
+		this.conn=conn;
+	        // create cache table if it does not exist
+		Statement stmt = conn.createStatement();
+		stmt.execute("CREATE TABLE IF NOT EXISTS QUERY_CACHE(QUERYHASH BINARY PRIMARY KEY,QUERY VARCHAR(20000), TRIPLES CLOB, STORE_TIME TIMESTAMP)");		
+	}
+
 	public ExtractionDBCache(String cacheDir) {
 		databaseDirectory = cacheDir;
 		try {
