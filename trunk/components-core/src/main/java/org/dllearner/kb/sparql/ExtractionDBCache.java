@@ -72,6 +72,8 @@ public class ExtractionDBCache {
 	public ExtractionDBCache(Connection conn) throws SQLException
 	{
 		this.conn=conn;
+		try{md5 = MessageDigest.getInstance("MD5");}
+		catch(NoSuchAlgorithmException e) {throw new RuntimeException("Should never happen - MD5 not found.");}
 	        // create cache table if it does not exist
 		Statement stmt = conn.createStatement();
 		stmt.execute("CREATE TABLE IF NOT EXISTS QUERY_CACHE(QUERYHASH BINARY PRIMARY KEY,QUERY VARCHAR(20000), TRIPLES CLOB, STORE_TIME TIMESTAMP)");		
