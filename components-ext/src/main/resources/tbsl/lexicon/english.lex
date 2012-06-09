@@ -140,7 +140,7 @@
 
 	and || (S S* CC:'and' S[s]) || <x,l1,t,[l1:[|]],[(l2,y,s,t)],[l1=l2],[]>
 	and || (DP DP* CC:'and' DP[dp]) || <x,l1,<<e,t>,t>,[l1:[|]],[(l2,y,dp,<<e,t>,t>)],[l1=l2],[]>
-	and || (NP NP* CC:'and' NP[np]) || <x,l1,<e,t>,[l1:[|]],[(l2,y,np,<e,t>)],[l1=l2],[]>
+	and || (NP NP* CC:'and' NP[np]) || <x,l1,<e,t>,[l1:[|x=y]],[(l2,y,np,<e,t>)],[l1=l2],[]>
 	and || (VP VP* CC:'and' VP[vp]) || -
 	and || (ADJ ADJ* CC:'and' ADJ[adj]) || -
 	
