@@ -2,7 +2,7 @@
 // PREPOSITIONS
 
   close to  || (NP NP* (PP P:'close' P:'to' DP[dp])) || <x,l1,<e,t>, [ l1:[ | SLOT_closeto(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_closeto/OBJECTPROPERTY/near ]>
-  in        || (NP NP* (PP P:'in' DP[dp]))           || <x,l1,<e,t>, [ l1:[ | SLOT_location(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_location/PROPERTY/location ]>
+  in        || (NP NP* (PP P:'in' DP[dp]))           || <x,l1,<e,t>, [ l1:[ | SLOT_location(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_location/PROPERTY/location^city^postal_code ]>
   since     || (NP NP* (PP P:'since' DP[dp]))        || <x,l1,<e,t>, [ l1:[ | SLOT_since(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_since/PROPERTY/since ]>
   
   for . pounds || (NP NP* (PP P:'for' (NP NUM[num] N:'pounds'))) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y) ] ], [ (l2,y,num,e) ], [ l2=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
@@ -12,8 +12,8 @@
 
   with || (NP NP* (PP P:'with' DP[dp])) || <x,l1,<e,t>, [ l1:[ | empty(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
   with || (NP NP* (PP P:'with' NUM[num] DP[dp])) || <x,l1,<e,t>, [ l1:[ | empty(x,y), count(y,z) ] ], [ (l2,y,dp,<<e,t>,t>),(l3,z,num,e) ], [ l2=l1,l3=l1 ],[ SLOT_arg/RESOURCE/y ]>
-  with || (NP NP* (PP P:'with' NUM[num] DP[dp])) || <x,l1,<e,t>, [ l1:[ | empty(x,y), equals(y,z) ] ], [ (l2,y,dp,<<e,t>,t>),(l3,z,num,e) ], [ l2=l1,l3=l1 ],[ SLOT_arg/LITERAL/y ]>
-
+  with || (NP NP* (PP P:'with' NUM[num] DP[dp])) || <x,l1,<e,t>, [ l1:[ | empty(x,y), equal(y,z) ] ], [ (l2,y,dp,<<e,t>,t>),(l3,z,num,e) ], [ l2=l1,l3=l1 ],[ SLOT_arg/LITERAL/y ]>
+  square meters || (DP N:'square' N:'meters') || <x,l1,<<e,t>,t>>, [l1:[ | SLOT_size(x,y) ]], [],[],[SLOT_size/DATATYPEPROPERTY/size ]>
 
 // MONTHS 
 
