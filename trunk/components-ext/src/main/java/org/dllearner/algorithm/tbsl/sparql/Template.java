@@ -56,9 +56,21 @@ public class Template implements Serializable, Comparable<Template>{
                     }
                     for (String arg : args) {
                         for (Slot s : argslots) {
-                            if (s.anchor.equals("SLOT_arg") && s.words.contains(arg.replace("?",""))) {
+                            if (s.words.contains(arg.replace("?",""))) {
                                 if (s.type.equals(SlotType.LITERAL)) slot.type = SlotType.DATATYPEPROPERTY;
                                 else if (s.type.equals(SlotType.RESOURCE)) slot.type = SlotType.OBJECTPROPERTY;
+                            }
+                        }
+                        if (slot.type.equals(SlotType.PROPERTY) || slot.type.equals(SlotType.SYMPROPERTY)) { // still
+                            Set<String> values = new HashSet<String>();
+                            for (SPARQL_Triple triple : query.conditions) {
+                                if (triple.property.toString().equals("?"+slot.anchor)) values.add(triple.value.toString());
+                            }
+                            for (SPARQL_Triple triple : query.conditions) {
+                                for (String val : values) {
+                                if (triple.variable.toString().equals(val) && triple.property.toString().equals("rdf:type"))
+                                    slot.type = SlotType.OBJECTPROPERTY;
+                                }
                             }
                         }
                     }
