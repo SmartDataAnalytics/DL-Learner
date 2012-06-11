@@ -11,7 +11,7 @@ import org.dllearner.algorithm.tbsl.templator.TemplatorHandler;
 
 public class TestFrontend {
 
-    static String[] GRAMMAR_FILES = {"src/main/resources/lexicon/english.lex"};
+    static String[] GRAMMAR_FILES = {"tbsl/lexicon/english.lex","tbsl/lexicon/english_oxford.lex"};
     static boolean BASIC_MODE = false; // true for BASIC mode, false for LEIPZIG mode
     
     public static void main(String[] args) {

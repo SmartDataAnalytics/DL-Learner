@@ -299,15 +299,15 @@ public class SlotBuilder {
 					result.add(wasGerEntry);
 				}
 				else if (pos.equals("WHEN")) {
-					String dateSlot = "SLOT_" + token + "/PROPERTY/" + token +"^" + token + "_date";
-					String tokenSlot = "SLOT_" + token + "/PROPERTY/" + token;
+					String dateSlot = "SLOT_" + token + "/DATATYPEPROPERTY/" + token +"^" + token + "_date";
+					String tokenSlot = "SLOT_" + token + "/DATATYPEPROPERTY/" + token;
 					String[] whenEntry1 = {token,
 							"(S DP[subj] (VP V:'" + token + "'))",
 							"<x,l1,t,[ l1:[ ?y | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>)],[ l2=l1 ],[ " + dateSlot + " ]>"};
 					String[] whenEntry2 = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
 							"<x,l1,t,[ l1:[|], l4:[ ?z | SLOT_" + token + "(x,y), SLOT_date(x,z) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ]," +
-									"[" + tokenSlot + ", SLOT_date/PROPERTY/date ]>"};
+									"[" + tokenSlot + ", SLOT_date/DATATYPEPROPERTY/date ]>"};
 					result.add(whenEntry1);
 					result.add(whenEntry2);
 				}

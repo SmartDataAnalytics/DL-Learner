@@ -33,7 +33,7 @@ public class Templator {
 	
 	private static final Logger logger = Logger.getLogger(Templator.class);
 	
-	String[] GRAMMAR_FILES = {"tbsl/lexicon/english.lex"};
+	String[] GRAMMAR_FILES = {"tbsl/lexicon/english.lex","tbsl/lexicon/english_oxford.lex"};
 	
 	private String[] noun = {"NN","NNS","NNP","NNPS","NPREP","JJNN","JJNPREP"};
 	private String[] adjective = {"JJ","JJR","JJS","JJH"};
@@ -67,15 +67,15 @@ public class Templator {
 	}
 	
 	public Templator(final PartOfSpeechTagger tagger, WordNet wordnet) {
-		this.tagger = tagger;
-		this.wordnet = wordnet;
+            this.tagger = tagger;
+            this.wordnet = wordnet;
+	
+            List<InputStream> grammarFiles = new ArrayList<InputStream>();
+            for(int i = 0; i < GRAMMAR_FILES.length; i++){
+		grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
+            }
 		
-		List<InputStream> grammarFiles = new ArrayList<InputStream>();
-		for(int i = 0; i < GRAMMAR_FILES.length; i++){
-			grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
-		}
-		
-        g = LTAG_Constructor.construct(grammarFiles);
+            g = LTAG_Constructor.construct(grammarFiles);
 		
 	    p = new Parser();
 	    p.SHOW_GRAMMAR = true;
@@ -87,16 +87,16 @@ public class Templator {
 	}
 	
 	public Templator(boolean b) {
-		this.tagger = new StanfordPartOfSpeechTagger();
-		this.USE_WORDNET = false;
-		VERBOSE = b;
+            this.tagger = new StanfordPartOfSpeechTagger();
+            this.USE_WORDNET = false;
+            VERBOSE = b;
 		
-		List<InputStream> grammarFiles = new ArrayList<InputStream>();
-		for(int i = 0; i < GRAMMAR_FILES.length; i++){
-			grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
-		}
+            List<InputStream> grammarFiles = new ArrayList<InputStream>();
+            for(int i = 0; i < GRAMMAR_FILES.length; i++){
+            	grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
+            }
 		
-        g = LTAG_Constructor.construct(grammarFiles);
+            g = LTAG_Constructor.construct(grammarFiles);
 		
 	    p = new Parser();
 	    p.SHOW_GRAMMAR = false;
@@ -119,7 +119,12 @@ public class Templator {
 		VERBOSE = b;
 	}
 	public void setGrammarFiles(String[] gf) {
-		GRAMMAR_FILES = gf;
+            GRAMMAR_FILES = gf;
+            List<InputStream> grammarFiles = new ArrayList<InputStream>();
+            for(int i = 0; i < GRAMMAR_FILES.length; i++){
+                grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
+            }	
+            g = LTAG_Constructor.construct(grammarFiles);
 	}
 
 	public Set<Template> buildTemplates(String s) {
@@ -196,6 +201,7 @@ public class Templator {
                 		
                 		try {
                 			Template temp = d2s.convert(drs,slots);
+                                        temp = temp.checkandrefine();
                 			if (temp == null) {
                 				continue;
                 			}

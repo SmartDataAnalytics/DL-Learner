@@ -1,11 +1,11 @@
 package org.dllearner.algorithm.tbsl.sem.dudes.data;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dllearner.algorithm.tbsl.sem.drs.DRS;
+import org.dllearner.algorithm.tbsl.sem.drs.DiscourseReferent;
 import org.dllearner.algorithm.tbsl.sem.drs.Simple_DRS_Condition;
 import org.dllearner.algorithm.tbsl.sem.util.DomType;
 import org.dllearner.algorithm.tbsl.sem.util.DominanceConstraint;
@@ -14,6 +14,7 @@ import org.dllearner.algorithm.tbsl.sem.util.SemanticRepresentation;
 import org.dllearner.algorithm.tbsl.sem.util.Type;
 import org.dllearner.algorithm.tbsl.sparql.BasicSlot;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
+import org.dllearner.algorithm.tbsl.sparql.SlotType;
 
 public class Dude implements SemanticRepresentation{
 
@@ -156,9 +157,9 @@ public class Dude implements SemanticRepresentation{
 		output.components.addAll(input.components); 		
 		output.dominanceConstraints.addAll(input.dominanceConstraints); 
 		output.arguments.remove(argument);
-		output.arguments.addAll(dude.arguments); 
-		output.slots.addAll(input.slots);
-	
+		output.arguments.addAll(dude.arguments);
+                output.slots.addAll(input.slots);
+
 		return output;
 	}
 	
@@ -177,7 +178,7 @@ public class Dude implements SemanticRepresentation{
 		output.components.addAll(input.components); 
 		output.dominanceConstraints.addAll(input.dominanceConstraints);
 		output.arguments.addAll(input.arguments); 
-		output.slots.addAll(input.slots);
+                output.slots.addAll(input.slots);
 
 		// finally add a constraint to link the main input-component to the bottom output-component (with DomType.equal)
 		DominanceConstraint newConstraint = new DominanceConstraint(getBottomLabel(output),input.mainLabel);
@@ -359,6 +360,9 @@ public class Dude implements SemanticRepresentation{
 		}
 		for (Slot slot : slots) {
 			slot.replaceReferent(ref1.replace("?",""),ref2.replace("?",""));
+                        String minus = null;
+                        for (String w : slot.getWords()) if (w.equals(ref1.replace("?",""))) minus = w;
+                        if (minus != null) { slot.getWords().remove(minus); slot.getWords().add(ref2.replace("?","")); }
 		}
 	}
 	

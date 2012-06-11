@@ -131,12 +131,18 @@ class GrammarFilter {
 					 */
 
 					try {
-						TreeNode tree = c.construct("NUM:'" + token + "'");
+						TreeNode tree  = c.construct("NUM:'" + token + "'");
+                                                TreeNode tree2 = c.construct("(NP NUM:'" + token + "' NP*)");
 
 						int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(token,tree), 
-								Collections.singletonList("<x,l1,e,[l1:[ x | equal(x," + token + ")]],[],[],[]>"));
+								Collections.singletonList("<x,l1,e,[l1:[ x | equal(x," + token + ")]],[],[],[ SLOT_arg/LITERAL/x ]>"));
 						add(parseG, tree, gid-1, localID);
 						localID++;
+                                                
+//                                                int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(token,tree2), 
+//								Collections.singletonList("<x,l1,<e,t>,[l1:[ | count(x," + token + ")]],[],[],[ SLOT_arg/RESOURCE/x ]>"));
+//						add(parseG, tree2, gid-1, localID);
+//						localID++;
 						
 						foundCandidates = true;
 						coveredTokens.add(token);
