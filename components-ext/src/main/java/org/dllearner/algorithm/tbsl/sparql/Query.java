@@ -155,16 +155,22 @@ public class Query implements Serializable {
 		if (qt == SPARQL_QueryType.SELECT)
 		{
 			retVal += "\nSELECT ";
-
-			String lastSelectTerm = null;
+                        
+                        boolean group = false;
 			for (SPARQL_Term term : selTerms)
 			{
 				retVal += term.toString() + " ";
 				if(selTerms.size() > 1 && term.toString().contains("COUNT")){
-					groupBy = lastSelectTerm;
+                                    group = true;
 				}
-				lastSelectTerm = term.toString();
 			}
+                        if (group) {
+                            groupBy = "";
+                            for (SPARQL_Term t : selTerms) {
+                                if (!t.toString().contains("COUNT"))
+                                    groupBy += t.toString() + " ";                                    
+                                }
+                        }
 		}
 		else retVal += "\nASK ";
 
@@ -185,7 +191,7 @@ public class Query implements Serializable {
 		retVal += "}\n";
 		
 		if(groupBy != null){
-			retVal += "GROUP BY (" + groupBy + ")\n";
+			retVal += "GROUP BY " + groupBy + "\n";
 		}
 
 		if (orderBy != null && !orderBy.isEmpty())
