@@ -451,8 +451,11 @@ Slot Slot() :
      }
 	 if (type.toString().equals("CLASS")) { slottype = SlotType.CLASS; }
 	 else if (type.toString().equals("RESOURCE")) { slottype = SlotType.RESOURCE; }
+         else if (type.toString().equals("DATATYPEPROPERTY")) { slottype = SlotType.DATATYPEPROPERTY; }
+         else if (type.toString().equals("OBJECTPROPERTY")) { slottype = SlotType.OBJECTPROPERTY; }
 	 else if (type.toString().equals("PROPERTY")) { slottype = SlotType.PROPERTY; }
 	 else if (type.toString().equals("SYMPROPERTY")) { slottype = SlotType.SYMPROPERTY; }
+         else if (type.toString().equals("LITERAL")) { slottype = SlotType.LITERAL; }
 	 else { slottype = SlotType.UNSPEC; }
 	   
      return new Slot(ref.toString(),slottype,words);

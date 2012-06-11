@@ -76,7 +76,7 @@ public class DRS2SPARQL_Converter {
         }
         
         template = new Template(new Query());
- //       slots = ls;
+        slots = ls;
         
         Query q = convert(drs, new Query(), false);
         if (q == null) {
@@ -126,6 +126,8 @@ public class DRS2SPARQL_Converter {
         		}
         	}
         }
+        
+        for (Slot s : slots) if (s.getAnchor().equals("SLOT_arg")) template.addSlot(s);
         
         Set<SPARQL_Triple> statements = new HashSet<SPARQL_Triple>();
 
@@ -242,7 +244,7 @@ public class DRS2SPARQL_Converter {
             	}
             }
             SPARQL_Property prop = new SPARQL_Property(predicate);
-            prop.setIsVariable(true);
+            if (!predicate.contains(":")) prop.setIsVariable(true);
             
             boolean literal = false; 
             if (simple.getArguments().size() > 1 && simple.getArguments().get(1).getValue().matches("\\d+")) {

@@ -75,8 +75,8 @@
 	
 	least || (ADJ DET:'least' ADJ*) || <x,l1,<e,t>,[ l1:[ | minimum(a,x,x) ] ], [],[],[]>
 	
-  	how many || (DET DET:'how' DET:'many') || <x,l1,e, [ l1:[ ?x | ] ], [],[],[]>
-  	how many || (DET DET:'how' DET:'many') || <x,l1,e, [ l1:[ ?c,x | count(a,x,c) ] ], [],[],[]>
+  	how many || (DET DET:'how' DET:'many') || <x,l1,e, [ l1:[ ?x | ] ], [],[],[ SLOT_arg/DATATYPEPROPERTY/x ]>
+  	how many || (DET DET:'how' DET:'many') || <x,l1,e, [ l1:[ ?c,x | count(a,x,c) ] ], [],[],[ SLOT_arg/OBJECTPROPERTY_CLASS/x ]>
 	a  || (DET DET:'a') || <x,l1,e, [ l1:[ x |] ], [],[],[]>
 	an || (DET DET:'an') || <x,l1,e, [ l1:[ x |] ], [],[],[]>
 	which || (DET DET:'which') || <x,l1,e, [ l1:[ ?x |] ], [],[],[]>
@@ -85,11 +85,11 @@
 	the least || (DET DET:'the' DET:'least') || <y, l1, e, [ l1:[ | l2:[ y | ] THELEAST y l3:[|] ] ], [], [],[]>
 
     // NECESSARY "CHEAT"
-	highest || (NP ADJ:'highest' NP*) || <x, l1, e, [ l1:[ | maximum(x) ] ], [], [],[]> ;; <x, l1, e, [ l1:[ j | SLOT_high(x,j), maximum(j) ] ],[],[],[ SLOT_high/PROPERTY/height ]>
+	highest || (NP ADJ:'highest' NP*) || <x, l1, e, [ l1:[ | maximum(x) ] ], [], [],[]> ;; <x, l1, e, [ l1:[ j | SLOT_high(x,j), maximum(j) ] ],[],[],[ SLOT_high/DATATYPEPROPERTY/height ]>
 
 	// COUNT
-	more than || (DP DET:'more' DET:'than' NUM[num] NP[np]) || <y,l1,<<e,t>,t>,[ l1:[ y,c | count(y,c), greater(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]> ;; <y,l1,<<e,t>,t>,[ l1:[ y | greater(y,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
-	less than || (DP DET:'less' DET:'than' NUM[num] NP[np]) || <y,l1,<<e,t>,t>,[ l1:[ y,c | count(y,c), less(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]> ;; <y,l1,<<e,t>,t>,[ l1:[ y | less(y,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
+	more than || (DP DET:'more' DET:'than' NUM[num] NP[np]) || <y,l1,<<e,t>,t>,[ l1:[ y,c | count(y,c), greater(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[ SLOT_arg/RESOURCE/y ]> ;; <y,l1,<<e,t>,t>,[ l1:[ y | greater(y,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[ SLOT_arg/LITERAL/y ]>
+	less than || (DP DET:'less' DET:'than' NUM[num] NP[np]) || <y,l1,<<e,t>,t>,[ l1:[ y,c | count(y,c), less(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[ SLOT_arg/RESOURCE/y ]> ;; <y,l1,<<e,t>,t>,[ l1:[ y | less(y,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[ SLOT_arg/LITERAL/y ]>
 
 	// HOW
 	// how || (DP DET:'how' ADJ[adj]) || <x,l1,<<e,t>,t>,[ l1:[?x,|] ],[ (x,l2,adj,<e,t>) ],[l2=l1],[]>
@@ -115,7 +115,7 @@
 
 	what     || (DP WH:'what')      || <x, l1, <<e,t>,t>, [ l1:[ ?x | ] ], [], [], []>
 	which    || (DP WH:'which')     || <x, l1, <<e,t>,t>, [ l1:[ ?x | ] ], [], [], []>
-	how many || (DP WH:'how' ADJ:'many' NP[noun]) || <y, l1, <<e,t>,t>, [ l1:[ | l2:[ y | ] HOWMANY y l3:[|] ] ], [ (l4,y,noun,<e,t>) ], [ l4=l2 ],[]>
+	how many || (DP WH:'how' ADJ:'many' NP[noun]) || <y, l1, <<e,t>,t>, [ l1:[ | l2:[ y | ] HOWMANY y l3:[|] ] ], [ (l4,y,noun,<e,t>) ], [ l4=l2 ],[  SLOT_arg/RESOURCE/y ]>
 	who      || (DP WH:'who')       || <x, l1, <<e,t>,t>, [ l1:[ ?x | ] ], [], [], []>	
 	whom     || (DP WH:'whom')      || <x, l1, <<e,t>,t>, [ l1:[ ?x | ] ], [], [], []>
 	when     || (S WH:'when' S[s])  || <x, l1, t, [ l1:[ ?x | SLOT_p(y,x) ] ], [(l2,y,s,t)], [l2=l1], [ SLOT_p/PROPERTY/date ]> 
@@ -162,24 +162,25 @@
 // NUMBERS (1-10)
 // ---------------------
 	
-	one   || (NP NUM:'one' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,1)]],[],[],[]>
-	two   || (NP NUM:'two' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,2)]],[],[],[]>
-	three || (NP NUM:'three' NP*) || <x,l1,<e,t>,[l1:[x|count(x,3)]],[],[],[]>
-	four  || (NP NUM:'four' NP*)  || <x,l1,<e,t>,[l1:[x|count(x,4)]],[],[],[]>
-	five  || (NP NUM:'five' NP*)  || <x,l1,<e,t>,[l1:[x|count(x,5)]],[],[],[]>
-	six   || (NP NUM:'six' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,6)]],[],[],[]>
-	seven || (NP NUM:'seven' NP*) || <x,l1,<e,t>,[l1:[x|count(x,7)]],[],[],[]>
-	eight || (NP NUM:'eight' NP*) || <x,l1,<e,t>,[l1:[x|count(x,8)]],[],[],[]>
-	nine  || (NP NUM:'nine' NP*)  || <x,l1,<e,t>,[l1:[x|count(x,9)]],[],[],[]>
-	ten   || (NP NUM:'ten' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,10)]],[],[],[]>
+	one   || (NP NUM:'one' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,1)]],[],[],[ SLOT_arg/RESOURCE/x ]>
+	two   || (NP NUM:'two' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,2)]],[],[],[ SLOT_arg/RESOURCE/x ]>
+	three || (NP NUM:'three' NP*) || <x,l1,<e,t>,[l1:[x|count(x,3)]],[],[],[ SLOT_arg/RESOURCE/x ]>
+	four  || (NP NUM:'four' NP*)  || <x,l1,<e,t>,[l1:[x|count(x,4)]],[],[],[ SLOT_arg/RESOURCE/x ]>
+	five  || (NP NUM:'five' NP*)  || <x,l1,<e,t>,[l1:[x|count(x,5)]],[],[],[ SLOT_arg/RESOURCE/x ]>
+	six   || (NP NUM:'six' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,6)]],[],[],[ SLOT_arg/RESOURCE/x ]>
+	seven || (NP NUM:'seven' NP*) || <x,l1,<e,t>,[l1:[x|count(x,7)]],[],[],[ SLOT_arg/RESOURCE/x ]>
+	eight || (NP NUM:'eight' NP*) || <x,l1,<e,t>,[l1:[x|count(x,8)]],[],[],[ SLOT_arg/RESOURCE/x ]>
+	nine  || (NP NUM:'nine' NP*)  || <x,l1,<e,t>,[l1:[x|count(x,9)]],[],[],[ SLOT_arg/RESOURCE/x ]>
+	ten   || (NP NUM:'ten' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,10)]],[],[],[ SLOT_arg/RESOURCE/x ]>
 	
-	one   || (NUM NUM:'one')   || <x,l1,e,[l1:[x|equal(x,1)]],[],[],[]>
-	two   || (NUM NUM:'two')   || <x,l1,e,[l1:[x|equal(x,2)]],[],[],[]>
-	three || (NUM NUM:'three') || <x,l1,e,[l1:[x|equal(x,3)]],[],[],[]>
-	four  || (NUM NUM:'four')  || <x,l1,e,[l1:[x|equal(x,4)]],[],[],[]>
-	five  || (NUM NUM:'five')  || <x,l1,e,[l1:[x|equal(x,5)]],[],[],[]>
-	six   || (NUM NUM:'six')   || <x,l1,e,[l1:[x|equal(x,6)]],[],[],[]>
-	seven || (NUM NUM:'seven') || <x,l1,e,[l1:[x|equal(x,7)]],[],[],[]>
-	eight || (NUM NUM:'eight') || <x,l1,e,[l1:[x|equal(x,8)]],[],[],[]>
-	nine  || (NUM NUM:'nine')  || <x,l1,e,[l1:[x|equal(x,9)]],[],[],[]>
-	ten   || (NUM NUM:'ten')   || <x,l1,e,[l1:[x|equal(x,10)]],[],[],[]>
+	one   || (NUM NUM:'one')   || <x,l1,e,[l1:[x|equal(x,1)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	two   || (NUM NUM:'two')   || <x,l1,e,[l1:[x|equal(x,2)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	three || (NUM NUM:'three') || <x,l1,e,[l1:[x|equal(x,3)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	four  || (NUM NUM:'four')  || <x,l1,e,[l1:[x|equal(x,4)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	five  || (NUM NUM:'five')  || <x,l1,e,[l1:[x|equal(x,5)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	six   || (NUM NUM:'six')   || <x,l1,e,[l1:[x|equal(x,6)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	seven || (NUM NUM:'seven') || <x,l1,e,[l1:[x|equal(x,7)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	eight || (NUM NUM:'eight') || <x,l1,e,[l1:[x|equal(x,8)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	nine  || (NUM NUM:'nine')  || <x,l1,e,[l1:[x|equal(x,9)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	ten   || (NUM NUM:'ten')   || <x,l1,e,[l1:[x|equal(x,10)]],[],[],[ SLOT_arg/LITERAL/x ]>
+

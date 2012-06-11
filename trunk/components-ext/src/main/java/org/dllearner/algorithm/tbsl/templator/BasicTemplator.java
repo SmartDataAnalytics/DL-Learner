@@ -39,15 +39,16 @@ public class BasicTemplator {
 	public boolean UNTAGGED_INPUT = true;
 	
 	public BasicTemplator() {
-		List<InputStream> grammarFiles = new ArrayList<InputStream>();
-		for(int i = 0; i < GRAMMAR_FILES.length; i++){
-			grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
-		}
+	
+            List<InputStream> grammarFiles = new ArrayList<InputStream>();
+            for(int i = 0; i < GRAMMAR_FILES.length; i++){
+                grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
+            }
 		
-        g = LTAG_Constructor.construct(grammarFiles);
+            g = LTAG_Constructor.construct(grammarFiles);
         
-        tagger = new StanfordPartOfSpeechTagger();
-//      tagger = new ApachePartOfSpeechTagger();
+            tagger = new StanfordPartOfSpeechTagger();
+//          tagger = new ApachePartOfSpeechTagger();
 		
 	    p = new Parser();
 	    p.SHOW_GRAMMAR = true;
@@ -61,6 +62,14 @@ public class BasicTemplator {
 	    d2s = new DRS2BasicSPARQL_Converter();
 	}
 	
+        public void setGrammarFiles(String[] files) {
+            GRAMMAR_FILES = files;
+            List<InputStream> grammarFiles = new ArrayList<InputStream>();
+            for(int i = 0; i < GRAMMAR_FILES.length; i++){
+                grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
+            }
+        }
+        
 	public void setUNTAGGED_INPUT(boolean b) {
 		UNTAGGED_INPUT = b;
 	}

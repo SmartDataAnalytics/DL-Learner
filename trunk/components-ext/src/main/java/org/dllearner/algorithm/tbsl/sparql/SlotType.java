@@ -1,5 +1,6 @@
 package org.dllearner.algorithm.tbsl.sparql;
 
 public enum SlotType {
-	CLASS, PROPERTY, SYMPROPERTY, RESOURCE, LITERAL, UNSPEC
+	RESOURCE, CLASS, OBJECTPROPERTY, DATATYPEPROPERTY, PROPERTY, LITERAL, UNSPEC,
+        SYMPROPERTY // TODO don't use them anymore
 }
