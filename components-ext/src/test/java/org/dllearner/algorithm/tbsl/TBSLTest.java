@@ -41,18 +41,6 @@ public class TBSLTest extends TestCase{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		System.out.println(model.size());
-		String queryStr = "PREFIX owl:<http://www.w3.org/2002/07/owl#> SELECT DISTINCT ?uri WHERE {" +
-//				"?s ?uri ?o." +
-				"{?uri a owl:DatatypeProperty.} UNION {?uri a owl:ObjectProperty.}" + 
-				"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label." +
-				"FILTER(REGEX(STR(?label), 'bathroom', 'i'))" +
-				"}" +
-				"LIMIT 20 OFFSET 0";
-		System.out.println(
-				ResultSetFormatter.asText(
-						QueryExecutionFactory.create(
-								QueryFactory.create(queryStr, Syntax.syntaxARQ), model).execSelect()));
 	}
 	
 	@Test
@@ -100,11 +88,12 @@ public class TBSLTest extends TestCase{
 		Index resourcesIndex = new SPARQLIndex(endpoint);
 		Index classesIndex = new SPARQLClassesIndex(endpoint);
 		Index propertiesIndex = new SPARQLPropertiesIndex(endpoint);
+		System.out.println(propertiesIndex.getResources("near"));
 		
 		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
 		learner.init();
 		
-		String question = "Give me all houses with more than 2 bedrooms and more than 3 bathrooms.";
+		String question = "Give me all houses near a school.";
 		
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();
