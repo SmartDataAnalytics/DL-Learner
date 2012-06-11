@@ -20,6 +20,7 @@ import org.junit.Test;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -27,18 +28,31 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class TBSLTest extends TestCase{
 	
 	private Model model;
+	private SparqlEndpoint endpoint;
 	
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		
+		endpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
 		model = ModelFactory.createOntologyModel();
 		try {
 			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/ontology.ttl")), null, "TURTLE");
-			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/finders.ttl")), "http://diadem.cs.ox.ac.uk/ontologies/real-estate#", "TURTLE");
+			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/data/wwagency-letting-triple.ttl")), "http://diadem.cs.ox.ac.uk/ontologies/real-estate#", "TURTLE");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		System.out.println(model.size());
+		String queryStr = "PREFIX owl:<http://www.w3.org/2002/07/owl#> SELECT DISTINCT ?uri WHERE {" +
+//				"?s ?uri ?o." +
+				"{?uri a owl:DatatypeProperty.} UNION {?uri a owl:ObjectProperty.}" + 
+				"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label." +
+				"FILTER(REGEX(STR(?label), 'bathroom', 'i'))" +
+				"}" +
+				"LIMIT 20 OFFSET 0";
+		System.out.println(
+				ResultSetFormatter.asText(
+						QueryExecutionFactory.create(
+								QueryFactory.create(queryStr, Syntax.syntaxARQ), model).execSelect()));
 	}
 	
 	@Test
@@ -62,7 +76,7 @@ public class TBSLTest extends TestCase{
 	}
 	
 	@Test
-	public void testOxford() throws Exception{
+	public void testOxfordLocal() throws Exception{
 		
 		Index resourcesIndex = new SPARQLIndex(model);
 		Index classesIndex = new SPARQLClassesIndex(model);
@@ -71,7 +85,26 @@ public class TBSLTest extends TestCase{
 		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(model, resourcesIndex, classesIndex, propertiesIndex);
 		learner.init();
 		
-		String question = "Give me all flats where pets are allowed";
+		String question = "Give me all houses with more than 2 bedrooms.";
+		
+		learner.setQuestion(question);
+		learner.learnSPARQLQueries();
+		System.out.println("Learned query:\n" + learner.getBestSPARQLQuery());
+		System.out.println("Lexical answer type is: " + learner.getTemplates().iterator().next().getLexicalAnswerType());
+		System.out.println(learner.getLearnedPosition());
+	}
+	
+	@Test
+	public void testOxfordRemote() throws Exception{
+		
+		Index resourcesIndex = new SPARQLIndex(endpoint);
+		Index classesIndex = new SPARQLClassesIndex(endpoint);
+		Index propertiesIndex = new SPARQLPropertiesIndex(endpoint);
+		
+		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
+		learner.init();
+		
+		String question = "Give me all houses with more than 2 bedrooms and more than 3 bathrooms.";
 		
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();
@@ -84,6 +117,7 @@ public class TBSLTest extends TestCase{
 	public void testSPARQLIndex(){
 		Index classesIndex = new SPARQLClassesIndex(model);
 		System.out.println(classesIndex.getResources("flat"));
+		
 		
 	}
 	
