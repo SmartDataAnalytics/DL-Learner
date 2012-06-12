@@ -35,9 +35,19 @@ public class TBSLTest extends TestCase{
 		super.setUp();
 		endpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
 		model = ModelFactory.createOntologyModel();
+		File dir = new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/data");
 		try {
+			for(File f : dir.listFiles()){
+				if(f.isFile()){
+					System.out.println("Loading file " + f.getName());
+					try {
+						model.read(new FileInputStream(f), null, "TURTLE");
+					} catch (Exception e) {
+						System.err.println("Parsing failed.");
+					}
+				}
+			}
 			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/ontology.ttl")), null, "TURTLE");
-			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/data/wwagency-letting-triple.ttl")), "http://diadem.cs.ox.ac.uk/ontologies/real-estate#", "TURTLE");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -88,12 +98,12 @@ public class TBSLTest extends TestCase{
 		Index resourcesIndex = new SPARQLIndex(endpoint);
 		Index classesIndex = new SPARQLClassesIndex(endpoint);
 		Index propertiesIndex = new SPARQLPropertiesIndex(endpoint);
-		System.out.println(propertiesIndex.getResources("near"));
 		
 		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
 		learner.init();
 		
 		String question = "Give me all houses near a school.";
+		question = "Give me all houses with more than 3 bathrooms and more than 2 bedrooms.";
 		
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();
