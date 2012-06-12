@@ -427,7 +427,7 @@ public class DRS2SPARQL_Converter {
                     			sc.setArguments(newargs);
                     			success = true;
                     			globalsuccess = true;
-                    			break loop;
+//                    			break loop;
         					}
         				}	
         			}
