@@ -47,6 +47,14 @@ public class SPARQLIndex implements Index{
 		this.model = model;
 	}
 	
+	public SPARQLIndex(SPARQLIndex index) {
+		if(index.getModel() != null){
+			this.model = index.getModel();
+		} else {
+			this.endpoint = index.getEndpoint();
+		}
+	}
+	
 	public SPARQLIndex(SparqlEndpoint endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
 		this.cache = cache;
@@ -115,7 +123,7 @@ public class SPARQLIndex implements Index{
 		return irs;
 	}
 	
-	private ResultSet executeSelect(String query){System.out.println(query);
+	private ResultSet executeSelect(String query){//System.out.println(query);
 		ResultSet rs;
 		if(model == null){
 			if(cache == null){
@@ -129,6 +137,14 @@ public class SPARQLIndex implements Index{
 			rs = QueryExecutionFactory.create(QueryFactory.create(query, Syntax.syntaxARQ), model).execSelect();
 		}
 		return rs;
+	}
+	
+	public SparqlEndpoint getEndpoint() {
+		return endpoint;
+	}
+	
+	public Model getModel() {
+		return model;
 	}
 	
 }
