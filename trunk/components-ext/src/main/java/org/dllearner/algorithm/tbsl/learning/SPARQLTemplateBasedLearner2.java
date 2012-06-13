@@ -31,7 +31,12 @@ import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.sparql.Allocation;
 import org.dllearner.algorithm.tbsl.sparql.Query;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Filter;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Pair;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_PairType;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_QueryType;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Term;
+import org.dllearner.algorithm.tbsl.sparql.SPARQL_Triple;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
@@ -452,6 +457,11 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				}
 			}
 			for(Slot slot : t.getSlots()){
+				if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.OBJECTPROPERTY || slot.getSlotType() == SlotType.DATATYPEPROPERTY){
+					sortedSlots.add(slot);
+				}
+			}
+			for(Slot slot : t.getSlots()){
 				if(!sortedSlots.contains(slot)){
 					sortedSlots.add(slot);
 				}
@@ -566,6 +576,22 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 					queries.clear();
 					queries.addAll(tmp);//System.out.println(tmp);
 					tmp.clear();
+				} else {//Add REGEX FILTER if resource slot is empty and predicate is datatype property
+					if(slot.getSlotType() == SlotType.RESOURCE){
+						for(WeightedQuery query : queries){
+							Query q = query.getQuery();
+							for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
+								String objectVar = triple.getValue().getName();
+								q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
+										new SPARQL_Term(objectVar), "'" + slot.getWords().get(0) + "'", SPARQL_PairType.REGEX)));
+								
+							}
+							
+						}
+						
+					}
+					
+					
 				}
 				
 			}
