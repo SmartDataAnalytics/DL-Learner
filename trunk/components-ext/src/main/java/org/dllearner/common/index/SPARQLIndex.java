@@ -60,6 +60,10 @@ public class SPARQLIndex implements Index{
 		this.cache = cache;
 	}
 	
+	public void setCache(ExtractionDBCache cache) {
+		this.cache = cache;
+	}
+	
 	@Override
 	public List<String> getResources(String searchTerm) {
 		return getResources(searchTerm, DEFAULT_LIMIT);

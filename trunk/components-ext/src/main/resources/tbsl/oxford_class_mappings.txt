@@ -1,0 +1,1 @@
+http://diadem.cs.ox.ac.uk/ontologies/real-estate#House|house, houses, flat, flats, appartement, appartements

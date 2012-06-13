@@ -41,6 +41,7 @@ import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.IndexResultItem;
 import org.dllearner.common.index.IndexResultSet;
+import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SOLRIndex;
 import org.dllearner.common.index.SPARQLDatatypePropertiesIndex;
 import org.dllearner.common.index.SPARQLObjectPropertiesIndex;
@@ -95,6 +96,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	
 	private Index datatypePropertiesIndex;
 	private Index objectPropertiesIndex;
+	
+	private MappingBasedIndex mappingIndex;
 	
 	private Templator templateGenerator;
 	private Lemmatizer lemmatizer;
@@ -190,6 +193,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	public void init() throws ComponentInitException {
 		 templateGenerator = new Templator(posTagger, wordNet);
 		 lemmatizer = new LingPipeLemmatizer();
+	}
+	
+	public void setMappingIndex(MappingBasedIndex mappingIndex) {
+		this.mappingIndex = mappingIndex;
 	}
 	
 	/*
@@ -369,6 +376,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				}
 			}
 		});
+		slot2Allocations = Collections.synchronizedMap(new HashMap<Slot, Set<Allocation>>());
 		
 		
 		Set<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
@@ -385,11 +393,13 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			long startTime = System.currentTimeMillis();
 			
 			for (Slot slot : t.getSlots()) {
-				if(!slot2Allocations.containsKey(slot)){
+				if(!slot2Allocations.containsKey(slot)){//System.out.println(slot + ": " + slot.hashCode());System.out.println(slot2Allocations);
 					Callable<Map<Slot, SortedSet<Allocation>>> worker = new SlotProcessor(slot);
 					Future<Map<Slot, SortedSet<Allocation>>> submit = executor.submit(worker);
 					list.add(submit);
-				} 
+				} else {
+					System.out.println("CACHE HIT");
+				}
 			}
 			
 			for (Future<Map<Slot, SortedSet<Allocation>>> future : list) {
@@ -840,27 +850,42 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			
 			IndexResultSet rs;
 			for(String word : slot.getWords()){
+				rs = new IndexResultSet();
+				if(mappingIndex != null){
+					SlotType type = slot.getSlotType();
+					if(type == SlotType.CLASS){
+						rs.add(mappingIndex.getClassesWithScores(word));
+					} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY){
+						rs.add(mappingIndex.getPropertiesWithScores(word));
+					} else if(type == SlotType.DATATYPEPROPERTY){
+						rs.add(mappingIndex.getDatatypePropertiesWithScores(word));
+					} else if(type == SlotType.OBJECTPROPERTY){
+						rs.add(mappingIndex.getObjectPropertiesWithScores(word));
+					} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
+						rs.add(mappingIndex.getResourcesWithScores(word));
+					}
+				}
 				if(slot.getSlotType() == SlotType.RESOURCE){
-					rs = index.getResourcesWithScores(word, 50);
+					rs.add(index.getResourcesWithScores(word, 50));
 				} else {
 					if(slot.getSlotType() == SlotType.CLASS){
 						word = PlingStemmer.stem(word); 
 					}
-					rs = index.getResourcesWithScores(word, 20);
+					rs.add(index.getResourcesWithScores(word, 20));
 				}
 				
 				for(IndexResultItem item : rs.getItems()){
 					double similarity = Similarity.getSimilarity(word, item.getLabel());
-					//get the labels of the redirects and compute the highest similarity
-					if(slot.getSlotType() == SlotType.RESOURCE){
-						Set<String> labels = getRedirectLabels(item.getUri());
-						for(String label : labels){
-							double tmp = Similarity.getSimilarity(word, label);
-							if(tmp > similarity){
-								similarity = tmp;
-							}
-						}
-					}
+//					//get the labels of the redirects and compute the highest similarity
+//					if(slot.getSlotType() == SlotType.RESOURCE){
+//						Set<String> labels = getRedirectLabels(item.getUri());
+//						for(String label : labels){
+//							double tmp = Similarity.getSimilarity(word, label);
+//							if(tmp > similarity){
+//								similarity = tmp;
+//							}
+//						}
+//					}
 					double prominence = getProminenceValue(item.getUri(), slot.getSlotType());
 					allocations.add(new Allocation(item.getUri(), prominence, similarity));
 				}
@@ -874,6 +899,11 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			return new TreeSet<Allocation>(allocations);
 		}
 		
+	}
+	
+	private boolean isDatatypePropeprty(String uri){
+		String query = "ASK {<%s> a <http://www.w3.org/2002/07/owl#DatatypeProperty>}.";
+		return executeAskQuery(query);
 	}
 	
 	/**

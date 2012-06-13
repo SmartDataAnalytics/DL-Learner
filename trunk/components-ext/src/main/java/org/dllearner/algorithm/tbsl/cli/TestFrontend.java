@@ -14,7 +14,7 @@ import org.dllearner.algorithm.tbsl.templator.Templator;
 public class TestFrontend {
 	
 	// MODE ::= BASIC | LEIPZIG
-	static String MODE = "BASIC";  
+	static String MODE = "LEIPZIG";  
 
     public static void main(String[] args) {
 
