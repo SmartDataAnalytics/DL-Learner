@@ -11,8 +11,6 @@
   from . to . pounds || (NP NP* (PP P:'from' NUM[num1] P:'to' NUM[num2] N:'pounds')) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y), greaterorequal(y,n1), lessorequal(y,n2) ] ], [ (l2,n1,num1,e),(l3,n2,num2,e) ], [ l2=l1,l3=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
 
   with || (NP NP* (PP P:'with' DP[dp])) || <x,l1,<e,t>, [ l1:[ | empty(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
-  with || (NP NP* (PP P:'with' NUM[num] DP[dp])) || <x,l1,<e,t>, [ l1:[ | empty(x,y), count(y,z) ] ], [ (l2,y,dp,<<e,t>,t>),(l3,z,num,e) ], [ l2=l1,l3=l1 ],[ SLOT_arg/RESOURCE/y ]>
-  with || (NP NP* (PP P:'with' NUM[num] DP[dp])) || <x,l1,<e,t>, [ l1:[ | empty(x,y), equal(y,z) ] ], [ (l2,y,dp,<<e,t>,t>),(l3,z,num,e) ], [ l2=l1,l3=l1 ],[ SLOT_arg/LITERAL/y ]>
   square meters || (DP N:'square' N:'meters') || <x,l1,<<e,t>,t>>, [l1:[ | SLOT_size(x,y) ]], [],[],[SLOT_size/DATATYPEPROPERTY/size ]>
 
 // MONTHS 

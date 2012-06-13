@@ -1,9 +1,6 @@
 package org.dllearner.algorithm.tbsl.ltag.parser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.tbsl.ltag.data.Category;
@@ -129,20 +126,20 @@ class GrammarFilter {
 					 * input token matches the regular expression "\d", a new
 					 * auxiliary tree is added to the parseGrammar.
 					 */
-
-					try {
-						TreeNode tree  = c.construct("NUM:'" + token + "'");
-                                                TreeNode tree2 = c.construct("(NP NUM:'" + token + "' NP*)");
-
-						int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(token,tree), 
-								Collections.singletonList("<x,l1,e,[l1:[ x | equal(x," + token + ")]],[],[],[ SLOT_arg/LITERAL/x ]>"));
-						add(parseG, tree, gid-1, localID);
-						localID++;
+                                    Set<Pair<String,String>> ps = new HashSet<Pair<String,String>>();
+                                    ps.add(new Pair<String,String>("NUM:'" + token + "'","<x,l1,e,[l1:[ x | equal(x," + token + ")]],[],[],[ SLOT_arg/LITERAL/x ]>"));
+                                    ps.add(new Pair<String,String>("(NP NUM:'" + token + "' NP*)","<x,l1,<e,t>,[l1:[ | count(x," + token + ")]],[],[],[ SLOT_arg/RESOURCE/x ]>"));
+				
+                                    for (Pair<String,String> p : ps) {
+                                    
+                                        try {
+						TreeNode tree  = c.construct(p.getFirst());
                                                 
-//                                                int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(token,tree2), 
-//								Collections.singletonList("<x,l1,<e,t>,[l1:[ | count(x," + token + ")]],[],[],[ SLOT_arg/RESOURCE/x ]>"));
-//						add(parseG, tree2, gid-1, localID);
-//						localID++;
+						int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(token,tree), 
+								Collections.singletonList(p.getSecond()));
+						add(parseG, tree, gid-1, localID);
+                                                temps.add(gid-1);
+						localID++;
 						
 						foundCandidates = true;
 						coveredTokens.add(token);
@@ -150,6 +147,7 @@ class GrammarFilter {
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
+                                    }
 					
 				} else {
 					/*
