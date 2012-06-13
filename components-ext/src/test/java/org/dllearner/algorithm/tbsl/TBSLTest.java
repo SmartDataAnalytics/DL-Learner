@@ -44,6 +44,7 @@ public class TBSLTest extends TestCase{
 						model.read(new FileInputStream(f), null, "TURTLE");
 					} catch (Exception e) {
 						System.err.println("Parsing failed.");
+						e.printStackTrace();
 					}
 				}
 			}
@@ -83,7 +84,7 @@ public class TBSLTest extends TestCase{
 		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(model, resourcesIndex, classesIndex, propertiesIndex);
 		learner.init();
 		
-		String question = "Give me all houses with more than 2 bedrooms.";
+		String question = "Give me all houses with more than 3 bathrooms and more than 2 bedrooms.";
 		
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();
@@ -104,6 +105,7 @@ public class TBSLTest extends TestCase{
 		
 		String question = "Give me all houses near a school.";
 		question = "Give me all houses with more than 3 bathrooms and more than 2 bedrooms.";
+		question = "Give me all houses with large garden and equipped kitchen";
 		
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();
