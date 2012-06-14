@@ -33,7 +33,28 @@ public class Template implements Serializable, Comparable<Template>{
         public Template checkandrefine() {
             
             Set<Slot> argslots = new HashSet<Slot>();
-            for (Slot slot : slots) if (slot.anchor.equals("SLOT_arg")) argslots.add(slot);
+            for (Slot slot : slots) if (slot.anchor.equals("SLOT_arg")) {
+                String var = slot.words.get(0);
+                // check for clash (v=LITERAL && v=RESOURCE)
+                for (Slot s : argslots) {
+                    if (s.words.get(0).equals(slot.words.get(0)) && !s.type.equals(slot.type)) 
+                        return null;
+                }
+                // check for clash (v=LITERAL && p(...,v)=OBJECTPROPERTY) || (v=RESOURCE && p(...,v)=DATATYPEPROPERTY)
+                SlotType clashing = null;
+                if (slot.type.equals(SlotType.LITERAL)) clashing = SlotType.OBJECTPROPERTY;
+                else if (slot.type.equals(SlotType.RESOURCE)) clashing = SlotType.DATATYPEPROPERTY;
+                for (Slot s : slots) {
+                    if (clashing != null && s.type.equals(clashing)) {
+                        for (SPARQL_Triple triple : query.conditions) {
+                            if (triple.property.toString().equals("?"+s.anchor)) {
+                                if (triple.value.toString().equals("?"+var)) return null;
+                            }
+                        }
+                    }
+                }
+                argslots.add(slot);
+            }
             
             for (Slot slot : slots) {
                 // check for clashes    
