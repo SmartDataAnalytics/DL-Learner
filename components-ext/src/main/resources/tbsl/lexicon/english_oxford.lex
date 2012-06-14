@@ -6,8 +6,10 @@
   since     || (NP NP* (PP P:'since' DP[dp]))        || <x,l1,<e,t>, [ l1:[ | SLOT_since(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_since/PROPERTY/since ]>
   
   for . pounds || (NP NP* (PP P:'for' (NP NUM[num] N:'pounds'))) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y) ] ], [ (l2,y,num,e) ], [ l2=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
-  for more than . pounds || (NP NP* (PP P:'for' (NP NUM[num] N:'pounds'))) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y), greater(y,z) ] ], [ (l2,z,num,e) ], [ l2=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
-  for less than . pounds || (NP NP* (PP P:'for' (NP NUM[num] N:'pounds'))) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y), less(y,z) ] ], [ (l2,y,num,e) ], [ l2=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
+  for more than . pounds || (NP NP* (PP P:'for' DET:'more' DET:'than' (NP NUM[num] N:'pounds'))) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y), greater(y,z) ] ], [ (l2,z,num,e) ], [ l2=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
+  for less than . pounds || (NP NP* (PP P:'for' DET:'more' DET:'than' NUM[num])) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y), less(y,z) ] ], [ (l2,z,num,e) ], [ l2=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
+  for less than || (NP NP* (PP P:'for' DET:'less' DET:'than' NUM[num])) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y), less(y,z) ] ], [ (l2,z,num,e) ], [ l2=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
+  for more than || (NP NP* (PP P:'for' DET:'more' DET:'than' NUM[num])) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y), greater(y,z) ] ], [ (l2,z,num,e) ], [ l2=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
   from . to . pounds || (NP NP* (PP P:'from' NUM[num1] P:'to' NUM[num2] N:'pounds')) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y), greaterorequal(y,n1), lessorequal(y,n2) ] ], [ (l2,n1,num1,e),(l3,n2,num2,e) ], [ l2=l1,l3=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
 
   with || (NP NP* (PP P:'with' DP[dp])) || <x,l1,<e,t>, [ l1:[ | empty(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[]> ;; <x,l1,<e,t>, [ l1:[ | SLOT_description(x,z), regextoken(z,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_description/DATATYPEPROPERTY/description, SLOT_arg/LITERAL/z ]>

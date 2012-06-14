@@ -98,7 +98,7 @@ public class DRS2SPARQL_Converter {
         	return null;
         }
         replaceRegextoken(drs);
- //       System.out.println("--- DRS (after) : " + drs); // DEBUG
+//       System.out.println("--- DRS (after) : " + drs); // DEBUG
             
         for (DiscourseReferent referent : drs.collectDRs()) {
             if (referent.isMarked()) {
@@ -325,7 +325,8 @@ public class DRS2SPARQL_Converter {
                     }
                 }
                 if (regex != null) {
-                    query.addFilter(new SPARQL_Filter(new SPARQL_Pair(
+                    query.addFilter(new SPARQL_Filter(
+                                    new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term("'"+regex+"'",false),
                         SPARQL_PairType.REGEX)));
@@ -458,7 +459,7 @@ public class DRS2SPARQL_Converter {
         String var;
         String newvar;
         String regex = "";
-        String[] forbidden = {"regextoken","regex","count","minimum","maximum","greater","less","greaterorequal","lessorequal","equal","sum"};
+        String[] forbidden = {"regextoken","regex","count","minimum","maximum","greater","less","greaterorequal","lessorequal","equal","sum","location","description"};
         Set<Simple_DRS_Condition> used = new HashSet<Simple_DRS_Condition>();
         
         for (Simple_DRS_Condition c : cs) {
