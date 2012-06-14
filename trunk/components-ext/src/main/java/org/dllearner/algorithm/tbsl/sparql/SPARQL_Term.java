@@ -24,7 +24,16 @@ public class SPARQL_Term extends SPARQL_Value{
 		super(name);
 		this.name = name.replace("?","").replace("!","");
 		isURI = uri;
+		setIsVariable(true);
 		alias = name;
+	}
+	
+	public SPARQL_Term(String name, boolean uri, boolean variable) {
+		super(name);
+		this.name = name.replace("?","").replace("!","");
+		isURI = uri;
+		alias = name;
+		setIsVariable(variable);
 	}
 	
 	public SPARQL_Term(String name, SPARQL_Aggregate aggregate) {
