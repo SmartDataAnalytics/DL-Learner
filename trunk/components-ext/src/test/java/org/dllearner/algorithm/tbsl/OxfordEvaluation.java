@@ -21,7 +21,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 
 public class OxfordEvaluation {
 	
-	private static final String QUERIES_FILE = "/home/lorenz/evaluation.txt";
+	private static final String QUERIES_FILE = OxfordEvaluation.class.getClassLoader().getResource("tbsl/evaluation.txt").getPath();
 	
 	public static void main(String[] args) throws Exception{
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
