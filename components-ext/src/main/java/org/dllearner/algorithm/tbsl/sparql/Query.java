@@ -378,6 +378,8 @@ public class Query implements Serializable {
 					object.setIsVariable(false);
 					if(object instanceof SPARQL_Term){
 						((SPARQL_Term) object).setIsURI(true);
+					} else if(object instanceof SPARQL_Property){
+						((SPARQL_Property) object).setIsVariable(false);
 					}
 				}
 			}

@@ -2,7 +2,7 @@
 // PREPOSITIONS
 
   close to  || (NP NP* (PP P:'close' P:'to' DP[dp])) || <x,l1,<e,t>, [ l1:[ | SLOT_closeto(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_closeto/OBJECTPROPERTY/near ]>
-  in        || (NP NP* (PP P:'in' DP[dp]))           || <x,l1,<e,t>, [ l1:[ | SLOT_location(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_location/PROPERTY/location^city^postal_code^address ]>
+  in        || (NP NP* (PP P:'in' DP[dp]))           || <x,l1,<e,t>, [ l1:[ | SLOT_location(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_location/PROPERTY/location^city^postal_code^address^street ]>
   since     || (NP NP* (PP P:'since' DP[dp]))        || <x,l1,<e,t>, [ l1:[ | SLOT_since(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_since/PROPERTY/since ]>
   
   for . pounds || (NP NP* (PP P:'for' (NP NUM[num] N:'pounds'))) || <x,l1,<e,t>, [ l1:[ | SLOT_price(x,y) ] ], [ (l2,y,num,e) ], [ l2=l1 ],[ SLOT_price/DATATYPEPROPERTY/price ]>
