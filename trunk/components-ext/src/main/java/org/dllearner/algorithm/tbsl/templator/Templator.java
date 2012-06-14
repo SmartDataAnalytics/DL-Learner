@@ -32,8 +32,8 @@ import org.dllearner.algorithm.tbsl.sparql.Template;
 public class Templator {
 	
 	private static final Logger logger = Logger.getLogger(Templator.class);
-	
-	String[] GRAMMAR_FILES = {"tbsl/lexicon/english.lex","tbsl/lexicon/english_oxford.lex"};
+        
+        String[] GRAMMAR_FILES = {"tbsl/lexicon/english.lex","tbsl/lexicon/english_oxford.lex"};
 	
 	private String[] noun = {"NN","NNS","NNP","NNPS","NPREP","JJNN","JJNPREP"};
 	private String[] adjective = {"JJ","JJR","JJS","JJH"};
@@ -49,8 +49,8 @@ public class Templator {
 	WordNet wordnet;
 	LingPipeLemmatizer lem = new LingPipeLemmatizer();
 	
-    DUDE2UDRS_Converter d2u = new DUDE2UDRS_Converter();
-    DRS2SPARQL_Converter d2s = new DRS2SPARQL_Converter();
+        DUDE2UDRS_Converter d2u = new DUDE2UDRS_Converter();
+        DRS2SPARQL_Converter d2s = new DRS2SPARQL_Converter();
 	
 	boolean ONE_SCOPE_ONLY = true;
 	boolean UNTAGGED_INPUT = true;
