@@ -625,9 +625,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 									if(!predicate.isVariable()){//only consider triple where predicate is URI
 										String predicateURI = predicate.getName().replace("<", "").replace(">", "");
 										if(isDatatypeProperty(predicateURI)){//if data property
-											String objectVar = triple.getValue().getName();
 											q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
-													new SPARQL_Term(objectVar), "'" + slot.getWords().get(0) + "'", SPARQL_PairType.REGEX)));
+													object, "'" + slot.getWords().get(0) + "'", SPARQL_PairType.REGEX)));
 										}
 									}
 								}
@@ -635,35 +634,36 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 							
 						}
 						
-					} else if(slot.getSlotType() == SlotType.CLASS){
-						String token = slot.getWords().get(0);
-						if(slot.getToken().contains("house")){
-							String regexToken = token.replace("houses", "").replace("house", "").trim();
-							try {
-								Map<Slot, SortedSet<Allocation>> ret = new SlotProcessor(new Slot(null, SlotType.CLASS, Collections.singletonList("house"))).call();
-								SortedSet<Allocation> alloc = ret.entrySet().iterator().next().getValue();
-								if(alloc != null && !alloc.isEmpty()){
-									String uri = alloc.first().getUri();
-									for(WeightedQuery query : queries){
-										Query q = query.getQuery();
-										for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
-											SPARQL_Term subject = triple.getVariable();
-											SPARQL_Term object = new SPARQL_Term("desc");
-											object.setIsVariable(true);
-											object.setIsURI(false);
-											q.addCondition(new SPARQL_Triple(subject, new SPARQL_Property("<http://purl.org/goodrelations/v1#description>"), object));
-											q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
-													object, "'" + regexToken + "'", SPARQL_PairType.REGEX)));
-										}
-										q.replaceVarWithURI(slot.getAnchor(), uri);
-										
-									}
-								}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					}
+					} 
+//					else if(slot.getSlotType() == SlotType.CLASS){
+//						String token = slot.getWords().get(0);
+//						if(slot.getToken().contains("house")){
+//							String regexToken = token.replace("houses", "").replace("house", "").trim();
+//							try {
+//								Map<Slot, SortedSet<Allocation>> ret = new SlotProcessor(new Slot(null, SlotType.CLASS, Collections.singletonList("house"))).call();
+//								SortedSet<Allocation> alloc = ret.entrySet().iterator().next().getValue();
+//								if(alloc != null && !alloc.isEmpty()){
+//									String uri = alloc.first().getUri();
+//									for(WeightedQuery query : queries){
+//										Query q = query.getQuery();
+//										for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
+//											SPARQL_Term subject = triple.getVariable();
+//											SPARQL_Term object = new SPARQL_Term("desc");
+//											object.setIsVariable(true);
+//											object.setIsURI(false);
+//											q.addCondition(new SPARQL_Triple(subject, new SPARQL_Property("<http://purl.org/goodrelations/v1#description>"), object));
+//											q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
+//													object, "'" + regexToken + "'", SPARQL_PairType.REGEX)));
+//										}
+//										q.replaceVarWithURI(slot.getAnchor(), uri);
+//										
+//									}
+//								}
+//							} catch (Exception e) {
+//								e.printStackTrace();
+//							}
+//						}
+//					}
 					
 					
 				}
