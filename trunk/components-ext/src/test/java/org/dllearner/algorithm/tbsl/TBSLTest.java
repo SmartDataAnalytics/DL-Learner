@@ -10,10 +10,15 @@ import junit.framework.TestCase;
 
 import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner2;
 import org.dllearner.common.index.Index;
+import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SOLRIndex;
 import org.dllearner.common.index.SPARQLClassesIndex;
 import org.dllearner.common.index.SPARQLIndex;
 import org.dllearner.common.index.SPARQLPropertiesIndex;
+import org.dllearner.common.index.VirtuosoClassesIndex;
+import org.dllearner.common.index.VirtuosoPropertiesIndex;
+import org.dllearner.common.index.VirtuosoResourcesIndex;
+import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.junit.Test;
 
@@ -34,24 +39,24 @@ public class TBSLTest extends TestCase{
 	protected void setUp() throws Exception {
 		super.setUp();
 		endpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
-		model = ModelFactory.createOntologyModel();
-		File dir = new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/data");
-		try {
-			for(File f : dir.listFiles()){
-				if(f.isFile()){
-					System.out.println("Loading file " + f.getName());
-					try {
-						model.read(new FileInputStream(f), null, "TURTLE");
-					} catch (Exception e) {
-						System.err.println("Parsing failed.");
-						e.printStackTrace();
-					}
-				}
-			}
-			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/ontology.ttl")), null, "TURTLE");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+//		model = ModelFactory.createOntologyModel();
+//		File dir = new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/data");
+//		try {
+//			for(File f : dir.listFiles()){
+//				if(f.isFile()){
+//					System.out.println("Loading file " + f.getName());
+//					try {
+//						model.read(new FileInputStream(f), null, "TURTLE");
+//					} catch (Exception e) {
+//						System.err.println("Parsing failed.");
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/ontology.ttl")), null, "TURTLE");
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	@Test
@@ -95,17 +100,24 @@ public class TBSLTest extends TestCase{
 	
 	@Test
 	public void testOxfordRemote() throws Exception{
-		
-		Index resourcesIndex = new SPARQLIndex(endpoint);
-		Index classesIndex = new SPARQLClassesIndex(endpoint);
-		Index propertiesIndex = new SPARQLPropertiesIndex(endpoint);
+		ExtractionDBCache cache = new ExtractionDBCache("cache");
+		SPARQLIndex resourcesIndex = new VirtuosoResourcesIndex(endpoint, cache);
+		SPARQLIndex classesIndex = new VirtuosoClassesIndex(endpoint, cache);
+		SPARQLIndex propertiesIndex = new VirtuosoPropertiesIndex(endpoint, cache);
+		MappingBasedIndex mappingIndex= new MappingBasedIndex(
+				OxfordEvaluation.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
+				OxfordEvaluation.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
+				OxfordEvaluation.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
+				OxfordEvaluation.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
+				);
 		
 		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
+		learner.setMappingIndex(mappingIndex);
 		learner.init();
 		
 		String question = "Give me all houses near a school.";
 		question = "Give me all houses with more than 3 bathrooms and more than 2 bedrooms.";
-		question = "Give me all houses with large garden and equipped kitchen";
+		question = "Give me all Victorian houses in Oxfordshire";
 		
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();

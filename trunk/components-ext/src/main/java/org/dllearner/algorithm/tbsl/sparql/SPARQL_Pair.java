@@ -6,12 +6,12 @@ public class SPARQL_Pair implements Serializable
 {
 	private static final long serialVersionUID = -1255754209857823420L;
 	
-	public SPARQL_Term a;
+	public SPARQL_Value a;
 	public Object b;
 
 	public SPARQL_PairType type;
 
-	public SPARQL_Pair(SPARQL_Term a, Object b, SPARQL_PairType type)
+	public SPARQL_Pair(SPARQL_Value a, Object b, SPARQL_PairType type)
 	{
 		super();
 		this.a = a;
@@ -19,7 +19,7 @@ public class SPARQL_Pair implements Serializable
 		this.type = type;
 	}
 
-	public SPARQL_Pair(SPARQL_Term a, SPARQL_PairType type)
+	public SPARQL_Pair(SPARQL_Value a, SPARQL_PairType type)
 	{
 		super();
 		this.a = a;

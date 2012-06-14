@@ -1,0 +1,149 @@
+question: houses in Headington
+
+question: houses in Abingdon with more than 2 bedrooms
+
+question: houses with garden in Wheatley
+
+question: detached houses in Oxford
+
+question: Victorian houses in Oxfordshire
+
+question: Edwardian house in Oxfordshire for less than 1000000
+
+question: houses with double garage
+
+question: houses with large garden and equipped kitchen
+
+question: houses with more than 1 reception room
+
+question: houses in Didcot furnished to a high standard
+
+question: houses with conservatory room and less than 900000 pounds
+
+question: detached bungalows in Oxfordshire
+
+question: houses in Old Marston
+
+question: family houses with more than 2 bathrooms and more than 4 bedrooms
+
+question: houses close to Iffley Sport Centre
+
+question: houses in Oxford close to the train station
+
+question: houses in Summertown for less than 400000 pounds
+
+question: two floors houses in East Oxford
+
+question: brand new houses in Oxford for less than 500000 pounds
+
+question: houses close to Brookes University
+
+question: houses in Jericho area
+
+question: house close to Headington hospitals
+
+question: modern houses with gas central heating
+
+question: houses with electric heating
+
+question: houses less than 500000 within area OX16
+
+question: houses close to an Italian restaurant
+
+question: houses at walking distance from a pharmacy
+
+question: houses at walking distance from Tesco or Sainsburys shops
+
+question: houses nearby Sheldonian Theatre
+
+question: houses with underfloor heating
+
+question: houses with wood floor
+
+question: houses close to The King's Arms pub
+
+question: houses with garden large at least 2 acres
+
+question: houses with many reception rooms
+
+question: houses built around 1950
+
+question: houses with balcony
+
+question: houses with double glazed windows
+
+question: houses far from city centre
+
+question: 2 bedroom houses near oxford train station 
+ 
+question: 4 bedroom detached houses in  oxford
+ 
+question: studio apartments in summertown, Oxford
+ 
+question: freehold houses with 2 bedrooms and a living room in banbury
+ 
+question: houses in Oxford city centre with at most 2 bedrooms
+ 
+question: houses with garage within minutes of Oxford schools and in a quiet road
+ 
+question: victorian town houses in north Oxford
+ 
+question: terrace houses with west facing garden
+ 
+question: modernised end terrace houses with private parking
+ 
+question: three bedroom houses with open fireplace
+ 
+question: houses available from June 15th. 
+
+question: houses on rawlinson road 
+
+question: flats near supermarket 
+
+question: flats with bill included 
+
+
+
+question: give me flats in central Oxford with at least one bedroom below 1000 GBP a month?
+
+question: Give me all 2 bedroom flats in walking distance from the computer science departement!
+
+question: Give me all houses with 3 bedrooms or more, close to the train station with good shopping opportunities.
+
+question: find a property with 2 bedrooms close to some park.
+
+question: Give me all flats at roughly 1300 GBP the month, equally close to the computer science department and Christ Church College. 
+
+question: Give me all flats in the area around Cowley Road with 2 bedrooms.
+
+question: Give me all furnished places with one bedroom close to the Radcliffe Camera.
+
+question: Give me all unfurnished houses with at least 2 bedrooms in Summertown.
+
+question: Give me all furnished flats with one bedroom for smokers.
+
+question: Give me all flats with parking in central Oxford.
+
+question: Give me all cheap places in Cowley.
+
+question: Give me all representative houses in Summertown.
+
+question: find a property for sale, with 2 bedrooms, parking, close to shops.
+
+question: Give me all flats with a garden, one bedroom, in walking distance to the computer science departement
+
+question: Give me all places offered close to the train station?
+
+question: Give me all retirement houses for sale near Oxford. 
+
+question: Give me all houses that I can BBQ. 
+
+question: Give me all flats which are far from the river. 
+
+question: Give me all flats which are close to three bars.
+
+question: What is the average price of furnished 1 bedroom apartments in Heddington?
+
+question: How many flats are offered in central Oxford below 1000 GBP a month?
+
+question: Which area in Oxford has the cheapest offers close to the Keble college [or some other landmark]?

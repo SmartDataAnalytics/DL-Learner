@@ -127,7 +127,7 @@ public class SPARQLIndex implements Index{
 		return irs;
 	}
 	
-	private ResultSet executeSelect(String query){//System.out.println(query);
+	private ResultSet executeSelect(String query){System.out.println(query);
 		ResultSet rs;
 		if(model == null){
 			if(cache == null){

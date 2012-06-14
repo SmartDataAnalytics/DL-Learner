@@ -103,7 +103,7 @@ public class SPARQL_Term extends SPARQL_Value{
 		if (isString()) {
 			return name.replaceAll("_"," ");
 		}
-		else if (isURI) {
+		else if (isURI || !isVariable()) {
 			return name;
 		}
 		else return "?"+name.toLowerCase();
