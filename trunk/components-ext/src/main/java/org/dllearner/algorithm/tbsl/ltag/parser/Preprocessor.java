@@ -220,8 +220,8 @@ public class Preprocessor {
 		}		
 		m = adjnounPattern.matcher(condensedstring); 
 		while (m.find()) {
-			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/NN");
-			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/NN");
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNN");
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNN");
 		}
 		m = adjnprepPattern.matcher(condensedstring); 
 		while (m.find()) {

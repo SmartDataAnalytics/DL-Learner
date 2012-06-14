@@ -68,7 +68,7 @@ public class SlotBuilder {
 //					words.addAll(wordnet.getBestSynonyms(token));
 				}
 				
-				String tokenfluent = token.replaceAll(" ","").replaceAll("_","");
+				String tokenfluent = token.replaceAll(" ","_");//.replaceAll("_","");
 				String slotX = "x/" + type + "/";
 				String slotP = "SLOT_" + tokenfluent + "/" + type + "/";
 				String slotC = "SLOT_" + tokenfluent + "/CLASS/"; 
@@ -165,23 +165,30 @@ public class SlotBuilder {
 				else if(pos.equals("JJNN") && token.contains("_")) {
 					String[] tokens = token.split("_");
 					String nntoken  = tokens[tokens.length-1];
+                                        String jjtoken  = token.replace("SLOT_","").replace(nntoken,"").replace("_"," ").trim();
 					String slotfluent = "SLOT_" + tokenfluent + "/CLASS/" + token;
 					String slotnn     = "SLOT_" + nntoken + "/CLASS/" + nntoken;
-					String semantics = "<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slotfluent + "]> " +
-							";; <x,l1,<e,t>,[ l1:[ | SLOT_" + nntoken + "(x)";
-					String slots = slotnn;
-					for (int i=0; i<(tokens.length-1); i++) {
-						semantics += ", SLOT_" + tokens[i] + "(x)";
-						slots += ",SLOT_" + tokens[i] + "/CLASS/" + tokens[i];
-					}
-					semantics += "] ],[],[],[" + slots + "]>";
+//					String semantics = "<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slotfluent + "]> " +
+//							";; <x,l1,<e,t>,[ l1:[ | SLOT_" + nntoken + "(x)";
+//					String slots = slotnn;
+//					for (int i=0; i<(tokens.length-1); i++) {
+//						semantics += ", SLOT_" + tokens[i] + "(x)";
+//						slots += ",SLOT_" + tokens[i] + "/CLASS/" + tokens[i];
+//					}
+//					semantics += "] ],[],[],[" + slots + "]>";
 
 					String[] npEntry = {token,
 							"(NP " + treetoken + " )",
-							semantics };
-//							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slotfluent + "]> ;; " +
-//							"<x,l1,<e,t>,[ l1:[ | SLOT_" + nntoken + "(x), SLOT_" + jjtoken + "(x) ] ],[],[],[" + slotnn + "," + slotjj + "]>"};
+		//					semantics };
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slotfluent + "]> ;; " +
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + nntoken + "(x), SLOT_description(x,y), regex(y,'"+ jjtoken +"')] ],[],[],[" + slotnn + ",SLOT_description/DATATYPEPROPERTY/description ]>"};
+                                        String[] dpEntry = {token,
+							"(DP (NP " + treetoken + " ))",
+		//					semantics };
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slotfluent + "]> ;; " +
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + nntoken + "(x), SLOT_description(x,y), regex(y,'"+ jjtoken +"')] ],[],[],[" + slotnn + ",SLOT_description/DATATYPEPROPERTY/description ]>"};
 					result.add(npEntry);
+					result.add(dpEntry);
 				}
 				else if (pos.equals("NNSAME")) {
 					String slot = "SLOT_" + token + "/" + type + "/" + token;
