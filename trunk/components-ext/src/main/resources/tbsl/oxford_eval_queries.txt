@@ -104,15 +104,15 @@ question: flats with bill included
 
 
 
-question: give me flats in central Oxford with at least one bedroom below 1000 GBP a month?
+question: give me all flats in central Oxford with at least one bedroom below 1000 GBP a month.
 
 question: Give me all 2 bedroom flats in walking distance from the computer science departement!
 
-question: Give me all houses with 3 bedrooms or more, close to the train station with good shopping opportunities.
+//question: Give me all houses with 3 bedrooms or more, close to the train station with good shopping opportunities.
 
 question: find a property with 2 bedrooms close to some park.
 
-question: Give me all flats at roughly 1300 GBP the month, equally close to the computer science department and Christ Church College. 
+//question: Give me all flats at roughly 1300 GBP the month, equally close to the computer science department and Christ Church College. 
 
 question: Give me all flats in the area around Cowley Road with 2 bedrooms.
 
@@ -128,9 +128,9 @@ question: Give me all cheap places in Cowley.
 
 question: Give me all representative houses in Summertown.
 
-question: find a property for sale, with 2 bedrooms, parking, close to shops.
+//question: find a property for sale, with 2 bedrooms, parking, close to shops.
 
-question: Give me all flats with a garden, one bedroom, in walking distance to the computer science departement
+//question: Give me all flats with a garden, one bedroom, in walking distance to the computer science departement
 
 question: Give me all places offered close to the train station?
 

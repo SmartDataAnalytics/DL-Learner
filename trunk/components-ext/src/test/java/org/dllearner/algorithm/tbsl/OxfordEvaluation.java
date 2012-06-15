@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dllearner.algorithm.tbsl.learning.NoTemplateFoundException;
 import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner2;
 import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SPARQLIndex;
@@ -19,13 +20,20 @@ import org.dllearner.common.index.VirtuosoResourcesIndex;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
+import com.hp.hpl.jena.query.QueryParseException;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+
 public class OxfordEvaluation {
 	
-	private static final String QUERIES_FILE = OxfordEvaluation.class.getClassLoader().getResource("tbsl/evaluation.txt").getPath();
+	private static final String QUERIES_FILE1 = OxfordEvaluation.class.getClassLoader().getResource("tbsl/oxford_eval_queries.txt").getPath();
+	private static final String QUERIES_FILE2 = OxfordEvaluation.class.getClassLoader().getResource("tbsl/oxford_eval_additional_queries.txt").getPath();
+	private static final String LOG_DIRECTORY = "log/oxford/";
+	private static final String LOG_FILE = "evaluation.txt";
 	
 	public static void main(String[] args) throws Exception{
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
 		ExtractionDBCache cache = new ExtractionDBCache("cache");
+		new File(LOG_DIRECTORY).mkdirs();
 		
 		SPARQLIndex resourcesIndex = new VirtuosoResourcesIndex(endpoint, cache);
 		SPARQLIndex classesIndex = new VirtuosoClassesIndex(endpoint, cache);
@@ -44,45 +52,69 @@ public class OxfordEvaluation {
 		int learnedQuestions = 0;
 		Map<String, String> question2QueryMap = new HashMap<String, String>();
 		
-		BufferedReader in = new BufferedReader(new FileReader(new File(QUERIES_FILE)));
-		BufferedWriter out = new BufferedWriter(new FileWriter(new File("log/oxford_eval.txt")));
+		BufferedReader in = new BufferedReader(new FileReader(new File(QUERIES_FILE2)));
+		BufferedWriter out = new BufferedWriter(new FileWriter(new File(LOG_DIRECTORY + LOG_FILE), false));
 		
-		int questionNr = 0;
+		int questionCnt = 0;
 		int errorCnt = 0;
-		int noQueryCnt = 0;
+		int noTemplateFoundCnt = 0;
+		int noQueryWithNonEmptyResultSetCnt = 0;
 		String question = null;
 		while((question = in.readLine()) != null){
 			question = question.replace("question:", "").trim();
-			if(question.isEmpty()) continue;
+			if(question.isEmpty() || question.startsWith("//")) continue;
 			if(!question.toLowerCase().contains("Give me all") && Character.isLowerCase(question.charAt(0))){
 				question = "Give me all " + question;
 			}
 			System.out.println("########################################################");
-			questionNr++;
+			questionCnt++;
 			System.out.println(question);
 			try {
+				out.write("****************************************\n");
+				out.write("QUESTION: " + question + "\n");
 				learner.setQuestion(question);
 				learner.learnSPARQLQueries();
 				String learnedQuery = learner.getBestSPARQLQuery();
 				if(learnedQuery != null){
 					question2QueryMap.put(question, learnedQuery);
 					learnedQuestions++;
-					out.write("****************************************\n" + question + "\n" + learnedQuery + "\n****************************************");
+					out.write("ANSWER FOUND: YES\n");
+					out.write(learnedQuery + "\n");
 				} else {
-					noQueryCnt++;
-					out.write("****************************************\n" + question + "\nNO QUERY WITH NON-EMPTY RESULTSET FOUND\n****************************************");
+					noQueryWithNonEmptyResultSetCnt++;
+					out.write("ANSWER FOUND: NO\n");
+					out.write("REASON: NO SPARQL QUERY WITH NON-EMPTY RESULTSET FOUND\n");
+					out.write("SPARQL QUERY WITH HIGHEST SCORE TESTED:\n" + learner.getGeneratedQueries().first());
+					
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				out.write("ANSWER FOUND: NO\n");
+				if(e instanceof NoTemplateFoundException){
+					noTemplateFoundCnt++;
+					out.write("REASON: NO TEMPLATE FOUND");
+				} else {
+					errorCnt++;
+					out.write("REASON: ERROR OCCURED (" + e.getClass() + ")\n");
+					if(e instanceof QueryExceptionHTTP || e instanceof QueryParseException){
+						out.write("\nLast tested SPARQL query: " + learner.getCurrentlyExecutedQuery());
+					}
+				}
+			} catch (Error e){
+				e.printStackTrace();
+				out.write("ANSWER FOUND: NO\n");
 				errorCnt++;
-				out.write("****************************************\n" + question + "\nERROR: " + e.getClass() + "\n****************************************");
+				out.write("REASON: ERROR OCCURED (" + e.getClass() + ")\n");
 			}
+			out.write("\n****************************************");
 			out.flush();
 		}
-		out.write("################################\n");
-		out.write("Questions with answer: " + learnedQuestions + "\n");
-		out.write("Questions with no answer (and no error): " + noQueryCnt + "\n");
-		out.write("Questions with error: " + errorCnt + "\n");
+		out.write("\n\n###################SUMMARY################\n");
+		out.write("Questions tested:\t" + questionCnt + "\n");
+		out.write("Questions with answer:\t" + learnedQuestions + "\n");
+		out.write("Questions with no answer (and no error):\t" + noQueryWithNonEmptyResultSetCnt + "\n");
+		out.write("Questions with no templates:\t" + noTemplateFoundCnt + "\n");
+		out.write("Questions with other errors:\t" + errorCnt + "\n");
 		
 		in.close();
 		out.close();

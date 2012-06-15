@@ -123,9 +123,11 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	private Map<Template, Collection<? extends Query>> template2Queries;
 	private Map<Slot, List<String>> slot2URI;
 	
-	private Set<WeightedQuery> generatedQueries;
+	private SortedSet<WeightedQuery> generatedQueries;
 	
 	private SPARQLReasoner reasoner;
+	
+	private String currentlyExecutedQuery;
 	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex){
 		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, new StanfordPartOfSpeechTagger());
@@ -277,6 +279,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		learnedSPARQLQueries = new HashMap<String, Object>();
 		template2Queries = new HashMap<Template, Collection<? extends Query>>();
 		slot2URI = new HashMap<Slot, List<String>>();
+		currentlyExecutedQuery = null;
 	}
 	
 	public void learnSPARQLQueries() throws NoTemplateFoundException{
@@ -317,12 +320,12 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		
 	}
 	
-	public Set<WeightedQuery> getGeneratedQueries() {
+	public SortedSet<WeightedQuery> getGeneratedQueries() {
 		return generatedQueries;
 	}
 	
-	public Set<WeightedQuery> getGeneratedQueries(int topN) {
-		Set<WeightedQuery> topNQueries = new TreeSet<WeightedQuery>();
+	public SortedSet<WeightedQuery> getGeneratedQueries(int topN) {
+		SortedSet<WeightedQuery> topNQueries = new TreeSet<WeightedQuery>();
 		int max = Math.min(topN, generatedQueries.size());
 		for(WeightedQuery wQ : generatedQueries){
 			topNQueries.add(wQ);
@@ -382,7 +385,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		
 	}
 	
-	private Set<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
+	private SortedSet<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
 		logger.info("Generating SPARQL query candidates...");
 		
 		Map<Slot, Set<Allocation>> slot2Allocations = new TreeMap<Slot, Set<Allocation>>(new Comparator<Slot>() {
@@ -399,7 +402,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		slot2Allocations = Collections.synchronizedMap(new HashMap<Slot, Set<Allocation>>());
 		
 		
-		Set<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
+		SortedSet<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
 		
 		Set<Allocation> allocations;
 		
@@ -864,6 +867,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 	
 	private boolean executeAskQuery(String query){
+		currentlyExecutedQuery = query;
 		QueryEngineHTTP qe = new QueryEngineHTTP(endpoint.getURL().toString(), query);
 		for(String uri : endpoint.getDefaultGraphURIs()){
 			qe.addDefaultGraph(uri);
@@ -873,6 +877,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 	
 	private ResultSet executeSelect(String query) {
+		currentlyExecutedQuery = query;
 		ResultSet rs;
 		if (model == null) {
 			if (cache == null) {
@@ -890,6 +895,9 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		return rs;
 	}
 	
+	public String getCurrentlyExecutedQuery() {
+		return currentlyExecutedQuery;
+	}
 	
 	public int getLearnedPosition() {
 		if(learnedPos >= 0){
