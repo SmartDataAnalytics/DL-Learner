@@ -470,7 +470,7 @@ public class DRS2SPARQL_Converter {
                 for (DiscourseReferent dr : cond.getArguments()) {
                     if (dr.getValue().equals(var)) { 
                         takeit = true;
-                        for (String f : forbidden) if (f.equals(cond.getPredicate())) takeit= false;
+                        for (String f : forbidden) if (cond.getPredicate().contains(f)) takeit= false;
                     }
                 }
                 if (takeit) {
