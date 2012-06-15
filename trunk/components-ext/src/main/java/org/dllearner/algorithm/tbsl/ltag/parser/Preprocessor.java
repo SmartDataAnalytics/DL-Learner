@@ -96,6 +96,7 @@ public class Preprocessor {
 		Pattern whenPattern       = Pattern.compile("\\A(when/WRB\\s(.+\\s)(\\w+)/((V[A-Z]+)|(PASS[A-Z]+)))");
 		Pattern wherePattern      = Pattern.compile("\\A(where/WRB\\s(.+\\s)(\\w+)/((V[A-Z]+)|(PASS[A-Z]+)))");
 		Pattern adjsPattern       = Pattern.compile("((\\w+)/JJ.(\\w+)/JJ)");
+                Pattern adjnnpPattern     = Pattern.compile("((\\w+)(?<!many)/JJ.(\\w+)/NNP(S)?)");
 		Pattern adjnounPattern    = Pattern.compile("((\\w+)(?<!many)/JJ.(\\w+)/NN(S)?)");
 		Pattern adjnprepPattern   = Pattern.compile("((\\w+)(?<!many)/JJ.(\\w+)/NPREP)");
 		
@@ -217,7 +218,12 @@ public class Preprocessor {
 		while (m.find()) {
 			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJ");
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJ");
-		}		
+		}
+                m = adjnnpPattern.matcher(condensedstring); 
+		while (m.find()) {
+			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/NNP");
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/NNP");
+		}
 		m = adjnounPattern.matcher(condensedstring); 
 		while (m.find()) {
 			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNN");

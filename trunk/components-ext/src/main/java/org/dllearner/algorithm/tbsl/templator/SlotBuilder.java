@@ -79,14 +79,16 @@ public class SlotBuilder {
 				}
 				// treetoken
 				String treetoken = "N:'" + token.toLowerCase() + "'";
-				if (token.trim().contains(" ")) {
-					String[] tokenParts = token.split(" ");
-					treetoken = "";
-					for (String t : tokenParts) {
-						treetoken += " N:'" + t.toLowerCase() + "'";
-					}
-					treetoken = treetoken.trim();
+				String[] tokenParts;
+                                if (token.trim().contains(" ")) tokenParts = token.split(" ");
+//                              else if (token.contains("_")) tokenParts = token.split("_");
+                                else { tokenParts = new String[1]; tokenParts[0] = token; }
+				treetoken = "";
+				for (String t : tokenParts) {
+                                    treetoken += " N:'" + t.toLowerCase() + "'";
 				}
+				treetoken = treetoken.trim();
+				
 				//
 				if (pos.equals("NN") || pos.equals("NNS")) {
 					/* DP */
@@ -165,7 +167,7 @@ public class SlotBuilder {
 				else if(pos.equals("JJNN") && token.contains("_")) {
 					String[] tokens = token.split("_");
 					String nntoken  = tokens[tokens.length-1];
-                                        String jjtoken  = token.replace("SLOT_","").replace(nntoken,"").replace("_"," ").trim();
+                                        String jjtoken  = token.replace("SLOT_","").replace(nntoken,"").trim();
 					String slotfluent = "SLOT_" + tokenfluent + "/CLASS/" + token;
 					String slotnn     = "SLOT_" + nntoken + "/CLASS/" + nntoken;
 //					String semantics = "<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slotfluent + "]> " +
@@ -302,6 +304,10 @@ public class SlotBuilder {
 					String[] wasGerEntry = {token,
 							"(S DP[comp] (VP V:'was' DP[subject] V:'" + token + "'))",
 							"<y,l1,t,[ l1:[ | SLOT_" + token + "(y,z) ] ],[(l2,y,comp,<<e,t>,t>), (l3,z,subject,<<e,t>,t>) ],[ l2=l1, l3=l1 ],[" + symslot + "]>"}; 
+                                        String[] adjEntry = {token,
+                                            "(NP ADJ:'"+token+"' NP*)",
+                                            "<x,l1,<e,t>,[ l1:[ | SLOT_description(x,y), regex(y,'"+ token +"')] ],[],[],[ SLOT_description/DATATYPEPROPERTY/description ]>"};
+                                        result.add(adjEntry);
 					result.add(gerEntry);
 					result.add(wasGerEntry);
 				}
@@ -331,6 +337,8 @@ public class SlotBuilder {
 					result.add(whereEntry1);
 					result.add(whereEntry2);
 				}
+                                
+                                // TODO relative clauses missing!
 				
 			}
 			/* ADJECTIVES */
