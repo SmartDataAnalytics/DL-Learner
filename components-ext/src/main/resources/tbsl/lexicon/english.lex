@@ -45,6 +45,7 @@
 	show || (S (VP V:'show' DP[object])) || <x,l1,t,[ l1:[ ?x | x=y ] ],[ (l2,y,object,<<e,t>,t>) ],[ l1=l2 ],[]>
 	list me || (S (VP V:'list' (DP N:'me') DP[object])) || <x,l1,t,[ l1:[ ?x | x=y ] ],[ (l2,y,object,<<e,t>,t>) ],[ l1=l2 ],[]>
 	list || (S (VP V:'list' DP[object])) || <x,l1,t,[ l1:[ ?x | x=y ] ],[ (l2,y,object,<<e,t>,t>) ],[ l1=l2 ],[]>
+        find || (S (VP V:'find' DP[object])) || <x,l1,t,[ l1:[ ?x | x=y ] ],[ (l2,y,object,<<e,t>,t>) ],[ l1=l2 ],[]>
 
 
 // DETERMINER
@@ -143,6 +144,10 @@
 	and || (NP NP* CC:'and' NP[np]) || <x,l1,<e,t>,[l1:[|x=y]],[(l2,y,np,<e,t>)],[l1=l2],[]>
 	and || (VP VP* CC:'and' VP[vp]) || -
 	and || (ADJ ADJ* CC:'and' ADJ[adj]) || -
+
+        but || (S S* CC:'but' S[s]) || <x,l1,t,[l1:[|]],[(l2,y,s,t)],[l1=l2],[]>
+	but || (DP DP* CC:'but' DP[dp]) || <x,l1,<<e,t>,t>,[l1:[|]],[(l2,y,dp,<<e,t>,t>)],[l1=l2],[]>
+	but || (NP NP* CC:'but' NP[np]) || <x,l1,<e,t>,[l1:[|x=y]],[(l2,y,np,<e,t>)],[l1=l2],[]>
 	
 	as well as || (NP NP* CC:'as' CC:'well' CC:'as' NP[np]) || <x,l1,<e,t>,[l1:[|]],[(l2,y,np,<e,t>)],[l1=l2],[]>
 	

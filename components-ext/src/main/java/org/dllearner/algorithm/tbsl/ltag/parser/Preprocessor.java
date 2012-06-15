@@ -54,7 +54,7 @@ public class Preprocessor {
 		replacements.addAll(Arrays.asList(genericReplacements));
                 replacements.addAll(Arrays.asList(hackReplacements));
 
-                s = s.replaceAll(",\\s"," and ");
+                s = s.replaceAll(",\\s"," and ").replaceAll(" and but "," but ");
 		for (int i = 0; i < replacements.size(); i += 2) {
 			s = s.replaceAll(replacements.get(i), replacements.get(i + 1));
 		}
