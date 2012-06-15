@@ -52,7 +52,7 @@ public class OxfordEvaluation {
 		int learnedQuestions = 0;
 		Map<String, String> question2QueryMap = new HashMap<String, String>();
 		
-		BufferedReader in = new BufferedReader(new FileReader(new File(QUERIES_FILE2)));
+		BufferedReader in = new BufferedReader(new FileReader(new File(QUERIES_FILE1)));
 		BufferedWriter out = new BufferedWriter(new FileWriter(new File(LOG_DIRECTORY + LOG_FILE), false));
 		
 		int questionCnt = 0;
