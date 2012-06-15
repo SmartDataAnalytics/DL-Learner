@@ -58,7 +58,7 @@ question: houses with wood floor
 
 question: houses close to The King's Arms pub
 
-question: houses with garden large at least 2 acres
+question: houses with a garden that is at least 2 acres big
 
 question: houses with many reception rooms
 
@@ -68,13 +68,13 @@ question: houses with balcony
 
 question: houses with double glazed windows
 
-question: 2 bedroom houses near oxford train station 
+question: 2 bedroom houses near Oxford train station 
  
 question: 4 bedroom detached houses in Oxford
  
-question: studio apartments in summertown, Oxford
+question: studio apartments in Summertown, Oxford
  
-question: freehold houses with 2 bedrooms and a living room in banbury
+question: freehold houses with 2 bedrooms and a living room in Banbury
  
 question: houses in Oxford city centre with at most 2 bedrooms
  
@@ -94,7 +94,7 @@ question: houses on Rawlinson Road
 
 question: flats near supermarket 
 
-question: give me flats in central Oxford with at least one bedroom below 1000 GBP a month?
+question: give me flats in central Oxford with at least one bedroom below 1000 pounds a month?
 
 question: find 2 bedroom flats in walking distance from the computer science departement!
 
@@ -122,7 +122,7 @@ question: show me a flat which is close to three bars.
 
 question: what is the average price of furnished 1 bedroom apartments in Heddington?
 
-question: how many flats are offered in central Oxford below 1000 GBP a month?
+question: how many flats are offered in central Oxford below 1000 pounds a month?
 
 question: houses close to The Ashmolean Museum, with more than one bedroom
 
@@ -162,7 +162,7 @@ question: houses with river views
 
 question: houses with gated entrance or in a gated community
 
-question: recently refurbished houses with lift (access)
+question: recently refurbished houses with lift
 
 question: house with balcony and vaulted ceiling
 
@@ -170,7 +170,7 @@ question: house that is a maisonette and on Gloucester Green
 
 question: house in a corner or end-of-terrace plot
 
-question: house with 3 bedrooms, but cheaper than 150000 GBP
+question: house with 3 bedrooms, but cheaper than 150000 pounds
 
 question: house with at least 2 reception rooms and a garden
 
@@ -186,11 +186,11 @@ question: house in a retirement complex
 
 question: house with double glazing and central heating
 
-question: house with “no upper chain” (means immediately available)
+question: house with immediately available
 
-question: house listed Grade I or Grade II (means “under protection for age …”)
+question: house listed Grade I or Grade II
 
-question: house that has recently replumbed
+question: house that has been recently replumbed
 
 question: house in Witney or Wolvercote
 
@@ -198,4 +198,4 @@ question: house with more than 2 bedrooms, but not in Marston
 
 question: house in Banbury Road
 
-question: house in the area of (John) Radcliffe hospital
+question: house in the area of John Radcliffe hospital

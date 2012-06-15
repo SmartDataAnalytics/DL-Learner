@@ -38,7 +38,7 @@ question: Give me all houses with river views
 
 question: Give me all houses with gated entrance or in a gated community
 
-question: Give me all recently refurbished houses with lift (access)
+question: Give me all recently refurbished houses with lift
 
 question: Give me all houses with balcony and vaulted ceiling
 
@@ -46,17 +46,17 @@ question: Give me all houses that are a maisonette and on Gloucester Green
 
 question: Give me all houses in a corner or end-of-terrace plot
 
-question: Give me all houses with 3 bedrooms, but cheaper than 150000 GBP
+question: Give me all houses with 3 bedrooms, but cheaper than 150000 pounds
 
 question: Give me all houses with at least 2 reception rooms and a garden
 
-question: Give me all houses in/with a courtyard
+question: Give me all houses with a courtyard
 
 question: Give me all houses with fireplace and a garden that is not communal
 
 question: Give me all houses with parking but not Victorian
 
-//question: Give me all houses with 2-5 bedrooms, a balcony, and a price less than 450000 GBP
+//question: Give me all houses with 2 to 5 bedrooms, a balcony, and a price less than 450000 pounds
 
 question: Give me all houses with 3 bathrooms, but not en-suite
 
@@ -64,9 +64,9 @@ question: Give me all houses in a retirement complex
 
 question: Give me all houses with double glazing and central heating
 
-question: Give me all houses with “no upper chain” (means immediately available)
+question: Give me all houses immediately available
 
-question: Give me all houses listed Grade I or Grade II (means “under protection for age …”)
+question: Give me all houses listed Grade I or Grade II
 
 question: Give me all houses that have recently replumbed
 
@@ -76,4 +76,4 @@ question: Give me all houses with more than 2 bedrooms, but not in Marston
 
 question: Give me all houses in Banbury Road
 
-question: Give me all houses in the area of (John) Radcliffe hospital
+question: Give me all houses in the area of John Radcliffe hospital

@@ -63,9 +63,9 @@ public class OxfordEvaluation {
 		while((question = in.readLine()) != null){
 			question = question.replace("question:", "").trim();
 			if(question.isEmpty() || question.startsWith("//")) continue;
-			if(!question.toLowerCase().contains("Give me all") && Character.isLowerCase(question.charAt(0))){
-				question = "Give me all " + question;
-			}
+			//if(!question.toLowerCase().contains("Give me all") && Character.isLowerCase(question.charAt(0))){
+			//	question = "Give me all " + question;
+			//}
 			System.out.println("########################################################");
 			questionCnt++;
 			System.out.println(question);
