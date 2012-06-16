@@ -76,9 +76,7 @@ question: studio apartments in Summertown, Oxford
  
 question: freehold houses with 2 bedrooms and a living room in Banbury
  
-question: houses in Oxford city centre with at most 2 bedrooms
- 
-question: houses with garage within minutes of Oxford schools and in a quiet road
+question: houses in Oxford city centre with at most 2 bedrooms	
  
 question: victorian town houses in north Oxford
  
@@ -116,9 +114,9 @@ question: which places are offered close to the train station?
 
 question: show me the retirement houses for sale near Oxford. 
 
-question: give me a flat which is far from the river. 
+question: give me a flat with at least two bathrooms for less than 1000 pounds. 
 
-question: show me a flat which is close to three bars.
+question: show me a flat which is close to 3 bars.
 
 question: what is the average price of furnished 1 bedroom apartments in Heddington?
 
@@ -176,7 +174,7 @@ question: house with at least 2 reception rooms and a garden
 
 question: house with a courtyard
 
-question: house with fireplace and a garden that is not communal
+question: house with a fireplace and a garden that is not communal
 
 question: house with parking but not Victorian
 
