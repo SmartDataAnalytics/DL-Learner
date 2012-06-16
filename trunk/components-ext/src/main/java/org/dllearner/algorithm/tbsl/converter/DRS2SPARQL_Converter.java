@@ -117,12 +117,12 @@ public class DRS2SPARQL_Converter {
 //            System.out.println("--- referent: " + referent.toString()); // DEBUG
             for (Slot s : slots) {
 //           	System.out.println("--- slot: " + s.toString()); // DEBUG
-        		if (s.getAnchor().equals(referent.getValue()) || s.getAnchor().equals(referent.toString())) {
+                if (s.getAnchor().equals(referent.getValue()) || s.getAnchor().equals(referent.toString())) {
 //        			System.out.println("    fits!"); // DEBUG
-       			template.addSlot(s);
-        			break;
-        		}
-        	}
+                    template.addSlot(s);
+                    break;
+                }
+            }
         }
         
         for (Slot s : slots) if (s.getAnchor().equals("SLOT_arg")) template.addSlot(s);
@@ -410,16 +410,22 @@ public class DRS2SPARQL_Converter {
             if (firstIsURI || firstIsInt) {
                 drs.replaceEqualRef(secondArg, firstArg, true);
                 for (Slot s : slots) {
-                	if (s.getAnchor().equals(secondArg.getValue())) {
-                		s.setAnchor(firstArg.getValue());
-                	}
+                	if (s.getAnchor().equals(secondArg.getValue()))
+                            s.setAnchor(firstArg.getValue());
+                	if (s.getWords().contains(secondArg.getValue())) {
+                            s.getWords().remove(secondArg.getValue());
+                            s.getWords().add(firstArg.getValue());
+                        }
                 }
             } else if (secondIsURI || secondIsInt) {
                 drs.replaceEqualRef(firstArg, secondArg, true);
                 for (Slot s : slots) {
-                	if (s.getAnchor().equals(firstArg.getValue())) {
-                		s.setAnchor(secondArg.getValue());
-                	}
+                	if (s.getAnchor().equals(firstArg.getValue()))
+                            s.setAnchor(secondArg.getValue());
+                	if (s.getWords().contains(firstArg.getValue())) {
+                            s.getWords().remove(firstArg.getValue());
+                            s.getWords().add(secondArg.getValue());
+                        }
                 }
             } else {
                 drs.replaceEqualRef(firstArg, secondArg, false);
