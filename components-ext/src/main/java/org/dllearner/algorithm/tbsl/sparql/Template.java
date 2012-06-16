@@ -33,11 +33,14 @@ public class Template implements Serializable, Comparable<Template>{
         public Template checkandrefine() {
             
             Set<Slot> argslots = new HashSet<Slot>();
-            for (Slot slot : slots) if (slot.anchor.equals("SLOT_arg")) {
+            for (Slot slot : slots) if (slot.anchor.equals("SLOT_arg")) argslots.add(slot);
+            
+            for (Slot slot : argslots) {
                 String var = slot.words.get(0);
                 // check for clash (v=LITERAL && v=RESOURCE)
-                for (Slot s : argslots) {
-                    if (s.words.get(0).equals(slot.words.get(0)) && !s.type.equals(slot.type)) 
+                for (Slot s : slots) {
+                    if ((s.words.get(0).equals(slot.words.get(0)) || s.anchor.equals(slot.words.get(0)))
+                            && !s.type.equals(slot.type)) 
                         return null;
                 }
                 // check for clash (v=LITERAL && p(...,v)=OBJECTPROPERTY) || (v=RESOURCE && p(...,v)=DATATYPEPROPERTY)
@@ -53,7 +56,6 @@ public class Template implements Serializable, Comparable<Template>{
                         }
                     }
                 }
-                argslots.add(slot);
             }
             
             for (Slot slot : slots) {
@@ -99,7 +101,14 @@ public class Template implements Serializable, Comparable<Template>{
             }
             
             // finally remove all argslots
-            slots.removeAll(argslots);
+//            slots.removeAll(argslots); // removes all (argslots + resource slots)
+//            for (Slot sl : argslots) slots.remove(sl); // removes resource slots
+            List<Slot> keep = new ArrayList<Slot>();
+            for (Slot s : slots) {
+                if (!s.anchor.startsWith("SLOT_arg"))
+                    keep.add(s);
+            }
+            slots = keep; 
             
             return this;
         }
