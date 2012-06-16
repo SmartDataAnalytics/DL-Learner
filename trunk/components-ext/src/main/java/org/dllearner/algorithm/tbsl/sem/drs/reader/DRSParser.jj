@@ -191,6 +191,7 @@ DRS_Condition Condition() :
 		if (quantifier.toString().equals("MANY")) {drs.setQuantifier(DRS_Quantifier.MANY);}
 		if (quantifier.toString().equals("HOWMANY")) {drs.setQuantifier(DRS_Quantifier.HOWMANY);}
 		if (quantifier.toString().equals("NO")) {drs.setQuantifier(DRS_Quantifier.NO);}
+		if (quantifier.toString().equals("OR")) {drs.setQuantifier(DRS_Quantifier.OR);}
 
 	return drs;
 

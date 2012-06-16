@@ -4,10 +4,10 @@
   close to  || (NP NP* (PP P:'close' P:'to' DP[dp])) || <x,l1,<e,t>, [ l1:[ | SLOT_closeto(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_closeto/OBJECTPROPERTY/near ]>
   near      || (NP NP* (PP P:'near' DP[dp])) || <x,l1,<e,t>, [ l1:[ | SLOT_near(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_near/OBJECTPROPERTY/near ]>
   nearby    || (NP NP* (PP P:'nearby' DP[dp])) || <x,l1,<e,t>, [ l1:[ | SLOT_nearby(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_nearby/OBJECTPROPERTY/near ]>
-  within walking distance from || (NP NP* (PP P:'within' (NP N:'walking' N:'distance' P:'from' DP[dp]))) || <x,l1,<e,t>, [ l1:[ | SLOT_near(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_near/OBJECTPROPERTY/near ]>
-  within minutes of || (NP NP* (PP P:'within' (NP N:'minutes' P:'of' DP[dp]))) || <x,l1,<e,t>, [ l1:[ | SLOT_near(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_near/OBJECTPROPERTY/near ]>
-  in walking distance from || (NP NP* (PP P:'in' (NP N:'walking' N:'distance' P:'from' DP[dp]))) || <x,l1,<e,t>, [ l1:[ | SLOT_near(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_near/OBJECTPROPERTY/near ]>
-  at walking distance from || (NP NP* (PP P:'at' (NP N:'walking' N:'distance' P:'from' DP[dp]))) || <x,l1,<e,t>, [ l1:[ | SLOT_near(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_near/OBJECTPROPERTY/near ]>
+  within walking distance from || (NP NP* (PP P:'within' (NP N:'walking' N:'distance' P:'from' DP[dp]))) || <x,l1,<e,t>, [ l1:[ | SLOT_near(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_near/OBJECTPROPERTY/at_walking_distance ]>
+  within minutes of || (NP NP* (PP P:'within' (NP N:'minutes' P:'of' DP[dp]))) || <x,l1,<e,t>, [ l1:[ | SLOT_near(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_near/OBJECTPROPERTY/at_walking_distance ]>
+  in walking distance from || (NP NP* (PP P:'in' (NP N:'walking' N:'distance' P:'from' DP[dp]))) || <x,l1,<e,t>, [ l1:[ | SLOT_near(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_near/OBJECTPROPERTY/at_walking_distance ]>
+  at walking distance from || (NP NP* (PP P:'at' (NP N:'walking' N:'distance' P:'from' DP[dp]))) || <x,l1,<e,t>, [ l1:[ | SLOT_near(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_near/OBJECTPROPERTY/at_walking_distance ]>
   in        || (NP NP* (PP P:'in' DP[dp]))           || <x,l1,<e,t>, [ l1:[ | SLOT_location(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_location/PROPERTY/location^city^postal_code^address^street ]>
   since     || (NP NP* (PP P:'since' DP[dp]))        || <x,l1,<e,t>, [ l1:[ | SLOT_since(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_since/PROPERTY/since ]>
   

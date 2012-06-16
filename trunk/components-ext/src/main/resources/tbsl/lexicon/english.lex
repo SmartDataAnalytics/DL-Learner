@@ -142,8 +142,6 @@
 	and || (S S* CC:'and' S[s]) || <x,l1,t,[l1:[|]],[(l2,y,s,t)],[l1=l2],[]>
 	and || (DP DP* CC:'and' DP[dp]) || <x,l1,<<e,t>,t>,[l1:[|]],[(l2,y,dp,<<e,t>,t>)],[l1=l2],[]>
 	and || (NP NP* CC:'and' NP[np]) || <x,l1,<e,t>,[l1:[|x=y]],[(l2,y,np,<e,t>)],[l1=l2],[]>
-	and || (VP VP* CC:'and' VP[vp]) || -
-	and || (ADJ ADJ* CC:'and' ADJ[adj]) || -
 
         but || (S S* CC:'but' S[s]) || <x,l1,t,[l1:[|]],[(l2,y,s,t)],[l1=l2],[]>
 	but || (DP DP* CC:'but' DP[dp]) || <x,l1,<<e,t>,t>,[l1:[|]],[(l2,y,dp,<<e,t>,t>)],[l1=l2],[]>
@@ -151,11 +149,10 @@
 	
 	as well as || (NP NP* CC:'as' CC:'well' CC:'as' NP[np]) || <x,l1,<e,t>,[l1:[|]],[(l2,y,np,<e,t>)],[l1=l2],[]>
 	
-	or || (S S* CC:'or' S[2]) || -
-	or || (DP DP* CC:'or' DP[2]) || -
-	or || (NP NP* CC:'or' NP[2]) || -
-	or || (VP VP* CC:'or' VP[2]) || -
-	or || (ADJ ADJ* CC:'or' ADJ[2]) || -
+	or || (S S* CC:'or' S[cc]) || <y, l2, <<e,t>,t>, [ l1:[ | l2:[ | ] OR y l3:[|] ] ], [ (l4,y,cc,<e,t>) ], [ l4=l3 ],[]>
+	or || (DP DP* CC:'or' DP[cc]) || <y, l2, <<e,t>,t>, [ l1:[ | l2:[ | ] OR y l3:[|] ] ], [ (l4,y,cc,<e,t>) ], [ l4=l3 ],[]>
+	or || (NP NP* CC:'or' NP[cc]) || <y, l2, <<e,t>,t>, [ l1:[ | l2:[ | ] OR y l3:[|] ] ], [ (l4,y,cc,<e,t>) ], [ l4=l3 ],[]>
+	or || (ADJ ADJ* CC:'or' ADJ[cc]) || -
 	
 
 // EXISTENTIAL

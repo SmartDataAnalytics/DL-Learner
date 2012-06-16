@@ -412,6 +412,7 @@ DominanceConstraint dc = null;
                 if (quantifier.toString().equals("MANY")) {drs.setQuantifier(DRS_Quantifier.MANY);}
                 if (quantifier.toString().equals("HOWMANY")) {drs.setQuantifier(DRS_Quantifier.HOWMANY);}
                 if (quantifier.toString().equals("NO")) {drs.setQuantifier(DRS_Quantifier.NO);}
+                if (quantifier.toString().equals("OR")) {drs.setQuantifier(DRS_Quantifier.OR);}
 
         {if (true) return drs;}
     } else {
@@ -830,14 +831,6 @@ DominanceConstraint dc = null;
     finally { jj_save(39, xla); }
   }
 
-  private boolean jj_3R_13() {
-    if (jj_3R_7()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_36()) jj_scanpos = xsp;
-    return false;
-  }
-
   private boolean jj_3_12() {
     if (jj_scan_token(2)) return true;
     if (jj_3R_1()) return true;
@@ -891,14 +884,14 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3R_11() {
-    if (jj_scan_token(LABEL)) return true;
-    if (jj_scan_token(11)) return true;
+  private boolean jj_3_38() {
+    if (jj_scan_token(C)) return true;
     return false;
   }
 
-  private boolean jj_3_38() {
-    if (jj_scan_token(C)) return true;
+  private boolean jj_3R_11() {
+    if (jj_scan_token(LABEL)) return true;
+    if (jj_scan_token(11)) return true;
     return false;
   }
 
@@ -923,19 +916,13 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_23() {
-    if (jj_scan_token(MOST)) return true;
-    return false;
-  }
-
   private boolean jj_3_37() {
     if (jj_scan_token(A)) return true;
     return false;
   }
 
-  private boolean jj_3_30() {
-    if (jj_3R_10()) return true;
-    if (jj_scan_token(6)) return true;
+  private boolean jj_3_23() {
+    if (jj_scan_token(MOST)) return true;
     return false;
   }
 
@@ -946,6 +933,12 @@ DominanceConstraint dc = null;
     jj_scanpos = xsp;
     if (jj_3_38()) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3_30() {
+    if (jj_3R_10()) return true;
+    if (jj_scan_token(6)) return true;
     return false;
   }
 
@@ -993,14 +986,14 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_10() {
-    if (jj_scan_token(9)) return true;
-    if (jj_scan_token(LABEL)) return true;
+  private boolean jj_3R_4() {
+    if (jj_3R_16()) return true;
     return false;
   }
 
-  private boolean jj_3R_4() {
-    if (jj_3R_16()) return true;
+  private boolean jj_3_10() {
+    if (jj_scan_token(9)) return true;
+    if (jj_scan_token(LABEL)) return true;
     return false;
   }
 
@@ -1172,6 +1165,14 @@ DominanceConstraint dc = null;
 
   private boolean jj_3R_2() {
     if (jj_3R_14()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_13() {
+    if (jj_3R_7()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_36()) jj_scanpos = xsp;
     return false;
   }
 
