@@ -382,6 +382,7 @@ DRS_Condition Condition() :
 		if (quantifier.toString().equals("MANY")) {drs.setQuantifier(DRS_Quantifier.MANY);}
 		if (quantifier.toString().equals("HOWMANY")) {drs.setQuantifier(DRS_Quantifier.HOWMANY);}
 		if (quantifier.toString().equals("NO")) {drs.setQuantifier(DRS_Quantifier.NO);}
+		if (quantifier.toString().equals("OR")) {drs.setQuantifier(DRS_Quantifier.OR);}
 
 	return drs;
 
@@ -504,8 +505,8 @@ TOKEN: {<LABEL: "l"(["0"-"9"])+>}
 //TOKEN: {<WORD: (["a"-"z","A"-"Z","_",".","#",":","0"-"9"])+>}
 //TOKEN: {<DR: (["?","!"])?(["a"-"z","A"-"Z","0"-"9","."])+>}
 
-TOKEN: {<A: (["a"-"z","A"-"Z","0"-"9","'","_"])+>}
-TOKEN: {<B: (["a"-"z","A"-"Z","_",".","#","0"-"9"])+":"(["a"-"z","A"-"Z","_",".","#","0"-"9"])+>} // oder eher: SLOT_([...])+
+TOKEN: {<A: (["a"-"z","A"-"Z","0"-"9","'","_","-"])+>}
+TOKEN: {<B: (["a"-"z","A"-"Z","_",".","#","0"-"9"])+":"(["a"-"z","A"-"Z","_",".","#","0"-"9","-"])+>} // oder eher: SLOT_([...])+
 TOKEN: {<C: ["?","!"](["a"-"z","A"-"Z","0"-"9"])+>}
 
 Token dr() : { Token t; }{ (t=<A> | t=<C>) { return t; } }

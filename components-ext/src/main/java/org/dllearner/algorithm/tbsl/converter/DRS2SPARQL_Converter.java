@@ -251,7 +251,17 @@ public class DRS2SPARQL_Converter {
 
             if (predicate.equals("count")) {
             	// COUNT(?x) AS ?c
-                query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, simple.getArguments().get(1).getValue()));
+                if (simple.getArguments().get(1).getValue().matches("[0-9]+")) {
+                    String fresh = "v"+createFresh();
+                    query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, fresh));
+                    query.addFilter(new SPARQL_Filter(
+                        new SPARQL_Pair(
+                        new SPARQL_Term(fresh,false),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
+                        SPARQL_PairType.EQ)));
+                } else {
+                    query.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, simple.getArguments().get(1).getValue()));
+                }
                 return query;
             } else if (predicate.equals("sum")) {
                 query.addSelTerm(new SPARQL_Term(simple.getArguments().get(1).getValue(), SPARQL_Aggregate.SUM));
@@ -313,24 +323,8 @@ public class DRS2SPARQL_Converter {
             	query.addFilter(new SPARQL_Filter(
             			new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),true),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue().replace("_","").trim(),true),
                         SPARQL_PairType.REGEX)));
-            }
-            else if (predicate.equals("regextoken")) {
-                String arg = simple.getArguments().get(1).getValue();
-                String regex = null;
-                for (Slot slot : slots) {
-                    if (slot.getAnchor().equals(arg)) {
-                        if (!slot.getWords().isEmpty()) regex = slot.getWords().get(0);
-                    }
-                }
-                if (regex != null) {
-                    query.addFilter(new SPARQL_Filter(
-                                    new SPARQL_Pair(
-                        new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
-                        new SPARQL_Term("'"+regex+"'",false),
-                        SPARQL_PairType.REGEX)));
-                }
             }
             else {
 	            if (arity == 1) {
@@ -409,8 +403,8 @@ public class DRS2SPARQL_Converter {
             secondArg = c.getArguments().get(1);
             firstIsURI = isUri(firstArg.getValue());
             secondIsURI = isUri(secondArg.getValue());
-            firstIsInt = firstArg.getValue().matches("[0..9]+"); 
-            secondIsInt = secondArg.getValue().matches("[0..9]+");
+            firstIsInt = firstArg.getValue().matches("(\\?)?[0..9]+"); 
+            secondIsInt = secondArg.getValue().matches("(\\?)?[0..9]+");
 
             drs.removeCondition(c);
             if (firstIsURI || firstIsInt) {

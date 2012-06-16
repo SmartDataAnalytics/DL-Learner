@@ -194,6 +194,7 @@ public class DRSParser implements DRSParserConstants {
                 if (quantifier.toString().equals("MANY")) {drs.setQuantifier(DRS_Quantifier.MANY);}
                 if (quantifier.toString().equals("HOWMANY")) {drs.setQuantifier(DRS_Quantifier.HOWMANY);}
                 if (quantifier.toString().equals("NO")) {drs.setQuantifier(DRS_Quantifier.NO);}
+                if (quantifier.toString().equals("OR")) {drs.setQuantifier(DRS_Quantifier.OR);}
 
         {if (true) return drs;}
     } else {
@@ -523,6 +524,11 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
+  private boolean jj_3_22() {
+    if (jj_scan_token(A)) return true;
+    return false;
+  }
+
   private boolean jj_3_12() {
     if (jj_scan_token(HOWMANY)) return true;
     return false;
@@ -544,8 +550,13 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
-  private boolean jj_3_22() {
-    if (jj_scan_token(A)) return true;
+  private boolean jj_3R_3() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_22()) {
+    jj_scanpos = xsp;
+    if (jj_3_23()) return true;
+    }
     return false;
   }
 
@@ -560,16 +571,6 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
-  private boolean jj_3R_3() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_22()) {
-    jj_scanpos = xsp;
-    if (jj_3_23()) return true;
-    }
-    return false;
-  }
-
   private boolean jj_3_5() {
     if (jj_scan_token(5)) return true;
     if (jj_3R_2()) return true;
@@ -581,11 +582,6 @@ public class DRSParser implements DRSParserConstants {
     return false;
   }
 
-  private boolean jj_3_14() {
-    if (jj_scan_token(NO)) return true;
-    return false;
-  }
-
   private boolean jj_3R_4() {
     Token xsp;
     xsp = jj_scanpos;
@@ -593,6 +589,11 @@ public class DRSParser implements DRSParserConstants {
     jj_scanpos = xsp;
     if (jj_3_21()) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3_14() {
+    if (jj_scan_token(NO)) return true;
     return false;
   }
 
