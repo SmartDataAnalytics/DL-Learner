@@ -2,12 +2,17 @@ package org.dllearner.algorithm.tbsl.ltag.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.tbsl.ltag.data.TreeNode;
 import org.dllearner.algorithm.tbsl.sem.dudes.data.Dude;
 import org.dllearner.algorithm.tbsl.sem.dudes.reader.ParseException;
 import org.dllearner.algorithm.tbsl.sem.util.Pair;
+
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 public class Parser {
 	
@@ -85,6 +90,53 @@ public class Parser {
 
 		if (USE_DPS_AS_INITTREES && derivationTrees.isEmpty()) {
 			internalParse(parseGrammar.getDPInitTrees(), n);
+		}
+
+		if (VERBOSE) logger.trace("Constructed " + derivationTrees.size() + " derivation trees.\n");
+		return derivationTrees;
+
+	}
+	
+	public List<DerivationTree> parseMultiThreaded(String taggeduserinput, LTAGLexicon grammar) {
+
+		derivationTrees.clear();
+		derivedTrees.clear();
+		dudes.clear();
+		temporaryEntries.clear();
+		
+		if (!VERBOSE) GrammarFilter.VERBOSE = false;
+
+		/*
+		 * create a local copy of the grammar with own treeIDs. This is
+		 * necessary since if an input string contains the same token multiple
+		 * times, a tree for each token is added. Both trees need to have
+		 * different treeIDs for the parser to work correctly.
+		 */
+		parseGrammar = GrammarFilter.filter(taggeduserinput,grammar,temporaryEntries,MODE);
+
+		String inputNoTags = "";		
+		for (String s : taggeduserinput.split(" ")) {
+			inputNoTags += s.substring(0,s.indexOf("/")) + " ";
+		}
+
+		this.input = ("# ".concat(inputNoTags.replaceAll("'","").trim())).split(" ");
+		int n = this.input.length;
+		
+		
+		if (SHOW_GRAMMAR) {
+			logger.trace(parseGrammar);
+		}
+		if (SHOW_LEXICAL_COVERAGE) {
+			logger.trace("# OF TREES FOUND: " + parseGrammar.size());
+			logger.trace("# OF INPUT TOKENS: " + n);
+		}
+
+		List<Pair<TreeNode, Short>> initTrees = parseGrammar.getInitTrees();
+		
+		internalParseMultiThreaded(initTrees, n);
+
+		if (USE_DPS_AS_INITTREES && derivationTrees.isEmpty()) {
+			internalParseMultiThreaded(parseGrammar.getDPInitTrees(), n);
 		}
 
 		if (VERBOSE) logger.trace("Constructed " + derivationTrees.size() + " derivation trees.\n");
@@ -211,6 +263,23 @@ public class Parser {
 		}
 
 	}
+	
+	private void internalParseMultiThreaded(List<Pair<TreeNode, Short>> initTrees, int n) {
+		Monitor parseMon = MonitorFactory.getTimeMonitor("parse");
+		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		parseMon.start();
+		for (int k = 0; k < initTrees.size(); k++) {
+			Pair<TreeNode, Short> pair = initTrees.get(k);
+			TreeNode tree = pair.getFirst();
+			short tid = pair.getSecond();
+			threadPool.execute(new TreeProcessor(tree, tid, n));
+		}
+		threadPool.shutdown();
+		while(!threadPool.isTerminated()){
+			
+		}
+		parseMon.start();
+	}
 
 	private List<List<ParseState>> makeStateSets() {
 
@@ -298,6 +367,20 @@ public class Parser {
 		return derivedTrees;
 
 	}
+	
+	public List<TreeNode> buildDerivedTreesMultiThreaded(LTAGLexicon G) throws ParseException {
+		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		for (DerivationTree dTree : derivationTrees) {
+			threadPool.execute(new DerivationTreeProcessor(dTree, G));
+		}
+		threadPool.shutdown();
+		while(!threadPool.isTerminated()){
+			
+		}
+
+		return derivedTrees;
+
+	}
 
 	/**
 	 * get List of Dudes parallely constructed by Parser.buildDerivedTrees()
@@ -341,6 +424,170 @@ public class Parser {
 		
 		grammar.clear(temps);
 
+	}
+	
+	class TreeProcessor implements Runnable{
+
+		
+		private TreeNode tree;
+		private short tid;
+		private int n;
+		
+		public TreeProcessor(TreeNode tree, short tid, int n) {
+			this.tree = tree;
+			this.tid = tid;
+			this.n = n;
+		}
+
+		@Override
+		public void run() {
+			List<List<ParseState>> stateSets = makeStateSets();
+
+			ParseState start = new ParseState(tree, tid);
+			// the inittree is already used
+			start.getUsedTrees().add(tid);
+			
+			stateSets.get(0).add(start);
+			boolean skip = false;
+			for (int i = 0; i < n; i++) {
+
+				if (i > 0) {
+					stateSets.get(i - 1).clear();
+					if (USE_LESS_MEMORY) {
+						System.gc();
+					}
+				}
+
+				List<ParseState> localStateSet = new ArrayList<ParseState>(
+						stateSets.get(i));
+				List<ParseState> localStateSet2 = new ArrayList<ParseState>();
+
+				stateSets.get(i).clear();
+
+				while (localStateSet.size() > 0) {
+
+					for (int j = 0; j < localStateSet.size(); j++) {
+						ParseState state = localStateSet.get(j);
+
+						List<ParseState> newStates;
+
+						OPLOOP: for (Class<?> c : operations) {
+
+							try {
+
+								ParserOperation op = (ParserOperation) c
+										.newInstance();
+
+								newStates = (op.go(i, state, input,
+										parseGrammar));
+
+								if (!newStates.isEmpty()) {
+
+									for (ParseState newState : newStates) {
+										if (newState.i.equals(i)) {
+											localStateSet2.add(newState);
+										}
+
+										if ((op instanceof Scanner)
+												|| (newState.isEndState() && newState.i == n - 1)) {
+											stateSets.get(newState.i).add(
+													newState);
+										}
+									}
+
+									op = null;
+									break OPLOOP;
+
+								}
+
+							} catch (InstantiationException e) {
+								e.printStackTrace();
+
+							} catch (IllegalAccessException e) {
+								e.printStackTrace();
+
+							}
+
+						}
+
+					}
+
+					localStateSet = null;
+					localStateSet = new ArrayList<ParseState>(localStateSet2);
+					localStateSet2 = new ArrayList<ParseState>();
+
+				}
+
+				localStateSet = null;
+				localStateSet2 = null;
+
+				/*
+				 * if the parser could not scan the next input token this run /
+				 * initial tree is rejected
+				 */
+				if (i < n - 1 && stateSets.get(i + 1).isEmpty()) {
+
+					stateSets.get(i).clear();
+					skip = true;
+					break;
+
+				}
+
+			}
+
+			if(!skip){
+				for (ParseState state : stateSets.get(n - 1)) {
+
+					
+//					if (state.isEndState() && state.t.equals(tree)) {
+					if (state.isEndState()) {
+						if (state.t.equals(tree)) {
+
+						derivationTrees.add(createDerivationTree(state,
+								parseGrammar));
+
+						}
+					}
+
+				}
+			}
+			
+			
+		}
+		
+	}
+	
+	class DerivationTreeProcessor implements Runnable{
+		
+		private DerivationTree dTree;
+		private LTAGLexicon lexicon;
+		
+		public DerivationTreeProcessor(DerivationTree dTree, LTAGLexicon lexicon) {
+			this.dTree = dTree;
+			this.lexicon = lexicon;
+		}
+
+		@Override
+		public void run() {
+			try {
+				List<Pair<TreeNode, Dude>> pairs = DerivedTree.build(dTree, parseGrammar, lexicon, CONSTRUCT_SEMANTICS);
+				
+				for (Pair<TreeNode,Dude> pair : pairs) {
+					TreeNode x = pair.getFirst();
+					Dude dude = pair.getSecond();
+
+					if (!derivedTrees.contains(x) || !dudes.contains(dude)) {
+						derivedTrees.add(x);
+						dudes.add(dude);
+					}
+					
+				}
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
 	}
 
 }

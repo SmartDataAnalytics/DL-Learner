@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -86,7 +87,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	
 	
 	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner2.class);
-	private Monitor mon = MonitorFactory.getTimeMonitor("tbsl");
+	private Monitor templateMon = MonitorFactory.getTimeMonitor("template");
+	private Monitor sparqlMon = MonitorFactory.getTimeMonitor("sparql");
 	
 	private boolean useRemoteEndpointValidation;
 	private boolean stopIfQueryResultNotEmpty;
@@ -128,6 +130,11 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	private SPARQLReasoner reasoner;
 	
 	private String currentlyExecutedQuery;
+	
+	private boolean dropZeroScoredQueries = true;
+	private boolean useManualMappingsIfExistOnly = true;
+	
+	private boolean multiThreaded = true;
 	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex){
 		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, new StanfordPartOfSpeechTagger());
@@ -280,16 +287,23 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		template2Queries = new HashMap<Template, Collection<? extends Query>>();
 		slot2URI = new HashMap<Slot, List<String>>();
 		currentlyExecutedQuery = null;
+		
+//		templateMon.reset();
+//		sparqlMon.reset();
 	}
 	
 	public void learnSPARQLQueries() throws NoTemplateFoundException{
 		reset();
 		//generate SPARQL query templates
 		logger.info("Generating SPARQL query templates...");
-		mon.start();
-		templates = templateGenerator.buildTemplates(question);
-		mon.stop();
-		logger.info("Done in " + mon.getLastValue() + "ms.");
+		templateMon.start();
+		if(multiThreaded){
+			templates = templateGenerator.buildTemplatesMultiThreaded(question);
+		} else {
+			templates = templateGenerator.buildTemplates(question);
+		}
+		templateMon.stop();
+		logger.info("Done in " + templateMon.getLastValue() + "ms.");
 		if(templates.isEmpty()){
 			throw new NoTemplateFoundException();
 		}
@@ -672,8 +686,16 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				}
 				
 			}
-			for(WeightedQuery q : queries){
-				q.setScore(q.getScore()/t.getSlots().size());
+			for (Iterator<WeightedQuery> iterator = queries.iterator(); iterator.hasNext();) {
+				WeightedQuery wQ = iterator.next();
+				if(dropZeroScoredQueries){
+					if(wQ.getScore() == 0){
+						iterator.remove();
+					}
+				} else {
+					wQ.setScore(wQ.getScore()/t.getSlots().size());
+				}
+				
 			}
 			allQueries.addAll(queries);
 			List<Query> qList = new ArrayList<Query>();
@@ -752,7 +774,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	
 	private List<String> getLemmatizedWords(List<String> words){
 		logger.info("Pruning word list " + words + "...");
-		mon.start();
+//		mon.start();
 		List<String> pruned = new ArrayList<String>();
 		for(String word : words){
 			//currently only stem single words
@@ -766,8 +788,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			}
 			
 		}
-		mon.stop();
-		logger.info("Done in " + mon.getLastValue() + "ms.");
+//		mon.stop();
+//		logger.info("Done in " + mon.getLastValue() + "ms.");
 		logger.info("Pruned list: " + pruned);
 		return pruned;
 	}
@@ -806,46 +828,51 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	
 	private void validate(List<String> queries, SPARQL_QueryType queryType){
 		logger.info("Testing candidate SPARQL queries on remote endpoint...");
-		mon.start();
+		sparqlMon.start();
 		if(queryType == SPARQL_QueryType.SELECT){
 			for(String query : queries){
-				logger.info("Testing query:\n" + query);
-				com.hp.hpl.jena.query.Query q = QueryFactory.create(query, Syntax.syntaxARQ);
-				q.setLimit(1);
-				ResultSet rs = executeSelect(q.toString());//executeSelect(query);
-				
-				List<String> results = new ArrayList<String>();
-				QuerySolution qs;
-				String projectionVar;
-				while(rs.hasNext()){
-					qs = rs.next();
-					projectionVar = qs.varNames().next();
-					if(qs.get(projectionVar).isLiteral()){
-						results.add(qs.get(projectionVar).asLiteral().getLexicalForm());
-					} else if(qs.get(projectionVar).isURIResource()){
-						results.add(qs.get(projectionVar).asResource().getURI());
-					}
+				List<String> results;
+				try {
+					logger.info("Testing query:\n" + query);
+					com.hp.hpl.jena.query.Query q = QueryFactory.create(query, Syntax.syntaxARQ);
+					q.setLimit(1);
+					ResultSet rs = executeSelect(q.toString());//executeSelect(query);
 					
-				}
-				if(!results.isEmpty()){
-					try{
-						int cnt = Integer.parseInt(results.get(0));
-						if(cnt > 0){learnedPos = queries.indexOf(query);
+					results = new ArrayList<String>();
+					QuerySolution qs;
+					String projectionVar;
+					while(rs.hasNext()){
+						qs = rs.next();
+						projectionVar = qs.varNames().next();
+						if(qs.get(projectionVar).isLiteral()){
+							results.add(qs.get(projectionVar).asLiteral().getLexicalForm());
+						} else if(qs.get(projectionVar).isURIResource()){
+							results.add(qs.get(projectionVar).asResource().getURI());
+						}
+						
+					}
+					if(!results.isEmpty()){
+						try{
+							int cnt = Integer.parseInt(results.get(0));
+							if(cnt > 0){learnedPos = queries.indexOf(query);
+								learnedSPARQLQueries.put(query, results);
+								if(stopIfQueryResultNotEmpty){
+									return;
+								}
+							}
+						} catch (NumberFormatException e){
 							learnedSPARQLQueries.put(query, results);
+							learnedPos = queries.indexOf(query);
 							if(stopIfQueryResultNotEmpty){
 								return;
 							}
 						}
-					} catch (NumberFormatException e){
-						learnedSPARQLQueries.put(query, results);
-						learnedPos = queries.indexOf(query);
-						if(stopIfQueryResultNotEmpty){
-							return;
-						}
+						logger.info("Result: " + results);
 					}
-					
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				logger.info("Result: " + results);
+				
 			}
 		} else if(queryType == SPARQL_QueryType.ASK){
 			for(String query : queries){
@@ -862,8 +889,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			}
 		}
 		
-		mon.stop();
-		logger.info("Done in " + mon.getLastValue() + "ms.");
+		sparqlMon.stop();
+		logger.info("Done in " + sparqlMon.getLastValue() + "ms.");
 	}
 	
 	private boolean executeAskQuery(String query){
@@ -976,14 +1003,18 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 						rs.add(mappingIndex.getResourcesWithScores(word));
 					}
 				}
-				if(slot.getSlotType() == SlotType.RESOURCE){
-					rs.add(index.getResourcesWithScores(word, 50));
-				} else {
-					if(slot.getSlotType() == SlotType.CLASS){
-						word = PlingStemmer.stem(word); 
+				//use the non manual indexes only if mapping based resultset is not empty and option is set
+				if(!useManualMappingsIfExistOnly || rs.isEmpty()){
+					if(slot.getSlotType() == SlotType.RESOURCE){
+						rs.add(index.getResourcesWithScores(word, 50));
+					} else {
+						if(slot.getSlotType() == SlotType.CLASS){
+							word = PlingStemmer.stem(word); 
+						}
+						rs.add(index.getResourcesWithScores(word, 20));
 					}
-					rs.add(index.getResourcesWithScores(word, 20));
 				}
+				
 				
 				for(IndexResultItem item : rs.getItems()){
 					double similarity = Similarity.getSimilarity(word, item.getLabel());
@@ -1010,6 +1041,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			return new TreeSet<Allocation>(allocations);
 		}
 		
+	}
+	
+	public String getTaggedInput(){
+		return templateGenerator.getTaggedInput();
 	}
 	
 	private boolean isDatatypeProperty(String uri){
