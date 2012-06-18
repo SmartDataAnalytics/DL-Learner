@@ -35,5 +35,9 @@ private Set<IndexResultItem> items;
 	public String toString() {
 		return items.toString();
 	}
+	
+	public boolean isEmpty(){
+		return items.isEmpty();
+	}
 
 }
