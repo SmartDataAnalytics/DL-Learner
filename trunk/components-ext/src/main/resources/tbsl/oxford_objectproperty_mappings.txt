@@ -1,1 +1,1 @@
-http://dbpedia.org/property/near|close, near
+http://dbpedia.org/property/near|close, near, at walking distance

@@ -118,7 +118,7 @@ public class TBSLTest extends TestCase{
 		String question = "Give me all houses near a school.";
 		question = "Give me all houses with more than 3 bathrooms and more than 2 bedrooms.";
 		question = "Give me all Victorian houses in Oxfordshire";
-		question = "Give me all Edwardian house in Oxfordshire for less than 1000000.";
+		question = "modern houses with gas central heating";
 //		question = "Give me all family houses with more than 2 bathrooms and more than 4 bedrooms";
 		
 		learner.setQuestion(question);
