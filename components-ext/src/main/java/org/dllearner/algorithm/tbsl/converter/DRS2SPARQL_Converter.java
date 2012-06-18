@@ -29,6 +29,7 @@ public class DRS2SPARQL_Converter {
 
     private boolean silent = true; // suppresses console output
     private boolean oxford = true;
+    private String inputstring = null;
     List<Slot> slots;
     Template template;
     List<Integer> usedInts;
@@ -44,6 +45,9 @@ public class DRS2SPARQL_Converter {
         usedInts = new ArrayList<Integer>();
     }
     
+    public void setInputString(String s) {
+        inputstring = s;
+    }
     public void setSlots(List<Slot> ls) {
     	slots = ls;
     }
@@ -457,7 +461,7 @@ public class DRS2SPARQL_Converter {
         
         String var;
         String newvar;
-        String regex = "";
+        List<String> regexs = new ArrayList<String>();
         String[] forbidden = {"regextoken","regex","count","minimum","maximum","greater","less","greaterorequal","lessorequal","equal","sum","location","description"};
         Set<Simple_DRS_Condition> used = new HashSet<Simple_DRS_Condition>();
         
@@ -473,7 +477,9 @@ public class DRS2SPARQL_Converter {
                     }
                 }
                 if (takeit) {
-                    regex += cond.getPredicate().replace("SLOT","").replaceAll("_"," ");
+                    for (String s : cond.getPredicate().replace("SLOT","").replaceAll("_"," ").trim().split(" ")) {
+                        regexs.add(s);
+                    }
                     used.add(cond);
                 }
                 else if (!cond.getPredicate().equals("regextoken")) {
@@ -482,9 +488,9 @@ public class DRS2SPARQL_Converter {
                     }
                 }
             }
-            if (!regex.isEmpty()) {
+            if (!regexs.isEmpty()) {
                 c.getArguments().remove(1);
-                c.getArguments().add(new DiscourseReferent("'"+regex.trim()+"'"));
+                c.getArguments().add(new DiscourseReferent("'"+orderedRegex(regexs)+"'"));
                 c.setPredicate("regex");
             }
             else { used.add(c); } // TODO should not happen!
@@ -503,7 +509,7 @@ public class DRS2SPARQL_Converter {
         for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
             String d = "";
             String d2 = "";
-            String newregex = "";
+            List<String> regextokens = new ArrayList<String>();
             if (c.getPredicate().equals("SLOT_description")) {
                 d = c.getArguments().get(0).getValue();
                 d2 = c.getArguments().get(1).getValue();
@@ -519,14 +525,16 @@ public class DRS2SPARQL_Converter {
                 for (Simple_DRS_Condition cond : drs.getAllSimpleConditions()) {
                     if (cond.getPredicate().equals("regex") && 
                             (cond.getArguments().get(0).getValue().equals(d) || cond.getArguments().get(0).getValue().equals(d2))) {
-                        newregex += cond.getArguments().get(1).getValue().replaceAll("'","").replaceAll("_"," ").trim() + " ";
+                        for (String s : cond.getArguments().get(1).getValue().replaceAll("'","").replaceAll("_"," ").trim().split(" ")) {
+                            regextokens.add(s);
+                        }
                         oldconds.add(cond);
                     }
                 }
                 for (Simple_DRS_Condition cond : oldconds) drs.removeCondition(cond);
                 List<DiscourseReferent> newrefs = new ArrayList<DiscourseReferent>();
                 newrefs.add(new DiscourseReferent(d));
-                newrefs.add(new DiscourseReferent("'"+newregex.trim()+"'"));
+                newrefs.add(new DiscourseReferent("'"+orderedRegex(regextokens)+"'"));
                 drs.addCondition(new Simple_DRS_Condition("regex",newrefs));
                 break;
             }
@@ -605,13 +613,37 @@ public class DRS2SPARQL_Converter {
         return false; // TODO
     }
     
-	private int createFresh() {
+    private int createFresh() {
 		
-		int fresh = 0;
-		for (int i = 0; usedInts.contains(i); i++) {
-			fresh = i+1 ;
-		}
-		usedInts.add(fresh);
-		return fresh;
+        int fresh = 0;
+	for (int i = 0; usedInts.contains(i); i++) {
+            fresh = i+1 ;
 	}
+	usedInts.add(fresh);
+	return fresh;
+    }
+    
+    private String orderedRegex(List<String> regextokens) {
+        
+        String newregex = "";
+        if (inputstring != null) {
+            String[] inputparts = inputstring.split(" ");
+            TreeMap<Integer,String> regexparts = new TreeMap<Integer,String>();
+            for (String s : regextokens) {
+                for (int i = 0; i < inputparts.length; i++) {
+                    if (inputparts[i].matches(s+"(/\\w+)?")) {
+                        regexparts.put(i,s);
+                        break;
+                    }
+                }
+            }
+            for (int n : regexparts.descendingKeySet()) {
+                newregex = regexparts.get(n) + " " + newregex;
+            }
+         } 
+         else for (String s : regextokens) newregex += s + " ";
+        
+        return newregex.trim();
+        }
+    
 }
