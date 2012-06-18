@@ -68,7 +68,7 @@
 	many || (DP DET:'many' NP[noun]) || <y, l1, <<e,t>,t>, [ l1:[ | l2:[ y | ] MANY y l3:[|] ] ], [ (l4,y,noun,<e,t>) ], [ l4=l2 ],[]>
 	the || (DP DET:'the' NP[noun]) || <x, l1, <<e,t>,t>, [ l1:[x|] ], [ (l2,x,noun,<e,t>) ], [ l2=l1 ],[]>
 	at least || (DP DET:'at' DET:'least' NUM[num] NP[noun]) || <y,l1,<<e,t>,t>,[l1:[ y,j |count(a,y,j), greaterorequal(j,x) ]],[(l2,y,noun,<e,t>),(l3,x,num,e)],[ l1=l2, l2=l3 ],[]>
-	at most || (DP DET:'at' DET:'most' NUM[num] NP[noun]) || <y,l1,<<e,t>,t>,[l1:[ y,j | count(a,y,j), smallerorequal(j,x) ]],[(l2,y,noun,<e,t>),(l3,x,num,e)],[ l1=l2, l2=l3 ],[]>
+	at most || (DP DET:'at' DET:'most' NUM[num] NP[noun]) || <y,l1,<<e,t>,t>,[l1:[ y,j | count(a,y,j), lessorequal(j,x) ]],[(l2,y,noun,<e,t>),(l3,x,num,e)],[ l1=l2, l2=l3 ],[]>
 	exactly || (DP DET:'exactly' NUM[num] NP[noun]) || <y,l1,<<e,t>,t>,[l1:[ y,j | count(y,j), equals(j,x) ]],[(l2,y,noun,<e,t>),(l3,x,num,e)],[ l1=l2, l2=l3 ],[]>
 	
 	other || (NP ADJ:'other' NP*) || <x,l1,<e,t>,[ l1:[ | ] ], [],[],[]>

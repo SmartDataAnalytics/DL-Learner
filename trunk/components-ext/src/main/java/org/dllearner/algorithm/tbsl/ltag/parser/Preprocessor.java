@@ -223,7 +223,7 @@ public class Preprocessor {
 		while (m.find()) {
 //                    if (!m.group(4).startsWith("NNP")) {
 			if (VERBOSE) logger.trace("Replacing " + m.group(1) + " by " + m.group(2)+"_"+m.group(3)+"/JJNN");
-			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNN");
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"_"+m.group(3)+"/JJNN ");
 //                    }
 		}
 		m = adjnprepPattern.matcher(condensedstring); 

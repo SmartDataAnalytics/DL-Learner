@@ -33,7 +33,7 @@ public class SPARQL_Pair implements Serializable
 		case B:
 			return "BOUND(" + a + ")";
 		case EQ:
-			return a + " == " + b;
+			return a + " = " + b;
 		case GT:
 			return a + " > " + b;
 		case GTEQ:
