@@ -135,6 +135,8 @@ public class Templator {
 
 	public Set<Template> buildTemplates(String s) {
 		
+            d2s.setInputString(s);
+            
 		boolean clearAgain = true;
         
 		String tagged;
