@@ -76,9 +76,7 @@ public class DRS2SPARQL_Converter {
         slots = ls;
         
         Query q = convert(drs, new Query(), false);
-        if (q == null) {
-        	return null;
-        }
+        if (q == null) return null;
         q.setPrefixes(prefixes);
         
         template.setQuery(q);
@@ -87,12 +85,13 @@ public class DRS2SPARQL_Converter {
             System.out.println("... done");
         }
 
+        usedInts = new ArrayList<Integer>();
         return template;
     }
 
     private Query convert(DRS drs, Query query, boolean negate) {
     	
-//        System.out.println("--- DRS (before): " + drs); // DEBUG   	
+//        System.out.println("\n--- DRS (before): " + drs); // DEBUG   	
         redundantEqualRenaming(drs); 
         if (!restructureEmpty(drs)) {
         	return null;
@@ -474,10 +473,10 @@ public class DRS2SPARQL_Converter {
                     }
                 }
                 if (takeit) {
-                    regex += cond.getPredicate().replace("SLOT_","") + " ";
+                    regex += cond.getPredicate().replace("SLOT","").replaceAll("_"," ");
                     used.add(cond);
                 }
-                else {
+                else if (!cond.getPredicate().equals("regextoken")) {
                     for (DiscourseReferent dr : cond.getArguments()) {
                         if (dr.getValue().equals(var)) dr.setValue(newvar);
                     }
@@ -488,7 +487,7 @@ public class DRS2SPARQL_Converter {
                 c.getArguments().add(new DiscourseReferent("'"+regex.trim()+"'"));
                 c.setPredicate("regex");
             }
-            else {} // TODO should not happen!
+            else { used.add(c); } // TODO should not happen!
             for (Slot s : slots) {
                 if (s.getWords().contains(var)) {
                     s.getWords().remove(var);
@@ -497,6 +496,41 @@ public class DRS2SPARQL_Converter {
             }
         }
         for (Simple_DRS_Condition cond : used) drs.removeCondition(cond);
+        
+        // postprocessing
+        boolean success = false;
+        Set<Simple_DRS_Condition> oldconds = new HashSet<Simple_DRS_Condition>();
+        for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
+            String d = "";
+            String d2 = "";
+            String newregex = "";
+            if (c.getPredicate().equals("SLOT_description")) {
+                d = c.getArguments().get(0).getValue();
+                d2 = c.getArguments().get(1).getValue();
+                for (Simple_DRS_Condition cond : drs.getAllSimpleConditions()) {
+                    if (cond.getPredicate().equals("SLOT_description") && cond.getArguments().get(1).getValue().equals(d)) {
+                        oldconds.add(c);
+                        success = true;
+                        break;
+                    }
+                }
+            }
+            if (success) {
+                for (Simple_DRS_Condition cond : drs.getAllSimpleConditions()) {
+                    if (cond.getPredicate().equals("regex") && 
+                            (cond.getArguments().get(0).getValue().equals(d) || cond.getArguments().get(0).getValue().equals(d2))) {
+                        newregex += cond.getArguments().get(1).getValue().replaceAll("'","").replaceAll("_"," ").trim() + " ";
+                        oldconds.add(cond);
+                    }
+                }
+                for (Simple_DRS_Condition cond : oldconds) drs.removeCondition(cond);
+                List<DiscourseReferent> newrefs = new ArrayList<DiscourseReferent>();
+                newrefs.add(new DiscourseReferent(d));
+                newrefs.add(new DiscourseReferent("'"+newregex.trim()+"'"));
+                drs.addCondition(new Simple_DRS_Condition("regex",newrefs));
+                break;
+            }
+        }
     }
     
 

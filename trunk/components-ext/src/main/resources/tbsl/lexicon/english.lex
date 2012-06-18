@@ -142,10 +142,14 @@
 	and || (S S* CC:'and' S[s]) || <x,l1,t,[l1:[|]],[(l2,y,s,t)],[l1=l2],[]>
 	and || (DP DP* CC:'and' DP[dp]) || <x,l1,<<e,t>,t>,[l1:[|]],[(l2,y,dp,<<e,t>,t>)],[l1=l2],[]>
 	and || (NP NP* CC:'and' NP[np]) || <x,l1,<e,t>,[l1:[|x=y]],[(l2,y,np,<e,t>)],[l1=l2],[]>
+	and || (PP PP* CC:'and' PP[pp]) || <x,l1,<e,t>,[l1:[|x=y]],[(l2,y,pp,<e,t>)],[l1=l2],[]>
+	and || (ADJ ADJ* CC:'and' ADJ[adj]) || <x,l1,<e,t>,[l1:[|]],[(l2,y,adj,<e,t>)],[l1=l2],[]>
 
         but || (S S* CC:'but' S[s]) || <x,l1,t,[l1:[|]],[(l2,y,s,t)],[l1=l2],[]>
 	but || (DP DP* CC:'but' DP[dp]) || <x,l1,<<e,t>,t>,[l1:[|]],[(l2,y,dp,<<e,t>,t>)],[l1=l2],[]>
 	but || (NP NP* CC:'but' NP[np]) || <x,l1,<e,t>,[l1:[|x=y]],[(l2,y,np,<e,t>)],[l1=l2],[]>
+	but || (PP PP* CC:'but' PP[pp]) || <x,l1,<e,t>,[l1:[|x=y]],[(l2,y,pp,<e,t>)],[l1=l2],[]>
+	but || (ADJ ADJ* CC:'but' ADJ[adj]) || <x,l1,<e,t>,[l1:[|]],[(l2,y,adj,<e,t>)],[l1=l2],[]>
 	
 	as well as || (NP NP* CC:'as' CC:'well' CC:'as' NP[np]) || <x,l1,<e,t>,[l1:[|]],[(l2,y,np,<e,t>)],[l1=l2],[]>
 	
