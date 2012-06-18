@@ -474,7 +474,7 @@ public class DRS2SPARQL_Converter {
                     }
                 }
                 if (takeit) {
-                    regex += cond.getPredicate().replace("SLOT","") + " ";
+                    regex += cond.getPredicate().replace("SLOT_","") + " ";
                     used.add(cond);
                 }
                 else {
@@ -488,6 +488,7 @@ public class DRS2SPARQL_Converter {
                 c.getArguments().add(new DiscourseReferent("'"+regex.trim()+"'"));
                 c.setPredicate("regex");
             }
+            else {} // TODO should not happen!
             for (Slot s : slots) {
                 if (s.getWords().contains(var)) {
                     s.getWords().remove(var);
