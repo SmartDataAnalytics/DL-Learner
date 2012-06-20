@@ -32,121 +32,7 @@ public class LevenstheinModule {
 		
 		boolean found_property_in_loaded_property=false;
 		boolean found_property_in_created_property=false;
-		if(Setting.isLoadedProperties()){
-			System.out.println("in Loaded!!");
-			//Open the file for reading
-		     try {
-		       BufferedReader br = new BufferedReader(new FileReader(dateiname));
-		       String thisLine;
-			while ((thisLine = br.readLine()) != null) { // while loop begins here
-		         String[] tmp_array = thisLine.split("::");
-		         if(tmp_array.length>1){
-		        	 loaded_properties.put(tmp_array[0].replace("\n", ""), tmp_array[1].replace("\n", ""));
-		         }
-		         
-		       } // end while 
-		     } // end try
-		     catch (IOException e) {
-		       System.err.println("Error: " + e);
-		     }
-		     for (Entry<String, String> entry_loaded : loaded_properties.entrySet()) {
-		    	 
-		    	 String key_loaded= entry_loaded.getKey();
-		    	 String value_loaded= entry_loaded.getValue();
-		    	 if(key_loaded.replace("_", " ").equals(property_to_compare_with.replace("_", " ").toLowerCase())){
-		    		 System.out.println("FOUND!!");
-		    		 for (Entry<String, String> entry : properties.entrySet()) {
-						 String key = entry.getKey();
-						 key=key.replace("\"","");
-						 key=key.replace("@en","");
-						 key=key.replace("(μ)", "");
-						 key=key.replace("(cm)", "");
-						 key=key.toLowerCase();
-						 String value = entry.getValue();
-						 /*System.out.println("KEY_old:"+key);
-						 System.out.println("value_loaded:"+value_loaded+"DONE");
-						 System.out.println("Value:"+value);
-						 System.out.println("\n");*/
-						 if(key.equals(value_loaded)){
-							 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 2.0); 
-							 listOfNewHypothesen.add(h); 
-							 h.printAll();
-							 found_property_in_loaded_property=true;
-						 }
-				     }
-		    	 }
-		    	 
-		     }
-		}
 		
-		/*
-		 * createdPropertyCombinations
-		 */
-	
-		/*
-		 * Second read in File with the propertys, which were created, when a query produced an answer and query had the rank >0.8
-		 * and the property hast the given "matserresource"
-		 */
-		
-	/*	if(found_property_in_loaded_property==false&&Setting.isSaveAnsweredQueries()){
-			HashMap<String, String> created_properties = new HashMap<String, String>();
-			System.out.println("in Save!!");
-			dateiname="/home/swalter/workspace/createdPropertyCombinations";
-			System.out.println("Resource to compare: "+resource_name);
-			//Open the file for reading
-		     try {
-		       BufferedReader br = new BufferedReader(new FileReader(dateiname));
-		       String thisLine;
-			while ((thisLine = br.readLine()) != null) { // while loop begins here
-		         String[] tmp_array = thisLine.split("::");
-		         if(tmp_array.length>2){
-		        	 
-		        	 // check, if the given resource is equal to the reosource loaded from the file!
-		        	  
-		        	 if(tmp_array[0].toLowerCase().replace("\n", "").equals(resource_name.toLowerCase())){
-		        		 created_properties.put(tmp_array[1].replace("\n", ""), tmp_array[2].replace("\n", ""));
-		        	 }
-		        	 
-		         }
-		         
-		       } // end while 
-		     } // end try
-		     catch (IOException e) {
-		       System.err.println("Error: " + e);
-		     }
-		     if(!created_properties.isEmpty()){
-		    	 for (Entry<String, String> entry_loaded : created_properties.entrySet()) {
-			    	 
-			    	 String key_loaded= entry_loaded.getKey();
-			    	 String value_loaded= entry_loaded.getValue();
-			    	 if(key_loaded.replace("_", " ").equals(property_to_compare_with.replace("_", " ").toLowerCase())){
-			    		 System.out.println("FOUND!!");
-			    		 for (Entry<String, String> entry : properties.entrySet()) {
-							 String key = entry.getKey();
-							 key=key.replace("\"","");
-							 key=key.replace("@en","");
-							 key=key.replace("(μ)", "");
-							 key=key.replace("(cm)", "");
-							 key=key.toLowerCase();
-							 String value = entry.getValue();
-							 System.out.println("KEY_old:"+key);
-							 System.out.println("value_loaded:"+value_loaded+"DONE");
-							 System.out.println("Value:"+value);
-							 System.out.println("\n");
-							 if(key.equals(value_loaded)){
-								 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 2.0); 
-								 listOfNewHypothesen.add(h); 
-								 h.printAll();
-								 found_property_in_created_property=true;
-							 }
-					     }
-			    	 }
-			    	 
-			     }
-		     }
-		     
-			
-		}*/
 		
 	     if(found_property_in_loaded_property==false||found_property_in_created_property==false){
 	    	 
@@ -211,7 +97,6 @@ public class LevenstheinModule {
 					 }
 					 else if(compare_property.substring(compare_property.length()-2).contains("ed")){
 							String compare_property_neu = compare_property.substring(0, compare_property.length() -2);
-							System.out.println("NEW compare_property: "+compare_property_neu);
 							if(key.contains(compare_property_neu)||compare_property_neu.contains(key)){
 							
 								 Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 0.95);

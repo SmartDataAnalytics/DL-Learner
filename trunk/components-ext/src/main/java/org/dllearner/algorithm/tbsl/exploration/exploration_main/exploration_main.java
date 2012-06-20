@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +45,9 @@ public class exploration_main {
 		System.out.println("Starting Main File");
 		long startInitTime = System.currentTimeMillis();
 
+		//PrintStream err = new PrintStream(new FileOutputStream("/home/swalter/Dokumente/ERRListe.txt"));
+		//System.setErr(err);
+		
 		/*
 		 * Initial Index and Templator
 		 */
@@ -66,6 +70,7 @@ public class exploration_main {
 		Setting.setThresholdSelect(0.5);
 		Setting.setLoadedProperties(false);
 		Setting.setSaveAnsweredQueries(false);
+		Setting.setTagging(false);
 		//default
 		//Setting.setVersion(1);
 		/*
@@ -73,7 +78,7 @@ public class exploration_main {
 		 * 2= "Normal" + Levensthein
 		 * 3= Normal+Levensthein+Wordnet
 		 */
-		Setting.setModuleStep(5);
+		Setting.setModuleStep(4);
 		Setting.setEsaMin(0.4);
 		
 
@@ -84,7 +89,7 @@ public class exploration_main {
 		boolean startQuestioning = true;
 		while(schleife==true){
 			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-			String line;
+			String line="";
 			startQuestioning = true;
 			try {
 				System.out.println("\n\n");
@@ -134,35 +139,40 @@ public class exploration_main {
 				}
 				
 				
-
+                
 				if(line.contains(":xml")&& schleife==true){
 					TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+					
+					float global_tbsl_avaerage = 0;
+					float global_builder_average=0;
 
-					//for(int i = 1; i<2;i++){
+					for(int i = 1; i<2;i++){
 						//double min = 0.95;
 						//min+=(i*0.05);
 					
-					/*if(i==1){
+					if(i==1){
 						line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-new.xml";
 					}
 					if(i==2){
 						line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-test-new-tagged2.xml";
-					}*/
+					}
 					
-					line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-train-tagged-new.xml";
+					//line="/home/swalter/Dokumente/Auswertung/Yahoo/works";
+					//line="/home/swalter/Dokumente/Auswertung/XMLDateien/dbpedia-test-new-tagged2.xml";
 					
 					for(int j=1;j<2;j++){
 						
-						Setting.setVersion(1);
+						//Setting.setVersion(99);
 						
-						for(int z=1;z<7;z++){
+						for(int z=4;z<5;z++){
 							//Setting.setLevenstheinMin(min);
 							Setting.setLevenstheinMin(0.95);
 							//Setting.setThresholdSelect(0.4);
-							Setting.setModuleStep(2);
+							Setting.setModuleStep(z);
 							Setting.setThresholdSelect(0.5);
-							Setting.setEsaMin(0.0+(z/10.0));
+							Setting.setEsaMin(0.4);
 							Setting.setLoadedProperties(false);
+							Setting.setTagging(false);
 							/*if(i==2)Setting.setLoadedProperties(true);
 							else Setting.setLoadedProperties(false);
 							*/
@@ -174,6 +184,7 @@ public class exploration_main {
 							ArrayList<queryInformation> list_of_structs = new ArrayList<queryInformation>();
 							
 							list_of_structs=generateStruct(line,true);
+							//list_of_structs=generateStructTextfile(line,true);
 							//Start Time measuring
 							long startTime = System.currentTimeMillis();
 						    
@@ -192,6 +203,17 @@ public class exploration_main {
 							
 							long stopTime = System.currentTimeMillis();
 							System.out.println("For "+anzahl+" Questions the QA_System took "+ ((stopTime-startTime)/1000)+"sek");
+							System.out.println("Tbsl took overall: "+Setting.getTime_tbsl()+"ms");
+							System.out.println("Builder took overall: "+Setting.getTime_builder()+"ms");
+							int anzahl_questions=list_of_structs.size();
+							System.out.println("Tbsl Average: "+Setting.getTime_tbsl()/anzahl_questions+"ms");
+							System.out.println("Builder Average: "+Setting.getTime_builder()/anzahl_questions+"ms");
+							System.out.println("Elements Average: "+Setting.getTime_elements()/anzahl_questions+"ms");
+							System.out.println("OverallTime Average: "+(stopTime-startTime)/anzahl_questions+"ms");
+							global_tbsl_avaerage+=Setting.getTime_tbsl()/anzahl_questions;
+							global_builder_average+=Setting.getTime_builder()/anzahl_questions;
+							
+							
 							
 							String filename="";
 							filename=createXML(list_of_structs,((stopTime-startTime)/1000));
@@ -237,16 +259,20 @@ public class exploration_main {
 					
 
 					
-				//	}
+					}
+					System.out.println("Average Tbsl:"+global_tbsl_avaerage/4/1000);
+					System.out.println("Average Builder:"+global_builder_average/4/1000);
 					/*schleife=false;
 					System.out.println("Bye!");
 					System.exit(0);*/
 				     
 				}
 				
+				//else
 				else if(schleife==true && startQuestioning ==true){
 					long startTime = System.currentTimeMillis();
 					queryInformation result = new queryInformation(line,"0","",false,false,false,"non",false);
+					//line="Give/VB me/PRP all/DT actors/NNS starring/VBG in/IN Batman/NNP Begins/NNP";
 					MainInterface.startQuestioning(line,btemplator,myindex,wordnet,lemmatiser);
 					ArrayList<String> ergebnis = result.getResult();
 					//get eacht result only once!
@@ -260,6 +286,7 @@ public class exploration_main {
 					}
 					long endTime= System.currentTimeMillis();
 					System.out.println("\n The complete answering of the Question took "+(endTime-startTime)+" ms");
+					//System.exit(0);
 				}
 
 			} catch (IOException e) {
@@ -539,5 +566,53 @@ public class exploration_main {
 	}
 
 	
+	
+private static ArrayList<queryInformation> generateStructTextfile(String filename, boolean hint) {
+		
+		
+		
+		BufferedReader in = null;
+		ArrayList<queryInformation> querylist = new ArrayList<queryInformation>();
+	    String tmp="";
+		// Lies Textzeilen aus der Datei in einen Vector:
+	    try {
+	      in = new BufferedReader(
+	                          new InputStreamReader(
+	                          new FileInputStream(filename) ) );
+	      String s;
+	      int anzahl=0;
+	      String XMLType="dbpedia-train";
+		while( null != (s = in.readLine()) ) {
+			anzahl+=1;
+			queryInformation blaquery=new queryInformation(s.replace("\n", ""), Integer.toString(anzahl),"",false,false,false,XMLType,false);
+			querylist.add(blaquery);
+		}
+	    } catch( FileNotFoundException ex ) {
+	    } catch( Exception ex ) {
+	      System.out.println( ex );
+	    } finally {
+	      if( in != null )
+			try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	    }	
+	    
+		
+	    	
+	    	
+	    
+	    for(queryInformation s : querylist){
+	    	System.out.println("");
+	    	if(s.getId()==""||s.getId()==null)System.out.println("NO");
+			System.out.println("ID: "+s.getId());
+			System.out.println("Query: "+s.getQuery());
+			System.out.println("Type: "+s.getType());
+			System.out.println("XMLType: "+s.getXMLtype());
+		}
+	    return querylist;
+	}
+
 
 }

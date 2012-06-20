@@ -15,9 +15,10 @@ import java.util.regex.Pattern;
 public class ServerUtil {
 
 	
-	//String static server_Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
+	//private static String server_Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
 	//private static String server_Prefix="http://dbpedia.org/sparql";
 	private static String server_Prefix="http://greententacle.techfak.uni-bielefeld.de:5171/sparql";
+	//private static String server_Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8897/sparql";
 	//private static String server_Prefix="http://purpurtentacle.techfak.uni-bielefeld.de:8890/sparql";
 	
 	private static int timeToTimeoutOnServer=3000;
@@ -108,6 +109,7 @@ public class ServerUtil {
 	    String result="";
 	    /*System.out.println(verarbeitungsurl);
 	    System.out.println("side: "+ side);*/
+	   // System.out.println(verarbeitungsurl);
 		result = getListOfElements(verarbeitungsurl);
 	    
 	    return generateList(result);
@@ -121,26 +123,7 @@ public class ServerUtil {
 	 */
 	public static HashMap<String,String> getElementsForGivenClass(String classUri) throws IOException{
 		
-		/*
-		PREFIX dbo: <http://dbpedia.org/ontology/>
-SELECT DISTINCT ?p WHERE {
- { ?x ?p ?y . } UNION { ?y ?p ?x . }
-    { 
-      SELECT ?x {
-        ?x rdf:type dbo:Mountain . 
-      }
-      LIMIT 10
-    }
-}
-ORDER BY ?x 
-
-
-		TODO:Try with different Limits
-		 */
 		
-		/*
-		 * TODO: Still a not "valid" url
-		 */
 		String query="SELECT DISTINCT ?s ?p WHERE {{?x ?p ?y. ?p rdfs:label ?s. FILTER (lang(?s) = 'en').} UNION {?y ?p ?x. ?p rdfs:label ?s. FILTER (lang(?s) = 'en').} { SELECT ?x { ?x rdf:type <"+classUri+">.}LIMIT 10}}";
 		//System.out.println(query);
 		//DebugMode.waitForButton();
@@ -243,8 +226,8 @@ ORDER BY ?x
 	}
 	
 	public static ArrayList<String> requestAnswerFromServer(String query){
+		query=query.replace(">0",">");
 		String query_url=server_Prefix+"?default-graph-uri=&query="+createServerRequest(query)+"&format=text%2Fhtml&debug=on&timeout=";
-
 		//System.out.println(tmp);
 		String result="";
 		HttpURLConnection connection = null;

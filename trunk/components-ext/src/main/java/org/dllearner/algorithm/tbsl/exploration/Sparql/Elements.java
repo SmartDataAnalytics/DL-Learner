@@ -2,8 +2,10 @@ package org.dllearner.algorithm.tbsl.exploration.Sparql;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.dllearner.algorithm.tbsl.exploration.Utils.DebugMode;
+import org.dllearner.algorithm.tbsl.exploration.Utils.ElementStorage;
 import org.dllearner.algorithm.tbsl.exploration.Utils.ServerUtil;
 import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
 
@@ -27,7 +29,7 @@ public class Elements {
 	}
 	
 	public Elements(ArrayList<ArrayList<String>> condition, ArrayList<ArrayList<Hypothesis>> hypothesen){
-		
+		long start = System.currentTimeMillis();
 		/*
 		 * first all Classes!
 		 */
@@ -51,6 +53,8 @@ public class Elements {
 		}
 		
 		if(Setting.isDebugModus())DebugMode.debugPrint("Created Elements");
+		long stop = System.currentTimeMillis();
+		Setting.addTime_elements(stop-start);
 	}
 	
 	private void createElementsOfClasses(ArrayList<ArrayList<Hypothesis>> hypothesenList) throws IOException{
@@ -64,13 +68,25 @@ public class Elements {
 				 * if isA is found and if Class has uri, get Elements
 				 */
 				if(h.getType().contains("ISA")&&h.getUri().contains("http")){
-					/*
-					 * TODO: improver performance, using geschicktes zwischenspeichern
-					 */
 					if(Setting.isDebugModus())DebugMode.debugPrint("Create Elements for Class: "+h.getName()+" Uri: "+h.getUri());
-					ElementList el = new ElementList(h.getName(),h.getUri(),ServerUtil.getElementsForGivenClass(h.getUri()));
+					/*
+					 * Todo First Lookup an HashMap with if the resource is in it, if yes, take the results,
+					 * if not, create new Elements
+					 */
+					if(ElementStorage.getStorage_classes().containsKey(h.getUri())){
+						ElementList el = new ElementList(h.getName(),h.getUri(),ElementStorage.getStorage_classes().get(h.getUri()));
+						this.addElements(el);
+					}
+					else{
+						HashMap<String,String> tmp_hm = new HashMap<String,String>();
+						tmp_hm=ServerUtil.getElementsForGivenClass(h.getUri());
+						ElementList el = new ElementList(h.getName(),h.getUri(),tmp_hm);
+						ElementStorage.addStorage_classes(h.getUri(), tmp_hm);
+						this.addElements(el);
+					}
+					//ElementList el = new ElementList(h.getName(),h.getUri(),ServerUtil.getElementsForGivenClass(h.getUri()));
 					//classes.add(el);
-					this.addElements(el);
+					//this.addElements(el);
 				}
 			}
 		}
@@ -90,18 +106,38 @@ public class Elements {
 					
 					for(ArrayList<String> cl : conditionList){
 						if(h.getVariable().equals(cl.get(0))) {
-							ElementList el = new ElementList(h.getName()+"RIGHT",h.getUri(),ServerUtil.getPropertiesForGivenResource(h.getUri(), "RIGHT"));
-							//resources.add(el);
-							this.addElements(el);
+							if(ElementStorage.getStorage_resource_right().containsKey(h.getUri())){
+								ElementList el = new ElementList(h.getName()+"RIGHT",h.getUri(),ElementStorage.getStorage_resource_right().get(h.getUri()));
+								//resources.add(el);
+								this.addElements(el);
+							}
+							else{
+								HashMap<String,String> tmp_hm = new HashMap<String,String>();
+								tmp_hm=ServerUtil.getPropertiesForGivenResource(h.getUri(), "RIGHT");
+								ElementList el = new ElementList(h.getName()+"RIGHT",h.getUri(),tmp_hm);
+								ElementStorage.addStorage_resource_right(h.getUri(), tmp_hm);
+								//resources.add(el);
+								this.addElements(el);
+							}
+								
+					
 						}
 						if(h.getVariable().equals(cl.get(2))) {
-							/*
-							 * TDO: Geht hier in die Schleife, aber die Liste wird nicht hinzugefügt....
-							 */
-							ElementList el_left = new ElementList(h.getName()+"LEFT",h.getUri(),ServerUtil.getPropertiesForGivenResource(h.getUri(), "LEFT"));
-							//resources.add(el);
-							//el_left.printAll();
-							this.addElements(el_left);
+							
+							if(ElementStorage.getStorage_resource_left().containsKey(h.getUri())){
+								ElementList el = new ElementList(h.getName()+"LEFT",h.getUri(),ElementStorage.getStorage_resource_left().get(h.getUri()));
+								//resources.add(el);
+								this.addElements(el);
+							}
+							else{
+								HashMap<String,String> tmp_hm = new HashMap<String,String>();
+								tmp_hm=ServerUtil.getPropertiesForGivenResource(h.getUri(), "LEFT");
+								ElementList el = new ElementList(h.getName()+"LEFT",h.getUri(),tmp_hm);
+								ElementStorage.addStorage_resource_left(h.getUri(), tmp_hm);
+								//resources.add(el);
+								this.addElements(el);
+							}
+								
 						}
 					}
 					

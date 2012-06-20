@@ -1,5 +1,6 @@
 package org.dllearner.algorithm.tbsl.exploration.Utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
@@ -46,16 +47,23 @@ public class Query {
 		for(ArrayList<Hypothesis> hypothesenList : givenHypothesenList){
 			String condition_new = condition;
 			String Resource=null;
+			String PropertyName=null;
+			String Property=null;
 			//System.out.println("New_Condition before replacing "+condition_new);
 			double global_rank=0;
 			boolean addQuery=true;
 			for(Hypothesis h : hypothesenList){
 				if(h.getType().toLowerCase().contains("resource")){
-					Resource=h.getName();
+					Resource=h.getUri();
+				}
+				if(h.getType().toLowerCase().contains("property")){
+					PropertyName=h.getName();
+					Property=h.getUri();
 				}
 				
 				
-				condition_new=condition_new.replace(h.getVariable(), "<"+h.getUri()+">");
+				condition_new=condition_new.replace(h.getVariable()+" ", "<"+h.getUri()+"> ");
+				
 				/*
 				 * Dont create a Query with variables, which dont have a correct uri
 				 */
@@ -86,6 +94,8 @@ public class Query {
 				String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "+t.getQueryType()+" "+t.getSelectTerm()+"?string WHERE {"+ condition_new+" OPTIONAL { "+ t.getSelectTerm()+" rdfs:label ?string. FILTER (lang(?string) = 'en') }"+ t.getFilter()+"}"+t.getOrderBy()+" "+t.getHaving() +" "+t.getLimit();
 				QueryPair qp = new QueryPair(query,global_rank);
 				qp.setResource(Resource);
+				qp.setProperty(Property);
+				qp.setPropertyName(PropertyName);
 				if(addQuery)queryList.add(qp);
 				
 			}
@@ -93,6 +103,8 @@ public class Query {
 				String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "+t.getQueryType()+" "+t.getSelectTerm()+" WHERE {"+ condition_new+" "+ t.getFilter()+"}"+t.getOrderBy()+" "+t.getHaving() +" "+t.getLimit();
 		    	QueryPair qp = new QueryPair(query,global_rank);
 		    	qp.setResource(Resource);
+		    	qp.setProperty(Property);
+				qp.setPropertyName(PropertyName);
 		    	if(addQuery)queryList.add(qp);
 			}
 	    	

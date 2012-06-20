@@ -47,8 +47,13 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
 		
 		ArrayList<Template> resultArrayList = new ArrayList<Template>();
 		Set<BasicQueryTemplate> querytemps =null;
-		querytemps = btemplator.buildBasicQueries(question);
-	
+		try{
+			querytemps = btemplator.buildBasicQueries(question);
+		}
+		catch (Exception e){
+			System.err.println("Error in Templategeneration");
+			querytemps=null;
+ 		}
 		
 		/*
 		 * check if templates were build, if not, safe the question and delete it for next time from the xml file.
@@ -83,7 +88,15 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
 		
 		
 		long stop_template = System.currentTimeMillis();
+		Setting.addTime_tbsl(stop_template-start);
+		
+		
+		
+		
+		
+		long start_builder = System.currentTimeMillis();
 		if(Setting.isDebugModus())DebugMode.waitForButton();
+		if(querytemps!=null){
      	for (BasicQueryTemplate bqt : querytemps) {
      		
      		long start_part1= System.currentTimeMillis();
@@ -217,14 +230,10 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      					
      				}
      				if(slot.toString().contains("PROPERTY")){
-     					System.out.println("Slot.toString(): "+slot.toString());
      					String tmp= slot.toString().replace(" PROPERTY {", "");
      					tmp=tmp.replace("}","");
-     					System.out.println(tmp);
      					String[] tmp_array = tmp.split(":");
      					if(tmp_array.length>1){
-	     					System.out.println("tmp_array[0]:"+tmp_array[0]);
-	     					System.out.println("tmp_array[1]:"+tmp_array[1]);
 	     					
 	     					Hypothesis tmp_hypothesis = new Hypothesis("?"+tmp_array[0], tmp_array[1],tmp_array[1], "PROPERTY", 0.0);
 	     					list_of_hypothesis.add(tmp_hypothesis);
@@ -340,7 +349,6 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      						if(h.getType().contains("ISA")){
      							try {
 									ArrayList<String> tmp = Index_utils.searchIndexForClass(h.getUri(), myindex);
-									System.out.println("Laenge tmp: "+tmp.size());
 									if(tmp.size()>0){
 										h.setUri(tmp.get(0));
 										h.setRank(1.0);
@@ -354,7 +362,6 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      						if(h.getType().contains("RESOURCE")){
      							try {
 									ArrayList<String> tmp = Index_utils.searchIndexForResource(h.getUri(), myindex);
-									System.out.println("Laenge tmp: "+tmp.size());
 									if(tmp.size()>0){
 										h.setUri(tmp.get(0));
 										h.setRank(1.0);
@@ -453,10 +460,13 @@ public TemplateBuilder(BasicTemplator bt, SQLiteIndex sq) throws MalformedURLExc
      		}
      	}
      	
-     	
+     	long stop_builder = System.currentTimeMillis();
+     	Setting.addTime_builder(stop_builder-start_builder);
      	if(Setting.isDebugModus())DebugMode.printTemplateList(resultArrayList, "Templates nach allen Verarbeitungsschritten");
      	
      	
+		return resultArrayList;
+	}
 		return resultArrayList;
 	}
 }
