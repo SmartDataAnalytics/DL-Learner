@@ -20,14 +20,12 @@ import org.dllearner.algorithm.tbsl.nlp.WordNet;
 
 public class WordnetModule {
 	
-	private static int explorationdepthwordnet =0;
+	private static int explorationdepthwordnet =1;
 	
 	public static ArrayList<Hypothesis> doWordnet(String variable, String property_to_compare_with, HashMap<String, String> properties, SQLiteIndex myindex,WordNet wordnet,StanfordLemmatizer lemmatiser) throws SQLException,
 	JWNLException {
 		ArrayList<Hypothesis> listOfNewHypothesen = new ArrayList<Hypothesis>();
 
-		 System.out.println("Start Iterating Wordnet with "+property_to_compare_with+" and deept of "+explorationdepthwordnet);
-		// StanfordLemmatizer lemmatiser = new StanfordLemmatizer();
 		 ArrayList<String> semantics=new ArrayList<String>();
 		 ArrayList<String> tmp_semantics=new ArrayList<String>();
 		 ArrayList<String> result_SemanticsMatchProperties=new ArrayList<String>();
@@ -51,7 +49,6 @@ public class WordnetModule {
 		 catch (Exception e){
 			 
 		 }
-		 System.out.println("Semantics: "+ semantics);
 		 
 		 for(String s: semantics){
 			 //first check, if there is a singular form in the wordnet dictionary.. eg children -> child
@@ -66,17 +63,15 @@ public class WordnetModule {
 
 		 }
 		 
-		 System.out.println("tmp_semantics: "+ tmp_semantics);
 		 Boolean goOnAfterWordnet = true;
 
 		 for(int i=0;i<=explorationdepthwordnet;i++){
 
 			 try {
 				tmp_semantics=getSemantics(tmp_semantics,wordnet);
-				System.out.println("tmp_semantics in Iteration: "+ tmp_semantics);
 				if (tmp_semantics==null){
 					goOnAfterWordnet=false;
-					System.out.println("Error in searching Wordnet with word "+semantics+" \n End");
+					System.err.println("Error in searching Wordnet with word "+semantics+" \n End");
 
 				}
 				else{
@@ -89,7 +84,7 @@ public class WordnetModule {
 			} catch (IOException e) {
 				
 				goOnAfterWordnet=false;
-				System.out.println("Error in searching Wordnet with word "+semantics+" \n End");
+				System.err.println("Error in searching Wordnet with word "+semantics+" \n End");
 				
 			}
 					 
@@ -107,7 +102,6 @@ public class WordnetModule {
 				for(String b : semantics){
 					if(key.equals(b)){
 
-						
 						Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 1.0); 
 						 
 						
@@ -116,10 +110,14 @@ public class WordnetModule {
 					}
 					else if(key.contains(b.toLowerCase())||b.toLowerCase().contains(key)){
 						
-						System.out.println("Key:"+key);
-						System.out.println("b:"+b);
+						/*System.out.println("Key:"+key);
+						System.out.println("b:"+b);*/
 
-						if(b.length()>4&&key.length()>4) {
+						if(b.length()>4&&key.length()>4&&!key.contains("_")&&!b.contains("_")) {
+							/*System.out.println("FOUND SOMETHING");
+							System.out.println("b "+b);
+							System.out.println("key: "+key);
+							System.out.println("\n");*/
 							double score=0;
 							if(b.length()>key.length()){
 								score = 0.8+(key.length()/b.length());
@@ -132,8 +130,12 @@ public class WordnetModule {
 							listOfNewHypothesen.add(h);
 						}
 						else{
-							Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 0.7); 
-							listOfNewHypothesen.add(h);
+							//System.out.println("FOUND SOMETHING12345");
+							if(!b.contains("_")&&!key.contains("_")){
+								Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", 0.7); 
+								listOfNewHypothesen.add(h);
+							}
+							
 						}
 						 
 						 
@@ -145,7 +147,8 @@ public class WordnetModule {
 					
 					else if(Levenshtein.nld(key.toLowerCase(), b.toLowerCase())>Setting.getLevenstheinMin()){
 						Hypothesis h = new Hypothesis(variable, key, value, "PROPERTY", (Levenshtein.nld(key.toLowerCase(), b.toLowerCase()))); 
-						 
+						 /*System.out.println("nld"+Levenshtein.nld(key.toLowerCase(), b.toLowerCase()));
+						 System.out.println("Key:"+key+"DONE");*/
 						
 						 listOfNewHypothesen.add(h);
 					}

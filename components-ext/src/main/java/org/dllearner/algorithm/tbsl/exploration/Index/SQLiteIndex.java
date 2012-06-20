@@ -32,6 +32,7 @@ public class SQLiteIndex {
 		Class.forName( "org.sqlite.JDBC" );
 		conn = DriverManager.getConnection("jdbc:sqlite::memory:");
 		createIndexPropertys();
+		createIndexManualPropertys();
 		createIndexResource();
 		createWordnetHelp();
 		createIndexOntology();
@@ -204,6 +205,30 @@ WHERE City LIKE '%tav%'
 	
 		  
 	  }
+	
+	public String getManualPropertyURI(String string) throws SQLException, IOException{
+		  Statement stat = conn.createStatement();
+		  ResultSet rs;
+		  string = string.replace("_"," ");
+		try {
+			rs = stat.executeQuery("select uri from manualproperty where name='"+string.toLowerCase()+"';");
+			while(rs.next()){
+				String result_string= rs.getString("uri");
+				return result_string;
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			//System.err.println("Error in SQLiteIndex.getProperty!!");
+  
+		        
+			return null;
+		}
+	
+		  return null;
+	  }
+	
 	
 	public String getontologyURI(String string) throws SQLException{
 		  Statement stat = conn.createStatement();
@@ -449,6 +474,61 @@ private void createIndexPropertys() throws ClassNotFoundException, SQLException{
 		    System.out.println("Done");
 		    
 		  }
+
+
+
+private void createIndexManualPropertys() throws ClassNotFoundException, SQLException{
+	System.out.println("start indexing ManualProperties");
+    Statement stat = conn.createStatement();
+    stat.executeUpdate("drop table if exists manualproperty;");
+    stat.executeUpdate("create table manualproperty (name, uri);");
+    PreparedStatement prep = conn.prepareStatement("insert into manualproperty values (?, ?);");
+    BufferedReader in=null;
+    int zaehler=0;
+	try {
+	      in = new BufferedReader(
+	                          new InputStreamReader(
+	                          new FileInputStream( "/home/swalter/workspace/manualAddedProperties" ) ) );
+	      String s;
+		while( null != (s = in.readLine()) ) {
+	        String[] tmp_array =s.split(":::");
+	        if(tmp_array.length>=2){
+	        	prep.setString(1, tmp_array[0]);
+	    	    prep.setString(2, tmp_array[1]);
+	    	    prep.addBatch();
+	    	    zaehler=zaehler+1;
+	    	    if(zaehler%1000000==0){
+	    	    	conn.setAutoCommit(false);
+	    		    prep.executeBatch();
+	    		    conn.setAutoCommit(false);
+	    		   // System.out.println(zaehler+" done");
+	    	    }
+
+	        }
+	      }
+	    } catch( FileNotFoundException ex ) {
+	    } catch( Exception ex ) {
+	      System.out.println( ex );
+	    } finally {
+	      if( in != null )
+			try {
+				in.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }
+ 
+    conn.setAutoCommit(false);
+    prep.executeBatch();
+    conn.setAutoCommit(true);
+    System.out.println("Number of ManualProperty: "+zaehler);
+    System.out.println("Done");
+    
+  }
+
+
+
 private void createIndexResource() throws ClassNotFoundException, SQLException{
 			System.out.println("start indexing Resources");
 		    Statement stat = conn.createStatement();

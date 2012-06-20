@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import net.didion.jwnl.JWNLException;
+
 import org.dllearner.algorithm.tbsl.exploration.Index.SQLiteIndex;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Elements;
 import org.dllearner.algorithm.tbsl.exploration.Sparql.Hypothesis;
@@ -31,6 +33,12 @@ import org.dllearner.algorithms.gp.GP;
 public class MainInterface {
 	//private static int anzahlAbgeschickterQueries = 10;
 	
+	private static ArrayList<Template> global_template_list=new ArrayList<Template>();
+	private static BasicTemplator btemplator_global;
+	private static SQLiteIndex myindex_global;
+	private static WordNet wordnet_global;
+	private static StanfordLemmatizer lemmatiser_global;
+	private static String type_global="";
 	
 	public static ArrayList<String> startQuestioning(String question,BasicTemplator btemplator,SQLiteIndex myindex, WordNet wordnet,StanfordLemmatizer lemmatiser) throws ClassNotFoundException, SQLException, IOException{
 		
@@ -87,6 +95,8 @@ public class MainInterface {
 		
 		//generate QueryPair
 		String Question="";
+		
+		//TODO: parallel here?
 		for(Template t : template_list){
 			Question=t.getQuestion();
 			t.printAll();
@@ -110,6 +120,10 @@ public class MainInterface {
 		//if(Setting.isDebugModus())printQueries(qp, "NORMAL", Question);
 		//printQueries(qp, "NORMAL", Question);
 		Setting.setAnzahlAbgeschickterQueries(10);
+		System.out.println("Following Querries were created:");
+		for(QueryPair q : qp){
+			System.out.println(q.getQuery()+" rank:"+q.getRank());
+		}
 		
 		int anzahl=1;
 		boolean go_on = true;
@@ -124,6 +138,9 @@ public class MainInterface {
 					go_on=false;
 					//if(qp.size()<3)go_on=true;
 					System.out.println("Got Answer from Server with this Query: "+ q.getQuery());
+					if(Setting.isTagging()) write_ResourcePropertyInformation(q.getResource(),q.getPropertyName(),q.getProperty());
+					
+					//printSingleQuery(q.getQuery(),Question);
 					//go_on=true;
 					boolean contains_uri=false;
 					for(String s : answer_tmp){
@@ -162,6 +179,8 @@ public class MainInterface {
 			System.out.println(answer);
 		}
 		if(wait)DebugMode.waitForButton();
+		
+		
 
 		if(answers.isEmpty()&&Setting.getModuleStep()>=2){
 			
@@ -190,13 +209,13 @@ public class MainInterface {
 			if(wait)DebugMode.waitForButton();
 		}
 		
+		
 		if(answers.isEmpty()&&Setting.getModuleStep()>=5){
 			System.out.println("NO Answer from Server =>Start Query Manipulation");
 			answers.clear();
 			answers.addAll(stufe5(myindex,wordnet,lemmatiser,wait,template_list));
 			if(wait)DebugMode.waitForButton();
 		}
-		
 		
 		
 		
@@ -229,23 +248,65 @@ public class MainInterface {
 		boolean special=false;
 		int anzahl;
 		boolean go_on;
-		/*if(type.contains("SPECIAL")){
-			type ="LEVENSTHEIN";
-			special=true;
-		}*/
 		
 		System.out.println("No answer from direkt match, start "+type+"Modul");
+		
+		/*ArrayList<Thread> thread_list = new ArrayList<Thread>();
+		ThreadGroup group = new ThreadGroup("QA-Threads");
+		int anzahl_thread=0;
+		global_template_list.clear();
+		global_template_list=template_list;
+		myindex_global=myindex;
+		wordnet_global=wordnet;
+		lemmatiser_global=lemmatiser;
+		type_global=type;
+		
+		for(Template t : template_list){
+			 final int anzahl_thread_new=anzahl_thread;
+
+				Thread t1;
+				try {
+					t1 = new Thread(group,String.valueOf(anzahl_thread))
+					{ 
+						String blub=do_something(anzahl_thread_new);
+					};
+					
+					thread_list.add(t1);
+				    t1.start();
+				    
+				    
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JWNLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				anzahl_thread+=1;
+			    
+			}
+				*/
+		
+		/*
+		 * NOw wait until all are finished
+		 */
+		
+		/*for(int i =0; i<thread_list.size();i++){
+			try {
+				thread_list.get(i).join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}*/
+	
+		
 		for(Template t : template_list){
 			try{
-				/*if(test.contains("alt")){
-					ArrayList<ArrayList<Hypothesis>> hypothesenSetList = IterationModule.doIteration(t.getElm(),t.getHypothesen(),t.getCondition(),type,myindex,wordnet,lemmatiser);
-					if(type.contains("WORDNET"))t.setHypothesenWordnet(hypothesenSetList);
-					if(type.contains("LEVENSTHEIN"))t.setHypothesenLevensthein(hypothesenSetList);
-					if(type.contains("RELATE"))t.setHypothesenRelate(hypothesenSetList);
-				}*/
 				
-				//if(test.contains("neu")){
-				//	System.err.println("IN NEU!!!!!");
 					ArrayList<ArrayList<Hypothesis>> hypothesenSetList  = new ArrayList<ArrayList<Hypothesis>>();
 					
 					
@@ -275,6 +336,8 @@ public class MainInterface {
 		
 		}
 		
+
+		
 		/*
 		 * Generate Queries and test queries
 		 */
@@ -299,12 +362,12 @@ public class MainInterface {
 		
 		//sort QueryPairs
 		qp=LinearSort.doSort(qp);	
-		//printQueries(qp, type, Question);
 		qp=HeuristicSort.doHeuristicSort(qp, Question);
+		//printQueries(qp, type, Question);
 		
 		System.out.println("Following Querries were created:");
-		for(QueryPair z : qp){
-			System.out.println(z.getQuery()+" "+z.getRank());
+		for(QueryPair q : qp){
+			System.out.println(q.getQuery()+" rank:"+q.getRank());
 		}
 		if(Setting.isDebugModus())printQueries(qp, type, Question);
 		//printQueries(qp, type, Question);
@@ -324,6 +387,8 @@ public class MainInterface {
 					go_on=false;
 					
 					System.out.println("Got Answer from Server with this Query: "+ q.getQuery());
+					if(Setting.isTagging()) write_ResourcePropertyInformation(q.getResource(),q.getPropertyName(),q.getProperty());
+					//printSingleQuery(q.getQuery(),Question);
 					if(qp.size()>(id+1)){
 						//&&anzahl<2
 						if(q.getRank()==qp.get(id+1).getRank()){
@@ -480,7 +545,7 @@ public class MainInterface {
 	}
 	
 	private static void printQueries(ArrayList<QueryPair> qp, String type, String Question){
-		String dateiname="/home/swalter/Dokumente/Auswertung/CreatedQueryListNLD"+Setting.getLevenstheinMin()+".txt";
+		/*String dateiname="/home/swalter/Dokumente/Auswertung/CreatedQuery"+Setting.getLevenstheinMin()+".txt";
 		String result_string ="";
 		//Open the file for reading
 	     try {
@@ -508,7 +573,7 @@ public class MainInterface {
 	      /*
 	       * write only the first 10 queries:
 	       */
-	      for(QueryPair q : qp){
+	    /*  for(QueryPair q : qp){
 	    	  if(anzahl<10){
 	    		  querylist+=q.getQuery()+"  "+q.getRank()+"\n";
 	    		  anzahl+=1;
@@ -535,7 +600,54 @@ public class MainInterface {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}*/
+	}
+	
+	
+	
+	private static void printSingleQuery(String query,String Question){
+		/*String dateiname="/home/swalter/Dokumente/Auswertung/WorkingQuery"+Setting.getLevenstheinMin()+".txt";
+		String result_string ="";
+		//Open the file for reading
+	     try {
+	       BufferedReader br = new BufferedReader(new FileReader(dateiname));
+	       String thisLine;
+		while ((thisLine = br.readLine()) != null) { // while loop begins here
+	         result_string+=thisLine+"\n";
+	       } // end while 
+	     } // end try
+	     catch (IOException e) {
+	       System.err.println("Error: " + e);
+	     }
+	     
+	     File file = new File(dateiname);
+	     BufferedWriter bw = null;
+		try {
+			bw = new BufferedWriter(new FileWriter(file));
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	     
+
+	        try {
+				bw.write(result_string+Question+" "+query+"\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+	        try {
+				bw.flush();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+	        try {
+				bw.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
 	}
 	
 	
@@ -767,6 +879,115 @@ public class MainInterface {
 				
 				
 			}
+			
+			if(t.getCondition().size()>=30){
+				ArrayList<ArrayList<Hypothesis>> new_hypothesen_list = new ArrayList<ArrayList<Hypothesis>>();
+				for(ArrayList<Hypothesis> h_l :t.getHypothesen()){
+					/*
+					 * if greater 2, than it means, there are at least 3 propertys/resources or whatever
+					 */
+					
+					/*
+					 * Resource ?x
+					 * Property ?y
+					 * Select auf ?z
+					 */
+					if(h_l.size()>2){
+						if(h_l.get(0).getUri().contains("resource")){
+							Hypothesis h_r= h_l.get(0);
+							Hypothesis h_p1= h_l.get(1);
+							Hypothesis h_p2= h_l.get(2);
+							h_r.setVariable("?x");
+							h_p1.setVariable("?y");
+							h_p2.setVariable("?y");
+							ArrayList<Hypothesis> list_one = new ArrayList<Hypothesis>();
+							ArrayList<Hypothesis> list_two = new ArrayList<Hypothesis>();
+							list_one.add(h_r);
+							list_one.add(h_p1);
+							new_hypothesen_list.add(list_one);
+							list_two.add(h_r);
+							list_two.add(h_p2);
+							new_hypothesen_list.add(list_two);
+						}
+						else if(h_l.get(1).getUri().contains("resource")){
+							Hypothesis h_r= h_l.get(1);
+							Hypothesis h_p1= h_l.get(0);
+							Hypothesis h_p2= h_l.get(2);
+							h_r.setVariable("?x");
+							h_p1.setVariable("?y");
+							h_p2.setVariable("?y");
+							ArrayList<Hypothesis> list_one = new ArrayList<Hypothesis>();
+							ArrayList<Hypothesis> list_two = new ArrayList<Hypothesis>();
+							list_one.add(h_r);
+							list_one.add(h_p1);
+							new_hypothesen_list.add(list_one);
+							list_two.add(h_r);
+							list_two.add(h_p2);
+							new_hypothesen_list.add(list_two);
+						}
+						else{
+							Hypothesis h_r= h_l.get(2);
+							Hypothesis h_p1= h_l.get(1);
+							Hypothesis h_p2= h_l.get(0);
+							h_r.setVariable("?x");
+							h_p1.setVariable("?y");
+							h_p2.setVariable("?y");
+							ArrayList<Hypothesis> list_one = new ArrayList<Hypothesis>();
+							ArrayList<Hypothesis> list_two = new ArrayList<Hypothesis>();
+							list_one.add(h_r);
+							list_one.add(h_p1);
+							new_hypothesen_list.add(list_one);
+							list_two.add(h_r);
+							list_two.add(h_p2);
+							new_hypothesen_list.add(list_two);
+	
+						}
+					}
+				}
+				
+				ArrayList<ArrayList<String>> condition_new=new ArrayList<ArrayList<String>>();
+				ArrayList<String> con = new ArrayList<String>();
+				con.add("?x");
+				con.add("?y");
+				con.add("?z");
+				condition_new.add(con);
+				
+				ArrayList<ArrayList<String>> condition_new_r=new ArrayList<ArrayList<String>>();
+				ArrayList<String> con_r = new ArrayList<String>();
+				con_r.add("?z");
+				con_r.add("?y");
+				con_r.add("?x");
+				condition_new_r.add(con_r);
+				
+				
+				
+				Template template_new = new Template(condition_new,"SELECT", t.getHaving(), t.getFilter(), "?z", t.getOrderBy(), t.getLimit(), t.getQuestion());
+				template_new.setHypothesen(new_hypothesen_list);
+				template_new.setElm(t.getElm());
+				
+				Template template_new_r = new Template(condition_new_r,"SELECT", t.getHaving(), t.getFilter(), "?z", t.getOrderBy(), t.getLimit(), t.getQuestion());
+				template_new_r.setHypothesen(new_hypothesen_list);
+				template_new_r.setElm(t.getElm());
+				
+				Elements elm = new Elements(template_new.getCondition(),template_new.getHypothesen());
+     			if(elm.isElementEmty()==false){
+     				//elm.printAll();
+     				template_new.setElm(elm);
+     				new_template_list.add(template_new);
+     			}
+     			
+     			Elements elm_r = new Elements(template_new.getCondition(),template_new.getHypothesen());
+     			if(elm.isElementEmty()==false){
+     				//elm.printAll();
+     				template_new_r.setElm(elm_r);
+     				new_template_list.add(template_new_r);
+     			}
+     			
+     			
+     			
+				//new_template_list.add(template_new);
+				//new_template_list.add(template_new_r);
+			}
 		}
 		
 		/*
@@ -784,5 +1005,81 @@ public class MainInterface {
 		}
 		
 		return answers;
+	}
+	
+	
+	private static String do_something(int number) throws SQLException, JWNLException, IOException{
+		//String str_number=Thread.currentThread().getName();
+		//System.out.println("ThreadName: "+str_number);
+		//int number= Integer.parseInt(str_number);
+		ArrayList<ArrayList<Hypothesis>> hypothesenSetList  = new ArrayList<ArrayList<Hypothesis>>();
+		
+		
+		for(ArrayList<Hypothesis> l_h : global_template_list.get(number).getHypothesen()){
+			ArrayList<ArrayList<Hypothesis>> generated_hypothesis = new ArrayList<ArrayList<Hypothesis>>();
+			generated_hypothesis= IterationModule.new_iteration(global_template_list.get(number).getElm(),l_h,global_template_list.get(number).getCondition(),type_global,myindex_global,wordnet_global,lemmatiser_global);
+			for(ArrayList<Hypothesis> h_t : generated_hypothesis){
+				ArrayList<Hypothesis> new_hypothesen_set = new ArrayList<Hypothesis>();
+				for(Hypothesis bla : h_t){
+					new_hypothesen_set.add(bla);
+				}
+				hypothesenSetList.add(new_hypothesen_set);
+			}
+			
+			//hypothesenSetList.addAll(blub);
+		}
+		if(type_global.contains("WORDNET"))global_template_list.get(number).setHypothesenWordnet(hypothesenSetList);
+		if(type_global.contains("LEVENSTHEIN"))global_template_list.get(number).setHypothesenLevensthein(hypothesenSetList);
+		if(type_global.contains("RELATE"))global_template_list.get(number).setHypothesenRelate(hypothesenSetList);
+		return "DONE";
+		
+	}
+	
+	private static void write_ResourcePropertyInformation(String Resource, String PropertyName, String Property){
+		String dateiname="/home/swalter/Dokumente/Auswertung/ResourcePropertyRelation.txt";
+		String result_string ="";
+		//Open the file for reading
+	     try {
+	       BufferedReader br = new BufferedReader(new FileReader(dateiname));
+	       String thisLine;
+		while ((thisLine = br.readLine()) != null) { // while loop begins here
+	         result_string+=thisLine+"\n";
+	       } // end while 
+	     } // end try
+	     catch (IOException e) {
+	       System.err.println("Error: " + e);
+	     }
+	     
+	   
+	     
+	     File file = new File(dateiname);
+	     BufferedWriter bw = null;
+		try {
+			bw = new BufferedWriter(new FileWriter(file));
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
+		
+	      
+	        try {
+				bw.write(result_string+Resource+"::"+PropertyName+"::"+Property+"\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        try {
+				bw.flush();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+	        try {
+				bw.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 }

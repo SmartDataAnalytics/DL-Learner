@@ -109,7 +109,6 @@ public class IterationModule {
 			e1.printStackTrace();
 		}*/
 		if(givenConditionList.size()==1){
-			System.err.println("Only one Condition => simple Struktur");
 			simple_structure=true;
 			
 			boolean resource_case=false;
@@ -188,7 +187,6 @@ public class IterationModule {
 		 * two conditions!
 		 */
 		if(givenConditionList.size()==2){
-			System.out.println("two Conditions => NOT simple Struktur");
 			ArrayList<ElementList> resources = new ArrayList<ElementList>();
 			boolean gotResource=true;
 			try{
@@ -259,7 +257,6 @@ public class IterationModule {
 			 * 
 			 */
 			if((condition1_exists_isa||condition2_exists_isa)&&gotResource&&(condition1_exists_resource||condition2_exists_resource)){
-				System.err.println("CASE1");
 				String class_variable=null;
 				String class_property_variable=null;
 				ArrayList<String> working_condition=new ArrayList<String>();
@@ -345,7 +342,6 @@ public class IterationModule {
 			 * ISA
 			 */
 			else if((condition1_exists_isa||condition2_exists_isa)&&gotResource){
-				System.err.println("CASE2");
 				/*
 				 * get Hypothese for the Class
 				 */
@@ -421,7 +417,6 @@ public class IterationModule {
 			
 			else if((condition1_exists_resource||condition2_exists_resource)&&gotResource){
 				
-				System.err.println("CASE3");
 				String property_name="";
 				String second_property_name="";
 				String property_variable="";
@@ -470,25 +465,25 @@ public class IterationModule {
 						for(Hypothesis h_temp : resultHypothesenList) {
 							String Query="";
 							if(property_side_new.contains("LEFT")){
-								Query= "SELECT DISTINCT ?s ?x WHERE {<"+ resource_h.getUri()+"> <"+h_temp.getUri()+"> ?x. ?x rdfs:label ?s. FILTER (lang(?s) = 'en') }";
+								//{ [] foaf:name ?name1 } UNION { [] vCard:FN ?name2 }
+								Query= "SELECT DISTINCT ?s ?x WHERE {{<"+ resource_h.getUri()+"> <"+h_temp.getUri()+"> ?x} UNION {<"+ resource_h.getUri()+"> <"+h_temp.getUri().replace("property", "ontology")+"> ?x}. ?x rdfs:label ?s. FILTER (lang(?s) = 'en') }";
 
 							}
 							else{
-								Query= "SELECT DISTINCT ?s ?x WHERE {?x <"+h_temp.getUri()+"> <"+ resource_h.getUri()+"> . ?x rdfs:label ?s. FILTER (lang(?s) = 'en') }";
+								Query= "SELECT DISTINCT ?s ?x WHERE {{?x <"+h_temp.getUri()+"> <"+ resource_h.getUri()+">} UNION {?x <"+h_temp.getUri().replace("property", "ontology")+"> <"+ resource_h.getUri()+">} . ?x rdfs:label ?s. FILTER (lang(?s) = 'en') }";
 
 							}
 							/*
 							 * Now use the variable from the second condition which does not has an Resource in the Hypothesis
 							 */
-							System.out.println("Query: "+Query);
 							HashMap<String, String> hm_newClasses=ServerUtil.generatesQueryForOutsideClasses(Query);
 							
 							
 							ArrayList<Hypothesis> second_resultHypothesenList=new ArrayList<Hypothesis>();
-							
 							second_resultHypothesenList = creatNewPropertyList(type,
 									myindex, wordnet, lemmatiser, second_property_variable,
 									second_property_name,hm_newClasses,resource_h.getName());
+							
 							
 							for(Hypothesis second_h_temp : second_resultHypothesenList) {
 								ArrayList<Hypothesis> temp_al = new ArrayList<Hypothesis>();

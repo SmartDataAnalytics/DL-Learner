@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dllearner.algorithm.tbsl.exploration.Utils.DebugMode;
+import org.dllearner.algorithm.tbsl.exploration.Utils.ElementStorage;
 import org.dllearner.algorithm.tbsl.exploration.exploration_main.Setting;
 
 
@@ -103,7 +104,7 @@ string=string.replace("_", " ");
 	}
 
 public static ArrayList<String> searchIndexForProperty(String string, SQLiteIndex myindex) throws SQLException{
-	HashMap<String,Float> hm = new HashMap<String,Float>();
+	//HashMap<String,Float> hm = new HashMap<String,Float>();
 	if(Setting.isDebugModus())DebugMode.debugPrint("######\n In search Index for Property");
 
     // adding or set elements in Map by put method key and value pair
@@ -113,13 +114,38 @@ public static ArrayList<String> searchIndexForProperty(String string, SQLiteInde
 map.put(23, 2.5f);  
 map.put(64, 4.83f);  
      */
-	
+	ArrayList<String> result_List = new ArrayList<String>();
 	string=string.replace("_", " ");
 	string=string.replace("-", " ");
 	string=string.replace(".", " ");
+	if(string.contains("label")&&string.contains("name")){
+		string="name";
+	}
+	
+	/*String value= null;
+	value=ElementStorage.getStorage_property().get(string);
+	
+	if(value!=null){
+		result_List.add(value);
+		return result_List;
+	}
+	else{*/
+	String result_new= null;
+	if(Setting.isLoadedProperties()){
+		try {
+			result_new = myindex.getManualPropertyURI(string);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(result_new!=null){
+			result_List.add(result_new);
+			ElementStorage.addStorage_property(string, result_new);
+			return result_List;
+		}
+	}
 	String result=null;
 	String result2 = null;
-	ArrayList<String> result_List = new ArrayList<String>();
 	
 	if(string.substring(string.length()-1).contains("s")){
 		String neuer_string = string.substring(0, string.length() -1);
@@ -133,18 +159,19 @@ map.put(64, 4.83f);
 		//tmp2=myindex.getYagoURI(neuer_string.toLowerCase());
 		if(result2!=null){
 			result_List.add(result2);
-			hm.put(result, 1.0f);
+			//hm.put(result, 1.0f);
 		}
 		else if(result!=null){
 			result_List.add(result);
-			hm.put(result, 1.0f);
+			ElementStorage.addStorage_property(string, result);
+			//hm.put(result, 1.0f);
 			if(Setting.isDebugModus())DebugMode.debugPrint("Found uri for: "+string.toLowerCase());
 		}
 		else{
 			if(Setting.isDebugModus())DebugMode.debugErrorPrint("Didnt find uri for: "+string.toLowerCase());
 			
 			result_List.add("http://dbpedia.org/ontology/"+string.toLowerCase().replace(" ", "_"));
-			hm.put(result, 0.0f);
+			//hm.put(result, 0.0f);
 		}
 	}
 	else{
@@ -158,19 +185,22 @@ map.put(64, 4.83f);
 		if(Setting.isDebugModus())DebugMode.debugPrint("Result: "+result);
 		if(result2!=null){
 			result_List.add(result2);
-			hm.put(result, 1.0f);
+			//ElementStorage.addStorage_property(string, result2);
+			//hm.put(result, 1.0f);
 			if(Setting.isDebugModus())DebugMode.debugPrint("Found uri for: "+string.toLowerCase());
 		}
 		else if(result!=null){
 			result_List.add(result);
-			hm.put(result, 1.0f);
+			//ElementStorage.addStorage_property(string, result);
+			//hm.put(result, 1.0f);
 			if(Setting.isDebugModus())DebugMode.debugPrint("Found uri for: "+string.toLowerCase());
 		}
 		else{
 			if(Setting.isDebugModus())DebugMode.debugErrorPrint("Didnt find uri for: "+string.toLowerCase());
 			
 			result_List.add("http://dbpedia.org/ontology/"+string.toLowerCase().replace(" ", "_"));
-			hm.put(result, 0.0f);
+			//ElementStorage.addStorage_property(string, "http://dbpedia.org/ontology/"+string.toLowerCase().replace(" ", "_"));
+			//hm.put(result, 0.0f);
 		}
 	}
 	
