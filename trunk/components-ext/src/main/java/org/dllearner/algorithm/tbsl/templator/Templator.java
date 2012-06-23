@@ -57,7 +57,7 @@ public class Templator {
 	boolean UNTAGGED_INPUT = true;
 	boolean USE_NER = false;
 	boolean USE_WORDNET = true;
-	boolean VERBOSE = false;
+	boolean VERBOSE = true;
 	
 	private String taggedInput;
 	
