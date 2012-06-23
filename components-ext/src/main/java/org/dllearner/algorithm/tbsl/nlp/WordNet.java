@@ -1,5 +1,6 @@
 package org.dllearner.algorithm.tbsl.nlp;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,15 @@ public class WordNet {
 	public WordNet(String configPath) {
 		try {
 			JWNL.initialize(this.getClass().getClassLoader().getResourceAsStream(configPath));
+			dict = Dictionary.getInstance();
+		} catch (JWNLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public WordNet(InputStream propertiesStream) {
+		try {
+			JWNL.initialize(propertiesStream);
 			dict = Dictionary.getInstance();
 		} catch (JWNLException e) {
 			e.printStackTrace();

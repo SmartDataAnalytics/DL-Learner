@@ -45,6 +45,7 @@ import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.sparql.WeightedQuery;
 import org.dllearner.algorithm.tbsl.templator.Templator;
+import org.dllearner.algorithm.tbsl.util.Knowledgebase;
 import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.IndexResultItem;
@@ -140,16 +141,44 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, new StanfordPartOfSpeechTagger());
 	}
 	
+	public SPARQLTemplateBasedLearner2(Knowledgebase knowledgebase, PartOfSpeechTagger posTagger, WordNet wordNet, Options options){
+		this(knowledgebase.getEndpoint(), knowledgebase.getResourceIndex(), knowledgebase.getPropertyIndex(), knowledgebase.getClassIndex(), posTagger, wordNet, options);
+	}
+	
+	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index index){
+		this(endpoint, index, new StanfordPartOfSpeechTagger());
+	}
+	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex, PartOfSpeechTagger posTagger){
 		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, posTagger, new WordNet(), new Options());
+	}
+	
+	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index index, PartOfSpeechTagger posTagger){
+		this(endpoint, index, posTagger, new WordNet(), new Options());
 	}
 	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex, WordNet wordNet){
 		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, new StanfordPartOfSpeechTagger(), wordNet, new Options());
 	}
 	
+	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index index, WordNet wordNet){
+		this(endpoint, index, new StanfordPartOfSpeechTagger(), wordNet, new Options());
+	}
+	
+	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex, PartOfSpeechTagger posTagger, WordNet wordNet){
+		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, posTagger, wordNet, new Options(), new ExtractionDBCache("cache"));
+	}
+	
+	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index index, PartOfSpeechTagger posTagger, WordNet wordNet){
+		this(endpoint, index, index, index, posTagger, wordNet, new Options(), new ExtractionDBCache("cache"));
+	}
+	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex, PartOfSpeechTagger posTagger, WordNet wordNet, Options options){
 		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, posTagger, wordNet, options, new ExtractionDBCache("cache"));
+	}
+	
+	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index index, PartOfSpeechTagger posTagger, WordNet wordNet, Options options){
+		this(endpoint, index, index, index, posTagger, wordNet, options, new ExtractionDBCache("cache"));
 	}
 	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex, PartOfSpeechTagger posTagger, WordNet wordNet, Options options, ExtractionDBCache cache){
@@ -226,6 +255,13 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	
 	public void setMappingIndex(MappingBasedIndex mappingIndex) {
 		this.mappingIndex = mappingIndex;
+	}
+	
+	public void setKnowledgebase(Knowledgebase knowledgebase){
+		this.endpoint = knowledgebase.getEndpoint();
+		this.resourcesIndex = knowledgebase.getResourceIndex();
+		this.classesIndex = knowledgebase.getPropertyIndex();
+		this.propertiesIndex = knowledgebase.getClassIndex();
 	}
 	
 	/*
@@ -689,7 +725,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			for (Iterator<WeightedQuery> iterator = queries.iterator(); iterator.hasNext();) {
 				WeightedQuery wQ = iterator.next();
 				if(dropZeroScoredQueries){
-					if(wQ.getScore() == 0){
+					if(wQ.getScore() <= 0){
 						iterator.remove();
 					}
 				} else {
