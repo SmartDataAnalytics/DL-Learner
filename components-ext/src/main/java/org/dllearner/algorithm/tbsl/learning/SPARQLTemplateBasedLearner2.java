@@ -137,12 +137,14 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	
 	private boolean multiThreaded = true;
 	
+	private String [] grammarFiles = new String[]{"tbsl/lexicon/english.lex"};
+	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex){
 		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, new StanfordPartOfSpeechTagger());
 	}
 	
 	public SPARQLTemplateBasedLearner2(Knowledgebase knowledgebase, PartOfSpeechTagger posTagger, WordNet wordNet, Options options){
-		this(knowledgebase.getEndpoint(), knowledgebase.getResourceIndex(), knowledgebase.getPropertyIndex(), knowledgebase.getClassIndex(), posTagger, wordNet, options);
+		this(knowledgebase.getEndpoint(), knowledgebase.getResourceIndex(), knowledgebase.getClassIndex(),knowledgebase.getPropertyIndex(), posTagger, wordNet, options);
 	}
 	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index index){
@@ -247,9 +249,13 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		}
 	}
 	
+	public void setGrammarFiles(String[] grammarFiles){
+		templateGenerator.setGrammarFiles(grammarFiles);
+	}
+	
 	@Override
 	public void init() throws ComponentInitException {
-		 templateGenerator = new Templator(posTagger, wordNet);
+		 templateGenerator = new Templator(posTagger, wordNet, grammarFiles);
 		 lemmatizer = new LingPipeLemmatizer();
 	}
 	
@@ -260,8 +266,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	public void setKnowledgebase(Knowledgebase knowledgebase){
 		this.endpoint = knowledgebase.getEndpoint();
 		this.resourcesIndex = knowledgebase.getResourceIndex();
-		this.classesIndex = knowledgebase.getPropertyIndex();
-		this.propertiesIndex = knowledgebase.getClassIndex();
+		this.classesIndex = knowledgebase.getClassIndex();
+		this.propertiesIndex = knowledgebase.getPropertyIndex();
 	}
 	
 	/*
