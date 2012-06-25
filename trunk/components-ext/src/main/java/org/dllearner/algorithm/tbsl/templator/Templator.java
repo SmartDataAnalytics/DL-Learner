@@ -92,6 +92,27 @@ public class Templator {
 	    pp = new Preprocessor(USE_NER);
 	}
 	
+	public Templator(final PartOfSpeechTagger tagger, WordNet wordnet, String[] GRAMMAR_FILES) {
+        this.tagger = tagger;
+        this.wordnet = wordnet;
+        this.GRAMMAR_FILES = GRAMMAR_FILES;
+
+        List<InputStream> grammarFiles = new ArrayList<InputStream>();
+        for(int i = 0; i < GRAMMAR_FILES.length; i++){
+	grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
+        }
+	
+        g = LTAG_Constructor.construct(grammarFiles);
+	
+    p = new Parser();
+    p.SHOW_GRAMMAR = true;
+    p.USE_DPS_AS_INITTREES = true;
+    p.CONSTRUCT_SEMANTICS = true;
+    p.MODE = "LEIPZIG";
+    
+    pp = new Preprocessor(USE_NER);
+}
+	
 	public Templator(boolean b) {
             this.tagger = new StanfordPartOfSpeechTagger();
             this.USE_WORDNET = false;
