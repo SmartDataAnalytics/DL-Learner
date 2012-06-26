@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
@@ -20,7 +21,10 @@ private CommonsHttpSolrServer server;
 	private static final int DEFAULT_LIMIT = 10;
 	private static final int DEFAULT_OFFSET = 0;
 	
-	private String searchField;
+	private String primarySearchField;
+	private String secondarySearchField;
+	
+	private String sortField;
 	
 	public SOLRIndex(String solrServerURL){
 		try {
@@ -31,8 +35,17 @@ private CommonsHttpSolrServer server;
 		}
 	}
 	
-	public void setSearchField(String searchField) {
-		this.searchField = searchField;
+	public void setSearchFields(String primarySearchField, String secondarySearchField){
+		this.primarySearchField = primarySearchField;
+		this.secondarySearchField = secondarySearchField;
+	}
+	
+	public void setPrimarySearchField(String primarySearchField) {
+		this.primarySearchField = primarySearchField;
+	}
+	
+	public void setSecondarySearchField(String secondarySearchField) {
+		this.secondarySearchField = secondarySearchField;
 	}
 	
 	@Override
@@ -81,9 +94,16 @@ private CommonsHttpSolrServer server;
 		
 		QueryResponse response;
 		try {
-			SolrQuery query = new SolrQuery((searchField != null) ? searchField  + ":" + queryString : queryString);
+			String solrString = queryString;
+			if(primarySearchField != null){
+				solrString = primarySearchField + ":" + "\"" + queryString + "\"" + "^2 " + queryString;
+			}
+			SolrQuery query = new SolrQuery(solrString);
 		    query.setRows(limit);
 		    query.setStart(offset);
+		    if(sortField != null){
+		    	query.addSortField(sortField, ORDER.desc);
+		    }
 		    query.addField("score");
 			response = server.query(query);
 			SolrDocumentList docList = response.getResults();
@@ -101,6 +121,10 @@ private CommonsHttpSolrServer server;
 			e.printStackTrace();
 		}
 		return rs;
+	}
+	
+	public void setSortField(String sortField){
+		this.sortField = sortField;
 	}
 
 }

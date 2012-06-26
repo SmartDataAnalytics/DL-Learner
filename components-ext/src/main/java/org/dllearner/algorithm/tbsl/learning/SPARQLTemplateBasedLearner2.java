@@ -268,6 +268,19 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		this.resourcesIndex = knowledgebase.getResourceIndex();
 		this.classesIndex = knowledgebase.getClassIndex();
 		this.propertiesIndex = knowledgebase.getPropertyIndex();
+		this.mappingIndex = knowledgebase.getMappingIndex();
+		if(propertiesIndex instanceof SPARQLPropertiesIndex){
+			if(propertiesIndex instanceof VirtuosoPropertiesIndex){
+				datatypePropertiesIndex = new VirtuosoDatatypePropertiesIndex((SPARQLPropertiesIndex)propertiesIndex);
+				objectPropertiesIndex = new VirtuosoObjectPropertiesIndex((SPARQLPropertiesIndex)propertiesIndex);
+			} else {
+				datatypePropertiesIndex = new SPARQLDatatypePropertiesIndex((SPARQLPropertiesIndex)propertiesIndex);
+				objectPropertiesIndex = new SPARQLObjectPropertiesIndex((SPARQLPropertiesIndex)propertiesIndex);
+			}
+		} else {
+			datatypePropertiesIndex = propertiesIndex;
+			objectPropertiesIndex = propertiesIndex;
+		}
 	}
 	
 	/*
@@ -545,7 +558,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			//add for each SYMPROPERTY Slot the reversed query
 			for(Slot slot : sortedSlots){
 				for(WeightedQuery wQ : queries){
-					if(slot.getSlotType() == SlotType.SYMPROPERTY){
+					if(slot.getSlotType() == SlotType.SYMPROPERTY || slot.getSlotType() == SlotType.OBJECTPROPERTY){
 						Query reversedQuery = new Query(wQ.getQuery());
 						reversedQuery.getTriplesWithVar(slot.getAnchor()).iterator().next().reverse();
 						tmp.add(new WeightedQuery(reversedQuery));
