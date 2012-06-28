@@ -46,6 +46,7 @@ import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.sparql.WeightedQuery;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
+import org.dllearner.algorithm.tbsl.util.PopularityMap;
 import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.IndexResultItem;
@@ -138,6 +139,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	private boolean multiThreaded = true;
 	
 	private String [] grammarFiles = new String[]{"tbsl/lexicon/english.lex"};
+	
+	private PopularityMap popularityMap;
 	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex){
 		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, new StanfordPartOfSpeechTagger());
@@ -777,33 +780,46 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 	
 	private double getProminenceValue(String uri, SlotType type){
-		int cnt = 1;
-		String query = null;
-		if(type == SlotType.CLASS){
-			query = "SELECT COUNT(?s) WHERE {?s a <%s>}";
-		} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY 
-				|| type == SlotType.DATATYPEPROPERTY || type == SlotType.OBJECTPROPERTY){
-			query = "SELECT COUNT(*) WHERE {?s <%s> ?o}";
-		} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
-			query = "SELECT COUNT(*) WHERE {?s ?p <%s>}";
+		Integer popularity = null;
+		if(popularityMap != null){
+			if(type == SlotType.CLASS || type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY 
+					|| type == SlotType.DATATYPEPROPERTY || type == SlotType.OBJECTPROPERTY){
+				popularity = popularityMap.getPopularity(uri);
+			} 
+		} 
+		if(popularity == null){
+			String query = null;
+			if(type == SlotType.CLASS){
+				query = "SELECT COUNT(?s) WHERE {?s a <%s>}";
+			} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY 
+					|| type == SlotType.DATATYPEPROPERTY || type == SlotType.OBJECTPROPERTY){
+				query = "SELECT COUNT(*) WHERE {?s <%s> ?o}";
+			} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
+				query = "SELECT COUNT(*) WHERE {?s ?p <%s>}";
+			}
+			query = String.format(query, uri);
+			
+			ResultSet rs = executeSelect(query);
+			QuerySolution qs;
+			String projectionVar;
+			while(rs.hasNext()){
+				qs = rs.next();
+				projectionVar = qs.varNames().next();
+				popularity = qs.get(projectionVar).asLiteral().getInt();
+			}
 		}
-		query = String.format(query, uri);
 		
-		ResultSet rs = executeSelect(query);
-		QuerySolution qs;
-		String projectionVar;
-		while(rs.hasNext()){
-			qs = rs.next();
-			projectionVar = qs.varNames().next();
-			cnt = qs.get(projectionVar).asLiteral().getInt();
-		}
+		
 //		if(cnt == 0){
 //			return 0;
 //		} 
 //		return Math.log(cnt);
-		return cnt;
+		return popularity;
 	}
 	
+	public void setPopularityMap(PopularityMap popularityMap) {
+		this.popularityMap = popularityMap;
+	}
 	
 	
 	private List<String> pruneList(List<String> words){
