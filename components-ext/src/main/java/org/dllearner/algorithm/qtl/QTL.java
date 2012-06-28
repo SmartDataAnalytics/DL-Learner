@@ -285,7 +285,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	
 	private String getDistinctSPARQLQuery(QueryTree<String> tree){
 		String query = tree.toSPARQLQueryString();
-		query = "SELECT DISTINCT " + query.substring(7);
+//		query = "SELECT DISTINCT " + query.substring(7);
 		return query;
 	}
 
