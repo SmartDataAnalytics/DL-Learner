@@ -47,6 +47,7 @@ import org.dllearner.algorithm.tbsl.sparql.WeightedQuery;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
 import org.dllearner.algorithm.tbsl.util.PopularityMap;
+import org.dllearner.algorithm.tbsl.util.PopularityMap.EntityType;
 import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.IndexResultItem;
@@ -782,9 +783,13 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	private double getProminenceValue(String uri, SlotType type){
 		Integer popularity = null;
 		if(popularityMap != null){
-			if(type == SlotType.CLASS || type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY 
+			if(type == SlotType.CLASS){
+				popularity = popularityMap.getPopularity(uri, EntityType.CLASS);
+			} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY 
 					|| type == SlotType.DATATYPEPROPERTY || type == SlotType.OBJECTPROPERTY){
-				popularity = popularityMap.getPopularity(uri);
+				popularity = popularityMap.getPopularity(uri, EntityType.PROPERTY);
+			} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
+				popularity = popularityMap.getPopularity(uri, EntityType.RESOURCE);
 			} 
 		} 
 		if(popularity == null){
@@ -807,6 +812,9 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				projectionVar = qs.varNames().next();
 				popularity = qs.get(projectionVar).asLiteral().getInt();
 			}
+		}
+		if(popularity == null){
+			popularity = Integer.valueOf(0);
 		}
 		
 		

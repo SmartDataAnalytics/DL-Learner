@@ -7,7 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.dllearner.core.owl.DatatypeProperty;
@@ -23,7 +25,7 @@ import com.hp.hpl.jena.query.ResultSet;
 
 public class PopularityMap {
 	
-	enum EntityType {
+	public enum EntityType {
 		CLASS, PROPERTY, RESOURCE
 	}
 	
@@ -48,22 +50,19 @@ public class PopularityMap {
 			// load popularity of classes
 			for (NamedClass nc : new SPARQLTasks(endpoint).getAllClasses()) {
 				System.out.println("Computing popularity for " + nc);
-				String query = String.format("SELECT COUNT(?s) WHERE {?s a <%s>}", nc.getName());
-				int popularity = loadPopularity(query);
+				int popularity = loadPopularity(nc.getName(), EntityType.CLASS);
 				class2Popularity.put(nc.getName(), Integer.valueOf(popularity));
 			}
 			// load popularity of properties
 			for (ObjectProperty op : new SPARQLTasks(endpoint).getAllObjectProperties()) {
 				System.out.println("Computing popularity for " + op);
-				String query = String.format("SELECT COUNT(*) WHERE {?s <%s> ?o}", op.getName());
-				int popularity = loadPopularity(query);
-				class2Popularity.put(op.getName(), Integer.valueOf(popularity));
+				int popularity = loadPopularity(op.getName(), EntityType.PROPERTY);
+				property2Popularity.put(op.getName(), Integer.valueOf(popularity));
 			}
 			for (DatatypeProperty dp : new SPARQLTasks(endpoint).getAllDataProperties()) {
 				System.out.println("Computing popularity for " + dp);
-				String query = String.format("SELECT COUNT(*) WHERE {?s <%s> ?o}", dp.getName());
-				int popularity = loadPopularity(query);
-				class2Popularity.put(dp.getName(), Integer.valueOf(popularity));
+				int popularity = loadPopularity(dp.getName(), EntityType.PROPERTY);
+				property2Popularity.put(dp.getName(), Integer.valueOf(popularity));
 			}
 			serialize();
 		}
@@ -73,7 +72,11 @@ public class PopularityMap {
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(new FileOutputStream(new File(file)));
-			oos.writeObject(class2Popularity);
+			List<Map<String, Integer>> mapList = new ArrayList<Map<String,Integer>>();
+			mapList.add(class2Popularity);
+			mapList.add(property2Popularity);
+			mapList.add(resource2Popularity);
+			oos.writeObject(mapList);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -98,7 +101,10 @@ public class PopularityMap {
 			ObjectInputStream ois = null;
 			try {
 				ois = new ObjectInputStream(new FileInputStream(new File(file)));
-				class2Popularity = (Map<String, Integer>) ois.readObject();
+				List<Map<String, Integer>> mapList = (List<Map<String, Integer>>) ois.readObject();
+				class2Popularity = mapList.get(0);
+				property2Popularity = mapList.get(1);
+				resource2Popularity = mapList.get(2);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -115,12 +121,21 @@ public class PopularityMap {
 				}
 				
 			}
+			System.out.println("Loaded popularity map.");
 			return true;
 		} 
 		return false;
 	}
 	
-	private int loadPopularity(String query){
+	private int loadPopularity(String uri, EntityType entityType){
+		String query;
+		if(entityType == EntityType.CLASS){
+			query = String.format("SELECT COUNT(?s) WHERE {?s a <%s>}", uri);
+		} else if(entityType == EntityType.PROPERTY){
+			query = String.format("SELECT COUNT(*) WHERE {?s <%s> ?o}", uri);
+		} else {
+			query = String.format("SELECT COUNT(*) WHERE {?s ?p <%s>}", uri);
+		}
 		int pop = 0;
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		QuerySolution qs;
@@ -137,10 +152,22 @@ public class PopularityMap {
 		Integer popularity;
 		if(entityType == EntityType.CLASS){
 			popularity = class2Popularity.get(uri);
+			if(popularity == null){
+				popularity = loadPopularity(uri, entityType);
+				class2Popularity.put(uri, popularity);
+			}
 		} else if(entityType == EntityType.PROPERTY){
 			popularity = property2Popularity.get(uri);
+			if(popularity == null){
+				popularity = loadPopularity(uri, entityType);
+				property2Popularity.put(uri, popularity);
+			}
 		} else {
 			popularity = resource2Popularity.get(uri);
+			if(popularity == null){
+				popularity = loadPopularity(uri, entityType);
+				resource2Popularity.put(uri, popularity);
+			}
 		}
 		return popularity;
 	}
@@ -157,7 +184,9 @@ public class PopularityMap {
 	}
 	
 	public static void main(String[] args) {
-		new PopularityMap("dbpedia_popularity.map", SparqlEndpoint.getEndpointDBpedia(), new ExtractionDBCache("cache")).init();
+		PopularityMap map = new PopularityMap("dbpedia_popularity.map", SparqlEndpoint.getEndpointDBpediaLiveAKSW(), new ExtractionDBCache("cache"));
+		map.init();
+		System.out.println(map.getPopularity("http://dbpedia.org/ontology/Book"));
 	}
 
 }
