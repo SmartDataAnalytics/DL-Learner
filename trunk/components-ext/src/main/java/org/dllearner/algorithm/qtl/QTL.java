@@ -31,7 +31,6 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections15.ListUtils;
 import org.apache.log4j.Logger;
-import org.dllearner.algorithm.qtl.cache.ModelCache;
 import org.dllearner.algorithm.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithm.qtl.datastructures.QueryTree;
 import org.dllearner.algorithm.qtl.datastructures.impl.QueryTreeImpl;
@@ -42,7 +41,6 @@ import org.dllearner.algorithm.qtl.filters.QueryTreeFilter;
 import org.dllearner.algorithm.qtl.operations.NBR;
 import org.dllearner.algorithm.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithm.qtl.operations.lgg.LGGGeneratorImpl;
-import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractLearningProblem;
@@ -56,6 +54,9 @@ import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.CachingConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -92,8 +93,6 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	private ExtractionDBCache cache;
 	
 	private QueryTreeCache treeCache;
-	private ModelGenerator modelGen;
-	private ModelCache modelCache;
 	
 	private LGGGenerator<String> lggGenerator;
 	private NBR<String> nbr;
@@ -105,6 +104,8 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	private List<QueryTree<String>> negExampleTrees;
 	
 	private QueryTreeFilter queryTreeFilter;
+	
+	private ConciseBoundedDescriptionGenerator cbdGenerator;
 	
 	private int maxExecutionTimeInSeconds = 60;
 	private int maxQueryTreeDepth = 2;
@@ -138,9 +139,8 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		this.cache = cache;
 		
 		treeCache = new QueryTreeCache();
-		modelGen = new ModelGenerator(endpoint, endpoint.getPredicateFilters(), cache);
-		modelCache = new ModelCache(modelGen);
-		modelCache.setRecursionDepth(maxQueryTreeDepth);
+		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, cache));
+		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
 		
 		lggGenerator = new LGGGeneratorImpl<String>();
 		nbr = new NBR<String>(endpoint, cache);
@@ -208,7 +208,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	
 	public void setMaxQueryTreeDepth(int maxQueryTreeDepth){
 		this.maxQueryTreeDepth = maxQueryTreeDepth;
-		modelCache.setRecursionDepth(maxQueryTreeDepth);
+		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
 	}
 	
 	public String getSPARQLQuery(){
@@ -216,6 +216,10 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 			lgg = lggGenerator.getLGG(getQueryTrees(posExamples));
 		}
 		return lgg.toSPARQLQueryString();
+	}
+	
+	public void setRestrictToNamespaces(List<String> namespaces){
+		cbdGenerator.setRestrictToNamespaces(namespaces);
 	}
 	
 	private void generatePositiveExampleTrees(){
@@ -236,7 +240,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 			if(logger.isDebugEnabled()){
 				logger.debug("Tree for resource " + resource);
 			}
-			model = modelCache.getModel(resource);
+			model = cbdGenerator.getConciseBoundedDescription(resource);
 			tree = treeCache.getQueryTree(resource, model);
 			if(logger.isDebugEnabled()){
 				logger.debug(tree.getStringRepresentation());
@@ -324,9 +328,8 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		endpoint = endpointKS.getEndpoint();
 		
 		treeCache = new QueryTreeCache();
-		modelGen = new ModelGenerator(endpoint);
-		modelCache = new ModelCache(modelGen);
-		modelCache.setRecursionDepth(maxQueryTreeDepth);
+		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, cache));
+		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
 		
 		lggGenerator = new LGGGeneratorImpl<String>();
 		nbr = new NBR<String>(endpoint);

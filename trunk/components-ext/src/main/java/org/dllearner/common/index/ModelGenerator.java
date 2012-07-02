@@ -1,4 +1,4 @@
-package org.dllearner.algorithm.qtl.util;
+package org.dllearner.common.index;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;

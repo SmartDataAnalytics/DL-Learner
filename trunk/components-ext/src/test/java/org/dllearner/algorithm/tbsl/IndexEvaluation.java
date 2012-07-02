@@ -27,7 +27,6 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner;
 import org.dllearner.algorithm.tbsl.search.HierarchicalSolrSearch;
 import org.dllearner.algorithm.tbsl.search.SolrSearch;
 import org.dllearner.algorithm.tbsl.search.ThresholdSlidingSolrSearch;
