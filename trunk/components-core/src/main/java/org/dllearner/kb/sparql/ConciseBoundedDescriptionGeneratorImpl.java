@@ -2,6 +2,9 @@ package org.dllearner.kb.sparql;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Level;
@@ -13,17 +16,21 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDescriptionGenerator{
 	
 	private static final Logger logger = Logger.getLogger(ConciseBoundedDescriptionGeneratorImpl.class);
 	
 	private static final int CHUNK_SIZE = 1000;
-	private static final int DEFAULT_DEPTH = 2;
 	
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
 	private Model baseModel;
+	
+	private List<String> namespaces;
+	private int maxRecursionDepth = 2;
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
@@ -39,7 +46,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	}
 	
 	public Model getConciseBoundedDescription(String resourceURI){
-		return getConciseBoundedDescription(resourceURI, DEFAULT_DEPTH);
+		return getConciseBoundedDescription(resourceURI, maxRecursionDepth);
 	}
 	
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
@@ -78,6 +85,16 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		return all;
 	}
 	
+	@Override
+	public void setRestrictToNamespaces(List<String> namespaces) {
+		this.namespaces = namespaces;
+	}
+	
+	@Override
+	public void setRecursionDepth(int maxRecursionDepth) {
+		this.maxRecursionDepth = maxRecursionDepth;
+	}
+	
 	/**
 	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given example with a specific recursion depth.
 	 * @param example The example resource for which a CONSTRUCT query is created.
@@ -95,11 +112,13 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		sb.append("}\n");
 		sb.append("WHERE {\n");
 		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
+		sb.append(createNamespacesFilter("?p0"));
 //		sb.append("?p0 a ?type0.\n");
 		for(int i = 1; i < depth; i++){
 			sb.append("OPTIONAL{\n");
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
 //			sb.append("?p").append(i).append(" ").append("a").append(" ").append("?type").append(i).append(".\n");
+			sb.append(createNamespacesFilter("?p" + i));
 		}
 		for(int i = 1; i < depth; i++){
 			sb.append("}");
@@ -108,6 +127,22 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		sb.append("LIMIT ").append(limit).append("\n");
 		sb.append("OFFSET ").append(offset);
 		return sb.toString();
+	}
+	
+	private String createNamespacesFilter(String targetVar){
+		String filter = "";
+		if(namespaces != null){
+			filter += "FILTER(";
+			for(Iterator<String> iter = namespaces.iterator(); iter.hasNext();){
+				String ns = iter.next();
+				filter += "(REGEX(STR(" + targetVar + "),'" + ns + "'))";
+				if(iter.hasNext()){
+					filter += " || ";
+				}
+			}
+			filter += ")";
+		}
+		return filter;
 	}
 	
 	private Model getModel(String query) throws UnsupportedEncodingException, SQLException{
@@ -143,7 +178,10 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	public static void main(String[] args) {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
 		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia());
-		cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 2);
+		cbdGen = new CachingConciseBoundedDescriptionGenerator(cbdGen);
+		cbdGen.setRestrictToNamespaces(Arrays.asList(new String[]{"http://dbpedia.org/ontology/", RDF.getURI(), RDFS.getURI()}));
+		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 2);
+		System.out.println(cbd.size());
 	}
 
 }

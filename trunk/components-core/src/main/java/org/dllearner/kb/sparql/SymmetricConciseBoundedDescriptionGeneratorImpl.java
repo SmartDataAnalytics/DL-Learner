@@ -2,6 +2,7 @@ package org.dllearner.kb.sparql;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Level;
@@ -18,10 +19,12 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	private static final Logger logger = Logger.getLogger(SymmetricConciseBoundedDescriptionGeneratorImpl.class);
 	
 	private static final int CHUNK_SIZE = 1000;
-	private static final int DEFAULT_DEPTH = 1;
 	
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
+	
+	private List<String> namespaces;
+	private int maxRecursionDepth = 1;
 	
 	public SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
@@ -33,7 +36,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	}
 	
 	public Model getConciseBoundedDescription(String resourceURI){
-		return getConciseBoundedDescription(resourceURI, DEFAULT_DEPTH);
+		return getConciseBoundedDescription(resourceURI, maxRecursionDepth);
 	}
 	
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
@@ -41,6 +44,11 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 		cbd.add(getModelChunkedResourceIsObject(resourceURI, depth));
 		cbd.add(getModelChunkedResourceIsSubject(resourceURI, depth));
 		return cbd;
+	}
+	
+	@Override
+	public void setRestrictToNamespaces(List<String> namespaces) {
+		this.namespaces = namespaces;
 	}
 	
 	private Model getModelChunkedResourceIsObject(String resource, int depth){
@@ -192,6 +200,12 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 		Logger.getRootLogger().setLevel(Level.DEBUG);
 		ConciseBoundedDescriptionGenerator cbdGen = new SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia());
 		cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 1);
+	}
+
+	@Override
+	public void setRecursionDepth(int maxRecursionDepth) {
+		this.maxRecursionDepth = maxRecursionDepth;
+		
 	}
 
 }
