@@ -151,6 +151,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		this(knowledgebase.getEndpoint(), knowledgebase.getResourceIndex(), knowledgebase.getClassIndex(),knowledgebase.getPropertyIndex(), posTagger, wordNet, options);
 	}
 	
+	public SPARQLTemplateBasedLearner2(Knowledgebase knowledgebase){
+		this(knowledgebase.getEndpoint(), knowledgebase.getResourceIndex(), knowledgebase.getClassIndex(),knowledgebase.getPropertyIndex(), new StanfordPartOfSpeechTagger(), new WordNet(), new Options());
+	}
+	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index index){
 		this(endpoint, index, new StanfordPartOfSpeechTagger());
 	}
@@ -456,6 +460,16 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			a.setScore(score);
 		}
 		
+	}
+	
+	public Set<String> getRelevantKeywords(){
+		Set<String> keywords = new HashSet<String>();
+		for(Template t : templates){
+			for (Slot slot : t.getSlots()) {
+				keywords.add(slot.getWords().get(0));
+			}
+		}
+		return keywords;
 	}
 	
 	private SortedSet<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){

@@ -7,11 +7,11 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Collections;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.dllearner.algorithm.tbsl.learning.NoTemplateFoundException;
-import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner;
-import org.dllearner.algorithm.tbsl.templator.Templator;
+import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner2;
+import org.dllearner.algorithm.tbsl.util.Knowledgebase;
+import org.dllearner.common.index.Index;
+import org.dllearner.common.index.SOLRIndex;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.ini4j.InvalidFileFormatException;
 
@@ -21,10 +21,17 @@ public class CLI {
 	    public static void main(String[] args) throws InvalidFileFormatException, FileNotFoundException, IOException {
 	    	
 //	    	Logger.getLogger(SPARQLTemplateBasedLearner.class).setLevel(Level.OFF);
-	    	
-			SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
-			SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"), 
-					Collections.<String>singletonList(""), Collections.<String>emptyList());
+	    	SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
+			
+			SOLRIndex resourcesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_resources");
+			resourcesIndex.setPrimarySearchField("label");
+//			resourcesIndex.setSortField("pagerank");
+			Index classesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_classes");
+			Index propertiesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_properties");
+			
+			
+			Knowledgebase kb = new Knowledgebase(endpoint, "DBpedia Live", "TODO", resourcesIndex, propertiesIndex, classesIndex, null);
+			SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(kb);
 	    	
 	        System.out.println("======= TBSL v0.1 =============");       
 	        System.out.println("\nType ':q' to quit.");

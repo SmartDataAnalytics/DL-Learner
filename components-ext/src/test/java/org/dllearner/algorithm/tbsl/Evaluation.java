@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,13 +35,14 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.dllearner.algorithm.tbsl.learning.NoTemplateFoundException;
-import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner;
-import org.dllearner.algorithm.tbsl.sparql.Query;
-import org.dllearner.algorithm.tbsl.sparql.SPARQL_Prefix;
+import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner2;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.sparql.WeightedQuery;
+import org.dllearner.algorithm.tbsl.util.Knowledgebase;
 import org.dllearner.algorithm.tbsl.util.LatexWriter;
+import org.dllearner.common.index.Index;
+import org.dllearner.common.index.SOLRIndex;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -79,7 +79,7 @@ public class Evaluation{
 	
 	private SparqlEndpoint endpoint;
 	
-	private SPARQLTemplateBasedLearner stbl;
+	private SPARQLTemplateBasedLearner2 stbl;
 	
 	private int testID = -1;
 	private Map<String, String> prefixMap;
@@ -91,7 +91,16 @@ public class Evaluation{
 		for(File file : evaluationFiles){
 			readQueries(file);
 		}
-		stbl = new SPARQLTemplateBasedLearner();
+		
+		SOLRIndex resourcesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_resources");
+		resourcesIndex.setPrimarySearchField("label");
+//		resourcesIndex.setSortField("pagerank");
+		Index classesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_classes");
+		Index propertiesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_properties");
+		
+		
+		Knowledgebase kb = new Knowledgebase(endpoint, "DBpedia Live", "TODO", resourcesIndex, propertiesIndex, classesIndex, null);
+		stbl = new SPARQLTemplateBasedLearner2(kb);
 		stbl.setUseIdealTagger(USE_IDEAL_TAGGER);
 		
 		init();
@@ -644,7 +653,8 @@ public class Evaluation{
 				//set the question
 				stbl.setQuestion(question);
 				//get the generated SPARQL query candidates
-				List<String> queries = stbl.getSPARQLQueries();
+				stbl.learnSPARQLQueries();
+				List<String> queries = stbl.getGeneratedSPARQLQueries();
 				//get the used templates
 				Set<Template> templates = stbl.getTemplates();
 				
@@ -771,7 +781,7 @@ public class Evaluation{
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-		Logger.getLogger(SPARQLTemplateBasedLearner.class).setLevel(Level.INFO);
+		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.INFO);
 		Logger.getLogger(Evaluation.class).setLevel(Level.INFO);
 		Logger.getRootLogger().removeAllAppenders();
 		Layout layout = new PatternLayout("%m%n");
