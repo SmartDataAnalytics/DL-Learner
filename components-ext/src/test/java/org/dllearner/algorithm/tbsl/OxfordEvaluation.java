@@ -49,6 +49,7 @@ public class OxfordEvaluation {
 		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
 		learner.setMappingIndex(mappingIndex);
 		learner.init();
+		learner.setGrammarFiles(new String[]{"tbsl/lexicon/english.lex","tbsl/lexicon/english_oxford.lex"});
 		
 		int learnedQuestions = 0;
 		Map<String, String> question2QueryMap = new HashMap<String, String>();

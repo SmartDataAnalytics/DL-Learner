@@ -32,6 +32,8 @@ public class Parser {
 	private List<Dude> dudes = new ArrayList<Dude>();
 	private ParseGrammar parseGrammar = null;
 	private List<Integer> temporaryEntries = new ArrayList<Integer>();
+	
+	private GrammarFilter grammarFilter = new GrammarFilter();
 
 	@SuppressWarnings("unchecked")
 	private final Class[] operations = { Scanner.class, MoveDotDown.class,
@@ -65,7 +67,7 @@ public class Parser {
 		 * times, a tree for each token is added. Both trees need to have
 		 * different treeIDs for the parser to work correctly.
 		 */
-		parseGrammar = GrammarFilter.filter(taggeduserinput,grammar,temporaryEntries,MODE);
+		parseGrammar = grammarFilter.filter(taggeduserinput,grammar,temporaryEntries,MODE);
 
 		String inputNoTags = "";		
 		for (String s : taggeduserinput.split(" ")) {
@@ -97,6 +99,10 @@ public class Parser {
 
 	}
 	
+	public List<String> getUnknownWords(){
+		return grammarFilter.getUnknownWords();
+	}
+	
 	public List<DerivationTree> parseMultiThreaded(String taggeduserinput, LTAGLexicon grammar) {
 
 		derivationTrees.clear();
@@ -112,7 +118,7 @@ public class Parser {
 		 * times, a tree for each token is added. Both trees need to have
 		 * different treeIDs for the parser to work correctly.
 		 */
-		parseGrammar = GrammarFilter.filter(taggeduserinput,grammar,temporaryEntries,MODE);
+		parseGrammar = grammarFilter.filter(taggeduserinput,grammar,temporaryEntries,MODE);
 
 		String inputNoTags = "";		
 		for (String s : taggeduserinput.split(" ")) {

@@ -44,7 +44,7 @@ public class Templator {
 	LTAGLexicon g;
 	LTAG_Lexicon_Constructor LTAG_Constructor = new LTAG_Lexicon_Constructor();
 
-	Parser p;
+	Parser parser;
 	Preprocessor pp;
 	
 	WordNet wordnet;
@@ -83,11 +83,11 @@ public class Templator {
 		
             g = LTAG_Constructor.construct(grammarFiles);
 		
-	    p = new Parser();
-	    p.SHOW_GRAMMAR = true;
-	    p.USE_DPS_AS_INITTREES = true;
-	    p.CONSTRUCT_SEMANTICS = true;
-	    p.MODE = "LEIPZIG";
+	    parser = new Parser();
+	    parser.SHOW_GRAMMAR = true;
+	    parser.USE_DPS_AS_INITTREES = true;
+	    parser.CONSTRUCT_SEMANTICS = true;
+	    parser.MODE = "LEIPZIG";
 	    
 	    pp = new Preprocessor(USE_NER);
 	}
@@ -104,11 +104,11 @@ public class Templator {
 	
         g = LTAG_Constructor.construct(grammarFiles);
 	
-    p = new Parser();
-    p.SHOW_GRAMMAR = true;
-    p.USE_DPS_AS_INITTREES = true;
-    p.CONSTRUCT_SEMANTICS = true;
-    p.MODE = "LEIPZIG";
+    parser = new Parser();
+    parser.SHOW_GRAMMAR = true;
+    parser.USE_DPS_AS_INITTREES = true;
+    parser.CONSTRUCT_SEMANTICS = true;
+    parser.MODE = "LEIPZIG";
     
     pp = new Preprocessor(USE_NER);
 }
@@ -125,12 +125,12 @@ public class Templator {
 		
             g = LTAG_Constructor.construct(grammarFiles);
 		
-	    p = new Parser();
-	    p.SHOW_GRAMMAR = false;
-	    p.VERBOSE = b;
-	    p.USE_DPS_AS_INITTREES = true;
-	    p.CONSTRUCT_SEMANTICS = true;
-	    p.MODE = "LEIPZIG";
+	    parser = new Parser();
+	    parser.SHOW_GRAMMAR = false;
+	    parser.VERBOSE = b;
+	    parser.USE_DPS_AS_INITTREES = true;
+	    parser.CONSTRUCT_SEMANTICS = true;
+	    parser.MODE = "LEIPZIG";
 	    
 	    pp = new Preprocessor(USE_NER);
 	    pp.setVERBOSE(b);
@@ -180,16 +180,16 @@ public class Templator {
 		newtagged = pp.condense(newtagged);
 		if (VERBOSE) logger.trace("Preprocessed: " + newtagged); 
         
-        p.parse(newtagged,g);
+        parser.parse(newtagged,g);
         
-        if (p.getDerivationTrees().isEmpty()) {
-            p.clear(g,p.getTemps());
+        if (parser.getDerivationTrees().isEmpty()) {
+            parser.clear(g,parser.getTemps());
             clearAgain = false;
             if (VERBOSE) logger.error("[Templator.java] '" + s + "' could not be parsed.");
         }
         else {
         try {
-        	p.buildDerivedTrees(g);
+        	parser.buildDerivedTrees(g);
         } catch (ParseException e) {
         	if (VERBOSE) logger.error("[Templator.java] ParseException at '" + e.getMessage() + "'", e);
         }
@@ -205,7 +205,7 @@ public class Templator {
         Set<DRS> drses = new HashSet<DRS>();
         Set<Template> templates = new HashSet<Template>();
         
-        for (Dude dude : p.getDudes()) {
+        for (Dude dude : parser.getDudes()) {
             UDRS udrs = d2u.convert(dude);
             if (udrs != null) { 
                 
@@ -295,7 +295,7 @@ public class Templator {
         }
  
         if (clearAgain) {
-        	p.clear(g,p.getTemps());
+        	parser.clear(g,parser.getTemps());
         }
 //        System.gc();
         
@@ -326,16 +326,16 @@ public class Templator {
 		newtagged = pp.condense(newtagged);
 		if (VERBOSE) logger.trace("Preprocessed: " + newtagged); 
         
-        p.parseMultiThreaded(newtagged,g);
+        parser.parseMultiThreaded(newtagged,g);
         
-        if (p.getDerivationTrees().isEmpty()) {
-            p.clear(g,p.getTemps());
+        if (parser.getDerivationTrees().isEmpty()) {
+            parser.clear(g,parser.getTemps());
             clearAgain = false;
             if (VERBOSE) logger.error("[Templator.java] '" + s + "' could not be parsed.");
         }
         else {
         try {
-        	p.buildDerivedTreesMultiThreaded(g);
+        	parser.buildDerivedTreesMultiThreaded(g);
         } catch (ParseException e) {
         	if (VERBOSE) logger.error("[Templator.java] ParseException at '" + e.getMessage() + "'", e);
         }
@@ -358,7 +358,7 @@ public class Templator {
 //        threadPool.shutdown();
 //		while(!threadPool.isTerminated()){}
         
-        for (Dude dude : p.getDudes()) {
+        for (Dude dude : parser.getDudes()) {
            
            UDRS udrs = d2u.convert(dude);
            if (udrs != null) { 
@@ -451,7 +451,7 @@ public class Templator {
         
  
         if (clearAgain) {
-        	p.clear(g,p.getTemps());
+        	parser.clear(g,parser.getTemps());
         }
 //        System.gc();
         
@@ -460,6 +460,10 @@ public class Templator {
 	
 	public String getTaggedInput() {
 		return taggedInput;
+	}
+	
+	public List<String> getUnknownWords(){
+		return parser.getUnknownWords();
 	}
 	
 	private List<String> getLemmatizedWords(List<String> words){

@@ -114,11 +114,12 @@ public class TBSLTest extends TestCase{
 		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
 		learner.setMappingIndex(mappingIndex);
 		learner.init();
+		learner.setGrammarFiles(new String[]{"tbsl/lexicon/english.lex","tbsl/lexicon/english_oxford.lex"});
 		
 		String question = "Give me all houses near a school.";
 		question = "Give me all houses with more than 3 bathrooms and more than 2 bedrooms.";
 		question = "Give me all Victorian houses in Oxfordshire";
-		question = "houses with more than 3 bedrooms";
+		question = "Edwardian houses close to supermarket for less than 1,000,000 in Oxfordshire";
 //		question = "Give me all family houses with more than 2 bathrooms and more than 4 bedrooms";
 		
 		learner.setQuestion(question);
