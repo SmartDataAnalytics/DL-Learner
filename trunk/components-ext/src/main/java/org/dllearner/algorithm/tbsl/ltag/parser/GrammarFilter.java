@@ -21,18 +21,20 @@ import org.dllearner.algorithm.tbsl.templator.SlotBuilder;
  * grammar contains the .+ wildcard the input n-gram "a b x y c" matches the
  * anchor "a b .+ c".
  */
-class GrammarFilter {
+public class GrammarFilter {
 	
 	private static final Logger logger = Logger.getLogger(GrammarFilter.class);
 
 	final static String[] NAMED_Strings = {"named", "called"};
 	// DISAM
-	static List<Integer> usedInts = new ArrayList<Integer>();
-	static ArrayList<String> doubles = new ArrayList<String>();
+	private List<Integer> usedInts = new ArrayList<Integer>();
+	private List<String> doubles = new ArrayList<String>();
 	
 	public static boolean VERBOSE = true;
 	
-	static ParseGrammar filter(String taggedinput,LTAGLexicon grammar,List<Integer> temps, String mode) {
+	private List<String> unknownWords;
+	
+	public ParseGrammar filter(String taggedinput,LTAGLexicon grammar,List<Integer> temps, String mode) {
 		
 		// DISAM: CLEAR 
 		usedInts = new ArrayList<Integer>();
@@ -208,7 +210,7 @@ class GrammarFilter {
 			}
 		}
 		
-		List<String> unknownWords = new ArrayList<String>();	
+		unknownWords = new ArrayList<String>();	
 		for (String t : unknownTokens) {	
 			String[] tParts = t.split(" ");
 			for (String s : tParts) {
@@ -280,8 +282,12 @@ class GrammarFilter {
 		
 		return parseG;
 	}
+	
+	public List<String> getUnknownWords(){
+		return unknownWords;
+	}
 
-	private static List<Pair<String,String>> checkForNamedString(String token) {
+	private List<Pair<String,String>> checkForNamedString(String token) {
 
 		String[] split;
 		if (token.contains(" ")) {
@@ -366,7 +372,7 @@ class GrammarFilter {
 		return result;
 	}
 	
-	private static int createFresh() {
+	private int createFresh() {
 		
 		int fresh = 0;
 		for (int i = 0; usedInts.contains(i); i++) {

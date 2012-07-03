@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithm.tbsl.ltag.parser.GrammarFilter;
 import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
@@ -142,6 +143,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	private String [] grammarFiles = new String[]{"tbsl/lexicon/english.lex"};
 	
 	private PopularityMap popularityMap;
+	
+	private Set<String> relevantKeywords;
 	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex){
 		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, new StanfordPartOfSpeechTagger());
@@ -349,6 +352,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		learnedSPARQLQueries = new HashMap<String, Object>();
 		template2Queries = new HashMap<Template, Collection<? extends Query>>();
 		slot2URI = new HashMap<Slot, List<String>>();
+		relevantKeywords = new HashSet<String>();
 		currentlyExecutedQuery = null;
 		
 //		templateMon.reset();
@@ -367,8 +371,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		}
 		templateMon.stop();
 		logger.info("Done in " + templateMon.getLastValue() + "ms.");
+		relevantKeywords.addAll(templateGenerator.getUnknownWords());
 		if(templates.isEmpty()){
 			throw new NoTemplateFoundException();
+		
 		}
 		logger.info("Templates:");
 		for(Template t : templates){
@@ -463,13 +469,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 	
 	public Set<String> getRelevantKeywords(){
-		Set<String> keywords = new HashSet<String>();
-		for(Template t : templates){
-			for (Slot slot : t.getSlots()) {
-				keywords.add(slot.getWords().get(0));
-			}
-		}
-		return keywords;
+		return relevantKeywords;
 	}
 	
 	private SortedSet<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
