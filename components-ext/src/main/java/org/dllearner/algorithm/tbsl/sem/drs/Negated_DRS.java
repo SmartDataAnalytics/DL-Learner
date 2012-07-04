@@ -36,6 +36,9 @@ public class Negated_DRS implements DRS_Condition {
 	{
 		return "NOT "+m_DRS;
 	}
+        public String toTex() {
+            return "\\lnot "+m_DRS.toTex();
+        }
 
 	public void replaceLabel(Label label1, Label label2) {
 		m_DRS.replaceLabel(label1, label2);

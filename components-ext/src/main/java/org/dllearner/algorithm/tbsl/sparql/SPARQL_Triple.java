@@ -55,10 +55,10 @@ public class SPARQL_Triple implements Serializable{
 	@Override
 	public String toString() {
 		if (optional) {
-			return "OPTIONAL {"+variable.toString()+" "+property.toString()+" "+value.toString()+"}";
+			return "OPTIONAL {"+variable.toString()+" "+property.toString()+" "+value.toString()+".}";
 			
 		}
-		return variable.toString()+" "+property.toString()+" "+value.toString();
+		return variable.toString()+" "+property.toString()+" "+value.toString()+".";
 	}
 	
 	public SPARQL_Triple(SPARQL_Term variable, SPARQL_Property property,

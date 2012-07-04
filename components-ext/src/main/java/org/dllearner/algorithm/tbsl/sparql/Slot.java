@@ -93,6 +93,15 @@ public class Slot implements Serializable{
 		
 		return out;
 	}
+        public String toTex() {
+            String out = anchor + ": " + type + " \\{";
+		for (Iterator<String> i = words.iterator(); i.hasNext();) {
+                    out += i.next();
+                    if (i.hasNext()) out += ",";
+		}
+		out += "\\}";
+		return out;
+        }
 	
 	public Slot clone() {
 		

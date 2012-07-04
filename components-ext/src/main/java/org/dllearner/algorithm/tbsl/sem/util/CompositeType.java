@@ -72,5 +72,9 @@ public class CompositeType implements Type{
 			return false;
 		return true;
 	}
+        
+        public String toTex() {
+            return "\\langle " + argument.toTex() + "," + result.toTex() + "\\rangle "; 
+        }
 	
 }

@@ -38,5 +38,8 @@ public class ElementaryType implements Type{
 	{
 		return type.toString();
 	}
+        public String toTex() {
+            return type.toString();
+        }
 	
 }

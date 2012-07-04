@@ -14,6 +14,7 @@ public class Query implements Serializable {
 	Set<SPARQL_Triple> conditions;
 	Set<SPARQL_Term> orderBy;
 	Set<SPARQL_Filter> filter;
+        Set<SPARQL_Union> unions;
 	SPARQL_QueryType qt = SPARQL_QueryType.SELECT;
 
 	int limit;
@@ -27,6 +28,7 @@ public class Query implements Serializable {
 		conditions = new HashSet<SPARQL_Triple>();
 		orderBy = new HashSet<SPARQL_Term>();
 		filter = new HashSet<SPARQL_Filter>();
+                unions = new HashSet<SPARQL_Union>();
 	}
 
 	public Query(Set<SPARQL_Term> selTerms, Set<SPARQL_Prefix> prefixes, Set<SPARQL_Triple> conditions)
@@ -35,6 +37,8 @@ public class Query implements Serializable {
 		this.selTerms = selTerms;
 		this.prefixes = prefixes;
 		this.conditions = conditions;
+                filter = new HashSet<SPARQL_Filter>();
+                unions = new HashSet<SPARQL_Union>();
 	}
 
 	public Query(Set<SPARQL_Term> selTerms, Set<SPARQL_Prefix> prefixes, Set<SPARQL_Triple> conditions, Set<SPARQL_Term> orderBy, int limit, int offset)
@@ -46,6 +50,7 @@ public class Query implements Serializable {
 		this.orderBy = orderBy;
 		this.limit = limit;
 		this.offset = offset;
+                unions = new HashSet<SPARQL_Union>();
 	}
 	
 	//copy constructor
@@ -102,6 +107,7 @@ public class Query implements Serializable {
 			}
 		}
 		this.filter = filters;
+                this.unions = query.unions; // TODO copy unions
 		
 		this.limit = query.getLimit();
 		this.offset = query.getOffset();
@@ -176,17 +182,13 @@ public class Query implements Serializable {
 
 		retVal += "WHERE {\n";
 
-		if (conditions == null || conditions.size() == 0) return "ERROR";
-		for (SPARQL_Triple condition : conditions)
-		{
-			if (condition == null) continue;
-			retVal += "\t" + condition.toString() + " .\n";
-		}
-
-		for (SPARQL_Filter f : filter)
-		{
-			retVal += "\t" + f.toString() + " .\n";
-		}
+		if (conditions != null)  {
+                    for (SPARQL_Triple condition : conditions) {
+			if (condition != null) retVal += "\t" + condition.toString() + "\n";
+                    }
+                }
+                for (SPARQL_Union u : unions) retVal += u.toString() + "\n";
+		for (SPARQL_Filter f : filter) retVal += "\t" + f.toString() + ".\n";
 
 		retVal += "}\n";
 		
@@ -261,6 +263,10 @@ public class Query implements Serializable {
 	{
 		conditions.add(triple);
 	}
+        
+        public void addUnion(SPARQL_Union union) {
+            unions.add(union);
+        }
 
 	public void addFilter(SPARQL_Filter f)
 	{

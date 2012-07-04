@@ -322,7 +322,7 @@ DRS_Condition Condition() :
       List<DiscourseReferent> dr_list;
       Token dr1;
       Token dr2;
-      Token dr;
+      Token dr = null;
       Token predicate;
       Token quantifier;
       DRS drs1;
@@ -365,13 +365,14 @@ DRS_Condition Condition() :
     |
 
     drs1=DRS()  (quantifier=<EVERY> | quantifier=<SOME> | quantifier=<AFEW> | quantifier=<MOST> | quantifier=<THEMOST> | quantifier=<THELEAST> |
-                 quantifier=<HOWMANY> | quantifier=<MANY> | quantifier=<NO>) dr=dr() drs2=DRS()
+                 quantifier=<HOWMANY> | quantifier=<MANY> | quantifier=<NO> | quantifier=<OR>) (dr=dr())? drs2=DRS()
     {
-		Complex_DRS_Condition drs;
+	Complex_DRS_Condition drs;
         drs = new Complex_DRS_Condition();
-		drs.setRestrictor(drs1);
+	drs.setRestrictor(drs1);
         drs.setScope(drs2);	
-		drs.setReferent(new DiscourseReferent(dr.toString()));
+	if (dr != null) drs.setReferent(new DiscourseReferent(dr.toString()));
+        else drs.setReferent(new DiscourseReferent("null"));
 	
 		if (quantifier.toString().equals("EVERY")) {drs.setQuantifier(DRS_Quantifier.EVERY);}
 		if (quantifier.toString().equals("SOME")) {drs.setQuantifier(DRS_Quantifier.SOME);}
@@ -497,6 +498,8 @@ TOKEN: {<AFEW: "AFEW">}
 TOKEN: {<MANY: "MANY">}
 
 TOKEN: {<NO: "NO">}
+
+TOKEN: {<OR: "OR">}
 
 TOKEN: {<HOWMANY: "HOWMANY">}
 

@@ -110,6 +110,25 @@ public class DRS implements SemanticRepresentation {
 		
 		return string;
 	}
+        public String toTex() {
+            
+                String string ="";
+		if (m_Label != null) string = string += m_Label.toTex() + ":";
+		string += "\\parbox{5cm}{\\Drs{";
+		
+		for (Iterator<DiscourseReferent> i = m_DiscourseReferents.iterator(); i.hasNext();) {
+                    string += i.next().toString();
+                    if (i.hasNext()) string += ",";
+		}
+		string += "}{";
+                
+		for (DRS_Condition cond : m_DRS_Conditions) {
+                    string += cond.toTex() + " \\\\ ";
+		}
+		string+= "}}";
+		
+		return string;
+        }
 
 	public Label getLabel()
 	{

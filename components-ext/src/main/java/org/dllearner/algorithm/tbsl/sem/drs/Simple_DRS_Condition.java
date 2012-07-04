@@ -1,10 +1,6 @@
 package org.dllearner.algorithm.tbsl.sem.drs;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.dllearner.algorithm.tbsl.sem.util.Label;
 
@@ -45,6 +41,15 @@ public class Simple_DRS_Condition implements DRS_Condition{
 		
 		return m_Predicate+string;	
 	}
+        public String toTex() {
+            String out = "\\text{"+m_Predicate.replaceAll("\\_","\\\\_")+"}(";
+            for (Iterator<DiscourseReferent> i = m_Arguments.iterator(); i.hasNext();) {
+                out += i.next().toString();
+                if (i.hasNext()) out += ",";
+            }
+            out += ")";
+            return out;
+        }
 
 	// get methods
 	

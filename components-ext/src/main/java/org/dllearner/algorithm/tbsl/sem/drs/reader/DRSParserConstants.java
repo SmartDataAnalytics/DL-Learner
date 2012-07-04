@@ -27,17 +27,19 @@ public interface DRSParserConstants {
   /** RegularExpression Id. */
   int NO = 17;
   /** RegularExpression Id. */
-  int HOWMANY = 18;
+  int OR = 18;
   /** RegularExpression Id. */
-  int LABEL = 19;
+  int HOWMANY = 19;
   /** RegularExpression Id. */
-  int A = 20;
+  int LABEL = 20;
   /** RegularExpression Id. */
-  int B = 21;
+  int A = 21;
   /** RegularExpression Id. */
-  int C = 22;
+  int B = 22;
   /** RegularExpression Id. */
-  int QUOTED_STRING = 23;
+  int C = 23;
+  /** RegularExpression Id. */
+  int QUOTED_STRING = 24;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -62,6 +64,7 @@ public interface DRSParserConstants {
     "\"AFEW\"",
     "\"MANY\"",
     "\"NO\"",
+    "\"OR\"",
     "\"HOWMANY\"",
     "<LABEL>",
     "<A>",
