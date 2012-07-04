@@ -153,9 +153,9 @@
 	
 	as well as || (NP NP* CC:'as' CC:'well' CC:'as' NP[np]) || <x,l1,<e,t>,[l1:[|]],[(l2,y,np,<e,t>)],[l1=l2],[]>
 	
-	or || (S S* CC:'or' S[cc]) || <y, l2, <<e,t>,t>, [ l1:[ | l2:[ | ] OR y l3:[|] ] ], [ (l4,y,cc,<e,t>) ], [ l4=l3 ],[]>
-	or || (DP DP* CC:'or' DP[cc]) || <y, l2, <<e,t>,t>, [ l1:[ | l2:[ | ] OR y l3:[|] ] ], [ (l4,y,cc,<e,t>) ], [ l4=l3 ],[]>
-	or || (NP NP* CC:'or' NP[cc]) || <y, l2, <<e,t>,t>, [ l1:[ | l2:[ | ] OR y l3:[|] ] ], [ (l4,y,cc,<e,t>) ], [ l4=l3 ],[]>
+	or || (S S[cc1] CC:'or' S[cc2]) || <x, l1, t, [ l1:[ | l2:[|] OR l3:[|] ] ], [ (l5,x,cc1,t),(l4,y,cc2,t) ], [ l5=l2,l4=l3 ],[]>
+	or || (DP DP[cc1] CC:'or' DP[cc2]) || <x, l1, <<e,t>,t>, [ l1:[ | l2:[|] OR l3:[|], x=y ] ], [ (l5,x,cc1,<<e,t>,t>),(l4,y,cc2,<<e,t>,t>) ], [ l5=l2,l4=l3 ],[]>
+	or || (NP NP[cc1] CC:'or' NP[cc2]) || <x, l1, <e,t>, [ l1:[ | l2:[|] OR l3:[|], x=y ] ], [ (l5,x,cc1,<e,t>),(l4,y,cc2,<e,t>) ], [ l5=l2,l4=l3 ],[]>
 	or || (ADJ ADJ* CC:'or' ADJ[cc]) || -
 	
 

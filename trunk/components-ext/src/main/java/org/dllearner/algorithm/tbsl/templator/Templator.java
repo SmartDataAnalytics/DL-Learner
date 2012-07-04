@@ -93,24 +93,24 @@ public class Templator {
 	}
 	
 	public Templator(final PartOfSpeechTagger tagger, WordNet wordnet, String[] GRAMMAR_FILES) {
-        this.tagger = tagger;
-        this.wordnet = wordnet;
-        this.GRAMMAR_FILES = GRAMMAR_FILES;
+            this.tagger = tagger;
+            this.wordnet = wordnet;
+            this.GRAMMAR_FILES = GRAMMAR_FILES;
 
-        List<InputStream> grammarFiles = new ArrayList<InputStream>();
-        for(int i = 0; i < GRAMMAR_FILES.length; i++){
-	grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
-        }
-	
-        g = LTAG_Constructor.construct(grammarFiles);
-	
-    parser = new Parser();
-    parser.SHOW_GRAMMAR = true;
-    parser.USE_DPS_AS_INITTREES = true;
-    parser.CONSTRUCT_SEMANTICS = true;
-    parser.MODE = "LEIPZIG";
-    
-    pp = new Preprocessor(USE_NER);
+            List<InputStream> grammarFiles = new ArrayList<InputStream>();
+            for(int i = 0; i < GRAMMAR_FILES.length; i++) {
+                grammarFiles.add(this.getClass().getClassLoader().getResourceAsStream(GRAMMAR_FILES[i]));
+            }
+
+            g = LTAG_Constructor.construct(grammarFiles);
+
+            parser = new Parser();
+            parser.SHOW_GRAMMAR = true;
+            parser.USE_DPS_AS_INITTREES = true;
+            parser.CONSTRUCT_SEMANTICS = true;
+            parser.MODE = "LEIPZIG";
+
+            pp = new Preprocessor(USE_NER);
 }
 	
 	public Templator(boolean b) {
@@ -219,8 +219,8 @@ public class Templator {
                 	if (!containsModuloRenaming(drses,drs)) {
 //                    	// DEBUG
                 		if (VERBOSE) {
-	                		System.out.println(dude);
-	                		System.out.println(drs);
+	                		System.out.println(">>> DUDE:\n" + dude.toString());
+	                		System.out.println("\n>>> DRS:\n"+ drs.toString());
 	                		for (Slot sl : slots) {
 	                			System.out.println(sl.toString());
 	                		}

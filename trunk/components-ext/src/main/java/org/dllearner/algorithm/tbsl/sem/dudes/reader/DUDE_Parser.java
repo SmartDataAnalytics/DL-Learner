@@ -338,12 +338,12 @@ DominanceConstraint dc = null;
       List<DiscourseReferent> dr_list;
       Token dr1;
       Token dr2;
-      Token dr;
+      Token dr = null;
       Token predicate;
       Token quantifier;
       DRS drs1;
       DRS drs2;
-    if (jj_2_29(2)) {
+    if (jj_2_31(2)) {
       predicate = word();
       jj_consume_token(10);
       dr_list = DR_List();
@@ -354,7 +354,7 @@ DominanceConstraint dc = null;
         condition.setPredicate(predicate.toString());
         condition.setArguments(dr_list);
         {if (true) return condition;}
-    } else if (jj_2_30(2)) {
+    } else if (jj_2_32(2)) {
       dr1 = dr();
       jj_consume_token(6);
       dr2 = dr();
@@ -365,13 +365,13 @@ DominanceConstraint dc = null;
         condition.addArgument(new DiscourseReferent(dr1.toString()));
                 condition.addArgument(new DiscourseReferent(dr2.toString()));
         {if (true) return condition;}
-    } else if (jj_2_31(2)) {
+    } else if (jj_2_33(2)) {
       jj_consume_token(13);
       drs1 = DRS();
        Negated_DRS drs = new Negated_DRS();
        drs.setDRS(drs1);
        {if (true) return drs;}
-    } else if (jj_2_32(2)) {
+    } else if (jj_2_34(2)) {
       drs1 = DRS();
       if (jj_2_20(2)) {
         quantifier = jj_consume_token(EVERY);
@@ -391,17 +391,24 @@ DominanceConstraint dc = null;
         quantifier = jj_consume_token(MANY);
       } else if (jj_2_28(2)) {
         quantifier = jj_consume_token(NO);
+      } else if (jj_2_29(2)) {
+        quantifier = jj_consume_token(OR);
       } else {
         jj_consume_token(-1);
         throw new ParseException();
       }
-      dr = dr();
+      if (jj_2_30(2)) {
+        dr = dr();
+      } else {
+        ;
+      }
       drs2 = DRS();
-                Complex_DRS_Condition drs;
+        Complex_DRS_Condition drs;
         drs = new Complex_DRS_Condition();
-                drs.setRestrictor(drs1);
+        drs.setRestrictor(drs1);
         drs.setScope(drs2);
-                drs.setReferent(new DiscourseReferent(dr.toString()));
+        if (dr != null) drs.setReferent(new DiscourseReferent(dr.toString()));
+        else drs.setReferent(new DiscourseReferent("null"));
 
                 if (quantifier.toString().equals("EVERY")) {drs.setQuantifier(DRS_Quantifier.EVERY);}
                 if (quantifier.toString().equals("SOME")) {drs.setQuantifier(DRS_Quantifier.SOME);}
@@ -427,7 +434,7 @@ DominanceConstraint dc = null;
    Token dr;
    List<DiscourseReferent> dr_list=null;
     dr = dr();
-    if (jj_2_33(2)) {
+    if (jj_2_35(2)) {
       jj_consume_token(2);
       dr_list = DR_List();
     } else {
@@ -456,7 +463,7 @@ DominanceConstraint dc = null;
   Slot slot;
   List<Slot> slots = null;
     slot = Slot();
-    if (jj_2_34(2)) {
+    if (jj_2_36(2)) {
       jj_consume_token(2);
       slots = Slot_List();
     } else {
@@ -481,7 +488,7 @@ DominanceConstraint dc = null;
     jj_consume_token(14);
     type = word();
     jj_consume_token(14);
-    if (jj_2_35(2)) {
+    if (jj_2_37(2)) {
       words = Word_List();
     } else {
       ;
@@ -507,7 +514,7 @@ DominanceConstraint dc = null;
   Token word;
   List<String> words = null;
     word = word();
-    if (jj_2_36(2)) {
+    if (jj_2_38(2)) {
       jj_consume_token(15);
       words = Word_List();
     } else {
@@ -525,9 +532,9 @@ DominanceConstraint dc = null;
 
   final public Token dr() throws ParseException {
                Token t;
-    if (jj_2_37(2)) {
+    if (jj_2_39(2)) {
       t = jj_consume_token(A);
-    } else if (jj_2_38(2)) {
+    } else if (jj_2_40(2)) {
       t = jj_consume_token(C);
     } else {
       jj_consume_token(-1);
@@ -539,9 +546,9 @@ DominanceConstraint dc = null;
 
   final public Token word() throws ParseException {
                  Token t;
-    if (jj_2_39(2)) {
+    if (jj_2_41(2)) {
       t = jj_consume_token(A);
-    } else if (jj_2_40(2)) {
+    } else if (jj_2_42(2)) {
       t = jj_consume_token(B);
     } else {
       jj_consume_token(-1);
@@ -831,6 +838,20 @@ DominanceConstraint dc = null;
     finally { jj_save(39, xla); }
   }
 
+  private boolean jj_2_41(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_41(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(40, xla); }
+  }
+
+  private boolean jj_2_42(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_42(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(41, xla); }
+  }
+
   private boolean jj_3_12() {
     if (jj_scan_token(2)) return true;
     if (jj_3R_1()) return true;
@@ -848,7 +869,7 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_32() {
+  private boolean jj_3_34() {
     if (jj_3R_11()) return true;
     return false;
   }
@@ -858,8 +879,18 @@ DominanceConstraint dc = null;
     return false;
   }
 
+  private boolean jj_3_30() {
+    if (jj_3R_10()) return true;
+    return false;
+  }
+
   private boolean jj_3_3() {
     if (jj_3R_3()) return true;
+    return false;
+  }
+
+  private boolean jj_3_42() {
+    if (jj_scan_token(B)) return true;
     return false;
   }
 
@@ -873,25 +904,14 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_31() {
+  private boolean jj_3_33() {
     if (jj_scan_token(13)) return true;
     if (jj_3R_11()) return true;
     return false;
   }
 
   private boolean jj_3_40() {
-    if (jj_scan_token(B)) return true;
-    return false;
-  }
-
-  private boolean jj_3_38() {
     if (jj_scan_token(C)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_11() {
-    if (jj_scan_token(LABEL)) return true;
-    if (jj_scan_token(11)) return true;
     return false;
   }
 
@@ -901,12 +921,33 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_39() {
+  private boolean jj_3R_11() {
+    if (jj_scan_token(LABEL)) return true;
+    if (jj_scan_token(11)) return true;
+    return false;
+  }
+
+  private boolean jj_3_41() {
     if (jj_scan_token(A)) return true;
     return false;
   }
 
   private boolean jj_3R_7() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_41()) {
+    jj_scanpos = xsp;
+    if (jj_3_42()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_39() {
+    if (jj_scan_token(A)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_10() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_39()) {
@@ -916,8 +957,14 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_37() {
-    if (jj_scan_token(A)) return true;
+  private boolean jj_3_29() {
+    if (jj_scan_token(OR)) return true;
+    return false;
+  }
+
+  private boolean jj_3_36() {
+    if (jj_scan_token(2)) return true;
+    if (jj_3R_4()) return true;
     return false;
   }
 
@@ -926,25 +973,9 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3R_10() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_37()) {
-    jj_scanpos = xsp;
-    if (jj_3_38()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3_30() {
+  private boolean jj_3_32() {
     if (jj_3R_10()) return true;
     if (jj_scan_token(6)) return true;
-    return false;
-  }
-
-  private boolean jj_3_34() {
-    if (jj_scan_token(2)) return true;
-    if (jj_3R_4()) return true;
     return false;
   }
 
@@ -956,20 +987,20 @@ DominanceConstraint dc = null;
   private boolean jj_3R_17() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_29()) {
-    jj_scanpos = xsp;
-    if (jj_3_30()) {
-    jj_scanpos = xsp;
     if (jj_3_31()) {
     jj_scanpos = xsp;
-    if (jj_3_32()) return true;
+    if (jj_3_32()) {
+    jj_scanpos = xsp;
+    if (jj_3_33()) {
+    jj_scanpos = xsp;
+    if (jj_3_34()) return true;
     }
     }
     }
     return false;
   }
 
-  private boolean jj_3_29() {
+  private boolean jj_3_31() {
     if (jj_3R_7()) return true;
     if (jj_scan_token(10)) return true;
     return false;
@@ -981,13 +1012,13 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_15() {
-    if (jj_3R_7()) return true;
+  private boolean jj_3R_4() {
+    if (jj_3R_16()) return true;
     return false;
   }
 
-  private boolean jj_3R_4() {
-    if (jj_3R_16()) return true;
+  private boolean jj_3_15() {
+    if (jj_3R_7()) return true;
     return false;
   }
 
@@ -1034,7 +1065,7 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_33() {
+  private boolean jj_3_35() {
     if (jj_scan_token(2)) return true;
     if (jj_3R_12()) return true;
     return false;
@@ -1084,14 +1115,14 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_13() {
-    if (jj_scan_token(2)) return true;
-    if (jj_3R_2()) return true;
+  private boolean jj_3R_12() {
+    if (jj_3R_10()) return true;
     return false;
   }
 
-  private boolean jj_3R_12() {
-    if (jj_3R_10()) return true;
+  private boolean jj_3_13() {
+    if (jj_scan_token(2)) return true;
+    if (jj_3R_2()) return true;
     return false;
   }
 
@@ -1106,8 +1137,13 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_36() {
+  private boolean jj_3_38() {
     if (jj_scan_token(15)) return true;
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
+  private boolean jj_3_37() {
     if (jj_3R_13()) return true;
     return false;
   }
@@ -1120,11 +1156,6 @@ DominanceConstraint dc = null;
   private boolean jj_3_6() {
     if (jj_3R_5()) return true;
     if (jj_scan_token(5)) return true;
-    return false;
-  }
-
-  private boolean jj_3_35() {
-    if (jj_3R_13()) return true;
     return false;
   }
 
@@ -1163,16 +1194,16 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3R_2() {
-    if (jj_3R_14()) return true;
-    return false;
-  }
-
   private boolean jj_3R_13() {
     if (jj_3R_7()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_36()) jj_scanpos = xsp;
+    if (jj_3_38()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_2() {
+    if (jj_3R_14()) return true;
     return false;
   }
 
@@ -1208,7 +1239,7 @@ DominanceConstraint dc = null;
    private static void jj_la1_init_1() {
       jj_la1_1 = new int[] {};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[40];
+  final private JJCalls[] jj_2_rtns = new JJCalls[42];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -1392,7 +1423,7 @@ DominanceConstraint dc = null;
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[34];
+    boolean[] la1tokens = new boolean[35];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1409,7 +1440,7 @@ DominanceConstraint dc = null;
         }
       }
     }
-    for (int i = 0; i < 34; i++) {
+    for (int i = 0; i < 35; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -1436,7 +1467,7 @@ DominanceConstraint dc = null;
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < 42; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -1483,6 +1514,8 @@ DominanceConstraint dc = null;
             case 37: jj_3_38(); break;
             case 38: jj_3_39(); break;
             case 39: jj_3_40(); break;
+            case 40: jj_3_41(); break;
+            case 41: jj_3_42(); break;
           }
         }
         p = p.next;

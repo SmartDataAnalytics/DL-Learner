@@ -38,6 +38,9 @@ public class Argument {
 	public String toString() {
 		return "(" + anchor + "," + referent + "," + type + "," + label + ")";
 	}
+        public String toTex() {
+            return "(\\text{"+anchor+"},"+referent+","+type.toTex()+","+label.toTex()+")";
+        }
 	
 	public Argument clone() {
 		return new Argument(anchor,referent,type,label);

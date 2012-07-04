@@ -73,7 +73,11 @@ public class Label {
 	}
 
 
-	
+	public String toTex() {
+            if (m_Position != null) 
+                return "\\text{"+m_Position+"}" + "(" + m_Label.replace("l","l_") + ")";
+            else return m_Label.replace("l","l_");
+        }
 	
 
 }

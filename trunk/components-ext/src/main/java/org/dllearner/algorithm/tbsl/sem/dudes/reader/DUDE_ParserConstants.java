@@ -27,17 +27,19 @@ public interface DUDE_ParserConstants {
   /** RegularExpression Id. */
   int NO = 23;
   /** RegularExpression Id. */
-  int HOWMANY = 24;
+  int OR = 24;
   /** RegularExpression Id. */
-  int LABEL = 25;
+  int HOWMANY = 25;
   /** RegularExpression Id. */
-  int A = 26;
+  int LABEL = 26;
   /** RegularExpression Id. */
-  int B = 27;
+  int A = 27;
   /** RegularExpression Id. */
-  int C = 28;
+  int B = 28;
   /** RegularExpression Id. */
-  int QUOTED_STRING = 29;
+  int C = 29;
+  /** RegularExpression Id. */
+  int QUOTED_STRING = 30;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -68,6 +70,7 @@ public interface DUDE_ParserConstants {
     "\"AFEW\"",
     "\"MANY\"",
     "\"NO\"",
+    "\"OR\"",
     "\"HOWMANY\"",
     "<LABEL>",
     "<A>",

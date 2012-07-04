@@ -388,5 +388,26 @@ public class Dude implements SemanticRepresentation{
 			}
 		}
 	}
+        
+        public String toTex() {
+            
+            String out = "\\Dude{"+mainReferent+","+mainLabel.toTex()+","+mainType.toTex()+"}";
+            out += "{";
+            for (DRS drs : components) out += drs.toTex() + " \\\\ ";
+            out += "}{";
+            for (Argument arg : arguments) out += arg.toTex() + "\\ ";
+            out += "}{";
+            for (Iterator<DominanceConstraint> i = dominanceConstraints.iterator(); i.hasNext();) { 
+                out += i.next().toTex();
+                if (i.hasNext()) out += ",";
+            }
+            out += "}{";
+            for (Iterator<Slot> i = slots.iterator(); i.hasNext();) { 
+                out += i.next().toTex();
+                if (i.hasNext()) out += ",";
+            }
+            out += "}";
+            return out;
+        }
 	
 }

@@ -62,6 +62,12 @@ public class DominanceConstraint {
 			return m_Sub + "=" + m_Super;
 		}
 	}
+        public String toTex() {
+            if (m_Type.equals(DomType.sub)) 
+                return m_Sub.toTex() + "<" + m_Super.toTex();
+            else
+		return m_Sub.toTex() + "=" + m_Super.toTex();
+	}
 	
 	public DominanceConstraint clone() {
 		DominanceConstraint copy = new DominanceConstraint(m_Sub,m_Super);

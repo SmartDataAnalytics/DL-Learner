@@ -25,8 +25,7 @@ public class Complex_DRS_Condition implements DRS_Condition {
 	}
 
 	// full constructors
-	public Complex_DRS_Condition(DRS_Quantifier quantifier,
-			DiscourseReferent referent, DRS restrictor, DRS scope) {
+	public Complex_DRS_Condition(DRS_Quantifier quantifier,DiscourseReferent referent, DRS restrictor, DRS scope) {
 		m_Quantifier = quantifier;
 		m_Referent = referent;
 		m_Restrictor = restrictor;
@@ -71,10 +70,20 @@ public class Complex_DRS_Condition implements DRS_Condition {
 
 	public String toString() {
 
-		return m_Restrictor + " " + m_Quantifier + " " + m_Referent + " "
-				+ m_Scope + "\n";
+            String out = m_Restrictor + " " + m_Quantifier + " ";
+            if (!m_Referent.m_Referent.equals("null")) out += m_Referent + " ";
+            out += m_Scope + "\n";
 
+            return out;
 	}
+        public String toTex() {
+            
+            String out = m_Restrictor.toTex() + " \\langle " + m_Quantifier + " ";
+            if (!m_Referent.m_Referent.equals("null")) out += m_Referent;
+            out += " \\rangle " + m_Scope.toTex(); 
+            
+            return out;
+        }
 
 	public void replaceLabel(Label label1, Label label2) {
 		m_Restrictor.replaceLabel(label1, label2);
@@ -100,7 +109,7 @@ public class Complex_DRS_Condition implements DRS_Condition {
 
 		Set<String> variables = new HashSet<String>();
 
-		variables.add(m_Referent.m_Referent);
+		if (!m_Referent.m_Referent.equals("null")) variables.add(m_Referent.m_Referent);
 		variables.addAll(m_Restrictor.collectVariables());
 		variables.addAll(m_Scope.collectVariables());
 
@@ -117,8 +126,8 @@ public class Complex_DRS_Condition implements DRS_Condition {
 
 	public List<Label> getAllLabels() {
 		List<Label> result = new ArrayList<Label>();
-		result.add(m_Restrictor.getLabel());
-		result.add(m_Scope.getLabel());
+		result.addAll(m_Restrictor.getAllLabels());
+		result.addAll(m_Scope.getAllLabels());
 		return result;
 	}
 	
@@ -137,8 +146,7 @@ public class Complex_DRS_Condition implements DRS_Condition {
 	}
 
 	public DRS_Condition clone() {
-		return (new Complex_DRS_Condition(m_Quantifier, m_Referent,
-				m_Restrictor.clone(), m_Scope.clone()));
+		return (new Complex_DRS_Condition(m_Quantifier, m_Referent, m_Restrictor.clone(), m_Scope.clone()));
 	}
 
 	@Override

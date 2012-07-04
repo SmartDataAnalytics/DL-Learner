@@ -13,6 +13,7 @@ public interface DRS_Condition {
 	// iii) a complex condition
 	
 	public String toString();
+        public String toTex();
 	
 	public void replaceReferent(String ref1, String ref2);
 	public void replaceEqualRef(DiscourseReferent dr1, DiscourseReferent dr2, boolean isInUpperUniverse);
