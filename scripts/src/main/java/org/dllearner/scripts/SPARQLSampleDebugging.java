@@ -39,8 +39,8 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithm.qtl.util.ModelGenerator;
-import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
+import org.dllearner.common.index.ModelGenerator;
+import org.dllearner.common.index.ModelGenerator.Strategy;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.ExtractionDBCache;
@@ -258,10 +258,10 @@ public class SPARQLSampleDebugging {
 	private OWLOntology extractSampleModule(Set<String> resources){
 		logger.info("Extracting sample module...");
 		long startTime = System.currentTimeMillis();
-		ModelGenerator modelGen = new ModelGenerator(endpoint, cache);
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cache);
 		Model model = ModelFactory.createDefaultModel();
 		for(String resource : resources){
-			model.add(modelGen.createModel(resource, Strategy.CHUNKS, depth));
+			model.add(cbdGen.getConciseBoundedDescription(resource, depth));
 		}
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
 		return convert(model);
