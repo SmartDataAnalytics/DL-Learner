@@ -63,8 +63,7 @@ public class TypeOntology {
 
 		// foreach triple in the model
 		for (Triple triple : triples) {
-			if(triple.getSubject().isBlank() || triple.getPredicate().isBlank() || triple.getObject().isBlank()){
-				System.out.println(triple);
+			if(!triple.getSubject().isURI() || !triple.getPredicate().isURI() || !triple.getObject().isURI()){
 				continue;
 			}
 			sUri = triple.getSubject().getURI();
