@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +36,7 @@ import java.util.TreeSet;
 import org.aksw.commons.sparql.core.SparqlTemplate;
 import org.apache.velocity.VelocityContext;
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.fuzzydll.FuzzyCELOE;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -48,7 +50,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.gui.Config;
 import org.dllearner.gui.ConfigSave;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.simple.SparqlSimpleExtractor;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -79,18 +81,19 @@ import com.jamonapi.MonitorFactory;
  * 
  * @author Jens Lehmann
  * @author Sebastian Hellmann
+ * @author Didier Cherix
  */
-public class DBpediaClassLearnerCELOE {
+public class NewSparqlCompDBpediaClassLearnerCELOE {
 
 	public static String endpointurl = "http://live.dbpedia.org/sparql";
 	public static int examplesize = 30;
 
 	private static org.apache.log4j.Logger logger = org.apache.log4j.Logger
-			.getLogger(DBpediaClassLearnerCELOE.class);
+			.getLogger(NewSparqlCompDBpediaClassLearnerCELOE.class);
 
 	SparqlEndpoint sparqlEndpoint = null;
 
-	public DBpediaClassLearnerCELOE() {
+	public NewSparqlCompDBpediaClassLearnerCELOE() {
 		// OPTIONAL: if you want to do some case distinctions in the learnClass
 		// method, you could add
 		// parameters to the constructure e.g. YAGO_
@@ -104,26 +107,30 @@ public class DBpediaClassLearnerCELOE {
 
 	public static void main(String args[])
 			throws LearningProblemUnsupportedException, IOException, Exception {
-		for (int i = 0; i < 4; i++) {
-			DBpediaClassLearnerCELOE dcl = new DBpediaClassLearnerCELOE();
+		for (int i = 0; i < 10; i++) {
+			NewSparqlCompDBpediaClassLearnerCELOE dcl = new NewSparqlCompDBpediaClassLearnerCELOE();
 			Set<String> classesToLearn = dcl.getClasses();
+			
 			Monitor mon = MonitorFactory.start("Learn DBpedia");
 			KB kb = dcl.learnAllClasses(classesToLearn);
 			mon.stop();
-			kb.export(new File("/home/dcherix/dllearner/old/result.owl"),
-					OntologyFormat.RDF_XML);
+			kb.export(new File("/home/dcherix/dllearner/simple/result" + i
+					+ ".owl"), OntologyFormat.RDF_XML);
 			// Set<String> pos =
 			// dcl.getPosEx("http://dbpedia.org/ontology/Person");
 			// dcl.getNegEx("http://dbpedia.org/ontology/Person", pos);
-			logger.info("Test " + i + ":\n"
+			logger.info("Test" + i + ":\n"
 					+ JamonMonitorLogger.getStringForAllSortedByLabel());
+			System.out.println(JamonMonitorLogger
+					.getStringForAllSortedByLabel());
 		}
 	}
 
 	public KB learnAllClasses(Set<String> classesToLearn) {
 		KB kb = new KB();
 		for (String classToLearn : classesToLearn) {
-			logger.info("Leraning class: " + classToLearn);
+			logger.info(classToLearn);
+			System.out.println(classToLearn);
 			try {
 				Description d = learnClass(classToLearn);
 				if (d == null
@@ -135,7 +142,7 @@ public class DBpediaClassLearnerCELOE {
 				kb.addAxiom(new EquivalentClassesAxiom(new NamedClass(
 						classToLearn), d));
 				kb.export(new File(
-						"/home/dcherix/dllearner/old/result_partial.owl"),
+						"/home/dcherix/dllearner/simple/result_partial.owl"),
 						OntologyFormat.RDF_XML);
 
 			} catch (Exception e) {
@@ -166,27 +173,38 @@ public class DBpediaClassLearnerCELOE {
 
 		ComponentManager cm = ComponentManager.getInstance();
 
-		SparqlKnowledgeSource ks = cm
-				.knowledgeSource(SparqlKnowledgeSource.class);
-		ks.setInstances(Datastructures.individualSetToStringSet(examples
-				.getCompleteSet()));
+		SparqlSimpleExtractor ks = cm
+				.knowledgeSource(SparqlSimpleExtractor.class);
+		ks.setInstances(new ArrayList<String>(Datastructures
+				.individualSetToStringSet(examples.getCompleteSet())));
 		// ks.getConfigurator().setPredefinedEndpoint("DBPEDIA"); // TODO:
 		// probably the official endpoint is too slow?
-		ks.setUrl(new URL(endpointurl));
-		ks.setUseLits(false);
-		ks.setUseCacheDatabase(true);
+		ks.setEndpointURL(endpointurl);
+		// ks.setUseLits(false);
+		// ks.setUseCacheDatabase(true);
 		ks.setRecursionDepth(1);
-		ks.setCloseAfterRecursion(true);
-		ks.setSaveExtractedFragment(true);
-		ks.setPredList(new HashSet<String>(Arrays.asList(new String[] {
-				"http://dbpedia.org/property/wikiPageUsesTemplate",
-				"http://dbpedia.org/ontology/wikiPageExternalLink",
-				"http://dbpedia.org/property/wordnet_type",
-				"http://www.w3.org/2002/07/owl#sameAs" })));
+		ArrayList<String> ontologyUrls = new ArrayList<String>();
+		ontologyUrls.add("http://downloads.dbpedia.org/3.6/dbpedia_3.6.owl");
+		ks.setOntologySchemaUrls(ontologyUrls);
+		ks.setAboxfilter("FILTER (!regex(str(?p), '^http://dbpedia.org/property/wikiPageUsesTemplate') && "
+				+ "!regex(str(?p), '^http://dbpedia.org/ontology/wikiPageExternalLink') && "
+				+ "!regex(str(?p), '^http://dbpedia.org/property/wordnet_type') && "
+				+ "!regex(str(?p), '^http://www.w3.org/2002/07/owl#sameAs')) .");
+		ks.setTboxfilter("FILTER ( !regex(str(?class), '^http://dbpedia.org/class/yago/') && "
+				+ "!regex(str(?class), '^http://dbpedia.org/resource/Category:')) ");
+		// ks.setCloseAfterRecursion(true);
+		// ks.setSaveExtractedFragment(true);
+		// ks.setPredList(new HashSet<String>(Arrays.asList(new String[] {
+		// "http://dbpedia.org/property/wikiPageUsesTemplate",(!regex(str(?p),
+		// '^http://dbpedia.org/resource/') && ! regex(str(?o),
+		// '^http://dbpedia.org/resource/Category') )
+		// "http://dbpedia.org/ontology/wikiPageExternalLink",
+		// "http://dbpedia.org/property/wordnet_type",
+		// "http://www.w3.org/2002/07/owl#sameAs" })));
 
-		ks.setObjList(new HashSet<String>(Arrays.asList(new String[] {
-				"http://dbpedia.org/class/yago/",
-				"http://dbpedia.org/resource/Category:" })));
+		// ks.setObjList(new HashSet<String>(Arrays.asList(new String[] {
+		// "http://dbpedia.org/class/yago/",
+		// "" + "http://dbpedia.org/resource/Category:" })));
 
 		ks.init();
 
@@ -200,7 +218,6 @@ public class DBpediaClassLearnerCELOE {
 		lp.setAccuracyMethod("fmeasure");
 		lp.setUseApproximations(false);
 		lp.init();
-
 		CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
 		// CELOEConfigurator cc = la.getConfigurator();
 		la.setMaxExecutionTimeInSeconds(100);
@@ -211,6 +228,7 @@ public class DBpediaClassLearnerCELOE {
 		op.setUseAllConstructor(false);
 		op.setUseCardinalityRestrictions(false);
 		op.setUseHasValueConstructor(true);
+
 		la.setNoisePercentage(20);
 		la.setIgnoredConcepts(new HashSet<NamedClass>(Arrays
 				.asList(new NamedClass[] { new NamedClass(classToLearn) })));
@@ -218,7 +236,7 @@ public class DBpediaClassLearnerCELOE {
 
 		// to write the above configuration in a conf file (optional)
 		Config cf = new Config(cm, ks, rc, lp, la);
-		new ConfigSave(cf).saveFile(new File("/dev/null"));
+		// new ConfigSave(cf).saveFile(new File("/dev/null"));
 
 		la.start();
 
@@ -232,9 +250,14 @@ public class DBpediaClassLearnerCELOE {
 				"/home/dcherix/Downloads/dbpedia_3.6.owl"), null);
 		Set<OntClass> classes = model.listClasses().toSet();
 		Set<String> results = new HashSet<String>();
+		int i = 0;
 		for (OntClass ontClass : classes) {
 			results.add(ontClass.getURI());
+			i++;
+			if (i == 100)
+				break;
 		}
+		System.out.println(results.size());
 		return results;
 	}
 
