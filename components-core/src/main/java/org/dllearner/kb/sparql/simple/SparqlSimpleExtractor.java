@@ -11,15 +11,12 @@ import java.util.Set;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
-
 import org.dllearner.core.owl.KB;
-
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
-
-import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.analyse.TypeOntology;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
