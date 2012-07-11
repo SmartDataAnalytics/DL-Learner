@@ -72,6 +72,7 @@ import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.RoleComparator;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
+import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
@@ -122,6 +123,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
+import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
+
 /**
  * Mapping to OWL API reasoner interface. The OWL API currently
  * supports three reasoners: FaCT++, HermiT and Pellet. FaCT++ is connected
@@ -169,7 +172,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     // references to OWL API ontologies
     private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
-    @ConfigOption(name = "reasonerType", description = "The name of the OWL APIReasoner to use {\"fact\", \"hermit\", \"owllink\", \"pellet\"}", defaultValue = "pellet", required = false, propertyEditorClass = StringTrimmerEditor.class)
+    @ConfigOption(name = "reasonerType", description = "The name of the OWL APIReasoner to use {\"fact\", \"hermit\", \"owllink\", \"pellet\", \"elk\", \"cel\"}", defaultValue = "pellet", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String reasonerTypeString = "pellet";
     @ConfigOption(name = "owlLinkURL", description = "The URL to the owl server", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String owlLinkURL;
@@ -305,6 +308,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             // output will be very large
             Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
             pelletLogger.setLevel(Level.WARN);
+        } else if (getReasonerTypeString().equals("elk")) {
+            // instantiate ELK reasoner
+            reasoner = new ElkReasonerFactory().createNonBufferingReasoner(ontology, conf);
+        } else if (getReasonerTypeString().equals("cel")) {
+            // instantiate CEL reasoner
+            reasoner = new CelReasoner(ontology, conf);
         } else {
             try {
                 OWLlinkHTTPXMLReasonerFactory factory = new OWLlinkHTTPXMLReasonerFactory();
