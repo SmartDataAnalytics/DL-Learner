@@ -227,6 +227,22 @@
         	<groupId>commons-pool</groupId>
         	<artifactId>commons-pool</artifactId>
         </dependency>
+        <dependency>
+        	<groupId>org.semanticweb.elk</groupId>
+        	<artifactId>elk-owlapi</artifactId>
+        	<version>0.2.0</version>
+        </dependency>
+           <dependency>
+        	<groupId>de.tudresden.inf.lat.cel</groupId>
+        	<artifactId>reasoner</artifactId>
+        	<version>0.5.1</version>
+        </dependency>
+         <dependency>
+        	<groupId>de.tudresden.inf.lat.cel</groupId>
+        	<artifactId>jsexp</artifactId>
+        	<version>0.1.0</version>
+        </dependency>
+        
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
