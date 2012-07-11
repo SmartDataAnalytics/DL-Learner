@@ -40,7 +40,7 @@ import com.jamonapi.MonitorFactory;
 
 @ComponentAnn(name = "efficient SPARQL fragment extractor", shortName = "sparqls", version = 0.1)
 
-public class SparqlSimpleExtractor extends AbstractKnowledgeSource {
+public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource{
 
 
     @ConfigOption(name = "endpointURL", description = "URL of the SPARQL endpoint", required = true)
@@ -331,9 +331,10 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource {
 		
 	}
 
-    
+    @Override
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {
         JenaToOwlapiConverter converter = new JenaToOwlapiConverter();
         return converter.convert(this.model,manager);
     }
+
 }
