@@ -14,6 +14,7 @@ public class Query implements Serializable {
 	Set<SPARQL_Triple> conditions;
 	Set<SPARQL_Term> orderBy;
 	Set<SPARQL_Filter> filter;
+        Set<SPARQL_Having> having;
         Set<SPARQL_Union> unions;
 	SPARQL_QueryType qt = SPARQL_QueryType.SELECT;
 
@@ -28,6 +29,7 @@ public class Query implements Serializable {
 		conditions = new HashSet<SPARQL_Triple>();
 		orderBy = new HashSet<SPARQL_Term>();
 		filter = new HashSet<SPARQL_Filter>();
+                having  = new HashSet<SPARQL_Having>();
                 unions = new HashSet<SPARQL_Union>();
 	}
 
@@ -38,6 +40,7 @@ public class Query implements Serializable {
 		this.prefixes = prefixes;
 		this.conditions = conditions;
                 filter = new HashSet<SPARQL_Filter>();
+                having = new HashSet<SPARQL_Having>();
                 unions = new HashSet<SPARQL_Union>();
 	}
 
@@ -50,6 +53,8 @@ public class Query implements Serializable {
 		this.orderBy = orderBy;
 		this.limit = limit;
 		this.offset = offset;
+                filter = new HashSet<SPARQL_Filter>();
+                having = new HashSet<SPARQL_Having>();
                 unions = new HashSet<SPARQL_Union>();
 	}
 	
@@ -107,6 +112,7 @@ public class Query implements Serializable {
 			}
 		}
 		this.filter = filters;
+                this.having = having;
                 this.unions = query.unions; // TODO copy unions
 		
 		this.limit = query.getLimit();
@@ -195,6 +201,10 @@ public class Query implements Serializable {
 		if(groupBy != null){
 			retVal += "GROUP BY " + groupBy + "\n";
 		}
+                
+                if (!having.isEmpty()) {
+                    for (SPARQL_Having h : having) retVal += h.toString() + "\n";
+                }
 
 		if (orderBy != null && !orderBy.isEmpty())
 		{
@@ -274,6 +284,10 @@ public class Query implements Serializable {
 			if (f.equals(filter.toArray()[i])) return;
 
 		this.filter.add(f);
+	}
+        public void addHaving(SPARQL_Having h)
+	{
+		this.having.add(h);
 	}
 
 	public Set<SPARQL_Term> getOrderBy()

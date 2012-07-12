@@ -264,7 +264,7 @@ public class DRS2SPARQL_Converter {
             if (!predicate.contains(":")) prop.setIsVariable(true);
             
             boolean literal = false; 
-            if (simple.getArguments().size() > 1 && simple.getArguments().get(1).getValue().matches("\\d+")) {
+            if (simple.getArguments().size() > 1 && (simple.getArguments().get(1).getValue().startsWith("\'") || simple.getArguments().get(1).getValue().matches("[0-9]+"))) {
             	literal = true;
             }
 
@@ -273,11 +273,7 @@ public class DRS2SPARQL_Converter {
                 if (simple.getArguments().get(1).getValue().matches("[0-9]+")) {
                     String fresh = "v"+createFresh();
                     out.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, fresh));
-                    out.addFilter(new SPARQL_Filter(
-                        new SPARQL_Pair(
-                        new SPARQL_Term(fresh,false),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
-                        SPARQL_PairType.EQ)));
+                    out.addHaving(new SPARQL_Having("?"+fresh + " = " + simple.getArguments().get(1).getValue()));
                 } else {
                     out.addSelTerm(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_Aggregate.COUNT, simple.getArguments().get(1).getValue()));
                 }
@@ -326,7 +322,7 @@ public class DRS2SPARQL_Converter {
             } else if (predicate.equals("equal")) {
                 out.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
-                        new SPARQL_Term(simple.getArguments().get(0).getValue(),true),
+                        new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
                         new SPARQL_Term(simple.getArguments().get(1).getValue(),literal),
                         SPARQL_PairType.EQ)));
                 return out;
@@ -335,14 +331,14 @@ public class DRS2SPARQL_Converter {
             	out.addFilter(new SPARQL_Filter(
             			new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
-                        new SPARQL_Term("'^"+simple.getArguments().get(1).getValue()+"'",true),
+                        new SPARQL_Term("'^"+simple.getArguments().get(1).getValue()+"'",false),
                         SPARQL_PairType.REGEX)));
             }
             else if (predicate.equals("regex")) {
             	out.addFilter(new SPARQL_Filter(
             			new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
-                        new SPARQL_Term(simple.getArguments().get(1).getValue().replace("_","").trim(),true),
+                        new SPARQL_Term(simple.getArguments().get(1).getValue().replace("_","").trim(),false),
                         SPARQL_PairType.REGEX)));
             }
             else {
@@ -403,10 +399,13 @@ public class DRS2SPARQL_Converter {
     }
 
     public void redundantEqualRenaming(DRS drs) {
-
+        
         Set<Simple_DRS_Condition> equalsConditions = new HashSet<Simple_DRS_Condition>();
         for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
-        	if(c.getPredicate().equals("equal")) equalsConditions.add(c);
+        	if(c.getPredicate().equals("equal")
+                        && !c.getArguments().get(0).getValue().matches("[0-9]+")
+                        && !c.getArguments().get(1).getValue().matches("[0-9]+")) 
+                    equalsConditions.add(c);
         }
         
         DiscourseReferent firstArg;
@@ -426,7 +425,7 @@ public class DRS2SPARQL_Converter {
             secondIsInt = secondArg.getValue().matches("(\\?)?[0..9]+");
 
             drs.removeCondition(c);
-            if (firstIsURI || firstIsInt) {
+            if (firstIsURI) { //  firstIsURI || firstIsInt
                 drs.replaceEqualRef(secondArg, firstArg, true);
                 for (Slot s : slots) {
                 	if (s.getAnchor().equals(secondArg.getValue()))
@@ -436,7 +435,7 @@ public class DRS2SPARQL_Converter {
                             s.getWords().add(firstArg.getValue());
                         }
                 }
-            } else if (secondIsURI || secondIsInt) {
+            } else if (secondIsURI) { // secondIsURI || secondIsInt
                 drs.replaceEqualRef(firstArg, secondArg, true);
                 for (Slot s : slots) {
                 	if (s.getAnchor().equals(firstArg.getValue()))
