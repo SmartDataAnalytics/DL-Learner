@@ -34,7 +34,7 @@
 
   with || (NP NP* (PP P:'with' DP[dp])) || <x,l1,<e,t>, [ l1:[ | empty(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[]> ;; <x,l1,<e,t>, [ l1:[ | SLOT_description(x,z), regextoken(z,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_description/DATATYPEPROPERTY/description, SLOT_arg/LITERAL/z ]>
   with || (PP P:'with' DP[dp]) || <x,l1,<e,t>, [ l1:[ | empty(x,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[]> ;; <x,l1,<e,t>, [ l1:[ | SLOT_description(x,z), regextoken(z,y) ] ], [ (l2,y,dp,<<e,t>,t>) ], [ l2=l1 ],[ SLOT_description/DATATYPEPROPERTY/description, SLOT_arg/LITERAL/z ]>
-  square meters || (DP N:'square' N:'meters') || <x,l1,<<e,t>,t>>, [l1:[ | SLOT_size(x,y) ]], [],[],[SLOT_size/DATATYPEPROPERTY/size ]>
+  square meters || (NP N:'square' N:'meters') || <x,l1,<e,t>, [l1:[ | SLOT_size(x,y) ]], [],[],[SLOT_size/DATATYPEPROPERTY/size ]>
 
 // MONTHS 
 
