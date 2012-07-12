@@ -9,6 +9,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
+import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.RefinementOperator;
 
 /**
@@ -17,7 +18,7 @@ import org.dllearner.refinementoperators.RefinementOperator;
  * @author An C. Tran
  *
  */
-public class ParCELRefinementOperatorPool extends StackObjectPool<RefinementOperator> {
+public class ParCELRefinementOperatorPool extends StackObjectPool<LengthLimitedRefinementOperator> {
 
 	/**
 	 * Create refinement operator pool given max number of idle object without splitter 

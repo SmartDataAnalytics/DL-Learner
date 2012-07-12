@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007-2012, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,32 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.refinementoperators;
 
-import java.util.List;
-import java.util.Set;
+import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 
-import org.dllearner.core.Component;
-import org.dllearner.core.owl.Description;
 
 /**
- * Interface for all refinement operators based on OWL/Description Logics.
- * A refinement operator
- * maps a description to a set of descriptions. For downward refinement
- * operators those descriptions are more special. For upward refinement
- * operators, those descriptions are more general. 
+ * 
+ * A refinement operator for which hierarchies other those of the
+ * reasoner can be injected. Using those hierarchies means that only classes
+ * from the hierarchies should occur in refinements.
  * 
  * @author Jens Lehmann
  *
  */
-public interface RefinementOperator extends Component {
+public interface CustomHierarchyRefinementOperator extends RefinementOperator {
 
-	/**
-	 * Standard refinement operation.
-	 * @param description The description, which will be refined.
-	 * @return A set of refinements.
-	 */
-	public Set<Description> refine(Description description);
+	public void setClassHierarchy(ClassHierarchy classHierarchy);
 	
+	public void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy);
+	
+	public void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy);
+		
 }

@@ -92,6 +92,8 @@ public class AnnComponentManager {
             "org.dllearner.algorithms.celoe.OEHeuristicRuntime",
             "org.dllearner.refinementoperators.RhoDRDown",
             "org.dllearner.refinementoperators.SynchronizedRhoDRDown",
+            // just for testing
+            "org.dllearner.refinementoperators.ExampleOperator",
     } ));
     private static Collection<Class<? extends Component>> components;
     private static BidiMap<Class<? extends Component>, String> componentNames;

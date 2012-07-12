@@ -198,6 +198,8 @@ public class CLI {
         } catch (Exception e) {
             String stacktraceFileName = "log/error.log";
 
+//            e.printStackTrace();
+            
             //Find the primary cause of the exception.
             Throwable primaryCause = findPrimaryCause(e);
 

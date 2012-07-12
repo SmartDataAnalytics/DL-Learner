@@ -51,6 +51,7 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -80,7 +81,7 @@ public class ISLE extends AbstractCELA {
 //	private OEHeuristicStable heuristicStable = new OEHeuristicStable();
 //	private OEHeuristicRuntime heuristicRuntime = new OEHeuristicRuntime();
 	
-	private RefinementOperator operator;
+	private LengthLimitedRefinementOperator operator;
 	private DescriptionMinimizer minimizer;
 	
 	// all nodes in the search tree (used for selecting most promising node)
@@ -246,7 +247,7 @@ public class ISLE extends AbstractCELA {
 					LinkedList<Description> startClassCandidates = new LinkedList<Description>();
 					startClassCandidates.add(existingDefinition);
 					((RhoDRDown)operator).setDropDisjuncts(true);
-					RefinementOperator upwardOperator = new OperatorInverter(operator);
+					LengthLimitedRefinementOperator upwardOperator = (LengthLimitedRefinementOperator) new OperatorInverter(operator);
 					
 					// use upward refinement until we find an appropriate start class
 					boolean startClassFound = false;

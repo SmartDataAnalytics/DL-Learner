@@ -7,6 +7,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.owl.Description;
+import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.RefinementOperator;
 
 /**
@@ -23,7 +24,7 @@ public class ParCELWorker implements Runnable {
 
 	// refinement operator used in refinement
 	private ParCELRefinementOperatorPool refinementOperatorPool;
-	private RefinementOperator refinementOperator;
+	private LengthLimitedRefinementOperator refinementOperator;
 
 	// reducer, used to make the callback to pass the result and get the next description for
 	// processing
@@ -93,7 +94,7 @@ public class ParCELWorker implements Runnable {
 	 * @param name
 	 *            Name of the worker, assigned by reduce (for tracing purpose only)
 	 */
-	public ParCELWorker(ParCELearner learner, RefinementOperator refinementOperator,
+	public ParCELWorker(ParCELearner learner, LengthLimitedRefinementOperator refinementOperator,
 			ParCELPosNegLP learningProblem, ParCELNode nodeToProcess, String name) {
 
 		super();

@@ -37,14 +37,14 @@ import org.dllearner.utilities.owl.ConceptTransformation;
  * @author Jens Lehmann
  *
  */
-public class OperatorInverter implements RefinementOperator {
+public class OperatorInverter implements LengthLimitedRefinementOperator {
 
-	private RefinementOperator operator;
+	private LengthLimitedRefinementOperator operator;
 	private ConceptComparator cc = new ConceptComparator();
 	private boolean useNegationNormalForm = true;
 	private boolean guaranteeLength = true;
 	
-	public OperatorInverter(RefinementOperator operator) {
+	public OperatorInverter(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
 	}
 	
