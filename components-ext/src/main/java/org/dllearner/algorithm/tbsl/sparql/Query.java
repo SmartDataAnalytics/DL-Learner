@@ -112,7 +112,7 @@ public class Query implements Serializable {
 			}
 		}
 		this.filter = filters;
-                this.having = having;
+                this.having = query.having;
                 this.unions = query.unions; // TODO copy unions
 		
 		this.limit = query.getLimit();
