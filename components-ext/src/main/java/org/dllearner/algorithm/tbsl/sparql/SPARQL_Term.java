@@ -79,7 +79,7 @@ public class SPARQL_Term extends SPARQL_Value{
 	
 	public boolean isString()
 	{
-		return name.startsWith("'") || name.matches("\\d+");
+		return name.startsWith("'");
 	}
 	
 	public void setIsURI(boolean isURI){
