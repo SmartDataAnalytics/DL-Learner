@@ -56,6 +56,7 @@ import org.dllearner.learningproblems.FuzzyPosNegLPStandard;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -91,7 +92,7 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 //	private OEHeuristicStable heuristicStable = new OEHeuristicStable();
 //	private OEHeuristicRuntime heuristicRuntime = new OEHeuristicRuntime();
 	
-	private RefinementOperator operator;
+	private LengthLimitedRefinementOperator operator;
 	private DescriptionMinimizer minimizer;
 	
 	// all nodes in the search tree (used for selecting most promising node)
@@ -332,7 +333,7 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 					LinkedList<Description> startClassCandidates = new LinkedList<Description>();
 					startClassCandidates.add(existingDefinition);
 					((RhoDRDown)operator).setDropDisjuncts(true);
-					RefinementOperator upwardOperator = new OperatorInverter(operator);
+					LengthLimitedRefinementOperator upwardOperator = (LengthLimitedRefinementOperator) new OperatorInverter(operator);
 					
 					// use upward refinement until we find an appropriate start class
 					boolean startClassFound = false;
@@ -926,7 +927,7 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	}
 
 	@Autowired(required=false)
-	public void setOperator(RefinementOperator operator) {
+	public void setOperator(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
 	}
 

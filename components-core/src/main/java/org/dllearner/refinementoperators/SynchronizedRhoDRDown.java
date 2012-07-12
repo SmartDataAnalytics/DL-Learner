@@ -38,6 +38,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.Reasoner;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -92,7 +93,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 @ComponentAnn(name = "synchronized rho refinement operator", shortName = "syncrho", version = 0.8)
-public class SynchronizedRhoDRDown extends RefinementOperatorAdapter implements Component {
+public class SynchronizedRhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
 
 	private static Logger logger = Logger
 	.getLogger(SynchronizedRhoDRDown.class);	
@@ -1710,4 +1711,15 @@ public class SynchronizedRhoDRDown extends RefinementOperatorAdapter implements 
 	public void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy) {
 		this.dataPropertyHierarchy = dataPropertyHierarchy;
 	}
+	
+	@Override
+	public void setReasoner(Reasoner reasoner) {
+		this.reasoner = (AbstractReasonerComponent) reasoner;
+	}
+
+	@Override
+	public void setClassHierarchy(ClassHierarchy classHierarchy) {
+		subHierarchy = classHierarchy;
+	}	
+	
 }

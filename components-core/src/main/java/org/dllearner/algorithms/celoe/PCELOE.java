@@ -63,7 +63,11 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
+import org.dllearner.refinementoperators.CustomStartRefinementOperator;
+import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.OperatorInverter;
+import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.refinementoperators.SynchronizedRhoDRDown;
@@ -99,7 +103,7 @@ public class PCELOE extends AbstractCELA {
 //	private OEHeuristicStable heuristicStable = new OEHeuristicStable();
 //	private OEHeuristicRuntime heuristicRuntime = new OEHeuristicRuntime();
 	
-	private RefinementOperator operator;
+	private LengthLimitedRefinementOperator operator;
 	private DescriptionMinimizer minimizer;
 	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
 	private boolean useMinimizer = true;
@@ -297,15 +301,19 @@ public class PCELOE extends AbstractCELA {
 		if(operator == null) {
 			// we use a default operator and inject the class hierarchy for now
 			operator = new SynchronizedRhoDRDown();
-			((SynchronizedRhoDRDown)operator).setStartClass(startClass);
-			((SynchronizedRhoDRDown)operator).setReasoner(reasoner);
-			((SynchronizedRhoDRDown)operator).init();
+			if(operator instanceof CustomStartRefinementOperator) {
+				((CustomStartRefinementOperator)operator).setStartClass(startClass);
+			}
+			if(operator instanceof ReasoningBasedRefinementOperator) {
+				((ReasoningBasedRefinementOperator)operator).setReasoner(reasoner);
+			}
+			operator.init();
 		}
-		// TODO: find a better solution as this is quite difficult to debug
-		((SynchronizedRhoDRDown)operator).setSubHierarchy(classHierarchy);
-		((SynchronizedRhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		((SynchronizedRhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-		
+		if(operator instanceof CustomHierarchyRefinementOperator) {
+			((CustomHierarchyRefinementOperator)operator).setClassHierarchy(classHierarchy);
+			((CustomHierarchyRefinementOperator)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		}
 		
 //		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
@@ -362,8 +370,10 @@ public class PCELOE extends AbstractCELA {
 					
 					LinkedList<Description> startClassCandidates = new LinkedList<Description>();
 					startClassCandidates.add(existingDefinition);
-					((RhoDRDown)operator).setDropDisjuncts(true);
-					RefinementOperator upwardOperator = new OperatorInverter(operator);
+					if(operator instanceof RhoDRDown) {
+						((RhoDRDown)operator).setDropDisjuncts(true);
+					}
+					LengthLimitedRefinementOperator upwardOperator = (LengthLimitedRefinementOperator) new OperatorInverter(operator);
 					
 					// use upward refinement until we find an appropriate start class
 					boolean startClassFound = false;
@@ -395,7 +405,9 @@ public class PCELOE extends AbstractCELA {
 //					System.out.println("existing def: " + existingDefinition);
 //					System.out.println(reasoner.getIndividuals(existingDefinition));
 					
-					((RhoDRDown)operator).setDropDisjuncts(false);
+					if(operator instanceof RhoDRDown) {
+						((RhoDRDown)operator).setDropDisjuncts(false);
+					}
 					
 				} else {
 					Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
@@ -877,7 +889,7 @@ public class PCELOE extends AbstractCELA {
 	}
 
 	@Autowired(required=false)
-	public void setOperator(RefinementOperator operator) {
+	public void setOperator(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
 	}
 

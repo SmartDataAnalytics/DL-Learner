@@ -15,10 +15,11 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
+import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown2008;
 
-public class ParCELRefinementOperatorFactory extends BasePoolableObjectFactory<RefinementOperator> {
+public class ParCELRefinementOperatorFactory extends BasePoolableObjectFactory<LengthLimitedRefinementOperator> {
 		
 	private AbstractReasonerComponent reasoner;
 	private ClassHierarchy classHierarchy;
@@ -63,7 +64,7 @@ public class ParCELRefinementOperatorFactory extends BasePoolableObjectFactory<R
 	}
 	
 	@Override
-	public RefinementOperator makeObject() throws Exception {
+	public LengthLimitedRefinementOperator makeObject() throws Exception {
 		
 		//clone a new class heirarchy to avoid the competition between refinement operators
 		ClassHierarchy clonedClassHierarchy = this.classHierarchy.clone();

@@ -30,7 +30,7 @@ import org.dllearner.core.owl.Description;
  * @author Jens Lehmann
  *
  */
-public abstract class RefinementOperatorAdapter implements RefinementOperator {
+public abstract class RefinementOperatorAdapter implements LengthLimitedRefinementOperator {
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.refinementoperators.RefinementOperator#refine(org.dllearner.core.owl.Description)

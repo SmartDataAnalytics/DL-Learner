@@ -42,6 +42,7 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -247,7 +248,7 @@ public class RefinementOperatorTests {
 		op.setDropDisjuncts(true);
 		op.init();
 		
-		RefinementOperator operator = new OperatorInverter(op);
+		LengthLimitedRefinementOperator operator = new OperatorInverter(op);
 		Description concept = KBParser.parseConcept("(limo AND EXISTS hasOwner.man)");
 		Set<Description> refinements = operator.refine(concept, 6);
 		for(Description refinement : refinements) {
