@@ -562,7 +562,7 @@ public class DRS2SPARQL_Converter {
     	
     	Set<Simple_DRS_Condition> emptyConditions = new HashSet<Simple_DRS_Condition>();
         for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
-        	if(c.getPredicate().equals("empty")) {
+        	if(c.getPredicate().equals("empty") || c.getPredicate().equals("empty_data")) {
         		emptyConditions.add(c);
         	}
         }
@@ -572,8 +572,17 @@ public class DRS2SPARQL_Converter {
         
         boolean globalsuccess = false;
         for (Simple_DRS_Condition c : emptyConditions) {
-        	String nounToExpand = c.getArguments().get(1).getValue();
-        	String fallbackNoun = c.getArguments().get(0).getValue();
+        	String nounToExpand; 
+        	String fallbackNoun; 
+                boolean datatype = false;
+                if (c.getPredicate().equals("empty")) {
+                    nounToExpand = c.getArguments().get(1).getValue();
+                    fallbackNoun = c.getArguments().get(0).getValue();
+                } else {
+                    nounToExpand = c.getArguments().get(0).getValue(); 
+                    fallbackNoun = c.getArguments().get(1).getValue(); // TODO das ist quark...
+                    datatype = true;
+                }
         	boolean success = false;
         	loop: 
         	for (Simple_DRS_Condition sc : drs.getAllSimpleConditions()) {
@@ -584,7 +593,8 @@ public class DRS2SPARQL_Converter {
         						s.setSlotType(SlotType.PROPERTY); 
         						List<DiscourseReferent> newargs = new ArrayList<DiscourseReferent>();
                     			newargs.add(c.getArguments().get(0));
-                    			newargs.add(sc.getArguments().get(0));
+                                        if (datatype) newargs.add(c.getArguments().get(1));
+                                        else newargs.add(sc.getArguments().get(0));
                     			sc.setArguments(newargs);
                     			success = true;
                     			globalsuccess = true;
