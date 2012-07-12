@@ -14,7 +14,7 @@ import org.dllearner.core.owl.Description;
  * @author Jens Lehmann
  *
  */
-@ComponentAnn(name = "example refinement operator", shortName = "exop", version = 0.8)
+@ComponentAnn(name = "example refinement operator", shortName = "exop", version = 0.1)
 public class ExampleOperator implements LengthLimitedRefinementOperator {
 
 	@Override
