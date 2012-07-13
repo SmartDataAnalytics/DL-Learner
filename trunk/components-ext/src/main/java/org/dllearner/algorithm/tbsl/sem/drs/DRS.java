@@ -312,7 +312,7 @@ public class DRS implements SemanticRepresentation {
 			next = true;
 		}
 		m_DiscourseReferents.remove(dr2);
-		if (!isInUpperUniverse) {
+		if (!isInUpperUniverse && !dr2.m_Referent.matches("[0-9]+")) {
 			m_DiscourseReferents.add(new DiscourseReferent(dr2.m_Referent,marked,nonex));
 		}
 

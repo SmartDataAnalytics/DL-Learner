@@ -319,7 +319,7 @@ public class DRS2SPARQL_Converter {
                 out.addOrderBy(new SPARQL_Term(simple.getArguments().get(0).getValue(), SPARQL_OrderBy.ASC));
                 out.setLimit(1);
                 return out;
-            } else if (predicate.equals("equal")) {
+            } else if (predicate.equals("equals")) {
                 out.addFilter(new SPARQL_Filter(
                         new SPARQL_Pair(
                         new SPARQL_Term(simple.getArguments().get(0).getValue(),false),
@@ -347,9 +347,11 @@ public class DRS2SPARQL_Converter {
 	            	out.addCondition(new SPARQL_Triple(term,new SPARQL_Property("type",new SPARQL_Prefix("rdf","")),prop));
 	            }
 	            else if (arity == 2) {
-	            	String arg1 = simple.getArguments().get(0).getValue();SPARQL_Term term1 = new SPARQL_Term(arg1,false);term1.setIsVariable(true);
-	            	String arg2 = simple.getArguments().get(1).getValue();SPARQL_Term term2 = new SPARQL_Term(arg2,false);term2.setIsVariable(true);
-	            	out.addCondition(new SPARQL_Triple(term1, prop, term2));
+	            	String arg1 = simple.getArguments().get(0).getValue();                   
+                        SPARQL_Term term1 = new SPARQL_Term(arg1,arg1.contains(":"),!arg1.matches("(\\?)?[0-9]+"));
+	            	String arg2 = simple.getArguments().get(1).getValue();
+                        SPARQL_Term term2 = new SPARQL_Term(arg2,arg2.contains(":"),!arg2.matches("(\\?)?[0-9]+"));
+	            	out.addCondition(new SPARQL_Triple(term1,prop,term2));
 	            }
 	            else if (arity > 2) {
 	            	// TODO
@@ -371,11 +373,11 @@ public class DRS2SPARQL_Converter {
                     if (s.getAnchor().equals(v1)) v1isSlotVar = true; 
                     if (s.getAnchor().equals(v2)) v2isSlotVar = true;
                 }
-                if (!v1isSlotVar && !v1.matches("[0..9]+") && !v1.contains("count")) {
+                if (!v1isSlotVar && !v1.matches("(\\?)?[0-9]+") && !v1.contains("count")) {
                     if (vs.containsKey(v1)) vs.put(v1,vs.get(v1)+1);
                     else vs.put(v1,1);
                 }
-                if (!v2isSlotVar && !v2.matches("[0..9]+") && !v2.contains("count")) {
+                if (!v2isSlotVar && !v2.matches("(\\?)?[0-9]+") && !v2.contains("count")) {
                     if (vs.containsKey(v2)) vs.put(v2,vs.get(v2)+1);
                     else vs.put(v2,1);
                 }
@@ -402,9 +404,7 @@ public class DRS2SPARQL_Converter {
         
         Set<Simple_DRS_Condition> equalsConditions = new HashSet<Simple_DRS_Condition>();
         for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
-        	if(c.getPredicate().equals("equal")
-                        && !c.getArguments().get(0).getValue().matches("[0-9]+")
-                        && !c.getArguments().get(1).getValue().matches("[0-9]+")) 
+        	if(c.getPredicate().equals("equal"))
                     equalsConditions.add(c);
         }
         
