@@ -34,8 +34,8 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
-import com.ibm.icu.util.StringTokenizer;
 
 /**
  * @author Jens Lehmann
