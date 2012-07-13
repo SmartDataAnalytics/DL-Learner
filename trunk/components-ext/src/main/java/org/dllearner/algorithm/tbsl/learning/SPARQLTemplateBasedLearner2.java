@@ -496,6 +496,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		for(Template t : templates){
 			logger.info("Processing template:\n" + t.toString());
 			allocations = new TreeSet<Allocation>();
+			boolean containsRegex = t.getQuery().toString().toLowerCase().contains("(regex(");
 			
 			ExecutorService executor = Executors.newFixedThreadPool(t.getSlots().size());
 			List<Future<Map<Slot, SortedSet<Allocation>>>> list = new ArrayList<Future<Map<Slot, SortedSet<Allocation>>>>();
@@ -701,6 +702,13 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 							
 						}
 					}
+					//lower queries with FILTER-REGEX
+					if(containsRegex){
+						for(WeightedQuery wQ : tmp){
+							wQ.setScore(wQ.getScore() - 0.01);
+						}
+					}
+					
 					queries.clear();
 					queries.addAll(tmp);//System.out.println(tmp);
 					tmp.clear();
@@ -1132,6 +1140,23 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			computeScore(allocations);
 			logger.info("Found " + allocations.size() + " allocations for slot " + slot);
 			return new TreeSet<Allocation>(allocations);
+		}
+		
+		private Index getIndexBySlotType(Slot slot){
+			Index index = null;
+			SlotType type = slot.getSlotType();
+			if(type == SlotType.CLASS){
+				index = classesIndex;
+			} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY){
+				index = propertiesIndex;
+			} else if(type == SlotType.DATATYPEPROPERTY){
+				index = datatypePropertiesIndex;
+			} else if(type == SlotType.OBJECTPROPERTY){
+				index = objectPropertiesIndex;
+			} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
+				index = resourcesIndex;
+			}
+			return index;
 		}
 		
 	}
