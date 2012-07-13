@@ -5,7 +5,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
-public class VirtuosoPropertiesIndex extends SPARQLIndex{
+public class VirtuosoPropertiesIndex extends SPARQLPropertiesIndex{
 	
 	public VirtuosoPropertiesIndex(SparqlEndpoint endpoint) {
 		super(endpoint);
