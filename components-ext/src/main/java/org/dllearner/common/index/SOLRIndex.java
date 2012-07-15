@@ -26,6 +26,8 @@ private CommonsHttpSolrServer server;
 	
 	private String sortField;
 	
+	private boolean restrictiveSearch = true;
+	
 	public SOLRIndex(String solrServerURL){
 		try {
 			server = new CommonsHttpSolrServer(solrServerURL);
@@ -96,8 +98,26 @@ private CommonsHttpSolrServer server;
 		try {
 			String solrString = queryString;
 			if(primarySearchField != null){
-				solrString = primarySearchField + ":" + "\"" + queryString + "\"" + "^2 " + queryString;
+				solrString = primarySearchField + ":" + "\"" + queryString + "\"" + "^2 ";
+				if(restrictiveSearch){
+					String[] tokens = queryString.split(" ");
+					if(tokens.length > 1){
+						solrString += " OR (";
+						for(int i = 0; i < tokens.length; i++){
+							String token = tokens[i];
+							solrString += primarySearchField + ":" + token;
+							if(i < tokens.length-1){
+								solrString += " AND ";
+							}
+						}
+						solrString += ")";
+					}
+					
+				} else {
+					solrString += queryString;
+				}
 			}
+			System.out.println(solrString);
 			SolrQuery query = new SolrQuery(solrString);
 		    query.setRows(limit);
 		    query.setStart(offset);
