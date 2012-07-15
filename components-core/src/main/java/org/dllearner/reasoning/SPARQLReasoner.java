@@ -727,6 +727,18 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		return null;
 	}
 	
+	public boolean isObjectProperty(String propertyURI){
+		String query = String.format("ASK {<%s> a <%s>}", propertyURI, OWL.ObjectProperty.getURI());
+		boolean isObjectProperty = executeAskQuery(query);
+		return isObjectProperty;
+	}
+	
+	public boolean isDataProperty(String propertyURI){
+		String query = String.format("ASK {<%s> a <%s>}", propertyURI, OWL.DatatypeProperty.getURI());
+		boolean isObjectProperty = executeAskQuery(query);
+		return isObjectProperty;
+	}
+	
 	public int getIndividualsCount(NamedClass nc){
 		String query = String.format("SELECT (COUNT(?s) AS ?cnt) WHERE {" +
 				"?s a <%s>." +
