@@ -155,6 +155,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	
 	private Set<String> relevantKeywords;
 	
+	private boolean useDomainRangeRestriction = true;
+	
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index resourcesIndex, Index classesIndex, Index propertiesIndex){
 		this(endpoint, resourcesIndex, classesIndex, propertiesIndex, new StanfordPartOfSpeechTagger());
 	}
@@ -303,6 +305,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			objectPropertiesIndex = propertiesIndex;
 		}
 		reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
+	}
+	
+	public void setUseDomainRangeRestriction(boolean useDomainRangeRestriction) {
+		this.useDomainRangeRestriction = useDomainRangeRestriction;
 	}
 	
 	/*
@@ -619,31 +625,66 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 								Query q = new Query(query.getQuery());
 								
 								boolean drop = false;
-								if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
-									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
-										String objectVar = triple.getValue().getName();
-										String subjectVar = triple.getVariable().getName();
-//										System.out.println(triple);
-										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(objectVar)){
-//											System.out.println(typeTriple);
-											if(true){//reasoner.isObjectProperty(a.getUri())){
-												Description range = reasoner.getRange(new ObjectProperty(a.getUri()));
-//												System.out.println(a);
-												if(range != null){
-													Set<Description> allRanges = new HashSet<Description>();
-													SortedSet<Description> superClasses;
-													if(range instanceof NamedClass){
-														superClasses = reasoner.getSuperClasses(range);
-														allRanges.addAll(superClasses);
-													} else {
-														for(Description nc : range.getChildren()){
-															superClasses = reasoner.getSuperClasses(nc);
+								if(useDomainRangeRestriction){
+									if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
+										for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
+											String objectVar = triple.getValue().getName();
+											String subjectVar = triple.getVariable().getName();
+//											System.out.println(triple);
+											for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(objectVar)){
+//												System.out.println(typeTriple);
+												if(true){//reasoner.isObjectProperty(a.getUri())){
+													Description range = reasoner.getRange(new ObjectProperty(a.getUri()));
+//													System.out.println(a);
+													if(range != null){
+														Set<Description> allRanges = new HashSet<Description>();
+														SortedSet<Description> superClasses;
+														if(range instanceof NamedClass){
+															superClasses = reasoner.getSuperClasses(range);
 															allRanges.addAll(superClasses);
+														} else {
+															for(Description nc : range.getChildren()){
+																superClasses = reasoner.getSuperClasses(nc);
+																allRanges.addAll(superClasses);
+															}
+														}
+														allRanges.add(range);
+														allRanges.remove(new NamedClass(Thing.instance.getURI()));
+														
+														Set<Description> allTypes = new HashSet<Description>();
+														String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
+														Description type = new NamedClass(typeURI);
+														superClasses = reasoner.getSuperClasses(type);
+														allTypes.addAll(superClasses);
+														allTypes.add(type);
+														
+														if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
+															drop = true;
+														} 
+													}
+												} else {
+													drop = true;
+												}
+												
+											}
+											for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(subjectVar)){
+												Description domain = reasoner.getDomain(new ObjectProperty(a.getUri()));
+//												System.out.println(a);
+												if(domain != null){
+													Set<Description> allDomains = new HashSet<Description>();
+													SortedSet<Description> superClasses;
+													if(domain instanceof NamedClass){
+														superClasses = reasoner.getSuperClasses(domain);
+														allDomains.addAll(superClasses);
+													} else {
+														for(Description nc : domain.getChildren()){
+															superClasses = reasoner.getSuperClasses(nc);
+															allDomains.addAll(superClasses);
 														}
 													}
-													allRanges.add(range);
-													allRanges.remove(new NamedClass(Thing.instance.getURI()));
-													
+													allDomains.add(domain);
+													allDomains.remove(new NamedClass(Thing.instance.getURI()));
+												
 													Set<Description> allTypes = new HashSet<Description>();
 													String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
 													Description type = new NamedClass(typeURI);
@@ -651,45 +692,12 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 													allTypes.addAll(superClasses);
 													allTypes.add(type);
 													
-													if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
+													if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
 														drop = true;
-													} 
-												}
-											} else {
-												drop = true;
-											}
-											
-										}
-										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(subjectVar)){
-											Description domain = reasoner.getDomain(new ObjectProperty(a.getUri()));
-//											System.out.println(a);
-											if(domain != null){
-												Set<Description> allDomains = new HashSet<Description>();
-												SortedSet<Description> superClasses;
-												if(domain instanceof NamedClass){
-													superClasses = reasoner.getSuperClasses(domain);
-													allDomains.addAll(superClasses);
-												} else {
-													for(Description nc : domain.getChildren()){
-														superClasses = reasoner.getSuperClasses(nc);
-														allDomains.addAll(superClasses);
+														System.err.println("DROPPING: \n" + q.toString());
+													} else {
+															
 													}
-												}
-												allDomains.add(domain);
-												allDomains.remove(new NamedClass(Thing.instance.getURI()));
-											
-												Set<Description> allTypes = new HashSet<Description>();
-												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
-												Description type = new NamedClass(typeURI);
-												superClasses = reasoner.getSuperClasses(type);
-												allTypes.addAll(superClasses);
-												allTypes.add(type);
-												
-												if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
-													drop = true;
-//													System.err.println("DROPPING: \n" + q.toString());
-												} else {
-														
 												}
 											}
 										}
