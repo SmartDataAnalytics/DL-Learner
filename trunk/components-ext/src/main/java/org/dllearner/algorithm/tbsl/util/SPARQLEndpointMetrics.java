@@ -353,16 +353,26 @@ public class SPARQLEndpointMetrics {
 		for(NamedClass cls : classes){
 			for(ObjectProperty prop : objectProperties){
 				log.info("Processing class " + cls + " and property " + prop);
-				getDirectedPMI(cls, prop);
-				getDirectedPMI(prop, cls);
+				try {
+					getDirectedPMI(cls, prop);
+					getDirectedPMI(prop, cls);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
 		for(NamedClass cls1 : classes){
 			for(NamedClass cls2 : classes){
-				log.info("Processing class " + cls1 + " and class " + cls2);
-				getPMI(cls1, cls2);
-				getPMI(cls2, cls1);
+				if(!cls1.equals(cls2)){
+					log.info("Processing class " + cls1 + " and class " + cls2);
+					try {
+						getPMI(cls1, cls2);
+						getPMI(cls2, cls1);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 		log.info("Done in " + ((System.currentTimeMillis() - startTime)/1000d) + "s");
