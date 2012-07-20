@@ -40,6 +40,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_LogicalNot;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
@@ -744,10 +745,14 @@ public class NBR<N> {
 		
 		String uri;
 		QuerySolution qs;
+		RDFNode node;
 		while(rs.hasNext()){
 			qs = rs.next();
-			uri = qs.getResource("x0").getURI();
-			resources.add(uri);
+			node = qs.get("x0");
+			if(node.isURIResource()){
+				uri = qs.getResource("x0").getURI();
+				resources.add(uri);
+			}
 		}
 		
 		return resources;

@@ -645,7 +645,7 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 							for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(varName)){
 								types.add(typeTriple.getValue().getName().replace(">", "").replace("<", ""));
 							}
-							for(String type : types){System.out.println(type);
+							for(String type : types){
 								metrics.getGoodness(new NamedClass(type), 
 										new ObjectProperty(predicate.getName().replace(">", "").replace("<", "")), 
 										new Individual(object.getName().replace(">", "").replace("<", "")));
