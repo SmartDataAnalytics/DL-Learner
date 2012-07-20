@@ -108,15 +108,20 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		if(useCache){
 			cache = new ExtractionDBCache("cache");
 		}
+		classPopularityMap = new HashMap<NamedClass, Integer>();
 	}
 	
 	public SPARQLReasoner(SparqlEndpointKS ks, ExtractionDBCache cache) {
 		this.ks = ks;
 		this.cache = cache;
+		
+		classPopularityMap = new HashMap<NamedClass, Integer>();
 	}
 	
 	public SPARQLReasoner(OntModel model) {
 		this.model = model;
+		
+		classPopularityMap = new HashMap<NamedClass, Integer>();
 	}
 	
 	public void precomputePopularity(){
@@ -127,7 +132,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	
 	public void precomputeClassPopularity(){
 		logger.info("Precomputing class popularity ...");
-		classPopularityMap = new HashMap<NamedClass, Integer>();
 		
 		Set<NamedClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
 		String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s a <%s>}";
@@ -197,7 +201,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	}
 	
 	public int getPopularity(NamedClass nc){
-		if(classPopularityMap.containsKey(nc)){
+		if(classPopularityMap != null && classPopularityMap.containsKey(nc)){
 			return classPopularityMap.get(nc);
 		} else {
 			System.out.println("Cache miss: " + nc);

@@ -190,7 +190,7 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		
 		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/creator"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/grammyAward"));
 		l.setMaxExecutionTimeInSeconds(40);
 		l.addFilterNamespace("http://dbpedia.org/ontology/");
 //		l.setReturnOnlyNewAxioms(true);
