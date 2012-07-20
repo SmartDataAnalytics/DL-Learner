@@ -362,25 +362,25 @@ public class SPARQLEndpointMetrics {
 			}
 		}
 		
-		for(NamedClass cls1 : classes){
-			for(NamedClass cls2 : classes){
-				if(!cls1.equals(cls2)){
-					log.info("Processing class " + cls1 + " and class " + cls2);
-					try {
-						getPMI(cls1, cls2);
-						getPMI(cls2, cls1);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
+//		for(NamedClass cls1 : classes){
+//			for(NamedClass cls2 : classes){
+//				if(!cls1.equals(cls2)){
+//					log.info("Processing class " + cls1 + " and class " + cls2);
+//					try {
+//						getPMI(cls1, cls2);
+//						getPMI(cls2, cls1);
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		}
 		log.info("Done in " + ((System.currentTimeMillis() - startTime)/1000d) + "s");
 	}
 	
 	public static void main(String[] args) {
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
-		ExtractionDBCache cache = new ExtractionDBCache("/opt/tbsl/cache");
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		ExtractionDBCache cache = new ExtractionDBCache("/opt/tbsl/cache2");
 		String NS = "http://dbpedia.org/ontology/";
 		String NS_Res = "http://dbpedia.org/resource/";
 		

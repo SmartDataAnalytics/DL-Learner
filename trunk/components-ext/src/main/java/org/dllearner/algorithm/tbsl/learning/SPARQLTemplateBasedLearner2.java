@@ -286,6 +286,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		this.mappingIndex = mappingIndex;
 	}
 	
+	public void setCache(ExtractionDBCache cache) {
+		this.cache = cache;
+	}
+	
 	public void setKnowledgebase(Knowledgebase knowledgebase){
 		this.endpoint = knowledgebase.getEndpoint();
 		this.resourcesIndex = knowledgebase.getResourceIndex();
