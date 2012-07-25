@@ -164,7 +164,7 @@ public class Templator {
 		if (UNTAGGED_INPUT) {		
 			s = pp.normalize(s);
 			tagged = tagger.tag(s);
-			if (VERBOSE) logger.trace("Tagged input: " + tagged);
+			logger.debug("Tagged input: " + tagged);
 		}
 		else {
 			tagged = s;
@@ -178,7 +178,7 @@ public class Templator {
 		else newtagged = pp.condenseNominals(tagged);
 		
 		newtagged = pp.condense(newtagged);
-		if (VERBOSE) logger.trace("Preprocessed: " + newtagged); 
+		logger.debug("Preprocessed: " + newtagged); 
         
         parser.parse(newtagged,g);
         
@@ -219,10 +219,10 @@ public class Templator {
                 	if (!containsModuloRenaming(drses,drs)) {
 //                    	// DEBUG
                 		if (VERBOSE) {
-	                		System.out.println(">>> DUDE:\n" + dude.toString());
-	                		System.out.println("\n>>> DRS:\n"+ drs.toString());
+	                		logger.debug(">>> DUDE:\n" + dude.toString());
+	                		logger.debug("\n>>> DRS:\n"+ drs.toString());
 	                		for (Slot sl : slots) {
-	                			System.out.println(sl.toString());
+	                			logger.debug(sl.toString());
 	                		}
                 		}
 //                		//
@@ -310,7 +310,7 @@ public class Templator {
 		if (UNTAGGED_INPUT) {		
 			s = pp.normalize(s);
 			tagged = tagger.tag(s);
-			if (VERBOSE) logger.trace("Tagged input: " + tagged);
+			logger.debug("Tagged input: " + tagged);
 		}
 		else {
 			tagged = s;
@@ -324,20 +324,20 @@ public class Templator {
 		else newtagged = pp.condenseNominals(tagged);
 		
 		newtagged = pp.condense(newtagged);
-		if (VERBOSE) logger.trace("Preprocessed: " + newtagged); 
+		logger.debug("Preprocessed: " + newtagged); 
         
         parser.parseMultiThreaded(newtagged,g);
         
         if (parser.getDerivationTrees().isEmpty()) {
             parser.clear(g,parser.getTemps());
             clearAgain = false;
-            if (VERBOSE) logger.error("[Templator.java] '" + s + "' could not be parsed.");
+            logger.error("[Templator.java] '" + s + "' could not be parsed.");
         }
         else {
         try {
         	parser.buildDerivedTreesMultiThreaded(g);
         } catch (ParseException e) {
-        	if (VERBOSE) logger.error("[Templator.java] ParseException at '" + e.getMessage() + "'", e);
+        	logger.error("[Templator.java] ParseException at '" + e.getMessage() + "'", e);
         }
         }
 
@@ -372,13 +372,11 @@ public class Templator {
                	
                	if (!containsModuloRenaming(drses,drs)) {
 //                   	// DEBUG
-               		if (VERBOSE) {
-	                		System.out.println(dude);
-	                		System.out.println(drs);
+               			logger.debug(dude);
+               			logger.debug(drs);
 	                		for (Slot sl : slots) {
-	                			System.out.println(sl.toString());
+	                			logger.debug(sl.toString());
 	                		}
-               		}
 //               		//
                		drses.add(drs);
                		
@@ -546,10 +544,10 @@ public class Templator {
 	                	if (!containsModuloRenaming(drses,drs)) {
 //	                    	// DEBUG
 	                		if (VERBOSE) {
-		                		System.out.println(dude);
-		                		System.out.println(drs);
+	                			logger.debug(dude);
+	                			logger.debug(drs);
 		                		for (Slot sl : slots) {
-		                			System.out.println(sl.toString());
+		                			logger.debug(sl.toString());
 		                		}
 	                		}
 //	                		//
