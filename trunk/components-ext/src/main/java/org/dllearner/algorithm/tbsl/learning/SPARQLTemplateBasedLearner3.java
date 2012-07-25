@@ -95,6 +95,7 @@ import com.jamonapi.MonitorFactory;
 
 public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm{
 	
+	// TODO: is it possible to use this learner concurrently? and if not would it be easy to implement it or at least a copy constructor?
 	
 	enum Mode{
 		BEST_QUERY, BEST_NON_EMPTY_QUERY
