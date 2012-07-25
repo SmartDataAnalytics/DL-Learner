@@ -65,7 +65,6 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
@@ -76,7 +75,6 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Options;
-import org.semanticweb.HermiT.Configuration.DirectBlockingType;
 
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -84,14 +82,12 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.shared.UnknownPropertyException;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm{
-	
 	
 	enum Mode{
 		BEST_QUERY, BEST_NON_EMPTY_QUERY
@@ -383,7 +379,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	public void learnSPARQLQueries() throws NoTemplateFoundException{
 		reset();
 		//generate SPARQL query templates
-		logger.info("Generating SPARQL query templates...");
+		logger.debug("Generating SPARQL query templates...");
 		templateMon.start();
 		if(multiThreaded){
 			templates = templateGenerator.buildTemplatesMultiThreaded(question);
@@ -391,15 +387,15 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			templates = templateGenerator.buildTemplates(question);
 		}
 		templateMon.stop();
-		logger.info("Done in " + templateMon.getLastValue() + "ms.");
+		logger.debug("Done in " + templateMon.getLastValue() + "ms.");
 		relevantKeywords.addAll(templateGenerator.getUnknownWords());
 		if(templates.isEmpty()){
 			throw new NoTemplateFoundException();
 		
 		}
-		logger.info("Templates:");
+		logger.debug("Templates:");
 		for(Template t : templates){
-			logger.info(t);
+			logger.debug(t);
 		}
 		
 		//get the weighted query candidates
@@ -407,7 +403,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		sparqlQueryCandidates = new ArrayList<WeightedQuery>();
 		int i = 0;
 		for(WeightedQuery wQ : generatedQueries){
-			System.out.println(wQ.explain());
+			logger.debug(wQ.explain());
 			sparqlQueryCandidates.add(wQ);
 			if(i == maxTestedQueries){
 				break;
@@ -506,7 +502,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 	
 	private SortedSet<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
-		logger.info("Generating SPARQL query candidates...");
+		logger.debug("Generating SPARQL query candidates...");
 		
 		Map<Slot, Set<Allocation>> slot2Allocations = new TreeMap<Slot, Set<Allocation>>(new Comparator<Slot>() {
 
@@ -527,7 +523,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		Set<Allocation> allocations;
 		
 		for(Template t : templates){
-			logger.info("Processing template:\n" + t.toString());
+			logger.debug("Processing template:\n" + t.toString());
 			allocations = new TreeSet<Allocation>();
 			boolean containsRegex = t.getQuery().toString().toLowerCase().contains("(regex(");
 			
@@ -541,9 +537,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 					Callable<Map<Slot, SortedSet<Allocation>>> worker = new SlotProcessor(slot);
 					Future<Map<Slot, SortedSet<Allocation>>> submit = executor.submit(worker);
 					list.add(submit);
-				} else {
-					System.out.println("CACHE HIT");
-				}
+				} 
 			}
 			
 			for (Future<Map<Slot, SortedSet<Allocation>>> future : list) {
@@ -582,7 +576,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				}
 				allocations.addAll(tmp);
 			}*/
-			System.out.println("Time needed: " + (System.currentTimeMillis() - startTime) + "ms");
+			logger.debug("Time needed: " + (System.currentTimeMillis() - startTime) + "ms");
 			
 			Set<WeightedQuery> queries = new HashSet<WeightedQuery>();
 			Query cleanQuery = t.getQuery();
@@ -794,10 +788,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 									List<SPARQL_Triple> typeTriples = wQ.getQuery().getRDFTypeTriples(typeVar);
 									for(SPARQL_Triple typeTriple : typeTriples){
 										String typeURI = typeTriple.getValue().getName().replace("<", "").replace(">", "");
-										System.out.println(typeURI + "---" + resourceURI);
 										List<Entry<String, Integer>> mostFrequentProperties = UnknownPropertyHelper.getMostFrequentProperties(endpoint, cache, typeURI, resourceURI, direction);
 										for(Entry<String, Integer> property : mostFrequentProperties){
-											System.out.println(property);
 											wQ.getQuery().replaceVarWithURI(slot.getAnchor(), property.getKey());
 											wQ.setScore(wQ.getScore() + 0.1);
 										}
@@ -859,7 +851,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			}
 			template2Queries.put(t, qList);
 		}
-		logger.info("...done in ");
+		logger.debug("...done in ");
 		return allQueries;
 	}
 
@@ -993,14 +985,14 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 	
 	private void validate(Collection<WeightedQuery> queries, SPARQL_QueryType queryType){
-		logger.info("Testing candidate SPARQL queries on remote endpoint...");
+		logger.debug("Testing candidate SPARQL queries on remote endpoint...");
 		sparqlMon.start();
 		if(queryType == SPARQL_QueryType.SELECT){
 			for(WeightedQuery query : queries){
 				learnedPos++;
 				List<String> results;
 				try {
-					logger.info("Testing query:\n" + query);
+					logger.debug("Testing query:\n" + query);
 					com.hp.hpl.jena.query.Query q = QueryFactory.create(query.getQuery().toString(), Syntax.syntaxARQ);
 					q.setLimit(1);
 					ResultSet rs = executeSelect(q.toString());
@@ -1033,7 +1025,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 								return;
 							}
 						}
-						logger.info("Result: " + results);
+						logger.debug("Result: " + results);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1043,7 +1035,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		} else if(queryType == SPARQL_QueryType.ASK){
 			for(WeightedQuery query : queries){
 				learnedPos++;
-				logger.info("Testing query:\n" + query);
+				logger.debug("Testing query:\n" + query);
 				boolean result = executeAskQuery(query.getQuery().toString());
 				learnedSPARQLQueries.add(query);
 //				if(stopIfQueryResultNotEmpty && result){
@@ -1052,12 +1044,12 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				if(stopIfQueryResultNotEmpty){
 					return;
 				}
-				logger.info("Result: " + result);
+				logger.debug("Result: " + result);
 			}
 		}
 		
 		sparqlMon.stop();
-		logger.info("Done in " + sparqlMon.getLastValue() + "ms.");
+		logger.debug("Done in " + sparqlMon.getLastValue() + "ms.");
 	}
 	
 	private boolean executeAskQuery(String query){
@@ -1154,7 +1146,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		}
 		
 		private SortedSet<Allocation> computeAllocations(Slot slot){
-			logger.info("Computing allocations for slot: " + slot);
+			logger.debug("Computing allocations for slot: " + slot);
 			SortedSet<Allocation> allocations = new TreeSet<Allocation>();
 			
 			Index index = getIndexBySlotType(slot);
@@ -1210,7 +1202,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			normProminenceValues(allocations);
 			
 			computeScore(allocations);
-			logger.info("Found " + allocations.size() + " allocations for slot " + slot);
+			logger.debug("Found " + allocations.size() + " allocations for slot " + slot);
 			return new TreeSet<Allocation>(allocations);
 		}
 		

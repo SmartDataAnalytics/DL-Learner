@@ -145,7 +145,7 @@ public class Parser {
 			internalParseMultiThreaded(parseGrammar.getDPInitTrees(), n);
 		}
 
-		if (VERBOSE) logger.trace("Constructed " + derivationTrees.size() + " derivation trees.\n");
+		if (VERBOSE) logger.debug("Constructed " + derivationTrees.size() + " derivation trees.\n");
 		return derivationTrees;
 
 	}
