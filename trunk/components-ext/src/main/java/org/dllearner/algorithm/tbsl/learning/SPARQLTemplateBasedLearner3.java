@@ -1023,10 +1023,7 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 		learner.learnSPARQLQueries();
 		System.out.println("Learned query:\n" + learner.getBestSPARQLQuery());
 		System.out.println("Lexical answer type is: " + learner.getTemplates().iterator().next().getLexicalAnswerType());
-		System.out.println(learner.getLearnedPosition());
-		
+		System.out.println(learner.getLearnedPosition());		
 	}
-
-	
 
 }

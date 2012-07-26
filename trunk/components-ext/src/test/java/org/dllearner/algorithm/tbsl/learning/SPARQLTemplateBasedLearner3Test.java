@@ -1,6 +1,7 @@
 package org.dllearner.algorithm.tbsl.learning;
 
 import static org.junit.Assert.assertTrue;
+import org.ini4j.Options;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,10 +27,16 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import opennlp.tools.postag.POSTagger;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithm.tbsl.ltag.parser.Parser;
+import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.nlp.WordNet;
+import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.MappingBasedIndex;
@@ -44,6 +51,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.junit.Before;
 import org.junit.Test;
+import org.openjena.atlas.logging.Log;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -69,12 +77,12 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  * @author Konrad Höffner
  *  **/
 public class SPARQLTemplateBasedLearner3Test
-{
-	@Test public void testDBpedia() throws ParserConfigurationException, SAXException, IOException, TransformerException
+{		
+	@Test public void testDBpedia() throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
 	{test(new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train.xml").getFile()),"http://live.dbpedia.org/sparql");}
 	//@Test public void testOxford() {test(new File(""),"");}
 
-	public void test(File file, String endpoint) throws ParserConfigurationException, SAXException, IOException, TransformerException
+	public void test(File file, String endpoint) throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
 	{
 		String dir = "cache/"+getClass().getSimpleName()+"/";
 		new File(dir).mkdirs();
@@ -82,34 +90,80 @@ public class SPARQLTemplateBasedLearner3Test
 		if(!updatedFile.exists()) {generateUpdatedFile(file,updatedFile,endpoint);}
 
 		QueryTestData savedTestData = readQueries(updatedFile);
-		QueryTestData newTestData = generateQueries(updatedFile);
-		Diff QueryTestDataDiff = diffTestQueries(savedTestData,newTestData);
+		QueryTestData newTestData = generateTestData(savedTestData.id2Question);
+		Diff QueryTestDataDiff = diffTestData(savedTestData,newTestData);
 	}
-	
+
 	/**
 	 * @param savedTestData
 	 * @param newTestData
 	 * @return
 	 */
-	private Diff diffTestQueries(QueryTestData savedTestData, QueryTestData newTestData)
+	private Diff diffTestData(QueryTestData d, QueryTestData e)
 	{
+//		if(d.id2Question.size()!=e.id2Question.size())
+		{logger.info("comparing test data D against E. number of questions: "+d.id2Question.size()+" vs "+e.id2Question.size());}
+		
+		Set<Integer> dMinusE = new HashSet<Integer>(d.id2Question.keySet());
+		dMinusE.removeAll(e.id2Question.keySet());		
+		if(!dMinusE.isEmpty()) logger.info("questions D/E: "+dMinusE+" ("+dMinusE.size()+" elements)");
+		
+		Set<Integer> eMinusD = new HashSet<Integer>(e.id2Question.keySet());
+		eMinusD.removeAll(d.id2Question.keySet());		
+		if(!eMinusD.isEmpty()) logger.info("questions E/D: "+eMinusD+" ("+eMinusD.size()+" elements)");
+		
+		Set<Integer> intersection = new HashSet<Integer>(d.id2Question.keySet());
+		intersection.retainAll(e.id2Question.keySet());
+		
+		if(!eMinusD.isEmpty()) logger.info("questions E/D: "+eMinusD+" ("+eMinusD.size()+" elements)");
+		
+		
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	private class Diff
 	{
-		
+
 	}
-	
-	/**
-	 * @param updatedFile
-	 * @return
+
+	/**	
+	 * @return the test data containing those of the given questions for which queries were found and the results of the queries  	 
 	 */
-	private QueryTestData generateQueries(File updatedFile)
+	private QueryTestData generateTestData(SortedMap<Integer, String> id2Question) throws MalformedURLException, ComponentInitException
 	{
+		QueryTestData testData = new QueryTestData();
+		// -- only create the learner parameters once to save time -- 
+		PartOfSpeechTagger posTagger = new StanfordPartOfSpeechTagger();
+		WordNet wordnet = new WordNet();
+		Options options = new Options();
+		// ----------------------------------------------------------
+		int successes = 0;
+		for(int i:id2Question.keySet())
+		{				
+			String question = id2Question.get(i);
+			logger.debug("generating query for question \""+question+"\", id "+i);			
+			long start = System.currentTimeMillis();	
+			SPARQLTemplateBasedLearner2 dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(dbpediaLiveKnowledgebase,posTagger,wordnet,options);
+
+			dbpediaLiveLearner.init();
+			dbpediaLiveLearner.setQuestion(question);
+			
+			try{dbpediaLiveLearner.learnSPARQLQueries();}
+			catch(NoTemplateFoundException e) {continue;}
+			catch(Exception e) {logger.error("Error processing question "+question,e);continue;}
+			successes++;			
+			testData.id2Question.put(i, question);
+			String learnedQuery = dbpediaLiveLearner.getBestSPARQLQuery();
+			testData.id2Query.put(i, learnedQuery);
+						
+			long end = System.currentTimeMillis();
+			logger.debug(String.format("Generated query \"%s\" after %d ms", learnedQuery,end-start));
+
+		}
+		logger.info(String.format("Successfully learned queries for %d of %d questions.",successes,id2Question.size()));
 		// TODO Auto-generated method stub
-		return null;
+		return testData;
 	}
 
 	/**
@@ -124,81 +178,81 @@ public class SPARQLTemplateBasedLearner3Test
 	{
 		logger.info(String.format("Updating question file \"%s\" by removing questions without nonempty resource list answer and adding answers.\n" +
 				" Saving the result to file \"%s\"",originalFile.getPath(),updatedFile.getPath()));
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(originalFile);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-			doc.getDocumentElement().normalize();
-			NodeList questionNodes = doc.getElementsByTagName("question");			
-			List<Element> questionElementsToDelete = new LinkedList<Element>(); 
-			int id;
-			String question;
-			String query;
-			//			Set<String> answers;
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(originalFile);
 
-			for(int i = 0; i < questionNodes.getLength(); i++)
-			{				
-				Element questionNode = (Element) questionNodes.item(i);
-				//keep the id to aid comparison between original and updated files 
-				id = Integer.valueOf(questionNode.getAttribute("id"));
-				//Read question
+		doc.getDocumentElement().normalize();
+		NodeList questionNodes = doc.getElementsByTagName("question");			
+		List<Element> questionElementsToDelete = new LinkedList<Element>(); 
+		int id;
+		String question;
+		String query;
+		//			Set<String> answers;
 
-				question = ((Element)questionNode.getElementsByTagName("string").item(0)).getChildNodes().item(0).getNodeValue().trim();
-				//Read SPARQL query
-				query = ((Element)questionNode.getElementsByTagName("query").item(0)).getChildNodes().item(0).getNodeValue().trim();
-				//				//Read answers
-				//				answers = new HashSet<String>();
-				//				NodeList aswersNodes = questionNode.getElementsByTagName("answer");
-				//				for(int j = 0; j < aswersNodes.getLength(); j++){
-				//					Element answerNode = (Element) aswersNodes.item(j);
-				//					answers.add(((Element)answerNode.getElementsByTagName("uri").item(0)).getChildNodes().item(0).getNodeValue().trim());
-				//				}
+		for(int i = 0; i < questionNodes.getLength(); i++)
+		{				
+			Element questionNode = (Element) questionNodes.item(i);
+			//keep the id to aid comparison between original and updated files 
+			id = Integer.valueOf(questionNode.getAttribute("id"));
+			//Read question
 
-				if(!query.equals("OUT OF SCOPE")) // marker in qald benchmark file, will create holes interval of ids (e.g. 1,2,5,7)   
+			question = ((Element)questionNode.getElementsByTagName("string").item(0)).getChildNodes().item(0).getNodeValue().trim();
+			//Read SPARQL query
+			query = ((Element)questionNode.getElementsByTagName("query").item(0)).getChildNodes().item(0).getNodeValue().trim();
+			//				//Read answers
+			//				answers = new HashSet<String>();
+			//				NodeList aswersNodes = questionNode.getElementsByTagName("answer");
+			//				for(int j = 0; j < aswersNodes.getLength(); j++){
+			//					Element answerNode = (Element) aswersNodes.item(j);
+			//					answers.add(((Element)answerNode.getElementsByTagName("uri").item(0)).getChildNodes().item(0).getNodeValue().trim());
+			//				}
+
+			if(!query.equals("OUT OF SCOPE")) // marker in qald benchmark file, will create holes interval of ids (e.g. 1,2,5,7)   
+			{
+				Set<String> uris = getUris(endpoint, query);
+				if(!uris.isEmpty())
 				{
-					Set<String> uris = getUris(endpoint, query);
-					if(!uris.isEmpty())
-					{
-						// remove reference answers of the benchmark because they are obtained from an other endpoint
-						Element existingAnswersElement = (Element)questionNode.getElementsByTagName("answers").item(0); // there is at most one "answers"-element
-						if(existingAnswersElement!=null) {questionNode.removeChild(existingAnswersElement);} 
+					// remove reference answers of the benchmark because they are obtained from an other endpoint
+					Element existingAnswersElement = (Element)questionNode.getElementsByTagName("answers").item(0); // there is at most one "answers"-element
+					if(existingAnswersElement!=null) {questionNode.removeChild(existingAnswersElement);} 
 
-						Element answersElement =  doc.createElement("answers");
-						questionNode.appendChild(answersElement);
-						for(String uri:uris)
-						{							
-							Element answerElement =  doc.createElement("answer");
-							answerElement.setTextContent(uri);
-							answersElement.appendChild(answerElement);
-						}		
-						System.out.print('.');
-						continue;
-					}
+					Element answersElement =  doc.createElement("answers");
+					questionNode.appendChild(answersElement);
+					for(String uri:uris)
+					{							
+						Element answerElement =  doc.createElement("answer");
+						answerElement.setTextContent(uri);
+						answersElement.appendChild(answerElement);
+					}		
+					System.out.print('.');
+					continue;
 				}
-				// no answers gotten, mark for deletion
-				questionElementsToDelete.add(questionNode);
-				System.out.print('x');
 			}
-			for(Element element: questionElementsToDelete) {doc.getDocumentElement().removeChild(element);}
+			// no answers gotten, mark for deletion
+			questionElementsToDelete.add(questionNode);
+			System.out.print('x');
+		}
+		for(Element element: questionElementsToDelete) {doc.getDocumentElement().removeChild(element);}
 
-			  TransformerFactory tFactory =
-			    TransformerFactory.newInstance();
-			  Transformer transformer = tFactory.newTransformer();
+		TransformerFactory tFactory =
+				TransformerFactory.newInstance();
+		Transformer transformer = tFactory.newTransformer();
 
-			  DOMSource source = new DOMSource(doc);
-			  StreamResult result = new StreamResult(new FileOutputStream(updatedFile));
-			  transformer.transform(source, result);			  
-		
-//		catch (DOMException e) {
-//			e.printStackTrace();
-//		} catch (ParserConfigurationException e) {
-//			e.printStackTrace();
-//		} catch (SAXException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		DOMSource source = new DOMSource(doc);
+		StreamResult result = new StreamResult(new FileOutputStream(updatedFile));
+		transformer.transform(source, result);			  
+
+		//		catch (DOMException e) {
+		//			e.printStackTrace();
+		//		} catch (ParserConfigurationException e) {
+		//			e.printStackTrace();
+		//		} catch (SAXException e) {
+		//			e.printStackTrace();
+		//		} catch (IOException e) {
+		//			e.printStackTrace();
+		//		}
 	}
 
 
@@ -212,37 +266,53 @@ public class SPARQLTemplateBasedLearner3Test
 
 	private static Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner3Test.class);
 
-	//	private SPARQLTemplateBasedLearner3 oxfordLearner;
-	//	private SPARQLTemplateBasedLearner3 dbpediaLiveLearner;
+	//	private SPARQLTemplateBasedLearner2 oxfordLearner;
+	//	private SPARQLTemplateBasedLearner2 dbpediaLiveLearner;
 
 	private ExtractionDBCache oxfordCache = new ExtractionDBCache("cache");
 	private ExtractionDBCache dbpediaLiveCache = new ExtractionDBCache("cache");
 
-	SparqlEndpoint dbpediaLiveEndpoint;
-	SparqlEndpoint oxfordEndpoint;
+	private Knowledgebase dbpediaLiveKnowledgebase = createDBpediaLiveKnowledgebase(dbpediaLiveCache);
+	
+	static SparqlEndpoint dbpediaLiveEndpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+	//static SparqlEndpoint oxfordEndpoint;
 
 	private ResultSet executeDBpediaLiveSelect(String query){return SparqlQuery.convertJSONtoResultSet(dbpediaLiveCache.executeSelectQuery(dbpediaLiveEndpoint, query));}
-	private ResultSet executeOxfordSelect(String query){return SparqlQuery.convertJSONtoResultSet(oxfordCache.executeSelectQuery(oxfordEndpoint, query));}
+//	private ResultSet executeOxfordSelect(String query){return SparqlQuery.convertJSONtoResultSet(oxfordCache.executeSelectQuery(oxfordEndpoint, query));}
 
-	private Knowledgebase createOxfordKnowledgebase(ExtractionDBCache cache) throws MalformedURLException
-	{
-		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
+//	@Test public void benchmarkCreateOxfordKnowledgeBase()
+//	{
+//		long start = System.currentTimeMillis();
+//		for(int i=0;i<1000;i++)
+//		{
+//			createOxfordKnowledgebase(oxfordCache);
+//		}
+//		long end = System.currentTimeMillis();
+//		long diff = end-start;
+//		System.out.println(diff+" millis as a whole, "+diff/1000.0+" millis per run");
+//	}
 
-		SPARQLIndex resourcesIndex = new VirtuosoResourcesIndex(endpoint, cache);
-		SPARQLIndex classesIndex = new VirtuosoClassesIndex(endpoint, cache);
-		SPARQLIndex propertiesIndex = new VirtuosoPropertiesIndex(endpoint, cache);
-		MappingBasedIndex mappingIndex= new MappingBasedIndex(
-				this.getClass().getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
-				this.getClass().getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
-				this.getClass().getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
-				this.getClass().getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
-				);
+//	private Knowledgebase createOxfordKnowledgebase(ExtractionDBCache cache)
+//	{
+//		URL url;
+//		try{url = new URL("http://lgd.aksw.org:8900/sparql");} catch(Exception e) {throw new RuntimeException(e);}
+//		SparqlEndpoint endpoint = new SparqlEndpoint(url, Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
+//
+//		SPARQLIndex resourcesIndex = new VirtuosoResourcesIndex(endpoint, cache);
+//		SPARQLIndex classesIndex = new VirtuosoClassesIndex(endpoint, cache);
+//		SPARQLIndex propertiesIndex = new VirtuosoPropertiesIndex(endpoint, cache);
+//		MappingBasedIndex mappingIndex= new MappingBasedIndex(
+//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
+//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
+//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
+//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
+//				);
+//
+//		Knowledgebase kb = new Knowledgebase(oxfordEndpoint, "Oxford - Real estate", "TODO", resourcesIndex, propertiesIndex, classesIndex, mappingIndex);
+//		return kb;
+//	}
 
-		Knowledgebase kb = new Knowledgebase(oxfordEndpoint, "Oxford - Real estate", "TODO", resourcesIndex, propertiesIndex, classesIndex, mappingIndex);
-		return kb;
-	}
-
-	private Knowledgebase createDBpediaLiveKnowledgebase(ExtractionDBCache cache) throws MalformedURLException
+	private Knowledgebase createDBpediaLiveKnowledgebase(ExtractionDBCache cache)
 	{		
 		SOLRIndex resourcesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_resources");
 		resourcesIndex.setPrimarySearchField("label");
@@ -251,10 +321,10 @@ public class SPARQLTemplateBasedLearner3Test
 		Index propertiesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_properties");
 
 		MappingBasedIndex mappingIndex= new MappingBasedIndex(
-				this.getClass().getClassLoader().getResource("test/dbpedia_class_mappings.txt").getPath(), 
-				this.getClass().getClassLoader().getResource("test/dbpedia_resource_mappings.txt").getPath(),
-				this.getClass().getClassLoader().getResource("test/dbpedia_dataproperty_mappings.txt").getPath(),
-				this.getClass().getClassLoader().getResource("test/dbpedia_objectproperty_mappings.txt").getPath()
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("test/dbpedia_class_mappings.txt").getPath(), 
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("test/dbpedia_resource_mappings.txt").getPath(),
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("test/dbpedia_dataproperty_mappings.txt").getPath(),
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("test/dbpedia_objectproperty_mappings.txt").getPath()
 				);
 
 		Knowledgebase kb = new Knowledgebase(dbpediaLiveEndpoint, "DBpedia Live", "TODO", resourcesIndex, propertiesIndex, classesIndex, mappingIndex);
@@ -264,10 +334,14 @@ public class SPARQLTemplateBasedLearner3Test
 	@Before
 	public void setup() throws IOException
 	{			
+		Logger.getRootLogger().setLevel(Level.WARN);
+		Logger.getLogger(Templator.class).setLevel(Level.WARN);
+		Logger.getLogger(Parser.class).setLevel(Level.WARN);
+		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.INFO);
 		logger.setLevel(Level.ALL); // TODO: remove when finishing implementation of this class
 		logger.addAppender(new FileAppender(new SimpleLayout(), "log/"+this.getClass().getSimpleName()+".log", false));
 		//		oxfordEndpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());		
-		//		oxfordLearner = new SPARQLTemplateBasedLearner3(createOxfordKnowledgebase(oxfordCache));
+		//		oxfordLearner = new SPARQLTemplateBasedLearner2(createOxfordKnowledgebase(oxfordCache));
 	}
 
 	private class QueryTestData
@@ -276,7 +350,7 @@ public class SPARQLTemplateBasedLearner3Test
 		public SortedMap<Integer, String> id2Query = new TreeMap<Integer, String>();
 		public SortedMap<Integer, Set<String>> id2Answers = new TreeMap<Integer, Set<String>>();
 	}
-	
+
 	private QueryTestData readQueries(final File file)
 	{
 		QueryTestData testData = new QueryTestData();
@@ -420,7 +494,7 @@ public class SPARQLTemplateBasedLearner3Test
 				Set<String> referenceURIs = getUris(DBPEDIA_LIVE_ENDPOINT_URL_STRING,referenceQuery);			
 
 				// learn query
-				SPARQLTemplateBasedLearner3 dbpediaLiveLearner = new SPARQLTemplateBasedLearner3(createDBpediaLiveKnowledgebase(dbpediaLiveCache));
+				SPARQLTemplateBasedLearner2 dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache));
 				dbpediaLiveLearner.init();
 				dbpediaLiveLearner.setQuestion(question);
 				dbpediaLiveLearner.learnSPARQLQueries();
@@ -462,70 +536,70 @@ public class SPARQLTemplateBasedLearner3Test
 
 	}
 
-//	private void test(File file) throws MalformedURLException, InterruptedException
-//	{
-//		SortedMap<Integer, String> id2Question = new TreeMap<Integer, String>();
-//		SortedMap<Integer, String> id2Query = new TreeMap<Integer, String>();
-//		SortedMap<Integer, Set<String>> id2Answers = new TreeMap<Integer, Set<String>>();
-//
-//		{			
-//			//			URL url = getClass().getClassLoader().getResource(s);
-//			//			assertFalse("resource not found: "+s,url==null);			
-//			//			readQueries(new File(url.getPath()),id2Question,id2Query);
-//			readQueries(file);
-//		}
-//		assertTrue("no questions loaded",id2Question.size()>0);
-//		logger.info(id2Question.size()+" questions loaded.");
-//		assertTrue(String.format("number of questions (%d) != number of queries (%d).",id2Question.size(),id2Query.size()),
-//				id2Question.size()==id2Query.size());
-//
-//		// get question and answer from file 
-//		dbpediaLiveEndpoint = new SparqlEndpoint(new URL(DBPEDIA_LIVE_ENDPOINT_URL_STRING), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
-//
-//		//		dbpediaLiveLearner = new SPARQLTemplateBasedLearner3(createDBpediaLiveKnowledgebase(dbpediaLiveCache));
-//		//		dbpediaLiveLearner.init();
-//
-//		// TODO: use thread pools
-//		ExecutorService service = Executors.newFixedThreadPool(10);
-//		for(int i: id2Query.keySet())
-//		{
-//			Runnable r = new TestQueryThread(id2Question.get(i),id2Query.get(i));
-//			service.execute(r);
-//		}
-//		boolean timeout =!service.awaitTermination(600, TimeUnit.SECONDS);
-//
-//		logger.info(timeout?"timeout":"finished all threads");
-//		if(numberOfNoTemplateFoundExceptions>0)	{logger.warn(numberOfNoTemplateFoundExceptions+" NoTemplateFoundExceptions");}
-//		if(numberOfOtherExceptions>0)			{logger.error(numberOfOtherExceptions+" other exceptions");}
-//		assertTrue(String.format("only %d/%d correct answers",correctMatches,id2Query.size()),correctMatches==id2Query.size());
-//
-//		//		dbpediaLiveLearner.setQuestion("houses with more than 2 bedrooms");
-//		//		dbpediaLiveLearner.learnSPARQLQueries();
-//		//		String learnedQuery = dbpediaLiveLearner.getBestSPARQLQuery();
-//		//		logger.trace(learnedQuery);
-//		//fail("Not yet implemented");		
-//	}
+	//	private void test(File file) throws MalformedURLException, InterruptedException
+	//	{
+	//		SortedMap<Integer, String> id2Question = new TreeMap<Integer, String>();
+	//		SortedMap<Integer, String> id2Query = new TreeMap<Integer, String>();
+	//		SortedMap<Integer, Set<String>> id2Answers = new TreeMap<Integer, Set<String>>();
+	//
+	//		{			
+	//			//			URL url = getClass().getClassLoader().getResource(s);
+	//			//			assertFalse("resource not found: "+s,url==null);			
+	//			//			readQueries(new File(url.getPath()),id2Question,id2Query);
+	//			readQueries(file);
+	//		}
+	//		assertTrue("no questions loaded",id2Question.size()>0);
+	//		logger.info(id2Question.size()+" questions loaded.");
+	//		assertTrue(String.format("number of questions (%d) != number of queries (%d).",id2Question.size(),id2Query.size()),
+	//				id2Question.size()==id2Query.size());
+	//
+	//		// get question and answer from file 
+	//		dbpediaLiveEndpoint = new SparqlEndpoint(new URL(DBPEDIA_LIVE_ENDPOINT_URL_STRING), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
+	//
+	//		//		dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache));
+	//		//		dbpediaLiveLearner.init();
+	//
+	//		// TODO: use thread pools
+	//		ExecutorService service = Executors.newFixedThreadPool(10);
+	//		for(int i: id2Query.keySet())
+	//		{
+	//			Runnable r = new TestQueryThread(id2Question.get(i),id2Query.get(i));
+	//			service.execute(r);
+	//		}
+	//		boolean timeout =!service.awaitTermination(600, TimeUnit.SECONDS);
+	//
+	//		logger.info(timeout?"timeout":"finished all threads");
+	//		if(numberOfNoTemplateFoundExceptions>0)	{logger.warn(numberOfNoTemplateFoundExceptions+" NoTemplateFoundExceptions");}
+	//		if(numberOfOtherExceptions>0)			{logger.error(numberOfOtherExceptions+" other exceptions");}
+	//		assertTrue(String.format("only %d/%d correct answers",correctMatches,id2Query.size()),correctMatches==id2Query.size());
+	//
+	//		//		dbpediaLiveLearner.setQuestion("houses with more than 2 bedrooms");
+	//		//		dbpediaLiveLearner.learnSPARQLQueries();
+	//		//		String learnedQuery = dbpediaLiveLearner.getBestSPARQLQuery();
+	//		//		logger.trace(learnedQuery);
+	//		//fail("Not yet implemented");		
+	//	}
 
-//	@Test public void testDBpediaX() throws NoTemplateFoundException, ComponentInitException, MalformedURLException, InterruptedException
-//	{
-//		// original file - qald benchmark xml
-//		// updated file - delete questions giving no nonempty list of resources (literals, ask query, no result or error)   
-//		final String originalDirName = "tbsl/evaluation";
-//		final String updatedDirName = "cache";		
-//		final File processedDir = new File(updatedDirName);
-//
-//		if(!processedDir.exists()) {processedDir.mkdirs();} 
-//
-//		final String originalFilename = "qald2-dbpedia-train.xml";
-//		final String updatedFilename = "processed_"+originalFilename;
-//		final File originalFile = new File(originalDirName+'/'+originalFilename);		
-//		final File updatedFile = new File(updatedDirName+'/'+updatedFilename);
-//
-//		if(!updatedFile.exists()) {updateFile(originalFile,updatedFile,DBPEDIA_LIVE_ENDPOINT_URL_STRING);}
-//
-//		test(updatedFile);
-//
-//	}
+	//	@Test public void testDBpediaX() throws NoTemplateFoundException, ComponentInitException, MalformedURLException, InterruptedException
+	//	{
+	//		// original file - qald benchmark xml
+	//		// updated file - delete questions giving no nonempty list of resources (literals, ask query, no result or error)   
+	//		final String originalDirName = "tbsl/evaluation";
+	//		final String updatedDirName = "cache";		
+	//		final File processedDir = new File(updatedDirName);
+	//
+	//		if(!processedDir.exists()) {processedDir.mkdirs();} 
+	//
+	//		final String originalFilename = "qald2-dbpedia-train.xml";
+	//		final String updatedFilename = "processed_"+originalFilename;
+	//		final File originalFile = new File(originalDirName+'/'+originalFilename);		
+	//		final File updatedFile = new File(updatedDirName+'/'+updatedFilename);
+	//
+	//		if(!updatedFile.exists()) {updateFile(originalFile,updatedFile,DBPEDIA_LIVE_ENDPOINT_URL_STRING);}
+	//
+	//		test(updatedFile);
+	//
+	//	}
 	//	@Test public void test() throws NoTemplateFoundException, ComponentInitException
 	//	{
 	//		// get question and answer from file 

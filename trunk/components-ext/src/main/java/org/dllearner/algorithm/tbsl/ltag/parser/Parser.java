@@ -79,11 +79,11 @@ public class Parser {
 		
 		
 		if (SHOW_GRAMMAR) {
-			logger.trace(parseGrammar);
+			logger.debug(parseGrammar);
 		}
 		if (SHOW_LEXICAL_COVERAGE) {
-			logger.trace("# OF TREES FOUND: " + parseGrammar.size());
-			logger.trace("# OF INPUT TOKENS: " + n);
+			logger.debug("# OF TREES FOUND: " + parseGrammar.size());
+			logger.debug("# OF INPUT TOKENS: " + n);
 		}
 
 		List<Pair<TreeNode, Short>> initTrees = parseGrammar.getInitTrees();
@@ -94,7 +94,7 @@ public class Parser {
 			internalParse(parseGrammar.getDPInitTrees(), n);
 		}
 
-		if (VERBOSE) logger.trace("Constructed " + derivationTrees.size() + " derivation trees.\n");
+		if (VERBOSE) logger.debug("Constructed " + derivationTrees.size() + " derivation trees.\n");
 		return derivationTrees;
 
 	}
@@ -130,11 +130,11 @@ public class Parser {
 		
 		
 		if (SHOW_GRAMMAR) {
-			logger.trace(parseGrammar);
+			logger.debug(parseGrammar);
 		}
 		if (SHOW_LEXICAL_COVERAGE) {
-			logger.trace("# OF TREES FOUND: " + parseGrammar.size());
-			logger.trace("# OF INPUT TOKENS: " + n);
+			logger.debug("# OF TREES FOUND: " + parseGrammar.size());
+			logger.debug("# OF INPUT TOKENS: " + n);
 		}
 
 		List<Pair<TreeNode, Short>> initTrees = parseGrammar.getInitTrees();

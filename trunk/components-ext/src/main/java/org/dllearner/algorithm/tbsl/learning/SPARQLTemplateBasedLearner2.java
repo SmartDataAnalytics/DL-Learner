@@ -691,8 +691,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 													allTypes.add(type);
 													
 													if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
-														drop = true;
-														System.err.println("DROPPING: \n" + q.toString());
+														drop = true;												
 													} else {
 															
 													}
@@ -1258,7 +1257,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
 		learner.init();
 		
-		String question = "Give me all books written by Dan Brown";
+		String question = "What is the highest mountain?";
 		
 		learner.setQuestion(question);
 		learner.learnSPARQLQueries();

@@ -116,8 +116,7 @@ private CommonsHttpSolrServer server;
 				} else {
 					solrString += queryString;
 				}
-			}
-			System.out.println(solrString);
+			}			
 			SolrQuery query = new SolrQuery(solrString);
 		    query.setRows(limit);
 		    query.setStart(offset);
