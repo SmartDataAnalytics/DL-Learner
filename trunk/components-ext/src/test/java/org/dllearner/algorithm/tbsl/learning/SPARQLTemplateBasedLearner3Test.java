@@ -1,12 +1,14 @@
 package org.dllearner.algorithm.tbsl.learning;
 
-import static org.junit.Assert.assertTrue;
-import org.ini4j.Options;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,19 +17,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import opennlp.tools.postag.POSTagger;
+import net.sf.oval.constraint.AssertTrue;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -41,17 +39,14 @@ import org.dllearner.algorithm.tbsl.util.Knowledgebase;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SOLRIndex;
-import org.dllearner.common.index.SPARQLIndex;
-import org.dllearner.common.index.VirtuosoClassesIndex;
-import org.dllearner.common.index.VirtuosoPropertiesIndex;
-import org.dllearner.common.index.VirtuosoResourcesIndex;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.ini4j.Options;
 import org.junit.Before;
 import org.junit.Test;
-import org.openjena.atlas.logging.Log;
+import static org.junit.Assert.*;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -68,6 +63,7 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  * only contains the questions where the reference query does not return a nonempty list of resources.
  * This could be questions which return literals, ask queries, queries which have no results in the DBpedia endpoint
  * and queries that cause errors. This updated test file contains the reference answers as well and is only created once.
+ * The answers in the updated query could be out of date as well, so if the answers don't match they are newly queried from the reference query.
  * Because there are multiple queries that are not all valid at first, further test runs are compared against the first run.
  * The updated test data and the test runs are saved in the cache folder in the same format as the original test data
  * (an xml with the tags question, query and answer).
@@ -78,20 +74,42 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  *  **/
 public class SPARQLTemplateBasedLearner3Test
 {		
-	@Test public void testDBpedia() throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
+	@Test public void testDBpedia() throws Exception
 	{test(new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train.xml").getFile()),"http://live.dbpedia.org/sparql");}
 	//@Test public void testOxford() {test(new File(""),"");}
 
-	public void test(File file, String endpoint) throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
+	public void test(final File referenceXML,final  String endpoint) throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
 	{
 		String dir = "cache/"+getClass().getSimpleName()+"/";
 		new File(dir).mkdirs();
-		File updatedFile=new File(dir+"updated_"+file.getName());
-		if(!updatedFile.exists()) {generateUpdatedFile(file,updatedFile,endpoint);}
+		File updatedReferenceXML=new File(dir+"updated_"+referenceXML.getName());
+		if(!updatedReferenceXML.exists()) {generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint);}
 
-		QueryTestData savedTestData = readQueries(updatedFile);
-		QueryTestData newTestData = generateTestData(savedTestData.id2Question);
-		Diff QueryTestDataDiff = diffTestData(savedTestData,newTestData);
+		logger.debug("Reading updated reference test data");		
+		QueryTestData referenceTestData = readQueries(updatedReferenceXML);
+		QueryTestData learnedTestData = generateTestData(referenceTestData.id2Question);
+
+		logger.info("Comparing updated reference test data a with learned test data b:");
+		Diff queryTestDataDiff = diffTestData(referenceTestData,learnedTestData);
+		logger.info(queryTestDataDiff);
+
+		logger.info("Comparing learned test data with old learned test data");
+
+		try{
+			QueryTestData oldLearnedTestData = QueryTestData.read();
+			Diff queryTestDataDiff2 = diffTestData(oldLearnedTestData,learnedTestData);
+			logger.info(queryTestDataDiff);
+//			assertFalse("the following queries did not return an answer in the current learned test data: "+queryTestDataDiff2.aMinusB,
+//					queryTestDataDiff2.aMinusB.isEmpty());
+			assertFalse("the following queries had different answers: "+queryTestDataDiff2.differentAnswers,
+					queryTestDataDiff2.differentAnswers.isEmpty());
+			
+		}
+		catch(IOException e)
+		{
+			logger.info("Old test data not loadable, creating it and exiting.");
+			learnedTestData.write();		
+		}
 	}
 
 	/**
@@ -99,32 +117,47 @@ public class SPARQLTemplateBasedLearner3Test
 	 * @param newTestData
 	 * @return
 	 */
-	private Diff diffTestData(QueryTestData d, QueryTestData e)
+	private static Diff diffTestData(QueryTestData a, QueryTestData b)
 	{
-//		if(d.id2Question.size()!=e.id2Question.size())
-		{logger.info("comparing test data D against E. number of questions: "+d.id2Question.size()+" vs "+e.id2Question.size());}
-		
-		Set<Integer> dMinusE = new HashSet<Integer>(d.id2Question.keySet());
-		dMinusE.removeAll(e.id2Question.keySet());		
-		if(!dMinusE.isEmpty()) logger.info("questions D/E: "+dMinusE+" ("+dMinusE.size()+" elements)");
-		
-		Set<Integer> eMinusD = new HashSet<Integer>(e.id2Question.keySet());
-		eMinusD.removeAll(d.id2Question.keySet());		
-		if(!eMinusD.isEmpty()) logger.info("questions E/D: "+eMinusD+" ("+eMinusD.size()+" elements)");
-		
-		Set<Integer> intersection = new HashSet<Integer>(d.id2Question.keySet());
-		intersection.retainAll(e.id2Question.keySet());
-		
-		if(!eMinusD.isEmpty()) logger.info("questions E/D: "+eMinusD+" ("+eMinusD.size()+" elements)");
-		
-		
+		//		if(d.id2Question.size()!=e.id2Question.size())
+		{logger.info("comparing test data a against b. number of questions: "+a.id2Question.size()+" vs "+b.id2Question.size());}
+		Diff diff = new Diff();
+		diff.aMinusB.addAll(a.id2Question.keySet());
+		diff.aMinusB.removeAll(b.id2Question.keySet());		
+
+		diff.bMinusA.addAll(b.id2Question.keySet());
+		diff.bMinusA.removeAll(a.id2Question.keySet());				
+
+		diff.intersection.addAll(a.id2Question.keySet());
+		diff.intersection.retainAll(b.id2Question.keySet());
+
+		for(int i: diff.intersection)
+		{
+			if(a.id2Answers.containsKey(i)&&!a.id2Answers.get(i).equals(b.id2Answers.get(i))) {diff.differentAnswers.add(i);} 
+		}
+		//		if(!eMinusD.isEmpty()) logger.info("questions E/D: "+eMinusD+" ("+eMinusD.size()+" elements)");
+
+
 		// TODO Auto-generated method stub
-		return null;
+		return diff;
 	}
 
-	private class Diff
+	public static class Diff
 	{
+		final Set<Integer> aMinusB 			= new HashSet<Integer>();
+		final Set<Integer> bMinusA 			= new HashSet<Integer>();
+		final Set<Integer> intersection 	= new HashSet<Integer>();
+		final Set<Integer> differentAnswers	= new HashSet<Integer>();
 
+		@Override public String toString()
+		{
+			StringBuilder sb = new StringBuilder();
+			if(!aMinusB.isEmpty())			sb.append("questions a/b: "+aMinusB+" ("+aMinusB.size()+" elements)\n");
+			if(!bMinusA.isEmpty())			sb.append("questions b/a: "+bMinusA+" ("+bMinusA.size()+" elements)\n");
+			if(!intersection.isEmpty())		sb.append("questions intersection: "+intersection+" ("+intersection.size()+" elements)\n");
+			if(!differentAnswers.isEmpty())	sb.append("questions with different answers: "+differentAnswers+" ("+differentAnswers.size()+" elements)\n");
+			return sb.substring(0, sb.length()-2); // remove last \n
+		}
 	}
 
 	/**	
@@ -148,7 +181,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 			dbpediaLiveLearner.init();
 			dbpediaLiveLearner.setQuestion(question);
-			
+
 			try{dbpediaLiveLearner.learnSPARQLQueries();}
 			catch(NoTemplateFoundException e) {continue;}
 			catch(Exception e) {logger.error("Error processing question "+question,e);continue;}
@@ -156,7 +189,9 @@ public class SPARQLTemplateBasedLearner3Test
 			testData.id2Question.put(i, question);
 			String learnedQuery = dbpediaLiveLearner.getBestSPARQLQuery();
 			testData.id2Query.put(i, learnedQuery);
-						
+			// generate answers
+			//			getUris(endpoint, learnedQuery);
+
 			long end = System.currentTimeMillis();
 			logger.debug(String.format("Generated query \"%s\" after %d ms", learnedQuery,end-start));
 
@@ -174,7 +209,7 @@ public class SPARQLTemplateBasedLearner3Test
 	 * @throws SAXException 
 	 * @throws TransformerException 
 	 */
-	private void generateUpdatedFile(File originalFile, File updatedFile,String endpoint) throws ParserConfigurationException, SAXException, IOException, TransformerException
+	private void generateUpdatedXML(File originalFile, File updatedFile,String endpoint) throws ParserConfigurationException, SAXException, IOException, TransformerException
 	{
 		logger.info(String.format("Updating question file \"%s\" by removing questions without nonempty resource list answer and adding answers.\n" +
 				" Saving the result to file \"%s\"",originalFile.getPath(),updatedFile.getPath()));
@@ -262,55 +297,55 @@ public class SPARQLTemplateBasedLearner3Test
 	//	int successfullTestThreadRuns = 0;
 
 	/** */
-	private static final String	DBPEDIA_LIVE_ENDPOINT_URL_STRING	= "http://live.dbpedia.org/sparql";
+	private static final String DBPEDIA_LIVE_ENDPOINT_URL_STRING	= "http://live.dbpedia.org/sparql";
 
-	private static Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner3Test.class);
+	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner3Test.class);
 
 	//	private SPARQLTemplateBasedLearner2 oxfordLearner;
 	//	private SPARQLTemplateBasedLearner2 dbpediaLiveLearner;
 
-	private ExtractionDBCache oxfordCache = new ExtractionDBCache("cache");
-	private ExtractionDBCache dbpediaLiveCache = new ExtractionDBCache("cache");
+	private final ExtractionDBCache oxfordCache = new ExtractionDBCache("cache");
+	private final ExtractionDBCache dbpediaLiveCache = new ExtractionDBCache("cache");
 
-	private Knowledgebase dbpediaLiveKnowledgebase = createDBpediaLiveKnowledgebase(dbpediaLiveCache);
-	
-	static SparqlEndpoint dbpediaLiveEndpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+	private final Knowledgebase dbpediaLiveKnowledgebase = createDBpediaLiveKnowledgebase(dbpediaLiveCache);
+
+	static final SparqlEndpoint dbpediaLiveEndpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	//static SparqlEndpoint oxfordEndpoint;
 
 	private ResultSet executeDBpediaLiveSelect(String query){return SparqlQuery.convertJSONtoResultSet(dbpediaLiveCache.executeSelectQuery(dbpediaLiveEndpoint, query));}
-//	private ResultSet executeOxfordSelect(String query){return SparqlQuery.convertJSONtoResultSet(oxfordCache.executeSelectQuery(oxfordEndpoint, query));}
+	//	private ResultSet executeOxfordSelect(String query){return SparqlQuery.convertJSONtoResultSet(oxfordCache.executeSelectQuery(oxfordEndpoint, query));}
 
-//	@Test public void benchmarkCreateOxfordKnowledgeBase()
-//	{
-//		long start = System.currentTimeMillis();
-//		for(int i=0;i<1000;i++)
-//		{
-//			createOxfordKnowledgebase(oxfordCache);
-//		}
-//		long end = System.currentTimeMillis();
-//		long diff = end-start;
-//		System.out.println(diff+" millis as a whole, "+diff/1000.0+" millis per run");
-//	}
+	//	@Test public void benchmarkCreateOxfordKnowledgeBase()
+	//	{
+	//		long start = System.currentTimeMillis();
+	//		for(int i=0;i<1000;i++)
+	//		{
+	//			createOxfordKnowledgebase(oxfordCache);
+	//		}
+	//		long end = System.currentTimeMillis();
+	//		long diff = end-start;
+	//		System.out.println(diff+" millis as a whole, "+diff/1000.0+" millis per run");
+	//	}
 
-//	private Knowledgebase createOxfordKnowledgebase(ExtractionDBCache cache)
-//	{
-//		URL url;
-//		try{url = new URL("http://lgd.aksw.org:8900/sparql");} catch(Exception e) {throw new RuntimeException(e);}
-//		SparqlEndpoint endpoint = new SparqlEndpoint(url, Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
-//
-//		SPARQLIndex resourcesIndex = new VirtuosoResourcesIndex(endpoint, cache);
-//		SPARQLIndex classesIndex = new VirtuosoClassesIndex(endpoint, cache);
-//		SPARQLIndex propertiesIndex = new VirtuosoPropertiesIndex(endpoint, cache);
-//		MappingBasedIndex mappingIndex= new MappingBasedIndex(
-//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
-//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
-//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
-//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
-//				);
-//
-//		Knowledgebase kb = new Knowledgebase(oxfordEndpoint, "Oxford - Real estate", "TODO", resourcesIndex, propertiesIndex, classesIndex, mappingIndex);
-//		return kb;
-//	}
+	//	private Knowledgebase createOxfordKnowledgebase(ExtractionDBCache cache)
+	//	{
+	//		URL url;
+	//		try{url = new URL("http://lgd.aksw.org:8900/sparql");} catch(Exception e) {throw new RuntimeException(e);}
+	//		SparqlEndpoint endpoint = new SparqlEndpoint(url, Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
+	//
+	//		SPARQLIndex resourcesIndex = new VirtuosoResourcesIndex(endpoint, cache);
+	//		SPARQLIndex classesIndex = new VirtuosoClassesIndex(endpoint, cache);
+	//		SPARQLIndex propertiesIndex = new VirtuosoPropertiesIndex(endpoint, cache);
+	//		MappingBasedIndex mappingIndex= new MappingBasedIndex(
+	//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
+	//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
+	//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
+	//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
+	//				);
+	//
+	//		Knowledgebase kb = new Knowledgebase(oxfordEndpoint, "Oxford - Real estate", "TODO", resourcesIndex, propertiesIndex, classesIndex, mappingIndex);
+	//		return kb;
+	//	}
 
 	private Knowledgebase createDBpediaLiveKnowledgebase(ExtractionDBCache cache)
 	{		
@@ -344,11 +379,35 @@ public class SPARQLTemplateBasedLearner3Test
 		//		oxfordLearner = new SPARQLTemplateBasedLearner2(createOxfordKnowledgebase(oxfordCache));
 	}
 
-	private class QueryTestData
+	private static class QueryTestData implements Serializable
 	{
 		public SortedMap<Integer, String> id2Question = new TreeMap<Integer, String>();
 		public SortedMap<Integer, String> id2Query = new TreeMap<Integer, String>();
 		public SortedMap<Integer, Set<String>> id2Answers = new TreeMap<Integer, Set<String>>();
+
+		private static final String persistancePath = "cache/"+SPARQLTemplateBasedLearner3Test.class.getSimpleName()+'/'+QueryTestData.class.getSimpleName();
+
+		public void write()
+		{
+			try
+			{
+				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(persistancePath)));
+				oos.writeObject(this);
+				oos.close();
+			} catch(IOException e) {throw new RuntimeException(e);}
+		}
+
+		public static QueryTestData read() throws FileNotFoundException, IOException
+		{
+			try
+			{
+				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(persistancePath)));
+				QueryTestData testData = (QueryTestData) ois.readObject();
+				ois.close();
+				return testData;
+			}
+			catch (ClassNotFoundException e){throw new RuntimeException(e);}		
+		}
 	}
 
 	private QueryTestData readQueries(final File file)
@@ -467,68 +526,68 @@ public class SPARQLTemplateBasedLearner3Test
 		return uris;
 	}
 
-	private class TestQueryThread implements Runnable
-	{
-		private String question;
-		private String referenceQuery;
-
-		public TestQueryThread(String question, String referenceQuery)
-		{
-			this.question=question;
-			this.referenceQuery=referenceQuery;
-		}
-		//		String referenceQuery 	= id2Query.get(i);
-		//		String question = id2Question.get(i);
-		@Override public void run()
-		{
-
-			logger.trace("question: "+question);
-
-			// TODO: check for query isomorphism and leave out result comparison if possible
-			// TODO: only load the reference answers once and permanently cache them somehow (file, ehcache, serialization, ...)
-			// get the answers for the gold standard query
-			logger.trace("reference query: "+referenceQuery);
-
-			try
-			{			
-				Set<String> referenceURIs = getUris(DBPEDIA_LIVE_ENDPOINT_URL_STRING,referenceQuery);			
-
-				// learn query
-				SPARQLTemplateBasedLearner2 dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache));
-				dbpediaLiveLearner.init();
-				dbpediaLiveLearner.setQuestion(question);
-				dbpediaLiveLearner.learnSPARQLQueries();
-				String learnedQuery = dbpediaLiveLearner.getBestSPARQLQuery();					
-
-				logger.trace(learnedQuery);
-
-				Set<String> learnedURIs = getUris(DBPEDIA_LIVE_ENDPOINT_URL_STRING,learnedQuery);
-
-				logger.trace("referenced uris: "+referenceURIs);
-				logger.trace("learned uris: "+learnedURIs);
-
-				boolean correctMatch = referenceURIs.equals(learnedURIs);
-				logger.trace(correctMatch?"matches":"doesn't match");
-				if(correctMatch) {synchronized(this) {correctMatches++;}}
-			}
-			catch(NoTemplateFoundException e)
-			{
-				synchronized(this) {numberOfNoTemplateFoundExceptions++;}
-				logger.warn(String.format("no template found for question \"%s\"",question));
-			}
-			catch(Exception e)
-			{
-				synchronized(this) {numberOfOtherExceptions++;}
-				logger.error(String.format("Exception for question \"%s\": %s",question,e.getLocalizedMessage()));
-				e.printStackTrace();
-				// maybe the exception has corrupted the learner? better create a new one
-				//		
-			}
-			// get the answers for the learned query
-			// compare gold standard query and learned query answers						
-		}
-
-	}
+	//	private class TestQueryThread implements Runnable
+	//	{
+	//		private String question;
+	//		private String referenceQuery;
+	//
+	//		public TestQueryThread(String question, String referenceQuery)
+	//		{
+	//			this.question=question;
+	//			this.referenceQuery=referenceQuery;
+	//		}
+	//		//		String referenceQuery 	= id2Query.get(i);
+	//		//		String question = id2Question.get(i);
+	//		@Override public void run()
+	//		{
+	//
+	//			logger.trace("question: "+question);
+	//
+	//			// TODO: check for query isomorphism and leave out result comparison if possible
+	//			// TODO: only load the reference answers once and permanently cache them somehow (file, ehcache, serialization, ...)
+	//			// get the answers for the gold standard query
+	//			logger.trace("reference query: "+referenceQuery);
+	//
+	//			try
+	//			{			
+	//				Set<String> referenceURIs = getUris(DBPEDIA_LIVE_ENDPOINT_URL_STRING,referenceQuery);			
+	//
+	//				// learn query
+	//				SPARQLTemplateBasedLearner2 dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache));
+	//				dbpediaLiveLearner.init();
+	//				dbpediaLiveLearner.setQuestion(question);
+	//				dbpediaLiveLearner.learnSPARQLQueries();
+	//				String learnedQuery = dbpediaLiveLearner.getBestSPARQLQuery();					
+	//
+	//				logger.trace(learnedQuery);
+	//
+	//				Set<String> learnedURIs = getUris(DBPEDIA_LIVE_ENDPOINT_URL_STRING,learnedQuery);
+	//
+	//				logger.trace("referenced uris: "+referenceURIs);
+	//				logger.trace("learned uris: "+learnedURIs);
+	//
+	//				boolean correctMatch = referenceURIs.equals(learnedURIs);
+	//				logger.trace(correctMatch?"matches":"doesn't match");
+	////				if(correctMatch) {synchronized(this) {correctMatches++;}}
+	//			}
+	//			catch(NoTemplateFoundException e)
+	//			{
+	//				synchronized(this) {numberOfNoTemplateFoundExceptions++;}
+	//				logger.warn(String.format("no template found for question \"%s\"",question));
+	//			}
+	//			catch(Exception e)
+	//			{
+	//				synchronized(this) {numberOfOtherExceptions++;}
+	//				logger.error(String.format("Exception for question \"%s\": %s",question,e.getLocalizedMessage()));
+	//				e.printStackTrace();
+	//				// maybe the exception has corrupted the learner? better create a new one
+	//				//		
+	//			}
+	//			// get the answers for the learned query
+	//			// compare gold standard query and learned query answers						
+	//		}
+	//
+	//	}
 
 	private void updateFile(File originalFile, File updatedFile, String endpoint)
 	{
