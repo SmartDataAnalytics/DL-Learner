@@ -58,7 +58,7 @@ public class Unification {
 	private static boolean unify(LexicalSelection a, LexicalSelection b) {
 		if (a == null && b == null) {
 			return true;
-		} else if (a.equals(b)) {
+		} else if (a!=null&&a.equals(b)) {
 			return true;
 		}
 		return false;
