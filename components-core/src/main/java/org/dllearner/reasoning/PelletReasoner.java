@@ -182,6 +182,11 @@ public class PelletReasoner extends AbstractReasonerComponent {
 		super(sources);
 	}
 	
+	public PelletReasoner(com.clarkparsia.pellet.owlapiv3.PelletReasoner reasoner) {
+		setSources(new OWLAPIOntology(reasoner.getRootOntology()));
+		this.reasoner = reasoner;
+	}
+	
 	public void loadOntologies() throws URISyntaxException, OWLOntologyCreationException {
 		Comparator<OWLNamedObject> namedObjectComparator = new Comparator<OWLNamedObject>() {
 			public int compare(OWLNamedObject o1, OWLNamedObject o2) {
@@ -566,7 +571,9 @@ public class PelletReasoner extends AbstractReasonerComponent {
 		Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
 		pelletLogger.setLevel(Level.WARN);
 
-		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
+		if(reasoner != null){
+			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
+		}
 		classifier = PelletIncremantalReasonerFactory.getInstance().createReasoner(reasoner);
 
 	}
