@@ -571,7 +571,7 @@ public class PelletReasoner extends AbstractReasonerComponent {
 		Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
 		pelletLogger.setLevel(Level.WARN);
 
-		if(reasoner != null){
+		if(reasoner == null){
 			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
 		}
 		classifier = PelletIncremantalReasonerFactory.getInstance().createReasoner(reasoner);
