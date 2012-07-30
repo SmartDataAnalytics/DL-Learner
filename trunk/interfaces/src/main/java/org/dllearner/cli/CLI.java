@@ -91,6 +91,8 @@ public class CLI {
 
             ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
             context =  builder.buildApplicationContext(configuration,springConfigResources);	
+            
+            knowledgeSource = context.getBean(KnowledgeSource.class);
     	}
 	}
 	
