@@ -25,5 +25,14 @@
         <servlet-name>NKEGeizhals</servlet-name>
         <url-pattern>/NKEGeizhals</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>Enrichment</servlet-name>
+        <servlet-class>org.dllearner.server.EnrichmentServlet</servlet-class>
+    </servlet>
 
+    <servlet-mapping>
+        <servlet-name>Enrichment</servlet-name>
+        <url-pattern>/Enrichment</url-pattern>
+    </servlet-mapping>
 </web-app>

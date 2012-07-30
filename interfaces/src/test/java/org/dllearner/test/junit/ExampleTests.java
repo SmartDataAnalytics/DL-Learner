@@ -24,13 +24,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -41,9 +39,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.cli.CLI;
 import org.dllearner.cli.QuickStart;
-import org.dllearner.cli.Start;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningAlgorithm;
@@ -153,6 +149,7 @@ public class ExampleTests {
 					break;
 				}
 			}
+			if(sparql == 2 && conf.contains("sparql")) ignored = true;
 			if(ignored) {
 				System.out.println("Skipping " + conf + " (is on ignore list).");
 			} else {
@@ -163,6 +160,7 @@ public class ExampleTests {
 					// start example
 					CLI start = new CLI(new File(conf));
 					start.init();
+					
 //					System.out.println("algorithm: " + start.getLearningAlgorithm());
 					boolean isSparql = start.getKnowledgeSource() instanceof SparqlKnowledgeSource;
 //					boolean isSparql = false;
