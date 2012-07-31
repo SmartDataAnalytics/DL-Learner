@@ -630,7 +630,7 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 				}
 				
 			}
-			SPARQLEndpointMetrics metrics = new SPARQLEndpointMetrics(endpoint, cache);
+			SPARQLEndpointMetrics metrics = new SPARQLEndpointMetrics(endpoint, new ExtractionDBCache("/opt/tbsl/cache2"));
 			for (Iterator<WeightedQuery> iterator = queries.iterator(); iterator.hasNext();) {
 				WeightedQuery wQ = iterator.next();
 				Query q = wQ.getQuery();
@@ -1009,7 +1009,7 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 	 * @throws InvalidFileFormatException 
 	 */
 	public static void main(String[] args) throws Exception {
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		Index resourcesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_resources");
 		Index classesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_classes");
 		Index propertiesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_properties");
