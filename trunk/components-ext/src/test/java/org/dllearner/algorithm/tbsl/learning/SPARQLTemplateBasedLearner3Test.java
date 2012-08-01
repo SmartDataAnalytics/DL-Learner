@@ -1,5 +1,6 @@
 package org.dllearner.algorithm.tbsl.learning;
 
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,7 +13,6 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -36,6 +37,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import jjtraveler.Fail;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -53,11 +55,9 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.eclipse.jdt.annotation.NonNull;
 import org.ini4j.Options;
 import org.junit.Before;
 import org.junit.Test;
-import org.openjena.atlas.logging.Log;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -89,28 +89,32 @@ public class SPARQLTemplateBasedLearner3Test
 	private static final File evaluationFolder = new File("log/evaluation");
 
 	@Test public void testDBpedia() throws Exception
-	{test("QALD 2 Benchmark", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train.xml").getFile()),"http://live.dbpedia.org/sparql");}
+	{test("QALD 2 Benchmark", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train.xml").getFile()),
+			SparqlEndpoint.getEndpointDBpediaLiveAKSW(),dbpediaLiveCache);}
 	//@Test public void testOxford() {test(new File(""),"");}
 
-	public void test(String title, final File referenceXML,final  String endpoint) throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
+	public void test(String title, final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
 	{
-		String dir = "cache/"+getClass().getSimpleName()+"/";
-		new File(dir).mkdirs();
-		File updatedReferenceXML=new File(dir+"updated_"+referenceXML.getName());
-		if(!updatedReferenceXML.exists())
-		{
-			logger.info("Generating updated reference for "+title);
-			generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint);
-		}
+//		String dir = "cache/"+getClass().getSimpleName()+"/";
+//
+//		new File(dir).mkdirs();
+//		File updatedReferenceXML=new File(dir+"updated_"+referenceXML.getName());
+//		if(!updatedReferenceXML.exists())
+//		{
+//			logger.info("Generating updated reference for "+title);
+//			generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint,cache);
+//		}
+//
+//		QueryTestData referenceTestData = readQueries(updatedReferenceXML);
+//		logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
+//
+//		QueryTestData learnedTestData = generateTestData(referenceTestData.id2Question, dbpediaLiveKnowledgebase).generateAnswers(endpoint,cache);		
+//		Evaluation evaluation = evaluate(referenceTestData, learnedTestData); 
+//		logger.info(evaluation);
+//		evaluation.write();
+		generateHTML(); 
 
-		QueryTestData referenceTestData = readQueries(updatedReferenceXML);
-		logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
-
-		QueryTestData learnedTestData = generateTestData(referenceTestData.id2Question, endpoint).generateAnswers(endpoint);		
-		Evaluation evaluation = evaluate(referenceTestData, learnedTestData); 
-		logger.info(evaluation);
-		evaluation.write();
-		generateHTML();
+//		if(evaluation.numberOfCorrectAnswers<3) {fail("only " + evaluation.numberOfCorrectAnswers+" correct answers.");}
 		/*		{
 							logger.info("Comparing updated reference test data with learned test data:");	
 							Diff queryTestDataDiff = diffTestData(referenceTestData,learnedTestData);
@@ -253,51 +257,31 @@ public class SPARQLTemplateBasedLearner3Test
 				return evaluation;
 			}
 			catch (Exception e){throw new RuntimeException(e);}		
-		}		
-	}
-
-	/**
-	 * @param savedTestData
-	 * @param newTestData
-	 * @return
-	 */
-	private static Diff diffTestData(QueryTestData reference, QueryTestData newData)
-	{
-		//		if(d.id2Question.size()!=e.id2Question.size())
-		//		logger.info("comparing test data a against b. number of questions: "+reference.id2Question.size()+" vs "+newData.id2Question.size());
-		//		if(reference.id2Question.size()!=newData.id2Question.size())
-		//		{
-		//			logger.info("questions a: "+reference.id2Question.keySet());
-		//			logger.info("questions b: "+newData.id2Question.keySet());
-		//		}
-		Diff diff = new Diff();
-		diff.aMinusB.addAll(reference.id2Question.keySet());
-		diff.aMinusB.removeAll(newData.id2Question.keySet());		
-
-		diff.bMinusA.addAll(newData.id2Question.keySet());
-		diff.bMinusA.removeAll(reference.id2Question.keySet());				
-
-		diff.intersection.addAll(reference.id2Question.keySet());
-		diff.intersection.retainAll(newData.id2Question.keySet());
-
-		for(int i: diff.intersection)
-		{
-			// the questions are the same - we don't care about the answer
-			if(reference.id2Question.get(i).equals(newData.id2Question.get(i))) 
-
-				if(reference.id2Answers.containsKey(i)&&!reference.id2Answers.get(i).equals(newData.id2Answers.get(i)))
-				{
-					//					logger.info("different answers:");
-					//					logger.info("a: "+reference.id2Answers.get(i));
-					//					logger.info("b: "+newData.id2Answers.get(i));
-					diff.differentAnswers.add(i);
-				} 
 		}
-		//		if(!eMinusD.isEmpty()) logger.info("questions E/D: "+eMinusD+" ("+eMinusD.size()+" elements)");
 
-
-		// TODO Auto-generated method stub
-		return diff;
+		@Override public boolean equals(Object obj)
+		{
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			Evaluation other = (Evaluation) obj;
+			if (correctlyAnsweredQuestions == null)
+			{
+				if (other.correctlyAnsweredQuestions != null) return false;
+			}
+			else if (!correctlyAnsweredQuestions.equals(other.correctlyAnsweredQuestions)) return false;
+			if (incorrectlyAnsweredQuestions == null)
+			{
+				if (other.incorrectlyAnsweredQuestions != null) return false;
+			}
+			else if (!incorrectlyAnsweredQuestions.equals(other.incorrectlyAnsweredQuestions)) return false;
+			if (unansweredQuestions == null)
+			{
+				if (other.unansweredQuestions != null) return false;
+			}
+			else if (!unansweredQuestions.equals(other.unansweredQuestions)) return false;
+			return true;
+		}
 	}
 
 	public static class Diff
@@ -306,6 +290,36 @@ public class SPARQLTemplateBasedLearner3Test
 		final Set<Integer> bMinusA 			= new HashSet<Integer>();
 		final Set<Integer> intersection 	= new HashSet<Integer>();
 		final Set<Integer> differentAnswers	= new HashSet<Integer>();
+
+		public Diff(QueryTestData reference, QueryTestData newData)
+		{
+			//		if(d.id2Question.size()!=e.id2Question.size())
+			//		logger.info("comparing test data a against b. number of questions: "+reference.id2Question.size()+" vs "+newData.id2Question.size());
+			//		if(reference.id2Question.size()!=newData.id2Question.size())
+			//		{
+			//			logger.info("questions a: "+reference.id2Question.keySet());
+			//			logger.info("questions b: "+newData.id2Question.keySet());
+			//		}
+			aMinusB.addAll(reference.id2Question.keySet());
+			aMinusB.removeAll(newData.id2Question.keySet());		
+
+			bMinusA.addAll(newData.id2Question.keySet());
+			bMinusA.removeAll(reference.id2Question.keySet());				
+
+			intersection.addAll(reference.id2Question.keySet());
+			intersection.retainAll(newData.id2Question.keySet());
+
+			for(int i: intersection)
+			{
+				// the questions are the same - we don't care about the answer
+				if(reference.id2Question.get(i).equals(newData.id2Question.get(i))) 
+
+					if(reference.id2Answers.containsKey(i)&&!reference.id2Answers.get(i).equals(newData.id2Answers.get(i)))
+					{
+						differentAnswers.add(i);
+					} 
+			}
+		}
 
 		@Override public String toString()
 		{
@@ -322,7 +336,7 @@ public class SPARQLTemplateBasedLearner3Test
 	/**	
 	 * @return the test data containing those of the given questions for which queries were found and the results of the queries  	 
 	 */
-	private QueryTestData generateTestData(SortedMap<Integer, String> id2Question,String endpoint) throws MalformedURLException, ComponentInitException
+	private QueryTestData generateTestData(SortedMap<Integer, String> id2Question,Knowledgebase kb) throws MalformedURLException, ComponentInitException
 	{
 		QueryTestData testData = new QueryTestData();
 		// -- only create the learner parameters once to save time -- 
@@ -336,7 +350,7 @@ public class SPARQLTemplateBasedLearner3Test
 		ExecutorService service = Executors.newFixedThreadPool(10);
 
 		for(int i: id2Question.keySet())
-		{todo.add(Executors.callable(new LearnQueryRunnable(id2Question.get(i),i,endpoint, testData)));}
+		{todo.add(Executors.callable(new LearnQueryRunnable(id2Question.get(i),i, testData,kb)));}
 
 		try{service.invokeAll(todo);} catch (InterruptedException e) {throw new RuntimeException(e);}			
 		//			logger.debug("generating query for question \""+question+"\", id "+i);			
@@ -375,7 +389,7 @@ public class SPARQLTemplateBasedLearner3Test
 	 * @throws SAXException 
 	 * @throws TransformerException 
 	 */
-	private void generateUpdatedXML(File originalFile, File updatedFile,String endpoint) throws ParserConfigurationException, SAXException, IOException, TransformerException
+	private void generateUpdatedXML(File originalFile, File updatedFile,SparqlEndpoint endpoint, ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException
 	{
 		logger.info(String.format("Updating question file \"%s\" by removing questions without nonempty resource list answer and adding answers.\n" +
 				" Saving the result to file \"%s\"",originalFile.getPath(),updatedFile.getPath()));
@@ -412,7 +426,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 			if(!query.equals("OUT OF SCOPE")) // marker in qald benchmark file, will create holes interval of ids (e.g. 1,2,5,7)   
 			{
-				Set<String> uris = getUris(endpoint, query);
+				Set<String> uris = getUris(endpoint, query,cache);
 				if(!uris.isEmpty())
 				{
 					// remove reference answers of the benchmark because they are obtained from an other endpoint
@@ -478,7 +492,7 @@ public class SPARQLTemplateBasedLearner3Test
 	static final SparqlEndpoint dbpediaLiveEndpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	//static SparqlEndpoint oxfordEndpoint;
 
-	private ResultSet executeDBpediaLiveSelect(String query){return SparqlQuery.convertJSONtoResultSet(dbpediaLiveCache.executeSelectQuery(dbpediaLiveEndpoint, query));}
+	//	private ResultSet executeDBpediaLiveSelect(String query){return SparqlQuery.convertJSONtoResultSet(dbpediaLiveCache.executeSelectQuery(dbpediaLiveEndpoint, query));}
 
 
 	private static Knowledgebase createDBpediaLiveKnowledgebase(ExtractionDBCache cache)
@@ -545,10 +559,10 @@ public class SPARQLTemplateBasedLearner3Test
 			catch (ClassNotFoundException e){throw new RuntimeException(e);}		
 		}
 
-		public QueryTestData generateAnswers(String endpoint)
+		public QueryTestData generateAnswers(SparqlEndpoint endpoint, ExtractionDBCache cache)
 		{
 			if(!id2Answers.isEmpty()) {throw new AssertionError("Answers already existing.");}
-			for(int i:id2Query.keySet()) {id2Answers.put(i, getUris(endpoint, id2Query.get(i)));}
+			for(int i:id2Query.keySet()) {id2Answers.put(i, getUris(endpoint, id2Query.get(i),cache));}
 			return this;
 		}
 	}
@@ -571,8 +585,7 @@ public class SPARQLTemplateBasedLearner3Test
 				Set<String> answers = new HashSet<String>();
 				Element questionNode = (Element) questionNodes.item(i);
 				//read question ID
-				id = Integer.valueOf(questionNode.getAttribute("id"));
-				if(id>5) continue; // TODO: remove
+				id = Integer.valueOf(questionNode.getAttribute("id"));				
 				//Read question
 				question = ((Element)questionNode.getElementsByTagName("string").item(0)).getChildNodes().item(0).getNodeValue().trim();
 				//Read SPARQL query
@@ -630,15 +643,16 @@ public class SPARQLTemplateBasedLearner3Test
 		return testData;
 	}
 
-	protected static Set<String> getUris(final String endpoint, final String query)
+	protected static Set<String> getUris(final SparqlEndpoint endpoint, final String query, ExtractionDBCache cache)
 	{		
 		if(query==null)		{throw new AssertionError("query is null");}
 		if(endpoint==null)	{throw new AssertionError("endpoint is null");}		
 		if(!query.contains("SELECT")&&!query.contains("select")) {return Collections.<String>emptySet();} // abort when not a select query
 		Set<String> uris = new HashSet<String>();
-		QueryEngineHTTP qe = new QueryEngineHTTP(DBPEDIA_LIVE_ENDPOINT_URL_STRING, query);
+		//		QueryEngineHTTP qe = new QueryEngineHTTP(DBPEDIA_LIVE_ENDPOINT_URL_STRING, query);		
 		ResultSet rs;
-		try{rs = qe.execSelect();}
+		//		try{rs = qe.execSelect();}
+		try{rs = executeSelect(endpoint, query, cache);}
 		catch(QueryExceptionHTTP e)
 		{
 			logger.error("Error getting uris for query "+query+" at endpoint "+endpoint,e);
@@ -713,19 +727,21 @@ public class SPARQLTemplateBasedLearner3Test
 	private static class LearnQueryRunnable implements Runnable
 	{
 		private final String question;
-		private final String endpoint;
+		//		private final String endpoint;
 		private final int id;
 		private final QueryTestData testData;
+		private final Knowledgebase knowledgeBase;
 
 		static private final PartOfSpeechTagger posTagger = new SynchronizedStanfordPartOfSpeechTagger();		
 		static private final WordNet wordnet = new WordNet();
 		static private final Options options = new Options();
 
-		public LearnQueryRunnable(String question, int id,String endpoint, QueryTestData testData)
+
+		public LearnQueryRunnable(String question, int id, QueryTestData testData, Knowledgebase knowledgeBase)
 		{
 			this.question=question;
 			this.id=id;					
-			this.endpoint=endpoint;
+			this.knowledgeBase=knowledgeBase;
 			this.testData=testData;
 		}								
 
@@ -735,12 +751,13 @@ public class SPARQLTemplateBasedLearner3Test
 			try
 			{			
 				// learn query
-				SPARQLTemplateBasedLearner2 dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache),posTagger,wordnet,options);
+				// TODO: change to knowledgebase parameter
+				SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache),posTagger,wordnet,options);
 				//						SPARQLTemplateBasedLearner2 dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache));
-				dbpediaLiveLearner.init();
-				dbpediaLiveLearner.setQuestion(question);						
-				dbpediaLiveLearner.learnSPARQLQueries();						
-				String learnedQuery = dbpediaLiveLearner.getBestSPARQLQuery();					
+				learner.init();
+				learner.setQuestion(question);						
+				learner.learnSPARQLQueries();						
+				String learnedQuery = learner.getBestSPARQLQuery();					
 				if(learnedQuery!=null&&!learnedQuery.isEmpty())
 				{
 					testData.id2Question.put(id, question);
@@ -762,6 +779,24 @@ public class SPARQLTemplateBasedLearner3Test
 		}
 	}
 
+	public static String diffHTML(String title, Set<String> from, Set<String> to)
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("<h3>"+title+"</h3>");
+		{
+			Set<String> addedStrings = new HashSet<String>(to);
+			addedStrings.removeAll(from);
+			
+			for(String added: addedStrings) {sb.append("<span style='color:green'>"+added+"</span></br>\n");}
+		}
+		sb.append('\n');
+		{
+			Set<String> removedStrings = new HashSet<String>(from);
+			removedStrings.removeAll(to);
+			for(String removed: removedStrings) {sb.append("<span style='color:red'>"+removed+"</span></br>\n");}
+		}
+		return sb.toString();
+	}
 
 	/** Generates the HTML string content for one of the 3 colored bars which represent the correctly, incorrectly and unanswered question.
 	 * Also creates and links to a file which contains the questions.*/
@@ -783,34 +818,64 @@ public class SPARQLTemplateBasedLearner3Test
 		return sb.toString();
 	}
 
+	static String createChangeHTML(File link, Evaluation from, Evaluation to)
+	{				
+		try
+		{
+			PrintWriter out = new PrintWriter(link);
+			out.println("<html>\n<body>\n");
+			out.println(diffHTML("Correctly Answered Questions", from.correctlyAnsweredQuestions, to.correctlyAnsweredQuestions));
+			out.println(diffHTML("Incorrectly Answered Questions", from.incorrectlyAnsweredQuestions, to.incorrectlyAnsweredQuestions));
+			out.println(diffHTML("Unanswered Questions", from.unansweredQuestions, to.unansweredQuestions));
+			out.println("</body>\n</html>");
+			out.close();
+		}
+		catch (Exception e){throw new RuntimeException(e);}
+
+		return "<a href='"+link.getAbsolutePath()+"'>change</a>";
+	}
+
 	static void generateHTML()
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("<html><body><table style='width:100%'>");
+		sb.append("<html>\n<body>\n<table style='width:100%'>\n");
 		SortedMap<Long,Evaluation> evaluations = Evaluation.read();
-		SortedSet<Long> timestampsDescending = new TreeSet<Long>(Collections.reverseOrder());
-		timestampsDescending.addAll(evaluations.keySet());		
-		for(long timestamp: timestampsDescending)
+//		SortedSet<Long> timestampsDescending = new TreeSet<Long>(Collections.reverseOrder());
+//		timestampsDescending.addAll(evaluations.keySet());
+		Evaluation last = null;
+		
+		Stack<String> stack = new Stack<String>(); // show reverse chronological order (we can't iterate in reverse order because of the diffs of the evaluations)
+		
+		for(long timestamp: evaluations.keySet())
 		{
+			StringBuilder sb2 = new StringBuilder();
 			try
 			{		
 				File folder = new File("log/"+SPARQLTemplateBasedLearner3Test.class.getSimpleName()+"/"+timestamp);			
 				folder.mkdirs();
 				Evaluation e = evaluations.get(timestamp);			
-				sb.append("<tr><td style='white-space: nowrap'>");
+				sb2.append("<tr><td style='white-space: nowrap'>");
 				Date date = new Date(timestamp);
-				sb.append(DateFormat.getInstance().format(date));
-				sb.append("</td><td width='100%'>");		
-				sb.append("<div style='width:100%;height:1em;border:solid 1px;'>");			
-				sb.append(createColoredColumn(new File(folder,"correctly_answered.txt"),	"Correctly Answered Questions",		"green",	e.correctlyAnsweredQuestions,	e.numberOfQuestions));
-				sb.append(createColoredColumn(new File(folder,"incorrectly_answered.txt"),	"Incorrectly Answered Questions",	"orange",	e.incorrectlyAnsweredQuestions,	e.numberOfQuestions));
-				sb.append(createColoredColumn(new File(folder,"unanswered.txt"),			"Unanswered Questions",				"red",		e.unansweredQuestions,			e.numberOfQuestions));
-				sb.append("<span style='width:1000px;'></span>");
-				sb.append("</td></tr>");			
+				sb2.append(DateFormat.getInstance().format(date));
+				sb2.append("</td><td style='white-space: nowrap'>");
+				if(last!=null)
+				{
+					if(last.equals(e))	{/*sb2.append("no change");*/}
+					else				{sb2.append(createChangeHTML(new File(folder,"change.html"),last,e));}
+				}
+								sb2.append("</td><td width='100%'>");		
+				sb2.append("<div style='width:100%;height:1em;border:solid 1px;'>");			
+				sb2.append(createColoredColumn(new File(folder,"correctly_answered.txt"),	"Correctly Answered Questions",		"green",	e.correctlyAnsweredQuestions,	e.numberOfQuestions));
+				sb2.append(createColoredColumn(new File(folder,"incorrectly_answered.txt"),	"Incorrectly Answered Questions",	"orange",	e.incorrectlyAnsweredQuestions,	e.numberOfQuestions));
+				sb2.append(createColoredColumn(new File(folder,"unanswered.txt"),			"Unanswered Questions",				"red",		e.unansweredQuestions,			e.numberOfQuestions));
+				sb2.append("<span style='width:1000px;'></span>");
+				sb2.append("</td></tr>\n");				
+				last = e;
+				stack.push(sb2.toString());
 			} catch(Exception e) {logger.warn("error with evaluation from timestamp "+timestamp,e);}
 		}
-
-		sb.append("</table></body></html>");				
+		while(!stack.isEmpty()) {sb.append(stack.pop());}
+		sb.append("</table>\n</body>\n</html>");				
 		try
 		{
 			PrintWriter out = new PrintWriter("log/"+SPARQLTemplateBasedLearner3Test.class.getSimpleName()+".html");
@@ -900,4 +965,6 @@ public class SPARQLTemplateBasedLearner3Test
 	//		
 	//		//fail("Not yet implemented");
 	//	}
+
+	private static ResultSet executeSelect(SparqlEndpoint endpoint, String query,  ExtractionDBCache cache){return SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));}
 }
