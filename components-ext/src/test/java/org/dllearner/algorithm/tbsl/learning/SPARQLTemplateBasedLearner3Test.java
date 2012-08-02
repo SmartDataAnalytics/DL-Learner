@@ -1,6 +1,5 @@
 package org.dllearner.algorithm.tbsl.learning;
 
-import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,15 +15,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.Stack;
-import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +36,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import jjtraveler.Fail;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -66,7 +64,6 @@ import org.xml.sax.SAXException;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
 /** Tests TSBL against the qald2 benchmark test data with the DBpedia endpoint.
@@ -95,26 +92,26 @@ public class SPARQLTemplateBasedLearner3Test
 
 	public void test(String title, final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
 	{
-//		String dir = "cache/"+getClass().getSimpleName()+"/";
-//
-//		new File(dir).mkdirs();
-//		File updatedReferenceXML=new File(dir+"updated_"+referenceXML.getName());
-//		if(!updatedReferenceXML.exists())
-//		{
-//			logger.info("Generating updated reference for "+title);
-//			generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint,cache);
-//		}
-//
-//		QueryTestData referenceTestData = readQueries(updatedReferenceXML);
-//		logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
-//
-//		QueryTestData learnedTestData = generateTestData(referenceTestData.id2Question, dbpediaLiveKnowledgebase).generateAnswers(endpoint,cache);		
-//		Evaluation evaluation = evaluate(referenceTestData, learnedTestData); 
-//		logger.info(evaluation);
-//		evaluation.write();
+		//				String dir = "cache/"+getClass().getSimpleName()+"/";
+		//		
+		//				new File(dir).mkdirs();
+		//				File updatedReferenceXML=new File(dir+"updated_"+referenceXML.getName());
+		//				if(!updatedReferenceXML.exists())
+		//				{
+		//					logger.info("Generating updated reference for "+title);
+		//					generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint,cache);
+		//				}
+		//		
+		//				QueryTestData referenceTestData = readQueries(updatedReferenceXML);
+		//				logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
+		//		
+		//				QueryTestData learnedTestData = generateTestData(referenceTestData.id2Question, dbpediaLiveKnowledgebase).generateAnswers(endpoint,cache);		
+		//				Evaluation evaluation = evaluate(referenceTestData, learnedTestData); 
+		//				logger.info(evaluation);
+		//				evaluation.write();
 		generateHTML(); 
 
-//		if(evaluation.numberOfCorrectAnswers<3) {fail("only " + evaluation.numberOfCorrectAnswers+" correct answers.");}
+		//				if(evaluation.numberOfCorrectAnswers<3) {fail("only " + evaluation.numberOfCorrectAnswers+" correct answers.");}
 		/*		{
 							logger.info("Comparing updated reference test data with learned test data:");	
 							Diff queryTestDataDiff = diffTestData(referenceTestData,learnedTestData);
@@ -146,7 +143,7 @@ public class SPARQLTemplateBasedLearner3Test
 	private static Evaluation evaluate(QueryTestData reference, QueryTestData suspect)
 	{
 		//		Diff d = diffTestData(reference,testData);	
-		Evaluation evaluation = new Evaluation();
+		Evaluation evaluation = new Evaluation(suspect);
 		evaluation.numberOfQuestions = reference.id2Question.keySet().size();
 
 		for(int i: reference.id2Question.keySet())
@@ -179,7 +176,8 @@ public class SPARQLTemplateBasedLearner3Test
 
 	static class Evaluation implements Serializable
 	{		
-		private static final long	serialVersionUID	= 1L;
+		private static final long	serialVersionUID	= 2L;
+		final QueryTestData testData;
 		int numberOfQuestions = 0;
 		int numberOfAnsweredQuestions = 0;
 		int numberOfCorrectAnswers = 0;
@@ -188,6 +186,8 @@ public class SPARQLTemplateBasedLearner3Test
 		final Set<String> unansweredQuestions = new HashSet<String>();
 		final Set<String> incorrectlyAnsweredQuestions = new HashSet<String>();
 		final Set<String> correctlyAnsweredQuestions = new HashSet<String>();
+
+		public Evaluation(QueryTestData testData) {this.testData = testData;}
 
 		void computePrecisionAndRecall() // we have at maximum one answer set per question
 		{
@@ -580,6 +580,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 			for(int i = 0; i < questionNodes.getLength(); i++)
 			{
+				if(i>3) break; // TODO: remove
 				String question;
 				String query;
 				Set<String> answers = new HashSet<String>();
@@ -786,31 +787,62 @@ public class SPARQLTemplateBasedLearner3Test
 		{
 			Set<String> addedStrings = new HashSet<String>(to);
 			addedStrings.removeAll(from);
-			
-			for(String added: addedStrings) {sb.append("<span style='color:green'>"+added+"</span></br>\n");}
+			sb.append("<ul class='added'>");
+			for(String added: addedStrings) {sb.append("<li>"+added+"</li>\n");}
+			sb.append("</ul>\n");
 		}
 		sb.append('\n');
 		{
 			Set<String> removedStrings = new HashSet<String>(from);
 			removedStrings.removeAll(to);
-			for(String removed: removedStrings) {sb.append("<span style='color:red'>"+removed+"</span></br>\n");}
+			sb.append("<ul>");
+			for(String removed: removedStrings) {sb.append("<li>"+removed+"</li>\n");}
+			sb.append("</ul>\n");
+
 		}
 		return sb.toString();
 	}
 
 	/** Generates the HTML string content for one of the 3 colored bars which represent the correctly, incorrectly and unanswered question.
 	 * Also creates and links to a file which contains the questions.*/
-	private static String createColoredColumn(/*@NonNull*/ File link,/*@NonNull*/ String title,/*@NonNull*/ String color,/*@NonNull*/ Collection<String> questions, int numberOfQuestionsTotal)
-	{		
-		final StringBuilder sb = new StringBuilder();
-		sb.append("<a href='"+link.getAbsolutePath()+"' title='"+title+"'>");
-		sb.append("<div style='float:left;width:"+100.0*questions.size()/numberOfQuestionsTotal+"%;height:1em;background-color:"+color+";'></div>");
-		sb.append("</a>");
+	private static String createColoredColumn(/*@NonNull*/ File link,/*@NonNull*/ String title,/*@NonNull*/ String color,/*@NonNull*/ Collection<String> questions, int numberOfQuestionsTotal, boolean htmlAndIncludeQueriesAndAnswers, Evaluation evaluation)
+	{				
+			final StringBuilder sb = new StringBuilder();
+			sb.append("<a href='"+link.getAbsolutePath()+"' title='"+title+"'>");
+			sb.append("<div style='float:left;width:"+100.0*questions.size()/numberOfQuestionsTotal+"%;height:1em;background-color:"+color+";'></div>");
+			sb.append("</a>");
+		
 		//		link.getParentFile().mkdirs();		
 		try
 		{
 			PrintWriter out = new PrintWriter(link);
-			for(String question: questions) {out.println(question);}
+			Map<String,Integer> question2Id = new HashMap<String,Integer>();
+			for(Integer i: evaluation.testData.id2Question.keySet()) {question2Id.put(evaluation.testData.id2Question.get(i),i);}
+			if(htmlAndIncludeQueriesAndAnswers)
+			{				
+				out.println("<html>\n<head><title>"+title+"</title></head>\n<body>\n<table border='1'>");
+				out.println("<tr><th>Question</th><th>Query</th><th>Answers</th></tr>");
+				for(String question: questions)
+				{
+					Integer id = question2Id.get(question);					
+					String[] answers = evaluation.testData.id2Answers.get(id).toArray(new String[0]);
+					StringBuilder sb2 = new StringBuilder();					
+					final int MAX = 10;
+					for(int i=0;i<answers.length;i++)
+					{
+						if(i>=MAX)
+						{
+							sb2.append("["+(answers.length-i+1)+" more...]");
+							break;
+						}
+						sb2.append("<li><a href='"+answers[i]+"'>"+answers[i].replace("http://dbpedia.org/resource/","dbpedia:")+"</a></li>\n");
+					}					
+					out.println("<tr><td>"+question+"</td><td>"+evaluation.testData.id2Query.get(id)+"</td><td><ul>"+sb2.toString()+"</ul></td></tr>");					
+				}				
+				
+				out.println("</table>\n</body>\n</html>");
+			} else
+			{for(String question: questions) {out.println(question);}}
 			out.close();
 		}
 		catch (Exception e){throw new RuntimeException(e);}		
@@ -823,7 +855,16 @@ public class SPARQLTemplateBasedLearner3Test
 		try
 		{
 			PrintWriter out = new PrintWriter(link);
-			out.println("<html>\n<body>\n");
+			out.println("<html>");
+			out.println("<head><style type='text/css'>");
+			out.println(".added {text-color:green;}");
+			out.println(".added li {list-style: none;margin-left: 0;padding-left: -2em;text-indent: -2em;color:darkgreen;}");
+			out.println(".added li:before {content: '+ ';}");
+			out.println(".removed li {list-style: none;margin-left: 0;padding-left: -2em;text-indent: -2em;color:darkred;}");
+			out.println(".removed li:before {content: '- ';}");
+
+			out.println("</style></head>");
+			out.println("<body>");
 			out.println(diffHTML("Correctly Answered Questions", from.correctlyAnsweredQuestions, to.correctlyAnsweredQuestions));
 			out.println(diffHTML("Incorrectly Answered Questions", from.incorrectlyAnsweredQuestions, to.incorrectlyAnsweredQuestions));
 			out.println(diffHTML("Unanswered Questions", from.unansweredQuestions, to.unansweredQuestions));
@@ -840,12 +881,12 @@ public class SPARQLTemplateBasedLearner3Test
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html>\n<body>\n<table style='width:100%'>\n");
 		SortedMap<Long,Evaluation> evaluations = Evaluation.read();
-//		SortedSet<Long> timestampsDescending = new TreeSet<Long>(Collections.reverseOrder());
-//		timestampsDescending.addAll(evaluations.keySet());
+		//		SortedSet<Long> timestampsDescending = new TreeSet<Long>(Collections.reverseOrder());
+		//		timestampsDescending.addAll(evaluations.keySet());
 		Evaluation last = null;
-		
+
 		Stack<String> stack = new Stack<String>(); // show reverse chronological order (we can't iterate in reverse order because of the diffs of the evaluations)
-		
+
 		for(long timestamp: evaluations.keySet())
 		{
 			StringBuilder sb2 = new StringBuilder();
@@ -863,11 +904,11 @@ public class SPARQLTemplateBasedLearner3Test
 					if(last.equals(e))	{/*sb2.append("no change");*/}
 					else				{sb2.append(createChangeHTML(new File(folder,"change.html"),last,e));}
 				}
-								sb2.append("</td><td width='100%'>");		
+				sb2.append("</td><td width='100%'>");		
 				sb2.append("<div style='width:100%;height:1em;border:solid 1px;'>");			
-				sb2.append(createColoredColumn(new File(folder,"correctly_answered.txt"),	"Correctly Answered Questions",		"green",	e.correctlyAnsweredQuestions,	e.numberOfQuestions));
-				sb2.append(createColoredColumn(new File(folder,"incorrectly_answered.txt"),	"Incorrectly Answered Questions",	"orange",	e.incorrectlyAnsweredQuestions,	e.numberOfQuestions));
-				sb2.append(createColoredColumn(new File(folder,"unanswered.txt"),			"Unanswered Questions",				"red",		e.unansweredQuestions,			e.numberOfQuestions));
+				sb2.append(createColoredColumn(new File(folder,"correctly_answered.html"),	"Correctly Answered Questions",		"green",	e.correctlyAnsweredQuestions,	e.numberOfQuestions,true,e));
+				sb2.append(createColoredColumn(new File(folder,"incorrectly_answered.html"),	"Incorrectly Answered Questions",	"orange",	e.incorrectlyAnsweredQuestions,	e.numberOfQuestions,true,e));
+				sb2.append(createColoredColumn(new File(folder,"unanswered.txt"),			"Unanswered Questions",				"red",		e.unansweredQuestions,			e.numberOfQuestions,false,e));
 				sb2.append("<span style='width:1000px;'></span>");
 				sb2.append("</td></tr>\n");				
 				last = e;
