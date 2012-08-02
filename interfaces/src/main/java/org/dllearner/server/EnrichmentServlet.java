@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -46,21 +48,37 @@ import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigHelper;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Entity;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.Heuristics.HeuristicType;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.datastructures.SetManipulation;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
@@ -139,34 +157,42 @@ public class EnrichmentServlet extends HttpServlet {
 	private static final int DEFAULT_MAX_EXECUTION_TIME_IN_SECONDS = 10;
 	private static final int DEFAULT_MAX_NR_OF_RETURNED_AXIOMS = 10;
 	private static final double DEFAULT_THRESHOLD = 0.75;
+	
+	private String cacheDir;
+	
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		cacheDir = getServletContext().getRealPath("cache");
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		long timeStamp = System.currentTimeMillis();
-		String endpointURL = req.getParameter("endpoint");
+		String endpointURL = req.getParameter("endpoint_url");
 		if (endpointURL == null) {
 			throw new IllegalStateException("Missing parameter: endpoint");
 		}
-		String graphURI = req.getParameter("graph");
+		String graphURI = req.getParameter("default_graph_uri");
 
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL(endpointURL), Collections.singletonList(graphURI),
 				Collections.<String> emptyList());
 
-		final boolean useInference = req.getParameter("useInference") == null ? false : Boolean.valueOf(req
-				.getParameter("useInference"));
+		final boolean useInference = req.getParameter("use_inference") == null ? false : Boolean.valueOf(req
+				.getParameter("use_inference"));
 		
 		final int maxNrOfReturnedAxioms = req.getParameter("maxNrOfReturnedAxioms") == null ? DEFAULT_MAX_NR_OF_RETURNED_AXIOMS : Integer.parseInt(req.getParameter("maxNrOfReturnedAxioms")); 
 		final int maxExecutionTimeInSeconds = req.getParameter("maxExecutionTimeInSeconds") == null ? DEFAULT_MAX_EXECUTION_TIME_IN_SECONDS : Integer.parseInt(req.getParameter("maxExecutionTimeInSeconds")); 
 		final double threshold = req.getParameter("threshold") == null ? DEFAULT_THRESHOLD : Double.parseDouble(req.getParameter("threshold")); 
 
-		String resourceURI = req.getParameter("resource");
+		String resourceURI = req.getParameter("resource_uri");
 		if (resourceURI == null) {
-			throw new IllegalStateException("Missing parameter: resourceURI");
+			throw new IllegalStateException("Missing parameter: resource_uri");
 		}
 
-		String axiomTypeStrings[] = req.getParameterValues("axiomTypes");
+		String axiomTypeStrings[] = req.getParameterValues("axiom_types");
 		if (axiomTypeStrings == null) {
-			throw new IllegalStateException("Missing parameter: axiomTypes");
+			throw new IllegalStateException("Missing parameter: axiom_types");
 		}
 		axiomTypeStrings = axiomTypeStrings[0].split(",");
 
@@ -181,7 +207,7 @@ public class EnrichmentServlet extends HttpServlet {
 		}
 		
 		SPARQLTasks st = new SPARQLTasks(endpoint);
-		String entityType = req.getParameter("entityType");
+		String entityType = req.getParameter("entity_type");
 		final Entity entity;
 		if(entityType != null){
 			if(oneOf(entityType, entityTypes)){
@@ -217,7 +243,7 @@ public class EnrichmentServlet extends HttpServlet {
 		ks.setSupportsSPARQL_1_1(supportsSPARQL_1_1);
 		
 		final SPARQLReasoner reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
-		reasoner.setCache(new ExtractionDBCache("cache"));
+		reasoner.setCache(new ExtractionDBCache(cacheDir));
 		if (useInference && !reasoner.isPrepared()) {
 			System.out.print("Precomputing subsumption hierarchy ... ");
 			long startTime = System.currentTimeMillis();
@@ -248,7 +274,8 @@ public class EnrichmentServlet extends HttpServlet {
 						axiomObject.put("confidence", ax.getScore().getAccuracy());
 						axiomArray.put(axiomObject);
 					}
-					result.put(axiomType, axiomArray);
+					result.put("axiom_type", axiomType);
+					result.put("axioms", axiomArray);
 					return result;
 				}
 				
@@ -271,7 +298,7 @@ public class EnrichmentServlet extends HttpServlet {
 		
 		executor.shutdown();
 		
-		
+		resp.setContentType("application/json");
 		PrintWriter pw = resp.getWriter();
 		JSONObject finalResult = new JSONObject();
 		finalResult.put("result", result);
@@ -282,7 +309,11 @@ public class EnrichmentServlet extends HttpServlet {
 		finalResult.put("resource uri", resourceURI);
 		finalResult.put("entity type", entityType);
 		finalResult.put("omitted axiom types", omittedAxiomTypes);
-		pw.print(finalResult.toJSONString());
+		String resultString = finalResult.toJSONString();
+		if(req.getParameter("jsonp_callback") != null){
+			resultString = req.getParameter("jsonp_callback") + "(" + resultString + ")";
+		}
+		pw.print(resultString);
 		pw.close();
 	}
 	
@@ -319,37 +350,121 @@ public class EnrichmentServlet extends HttpServlet {
 	private List<EvaluatedAxiom> applyLearningAlgorithm(Class<? extends LearningAlgorithm> algorithmClass,
 			SparqlEndpointKS ks, SPARQLReasoner reasoner, Entity entity, int maxExecutionTimeInSeconds, double threshold, int maxNrOfReturnedAxioms)
 			throws ComponentInitException {
-		AxiomLearningAlgorithm learner = null;
-		try {
-			learner = (AxiomLearningAlgorithm) algorithmClass.getConstructor(SparqlEndpointKS.class).newInstance(ks);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (classAlgorithms.contains(algorithmClass)) {
-			ConfigHelper.configure(learner, "classToDescribe", entity);
+		List<EvaluatedAxiom> learnedAxioms = null;
+		if(algorithmClass == CELOE.class){
+			learnedAxioms = applyCELOE(ks, (NamedClass) entity, true, false, threshold);
 		} else {
-			ConfigHelper.configure(learner, "propertyToDescribe", entity);
-		}
-		ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
-		// if(reasoner != null){
-		((AbstractAxiomLearningAlgorithm) learner).setReasoner(reasoner);
-		// }
-		learner.init();
-		String algName = AnnComponentManager.getName(learner);
-		System.out.print("Applying " + algName + " on " + entity + " ... ");
-		long startTime = System.currentTimeMillis();
-		try {
-			learner.start();
-		} catch (Exception e) {
-			if (e.getCause() instanceof SocketTimeoutException) {
-				System.out.println("Query timed out (endpoint possibly too slow).");
-			} else {
+			AxiomLearningAlgorithm learner = null;
+			try {
+				
+				learner = (AxiomLearningAlgorithm) algorithmClass.getConstructor(SparqlEndpointKS.class).newInstance(ks);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			if (classAlgorithms.contains(algorithmClass)) {
+				ConfigHelper.configure(learner, "classToDescribe", entity);
+			} else {
+				ConfigHelper.configure(learner, "propertyToDescribe", entity);
+			}
+			ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
+			// if(reasoner != null){
+			((AbstractAxiomLearningAlgorithm) learner).setReasoner(reasoner);
+			// }
+			learner.init();
+			String algName = AnnComponentManager.getName(learner);
+			System.out.print("Applying " + algName + " on " + entity + " ... ");
+			long startTime = System.currentTimeMillis();
+			try {
+				learner.start();
+			} catch (Exception e) {
+				if (e.getCause() instanceof SocketTimeoutException) {
+					System.out.println("Query timed out (endpoint possibly too slow).");
+				} else {
+					e.printStackTrace();
+				}
+			}
+			long runtime = System.currentTimeMillis() - startTime;
+			System.out.println("done in " + runtime + " ms");
+			learnedAxioms = learner.getCurrentlyBestEvaluatedAxioms(maxNrOfReturnedAxioms, threshold);
 		}
-		long runtime = System.currentTimeMillis() - startTime;
-		System.out.println("done in " + runtime + " ms");
-		List<EvaluatedAxiom> learnedAxioms = learner.getCurrentlyBestEvaluatedAxioms(maxNrOfReturnedAxioms, threshold);
+		
+		return learnedAxioms;
+	}
+	
+	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, NamedClass nc, boolean equivalence, boolean reuseKnowledgeSource, double threshold) throws ComponentInitException {
+
+		// get instances of class as positive examples
+		SPARQLReasoner sr = new SPARQLReasoner(ks);
+		SortedSet<Individual> posExamples = sr.getIndividuals(nc, 20);
+		if(posExamples.isEmpty()){
+			System.out.println("Skipping CELOE because class " + nc.toString() + " is empty.");
+			return Collections.emptyList();
+		}
+		SortedSet<String> posExStr = Helper.getStringSet(posExamples);
+		
+		// use own implementation of negative example finder
+		long startTime = System.currentTimeMillis();
+		System.out.print("finding negatives ... ");
+		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
+		SortedSet<String> negExStr = finder.getNegativeExamples(nc.getName(), posExStr);
+		negExStr = SetManipulation.fuzzyShrink(negExStr, 20);
+		SortedSet<Individual> negExamples = Helper.getIndividualSet(negExStr);
+		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
+		long runTime = System.currentTimeMillis() - startTime;
+		System.out.println("done (" + negExStr.size()+ " examples fround in " + runTime + " ms)");
+		
+        SparqlKnowledgeSource ks2;
+		AbstractReasonerComponent rc;
+		ks2 = new SparqlKnowledgeSource();
+		ks2.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
+		ks2.setUrl(ks.getEndpoint().getURL());
+		ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
+		ks2.setUseLits(false);
+		ks2.setUseCacheDatabase(true);
+		ks2.setCacheDir(cacheDir);
+		ks2.setRecursionDepth(2);
+		ks2.setCloseAfterRecursion(true);
+		ks2.setDissolveBlankNodes(false);
+		ks2.setSaveExtractedFragment(true);
+		startTime = System.currentTimeMillis();
+		System.out.print("getting knowledge base fragment ... ");
+		ks2.init();
+		runTime = System.currentTimeMillis() - startTime;
+		System.out.println("done in " + runTime + " ms");
+		rc = new FastInstanceChecker(ks2);
+		rc.init();
+
+        ClassLearningProblem lp = new ClassLearningProblem(rc);
+		lp.setClassToDescribe(nc);
+        lp.setEquivalence(equivalence);
+        lp.setHeuristic(HeuristicType.FMEASURE);
+        lp.setUseApproximations(false);
+        lp.setMaxExecutionTimeInSeconds(10);
+        lp.init();
+
+        CELOE la = new CELOE(lp, rc);
+        la.setMaxExecutionTimeInSeconds(10);
+        la.setNoisePercentage(25);
+        la.init();
+        startTime = System.currentTimeMillis();
+        System.out.print("running CELOE (for " + (equivalence ? "equivalent classes" : "sub classes") + ") ... ");
+        la.start();
+        runTime = System.currentTimeMillis() - startTime;
+        System.out.println("done in " + runTime + " ms");	
+
+        // convert the result to axioms (to make it compatible with the other algorithms)
+        List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
+        List<EvaluatedAxiom> learnedAxioms = new LinkedList<EvaluatedAxiom>();
+        for(EvaluatedDescription learnedDescription : learnedDescriptions) {
+        	Axiom axiom;
+        	if(equivalence) {
+        		axiom = new EquivalentClassesAxiom(nc, learnedDescription.getDescription());
+        	} else {
+        		axiom = new SubClassAxiom(nc, learnedDescription.getDescription());
+        	}
+        	Score score = lp.computeScore(learnedDescription.getDescription());
+        	learnedAxioms.add(new EvaluatedAxiom(axiom, score)); 
+        }
 		return learnedAxioms;
 	}
 
@@ -380,7 +495,7 @@ public class EnrichmentServlet extends HttpServlet {
 		return entityType;
 	}
 	
-	public Collection<AxiomType> getAxiomTypes(String entityType){
+	public static Collection<AxiomType> getAxiomTypes(String entityType){
 		List<AxiomType> types = new ArrayList<AxiomType>();
 		
 		List<Class<? extends LearningAlgorithm>> algorithms = null;
@@ -399,6 +514,16 @@ public class EnrichmentServlet extends HttpServlet {
 		}
 		
 		return types;
+	}
+	
+	public static void main(String[] args) {
+		String s = "";
+		SortedSet<String> types = new TreeSet<String>();
+		for(AxiomType t : getAxiomTypes("dataproperty")){
+			s += "\"" + t.getName() + "\"";
+			s+= ", ";
+		}
+		System.out.println(s);
 	}
 	
 
