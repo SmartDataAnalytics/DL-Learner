@@ -75,6 +75,7 @@ import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.SPARULTranslator;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
@@ -82,12 +83,16 @@ import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
 
 public class EnrichmentServlet extends HttpServlet {
 
@@ -99,6 +104,9 @@ public class EnrichmentServlet extends HttpServlet {
 	private static final List<String> entityTypes = Arrays.asList(new String[]{"class", "objectproperty", "dataproperty"});
 	
 	private static String validAxiomTypes = "";
+	
+	private SPARULTranslator sparul;
+	private OWLOntology ont;
 
 	static {
 		axiomType2Class = new DualHashBidiMap<AxiomType, Class<? extends LearningAlgorithm>>();
@@ -128,13 +136,16 @@ public class EnrichmentServlet extends HttpServlet {
 		objectPropertyAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
 		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
 		objectPropertyAlgorithms.add(ObjectPropertyDomainAxiomLearner.class);
 		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
-		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
+		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(AsymmetricObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
 
 		dataPropertyAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
 		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
@@ -159,6 +170,17 @@ public class EnrichmentServlet extends HttpServlet {
 	private static final double DEFAULT_THRESHOLD = 0.75;
 	
 	private String cacheDir;
+	
+	public EnrichmentServlet() {
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLOntology ont = null;
+		try {
+			ont = man.createOntology();
+		} catch (OWLOntologyCreationException e1) {
+			e1.printStackTrace();
+		}
+		sparul = new SPARULTranslator(man, ont, false);
+	}
 	
 	@Override
 	public void init() throws ServletException {
@@ -257,7 +279,8 @@ public class EnrichmentServlet extends HttpServlet {
 		List<Future<JSONObject>> list = new ArrayList<Future<JSONObject>>();
 		
 		final OWLObjectRenderer renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-		renderer.setShortFormProvider(new ManchesterOWLSyntaxPrefixNameShortFormProvider(new DefaultPrefixManager()));
+//		renderer.setShortFormProvider(new ManchesterOWLSyntaxPrefixNameShortFormProvider(new DefaultPrefixManager()));
+		
 
 		
 		for (final AxiomType axiomType : executableAxiomTypes) {
@@ -270,7 +293,10 @@ public class EnrichmentServlet extends HttpServlet {
 					List<EvaluatedAxiom> axioms = getEvaluatedAxioms(ks, reasoner, entity, axiomType, maxExecutionTimeInSeconds, threshold, maxNrOfReturnedAxioms, useInference);
 					for(EvaluatedAxiom ax : axioms){
 						JSONObject axiomObject = new JSONObject();
-						axiomObject.put("axiom", renderer.render(OWLAPIConverter.getOWLAPIAxiom(ax.getAxiom())));
+						OWLAxiom axiom = OWLAPIConverter.getOWLAPIAxiom(ax.getAxiom());
+						axiomObject.put("axiom", axiom);
+						axiomObject.put("axiom_rendered", renderer.render(axiom));
+						axiomObject.put("axiom_sparul", getSPARUL(axiom));
 						axiomObject.put("confidence", ax.getScore().getAccuracy());
 						axiomArray.put(axiomObject);
 					}
@@ -315,6 +341,10 @@ public class EnrichmentServlet extends HttpServlet {
 		}
 		pw.print(resultString);
 		pw.close();
+	}
+	
+	private String getSPARUL(OWLAxiom axiom){
+		return sparul.translate(new AddAxiom(ont, axiom));
 	}
 	
 	private boolean oneOf(String value, String... possibleValues){
@@ -519,7 +549,7 @@ public class EnrichmentServlet extends HttpServlet {
 	public static void main(String[] args) {
 		String s = "";
 		SortedSet<String> types = new TreeSet<String>();
-		for(AxiomType t : getAxiomTypes("dataproperty")){
+		for(AxiomType t : getAxiomTypes("objectproperty")){
 			s += "\"" + t.getName() + "\"";
 			s+= ", ";
 		}
