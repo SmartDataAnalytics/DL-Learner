@@ -28,6 +28,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -92,23 +93,23 @@ public class SPARQLTemplateBasedLearner3Test
 
 	public void test(String title, final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
 	{
-		//				String dir = "cache/"+getClass().getSimpleName()+"/";
-		//		
-		//				new File(dir).mkdirs();
-		//				File updatedReferenceXML=new File(dir+"updated_"+referenceXML.getName());
-		//				if(!updatedReferenceXML.exists())
-		//				{
-		//					logger.info("Generating updated reference for "+title);
-		//					generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint,cache);
-		//				}
-		//		
-		//				QueryTestData referenceTestData = readQueries(updatedReferenceXML);
-		//				logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
-		//		
-		//				QueryTestData learnedTestData = generateTestData(referenceTestData.id2Question, dbpediaLiveKnowledgebase).generateAnswers(endpoint,cache);		
-		//				Evaluation evaluation = evaluate(referenceTestData, learnedTestData); 
-		//				logger.info(evaluation);
-		//				evaluation.write();
+		String dir = "cache/"+getClass().getSimpleName()+"/";
+
+		new File(dir).mkdirs();
+		File updatedReferenceXML=new File(dir+"updated_"+referenceXML.getName());
+		if(!updatedReferenceXML.exists())
+		{
+			logger.info("Generating updated reference for "+title);
+			generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint,cache);
+		}
+
+		QueryTestData referenceTestData = readQueries(updatedReferenceXML);
+		logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
+
+		QueryTestData learnedTestData = generateTestData(referenceTestData.id2Question, dbpediaLiveKnowledgebase).generateAnswers(endpoint,cache);		
+		Evaluation evaluation = evaluate(referenceTestData, learnedTestData); 
+		logger.info(evaluation);
+		evaluation.write();
 		generateHTML(); 
 
 		//				if(evaluation.numberOfCorrectAnswers<3) {fail("only " + evaluation.numberOfCorrectAnswers+" correct answers.");}
@@ -346,13 +347,21 @@ public class SPARQLTemplateBasedLearner3Test
 		// ----------------------------------------------------------
 		//		int successes = 0;
 
-		List<Callable<Object>> todo = new ArrayList<Callable<Object>>(id2Question.size());					
+		//		List<Callable<Object>> todo = new ArrayList<Callable<Object>>(id2Question.size());					
+		List<FutureTask> todo = new ArrayList<FutureTask>(id2Question.size());
 		ExecutorService service = Executors.newFixedThreadPool(10);
 
 		for(int i: id2Question.keySet())
-		{todo.add(Executors.callable(new LearnQueryRunnable(id2Question.get(i),i, testData,kb)));}
-
-		try{service.invokeAll(todo);} catch (InterruptedException e) {throw new RuntimeException(e);}			
+		{
+			Callable c = Executors.callable(new LearnQueryRunnable(id2Question.get(i),i, testData,kb));
+			FutureTask task = new FutureTask(c);	
+			todo.add(task);
+		}
+		for(FutureTask task : todo)
+		{
+			service.execute(task);
+		}
+		//		try{service.invokeAll(todo);} catch (InterruptedException e) {throw new RuntimeException(e);}			
 		//			logger.debug("generating query for question \""+question+"\", id "+i);			
 		//			long start = System.currentTimeMillis();	
 		//			SPARQLTemplateBasedLearner2 dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(dbpediaLiveKnowledgebase,posTagger,wordnet,options);
@@ -409,11 +418,13 @@ public class SPARQLTemplateBasedLearner3Test
 		for(int i = 0; i < questionNodes.getLength(); i++)
 		{				
 			Element questionNode = (Element) questionNodes.item(i);
-			//keep the id to aid comparison between original and updated files 
+			//keep the id to aid comparison between original and updated files 			
 			id = Integer.valueOf(questionNode.getAttribute("id"));
 			//Read question
 
 			question = ((Element)questionNode.getElementsByTagName("string").item(0)).getChildNodes().item(0).getNodeValue().trim();
+
+			logger.trace("id "+id+", question: "+question);
 			//Read SPARQL query
 			query = ((Element)questionNode.getElementsByTagName("query").item(0)).getChildNodes().item(0).getNodeValue().trim();
 			//				//Read answers
@@ -477,7 +488,7 @@ public class SPARQLTemplateBasedLearner3Test
 	//	int successfullTestThreadRuns = 0;
 
 	/** */
-	private static final String DBPEDIA_LIVE_ENDPOINT_URL_STRING	= "http://live.dbpedia.org/sparql";
+	private static final String DBPEDIA_LIVE_ENDPOINT_URL_STRING	= "http://dbpedia.org/sparql";
 
 	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner3Test.class);
 
@@ -522,7 +533,7 @@ public class SPARQLTemplateBasedLearner3Test
 		Logger.getLogger(Parser.class).setLevel(Level.WARN);
 		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.WARN);
 		//		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.INFO);
-		logger.setLevel(Level.INFO); // TODO: remove when finishing implementation of this class
+		logger.setLevel(Level.TRACE); // TODO: remove when finishing implementation of this class
 		logger.addAppender(new FileAppender(new SimpleLayout(), "log/"+this.getClass().getSimpleName()+".log", false));
 
 		//		oxfordEndpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());		
@@ -580,7 +591,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 			for(int i = 0; i < questionNodes.getLength(); i++)
 			{
-				if(i>3) break; // TODO: remove
+				//				if(i>3) break; // TODO: remove
 				String question;
 				String query;
 				Set<String> answers = new HashSet<String>();
@@ -807,11 +818,11 @@ public class SPARQLTemplateBasedLearner3Test
 	 * Also creates and links to a file which contains the questions.*/
 	private static String createColoredColumn(/*@NonNull*/ File link,/*@NonNull*/ String title,/*@NonNull*/ String color,/*@NonNull*/ Collection<String> questions, int numberOfQuestionsTotal, boolean htmlAndIncludeQueriesAndAnswers, Evaluation evaluation)
 	{				
-			final StringBuilder sb = new StringBuilder();
-			sb.append("<a href='"+link.getAbsolutePath()+"' title='"+title+"'>");
-			sb.append("<div style='float:left;width:"+100.0*questions.size()/numberOfQuestionsTotal+"%;height:1em;background-color:"+color+";'></div>");
-			sb.append("</a>");
-		
+		final StringBuilder sb = new StringBuilder();
+		sb.append("<a href='"+link.getAbsolutePath()+"' title='"+title+"'>");
+		sb.append("<div style='float:left;width:"+100.0*questions.size()/numberOfQuestionsTotal+"%;height:1em;background-color:"+color+";'></div>");
+		sb.append("</a>");
+
 		//		link.getParentFile().mkdirs();		
 		try
 		{
@@ -839,7 +850,7 @@ public class SPARQLTemplateBasedLearner3Test
 					}					
 					out.println("<tr><td>"+question+"</td><td>"+evaluation.testData.id2Query.get(id)+"</td><td><ul>"+sb2.toString()+"</ul></td></tr>");					
 				}				
-				
+
 				out.println("</table>\n</body>\n</html>");
 			} else
 			{for(String question: questions) {out.println(question);}}
