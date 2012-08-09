@@ -159,7 +159,7 @@ WHERE {
 }
 ]]></query>
 </question>
-
+<!-- changed because it was wrong -->
 <question id="11" answertype="resource" aggregation="false" yago="false">
 <string><![CDATA[
 Which countries have places with more than two caves?
@@ -172,7 +172,8 @@ WHERE {
         ?cave dbo:location ?uri .
         ?uri rdf:type dbo:Country .
         OPTIONAL { ?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
-} 
+}
+GROUP BY ?uri ?string 
 HAVING (COUNT(?cave) > 2)
 ]]></query>
 </question>
