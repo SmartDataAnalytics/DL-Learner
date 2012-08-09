@@ -787,11 +787,11 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 									List<SPARQL_Triple> typeTriples = wQ.getQuery().getRDFTypeTriples(typeVar);
 									for(SPARQL_Triple typeTriple : typeTriples){
 										String typeURI = typeTriple.getValue().getName().replace("<", "").replace(">", "");
-										List<Entry<String, Integer>> mostFrequentProperties = UnknownPropertyHelper.getMostFrequentProperties(endpoint, cache, typeURI, resourceURI, direction);
-										for(Entry<String, Integer> property : mostFrequentProperties){
-											wQ.getQuery().replaceVarWithURI(slot.getAnchor(), property.getKey());
-											wQ.setScore(wQ.getScore() + 0.1);
-										}
+//										List<Entry<String, Integer>> mostFrequentProperties = UnknownPropertyHelper.getMostFrequentProperties(endpoint, cache, typeURI, resourceURI, direction);
+//										for(Entry<String, Integer> property : mostFrequentProperties){
+//											wQ.getQuery().replaceVarWithURI(slot.getAnchor(), property.getKey());
+//											wQ.setScore(wQ.getScore() + 0.1);
+//										}
 									}
 									
 								}
