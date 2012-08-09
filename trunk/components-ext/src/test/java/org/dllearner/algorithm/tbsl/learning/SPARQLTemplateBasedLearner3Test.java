@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -26,11 +25,12 @@ import java.util.SortedMap;
 import java.util.Stack;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -59,6 +59,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.ini4j.Options;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.*;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -84,34 +85,40 @@ import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
  * logging output is also wrote to the file log/#classname.
  * @author Konrad Höffner
  *  **/
+
+// problem mit "In/IN which/WDT films/NNS did/VBD Julia/NNP Roberts/NNP as/RB well/RB as/IN Richard/NNP Gere/NNP play/NN"
 public class SPARQLTemplateBasedLearner3Test
 {		
-	private static final File evaluationFolder = new File("log/evaluation");
+	private static final File evaluationFolder = new File("cache/evaluation");
 
 	@Test public void testDBpedia() throws Exception
-	{test("QALD 2 Benchmark", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train.xml").getFile()),
+	{test("QALD 2 Benchmark", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
 			SparqlEndpoint.getEndpointDBpediaLiveAKSW(),dbpediaLiveCache);}
 	//@Test public void testOxford() {test(new File(""),"");}
 
 	public void test(String title, final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
 	{
-//		String dir = "cache/"+getClass().getSimpleName()+"/";
-//
-//		new File(dir).mkdirs();
-//		File updatedReferenceXML=new File(dir+"updated_"+referenceXML.getName());
-//		if(!updatedReferenceXML.exists())
-//		{
-//			logger.info("Generating updated reference for "+title);
-//			generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint,cache);
-//		}
-//
-//		QueryTestData referenceTestData = readQueries(updatedReferenceXML);
-//		logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
-//
-//		QueryTestData learnedTestData = generateTestData(referenceTestData.id2Question, dbpediaLiveKnowledgebase).generateAnswers(endpoint,cache);		
-//		Evaluation evaluation = evaluate(referenceTestData, learnedTestData); 
-//		logger.info(evaluation);
-//		evaluation.write();
+		final boolean EVALUATE = true;
+		if(EVALUATE)
+		{
+			String dir = "cache/"+getClass().getSimpleName()+"/";
+
+			new File(dir).mkdirs();
+			File updatedReferenceXML=new File(dir+"updated_"+referenceXML.getName());
+			if(!updatedReferenceXML.exists())
+			{
+				logger.info("Generating updated reference for "+title);
+				generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint,cache);
+			}
+
+			QueryTestData referenceTestData = readQueries(updatedReferenceXML);
+			logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
+
+			QueryTestData learnedTestData = generateTestDataMultiThreaded(referenceTestData.id2Question, dbpediaLiveKnowledgebase).generateAnswers(endpoint,cache);		
+			Evaluation evaluation = evaluate(referenceTestData, learnedTestData); 
+			logger.info(evaluation);
+			evaluation.write();
+		}
 		generateHTML(); 
 
 		//				if(evaluation.numberOfCorrectAnswers<3) {fail("only " + evaluation.numberOfCorrectAnswers+" correct answers.");}
@@ -146,7 +153,7 @@ public class SPARQLTemplateBasedLearner3Test
 	private static Evaluation evaluate(QueryTestData reference, QueryTestData suspect)
 	{
 		//		Diff d = diffTestData(reference,testData);	
-		Evaluation evaluation = new Evaluation(suspect);
+		Evaluation evaluation = new Evaluation(suspect,reference);
 		evaluation.numberOfQuestions = reference.id2Question.keySet().size();
 
 		for(int i: reference.id2Question.keySet())
@@ -170,8 +177,8 @@ public class SPARQLTemplateBasedLearner3Test
 			else
 			{
 				evaluation.incorrectlyAnsweredQuestions.add(question);
-				logger.debug("learned queries differing: "+referenceQuery+"\n"+suspectQuery);
-				logger.debug("learned answers differing: "+reference.id2Answers.get(i)+"\n"+suspect.id2Answers.get(i));
+				logger.debug("learned queries differing. reference query:\n"+referenceQuery+"\nsuspect query:\n"+suspectQuery);
+				logger.debug("learned answers differing: reference answers:\n"+reference.id2Answers.get(i)+"\nsuspect answers:\n"+suspect.id2Answers.get(i));
 			}
 		}
 		return evaluation;
@@ -179,8 +186,9 @@ public class SPARQLTemplateBasedLearner3Test
 
 	static class Evaluation implements Serializable
 	{		
-		private static final long	serialVersionUID	= 2L;
+		private static final long	serialVersionUID	= 4L;
 		final QueryTestData testData;
+		final QueryTestData referenceData;
 		int numberOfQuestions = 0;
 		int numberOfAnsweredQuestions = 0;
 		int numberOfCorrectAnswers = 0;
@@ -188,9 +196,9 @@ public class SPARQLTemplateBasedLearner3Test
 		double recall = 0;	
 		final Set<String> unansweredQuestions = new HashSet<String>();
 		final Set<String> incorrectlyAnsweredQuestions = new HashSet<String>();
-		final Set<String> correctlyAnsweredQuestions = new HashSet<String>();
+		final Set<String> correctlyAnsweredQuestions = new HashSet<String>();		
 
-		public Evaluation(QueryTestData testData) {this.testData = testData;}
+		public Evaluation(QueryTestData testData,QueryTestData referenceData) {this.testData = testData;this.referenceData = referenceData;}
 
 		void computePrecisionAndRecall() // we have at maximum one answer set per question
 		{
@@ -336,10 +344,12 @@ public class SPARQLTemplateBasedLearner3Test
 		}
 	}
 
+	enum LearnStatus {OK, TIMEOUT,EXCEPTION,NO_TEMPLATE_FOUND,QUERY_RESULT_EMPTY, NO_QUERY_LEARNED}
+	
 	/**	
 	 * @return the test data containing those of the given questions for which queries were found and the results of the queries  	 
 	 */
-	private QueryTestData generateTestData(SortedMap<Integer, String> id2Question,Knowledgebase kb) throws MalformedURLException, ComponentInitException
+	private QueryTestData generateTestDataMultiThreaded(SortedMap<Integer, String> id2Question,Knowledgebase kb) throws MalformedURLException, ComponentInitException
 	{
 		QueryTestData testData = new QueryTestData();
 		// -- only create the learner parameters once to save time -- 
@@ -349,25 +359,42 @@ public class SPARQLTemplateBasedLearner3Test
 		// ----------------------------------------------------------
 		//		int successes = 0;
 
-		//		List<Callable<Object>> todo = new ArrayList<Callable<Object>>(id2Question.size());					
-		List<FutureTask> todo = new ArrayList<FutureTask>(id2Question.size());
+		//		List<Callable<Object>> todo = new ArrayList<Callable<Object>>(id2Question.size());
+		Map<Integer,Future<LearnStatus>> futures = new HashMap<Integer,Future<LearnStatus>>();
+
+		//		List<FutureTask> todo = new ArrayList<FutureTask>(id2Question.size());
 		ExecutorService service = Executors.newFixedThreadPool(10);
 
 		for(int i: id2Question.keySet())
 		{
-			Callable c = Executors.callable(new LearnQueryRunnable(id2Question.get(i),i, testData,kb));
-			FutureTask task = new FutureTask(c);
-			todo.add(task);
+			futures.put(i,service.submit(new LearnQueryCallable(id2Question.get(i),i, testData,kb)));
 		}
-		List<Future> futures = new LinkedList<Future>();
-		for(FutureTask task : todo)
+		for(int i: id2Question.keySet())
 		{
-			futures.add(service.submit(task));			
-		}
-		for(Future future:futures) try {future.get(30, TimeUnit.SECONDS);} catch (Exception e)	{logger.warn("Timeout while generating test data.");}
+			String question = id2Question.get(i);
+			try
+			{
+				testData.id2LearnStatus.put(i,futures.get(i).get(30, TimeUnit.SECONDS));				
+			}
+			catch (InterruptedException e)
+			{
+				//				logger.warn("Timeout while generating test data for question "+id2Question.get(i)+".");
+				//				testData.id2LearnStatus.put(i, LearnStatus.TIMEOUT);
+				throw new RuntimeException("question= "+question,e);
+			}
+			catch (ExecutionException e)
+			{
+				throw new RuntimeException("question="+question,e);
+			}
+			catch (TimeoutException e)
+			{
+				logger.warn("Timeout while generating test data for question "+question+".");
+				testData.id2LearnStatus.put(i, LearnStatus.TIMEOUT);
+			}
+		}		
 		service.shutdown();
-//		try{service.awaitTermination(10, TimeUnit.MINUTES);} catch (InterruptedException e)	{throw new RuntimeException("Timeout while generating test data.");}
-		
+		//		try{service.awaitTermination(10, TimeUnit.MINUTES);} catch (InterruptedException e)	{throw new RuntimeException("Timeout while generating test data.");}
+
 		//		try{service.invokeAll(todo);} catch (InterruptedException e) {throw new RuntimeException(e);}			
 		//			logger.debug("generating query for question \""+question+"\", id "+i);			
 		//			long start = System.currentTimeMillis();	
@@ -552,6 +579,7 @@ public class SPARQLTemplateBasedLearner3Test
 		public SortedMap<Integer, String> id2Question = new ConcurrentSkipListMap<Integer, String>();
 		public SortedMap<Integer, String> id2Query = new ConcurrentSkipListMap<Integer, String>();
 		public SortedMap<Integer, Set<String>> id2Answers = new ConcurrentSkipListMap<Integer, Set<String>>();
+		public SortedMap<Integer, LearnStatus> id2LearnStatus = new ConcurrentSkipListMap<Integer, LearnStatus>();
 
 		private static final String persistancePath = "cache/"+SPARQLTemplateBasedLearner3Test.class.getSimpleName()+'/'+QueryTestData.class.getSimpleName();
 
@@ -580,7 +608,13 @@ public class SPARQLTemplateBasedLearner3Test
 		public QueryTestData generateAnswers(SparqlEndpoint endpoint, ExtractionDBCache cache)
 		{
 			if(!id2Answers.isEmpty()) {throw new AssertionError("Answers already existing.");}
-			for(int i:id2Query.keySet()) {id2Answers.put(i, getUris(endpoint, id2Query.get(i),cache));}
+			for(int i:id2Query.keySet())
+			{
+				Set<String> uris = getUris(endpoint, id2Query.get(i),cache); 
+				id2Answers.put(i, uris); // empty answer set better transfers intended meaning and doesn't cause NPEs in html generation :-) 
+				if(!uris.isEmpty())	{/*id2Answers.put(i, uris);*/}
+				else				{id2LearnStatus.put(i, LearnStatus.QUERY_RESULT_EMPTY);}
+			}
 			return this;
 		}
 	}
@@ -743,7 +777,7 @@ public class SPARQLTemplateBasedLearner3Test
 	//		Knowledgebase kb = new Knowledgebase(oxfordEndpoint, "Oxford - Real estate", "TODO", resourcesIndex, propertiesIndex, classesIndex, mappingIndex);
 	//		return kb;
 	//	}
-	private static class LearnQueryRunnable implements Runnable
+	private static class LearnQueryCallable implements Callable<LearnStatus>
 	{
 		private final String question;
 		//		private final String endpoint;
@@ -756,7 +790,7 @@ public class SPARQLTemplateBasedLearner3Test
 		static private final Options options = new Options();
 
 
-		public LearnQueryRunnable(String question, int id, QueryTestData testData, Knowledgebase knowledgeBase)
+		public LearnQueryCallable(String question, int id, QueryTestData testData, Knowledgebase knowledgeBase)
 		{
 			this.question=question;
 			this.id=id;					
@@ -764,7 +798,7 @@ public class SPARQLTemplateBasedLearner3Test
 			this.testData=testData;
 		}								
 
-		@Override public void run()
+		@Override public LearnStatus call()
 		{					
 			logger.trace("learning question: "+question);					
 			try
@@ -772,16 +806,19 @@ public class SPARQLTemplateBasedLearner3Test
 				// learn query
 				// TODO: change to knowledgebase parameter
 				SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache),posTagger,wordnet,options);
+
 				//						SPARQLTemplateBasedLearner2 dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache));
 				learner.init();
+				learner.setUseIdealTagger(true);
 				learner.setQuestion(question);						
 				learner.learnSPARQLQueries();						
-				String learnedQuery = learner.getBestSPARQLQuery();					
+				String learnedQuery = learner.getBestSPARQLQuery();
+				testData.id2Question.put(id, question);
 				if(learnedQuery!=null&&!learnedQuery.isEmpty())
-				{
-					testData.id2Question.put(id, question);
+				{				
 					testData.id2Query.put(id, learnedQuery);
 				}
+				else {return LearnStatus.NO_QUERY_LEARNED;} 
 				logger.trace("learned query for question "+question+": "+learnedQuery);
 
 				//						Set<String> learnedURIs = getUris(DBPEDIA_LIVE_ENDPOINT_URL_STRING,learnedQuery);
@@ -789,12 +826,15 @@ public class SPARQLTemplateBasedLearner3Test
 			catch(NoTemplateFoundException e)
 			{		
 				logger.warn(String.format("no template found for question \"%s\"",question));
+				return LearnStatus.NO_TEMPLATE_FOUND;
 			}
 			catch(Exception e)
 			{
 				logger.error(String.format("Exception for question \"%s\": %s",question,e.getLocalizedMessage()));
-				e.printStackTrace();											
-			}
+				e.printStackTrace();
+				return LearnStatus.EXCEPTION;
+			}			
+			return LearnStatus.OK;
 		}
 	}
 
@@ -813,7 +853,7 @@ public class SPARQLTemplateBasedLearner3Test
 		{
 			Set<String> removedStrings = new HashSet<String>(from);
 			removedStrings.removeAll(to);
-			sb.append("<ul>");
+			sb.append("<ul class='removed'>");
 			for(String removed: removedStrings) {sb.append("<li>"+removed+"</li>\n");}
 			sb.append("</ul>\n");
 
@@ -821,11 +861,27 @@ public class SPARQLTemplateBasedLearner3Test
 		return sb.toString();
 	}
 
-	private static String escapePre(String s) {return s.replace("<", "&lt;").replace(">", "&rt;");}
-	
+	private static String escapePre(String s) {return s.replace("<", "&lt;").replace(">", "&gt;");}
+
+	private static String getAnswerHTMLList(String[] answers)
+	{
+		StringBuilder sbAnswers = new StringBuilder();					
+		final int MAX = 10;
+		for(int i=0;i<answers.length;i++)
+		{
+			if(i>=MAX)
+			{
+				sbAnswers.append("["+(answers.length-i+1)+" more...]");
+				break;
+			}
+			sbAnswers.append("<li><a href='"+answers[i]+"'>"+answers[i].replace("http://dbpedia.org/resource/","dbpedia:")+"</a></li>\n");
+		}
+		return sbAnswers.toString();
+	}
+
 	/** Generates the HTML string content for one of the 3 colored bars which represent the correctly, incorrectly and unanswered question.
 	 * Also creates and links to a file which contains the questions.*/
-	private static String createColoredColumn(/*@NonNull*/ File link,/*@NonNull*/ String title,/*@NonNull*/ String color,/*@NonNull*/ Collection<String> questions, int numberOfQuestionsTotal, boolean htmlAndIncludeQueriesAndAnswers, Evaluation evaluation)
+	private static String createColoredColumn(/*@NonNull*/ File link,/*@NonNull*/ String title,/*@NonNull*/ String color,/*@NonNull*/ Collection<String> questions, int numberOfQuestionsTotal, boolean queriesAvailable, Evaluation evaluation)
 	{				
 		final StringBuilder sb = new StringBuilder();
 		sb.append("<a href='"+link.getAbsolutePath()+"' title='"+title+"'>");
@@ -836,34 +892,38 @@ public class SPARQLTemplateBasedLearner3Test
 		try
 		{
 			PrintWriter out = new PrintWriter(link);
-			Map<String,Integer> question2Id = new HashMap<String,Integer>();
-			for(Integer i: evaluation.testData.id2Question.keySet()) {question2Id.put(evaluation.testData.id2Question.get(i),i);}
-			if(htmlAndIncludeQueriesAndAnswers)
+			final Map<String,Integer> question2Id = new HashMap<String,Integer>();
+			// only the reference data contains entries for questions without answers
+			for(Integer i: evaluation.referenceData.id2Question.keySet()) {question2Id.put(evaluation.referenceData.id2Question.get(i),i);}
+			out.println("<!DOCTYPE html><html>\n<head><title>"+title+"</title></head>\n<body>\n<table border='1'>");
+			if(queriesAvailable)
 			{				
-				out.println("<html>\n<head><title>"+title+"</title></head>\n<body>\n<table border='1'>");
-				out.println("<tr><th>Question</th><th>Query</th><th>Answers</th></tr>");
+				out.println("<tr><th>Question</th><th>Learned Query</th><th>Reference Query</th><th>Learned Answers</th><th>Reference Answers</th></tr>");
 				for(String question: questions)
 				{
-					Integer id = question2Id.get(question);					
-					String[] answers = evaluation.testData.id2Answers.get(id).toArray(new String[0]);
-					StringBuilder sb2 = new StringBuilder();					
-					final int MAX = 10;
-					for(int i=0;i<answers.length;i++)
-					{
-						if(i>=MAX)
-						{
-							sb2.append("["+(answers.length-i+1)+" more...]");
-							break;
-						}
-						sb2.append("<li><a href='"+answers[i]+"'>"+answers[i].replace("http://dbpedia.org/resource/","dbpedia:")+"</a></li>\n");
-					}					
-					out.println("<tr><td>"+question+"</td><td><code><pre>"+escapePre(evaluation.testData.id2Query.get(id))+"</pre></code></td><td><ul><code><pre>"+escapePre(sb2.toString())+"</pre></code></ul></td></tr>");					
-				}				
-
-				out.println("</table>\n</body>\n</html>");
+					Integer id = question2Id.get(question);
+					if(evaluation.testData.id2Answers.get(id)==null) {System.err.println(question);continue;}
+					out.println(
+							"<tr><td>"+question+"</td>"+
+									"<td><code><pre>"+escapePre(evaluation.testData.id2Query.get(id))+"</pre></code></td>"+
+									"<td><code><pre>"+escapePre(evaluation.referenceData.id2Query.get(id))+"</pre></code></td>"+
+									"<td><ul>"+getAnswerHTMLList(evaluation.testData.id2Answers.get(id).toArray(new String[0]))+"</ul></td>"+
+									"<td><ul>"+getAnswerHTMLList(evaluation.referenceData.id2Answers.get(id).toArray(new String[0]))+"</ul></td></tr>");					
+				}								
 			} else
-			{for(String question: questions) {out.println(question);}}
-			out.close();
+			{				
+				out.println("<tr><th>Question</th><th>Error Type</th></tr>");
+				for(String question: questions)
+				{
+					Integer id = question2Id.get(question);
+					if(id==null) {System.err.println(question);continue;}
+										out.println(
+												"<tr><td>"+question+"</td>"+
+										"<td>"+evaluation.testData.id2LearnStatus.get(id)+"</td></tr>");
+				}					
+			}
+			out.println("</table>\n</body>\n</html>");
+			out.close();	
 		}
 		catch (Exception e){throw new RuntimeException(e);}		
 
@@ -885,7 +945,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 			out.println("</style></head>");
 			out.println("<body>");
-			out.println(diffHTML("Correctly Answered Questions", from.correctlyAnsweredQuestions, to.correctlyAnsweredQuestions));
+			out.println(diffHTML("Correctly Answered Questions (precision and recall = 1)", from.correctlyAnsweredQuestions, to.correctlyAnsweredQuestions));
 			out.println(diffHTML("Incorrectly Answered Questions", from.incorrectlyAnsweredQuestions, to.incorrectlyAnsweredQuestions));
 			out.println(diffHTML("Unanswered Questions", from.unansweredQuestions, to.unansweredQuestions));
 			out.println("</body>\n</html>");
@@ -928,7 +988,7 @@ public class SPARQLTemplateBasedLearner3Test
 				sb2.append("<div style='width:100%;height:1em;border:solid 1px;'>");			
 				sb2.append(createColoredColumn(new File(folder,"correctly_answered.html"),	"Correctly Answered Questions",		"green",	e.correctlyAnsweredQuestions,	e.numberOfQuestions,true,e));
 				sb2.append(createColoredColumn(new File(folder,"incorrectly_answered.html"),	"Incorrectly Answered Questions",	"orange",	e.incorrectlyAnsweredQuestions,	e.numberOfQuestions,true,e));
-				sb2.append(createColoredColumn(new File(folder,"unanswered.txt"),			"Unanswered Questions",				"red",		e.unansweredQuestions,			e.numberOfQuestions,false,e));
+				sb2.append(createColoredColumn(new File(folder,"unanswered.html"),			"Unanswered Questions",				"red",		e.unansweredQuestions,			e.numberOfQuestions,false,e));
 				sb2.append("<span style='width:1000px;'></span>");
 				sb2.append("</td></tr>\n");				
 				last = e;

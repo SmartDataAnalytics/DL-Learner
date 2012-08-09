@@ -140,7 +140,7 @@ WHERE {
 }
 ]]></query>
 </question>
-
+<!-- changed because it was wrong -->
 <question aggregation="false" answertype="resource" id="11" yago="false">
 <string><![CDATA[Which/WDT countries/NNS have/VBP places/NNS with/IN more/JJR than/IN two/CD caves/NNS]]></string>
 <query><![CDATA[
@@ -151,7 +151,8 @@ WHERE {
         ?cave dbo:location ?uri .
         ?uri rdf:type dbo:Country .
         OPTIONAL { ?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }
-} 
+}
+GROUP BY ?uri ?string 
 HAVING (COUNT(?cave) > 2)
 ]]></query>
 </question>
