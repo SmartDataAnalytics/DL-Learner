@@ -382,8 +382,9 @@ public class Templator {
                		
                		try {
                			Template temp = d2s.convert(drs,slots);
+               			temp = temp.checkandrefine();
                			if (temp == null) {continue;}
-                                       temp = temp.checkandrefine();
+                                       
                			
                			
        					if (USE_WORDNET) { // find WordNet synonyms

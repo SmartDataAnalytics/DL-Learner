@@ -51,7 +51,8 @@ public class Template implements Serializable, Comparable<Template>{
                     if (clashing != null && s.type.equals(clashing)) {
                         for (SPARQL_Triple triple : query.conditions) {
                             if (triple.property.toString().equals("?"+s.anchor)) {
-                                if (triple.value.toString().equals("?"+var)) return null;
+                                if (triple.value.toString().equals("?"+var))
+                                	return null;
                             }
                         }
                     }
