@@ -10,7 +10,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,6 +52,7 @@ import org.dllearner.algorithm.tbsl.nlp.SynchronizedStanfordPartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
+import org.dllearner.common.index.HierarchicalIndex;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SOLRIndex;
@@ -95,7 +98,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 	/*@Test*/ public void testDBpedia() throws Exception
 	{test("QALD 2 Benchmark ideally tagged", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
-			SparqlEndpoint.getEndpointDBpediaLiveAKSW(),dbpediaLiveCache);}
+			SparqlEndpoint.getEndpointDBpedia(),dbpediaLiveCache);}
 	//@Test public void testOxford() {test(new File(""),"");}
 
 	@Test public void justTestTheLastWorkingOnesDBpedia() throws Exception
@@ -428,18 +431,18 @@ public class SPARQLTemplateBasedLearner3Test
 		Map<Integer,Future<LearnStatus>> futures = new HashMap<Integer,Future<LearnStatus>>();
 
 		//		List<FutureTask> todo = new ArrayList<FutureTask>(id2Question.size());
-		ExecutorService service = Executors.newFixedThreadPool(10);
+		ExecutorService service = Executors.newFixedThreadPool(1);
 
 		for(int i: id2Question.keySet())
-		{
+		{//if(i != 78)continue;
 			futures.put(i,service.submit(new LearnQueryCallable(id2Question.get(i),i, testData,kb)));
 		}
 		for(int i: id2Question.keySet())
-		{
+		{//if(i != 78)continue;
 			String question = id2Question.get(i);
 			try
 			{
-				testData.id2LearnStatus.put(i,futures.get(i).get(30, TimeUnit.SECONDS));				
+				testData.id2LearnStatus.put(i,futures.get(i).get(30, TimeUnit.MINUTES));				
 			}
 			catch (InterruptedException e)
 			{
@@ -613,7 +616,9 @@ public class SPARQLTemplateBasedLearner3Test
 		//			resourcesIndex.setSortField("pagerank");
 		Index classesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_classes");
 		Index propertiesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_properties");
-
+		SOLRIndex boa_propertiesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/boa_fact_detail");
+		boa_propertiesIndex.setSortField("boa-score");
+		propertiesIndex = new HierarchicalIndex(boa_propertiesIndex, propertiesIndex);
 		MappingBasedIndex mappingIndex= new MappingBasedIndex(
 				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("test/dbpedia_class_mappings.txt").getPath(), 
 				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("test/dbpedia_resource_mappings.txt").getPath(),
@@ -786,7 +791,7 @@ public class SPARQLTemplateBasedLearner3Test
 				if(node!=null&&node.isResource())
 				{
 					String uri=node.asResource().getURI();
-					uris.add(uri);			
+					uris.add(urlDecode(uri));			
 				}
 				else // there is no variable "uri" 
 				{
@@ -799,7 +804,7 @@ public class SPARQLTemplateBasedLearner3Test
 						{
 							variable = "?"+varName;
 							String uri=node2.asResource().getURI();
-							uris.add(uri);
+							uris.add(urlDecode(uri));
 							continue resultsetloop;
 						}				
 					}
@@ -807,6 +812,17 @@ public class SPARQLTemplateBasedLearner3Test
 				}
 			}
 		return uris;
+	}
+	
+	private static String urlDecode(String url){
+		String decodedURL = null;
+		try {
+			decodedURL = URLDecoder.decode(url, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return decodedURL;
 	}
 
 
@@ -871,7 +887,7 @@ public class SPARQLTemplateBasedLearner3Test
 			{			
 				// learn query
 				// TODO: change to knowledgebase parameter
-				SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache),posTagger,wordnet,options);
+				SPARQLTemplateBasedLearner3 learner = new SPARQLTemplateBasedLearner3(createDBpediaLiveKnowledgebase(dbpediaLiveCache),posTagger,wordnet,options);
 
 				//						SPARQLTemplateBasedLearner2 dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache));
 				learner.init();
