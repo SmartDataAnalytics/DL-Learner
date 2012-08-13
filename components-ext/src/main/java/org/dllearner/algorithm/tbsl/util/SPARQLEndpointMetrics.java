@@ -34,6 +34,8 @@ public class SPARQLEndpointMetrics {
 	public SPARQLEndpointMetrics(SparqlEndpoint endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
 		this.cache = cache;
+		cache.setFreshnessInMilliseconds(31536000000l);
+		cache.setMaxExecutionTimeInSeconds(30);
 		
 		this.reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cache);
 	}
@@ -56,7 +58,7 @@ public class SPARQLEndpointMetrics {
 		if(coOccurenceCnt > 0 && classOccurenceCnt > 0 && propertyOccurenceCnt > 0){
 			pmi = Math.log( (coOccurenceCnt * total) / (classOccurenceCnt * propertyOccurenceCnt) );
 		}
-		log.info(String.format("PMI(%s, %s) = %f", prop, cls, pmi));
+		log.debug(String.format("PMI(%s, %s) = %f", prop, cls, pmi));
 		return pmi;
 	}
 	
@@ -78,7 +80,7 @@ public class SPARQLEndpointMetrics {
 		if(coOccurenceCnt > 0 && classOccurenceCnt > 0 && propertyOccurenceCnt > 0){
 			pmi = Math.log( (coOccurenceCnt * total) / (classOccurenceCnt * propertyOccurenceCnt) );
 		}
-		log.info(String.format("PMI(%s, %s) = %f", cls, prop, pmi));
+		log.debug(String.format("PMI(%s, %s) = %f", cls, prop, pmi));
 		return pmi;
 	}
 	
@@ -100,7 +102,7 @@ public class SPARQLEndpointMetrics {
 		if(coOccurenceCnt > 0 && subjectOccurenceCnt > 0 && objectOccurenceCnt > 0){
 			pmi = Math.log( (coOccurenceCnt * total) / (subjectOccurenceCnt * objectOccurenceCnt) );
 		}
-		log.info(String.format("PMI(%s, %s) = %f", subject, object, pmi));
+		log.debug(String.format("PMI(%s, %s) = %f", subject, object, pmi));
 		return pmi;
 	}
 	
@@ -152,6 +154,7 @@ public class SPARQLEndpointMetrics {
 	 * @return
 	 */
 	public int getOccurencesSubjectPredicate(NamedClass cls, Property prop){
+		log.trace(String.format("Computing number of occurences as subject and predicate for [%s, %s]", cls.getName(), prop.getName()));
 		String query  = String.format("SELECT (COUNT(*) AS ?cnt) WHERE {?s a <%s>. ?s <%s> ?o}", cls.getName(), prop.getName());
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		int cnt = rs.next().getLiteral("cnt").getInt();
@@ -164,6 +167,7 @@ public class SPARQLEndpointMetrics {
 	 * @return
 	 */
 	public int getOccurencesPredicateObject(Property prop, NamedClass cls){
+		log.trace(String.format("Computing number of occurences as predicate and object for [%s, %s]", prop.getName(), cls.getName()));
 		String query  = String.format("SELECT (COUNT(*) AS ?cnt) WHERE {?o a <%s>. ?s <%s> ?o}", cls.getName(), prop.getName());
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		int cnt = rs.next().getLiteral("cnt").getInt();
@@ -176,6 +180,7 @@ public class SPARQLEndpointMetrics {
 	 * @return
 	 */
 	public int getOccurencesSubjectObject(NamedClass subject, NamedClass object){
+		log.trace(String.format("Computing number of occurences as subject and object for [%s, %s]", subject.getName(), object.getName()));
 		String query  = String.format("SELECT (COUNT(*) AS ?cnt) WHERE {?s a <%s>. ?s ?p ?o. ?o a <%s>}", subject.getName(), object.getName());
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		int cnt = rs.next().getLiteral("cnt").getInt();
@@ -188,6 +193,7 @@ public class SPARQLEndpointMetrics {
 	 * @return
 	 */
 	public int getOccurencesInSubjectPosition(NamedClass cls){
+		log.trace(String.format("Computing number of occurences in subject position for %s", cls.getName()));
 		String query  = String.format("SELECT (COUNT(?s) AS ?cnt) WHERE {?s a <%s>. ?s ?p ?o.}", cls.getName());
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		int classOccurenceCnt = rs.next().getLiteral("cnt").getInt();
@@ -200,6 +206,7 @@ public class SPARQLEndpointMetrics {
 	 * @return
 	 */
 	public int getOccurencesInObjectPosition(NamedClass cls){
+		log.trace(String.format("Computing number of occurences in object position for %s", cls.getName()));
 		String query  = String.format("SELECT (COUNT(?s) AS ?cnt) WHERE {?o a <%s>. ?s ?p ?o.}", cls.getName());
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		int classOccurenceCnt = rs.next().getLiteral("cnt").getInt();
@@ -212,6 +219,7 @@ public class SPARQLEndpointMetrics {
 	 * @return
 	 */
 	public int getOccurences(Property prop){
+		log.trace(String.format("Computing number of occurences as predicate for %s", prop.getName()));
 		String query  = String.format("SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}", prop.getName());
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		int propOccurenceCnt = rs.next().getLiteral("cnt").getInt();
@@ -225,6 +233,7 @@ public class SPARQLEndpointMetrics {
 	 * @return
 	 */
 	public int getOccurences(NamedClass cls){
+		log.trace(String.format("Computing number of occurences in subject or object position for %s", cls.getName()));
 		String query  = String.format("SELECT (COUNT(?s) AS ?cnt) WHERE {?s a <%s>.{?s ?p1 ?o1.} UNION {?o2 ?p2 ?s} }", cls.getName());
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		int classOccurenceCnt = rs.next().getLiteral("cnt").getInt();
@@ -256,17 +265,18 @@ public class SPARQLEndpointMetrics {
 	}
 	
 	public double getGoodness(NamedClass subject, ObjectProperty predicate, NamedClass object){
-		
+		log.info(String.format("Computing goodness of [%s, %s, %s]", subject.getName(), predicate.getName(), object.getName()));
 		double pmi_subject_predicate = getDirectedPMI(subject, predicate);
 		double pmi_preciate_object = getDirectedPMI(predicate, object);
 		double pmi_subject_object = getPMI(subject, object);
 		
 		double goodness = pmi_subject_predicate + pmi_preciate_object + 2*pmi_subject_object;
-		
+		log.info(String.format("Goodness of [%s, %s, %s]=%f", subject.getName(), predicate.getName(), object.getName(), Double.valueOf(goodness)));
 		return goodness;
 	}
 	
 	public double getGoodness(Individual subject, ObjectProperty predicate, NamedClass object){
+		log.info(String.format("Computing goodness of [%s, %s, %s]", subject.getName(), predicate.getName(), object.getName()));
 		//this is independent of the subject types
 		double pmi_preciate_object = getDirectedPMI(predicate, object);
 		
@@ -275,6 +285,7 @@ public class SPARQLEndpointMetrics {
 		//TODO inference
 		Set<NamedClass> types = reasoner.getTypes(subject);
 		for(NamedClass type : types){
+			if(!type.getName().startsWith("http://dbpedia.org/ontology/"))continue;
 			double pmi_subject_predicate = getDirectedPMI(type, predicate);
 			double pmi_subject_object = getPMI(type, object);
 			double tmpGoodness = pmi_subject_predicate + pmi_preciate_object + 2*pmi_subject_object;
@@ -282,10 +293,12 @@ public class SPARQLEndpointMetrics {
 				goodness = tmpGoodness;
 			}
 		}
+		log.info(String.format("Goodness of [%s, %s, %s]=%f", subject.getName(), predicate.getName(), object.getName(), Double.valueOf(goodness)));
 		return goodness;
 	}
 	
 	public double getGoodness(NamedClass subject, ObjectProperty predicate, Individual object){
+		log.info(String.format("Computing goodness of [%s, %s, %s]", subject.getName(), predicate.getName(), object.getName()));
 		//this is independent of the object types
 		double pmi_subject_predicate = getDirectedPMI(subject, predicate);
 		
@@ -294,6 +307,7 @@ public class SPARQLEndpointMetrics {
 		//TODO inference
 		Set<NamedClass> types = reasoner.getTypes(object);
 		for(NamedClass type : types){
+			if(!type.getName().startsWith("http://dbpedia.org/ontology/"))continue;
 			double pmi_preciate_object = getDirectedPMI(predicate, type);
 			double pmi_subject_object = getPMI(subject, type);
 			double tmpGoodness = pmi_subject_predicate + pmi_preciate_object + 2*pmi_subject_object;
@@ -301,6 +315,7 @@ public class SPARQLEndpointMetrics {
 				goodness = tmpGoodness;
 			}
 		}
+		log.info(String.format("Goodness of [%s, %s, %s]=%f", subject.getName(), predicate.getName(), object.getName(), Double.valueOf(goodness)));
 		return goodness;
 	}
 	
@@ -380,7 +395,7 @@ public class SPARQLEndpointMetrics {
 	
 	public static void main(String[] args) {
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		ExtractionDBCache cache = new ExtractionDBCache("/opt/tbsl/cache2");
+		ExtractionDBCache cache = new ExtractionDBCache("/opt/tbsl/dbpedia_pmi_cache");
 		String NS = "http://dbpedia.org/ontology/";
 		String NS_Res = "http://dbpedia.org/resource/";
 		
@@ -398,6 +413,7 @@ public class SPARQLEndpointMetrics {
 		Individual danBrowne = new Individual(NS_Res + "Dan_Browne");
 		
 		SPARQLEndpointMetrics pmiGen = new SPARQLEndpointMetrics(endpoint, cache);
+		System.out.println(pmiGen.getPMI(new NamedClass(NS + "River"), new NamedClass(NS + "Film")));
 		pmiGen.precompute(Arrays.asList(new String[]{"http://dbpedia.org/ontology/"}));
 		
 		System.out.println(pmiGen.getDirectedPMI(pAuthor, person));
