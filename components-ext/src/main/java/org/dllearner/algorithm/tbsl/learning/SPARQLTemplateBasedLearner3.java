@@ -52,6 +52,7 @@ import org.dllearner.algorithm.tbsl.util.SPARQLEndpointMetrics;
 import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.algorithm.tbsl.util.UnknownPropertyHelper;
 import org.dllearner.algorithm.tbsl.util.UnknownPropertyHelper.SymPropertyDirection;
+import org.dllearner.common.index.HierarchicalIndex;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.IndexResultItem;
 import org.dllearner.common.index.IndexResultSet;
@@ -80,6 +81,8 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Options;
 import org.semanticweb.HermiT.Configuration.DirectBlockingType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -118,6 +121,8 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 	private Model model;
 	
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
+	
+	private SimpleIRIShortFormProvider iriSfp = new SimpleIRIShortFormProvider();
 	
 	private Index resourcesIndex;
 	private Index classesIndex;
@@ -167,14 +172,17 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 	
 	public SPARQLTemplateBasedLearner3(Knowledgebase knowledgebase, PartOfSpeechTagger posTagger, WordNet wordNet, Options options){
 		this(knowledgebase.getEndpoint(), knowledgebase.getResourceIndex(), knowledgebase.getClassIndex(),knowledgebase.getPropertyIndex(), posTagger, wordNet, options);
+		setMappingIndex(knowledgebase.getMappingIndex());
 	}
 	
 	public SPARQLTemplateBasedLearner3(Knowledgebase knowledgebase, PartOfSpeechTagger posTagger, WordNet wordNet, Options options, ExtractionDBCache cache){
 		this(knowledgebase.getEndpoint(), knowledgebase.getResourceIndex(), knowledgebase.getClassIndex(),knowledgebase.getPropertyIndex(), posTagger, wordNet, options, cache);
+		setMappingIndex(knowledgebase.getMappingIndex());
 	}
 	
 	public SPARQLTemplateBasedLearner3(Knowledgebase knowledgebase){
 		this(knowledgebase.getEndpoint(), knowledgebase.getResourceIndex(), knowledgebase.getClassIndex(),knowledgebase.getPropertyIndex(), new StanfordPartOfSpeechTagger(), new WordNet(), new Options());
+		setMappingIndex(knowledgebase.getMappingIndex());
 	}
 	
 	public SPARQLTemplateBasedLearner3(SparqlEndpoint endpoint, Index index){
@@ -630,7 +638,7 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 				}
 				
 			}
-			SPARQLEndpointMetrics metrics = new SPARQLEndpointMetrics(endpoint, new ExtractionDBCache("/opt/tbsl/cache2"));
+			SPARQLEndpointMetrics metrics = new SPARQLEndpointMetrics(endpoint, new ExtractionDBCache("/opt/tbsl/dbpedia_pmi_cache"));
 			for (Iterator<WeightedQuery> iterator = queries.iterator(); iterator.hasNext();) {
 				WeightedQuery wQ = iterator.next();
 				Query q = wQ.getQuery();
@@ -647,9 +655,10 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 								types.add(typeTriple.getValue().getName().replace(">", "").replace("<", ""));
 							}
 							for(String type : types){
-								metrics.getGoodness(new NamedClass(type), 
+								double goodness = metrics.getGoodness(new NamedClass(type), 
 										new ObjectProperty(predicate.getName().replace(">", "").replace("<", "")), 
 										new Individual(object.getName().replace(">", "").replace("<", "")));
+								wQ.setScore(wQ.getScore()+goodness);
 							}
 						} else if(object.isVariable() && !subject.isVariable()){
 							String varName = triple.getVariable().getName();
@@ -658,9 +667,10 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 								types.add(typeTriple.getValue().getName().replace(">", "").replace("<", ""));
 							}
 							for(String type : types){
-								metrics.getGoodness(new Individual(subject.getName().replace(">", "").replace("<", "")), 
+								double goodness = metrics.getGoodness(new Individual(subject.getName().replace(">", "").replace("<", "")), 
 										new ObjectProperty(predicate.getName().replace(">", "").replace("<", "")), 
 										new NamedClass(type));
+								wQ.setScore(wQ.getScore()+goodness);
 							}
 						}
 					}
@@ -942,7 +952,11 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 				
 				
 				for(IndexResultItem item : rs.getItems()){
-					double similarity = Similarity.getSimilarity(word, item.getLabel());
+					String label = item.getLabel();
+					if(label == null){
+						label = iriSfp.getShortForm(IRI.create(item.getUri()));
+					}
+					double similarity = Similarity.getSimilarity(word, label);
 //					//get the labels of the redirects and compute the highest similarity
 //					if(slot.getSlotType() == SlotType.RESOURCE){
 //						Set<String> labels = getRedirectLabels(item.getUri());
@@ -1010,9 +1024,13 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 	 */
 	public static void main(String[] args) throws Exception {
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		Index resourcesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_resources");
+		SOLRIndex resourcesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_resources");
+		resourcesIndex.setPrimarySearchField("label");
 		Index classesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_classes");
 		Index propertiesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_properties");
+		SOLRIndex boa_propertiesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/boa_fact_detail");
+		boa_propertiesIndex.setSortField("boa-score");
+		propertiesIndex = new HierarchicalIndex(boa_propertiesIndex, propertiesIndex);
 		
 		SPARQLTemplateBasedLearner3 learner = new SPARQLTemplateBasedLearner3(endpoint, resourcesIndex, classesIndex, propertiesIndex);
 		learner.init();
