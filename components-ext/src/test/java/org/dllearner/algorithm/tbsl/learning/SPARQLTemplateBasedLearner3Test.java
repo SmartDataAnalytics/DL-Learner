@@ -178,10 +178,12 @@ public class SPARQLTemplateBasedLearner3Test
 		{
 			// see http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/Model.html#read%28java.io.InputStream,%20java.lang.String,%20java.lang.String%29
 			String ending = s.substring(s.lastIndexOf('.')+1, s.length());			
-			String type = (ending.equals("ttl")||ending.equals("nt"))?"N3":ending.equals("owl")?"RDF/XML":String.valueOf(Integer.valueOf("filetype "+ending+" not handled."));
+			String type = (ending.equals("ttl")||ending.equals("nt"))?"TURTLE":ending.equals("owl")?"RDF/XML":String.valueOf(Integer.valueOf("filetype "+ending+" not handled."));
 			// switch(type) {case "ttl":type="TURTLE";break;case "owl":type="RDF/XML";break;default:throw new RuntimeException("filetype "+ending+" not handled.");} // no Java 1.7 :-(
-			try{m.read(getClass().getClassLoader().getResourceAsStream("oxford/"+s),null, type);}
-			catch(RuntimeException e) {throw new RuntimeException("Could not read into model: "+s,e);}
+			try{
+//				m.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/data/"+s)), null, type);}catch (FileNotFoundException e) {}
+				m.read(getClass().getClassLoader().getResourceAsStream("oxford/"+s),null, type);}
+			catch(RuntimeException e) {throw new RuntimeException("Could not read into model: "+s,e);} 
 		}
 		//		test("Oxford evaluation questions", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
 		//			SparqlEndpoint.getEndpointDBpediaLiveAKSW(),dbpediaLiveCache);
@@ -994,6 +996,11 @@ public class SPARQLTemplateBasedLearner3Test
 					);
 
 			learner = new SPARQLTemplateBasedLearner2(model,mappingIndex,pretagged?null:POSTaggerHolder.posTagger);
+			try {
+				learner.init();
+			} catch (ComponentInitException e) {
+				e.printStackTrace();
+			}
 		}								
 
 
@@ -1024,7 +1031,7 @@ public class SPARQLTemplateBasedLearner3Test
 			}
 			catch(Exception e)
 			{
-				logger.error(String.format("Exception for question \"%s\": %s",question,e.getLocalizedMessage()));
+				logger.error(String.format("Exception for question %d \"%s\": %s",id, question,e.getLocalizedMessage()));
 				e.printStackTrace();
 				return LearnStatus.exceptionStatus(e);
 			}			
