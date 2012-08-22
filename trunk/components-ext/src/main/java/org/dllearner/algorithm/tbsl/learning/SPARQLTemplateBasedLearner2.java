@@ -47,7 +47,6 @@ import org.dllearner.algorithm.tbsl.util.Knowledgebase;
 import org.dllearner.algorithm.tbsl.util.PopularityMap;
 import org.dllearner.algorithm.tbsl.util.PopularityMap.EntityType;
 import org.dllearner.algorithm.tbsl.util.Similarity;
-import org.dllearner.algorithm.tbsl.util.UnknownPropertyHelper;
 import org.dllearner.algorithm.tbsl.util.UnknownPropertyHelper.SymPropertyDirection;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.IndexResultItem;
@@ -68,6 +67,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -76,14 +76,19 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Options;
 
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.sparql.expr.ExprAggregator;
+import com.hp.hpl.jena.sparql.expr.ExprVar;
+import com.hp.hpl.jena.sparql.expr.aggregate.AggCount;
+import com.hp.hpl.jena.sparql.expr.aggregate.Aggregator;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -272,6 +277,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			datatypePropertiesIndex = propertiesIndex;
 			objectPropertiesIndex = propertiesIndex;
 		}
+		reasoner = new SPARQLReasoner(new LocalModelBasedSparqlEndpointKS(ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM, model)), cache);
 	}
 	
 	public void setGrammarFiles(String[] grammarFiles){
@@ -529,7 +535,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		Set<Allocation> allocations;
 		
 		for(Template t : templates){
-			logger.debug("Processing template:\n" + t.toString());
+			logger.info("Processing template:\n" + t.toString());
+			System.err.println(QueryFactory.create(t.getQuery().toString(), Syntax.syntaxSPARQL_11));
 			allocations = new TreeSet<Allocation>();
 			boolean containsRegex = t.getQuery().toString().toLowerCase().contains("(regex(");
 			
@@ -858,19 +865,6 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		}
 		logger.debug("...done in ");
 		return allQueries;
-	}
-
-	private Set<String> getRedirectLabels(String uri){
-		Set<String> labels = new HashSet<String>();
-		String query = String.format("SELECT ?label WHERE {?s <http://dbpedia.org/ontology/wikiPageRedirects> <%s>. ?s <%s> ?label.}", uri, RDFS.label.getURI());
-		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			labels.add(qs.getLiteral("label").getLexicalForm());
-			
-		}
-		return labels;
 	}
 	
 	private double getProminenceValue(String uri, SlotType type){
