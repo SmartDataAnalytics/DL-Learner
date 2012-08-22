@@ -22,7 +22,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
@@ -56,6 +55,7 @@ import org.dllearner.common.index.IndexResultSet;
 import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SOLRIndex;
 import org.dllearner.common.index.SPARQLDatatypePropertiesIndex;
+import org.dllearner.common.index.SPARQLIndex;
 import org.dllearner.common.index.SPARQLObjectPropertiesIndex;
 import org.dllearner.common.index.SPARQLPropertiesIndex;
 import org.dllearner.common.index.VirtuosoDatatypePropertiesIndex;
@@ -241,6 +241,12 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	
 	public SPARQLTemplateBasedLearner2(Model model, Index resourcesIndex, Index classesIndex, Index propertiesIndex, PartOfSpeechTagger posTagger, WordNet wordNet, Options options){
 		this(model, resourcesIndex, classesIndex, propertiesIndex, posTagger, wordNet, options, new ExtractionDBCache("cache"));
+	}
+	
+	public SPARQLTemplateBasedLearner2(Model model, MappingBasedIndex mappingBasedIndex, PartOfSpeechTagger posTagger)
+	{
+		this(model, new SPARQLIndex(model),new SPARQLIndex(model),new SPARQLIndex(model),posTagger);
+		setMappingIndex(mappingBasedIndex);
 	}
 	
 	public SPARQLTemplateBasedLearner2(Model model, Index resourcesIndex, Index classesIndex, Index propertiesIndex, PartOfSpeechTagger posTagger, WordNet wordNet, Options options, ExtractionDBCache cache){
