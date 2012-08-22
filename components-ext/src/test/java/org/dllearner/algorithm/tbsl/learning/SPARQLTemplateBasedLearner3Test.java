@@ -1,17 +1,21 @@
 package org.dllearner.algorithm.tbsl.learning;
 
 import static org.junit.Assert.fail;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.util.Collection;
@@ -26,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutionException;
@@ -56,6 +61,10 @@ import org.dllearner.common.index.HierarchicalIndex;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SOLRIndex;
+import org.dllearner.common.index.SPARQLClassesIndex;
+import org.dllearner.common.index.SPARQLIndex;
+import org.dllearner.common.index.VirtuosoClassesIndex;
+import org.dllearner.common.index.VirtuosoResourcesIndex;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -70,6 +79,8 @@ import org.xml.sax.SAXException;
 import cern.colt.Arrays;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
@@ -91,30 +102,106 @@ import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
 // problem mit "In/IN which/WDT films/NNS did/VBD Julia/NNP Roberts/NNP as/RB well/RB as/IN Richard/NNP Gere/NNP play/NN"
 public class SPARQLTemplateBasedLearner3Test
-{		
-	private static final boolean PRETAGGED = true;
-
+{			
 	private static final File evaluationFolder = new File("cache/evaluation");
+	private static final boolean	DBPEDIA_PRETAGGED	= true;
+	private static final boolean	OXFORD_PRETAGGED	= false;
 
 	/*@Test*/ public void testDBpedia() throws Exception
 	{test("QALD 2 Benchmark ideally tagged", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
 			SparqlEndpoint.getEndpointDBpedia(),dbpediaLiveCache);}
-	//@Test public void testOxford() {test(new File(""),"");}
 
-	@Test public void justTestTheLastWorkingOnesDBpedia() throws Exception
+	@Test public void testOxford() throws IOException
+	{
+		Model m = loadOxfordModel();
+		List<String> questions = new LinkedList<String>();
+		BufferedReader in = new BufferedReader((new InputStreamReader(getClass().getClassLoader().getResourceAsStream("tbsl/oxford_eval_queries.txt"))));
+		int j=0;
+		for(String line=in.readLine();line!=null;)
+		{
+			j++;
+			if(j>5) break;
+			if(!line.isEmpty()) {questions.add(line.replace("question: ", ""));}
+		}
+		in.close();
+		SortedMap<Integer,String> id2Question = new TreeMap<Integer, String>();
+		Iterator<String> it = questions.iterator();
+		for(int i=0;i<questions.size();i++) {id2Question.put(i, it.next());}
+		MappingBasedIndex mappingIndex= new MappingBasedIndex(
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
+				);
+		generateTestDataMultiThreaded(id2Question, null,m,mappingIndex,OXFORD_PRETAGGED);
+	}
+
+	private Model loadOxfordModel()
+	{
+		// load it into a model because we can and it's faster and doesn't rely on endpoint availability
+		// the files are located in the paper svn under question-answering-iswc-2012/data
+		// ls *ttl | xargs -I @ echo \"@\",
+		final String[] rdf = {
+				"abbeys-sales-triple.ttl",
+				"andrewsonline-sales-triple.ttl",
+				"anker-sales-triple.ttl",
+				"bairstoweves-sales-triple.ttl",
+				"ballards-sales-triple.ttl",
+				"breckon-sales-triple.ttl",
+				"buckellandballard-sales-triple.ttl",
+				"carterjonas-sales.ttl",
+				"churchgribben-salse-triple.ttl",
+				"findaproperty-sales-triple.ttl",
+				"johnwood-sales-triple.ttl",
+				"martinco-letting-triples.ttl",
+				"scottfraser-letting-triples.ttl",
+				"scottfraser-sales-triples.ttl",
+				"scottsymonds-sales-triple.ttl",
+				"scrivenerandreinger-sales-triple.ttl",
+				"sequencehome-sales-triple.ttl",
+				"teampro-sales.ttl",
+				"thomasmerrifield-sales-triples.ttl",
+				"wwagency-letting-triple_with-XSD.ttl",
+				"wwagency-sales-triple_with-XSD.ttl",
+				// ls links/*ttl | xargs -I @ echo \"@\",
+				"links/allNear.ttl",
+				"links/all_walking_distance.ttl",
+				"links/lgd_data.ttl",
+				// ls schema/* | xargs -I @ echo \"@\",
+				"schema/goodRelations.owl",
+				"schema/LGD-Dump-110406-Ontology.nt",
+				"schema/ontology.ttl",
+				"schema/vCard.owl"
+		};
+		Model m = ModelFactory.createDefaultModel();
+		for(final String s:rdf)
+		{
+			// see http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/Model.html#read%28java.io.InputStream,%20java.lang.String,%20java.lang.String%29
+			String ending = s.substring(s.lastIndexOf('.')+1, s.length());			
+			String type = (ending.equals("ttl")||ending.equals("nt"))?"N3":ending.equals("owl")?"RDF/XML":String.valueOf(Integer.valueOf("filetype "+ending+" not handled."));
+			// switch(type) {case "ttl":type="TURTLE";break;case "owl":type="RDF/XML";break;default:throw new RuntimeException("filetype "+ending+" not handled.");} // no Java 1.7 :-(
+			try{m.read(getClass().getClassLoader().getResourceAsStream("oxford/"+s),null, type);}
+			catch(RuntimeException e) {throw new RuntimeException("Could not read into model: "+s,e);}
+		}
+		//		test("Oxford evaluation questions", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
+		//			SparqlEndpoint.getEndpointDBpediaLiveAKSW(),dbpediaLiveCache);
+		return m;
+	}
+
+	/*@Test*/ public void justTestTheLastWorkingOnesDBpedia() throws Exception
 	{		
 		SortedMap<Long,Evaluation> evaluations;
-		
+
 		if((evaluations=Evaluation.read()).isEmpty())
 		{
 			testDBpedia();
 			evaluations=Evaluation.read();		
 		}
-		
+
 		Evaluation latestEvaluation = evaluations.get(evaluations.lastKey());
 		for(String question: latestEvaluation.correctlyAnsweredQuestions)
 		{
-			LearnStatus status = new LearnQueryCallable(question, 0,new QueryTestData() , dbpediaLiveKnowledgebase).call();
+			LearnStatus status = new LearnQueryCallable(question, 0,new QueryTestData() , dbpediaLiveKnowledgebase,DBPEDIA_PRETAGGED).call();
 			if(status.type!=LearnStatus.Type.OK) {fail("Failed with question \""+question+"\", query status: "+status);}
 		}
 	}
@@ -165,7 +252,7 @@ public class SPARQLTemplateBasedLearner3Test
 		logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
 
 		long startLearning = System.currentTimeMillis();
-		QueryTestData learnedTestData = generateTestDataMultiThreaded(referenceTestData.id2Question, dbpediaLiveKnowledgebase);
+		QueryTestData learnedTestData = generateTestDataMultiThreaded(referenceTestData.id2Question, dbpediaLiveKnowledgebase,null,null,DBPEDIA_PRETAGGED);
 		long endLearning = System.currentTimeMillis();
 		logger.info("finished learning after "+(endLearning-startLearning)/1000.0+"s");
 		learnedTestData.generateAnswers(endpoint,cache);
@@ -414,10 +501,16 @@ public class SPARQLTemplateBasedLearner3Test
 	}
 	//	enum LearnStatus {OK, TIMEOUT,EXCEPTION,NO_TEMPLATE_FOUND,QUERY_RESULT_EMPTY, NO_QUERY_LEARNED;}
 
-	/**	
-	 * @return the test data containing those of the given questions for which queries were found and the results of the queries  	 
+	/**
+	 * @param id2Question
+	 * @param kb either the kb or both the model and the index can be null. if the kb is null the model and index are used, else the kb is used.
+	 * @param model can be null if the kb is not null
+	 * @param index can be null if the kb is not null
+	 * @return the test data containing those of the given questions for which queries were found and the results of the queries
+	 * @throws MalformedURLException
+	 * @throws ComponentInitException
 	 */
-	private QueryTestData generateTestDataMultiThreaded(SortedMap<Integer, String> id2Question,Knowledgebase kb) throws MalformedURLException, ComponentInitException
+	private QueryTestData generateTestDataMultiThreaded(SortedMap<Integer, String> id2Question,Knowledgebase kb,Model model, MappingBasedIndex index,boolean pretagged)
 	{
 		QueryTestData testData = new QueryTestData();
 		// -- only create the learner parameters once to save time -- 
@@ -435,7 +528,8 @@ public class SPARQLTemplateBasedLearner3Test
 
 		for(int i: id2Question.keySet())
 		{//if(i != 78)continue;
-			futures.put(i,service.submit(new LearnQueryCallable(id2Question.get(i),i, testData,kb)));
+			if(kb!=null)	{futures.put(i,service.submit(new LearnQueryCallable(id2Question.get(i),i, testData,kb,pretagged)));}
+			else			{futures.put(i,service.submit(new LearnQueryCallable(id2Question.get(i),i, testData,model,index,pretagged)));}
 		}
 		for(int i: id2Question.keySet())
 		{//if(i != 78)continue;
@@ -688,6 +782,8 @@ public class SPARQLTemplateBasedLearner3Test
 			}
 			return this;
 		}
+
+
 	}
 
 	private QueryTestData readQueries(final File file)
@@ -840,45 +936,66 @@ public class SPARQLTemplateBasedLearner3Test
 	//		System.out.println(diff+" millis as a whole, "+diff/1000.0+" millis per run");
 	//	}
 
-	//	private Knowledgebase createOxfordKnowledgebase(ExtractionDBCache cache)
-	//	{
-	//		URL url;
-	//		try{url = new URL("http://lgd.aksw.org:8900/sparql");} catch(Exception e) {throw new RuntimeException(e);}
-	//		SparqlEndpoint endpoint = new SparqlEndpoint(url, Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
+	//		private Knowledgebase createOxfordKnowledgebase(ExtractionDBCache cache)
+	//		{
+	//			URL url;
+	//			try{url = new URL("http://lgd.aksw.org:8900/sparql");} catch(Exception e) {throw new RuntimeException(e);}
+	//			SparqlEndpoint endpoint = new SparqlEndpoint(url, Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
+	//	
+	//			SPARQLIndex resourcesIndex = new VirtuosoResourcesIndex(endpoint, cache);
+	//			SPARQLIndex classesIndex = new VirtuosoClassesIndex(endpoint, cache);
+	//			SPARQLIndex propertiesIndex = new VirtuosoPropertiesIndex(endpoint, cache);
+	//			MappingBasedIndex mappingIndex= new MappingBasedIndex(
+	//					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
+	//					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
+	//					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
+	//					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
+	//					);
+	//	
+	//			Knowledgebase kb = new Knowledgebase(oxfordEndpoint, "Oxford - Real estate", "TODO", resourcesIndex, propertiesIndex, classesIndex, mappingIndex);
 	//
-	//		SPARQLIndex resourcesIndex = new VirtuosoResourcesIndex(endpoint, cache);
-	//		SPARQLIndex classesIndex = new VirtuosoClassesIndex(endpoint, cache);
-	//		SPARQLIndex propertiesIndex = new VirtuosoPropertiesIndex(endpoint, cache);
-	//		MappingBasedIndex mappingIndex= new MappingBasedIndex(
-	//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
-	//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
-	//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
-	//				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
-	//				);
-	//
-	//		Knowledgebase kb = new Knowledgebase(oxfordEndpoint, "Oxford - Real estate", "TODO", resourcesIndex, propertiesIndex, classesIndex, mappingIndex);
-	//		return kb;
-	//	}
+	//			return kb;
+	//		}
 	private static class LearnQueryCallable implements Callable<LearnStatus>
 	{
 		private final String question;
 		//		private final String endpoint;
 		private final int id;
 		private final QueryTestData testData;
-		private final Knowledgebase knowledgeBase;
 
-		static private final PartOfSpeechTagger posTagger = PRETAGGED? null: new SynchronizedStanfordPartOfSpeechTagger();		
+		static private class POSTaggerHolder
+		{static public final PartOfSpeechTagger posTagger = new SynchronizedStanfordPartOfSpeechTagger();}
+		
 		static private final WordNet wordnet = new WordNet();
 		static private final Options options = new Options();
+		private final boolean pretagged;
+		private final SPARQLTemplateBasedLearner2 learner;
 
-
-		public LearnQueryCallable(String question, int id, QueryTestData testData, Knowledgebase knowledgeBase)
+		public LearnQueryCallable(String question, int id, QueryTestData testData, Knowledgebase knowledgeBase,boolean pretagged)
 		{
 			this.question=question;
 			this.id=id;					
-			this.knowledgeBase=knowledgeBase;
 			this.testData=testData;
+			this.pretagged=pretagged;
+			learner = new SPARQLTemplateBasedLearner2(knowledgeBase,pretagged?null:POSTaggerHolder.posTagger,wordnet,options);
 		}								
+
+		public LearnQueryCallable(String question, int id, QueryTestData testData, Model model,MappingBasedIndex index,boolean pretagged)
+		{
+			this.question=question;
+			this.id=id;					
+			this.testData=testData;
+			this.pretagged=pretagged;
+			MappingBasedIndex mappingIndex= new MappingBasedIndex(
+					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
+					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
+					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
+					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
+					);
+
+			learner = new SPARQLTemplateBasedLearner2(model,mappingIndex,pretagged?null:POSTaggerHolder.posTagger);
+		}								
+
 
 		@Override public LearnStatus call()
 		{					
@@ -886,12 +1003,7 @@ public class SPARQLTemplateBasedLearner3Test
 			try
 			{			
 				// learn query
-				// TODO: change to knowledgebase parameter
-				SPARQLTemplateBasedLearner3 learner = new SPARQLTemplateBasedLearner3(createDBpediaLiveKnowledgebase(dbpediaLiveCache),posTagger,wordnet,options);
 
-				//						SPARQLTemplateBasedLearner2 dbpediaLiveLearner = new SPARQLTemplateBasedLearner2(createDBpediaLiveKnowledgebase(dbpediaLiveCache));
-				learner.init();
-				learner.setUseIdealTagger(true);
 				learner.setQuestion(question);						
 				learner.learnSPARQLQueries();						
 				String learnedQuery = learner.getBestSPARQLQuery();
