@@ -20,6 +20,11 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -27,12 +32,14 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -51,6 +58,8 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 
 	public FunctionalObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s ?p ?o1. FILTER NOT EXISTS {?s ?p ?o2. FILTER(?o1 != ?o2)} }");
+		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s ?p ?o1. ?s ?p ?o2. FILTER(?o1 != ?o2)}");
 	}
 	
 	public ObjectProperty getPropertyToDescribe() {
@@ -59,6 +68,8 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 
 	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
+		posExamplesQueryTemplate.setIri("p", propertyToDescribe.getURI().toString());
+		negExamplesQueryTemplate.setIri("p", propertyToDescribe.getURI().toString());
 	}
 	
 	@Override
@@ -86,36 +97,36 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	}
 	
 	private void runSPARQL1_0_Mode() {
-		Model model = ModelFactory.createDefaultModel();
+		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){System.out.println(query);
-			model.add(newModel);
+			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = String.format(
 					"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
 					propertyToDescribe.getName());
-			ResultSet rs = executeSelectQuery(query, model);
+			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int all = 1;
 			while (rs.hasNext()) {
 				qs = rs.next();
 				all = qs.getLiteral("all").getInt();
 			}
-			System.out.println(all);
+			
 			// get number of instances of s with <s p o> <s p o1> where o != o1
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o2)} }";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query, model);
+			rs = executeSelectQuery(query, workingModel);
 			int functional = 1;
 			while (rs.hasNext()) {
 				qs = rs.next();
 				functional = qs.getLiteral("functional").getInt();
 			}
-			System.out.println(functional);
+			
 			if (all > 0) {
 				currentlyBestAxioms.clear();
 				currentlyBestAxioms.add(new EvaluatedAxiom(
@@ -155,13 +166,21 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	}
 	
 	public static void main(String[] args) throws Exception{
-		FunctionalObjectPropertyAxiomLearner l = new FunctionalObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/wikiPageExternalLink"));
-		l.setMaxExecutionTimeInSeconds(10);
-//		l.setForceSPARQL_1_0_Mode(true);
+		FunctionalObjectPropertyAxiomLearner l = new FunctionalObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/league"));
+		l.setMaxExecutionTimeInSeconds(20);
+		l.setForceSPARQL_1_0_Mode(true);
 		l.init();
 		l.start();
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
+		List<EvaluatedAxiom> axioms = l.getCurrentlyBestEvaluatedAxioms(5);
+		System.out.println(axioms);
+		
+		for(EvaluatedAxiom axiom : axioms){
+			printSubset(l.getPositiveExamples(axiom), 10);
+			printSubset(l.getNegativeExamples(axiom), 10);
+			l.explainScore(axiom);
+		}
+		
 	}
 	
 }

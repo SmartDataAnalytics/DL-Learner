@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,6 +38,7 @@ import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -115,6 +117,11 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	private List<String> filterNamespaces = new ArrayList<String>();
 	
 	protected ParameterizedSparqlString iterativeQueryTemplate;
+	
+	protected Model workingModel;
+	protected ParameterizedSparqlString posExamplesQueryTemplate;
+	protected ParameterizedSparqlString negExamplesQueryTemplate;
+	
 	
 	public AbstractAxiomLearningAlgorithm() {
 		existingAxioms = new TreeSet<Axiom>(new AxiomComparator());
@@ -255,7 +262,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		
 	}
 	
-	protected Model executeConstructQuery(String query) {
+	protected Model executeConstructQuery(String query) {System.out.println(query);
 		logger.debug("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
@@ -266,7 +273,12 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
 			try {
 				Model model = queryExecution.execConstruct();
+				fetchedRows += model.size();
 				timeout = false;
+				if(model.size() == 0){
+					fullDataLoaded = true;
+				}
+
 				return model;
 			} catch (QueryExceptionHTTP e) {
 				if(e.getCause() instanceof SocketTimeoutException){
@@ -277,8 +289,13 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 				return ModelFactory.createDefaultModel();
 			}
 		} else {
-			QueryExecution qexec = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
-			return qexec.execConstruct();
+			QueryExecution queryExecution = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
+			Model model = queryExecution.execConstruct();
+			fetchedRows += model.size();
+			if(model.size() == 0){
+				fullDataLoaded = true;
+			}
+			return model;
 		}
 	}
 	
@@ -454,6 +471,67 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	public void addFilterNamespace(String namespace){
 		filterNamespaces.add(namespace);
+	}
+	
+	protected SortedSet<Individual> getPositiveExamples(EvaluatedAxiom axiom){
+		if(workingModel != null){
+			SortedSet<Individual> posExamples = new TreeSet<Individual>();
+			
+			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
+			while(rs.hasNext()){
+				posExamples.add(new Individual(rs.next().get("s").asResource().getURI()));
+			}
+			
+			return posExamples;
+		} else {
+			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+		}
+	}
+	
+	protected SortedSet<Individual> getNegativeExamples(EvaluatedAxiom axiom){
+		if(workingModel != null){
+			SortedSet<Individual> negExamples = new TreeSet<Individual>();
+			
+			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
+			while(rs.hasNext()){
+				negExamples.add(new Individual(rs.next().get("s").asResource().getURI()));
+			}
+			
+			return negExamples;
+		} else {
+			throw new UnsupportedOperationException("Getting negative examples is not possible.");
+		}
+	}
+	
+	protected void explainScore(EvaluatedAxiom evAxiom){
+		int posExampleCnt = getPositiveExamples(evAxiom).size();
+		int negExampleCnt = getNegativeExamples(evAxiom).size();
+		int total = posExampleCnt + negExampleCnt;
+		StringBuilder sb = new StringBuilder();
+		String lb = "\n";
+		sb.append("######################################").append(lb);
+		sb.append("Explanation:").append(lb);
+		sb.append("Score(").append(evAxiom.getAxiom()).append(") = ").append(evAxiom.getScore().getAccuracy()).append(lb);
+		sb.append("Total number of resources:\t").append(total).append(lb);
+		sb.append("Number of positive examples:\t").append(posExampleCnt).append(lb);
+		sb.append("Number of negative examples:\t").append(negExampleCnt).append(lb);
+		sb.append("Complete data processed:\t").append(fullDataLoaded).append(lb);
+		sb.append("######################################");
+		System.out.println(sb.toString());
+	}
+	
+	protected static <E> void printSubset(Collection<E> collection, int maxSize){
+		StringBuffer sb = new StringBuffer();
+		int i = 0;
+		Iterator<E> iter = collection.iterator();
+		while(iter.hasNext() && i < maxSize){
+			sb.append(iter.next().toString()).append(", ");
+			i++;
+		}
+		if(iter.hasNext()){
+			sb.append("...(").append(collection.size()-i).append(" more)");
+		}
+		System.out.println(sb.toString());
 	}
 	
 	protected <K,T extends Set<V>, V> void addToMap(Map<K, T> map, K key, V value ){
