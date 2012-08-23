@@ -911,6 +911,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		//			return 0;
 		//		} 
 		//		return Math.log(cnt);
+		if(Double.isNaN(popularity)) {throw new AssertionError("prominence NaN for uri "+uri+", slot type "+type);}
 		return popularity;
 	}
 
