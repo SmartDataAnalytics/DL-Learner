@@ -1,0 +1,1062 @@
+#60 houses
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+dd:i1cd1
+      dd:hasPrice "1560"^^xsd:double ;
+      gr:includes dd:i1cd3 ;
+      foaf:page "http://www.martinco.com/property/south/berkshire/reading/basingstoke_road_reading_59835" .
+
+dd:i1cd3
+      a       dd:House ;
+      dd:bedrooms 6 ;
+      gr:description "A large, 6 double bedroom, 3 storey house, located within 10 minutes walk of the Town Centre and University. House consists of a living room, large fully fitted kitchen, downstairs shower room with w.c, 5 double bedrooms & 1 good size single & a 1st. floor bathroom with w.c. House is available from the 1st July 2012 , furnished and has 2 off road parking spaces. STUDENT LET ONLY."^^xsd:string ;
+      gr:name "Basingstoke Road, Reading"^^xsd:string ;
+      wgs84:lat "51.4426002502441406"^^xsd:double ;
+      wgs84:long "-0.9653377532958984"^^xsd:double ;
+      vcard:locality "Reading" ;
+      vcard:street-address
+              "Basingstoke Road, Reading" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_13293_0.jpg" .
+
+
+dd:i2cd3
+      a       dd:House ;
+      dd:bathrooms 1 ;
+      dd:bedrooms 4 ;
+      gr:description "The property consists of the following:- Large porch leading into the lounge- Spacious lounge- Dining Room- Newly fitted kitchen with integrated appliances- Downstairs cloakroom- 3 Double bedrooms with fitted wardrobes- Single bedroom- Newly refurbished family bathroom with stand alone shower cubicle and airing cupboard- The kitchen leads into a double length secure car port with locking garage door- Rear lawned garden with patio area- Double Garage"^^xsd:string ;
+      gr:name "Wallingford"^^xsd:string ;
+      wgs84:lat "51.6021421"^^xsd:double ;
+      wgs84:long "-1.1385259"^^xsd:double ;
+      vcard:street-address
+              "Wallingford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_013.59.JPG" .
+
+dd:i2cd1
+      dd:hasPrice "1550"^^xsd:double ;
+      gr:includes dd:i2cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/wallingford/wallingford_64181" .
+
+
+
+dd:i3cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 3 ;
+      gr:description "A spacious 3 BEDROOM and 2 BATHROOM furnished APARTMENT with allocated PARKING on the prestigious Waterways development just of Woodstock Road, North Oxford.  The property is located for easy access to the shops and restaurants of Summertown and Jericho and close to frequent bus services into the city centre. A children's nursery centre can be found on the development and close by is a fitness and leisure complex. There is fast access to the ring road and motorway network.The apartment has a wide entrance hall, with storage cupboard, and leads to a large open plan living and dining area. An archway opens onto the kitchen, with tiled floor, and fitted with contemporary-style units and quality appliances. They include a gas hob/electric oven/extractor hood, dishwasher, washing machine and integrated fridge/freezer. The master bedroom is very spacious with built-in wardrobes and cupboards and a stylish en-suite shower room with toilet. There are 2 further bedrooms and a family bathroom."^^xsd:string ;
+      gr:name "Waterways,  North Oxford"^^xsd:string ;
+      wgs84:lat "51.7729492187500000"^^xsd:double ;
+      wgs84:long "-1.2733199596405029"^^xsd:double ;
+      vcard:locality "North Oxford" ;
+      vcard:street-address
+              "Waterways,  North Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_42178_0.jpg" .
+
+dd:i3cd1
+      dd:hasPrice "1525"^^xsd:double ;
+      gr:includes dd:i3cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/waterways__north_oxford_27882" .
+
+
+dd:i4cd1
+      dd:hasPrice "1500"^^xsd:double ;
+      gr:includes dd:i4cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/old_road_headington_oxford_84897" .
+
+dd:i4cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 5 ;
+      gr:description "A spacious DETACHED HOUSE available SEPTEMBER 2012. Offering flexible accommodation over 3 floors with 5 BEDROOMS, a living room, 2 BATHROOMS and parking. Ideal STUDENT ACCOMMODATION close to the Gipsy Lane Campus of Oxford Brookes."^^xsd:string ;
+      gr:name "Old Road, Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.753159"^^xsd:double ;
+      wgs84:long "-1.201065"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:street-address
+              "Old Road, Headington, Oxford" .
+
+
+
+dd:i5cd1
+      dd:hasPrice "1500"^^xsd:double ;
+      gr:includes dd:i5cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_53796" .
+
+dd:i5cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A spacious furnished 4 BEDROOM HOUSE with GARDENS front and rear and tucked away in a quiet no-through lane in beautiful Iffley Village. The location offers idyllic towpath walks just a short stroll away and the village boasts traditional pubs and fine restaurants.There is garage and off-road parking and the property is situated within two miles of Oxford city centre.Accommodation is arranged over three floors and includes a hallway with cloakroom/wc. The spacious kitchen/breakfast room has a range of fitted units and granite work surfaces with inset hob and integrated oven. All the appliances are built-in and include a fridge/freezer, washing machine and dishwasher. There is a spacious living room with separate sun room dining area opening out onto a paved patio and secluded and enclosed rear garden with shed. The landings to the upper floors have been adapted to incorporate ample storage space. There are three bedrooms and a family bathroom with over-bath pressurised shower and a fourth double bedroom, with countryside views, on the top floor. The property has gas central heating and is equipped for wireless internet access."^^xsd:string ;
+      gr:name "Oxford"^^xsd:string ;
+      wgs84:lat "51.7316473"^^xsd:double ;
+      wgs84:long "-1.235072700000046"^^xsd:double ;
+      vcard:street-address
+              "Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_24262_0.jpg" .
+
+
+
+dd:i6cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "STUDENT HOUSE for September 2012. Spacious, furnished, with 4 BEDROOMS and a GARDEN. Easy access to the city centre and close to Cowley Road shops, cafes and restaurants."^^xsd:string ;
+      gr:name "Howard Street, Oxford"^^xsd:string ;
+      wgs84:lat "51.740835"^^xsd:double ;
+      wgs84:long "-1.230426"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Howard Street, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_53197_0.jpg" .
+
+dd:i6cd1
+      dd:hasPrice "1495"^^xsd:double ;
+      gr:includes dd:i6cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/howard_street_oxford_19875" .
+
+
+dd:i7cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 2 ;
+      gr:description "Located on this prestigious and sought-after modern development in the heart of the city, a luxuriously appointed 1st floor FURNISHED APARMENT with 2 DOUBLE BEDROOMS, balcony and 2 BATHROOMS.  Perfect accommodation for a professional or student.  Parking may be possible by separate negotiation.Ideally situated with views over the courtyard, Castle Mill Stream and Oxford Castle. A short stroll takes you to fine restaurants, bars, cinemas, theatres, university colleges and Oxford city shopping centre. This well appointed apartment, with extensive wood flooring, is secured by an entry phone system and has lift access. Accommodation includes entrance hall with a deep storage cupboard. The spacious living/dining area has double aspect floor-to-ceiling windows and glazed doors opening to a balcony overlooking Oxford Castle. The kitchen is fully equipped with a range of modern fitted units, appliances and recessed ceiling downlighters. There are 2 double bedrooms and the master bedroom has a large en-suite shower room and fitted wardrobes. There is a separate bathroom with brilliant-white suite and over-bath shower.Viewings of this Martin & Co managed property are highly recommended."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7510108947753906"^^xsd:double ;
+      wgs84:long "-1.2640070915222168"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_24266_3.jpg" .
+
+dd:i7cd1
+      dd:hasPrice "1475"^^xsd:double ;
+      gr:includes dd:i7cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_53792" .
+
+
+
+dd:i8cd1
+      dd:hasPrice "1450"^^xsd:double ;
+      gr:includes dd:i8cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_96993" .
+
+dd:i8cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 2 ;
+      gr:description "A 2nd floor FURNISHED APARTMENT, overlooking Castle Mill stream, with 2 DOUBLE BEDROOMS, 2 bathrooms, a BALCONY and secure GARAGE PARKING.In a quiet location, with stream views from all rooms, the property is in the favoured development known as Empress Court next to Oxford Castle. The city's shopping centre, fine restaurants, cinemas and theatres are a short stroll away. The location provides quick access to train and bus stations as well as Oxford University colleges, all within easy walking distance.This light and spacious apartment has underfloor heating and can be accessed by lift.Generous accommodation includes a long entrance hall with audio/visual entry phone, airing cupboard and wood flooring, leading to the spacious living/dining room (6m x 3.8m). Floor to ceiling windows allow light to flood the apartment and a glazed door gives access to a balcony overlooking the stream. The separate recessed kitchen area has a range of contemporary fitted units including an inset hob, stainless steel oven and stainless steel extractor canopy. Both double bedrooms have stream views and the master bedroom (4.8m x 3.1m) is en-suite with shower cabinet. Both bathrooms are stylishly equipped and the 2nd bathroom has a classic white suite with bath.Built around 6 years ago, Martin & Co managed apartments in this development are sought-after and in demand. An early viewing is advised."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7508214"^^xsd:double ;
+      wgs84:long "-1.2639818999999761"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_28_Empress_Court_lounge.1.jpg" .
+
+
+
+dd:i9cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A furnished STUDENT HOUSE, available for the next academic year, with 4 BEDROOMS, rear GARDEN and off-road PARKING.Located in a popular residential and central location.  Within walking distance of the shopping centre, local and London bus services and parks.Accommodation includes a sitting room, large kitchen, 4 bedrooms and a bathroom."^^xsd:string ;
+      gr:name "Wharton Road, Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7585021"^^xsd:double ;
+      wgs84:long "-1.2049320999999508"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:street-address
+              "Wharton Road, Headington, Oxford" .
+
+dd:i9cd1
+      dd:hasPrice "1400"^^xsd:double ;
+      gr:includes dd:i9cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/wharton_road_headington_oxford_95737" .
+
+
+
+dd:i0cd3
+      a       dd:House ;
+      dd:bathrooms 3 ;
+      dd:bedrooms 5 ;
+      gr:description "Built 4 years ago, a luxuriously appointed and very spacious, unfurnished, DETACHED HOUSE with 5 DOUBLE BEDROOMS,  2 reception rooms, a kitchen/family room, study, 3 BATHROOMS, private enclosed GARDEN, double GARAGE and driveway parking. Cumnor Hill is perfectly positioned to bring the whole of the city within easy reach. It is an easy walk from several well-known restaurants and just a short distance from fine traditional pubs. Nearby Cumnor is home to a good junior school and there is an excellent secondary school just down the road. The shopping centre at Botley is a comfortable stroll away and the railway station is within easy cycling distance. Ground floor accommodation features a wide entrance hall, large living room and separate dining room, cloakroom/WC and a study. The spacious family/dining area, with large open-plan fitted kitchen has granite worktops and incorporates appliances including stainless steel gas hob/extractor canopy, double oven, fridge/freezer and dishwasher. Double glazed doors open on to a paved terrace and private garden. First floor master and second bedrooms both include en-suite facilities, with a further bathroom serving the remaining three bedrooms. All bathrooms have stylish chrome fittings, ceramic floor and wall tiles, towel warmer and a thermostatically controlled shower. This stunning home is one of just 5 similar houses on an exclusive no-through road development. The property is fitted with an intruder alarm and benefits from gas-fired central heating, extensive natural wood flooring and is managed by Martin & Co."^^xsd:string ;
+      gr:name "Cumnor Hill, Oxford"^^xsd:string ;
+      wgs84:lat "51.7431335449218750"^^xsd:double ;
+      wgs84:long "-1.3043689727783203"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Cumnor Hill, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_39854_0.jpg" .
+
+dd:i0cd1
+      dd:hasPrice "3500"^^xsd:double ;
+      gr:includes dd:i0cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/cumnor_hill_oxford_29441" .
+
+
+dd:j1cd3
+      a       dd:House ;
+      dd:bathrooms 3 ;
+      dd:bedrooms 5 ;
+      gr:description "An architect-designed DETACHED HOUSE offered unfurnished with 4/5 DOUBLE BEDROOMS and 3 BATHROOMS.  Built in 2008 to a high specification, with underfloor heating, unique design features offer SPACIOUS AND LIGHT accommodation with sweeping COUNTRYSIDE VIEWS.Located on the edge of this desirable village just 16 miles from Oxford city centre and with access to Swindon and Abingdon. The property's landscaped gardens will be maintained by a gardener.Flexible accommodation includes 4 or 5 double bedrooms, one en-suite bathroom and 2 further high specification family bathrooms.  Flexibility allows for a self-contained ground floor unit with a kitchen, bathroom and double bedroom, if required.To appreciate the individual features of this stunning property, we highly recommend viewings."^^xsd:string ;
+      gr:name "Littleworth, near Faringdon"^^xsd:string ;
+      wgs84:lat "51.67176019999999"^^xsd:double ;
+      wgs84:long "-1.5486077000000477"^^xsd:double ;
+      vcard:locality "near Faringdon" ;
+      vcard:street-address
+              "Littleworth, near Faringdon" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_Two_Hoots_DINER.1.jpg" .
+
+dd:j1cd1
+      dd:hasPrice "2450"^^xsd:double ;
+      gr:includes dd:j1cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/faringdon/littleworth_near_faringdon_98544" .
+
+
+dd:j2cd3
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "This unique 4/5 bedroom Hauf designed detached house, built in 2008, is situated on the edge of the attractive village of Littleworth with fantastic views over the Thames valley.  The individual design of this house offers light, spacious accommodation, resulting in a stunning family home. All four/five bedrooms are double,  one with an en-suite bathroom, and there are two further bathrooms which are also finished to a very high specification.  If required, the lower accommodation could be converted into a self-contained unit with kitchen, bathroom and double bedroom.The individual features of this property are too numerous to describe and it needs to be viewed to be appreciated!"^^xsd:string ;
+      gr:name "Two Hoots, Littleworth"^^xsd:string ;
+      wgs84:lat "51.6708"^^xsd:double ;
+      wgs84:long "-1.54875"^^xsd:double ;
+      vcard:locality "Littleworth" ;
+      vcard:street-address
+              "Two Hoots, Littleworth" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_2012/05/08/674115.1.jpg" .
+
+dd:j2cd1
+      dd:hasPrice "2450"^^xsd:double ;
+      gr:includes dd:j2cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/faringdon/two_hoots_littleworth_93608" .
+
+
+dd:j3cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 6 ;
+      gr:description "TOTAL RENOVATION.  A very spacious STUDENT HOUSE furnished by Ikea with 6 DOUBLE BEDROOMS and 2 BATHROOMS. Off-road PARKING. Available for AUGUST 1stIdeally located for Cowley Road's bars, restaurants, local traders and entertainment venues. The larger East Oxford shopping centres, retail parks and sports facilities can also be quickly reached. Frequent bus services to Oxford city centre pass close to the property.Accommodation includes a large living area with kitchen/diner, 6 double bedrooms and a bathroom with bath and separate shower cubicle. There is also a 2nd shower room with wc on the 1st floor and another separate toilet. To the rear of the property is a huge garden with paved terrace -  ideal for summer barbeques.Good standard student accommodation and early viewings advised"^^xsd:string ;
+      gr:name "Off Cowley Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7397837"^^xsd:double ;
+      wgs84:long "-1.2239865999999892"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Off Cowley Road, Oxford" .
+
+dd:j3cd1
+      dd:hasPrice "2400"^^xsd:double ;
+      gr:includes dd:j3cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/off_cowley_road_oxford_92886" .
+
+
+dd:j4cd1
+      dd:hasPrice "2100"^^xsd:double ;
+      gr:includes dd:j4cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/lime_walk_central_headington_94469" .
+
+dd:j4cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 4 ;
+      gr:description "COMPLETELY RENOVATED and UPDATED to a very high specification. A light and spacious DETACHED HOUSE offering flexible family accommodation over 3 floors to include 4 DOUBLE BEDROOMS, a sitting room, 2 BATHROOMS, study, basement with cloakroom and a LANDSCAPED GARDEN. Offered unfurnished.Centrally located on one of Headington's favoured streets and close to Shotover Country Park. The area includes some of Oxford's prime schools, a shopping centre with a wide range of stores, restaurants and cafes and the property is within walking distance of all Headington's hospitals. Frequent buses serve the area and Oxford city centre and the popular St Clements Quarter can be quickly reached. A 24-hour coach service into London picks up nearby.Expansive accommodation with quality finishes and extensive natural wood flooring includes an entrance hall leading to a large sitting. The huge open-planned kitchen/family room is flooded with light through roof skylights and a feature glazed wall with 4French doors all opening onto a beautiful terraced garden with paved, wood decked and lawn areas. There is a shed for easy storage of cycles accessed from the side of the property.  A study room/office can be found on the ground floor and to the lower ground floor is a cloakroom/WC, a utility room and a games room with wood flooring which could be used as a 4th double bedroom/guest room.To the 1st floor is the master bedroom suite featuring roof skylights, an en-suite bathroom and a separate dressing room/walk-in wardrobe. There are a further 2 double bedrooms and the remodelled family bathroom has a stylish suite including bath and separate shower.A dream home in a desirable area and viewings are highly recommended."^^xsd:string ;
+      gr:name "Lime Walk, Central Headington"^^xsd:string ;
+      wgs84:lat "51.7549136"^^xsd:double ;
+      wgs84:long "-1.2128037999999605"^^xsd:double ;
+      vcard:locality "Central Headington" ;
+      vcard:street-address
+              "Lime Walk, Central Headington" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_117_Lime_Walk_NEW_KITCHEN.1.jpg" .
+
+
+dd:j5cd1
+      dd:hasPrice "2000"^^xsd:double ;
+      gr:includes dd:j5cd3 ;
+      foaf:page "http://www.martinco.com/property/west_midlands/northamptonshire/daventry/daventry_100636" .
+
+dd:j5cd3
+      a       dd:House ;
+      dd:bedrooms 6 ;
+      gr:description "A Grade II listed 6/7 bedroom detached house, built in 1671, overlooking rolling countryside in this popular South Northamptonshire village. Built of stone under a slate roof, the property enjoys well-proportioned accommodation throughout with many traditional features including framed windows, window seats, flagstone flooring and high ceilings. The downstairs accommodation is both light and airy and comprises a delightful drawing room with a feature stone fireplace and working open fire, a large dining room with an Inglenook fireplace,  which leads conveniently into the adjacent kitchen/breakfast room with its oak flooring and fitted units to include appliances, a spacious sitting room with a feature working wood-burning and a downstairs cloakroom - which can be found in the main entrance hall. A unique and original oak staircase leads up to the first floor. The period features continue upstairs with the double master bedroom with a traditional fireplace and an ensuite bathroom, and a further 3 bedrooms, a family bathroom with an original restored bath and an additional staircase which rises to the top floor where there are two/three further double bedrooms and a bathroom with a wealth of built in cupboards. Outside are good size gardens to the rear approaching half an acre mainly laid to lawn with a large patio area, vegetable patch and rear access parking for ample vehicles approached via access off Back Lane.UNFURNISHED"^^xsd:string ;
+      gr:name "Daventry"^^xsd:string ;
+      wgs84:lat "52.21898969999999"^^xsd:double ;
+      wgs84:long "-1.2445890999999846"^^xsd:double ;
+      vcard:street-address
+              "Daventry" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_Front_Image.3.JPG" .
+
+
+dd:j6cd1
+      dd:hasPrice "1950"^^xsd:double ;
+      gr:includes dd:j6cd3 ;
+      foaf:page "http://www.martinco.com/property/south/berkshire/reading/reading_99305" .
+
+dd:j6cd3
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "Bedroom Five (10' 3\" x 6' 9\") Rear aspect window, carpet and radiator."^^xsd:string ;
+      gr:name "Reading"^^xsd:string ;
+      wgs84:lat "51.4204305"^^xsd:double ;
+      wgs84:long "-0.9451397999999926"^^xsd:double ;
+      vcard:street-address
+              "Reading" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_236971_8a.1.jpg" .
+
+
+dd:j7cd1
+      dd:hasPrice "1795"^^xsd:double ;
+      gr:includes dd:j7cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_38254" .
+
+dd:j7cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 2 ;
+      gr:description "Stylish and spacious 2nd floor FURNISHED APARTMENT with 2 DOUBLE BEDROOMS, 2 BATHROOMS, stream views and allocated PARKING on this landmark city centre development.A short walk will take you to rail and coach stations, fine restaurants & bars, theatres & cinemas and Oxford's shopping centre. This larger than average apartment has underfloor heating and video entry phone. The whole development is protected by closed circuit TV cameras. The property is luxuriously appointed throughout and accommodation includes an entrance lobby and spacious hall leading to a large and light living/dining room with Juliette balcony overlooking the Wareham Stream. The \"Pepper\" linear designed kitchen has a full provision of quality AEG/Electrolux integrated appliances. Both bedrooms are spacious and have built-in wardrobes. The guest bathroom is fitted to a high specification and the master bedroom has an en-suite shower room. There is a separate laundry facility within the apartment with appliances. The apartment has an East & South aspect and totals 1071 sq.ft.(99.5 sq.metres) A centrally located apartment positioned within a quiet and tranquil development. These Martin & Co managed apartments are highly desirable and an early viewing is advised."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7513961791992188"^^xsd:double ;
+      wgs84:long "-1.2647366523742676"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_289802_0.jpg" .
+
+dd:j8cd1
+      dd:hasPrice "1750"^^xsd:double ;
+      gr:includes dd:j8cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/marston_oxford_103700" .
+
+dd:j8cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 4 ;
+      gr:description "An extended and furnished 4 BEDROOM HOME, situated on a quiet residential street just off Marston Road, with 2 RECEPTION ROOMS, conservatory, study, 2 BATHROOMS, a large GARDEN and off-road PARKING."^^xsd:string ;
+      gr:name "Marston, Oxford"^^xsd:string ;
+      wgs84:lat "51.762186"^^xsd:double ;
+      wgs84:long "-1.237521"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Marston, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_13_Nicholson_Road_kitchen.1.jpg" .
+
+dd:j9cd1
+      dd:hasPrice "1745"^^xsd:double ;
+      gr:includes dd:j9cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/rewley_road_oxford_city_centre_21957" .
+
+dd:j9cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 4 ;
+      gr:description "A modern 4 DOUBLE BEDROOM unfurnished TOWN HOUSE with 2 BATHROOMS arranged over 3 FLOORS and located on this quiet, prestigious development with views over Rewley Abbey stream.This spacious property is ideally located for rail commuters, the Said Business School, restaurants, theatres, museums and Oxford's shopping centre. The popular Jericho quarter, with its wide range of amenities, is a short walk away.The town house has an intruder alarm, gas-fired central heating, double glazing, private parking and cable/broadband access. Accommodation includes an entrance hall with wood flooring and a cloakroom/wc. The living/dining room (15'5\"x 15'7\") also has wood flooring and a feature fireplace with gas fire and marble hearth.  Patio doors open onto a courtyard garden with storage shed and there is rear access to private car parking. The kitchen, with tiled flooring, has a range of contemporary fitted units and appliances including an inset gas hob and electric oven.  All bedrooms are of equal size (15'5\" x 9'2\") and the master bedroom, on the 1st floor, has an en-suite bathroom with pressurized shower and there is a 2nd double bedroom. Two further double bedrooms and a fully-tiled family bathroom can be found on the top floor. A stylish property in a favoured location close to all city centre amenities and viewings highly recommended."^^xsd:string ;
+      gr:name "Rewley Road, Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7550888061523438"^^xsd:double ;
+      wgs84:long "-1.2697577476501465"^^xsd:double ;
+      vcard:locality "Oxford City Centre" ;
+      vcard:street-address
+              "Rewley Road, Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_30_Rewley_Road_FRONT_RG.1.jpg" .
+
+dd:j0cd1
+      dd:hasPrice "1700"^^xsd:double ;
+      gr:includes dd:j0cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/cowley_road_oxford_98712" .
+
+dd:j0cd3
+      a       dd:House ;
+      dd:bathrooms 3 ;
+      dd:bedrooms 5 ;
+      gr:description "Probably the best student location in town!  A furnished HOUSE with 5 DOUBLE BEDROOMS and 3 BATHROOMS situated very close to the shops, restaurants and entertainment venues of Cowley Road.  Available for September 1st.  The vast range of amenities in Cowley Road and St Clements Street are on the doorstep and a short walk over Magdalen Bridge gives fast access to colleges and city centre facilities.Accommodation includes a kitchen fitted with appliances.  There are 3 double bedrooms (one is en-suite) and another shower room with toilet on the 1st floor.  To the 2nd floor are 2 more double bedrooms and a shower room with toilet.Early viewings of this Martin & Co managed property are advised."^^xsd:string ;
+      gr:name "Cowley Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7487225"^^xsd:double ;
+      wgs84:long "-1.2407379999999648"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Cowley Road, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_82b_Cowley_Road_FRONT_2.1.jpg" .
+
+dd:k1cd3
+      a       dd:House ;
+      dd:bathrooms 5 ;
+      dd:bedrooms 5 ;
+      gr:description "STUDENT ACCOMMODATION for September 2012.  Situated in a sought-after area on Warwick Street, a 5 BEDROOM HOUSE with GARDEN located near frequent bus services and local shops. "^^xsd:string ; 
+      gr:name "Iffley Fields, Oxford"^^xsd:string ;
+      wgs84:lat "51.740847"^^xsd:double ;
+      wgs84:long "-1.238623"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Iffley Fields, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_62754_0.jpg" .
+
+dd:k1cd1
+      dd:hasPrice "1700"^^xsd:double ;
+      gr:includes dd:k1cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/iffley_fields_oxford_12712" .
+
+dd:k2cd1
+      dd:hasPrice "1650"^^xsd:double ;
+      gr:includes dd:k2cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/witney/asthall-leigh_105186" .
+
+dd:k2cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A spacious 4 bedroom house in the village of Asthall Leigh.  The property is beautifully presented  and has been decorated to an extremely high standard. It  offers comfortable accommodation for anyone looking for a rural retreat with easy access to nearby towns and train stations. The ground floor accommodation consists of a living room with patio doors to a large rear garden, two double downstairs bedrooms, a family bathroom with shower, a stunning kitchen/diner and large utility room.  Upstairs there are two further double bedrooms and a bathroom with shower.  In addition to gardens to the front and rear there is a large garage and off road parking for 4/5 cars. "^^xsd:string ;
+      gr:name "Asthall-Leigh"^^xsd:string ;
+      wgs84:lat "51.8111"^^xsd:double ;
+      wgs84:long "-1.55606"^^xsd:double ;
+      vcard:street-address
+              "Asthall-Leigh" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_2012/05/24/691665.1.jpg" .
+
+dd:k3cd1
+      dd:hasPrice "1600"^^xsd:double ;
+      gr:includes dd:k3cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/cowley_road_oxford_98675" .
+
+dd:k3cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 4 ;
+      gr:description "STUDENT LIVING. A furnished HOUSE with 4 DOUBLE BEDROOMS and 2 BATHROOMS situated very close to the shops, restaurants and entertainment venues.  Available for September 1st. Probably the best student location in town! The vast range of amenities in Cowley Road and St Clements Street are on the doorstep and a short walk over Magdalen Bridge gives fast access to colleges and city centre facilities.Accommodation includes a kitchen fitted with appliances, 2 double bedrooms and bathroom on the ground floor.  To the 1st floor are another 2 large double bedrooms, a shower room and a separate toilet.Early viewings of this Martin & Co managed property are advised."^^xsd:string ;
+      gr:name "Cowley Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7487225"^^xsd:double ;
+      wgs84:long "-1.2407379999999648"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Cowley Road, Oxford" .
+
+dd:k4cd1
+      dd:hasPrice "1600"^^xsd:double ;
+      gr:includes dd:k4cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/warwick_street_iffley_fields_oxford_98017" .
+
+dd:k4cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 4 ;
+      gr:description "AVAILABLE NOW. A spacious, extended and well-presented TOWN HOUSE arranged over 3 storeys and with 4 DOUBLE BEDROOMS, 2 bathrooms and terraced rear GARDEN. The property is offered unfurnished, ideal for a family, and located on a popular residential side road.Iffley Fields is a favoured area within a short walk of Oxford city centre and riverside walks.  Well-serviced by bus services and there are local shops, a supermarket and schools close by.Accommodation includes an entrance hall leading to  a large living room with dark timber flooring. The spacious fitted kitchen has a breakfast/dining area and there is a ground floor shower room.  To the 1st floor are 3 double bedrooms and a family bathroom with bath and shower facilities.  There is another large bedroom on the top floor."^^xsd:string ;
+      gr:name "Warwick Street, Iffley Fields, Oxford"^^xsd:string ;
+      wgs84:lat "51.740924"^^xsd:double ;
+      wgs84:long "-1.238648"^^xsd:double ;
+      vcard:locality "Iffley Fields, Oxford" ;
+      vcard:street-address
+              "Warwick Street, Iffley Fields, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_3_Warwick_Street_FRONT.1.jpg" .
+
+dd:k5cd1
+      dd:hasPrice "1600"^^xsd:double ;
+      gr:includes dd:k5cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/off_iffley_roadoxford_67333" .
+
+dd:k5cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "AVAILABLE SEPTEMBER 1st 2012, a 4 BEDROOM furnished STUDENT HOUSE with rear GARDEN located on popular Henley Street, just off Oxford's Iffley Road.Situated within easy walking distance of the city centre and with quick access to the St Clements quarter and the vast range of amenities on Cowley Road. The property benefits from double glazing and ground floor accommodation includes an entrance hall leading to the sitting room with doors accessing a patio and the garden. There is a large bedroom, a kitchen/diner and bathroom with bath and shower facilities. To the 1st floor are a further 2 double bedrooms and a single bedroom."^^xsd:string ;
+      gr:name "Off Iffley Road,Oxford"^^xsd:string ;
+      wgs84:lat "51.744222"^^xsd:double ;
+      wgs84:long "-1.237383"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Off Iffley Road,Oxford" .
+
+dd:k6cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 2 ;
+      gr:description "A luxuriously appointed 2nd floor FURNISHED APARTMENT with 2 DOUBLE BEDROOMS, 2 bathrooms, secure GARAGE PARKING and fine stream and castle views.  Perfect accommodation for a professional or student.In a tranquil location, the property is within sought-after Empress Court, opposite the Oxford Castle heritage site. The city's shopping centre, restaurants, cinemas and theatres are a short stroll away. The location provides quick access to rail and bus stations as well as Oxford University colleges, all within easy walking distance. This spacious apartment has underfloor heating with wood flooring throughout and floor tiles to both bathrooms. Accommodation includes an entrance hall, with video entry phone and storage cupboard, leading to a spacious living/dining room, offering plenty of light through floor-to-ceiling windows. The recessed kitchen area has a range of modern fitted units, cupboards and appliances including a fridge/freezer, dishwasher and washing machine. Both double bedrooms have fitted wardrobes and the master bedroom is en-suite. There is a second guest's bathroom furnished with a modern white suite. The property was built just 7 years ago and these apartments are in high demand. An early viewing is advised."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7510108947753906"^^xsd:double ;
+      wgs84:long "-1.2640070915222168"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_27788_0.jpg" .
+
+dd:k6cd1
+      dd:hasPrice "1595"^^xsd:double ;
+      gr:includes dd:k6cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_48999" .
+
+
+dd:k7cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 2 ;
+      gr:description "A luxuriously appointed 2nd floor FURNISHED APARTMENT with 2 DOUBLE BEDROOMS, 2 bathrooms, secure GARAGE PARKING and fine stream and castle views.  Perfect accommodation for a professional or student.In a tranquil location, the property is within sought-after Empress Court, opposite the Oxford Castle heritage site. The city's shopping centre, restaurants, cinemas and theatres are a short stroll away. The location provides quick access to rail and bus stations as well as Oxford University colleges, all within easy walking distance. This spacious apartment has underfloor heating with wood flooring throughout and floor tiles to both bathrooms. Accommodation includes an entrance hall, with video entry phone and storage cupboard, leading to a spacious living/dining room, offering plenty of light through floor-to-ceiling windows. The recessed kitchen area has a range of modern fitted units, cupboards and appliances including a fridge/freezer, dishwasher and washing machine. Both double bedrooms have fitted wardrobes and the master bedroom is en-suite. There is a second guest's bathroom furnished with a modern white suite. The property was built just 7 years ago and these apartments are in high demand. An early viewing is advised."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7510108947753906"^^xsd:double ;
+      wgs84:long "-1.2640070915222168"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_27788_0.jpg" .
+
+dd:k7cd1
+      dd:hasPrice "1595"^^xsd:double ;
+      gr:includes dd:k7cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_48999" .
+
+dd:k8cd3
+      a       dd:House ;
+      dd:bathrooms 4 ;
+      dd:bedrooms 4 ;
+      gr:description "In a great location, this furnished STUDENT HOUSE with 4 bedrooms and 2 bathrooms, available from August 14th until July 22nd 2013.Ideally located close to South Park with easy access to St.Clements, Cowley Road and walking distance to the city centre and Oxford Brookes. The property has gas-fired central heating, double glazing and an enclosed rear garden. Accommodation includes a living/dining room, fitted kitchen, 4 bedrooms, bathroom with shower, another shower room and a separate toilet."^^xsd:string ;
+      gr:name "Off St.Clements, Oxford"^^xsd:string ;
+      wgs84:lat "51.7488746643066406"^^xsd:double ;
+      wgs84:long "-1.2296962738037109"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Off St.Clements, Oxford" .
+
+dd:k8cd1
+      dd:hasPrice "1400"^^xsd:double ;
+      gr:includes dd:k8cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/off_st.clements_oxford_27478" .
+
+dd:k9cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "STUDENT LIVING. Furnished 4 BEDROOM FLAT arranged over 1st & 2nd floors and located on a popular side street off Cowley Road. Available SEPTEMBER 2012."^^xsd:string ; 
+      gr:name "Off Cowley Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7427902221679688"^^xsd:double ;
+      wgs84:long "-1.2335586547851562"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Off Cowley Road, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_62680_0.jpg" .
+
+dd:k9cd1
+      dd:hasPrice "1370"^^xsd:double ;
+      gr:includes dd:k9cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/off_cowley_road_oxford_12766" .
+
+
+dd:k0cd1
+      dd:hasPrice "1350"^^xsd:double ;
+      gr:includes dd:k0cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/green_ridges_headington_105381" .
+
+dd:k0cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 5 ;
+      gr:description "Undergoing updating and improvement, a spacious unfurnished FAMILY HOME with accommodation over 3 FLOORS and including 5 BEDROOMS and 2 BATHROOMS.  The property has an enclosed GARDEN to the rear, a separate GARAGE with driveway parking and there is unrestricted on-road parking.This family home is ideally situated 5 minutes drive from the A34 and all major routes as well as being conveniently close to Thornhill Park and Ride for commuters to London or into Oxford city centre. The area offers its own amenities including local shops. Headington's comprehensive shopping centre is approximately 8 minutes drive away.Ground floor accommodation includes 2 double bedrooms and a bathroom with shower.  The sitting room, with a separate kitchen fitted with appliances, is on the 1st floor. There is another double bedroom on the 2nd floor and a further 2 good-size single bedrooms.  The family bathroom has been remodelled with new bath and shower facilities."^^xsd:string ;
+      gr:name "Green Ridges, Headington"^^xsd:string ;
+      wgs84:lat "51.7638406"^^xsd:double ;
+      wgs84:long "-1.1874934999999595"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Green Ridges, Headington" .
+
+
+dd:l1cd1
+      dd:hasPrice "1350"^^xsd:double ;
+      gr:includes dd:l1cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/marston_oxford_101904" .
+
+dd:l1cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A well-presented semi-detached 4 BEDROOM HOME with extensive wood flooring, a CONSERVATORY, driveway PARKING, front and rear GARDENS and which benefits from gas-fired central heating and double glazing. Ideal for a family or sharers.The property is located in a quiet residential road. Marston is well served for local amenities including supermarkets, small restaurants, a health centre and frequent buses to central Headington, Summertown and the city centre. Oxford Brooke's Gypsy Lane campus and the John Radcliffe Hospital are within walking distance and there is quick access to the ring road, A40 and M40. Nearby cycle paths provide a traffic-free route to Oxford University's science area and parks.Accommodation, neutrally decorated throughout, includes an entrance hall leading to the living/dining room, all with wood flooring.  There is a conservatory to the rear overlooking the garden  The kitchen is fully equipped with appliances including an inset stainless steel hob with integrated oven, fridge/freezer, microwave oven, dishwasher and washer/dryer.  There are 3 double bedrooms, a single bedroom and bathroom with bath and shower facilities."^^xsd:string ;
+      gr:name "Marston, Oxford"^^xsd:string ;
+      wgs84:lat "51.7656383"^^xsd:double ;
+      wgs84:long "-1.2315568999999868"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Marston, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_63_Crotch_Crescent_LOUNGE.1.jpg" .
+
+
+dd:l2cd1
+      dd:hasPrice "1350"^^xsd:double ;
+      gr:includes dd:l2cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_74902" .
+
+dd:l2cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 2 ;
+      gr:description "A 1st floor stylishly appointed APARTMENT with 2 DOUBLE BEDROOMS, 2 bathrooms, a BALCONY and situated within a modern prestigious city centre development.  Parking may be possible by separate negotiation and ideal accommodation for either professionals or students.Close to train and bus stations In a quiet location with stream and castle views, the property is in favoured Empress Court, opposite the Oxford Castle heritage site. The city's shopping centre, restaurants, cinemas and theatres are a short stroll away. The location provides quick access to rail and bus stations as well as Oxford University colleges, all within easy walking distance. Accommodation, with underfloor heating, includes an entrance hallway, with audio/video entry phone and storage cupboard, leading to a living/dining room with glazed door opening onto a balcony. The recessed kitchen area has a range of modern fitted units, cupboards and appliances including an inset hob and integrated oven, stainless steel extractor hood, fridge/freezer, dishwasher and washer/dryer. The master bedroom is en-suite with a double fitted wardrobe There is a second double bedroom and the guest's bathroom has a brilliant-white suite.The apartment was built just 6 years ago and an early viewing of this Martin & Co property is advised"^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.75065"^^xsd:double ;
+      wgs84:long "-1.265397"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_96_Empress_Court_exterior_2_edit.1.jpg" .
+
+
+dd:l3cd3
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A 3 BEDROOM partly-furnished SEMI-DETACHED HOUSE with 2 RECEPTION ROOMS, enclosed GARDEN, off-road PARKING and situated within walking distance of the Nuffield and Churchill Hospitals.Ideally located for easy access to both Headington and Cowley shopping centres. The ring road and motorway network can be quickly reached and local amenities and bus services are close by.Ground floor accommodation includes an entrance hall, leading to the sitting room and separate dining room. The kitchen is fitted with appliances and there is also a toilet on the ground floor. To the 1st floor are 3 bedrooms and a family bathroom."^^xsd:string ;
+      gr:name "Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7464018"^^xsd:double ;
+      wgs84:long "-1.2065494999999373"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Headington, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_114_Dene_Road_011.1.jpg" .
+
+dd:l3cd1
+      dd:hasPrice "1250"^^xsd:double ;
+      gr:includes dd:l3cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/headington_oxford_103716" .
+
+
+dd:l4cd1
+      dd:hasPrice "1250"^^xsd:double ;
+      gr:includes dd:l4cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/ridgeway_road_risinghurst_oxford_98452" .
+
+dd:l4cd3
+      a       dd:House ;
+      dd:bathrooms 1 ;
+      dd:bedrooms 3 ;
+      gr:description "A well-presented furnished semi-detached FAMILY HOME with 3 BEDROOMS, enclosed rear GARDEN and with driveway PARKING.Ideally situated for London coaches with easy access to Headington shops, restaurants, the hospitals (JR - approx. 10 minutes walk) and the ring road/A40/M40 motorway. Frequent buses to Oxford city centre stop close by. Accommodation includes an entrance hall leading to the sitting room and a large kitchen/dining room with fiited appliances.  To the 1st floor are 3 bedrooms and family bathroom with bath and separate shower.Outside there is side access to a pretty and private garden with paved patio.  A desirable property in a popular residential area and viewings highly recommended"^^xsd:string ;
+      gr:name "Ridgeway Road, Risinghurst, Oxford"^^xsd:string ;
+      wgs84:lat "51.7616391"^^xsd:double ;
+      wgs84:long "-1.1929086000000097"^^xsd:double ;
+      vcard:locality "Risinghurst, Oxford" ;
+      vcard:street-address
+              "Ridgeway Road, Risinghurst, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_21_Ridgeway_Road_FRONT.1.jpg" .
+
+
+dd:l5cd1
+      dd:hasPrice "1225"^^xsd:double ;
+      gr:includes dd:l5cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_30886" .
+
+dd:l5cd3
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A modern 2 DOUBLE BEDROOM 2nd floor APARTMENT with BALCONY, riverside views, communal gardens and allocated PARKING.  The property is offered furnished or unfurnished and would suit professionals or students.This modern purpose-built development is ideally located a few minutes walk from the train station and the Said Business School. A similar short riverside walk leads into the city centre. The property is double-glazed and has gas-fired central heating. Accommodation includes a secure communal entrance hall and apartment hallway leading to a spacious living/dining room with balcony and riverside views. The kitchen is fully equipped and there are 2 double bedrooms and a bathroom with bath and shower facilities. Central apartments are in high demand and an early viewing is advised."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7490299"^^xsd:double ;
+      wgs84:long "-1.2708482000000458"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_25_Millbank_main_pic_edit.1.jpg" .
+
+dd:l6cd1
+      dd:hasPrice "1200"^^xsd:double ;
+      gr:includes dd:l6cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/off_st.clements_oxford_105484" .
+
+dd:l6cd3
+      a       dd:House ;
+      dd:bathrooms 3 ;
+      dd:bedrooms 3 ;
+      gr:description "In a great location, this furnished STUDENT HOUSE with 3 bedrooms, 2 bathrooms and a study room, available from August 14th until July 22nd 2013.Ideally located close to South Park with easy access to St.Clements, Cowley Road and walking distance to the city centre and Oxford Brookes. The property has gas-fired central heating, double glazing and an enclosed rear garden. Accommodation includes a living/dining room, fitted kitchen, 3 bedrooms, an additional study room, bathroom with shower, another shower room and a separate toilet."^^xsd:string ;
+      gr:name "Off St.Clements, Oxford"^^xsd:string ;
+      wgs84:lat "51.74898409999999"^^xsd:double ;
+      wgs84:long "-1.2298114999999825"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Off St.Clements, Oxford" .
+
+
+dd:l7cd1
+      dd:hasPrice "1200"^^xsd:double ;
+      gr:includes dd:l7cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/off_botley_road_oxford_105133" .
+
+dd:l7cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Ideal for PROFESSIONAL SHARERS or STUDENTS and managed by Martin & Co, a furnished 4 bedroom home located on a popular no-through road, close to the city centreSituated on Hill View Road and within easy walking distance of the railway station, city centre and open countryside. Located close to local shops, traditional pubs and a park, the property benefits from quick access to the ring road, A34, A40 and M40 motorway.Accommodation, which benefits from gas-fired central heating and double glazing, includes an entrance porch, hallway, sitting room, fitted kitchen with appliances, 4 bedrooms and a bathroom"^^xsd:string ;
+      gr:name "Off Botley Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7514968"^^xsd:double ;
+      wgs84:long "-1.2771969000000353"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Off Botley Road, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_36_Hill_View_Road_FRONT.1.jpg" .
+
+dd:l8cd3
+      a       dd:House ;
+      dd:bathrooms 3 ;
+      dd:bedrooms 3 ;
+      gr:description "A modern 3 BEDROOM furnished APARTMENT with 2 BATHROOMS in Venneit Close, just a short walk to Oxford city centre, the train and bus stations. The development is set within landscaped mature communal grounds. Available 3 OCTOBER 2012 and ideal for students. The location gives fast, direct access to the ring road, A34 and motorway network north and south.  Tranquil riverside walks are a short stroll away.Accommodation includes an entrance hall, with storage cupboard, leading to a living/dining room.  The kitchen is through an archway and is fully fitted with appliances including an inset gas hob and integrated oven.  There are 3 good size bedrooms with working space, a bathroom with bath and shower facilities and a second shower room with toilet.A popular development close to all city centre amenities and viewings highly recommended."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7575774"^^xsd:double ;
+      wgs84:long "-1.2732315000000653"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_27265_0.jpg" .
+
+dd:l8cd1
+      dd:hasPrice "1200"^^xsd:double ;
+      gr:includes dd:l8cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_50938" .
+
+dd:l9cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A newly refurbished, 4 double bedroom house, located within a 5 minute walk of the Town Centre. House consists of a lounge/diner, modern, fully fitted kitchen with appliances, modern downstairs bathroom with shower, cloakroom, 4 double bedrooms and a rear garden. House benefits from gas central heating & double glazing windows. Ideal for professional sharers. Available from the 4th August 2012, furnished. Permit parking."^^xsd:string ;
+      gr:name "Henry Street"^^xsd:string ;
+      wgs84:lat "51.4497604370117188"^^xsd:double ;
+      wgs84:long "-0.9711956977844238"^^xsd:double ;
+      vcard:street-address
+              "Henry Street" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_64_Henry_Street.1.1.jpg" .
+
+dd:l9cd1
+      dd:hasPrice "1200"^^xsd:double ;
+      gr:includes dd:l9cd3 ;
+      foaf:page "http://www.martinco.com/property/south/berkshire/reading/henry_street_41094" .
+
+
+dd:l0cd1
+      dd:hasPrice "1195"^^xsd:double ;
+      gr:includes dd:l0cd3 ;
+      foaf:page "http://www.martinco.com/property/south/berkshire/reading/pippin_grove_shinfield_46254" .
+
+dd:l0cd3
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "House comprises of a good a size living room, fully fitted kitchen/diner with intergrated appliances, utility room, rear lawned garden with patio area, downstairs w/c, 2 double bedrooms (en-suite to master), 1 single bedroom & a family bathroom with electric shower.Property is in immaculate order throughout & also benefits from gas central heating, double glazed windows & a garage."^^xsd:string ;
+      gr:name "Pippin Grove, Shinfield"^^xsd:string ;
+      wgs84:lat "51.413112"^^xsd:double ;
+      wgs84:long "-0.947378"^^xsd:double ;
+      vcard:locality "Shinfield" ;
+      vcard:street-address
+              "Pippin Grove, Shinfield" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_281003_0.jpg" .
+
+
+dd:m1cd1
+      dd:hasPrice "1195"^^xsd:double ;
+      gr:includes dd:m1cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/woodstock_road_oxford_41799" .
+
+dd:m1cd3
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A light and spacious FURNISHED GARDEN FLAT with private entrance,  2 DOUBLE BEDROOMS and situated in a favoured location in central Oxford on the corner of Frenchay Road.The property has double glazed windows and gas-fired central heating. There is a secluded courtyard garden and on-road parking. Ideally located for local buses to the city centre and quick access to the ring road/A34/A40. Both Summertown and Jericho are within easy reach. Accommodation includes an entrance hall leading to a living/dining room with walk-in storage cupboard. The separate kitchen has a range of fitted units and cupboards and includes a fridge/freezer, washing machine, gas cooker and is fully equipped. Both double bedrooms have large windows and one has a double aspect overlooking the gardens. Both rooms are spacious and light and the family bathroom has been recently refurbished."^^xsd:string ;
+      gr:name "Woodstock Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7704963684082031"^^xsd:double ;
+      wgs84:long "-1.2667751312255859"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Woodstock Road, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_189_Woodstock_Road_main_pic_2.2.jpg" .
+
+dd:m2cd1
+      dd:hasPrice "1195"^^xsd:double ;
+      gr:includes dd:m2cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/cumnor_oxford_16304" .
+
+dd:m2cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Just 6 miles from Oxford city centre, a spacious stone-built PERIOD FARMHOUSE with 4 BEDROOMS, 2 reception rooms and a low-maintenance GARDEN. The property is offered furnished or unfurnished. Positioned along a quiet country lane near Cumnor village and close to Farmoor Reservoir, woodland and designated countryside paths, the property has a peaceful, rural outlook with far-reaching views over open countryside. There is parking for 3/4 cars. The farmhouse has gas-fired central heating and exposed beams throughout.Generous accommodation includes a living room with inglenook fireplace with a working wood-burning stove. There is a another reception room offering flexible ground floor space. The kitchen has a range of fitted cupboards, appliances and a breakfast bar. To the 1st floor are 2 double bedrooms and 2 single bedrooms. There is a separate WC and the family bathroom has bath and shower facilities. The roof space can be accessed offering a spacious storage area with electric lighting. Additional space is available in storage sheds opposite the property."^^xsd:string ;
+      gr:name "Cumnor, Oxford"^^xsd:string ;
+      wgs84:lat "51.7456855773925781"^^xsd:double ;
+      wgs84:long "-1.3623046875000000"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Cumnor, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_58028_2.jpg" .
+
+
+dd:m3cd1
+      dd:hasPrice "1190"^^xsd:double ;
+      gr:includes dd:m3cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/off_oatlands_road_oxford_105137" .
+
+dd:m3cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Managed by Martin & Co, a FURNISHED HOME with 4 BEDROOMS, rear garden and located on a quiet no-through road close to the city centre. Ideal for PROFESSIONAL SHARERS or STUDENTS.Situated on Oatlands Road and within easy walking distance of the railway station, city centre and open countryside. Located close to local shops, traditional pubs and a park, the property benefits from quick access to the ring road, A34, A40 and M40 motorway.Accommodation, which benefits from gas-fired central heating, includes hallway, sitting room, kitchen/diner with fitted appliances, 4 bedrooms and a bathroom"^^xsd:string ;
+      gr:name "Off Oatlands Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.75155230000001"^^xsd:double ;
+      wgs84:long "-1.278905399999985"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Off Oatlands Road, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_50_Oatlands_Road_FRONT.1.jpg" .
+
+
+dd:m4cd3
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A well-presented and FURNISHED semi-detached FAMILY HOME with 3 BEDROOMS and 2 RECEPTION ROOMS, easily maintained gardens, outbuildings and driveway PARKING.Located in a popular residential district and within easy walking distance of Cowley's shopping centres.  The area is well-served for leisure and sporting facilities, Oxford Business Park is close by and frequent buses run into the city centre.Accommodation includes a sitting room with bay window, a 2nd reception room with dining area, a kitchen with inset gas hob, 2 double bedrooms, a single bedroom and a bathroom with bath and shower facilities.Gardens to the front and rear are enclosed and there is a brick outbuilding and shed for additional storage.Viewings of this Martin & Co managed property are highly recommended."^^xsd:string ;
+      gr:name "Church Cowley, Oxford"^^xsd:string ;
+      wgs84:lat "51.7339613"^^xsd:double ;
+      wgs84:long "-1.2254017000000203"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Church Cowley, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_25_Florence_Park_Road_LOUNGE.1.jpg" .
+
+dd:m4cd1
+      dd:hasPrice "1185"^^xsd:double ;
+      gr:includes dd:m4cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/church_cowley_oxford_76546" .
+
+
+dd:m5cd1
+      dd:hasPrice "1180"^^xsd:double ;
+      gr:includes dd:m5cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/off_botley_road_oxford_105139" .
+
+dd:m5cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "An end-terrace FURNISHED HOME with 4 BEDROOMS, rear garden and located on a quiet no-through road close to the city centre. Ideal for PROFESSIONAL SHARERS or STUDENTS and managed by Martin & Co.Situated on Oatlands Road and within easy walking distance of the railway station, city centre and open countryside. Located close to local shops, traditional pubs and a park, the property benefits from quick access to the ring road, A34, A40 and M40 motorway.Accommodation, which benefits from gas-fired central heating, includes entrance hallway, sitting room, separate kitchen/diner with fitted appliances, 4 bedrooms and a bathroom"^^xsd:string ;
+      gr:name "Off Botley Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.75155230000001"^^xsd:double ;
+      wgs84:long "-1.278905399999985"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Off Botley Road, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_2_Oatlands_Road_FRONT.1.jpg" .
+
+dd:m6cd1
+      dd:hasPrice "1150"^^xsd:double ;
+      gr:includes dd:m6cd3 ;
+      foaf:page "http://www.martinco.com/property/south/berkshire/reading/kendrick_road_reading_84812" .
+
+dd:m6cd3
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A well presented, 3 bedroom, detached family home located within a 10 minute walk of the Royal Berkshire Hospital & Reading town centre.Property consists of a large lounge area, fitted kitchen with appliances, conservatory area, 2 double bedrooms & 1 single, family bathroom with electric shower & a large rear garden laid mostly to lawn.Also benefits from double glazed windows, gas central heating & driveway parking.Available from the 27th July 2012, furnished.Lounge/diner - 4.01m x 7.01m (13'2\" x 23\")Kitchen - 4.01m x 2.66m (13'2\" x 8'9\")Conservatory - 4.47m x 1.18m (14'8\" x 3'10\")Bedroom one - 4.01m x 3.35m (13'2\" x 11')Bedroom two - 3.02m x 2.59m (9'11\" x 8'6\")Bedroom three - 1.85m x 2.68m (6'1\" x 8'10\")"^^xsd:string ;
+      gr:name "Kendrick Road, Reading"^^xsd:string ;
+      wgs84:lat "51.44505909999999"^^xsd:double ;
+      wgs84:long "-0.9632642999999916"^^xsd:double ;
+      vcard:locality "Reading" ;
+      vcard:street-address
+              "Kendrick Road, Reading" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_new22.1.jpg" .
+
+
+dd:m7cd3
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A well-presented three bedroom semi-detached house located in the sought after area of Caversham with good access to local amenities and local schools. The property comprises: Entrance Hall leading to good size living room, dining room conservatory, modern fitted kitchen with appliances including dishwasher and gas hob. Stairs to first floor, two double bedrooms with fitted wardrobes, single bedroom/study and bathroom with shower over. The property has a good sized rear garden with lawn and patio area. Also benefits from gas central heating, double glazing and off road parking for two cars. Available from NOW, furnished."^^xsd:string ;
+      gr:name "Caversham"^^xsd:string ;
+      wgs84:lat "51.4722529"^^xsd:double ;
+      wgs84:long "-0.9574505"^^xsd:double ;
+      vcard:street-address
+              "Caversham" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_P1020137.2.JPG" .
+
+dd:m7cd1
+      dd:hasPrice "1150"^^xsd:double ;
+      gr:includes dd:m7cd3 ;
+      foaf:page "http://www.martinco.com/property/south/berkshire/reading/caversham_68814" .
+
+dd:m8cd3
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A 1st floor city centre APARTMENTwith 2 DOUBLE BEDROOMS, secure allocated PARKING, offered part-furnished and available now.Ideal for commuters, the apartment is located close to train and coach stations. Oxford's shopping centre, theatres, cinemas, university colleges and riverside walks are just a few minutes walk away. The motorway network, north and south, can be accessed quickly from Castle Mews. This well-presented apartment includes an entrance hall, living/dining room and separate kitchen/breakfast room. Fitted appliances feature an inset ceramic hob and integrated electric oven, fridge/freezer, dishwasher and washer/dryer. The master bedroom has double built-in wardrobes and there is a 2nd double bedroom. The bathroom has bath and shower facilities. Situated in a desirable location, early viewings are recommended."^^xsd:string ;
+      gr:name "Castle Mews, Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.751609"^^xsd:double ;
+      wgs84:long "-1.266239"^^xsd:double ;
+      vcard:locality "Oxford City Centre" ;
+      vcard:street-address
+              "Castle Mews, Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_4_Castle_Mews_main_pic_edit.1.1.jpg" .
+
+dd:m8cd1
+      dd:hasPrice "1150"^^xsd:double ;
+      gr:includes dd:m8cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/castle_mews_oxford_city_centre_40535" .
+
+dd:m9cd3
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A well presented, 3 bedroom semi-detached house located in the sought after area of Caversham with good access to Reading town centre & to all local amenities & local schools.Consists of a good size living room, dining room, brand new, large conservatory, modern fitted kitchen with appliances including dishwasher & gas hob, good size rear garden with lawn and patio area, bathroom with bath and shower, 2 double bedrooms with fitted wardrobes & a single bedroom/study. Also benefits from gas central heating, double glazed windows & driveway parking for 2 cars. Available Now, fully furnished."^^xsd:string ;
+      gr:name "Mayfield Drive, Caversham"^^xsd:string ;
+      wgs84:lat "51.4727210998535156"^^xsd:double ;
+      wgs84:long "-0.9576129913330078"^^xsd:double ;
+      vcard:locality "Caversham" ;
+      vcard:street-address
+              "Mayfield Drive, Caversham" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_photo14.4.JPG" .
+
+dd:m9cd1
+      dd:hasPrice "1150"^^xsd:double ;
+      gr:includes dd:m9cd3 ;
+      foaf:page "http://www.martinco.com/property/south/berkshire/reading/mayfield_drive_caversham_541" .
+
+dd:m0cd1
+      dd:hasPrice "1125"^^xsd:double ;
+      gr:includes dd:m0cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/reliance_way_oxford_16924" .
+
+dd:m0cd3
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A modern luxuriously FURNISHED APARTMENT with 2 DOUBLE BEDROOMS, 2 BATHROOMS and allocated PARKING located on this exclusive development.These sought-after properties are situated for quick access to Oxford city centre, the ring road and Oxford Business and Science Parks. This is a spacious top floor apartment with under-floor heating and ready for broadband/satellite TV reception.Accommodation includes an entrance hall, with storage, leading to a light and spacious living/dining room. The separate kitchen area is through an archway and is fitted with a range of contemporary units, integrated appliances and stainless steel extractor canopy. The 2 double bedrooms have in-built wardrobes and the master bedroom is en-suite with bath and separate shower. There is a stylish and spacious guest's shower room. A well-presented apartment managed by Martin & Co and early viewings are advised."^^xsd:string ;
+      gr:name "Reliance Way, Oxford"^^xsd:string ;
+      wgs84:lat "51.74106"^^xsd:double ;
+      wgs84:long "-1.222208"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Reliance Way, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_57209_0.jpg" .
+
+dd:n1cd1
+      dd:hasPrice "1100"^^xsd:double ;
+      gr:includes dd:n1cd3 ;
+      foaf:page "http://www.martinco.com/property/south/berkshire/reading/bourne_avenue_reading_96029" .
+
+dd:n1cd3
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A 4 bedroom house located within walking distance of the University of Reading and Reading town centre. House consists of a lounge, fully fitted kitchen, 3 double bedrooms & a good size single, bathroom with shower and a rear enclosed garden.Also benefits from gas central heating, double glazed windows & driveway parking.Available from the 1st July 2012, furnished.STUDENT LET ONLY!!"^^xsd:string ;
+      gr:name "Bourne Avenue, Reading"^^xsd:string ;
+      wgs84:lat "51.4418993"^^xsd:double ;
+      wgs84:long "-0.9669185999999854"^^xsd:double ;
+      vcard:locality "Reading" ;
+      vcard:street-address
+              "Bourne Avenue, Reading" .
+
+dd:n2cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 2 ;
+      gr:description "A modern luxuriously appointed APARTMENT with 2 DOUBLE BEDROOMS, 2 BATHROOMS and allocated PARKING located on this exclusive development.  The property is offered furnished and would suit professionals or students.These sought-after apartments are situated for quick access to Oxford city centre and the ring road. The property has underfloor electric heating and ready for satellite reception. This is a spacious and light 3rd floor apartment which can be accessed by lift.Accommodation includes an impressive entrance hallway with storage cupboard and laundry facility equipped with a washer/dryer. The living/dining room has a separate kitchen area. There is a range of contemporary fitted units which include an integrated fridge/freezer. The 2 double bedrooms both have built-in double wardrobes and the master bedroom has a spacious en-suite shower room. The second bathroom is fitted with a stylish suite and is a generous size.Early viewings of this modern and well-presented apartment are highly recommended."^^xsd:string ;
+      gr:name "Reliance Way, East Oxford"^^xsd:string ;
+      wgs84:lat "51.7405815124511719"^^xsd:double ;
+      wgs84:long "-1.2232589721679688"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:street-address
+              "Reliance Way, East Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_30467_0.jpg" .
+
+dd:n2cd1
+      dd:hasPrice "1100"^^xsd:double ;
+      gr:includes dd:n2cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/reliance_way_east_oxford_35366" .
+
+
+dd:n3cd3
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A 1st floor 1 BEDROOM APARTMENT with stream views, furnished to a high standard and located on Empress Court in the centre of the city.  Parking may be available by separate negotiation.This quiet location, next to the Oxford Castle heritage site, is within a few minutes walk of restaurants, shops, bars, cinemas and theatres. Ideally located for rail and bus stations and the Said Business School. This modern, recently built, apartment has particularly fine stream views from the terrace.Accommodation includes an entrance hall with storage cupboard and leads to the 21 ft long living/dining room with access to the terrace. The kitchen area (12'7\"x 5'9\") has recessed ceiling downlights and a range of contemporary fitted units and appliances. The bathroom has a modern white suite with bath & shower facilities and there is a spacious (12'10\" x 9'3\") double bedroom. Early viewings of this Martin & Co managed property strongly advised."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7501907348632812"^^xsd:double ;
+      wgs84:long "-1.2673699855804443"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_42449_5.jpg" .
+
+dd:n3cd1
+      dd:hasPrice "1100"^^xsd:double ;
+      gr:includes dd:n3cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_27693" .
+
+
+dd:n4cd3
+      a       dd:House ;
+      dd:bathrooms 1 ;
+      dd:bedrooms 2 ;
+      gr:description "AVAILABLE NOW. A spacious FURNISHED FLAT with 2 DOUBLE BEDROOMS, study room, large shared GARDEN with paved terrace and allocated PARKING.  Ideal for professionals or students.Located very close to the Gipsy Lane campus of Oxford Brookes with quick access to Headington shopping centre, London coaches and frequent buses into Oxford city centre.  The  wide range of amenities on the Cowley Road and St Clements quarter are within walking distance and the open spaces of South Park are nearby.Accommodation, with gas-fired central heating and timber flooring throughout, includes a large open-planned living and dining area with fitted kitchen and appliances.  There is a separate study room and the bathroom has shower facilities."^^xsd:string ;
+      gr:name "Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7542278"^^xsd:double ;
+      wgs84:long "-1.220537400000012"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Headington, Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_50c_Grays_Road_NEW_FRONT.1.jpg" .
+
+dd:n4cd1
+      dd:hasPrice "1075"^^xsd:double ;
+      gr:includes dd:n4cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/headington_oxford_95198" .
+
+dd:n5cd3
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A light and spacious furnished 2 BEDROOM 2nd floor APARTMENT with secure garage PARKING. The property is located on Paradise Square in the heart of the city. A short stroll away are fine restaurants, theatres and cinemas.  Train  and bus stations are close by.The generous-sized rooms have high ceilings and accommodation includes an entrance hall with storage cupboard. The living/dining room is light and spacious and has large bay windows. There is a separate fully equipped kitchen area. The bathroom has bath and shower facilities and there are 2 bedrooms. The master bedroom has built-in wardrobes.A well-presented apartment managed by Martin & Co and viewings are highly recommended."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.749529"^^xsd:double ;
+      wgs84:long "-1.262536"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_14_Tennyson_Lodge_main_pic_edit.1.jpg" .
+
+dd:n5cd1
+      dd:hasPrice "1075"^^xsd:double ;
+      gr:includes dd:n5cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_35348" .
+
+dd:n6cd1
+      dd:hasPrice "1075"^^xsd:double ;
+      gr:includes dd:n6cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_32019" .
+
+dd:n6cd3
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A 1 bedroom FURNISHED APARTMENT on Empress Court, a landmark development in the heart of the city centre, opposite the Oxford Castle heritage site.This quiet location, with stream views, is within a few minutes walk of fine restaurants, shops, bars, cinemas and theatres. Ideally located for rail and bus stations and the Said Business School. The apartment has under-floor heating and secure parking is possible by separate negotiation.Accommodation includes entrance hallway, with storage cupboard, leading to the living/dining area (18'3\"x10'5\"). The separate kitchen area (8'9\"x8'1\") has a range of modern fitted units and appliances including fridge/freezer, dishwasher, washing machine and microwave oven. There is an inset hob/electric oven with a stylish stainless steel extractor hood. The double bedroom (14'2\"x10'6\") has ample storage space and the spacious bathroom has a modern white suite with bidet, bath and shower facilities. These Martin & Co managed apartments are in high demand,so early viewings are advised."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7494392395019531"^^xsd:double ;
+      wgs84:long "-1.2626399993896484"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_35951_0.jpg" .
+
+dd:n7cd3
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description " A 1 bedroom 1st floor FURNISHED APARTMENT with PAVED TERRACE and situated on Empress Court, a prestigious development in the heart of the city centre opposite the Oxford Castle heritage site. Ideal accommodation for a PROFESSIONAL or STUDENT.  Parking may be possible by separate negotiation."^^xsd:string ;
+      gr:name "Oxford City Centre"^^xsd:string ;
+      wgs84:lat "51.7510375976562500"^^xsd:double ;
+      wgs84:long "-1.2640500068664551"^^xsd:double ;
+      vcard:street-address
+              "Oxford City Centre" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_10_Empress_Court_lounge_edit.1.jpg" .
+
+dd:n7cd1
+      dd:hasPrice "1075"^^xsd:double ;
+      gr:includes dd:n7cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/oxford_city_centre_22616" .
+
+dd:n8cd1
+      dd:hasPrice "1050"^^xsd:double ;
+      gr:includes dd:n8cd3 ;
+      foaf:page "http://www.martinco.com/property/central/buckinghamshire/high_wycombe/downley_64838" .
+
+dd:n8cd3
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Good size easily maintained rear garden with shed and patio area."^^xsd:string ;
+      gr:name "Downley"^^xsd:string ;
+      wgs84:lat "51.6399556"^^xsd:double ;
+      wgs84:long "-0.7608278"^^xsd:double ;
+      vcard:street-address
+              "Downley" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_SAM_21955_Small.1.JPG" .
+
+dd:n9cd1
+      dd:hasPrice "1050"^^xsd:double ;
+      gr:includes dd:n9cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/nursery_close_west_oxford_2142" .
+
+dd:n9cd3
+      a       dd:House ;
+      dd:bathrooms 2 ;
+      dd:bedrooms 2 ;
+      gr:description "Recently completed, an opportunity to live in this furnished 2 DOUBLE BEDROOM APARTMENT with 2 BATHROOMS and allocated PARKING on this landmark  development.The property is located one and a half miles from Oxford city centre and just over 1 mile from the train station. Botley is on the edge of the Green Belt and rolling countryside can be accessed quickly. The local facilities of West Oxford's West Way shopping centre, which includes a supermarket, banks, restaurants and chemist are opposite this prestigious development. A doctor's surgery is close by. The location is very convenient for the A34, providing direct access to the M4 or M40 via the A40. The town of Abingdon and Milton Business Park can both be reached quickly. Oxford city centre is connected to Botley with a frequent bus service and Park & Ride facility. Light & spacious accommodation includes an entrance hall leading to a large living/dining area (5.4m x 4m). The recessed kitchen, with halogen spot lights, is equipped with high specification appliances including a stainless steel integrated oven and hob with stainless steel cooker hood. The master bedroom (4.2m x 2.9m) is en-suite with shower cabinet and stone resin shower tray. Sanitryware in both bathrooms is in brilliant white with chrome fittings and the bath in the guest bathroom is enamelled steel and there is a separate shower. The 2nd double bedroom is 4.7m x 2.4m. The apartment is offered furnished and has gas-fired central heating, a mains pressure hot water system, mains powered smoke detectors, entryphone and Sky television can be accessed. These well-appointed apartments, with quick access to the city centre, are popular and an early viewing is advised."^^xsd:string ;
+      gr:name "Nursery Close, West Oxford"^^xsd:string ;
+      wgs84:lat "51.75213"^^xsd:double ;
+      wgs84:long "-1.297435"^^xsd:double ;
+      vcard:locality "West Oxford" ;
+      vcard:street-address
+              "Nursery Close, West Oxford" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_76012_0.jpg" .
+
+dd:n0cd1
+      dd:hasPrice "1025"^^xsd:double ;
+      gr:includes dd:n0cd3 ;
+      foaf:page "http://www.martinco.com/property/central/oxfordshire/oxford/central_headington_65772" .
+
+dd:n0cd3
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "The property is secured by an entry phone system, is double glazed and has gas-fired central heating. Patio doors from the living room open onto enclosed landscaped and maintained gardens."^^xsd:string ;
+      gr:name "Central Headington"^^xsd:string ;
+      wgs84:lat "51.759544"^^xsd:double ;
+      wgs84:long "-1.213246"^^xsd:double ;
+      vcard:street-address
+              "Central Headington" ;
+      foaf:depiction "http://www.martinco.com/image/property_image/detail_Flat_4_16_Osler_Road_main_pic_edited.1.jpg" .

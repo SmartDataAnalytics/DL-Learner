@@ -1,0 +1,533 @@
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+
+dd:g53g38
+      a       dd:House ;
+      gr:description "An extremely well presented, recently extended 2 bedroom terrace property located close to Village amenities and play park. Comprising entrance porch, hallway, kitchen/dining room, sitting room, garden/sunroom, two double bedrooms, shower room, gardens to front & rear. Offered with No Onward Chain"^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Bampton - 01993 851881BA00000368"^^xsd:string ;
+      vcard:postal-code "OX182AH" ;
+      vcard:street-address
+              "Mercury Close, Bampton" .
+
+dd:g53g10
+      a       dd:House ;
+      gr:description "A ground floor retirement Flat for the over 60's in a small purpose built two storey block well situated in a side road within the older part of central Eynsham.  The Flat is a short level walk from the excellent range of local village shops and amenities, bus stops with regular daily services to Oxford & Witney, medical centre etc.  The block has a more personal intimate feel to it with the communal area having an Entrance Hall, residents Laundry and Sitting Room.  The Flat itself comprises 1 double Bedroom, Bathroom, Sitting Room, Kitchen and electric heating.  Other features include a small private communal terrace and residents private parking.  The Flat is offered for sale with no onward chain and is available for a quick completion.  VERY COMPETITIVELY PRICED - SENSIBLE OFFERS INVITED FOR A QUICK SALE.          "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY00000636"^^xsd:string ;
+      vcard:street-address
+              "Swanlands, Swan Street, Eynsham" .
+
+dd:g53g57
+      dd:hasPrice "189950"^^xsd:double ;
+      gr:includes dd:g53g59 .
+
+dd:g53g31
+      a       dd:House ;
+      gr:description "A sizeable ground floor Flat being one of just two units converted from a stone built period property with Grade ll listed frontage in central Eynsham. Although not obvious from first view of the front the Flat is a very good size with a 24' Sitting/Dining Room, 18' double Bedroom, Inner Hall/Study area, Bathroom and a fitted Kitchen. On top of this there is a substantial Cellar with good head height running almost the length of the building and giving endless possibilites for imaginative conversion (subject to planning permission). This is a quite unique property with huge scope for an imaginative re-design internally to create a really sizeable and unique Period Apartment in central Eynsham, subject to the usual consents.  An internal inspection is a must! QUICK COMPLETION AVAILABLE - NO ONWARD CHAIN."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY000939"^^xsd:string ;
+      vcard:postal-code "OX294JS" ;
+      vcard:street-address
+              "Mill Street, Eynsham" .
+
+dd:g53g17
+      a       dd:House ;
+      gr:description "A well presented two-bedroom first floor Flat situated on the popular Beechgate development. The accommodation also comprises of a lounge/diner, kitchen and bathroom while the property benefits from communal gardens and allocated parking. The property is ideally located for the A40 while also being close to the town centre."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077W-00001888"^^xsd:string ;
+      vcard:street-address
+              "Beechgate, Witney" .
+
+dd:g53g45
+      a       dd:House ;
+      gr:description """URGENT NOTICE - ALL OFFERS TO BE MADE BY 12.00PM FRIDAY 11th MAY 2012 
+to Abbey Properties, Market Square, Bampton, OXON, OX18 2SH
+FOR CONVERSION - Planning permission has been granted for this wonderful Methodist Church to be converted into a 3 bedroom residential dwelling with parking and garden. (Note: The neighbouring hall requires demolishing as part of the agreed planning)"""^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Bampton - 01993 851881BA00000365"^^xsd:string ;
+      vcard:postal-code "OX182SH" ;
+      vcard:street-address
+              "Clanfield, Bampton" .
+
+dd:g53g52
+      a       dd:House ;
+      gr:description "Spacious, well presented, mid terrace family house in good order throughout, recent kitchen, bathroom, uPVC windows/doors and central heating. Comprising porch/entrance hall, lounge, dining room, kitchen, 3 bedrooms, bathroom, front & rear gardens, single garage and allocated parking. NO ONWARD CHAIN"^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Bampton - 01993 851881BA00000363"^^xsd:string ;
+      vcard:postal-code "OX182AE" ;
+      vcard:street-address
+              "Ampney Orchard, Bampton" .
+
+dd:g53g8
+      dd:hasPrice "99950"^^xsd:double ;
+      gr:includes dd:g53g10 .
+
+dd:g53g36
+      dd:hasPrice "179950"^^xsd:double ;
+      gr:includes dd:g53g38 .
+
+dd:g53g43
+      dd:hasPrice "185000"^^xsd:double ;
+      gr:includes dd:g53g45 .
+
+dd:g53g29
+      dd:hasPrice "175000"^^xsd:double ;
+      gr:includes dd:g53g31 .
+
+dd:g53g3
+      a       dd:House ;
+      gr:description "A second floor retirement flat for the over 55's in a wonderful rural setting some 3 miles west of Oxford and within a 10 minute drive. The Flat is surrounded by some 23 acres of stunning gardens and parkland and enjoys un-interrupted commanding views across the surrounding countryside and woodland towards Farmoor Reservoir. Parklands comprises some 29 one & two Bedroom Flats & Bungalows and is designed for independent living. Benefits include lift access, on-site warden, residents laundry & lounge, guest room available for overnight stay and ample private parking. The Flat is very competitively priced and offered for sale with no onward chain and available for immediate occupation. Viewing of this idyllic countryside setting close to the historic City of Oxford is essential. "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY00000404"^^xsd:string ;
+      vcard:postal-code "OX29TA" ;
+      vcard:street-address
+              "Parklands, Oakenholt, Nr Oxford" .
+
+dd:g53g15
+      dd:hasPrice "142500"^^xsd:double ;
+      gr:includes dd:g53g17 .
+
+dd:g53g1
+      dd:hasPrice "79950"^^xsd:double ;
+      gr:includes dd:g53g3 .
+
+dd:g53g24
+      a       dd:House ;
+      gr:description "Purpose built ground floor one bedroom apartment, central Bampton location with allocated parking and communal garden. Comprising sitting/dining room, kitchen/breakfast room, inner hall/storage, shower/wet room and double bedroom. NO CHAIN - Share of freehold - annual charge - age restriction."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Bampton - 01993 851881BA00000367"^^xsd:string ;
+      vcard:postal-code "OX182JH" ;
+      vcard:street-address
+              "Market Square, Bampton" .
+
+dd:g53g50
+      dd:hasPrice "189950"^^xsd:double ;
+      gr:includes dd:g53g52 .
+
+dd:g53g59
+      a       dd:House ;
+      gr:description "Stone built, mid terrace house situated in a no through cul de sac location close to open countryside. Comprising canopy porch, entrance hall, kitchen/dining room, sitting room, 3 bedrooms, family bathroom, single garage, allocated parking space, front and rear gardens. The property benefits from updated kitchen, bathroom and uPVC doors/windows."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Bampton - 01993 851881BA00000250"^^xsd:string ;
+      vcard:postal-code "OX182NS" ;
+      vcard:street-address
+              "Bampton" .
+
+dd:g53g22
+      dd:hasPrice "159950"^^xsd:double ;
+      gr:includes dd:g53g24 .
+
+dd:g54g31
+      a       dd:House ;
+      gr:description "A charming Victorian Mid-Terrace Cottage in central Eynsham close to all local amenities in the old village centre.  Sitting/Dining Room with firpelace, Kitchen, first floor double Bedroom & Bathroom, second floor Attic Bedroom, gas c/h, small but private courtyard garden.  Very sensibly priced and offered for sale with no onward chain.        "^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Eynsham  - 01865 880697EY00000682"^^xsd:string ;
+      vcard:street-address
+              "Acre End Street, Eynsham" .
+
+dd:g54g17
+      a       dd:House ;
+      gr:description "An end of terrace house built by Westbury Homes on the edge of the popular Dovehouse Close development. The property has the advantage of a converted garage, accessed from the Lounge, giving much improved ground floor space of either an extra Reception Room or Bedroom 3 if required.  Other features include a Sitting Room with spiral staircase, gas c/h, driveway parking and a larger than average rear garden.  These properties always generate considerable interest, particularly from investment buyers, and early viewing is advised.     "^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Eynsham  - 01865 880697EY000923"^^xsd:string ;
+      vcard:street-address
+              "Dovehouse Close, Eynsham" .
+
+dd:g54g45
+      a       dd:House ;
+      gr:description "A recently refurbished stone-built, 3 bedroom house, benefitting from: spacious accommodation, neutral decoration throughout, quality carpeting, off-road parking and enclosed garden; and located on the edge of a modern cul-de-sac within the village of Bampton. Modern and fresh, the house is well-presented internally."^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Bampton - 01993 851881BA00000337"^^xsd:string ;
+      vcard:postal-code "OX182EZ" ;
+      vcard:street-address
+              "Pembroke Place, Bampton" .
+
+dd:g54g15
+      dd:hasPrice "199500"^^xsd:double ;
+      gr:includes dd:g54g17 .
+
+dd:g54g3
+      a       dd:House ;
+      gr:description "A traditional Terraced Victorian 2 Bedroom Cottage in central Eynsham now in need of some updating but offered for sale with no onward chain and offering plenty of scope to improve at a sensible price. A number of these properties have very limited courtyard gardens but this particular Cottage has a pleasant garden complete with an old outhouse.  Set over three floors with 20' Sitting/Dining Room, Kitchen, useful Lean-To Garden Room, 2 Bedrooms and first floor Bathroom, gas c/h, mainly double glazed.  Old village location close to excellent local amenities and bus stops for Oxford & Witney.      "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY000878"^^xsd:string ;
+      vcard:street-address
+              "Acre End Street, Eynsham" .
+
+dd:g54g8
+      dd:hasPrice "195000"^^xsd:double ;
+      gr:includes dd:g54g10 .
+
+dd:g54g57
+      dd:hasPrice "219995"^^xsd:double ;
+      gr:includes dd:g54g59 .
+
+dd:g54g10
+      a       dd:House ;
+      gr:description "A beautifully presented 1 Bedroom Cottage tucked away in the heart of Witney Town centre. A fantastic, secluded location with all of Witney’s amenities within very easy walking distance. Shoo Cottage comprises of an entrance porch, open plan Kitchen / Sitting room with fully integrated appliances, charming fireplace and characterful exposed beams throughout. Staircase leading up to the double Bedroom which benefits from built-in wardrobes and dressing area space along with Shower room. Externally the Cottage has a south facing courtyard garden area and parking for c.2 vehicles. A true gem in an idyllic central location."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077W-00002210"^^xsd:string ;
+      vcard:postal-code "OX286HA" ;
+      vcard:street-address
+              "8a High Street, Witney" .
+
+dd:g54g59
+      a       dd:House ;
+      gr:description """An extended mid terrace property that offers spacious living accommodation and two good sized double Bedrooms
+ * Entrance Hall * Bathroom * Sitting Room * Kitchen/Breakfast Room * Dining Room * Utility Room * Two Double Bedrooms * Gardens Front and Rear *"""^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077W-00002151"^^xsd:string ;
+      vcard:postal-code "OX298JF" ;
+      vcard:street-address
+              "Church Road, Witney" .
+
+dd:g54g50
+      dd:hasPrice "219950"^^xsd:double ;
+      gr:includes dd:g54g52 .
+
+dd:g54g38
+      a       dd:House ;
+      gr:description "RETIREMENT PROPERTY - Stone built Cottage set within a fully maintained complex just a short distance from Bampton village centre and all it's amenities. Offering Entrance Hall, open plan Living/Dining room and Kitchen, WC/Shower room, 2 first floor Bedrooms, Bathroom, rear Garden and single Garage. NO ONWARD CHAIN."^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Bampton - 01993 851881BA00000330"^^xsd:string ;
+      vcard:postal-code "OX182JG" ;
+      vcard:street-address
+              "The Lanes, Bampton" .
+
+dd:g54g22
+      dd:hasPrice "199995"^^xsd:double ;
+      gr:includes dd:g54g24 .
+
+dd:g54g52
+      a       dd:House ;
+      gr:description "A well proportioned 3 Bedroom house in an established close on the northern edge of this popular village. The property has a small ground floor extension leading off the Sitting Room which gives the option of a very useful Study or Play Area.  The house further benefits from being located on the south side of Hanborough Close and is one of a smaller number that have their own integral garage with private parking in front along with a very pleasant south facing garden.  The property offers good sized accommodation for the price and viewing is advised.       "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY000942"^^xsd:string ;
+      vcard:street-address
+              "Hanborough Close, Eynsham" .
+
+dd:g54g24
+      a       dd:House ;
+      gr:description "An end of terrace 3 Bedroom House with good sized accommodation. Generous fully enclosed front and rear Gardens with the benefit of gated side access. Nicely situated and within easy walking distance of the local amenities. Garage and rear access leading to further on-road parking area. The front of the property benefits from being situated in a traffic free zone."^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Witney - 01993 771077W-00002138"^^xsd:string ;
+      vcard:postal-code "OX285NL" ;
+      vcard:street-address
+              "Wilmot Close, Witney" .
+
+dd:g54g1
+      dd:hasPrice "195000"^^xsd:double ;
+      gr:includes dd:g54g3 .
+
+dd:g54g43
+      dd:hasPrice "215000"^^xsd:double ;
+      gr:includes dd:g54g45 .
+
+dd:g54g29
+      dd:hasPrice "199995"^^xsd:double ;
+      gr:includes dd:g54g31 .
+
+dd:g54g36
+      dd:hasPrice "209950"^^xsd:double ;
+      gr:includes dd:g54g38 .
+
+
+dd:g56g1
+      dd:hasPrice "225000"^^xsd:double ;
+      gr:includes dd:g56g3 .
+
+dd:g56g43
+      dd:hasPrice "275000"^^xsd:double ;
+      gr:includes dd:g56g45 .
+
+dd:g56g57
+      dd:hasPrice "285000"^^xsd:double ;
+      gr:includes dd:g56g59 .
+
+dd:g56g59
+      a       dd:House ;
+      gr:description """Situated next to the Long Hanborough train station, the former Station Masters Cottage is a unique period property offering all of the delights of village living, yet incurring only 10 minute commute to central Oxford or 75 minutes to London Paddington by train. 
+Station Cottage has been lovingly maintained and includes two double bedrooms, open plan living area, attractive gardens, sun terrace and 2 allocated parking spaces. The property retains all of the charm and features of a property of its age and yet has been upgraded with double glazed windows and new gas central heating."""^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077W-00002212"^^xsd:string ;
+      vcard:postal-code "OX298LA" ;
+      vcard:street-address
+              "Main Road, Long Hanborough" .
+
+dd:g56g3
+      a       dd:House ;
+      gr:description "A spacious stone-built end-terrace situated on the ever popular development of Calais Dene, Bampton; benefitting from three bedrooms, one of which has the addition of a dressing room & ensuite bathroom; a garage; and an enclosed rear garden to include a large shed. The property would benefit from some internal updating, hence the low asking price."^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Bampton - 01993 851881BA00000355"^^xsd:string ;
+      vcard:postal-code "OX182NR" ;
+      vcard:street-address
+              "Calais Dene, Bampton" .
+
+dd:g56g29
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:g56g31 .
+
+dd:g56g31
+      a       dd:House ;
+      gr:description """INVESTMENT OPPORTUNITY - This property is currently tenanted on an Assured Shorthold Tenancy that is due to end in November 2012.
+An extremely well presented 3 bedroom 'MEWS STYLE' property situated in a courtyard setting with pretty landscaped rear garden, garage and ample parking. * Entrance Hall * Cloakroom/WC * Sitting Room * Dining Room * Kitchen * Landing * Two Double Bedrooms * Ensuite to Bedroom 1 * Single Bedroom * Family Bathroom * Rear Garden * Garage * Parking *"""^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077W-1627"^^xsd:string ;
+      vcard:postal-code "OX281AD" ;
+      vcard:street-address
+              "WITNEY" .
+
+dd:g56g17
+      a       dd:House ;
+      gr:description "A post-war detached Bungalow of steel-framed construction tucked away in a very pleasant semi-rural location close to open countryside on the edge of Stanton Harcourt village. The Bungalow has been very well maintained and improved by the current owner and is presented to a high standard throughout. Benefits include a good sized Sitting/Dining Room overlooking the garden, a well fitted Kitchen, stylish white Bathroom suite, 2 double Bedrooms, ample driveway parking and a garage, oil fired c/h, uPVC double glazing. The established and private rear garden is a particular feature and overlooks a small spinney. A substantial timber workshop/home office suitable for a variety of uses is neatly positioned in the corner of the garden.                   "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY00000454"^^xsd:string ;
+      vcard:street-address
+              "Foxburrow Close, Sutton, Stanton Harcourt" .
+
+dd:g56g45
+      a       dd:House ;
+      gr:description "A linked detached House situated on the sought after and well established Pensclose development. Pensclose is located to the Western side of Witney and is regarded as a very popular residential area. This property offers an “L Shaped” Living / Dining Room, fitted Kitchen and Cloakroom on the ground floor together with 3 bedrooms and a re-fitted Bathroom. Further benefits include gas central heating and replacement windows. Outside there is an enclosed rear Garden and to the front has a driveway that also provides access to the single attached garage."^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Witney - 01993 771077W-00002119"^^xsd:string ;
+      vcard:street-address
+              "Pensclose, Witney" .
+
+dd:g56g50
+      dd:hasPrice "279950"^^xsd:double ;
+      gr:includes dd:g56g52 .
+
+dd:g56g52
+      a       dd:House ;
+      gr:description "A double fronted Grade II listed stone Cottage in a slightly elevated position and set back from the road in the old village centre. The Cottage has 2 double Bedrooms, a 12' x 12' Breakfast Kitchen, Sitting Room, first floor Bathroom, gas heating and a south facing garden.  The property does give some opportunity to update and improve and is available for a quick completion with no onward chain.  A very handsome and well appointed period property with considerable character enjoying a good location in this sought after village.        "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY000927"^^xsd:string ;
+      vcard:street-address
+              "Oxford Road, Eynsham" .
+
+dd:g56g36
+      dd:hasPrice "269950"^^xsd:double ;
+      gr:includes dd:g56g38 .
+
+dd:g56g10
+      a       dd:House ;
+      gr:description "Stone built, end terrace family home recently updated creating stylish accommodation with high spec kichen/diner, spacious sitting room, entrance porch/hall, 3 bedrooms, family bathroom, new boiler, uPVC windows/doors, garage, allocated parking, landscaped, enclosed front & rear gardens. Space to side, ideal for extension subject to PP. No Onward Chain"^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Bampton - 01993 851881W-00002136"^^xsd:string ;
+      vcard:postal-code "OX182AE" ;
+      vcard:street-address
+              "Ampney Orchard, Bampton" .
+
+dd:g56g15
+      dd:hasPrice "229950"^^xsd:double ;
+      gr:includes dd:g56g17 .
+
+dd:g56g8
+      dd:hasPrice "225000"^^xsd:double ;
+      gr:includes dd:g56g10 .
+
+dd:g56g38
+      a       dd:House ;
+      gr:description "A popular style and rarely available semi-detached House with a long 200' rear garden positioned in a service lay-by set back from the road in this popular village.  The House has been updated in recent years but still offers scope for further improvement and extension - subject to planning permission.  Many of these properties have been extended and re-modelled and this house has considerable scope for this stype of alteration.  Features include a Sitting Room with varnished wooden flooring and fireplace, open plan Kitchen/Diner with integrated appliances and patio doors to the garden, 3 Bedrooms, gas c/h, double glazing, gravelled driveway parking and the very good sized garden.  A sought after house type available for a quick completion with no onward chain. "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY00000796"^^xsd:string ;
+      vcard:street-address
+              "Witney Road, Eynsham" .
+
+dd:g56g24
+      a       dd:House ;
+      gr:description "A modern linked detached House situated in a nice cul de sac position with a South facing rear Garden. Extended to the rear forming an impressive Garden room which has added greatly to the ground floor layout. Viewing is advised to fully appreciate all this property has to offer."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077W-00001693"^^xsd:string ;
+      vcard:postal-code "OX285NR" ;
+      vcard:street-address
+              "Thorney Leys, Witney" .
+
+dd:g56g22
+      dd:hasPrice "249950"^^xsd:double ;
+      gr:includes dd:g56g24 .
+
+
+dd:g57g36
+      dd:hasPrice "375000"^^xsd:double ;
+      gr:includes dd:g57g38 .
+
+dd:g57g31
+      a       dd:House ;
+      gr:description "An extremely individual period village property with a really well presented and somewhat quirky interior having considerable charm and character along with planning permission to extend.  The Cottage has a sizeable Sitting Room with fireplace, Cloakroom, useful Attic Room, Breakfast Kitchen, beamed Dining Room, 3 Bedrooms, large Bathroom with Shower, an enclosed garden with side access, ample off-road parking and a large garage with gated access off the Witney Road.  The Cottage has planning permission for a link extension into the existing Garage to form 2 further Bedrooms & Bathroom (WODC REF:10/0582/P/FP). An internal inspection is essential.                "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY00000798"^^xsd:string ;
+      vcard:street-address
+              "Millwood End, Long Hanborough" .
+
+dd:g57g15
+      dd:hasPrice "290000"^^xsd:double ;
+      gr:includes dd:g57g17 .
+
+dd:g57g1
+      dd:hasPrice "285000"^^xsd:double ;
+      gr:includes dd:g57g3 .
+
+dd:g57g45
+      a       dd:House ;
+      gr:description "A very pretty and well presented double fronted three storey cottage in central Eynsham with considerable character and period features throughout.  The property has been renovated in more recent years resulting in a Cottage with an updated interior whilst retaining plenty of charm and character.  Features include exposed beams, large fireplace and oak flooring in the Sitting Room, ledged & braced cottage style internal doors, modern fitted Kitchen and a very pleasant completely enclosed west facing garden. The accommodation is arranged on three floors and includes a fabulous second floor Master Bedroom with exposed roof timbers and period style En-Suite Bathroom, 2 further Bedrooms and a first floor Shower Room, a 24' Kitchen/Diner with doors to the garden and Sitting Room with fireplace.  The Cottage is situated in a wide part of Mill Street within the old Eynsham centre with parking bays running along both sides of the street.  Viewing is highly advised.    "^^xsd:string ;
+      gr:name "Sold STCAbbey Properties - Eynsham  - 01865 880697EY000854"^^xsd:string ;
+      vcard:street-address
+              "Mill Street, Eynsham" .
+
+dd:g57g50
+      dd:hasPrice "395000"^^xsd:double ;
+      gr:includes dd:g57g52 .
+
+dd:g57g17
+      a       dd:House ;
+      gr:description """A Detached 4 Bedroomed Property situated on the popular Deer Park Development.
+In our opinion the property is decorated and presented to a high standard throughout and has been well cared for by the current owners.
+59 Sherbourne Road offers well-proportioned open-plan accommodation and is constructed to a very pleasant design on this well planned established development on the West side of Witney."""^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077WI00000410"^^xsd:string ;
+      vcard:postal-code "OX285FQ" ;
+      vcard:street-address
+              "Sherbourne Road, Witney" .
+
+dd:g57g43
+      dd:hasPrice "375000"^^xsd:double ;
+      gr:includes dd:g57g45 .
+
+dd:g57g52
+      a       dd:House ;
+      gr:description "An individually designed and very high quality stone built detached House constructed in 2002. The property was a one-off build in the grounds of a larger house and is tucked away in a fabulous and extremely sought after no-through road in the old village centre.  The design and construction has clearly been carefully planned and executed resulting in a very attractive and completely individual dwelling, all finished and presented to the most exacting standards throughout.  In our opinion the size, style and standard of finish makes this ideal for a buyer perhaps scaling down from a larger property but still requring a 'special' property in the right location. "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY000945"^^xsd:string ;
+      vcard:street-address
+              "Bitterell, Queen Street, Eynsham" .
+
+dd:g57g59
+      a       dd:House ;
+      gr:description "A beautifully situated Edwardian semi-detached House dating from the early 1900's in this tranquil rural setting near Witney with wonderful open views over the Windrush Valley. The property is well presented internally and boasts well proportioned 3 Bedroom accommodation over three floors.  It has a good sized established cottage garden and a large double garage/workshop at the rear with additional parking.  The house also has great scope to extend, subject to planning permission.  Peace, seclusion and terrific views without isolation as the location gives easy access to Witney, Oxford and the A40.  Viewing is highly recommended.                "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY000970"^^xsd:string ;
+      vcard:street-address
+              "Worsham, Nr Witney" .
+
+dd:g57g22
+      dd:hasPrice "299950"^^xsd:double ;
+      gr:includes dd:g57g24 .
+
+dd:g57g8
+      dd:hasPrice "285000"^^xsd:double ;
+      gr:includes dd:g57g10 .
+
+dd:g57g29
+      dd:hasPrice "335000"^^xsd:double ;
+      gr:includes dd:g57g31 .
+
+dd:g57g38
+      a       dd:House ;
+      gr:description "A substantially extended and significantly improved semi-detached family sized house in an established non-estate side road within this sought after village between Witney and Woodstock. The property now offers extremely well proportioned 5 Bedroom accommodation over three floors and retains a good sized rear garden with a pleasant open rear aspect towards the primary school and recreation ground.  Noteable features include a 22' Lounge/Diner with fireplace, 12' x 10' Study, a very spacious Family Kitchen, Utility Room and 5 Bedrooms including a second floor Master Bedroom suite.  This house really does offer some very good sized accommodation, in this very popular village location, and has to be viewed internally.     "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY000877"^^xsd:string ;
+      vcard:postal-code "OX298JG" ;
+      vcard:street-address
+              "Roosevelt Road, Long Hanborough" .
+
+dd:g57g57
+      dd:hasPrice "395000"^^xsd:double ;
+      gr:includes dd:g57g59 .
+
+dd:g57g10
+      a       dd:House ;
+      gr:description "A well situated detached Bungalow in this sought after small village just outside Eynsham. The Bungalow provides flexible and larger than expected accommodation due to a rear extension.  This includes a Lounge/Family Room, Study/Bedroom, Dining Room, a fitted Kitchen with integrated appliances, 2 main Bedrooms and a Bathroom with modern white suite.  Externally the property has gated driveway parking and a rear garden housing an older style Garage.  The property does require some modernisation and general improvement but is priced accordingly.  "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY00000795"^^xsd:string ;
+      vcard:postal-code "OX294DJ" ;
+      vcard:street-address
+              "Eynsham Road, Cassington" .
+
+dd:g57g3
+      a       dd:House ;
+      gr:description "A well presented 3 bedroom detached House located in this popular village location and positioned within this no through cul de sac. Rear of property has a fantastic sized Conservatory to appreciate the great views across countryside. Viewing is advised to appreciate all the features of this well looked after property."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077BA00000347"^^xsd:string ;
+      vcard:postal-code "OX298AY" ;
+      vcard:street-address
+              "Freeland, Oxfordshire" .
+
+dd:g57g24
+      a       dd:House ;
+      gr:description "An extended and very good sized chalet style House on a corner plot in a small cul-de-sac within walking distance of the old village centre. The property offers vastly improved and flexible 4/5 Bedroom accommodation along with a large garage, accessed from the Kitchen with conversion potential (subject to planning permission), a larger than average garden, Conservatory and gas heating.  Very flexible family sized property in a rarely available non-estate position.  Offered for sale with no onward chain, viewing is advised.          "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY000908"^^xsd:string ;
+      vcard:postal-code "OX294QY" ;
+      vcard:street-address
+              "Evans Close, Eynsham" .
+
+
+dd:g58g45
+      a       dd:House ;
+      gr:description "A truly amazing and beautifully presented Grade II, thatched house situated close to the centre of the village. Comprising entrance hall, kitchen/breakfast room, lounge/dining room, study/home office, utility, GF shower room, 3 first floor bedrooms, two bathroom, enclosed gardens to front and rear and off road parking."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Bampton - 01993 851881BA00000338"^^xsd:string ;
+      vcard:postal-code "OX182HA" ;
+      vcard:street-address
+              "Bridge Street, Bampton" .
+
+dd:g58g36
+      dd:hasPrice "495000"^^xsd:double ;
+      gr:includes dd:g58g38 .
+
+dd:g58g52
+      a       dd:House ;
+      gr:description "An individual stone built detached house constructed in 1994 in a superb location at the end of a no-through road with stunning uninterrupted views at the front over open countryside.  The house has well planned accommodation over three floors with a second floor Master Bedroom suite with large En-Suite Bathroom providing a haven from the rest of the house! The remainder of the accommodation includes 4 Bedrooms (1 En-Suite), a Sitting Room with wood-burning stove, Study, Cloakroom and a fabulous L-Shaped Family sized Kitchen complete with Aga.  The house has ample parking on a gated driveway, a large single garage with boarded roof space and a sizeable garden on three sides.  The property has a lovely rural feel on the village edge with countryside walks on the doorstep.  The centre of Eynsham and all the local amenities are within walking distance.             "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY000915"^^xsd:string ;
+      vcard:postal-code "OX294BE" ;
+      vcard:street-address
+              "Chilbridge Road, Eynsham" .
+
+dd:g58g38
+      a       dd:House ;
+      gr:description "A traditional stone built attached period cottage set in a large South facing garden located on the edge of Bampton village. Comprising hall, kitchen/dining room, sitting room (large Inglenook fireplace), study, utility, WC, sun/garden room, two double bedrooms, two bathrooms and large garage/workshop. The vendor believes there is scope for a building plot within the grounds (subject to permission)."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Bampton - 01993 851881BA00000362"^^xsd:string ;
+      vcard:street-address
+              "New Road, Bampton" .
+
+dd:g58g50
+      dd:hasPrice "675000"^^xsd:double ;
+      gr:includes dd:g58g52 .
+
+dd:g58g17
+      a       dd:House ;
+      gr:description "A delightful period three storey town house in the heart of Witney Town Centre. Offering flexible accommodation the property has been lovingly restored in recent years by the current owners, yet still retains all of its charm and character features associated with a property of its style and time."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077BA00000372"^^xsd:string ;
+      vcard:postal-code "OX286HT" ;
+      vcard:street-address
+              "High Street, Witney" .
+
+dd:g58g22
+      dd:hasPrice "425000"^^xsd:double ;
+      gr:includes dd:g58g24 .
+
+dd:g58g59
+      a       dd:House ;
+      gr:description "A stunning Grade II listed Georgian House in the centre of this highly desirable village. Mulberry House boasts beautifully proportioned elegant accommodation over three floors along with a large well tended south facing garden and garage. The House has many original features of the period including flagstones, fireplaces, wall panelling, exposed floorboards, panelled doors, exposed roof timbers and traditional sash windows. The property has been extended at varying stages over the years and now boasts sizeable accommodation including a welcoming Reception Hall, Cellar, two formal Reception Rooms, large open plan Dining Area adjoining the Kitchen (with Aga), Utility Room, 5 Bedrooms and 3 Bathrooms (2 En-Suite).  The established rear garden enjoys a sunny southerly aspect and can be accessed via the garage.  The property is offered for sale with no onward chain. An internal inspection is essential.        "^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY00000363"^^xsd:string ;
+      vcard:street-address
+              "Acre End Street, Eynsham" .
+
+
+dd:g58g57
+      dd:hasPrice "795000"^^xsd:double ;
+      gr:includes dd:g58g59 .
+
+dd:g58g8
+      dd:hasPrice "415000"^^xsd:double ;
+      gr:includes dd:g58g10 .
+
+
+dd:g58g31
+      a       dd:House ;
+      gr:description "An imposing detached family home with good size corner plot located on the very edge of the Deer Park development in this sort after cul de sac. 3 reception rooms, kitchen, utility room, cloak room, 4 bedrooms, ensuite shower room, family bathroom, double garage with private parking and impressive sized corner plot gardens, with extension possibilities."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077W-00002006"^^xsd:string ;
+      vcard:postal-code "OX285GA" ;
+      vcard:street-address
+              "Stanway Close, Deer Park, Witney" .
+
+dd:g58g10
+      a       dd:House ;
+      gr:description """A semi-detached Victorian Cottage situated off the road in a no-through lane on the south side of the village with a wonderful open aspect at the rear over the site of the old Abbey Fishponds. The Cottage has been extended and updated in more recent years and offers pleasantly proportioned and flexible living space whilst retaining charm and character of the period.  Noteable features include an Entrance Hall with tiled floor, Cloakroom, a double aspect Lounge with views, a cosy Sitting Room/Snug in the original part of the Cottage and an 18' Dining Area with doors to the rear terrace.  A very useful Utility Area runs off the Kitchen.  The light & airy Master Bedroom enjoys double aspect views and a fabulous En-Suite Wet Room.  Two further Bedrooms and Bathroom complete the accommodation.  
+
+The Cottage has great views at the rear over an area of protected land known locally as Fishponds, this being the former site of the ancient Abbey Fishponds.  Having an almost semi-rural feel to the setting, the property is only a short walk from the village centre and all local facilities.  VIEWING IS HIGHLY ADVISED.                """^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Eynsham  - 01865 880697EY000911"^^xsd:string ;
+      vcard:postal-code "OX294XH" ;
+      vcard:street-address
+              "Station Road, Eynsham" .
+
+dd:g58g15
+      dd:hasPrice "425000"^^xsd:double ;
+      gr:includes dd:g58g17 .
+
+dd:g58g24
+      a       dd:House ;
+      gr:description "A Detached House with well proportioned rooms, having c.2100sq ft of flexible accommodation located in a pleasant cul de sac position within this sought after village location. This property would lend itself to becoming an brilliant Family Home. Close to the countryside and playing fields which certainly compensate the conservative garden size. Viewing is advised to be able to fully appreciate the sizeable rooms and space the property has to offer."^^xsd:string ;
+      gr:name "On MarketAbbey Properties - Witney - 01993 771077W-00002109"^^xsd:string ;
+      vcard:postal-code "OX298AN" ;
+      vcard:street-address
+              "Broadmarsh Lane, Freeland" .
+
+dd:g58g1
+      gr:includes dd:g58g3 .
+
+dd:g58g43
+      dd:hasPrice "565000"^^xsd:double ;
+      gr:includes dd:g58g45 .
+

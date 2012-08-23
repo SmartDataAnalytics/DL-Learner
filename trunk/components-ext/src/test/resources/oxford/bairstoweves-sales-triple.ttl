@@ -1,0 +1,877 @@
+#58 houses
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+dd:g73g81
+      dd:hasPrice "255000"^^xsd:double ;
+      gr:includes dd:g73g84 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-detached-house-in-banbury,ox16-for-gbp-255,000-ref-1811809/" .
+
+dd:g73g84
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "No Onward ChainA well proportioned four bedroom detached family home located in this highly regarded location North of Banbury town.The accommodation briefly comprises;  Entrance porch, entrance hall, living room, dining room, conservatory, kitchen/breakfast room,..."^^xsd:string ;
+      gr:name "4 Bedroom Detached House For SalePowys Grove, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Powys Grove, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1811809/6767456/15328810/1.jpg" .
+
+dd:g73g31
+      dd:hasPrice "290000"^^xsd:double ;
+      gr:includes dd:g73g34 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-detached-house-in-banbury,ox16-for-gbp-290,000-ref-1683213/" .
+
+dd:g73g34
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Call Bairstow Eves to view this very well presented four bedroom detached property set in a cul de sac on the popular development of Hardwick.The property briefly comprises; entrance hall, lounge, dining room, kitchen, utility, wc. From the first floor landing there..."^^xsd:string ;
+      gr:name "4 Bedroom Detached House For SaleBanesberie Close, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Banesberie Close, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1683213/6416011/14700260/1.jpg" .
+
+dd:g73g64
+      a       dd:House ;
+      gr:description "Situated in Portland Road, Milcombe is this residential Building Land with permission for 5 houses situated in quiet village location adjoining open..."^^xsd:string ;
+      gr:name "Land For SalePortland Road, Milcombe, Banbury, OX15"^^xsd:string ;
+      vcard:postal-code "OX15" ;
+      vcard:street-address
+              "Portland Road, Milcombe, Banbury, OX15" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1452530/4572304/10526215/1.jpg" .
+
+dd:g73g94
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Call Bairstow Eves to view this immaculately presented four bedroom detached property on the sought after development of Hardwick Park.The accommodation briefly comprises entrance porch, lounge, kitchen/diner, wc and conservatory. From the first floor landing there are..."^^xsd:string ;
+      gr:name "4 Bedroom Detached House For SaleHardwick Park, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Hardwick Park, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1680033/6278089/14262250/1.jpg" .
+
+dd:g73g21
+      dd:hasPrice "320000"^^xsd:double ;
+      gr:includes dd:g73g24 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-semi-detached-house-in-cropredy,ox17-for-guide-price-gbp-320,000-ref-1719290/" .
+
+dd:g73g11
+      dd:hasPrice "450000"^^xsd:double ;
+      gr:includes dd:g73g14 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-detached-house-in-oxfordshire,ox16-for-gbp-450,000-ref-1730660/" .
+
+dd:g73g91
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:g73g94 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-detached-house-in-banbury,ox16-for-gbp-250,000-ref-1680033/" .
+
+dd:g73g1
+      dd:hasPrice "485000"^^xsd:double ;
+      gr:includes dd:g73g4 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-detached-bungalow-in-chacombe,ox17-for-gbp-485,000-ref-1392788/" .
+
+dd:g73g74
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Call Bairstow Eves to view this well presented four bedroom detached property in the sought after area of New Grimsbury.The property briefly comprises; entrance hall, w/c, lounge, dining room, kitchen and utility. From the first floor landing are three double bedrooms..."^^xsd:string ;
+      gr:name "4 Bedroom Detached House For SaleWoburn Close, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Woburn Close, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1711707/6674554/15049983/1.jpg" .
+
+dd:g73g24
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Canal FrontageA very rare opportunity to purchase this four bedroom semi detached house with canal frontage to the end of the rear garden.The accommodation briefly comprises; Entrance porch, entrance hallway, living/dining room with open fire place, refitted kitchen,..."^^xsd:string ;
+      gr:name "4 Bedroom Semi Detached House For SaleCreampot Close, Cropredy, Banbury, OX17"^^xsd:string ;
+      vcard:postal-code "OX17" ;
+      vcard:street-address
+              "Creampot Close, Cropredy, Banbury, OX17" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1719290/6267437/14233971/1.jpg" .
+
+dd:g73g41
+      dd:hasPrice "280000"^^xsd:double ;
+      gr:includes dd:g73g44 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-detached-house-in-banbury,ox16-for-gbp-280,000-ref-1812968/" .
+
+dd:g73g14
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Beautifully Presented Four Double Bedroom Home In Private And Exclusive Development.The property briefly comprises; entrance hall, lounge, dining room, study, kitchen/breakfast and utility room. Upstairs there are four double bedrooms, two with en-suites, and a family..."^^xsd:string ;
+      gr:name "4 Bedroom Detached House For SaleFirtree Close, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Firtree Close, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1730660/6895941/15715379/1.jpg" .
+
+dd:g73g54
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Situated on the popular Hanwell Fields development in Banbury, this well presented four bedroom semi-detached property benefits from en-suite to master bedroom and enclosed rear garden.The accommodation briefly comprises; entrance hall, lounge, ground floor cloakroom,..."^^xsd:string ;
+      gr:name "4 Bedroom Detached House For SaleUsher Drive, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Usher Drive, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1695276/6923307/15817936/1.jpg" .
+
+dd:g73g61
+      dd:hasPrice "275000"^^xsd:double ;
+      gr:includes dd:g73g64 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/land-in-milcombe,ox15-for-offers-over-gbp-275,000-ref-1452530/" .
+
+dd:g73g71
+      dd:hasPrice "270000"^^xsd:double ;
+      gr:includes dd:g73g74 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-detached-house-in-banbury,ox16-for-gbp-270,000-ref-1711707/" .
+
+dd:g73g51
+      dd:hasPrice "275000"^^xsd:double ;
+      gr:includes dd:g73g54 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-detached-house-in-banbury,ox16-for-gbp-275,000-ref-1695276/" .
+
+dd:g73g44
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Call Bairstow Eves to view this well presented four bedroom detached family property situated on the south side of Banbury.The property briefly comprises; entrance porch, entrance hall, lounge, kitchen, dining room, utility and wc. From the first floor landing are four..."^^xsd:string ;
+      gr:name "4 Bedroom Detached House For SaleValley Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Valley Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1812968/6879586/15649702/1.jpg" .
+
+dd:g73g4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A detached four bedroom bungalow situated within approximately one acre of land with views over open countryside to front and rear.The accommodation comprises: Entrance hallway, inner hallway, living room, Conservatory, kitchen/dining room, utility, W.C, four bedrooms..."^^xsd:string ;
+      gr:name "4 Bedroom Detached Bungalow For SaleChacombe, Banbury, Northamptonshire, OX17"^^xsd:string ;
+      vcard:postal-code "OX17" ;
+      vcard:street-address
+              "Chacombe, Banbury, Northamptonshire, OX17" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1392788/4374338/9780758/1.jpg" .
+
+dd:g74g24
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "TWO GARAGES INCLUDED: A spacious three bedroom detached property, situated in a cul-de-sac in the highly sought after location of Foscote Rise.The property briefly comprises of; Entrance hall, ground floor w/c, living room and kitchen/dining room. From the first floor..."^^xsd:string ;
+      gr:name "3 Bedroom Detached House For SaleFoscote Rise, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Foscote Rise, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1436315/6346617/14441139/1.jpg" .
+
+dd:g74g41
+      dd:hasPrice "215000"^^xsd:double ;
+      gr:includes dd:g74g44 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-bungalow-in-claydon,ox17-for-offers-in-excess-of-gbp-215,000-ref-1647973/" .
+
+dd:g74g31
+      dd:hasPrice "215000"^^xsd:double ;
+      gr:includes dd:g74g34 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-detached-house-in-banbury,ox16-for-gbp-215,000-ref-1662736/" .
+
+dd:g74g34
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "This three bedroom detached property is situated in the Popular area of Cherwell HeightsThe property benefits from double glazing, gas central heating, driveway to garage, front and rear gardens.  Internally in brief the accommodation comprises: entrance hall, living..."^^xsd:string ;
+      gr:name "3 Bedroom Detached House For SaleSanderling Walk, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Sanderling Walk, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1662736/6444208/14780658/1.jpg" .
+
+dd:g74g84
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Three bedroom semi detached house which is located towards the south side of Banbury town centre.The accommodation briefly comprises; entrance hallway, separate living & dining rooms, kitchen, rear lobby with access to; ground floor WC, utility cupboard & workshop...."^^xsd:string ;
+      gr:name "3 Bedroom Semi Detached House For SaleHightown Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Hightown Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1677430/6773174/15338170/1.jpg" .
+
+dd:g74g1
+      dd:hasPrice "240000"^^xsd:double ;
+      gr:includes dd:g74g4 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-terraced-house-in-banbury,ox16-for-gbp-240,000-ref-1705880/" .
+
+dd:g74g51
+      dd:hasPrice "215000"^^xsd:double ;
+      gr:includes dd:g74g54 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-terraced-house-in-banbury,ox16-for-gbp-215,000-ref-1566544/" .
+
+dd:g74g21
+      dd:hasPrice "225000"^^xsd:double ;
+      gr:includes dd:g74g24 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-detached-house-in-banbury,ox16-for-gbp-225,000-ref-1436315/" .
+
+dd:g74g54
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Bairstow Eves are delighted to offer this well presented three bedroom end terraced home located in the popular Hillview area of Banbury.Accommodation in brief comprises: Entrance hall, lounge, dining room, office, kitchen and conservatory. From the first floor..."^^xsd:string ;
+      gr:name "3 Bedroom Terraced House For SaleDaimler Avenue, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Daimler Avenue, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1566544/5852094/12973133/1.jpg" .
+
+dd:g74g61
+      dd:hasPrice "210000"^^xsd:double ;
+      gr:includes dd:g74g64 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-semi-detached-house-in-banbury,ox16-for-gbp-210,000-ref-1762262/" .
+
+dd:g74g94
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "The only detached bungalow in this exclusive cul-de-sac of just nine bungalows, built on the largest plot ten years ago, with the advantage of a hard-standing for a third vehicle. It is beautifully presented, chain free and within close proximity of town with the..."^^xsd:string ;
+      gr:name "2 Bedroom Detached Bungalow For SaleNorthcot Lane, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Northcot Lane, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1849504/6910716/15763147/1.jpg" , "/images/results/results-new.png" .
+
+dd:g74g4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Call Bairstow Eves to view this very well presented four bedroom town house on the sought after development of Hanwell Fields.The accommodation briefly comprises; Entrance hall, kitchen, lounge, w/c. From the first floor landing there are two double bedrooms a further..."^^xsd:string ;
+      gr:name "4 Bedroom Terraced House For SaleMarjoram Walk, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Marjoram Walk, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1705880/6283598/14356535/1.jpg" .
+
+dd:g74g64
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Call Bairstow Eves to view this immaculately presented four bedroom semi detached property situated on the south side of Banbury.The property briefly comprises; entrance porch, lounge, kitchen/diner, conservatory and wc. From the first floor landing are four bedrooms..."^^xsd:string ;
+      gr:name "4 Bedroom Semi Detached House For SaleValley Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Valley Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1762262/6409251/14682191/1.jpg" .
+
+dd:g74g14
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A unique four bedroom town house situated in a cul-de-sac on the popular Hanwell Fields estate of Banbury.The accommodation comprises: Entrance hallway, living room, dining room, ground floor W.C, and kitchen. From the spacious first floor landing: Three bedrooms and a..."^^xsd:string ;
+      gr:name "4 Bedroom Terraced House For SaleBooth Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Booth Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1680474/6122041/13846942/1.jpg" .
+
+dd:g74g74
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "This four bedroom end of terrace property is situated on the popular Hillview development in Banbury.The accommodation briefly comprises; entrance porch, living room, dining room, kitchen, conservatory, four bedrooms and family bathroom.The property also benefits from..."^^xsd:string ;
+      gr:name "4 Bedroom Terraced House For SaleLanchester Drive, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Lanchester Drive, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1782063/6893464/15708750/1.jpg" .
+
+dd:g74g91
+      dd:hasPrice "199950"^^xsd:double ;
+      gr:includes dd:g74g94 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-detached-bungalow-in-banbury,ox16-for-gbp-199,950-ref-1849504/" .
+
+dd:g74g11
+      dd:hasPrice "239950"^^xsd:double ;
+      gr:includes dd:g74g14 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-terraced-house-in-banbury,ox16-for-gbp-239,950-ref-1680474/" .
+
+dd:g74g81
+      dd:hasPrice "200000"^^xsd:double ;
+      gr:includes dd:g74g84 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-semi-detached-house-in-banbury,ox16-for-gbp-200,000-ref-1677430/" .
+
+dd:g74g44
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Call Bairstow eves to view this immaculately presented and modern three bedroom detached bungalow in the sought after village of Claydon.The accommodation  in brief comprises; Entrance, kitchen, living room with open fire, two double bedrooms both with views, a further..."^^xsd:string ;
+      gr:name "3 Bedroom Bungalow For SaleManor Park, Claydon, Banbury, OX17"^^xsd:string ;
+      vcard:postal-code "OX17" ;
+      vcard:street-address
+              "Manor Park, Claydon, Banbury, OX17" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1647973/6263665/14282204/1.jpg" .
+
+dd:g74g71
+      dd:hasPrice "200000"^^xsd:double ;
+      gr:includes dd:g74g74 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/4-bedroom-terraced-house-in-banbury,ox16-for-gbp-200,000-ref-1782063/" .
+
+dd:g75g84
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A three bedroom property located in the Cherwell Heights area of Banbury.The accommodation briefly comprises;  Entrance, living room, kitchen and shower room with double shower cubicle.  From the first floor landing;  Three bedrooms.Other benefits include;  Gas central..."^^xsd:string ;
+      gr:name "3 Bedroom Semi Detached House For SaleMeadow View, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Meadow View, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1789234/6736348/15552467/1.jpg" .
+
+dd:g75g1
+      dd:hasPrice "192950"^^xsd:double ;
+      gr:includes dd:g75g4 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-semi-detached-bungalow-in-banbury,ox16-for-gbp-192,950-ref-1731285/" .
+
+dd:g75g31
+      dd:hasPrice "187500"^^xsd:double ;
+      gr:includes dd:g75g34 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-semi-detached-house-in-banbury,ox16-for-gbp-187,500-ref-1659235/" .
+
+dd:g75g94
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Call Bairstow Eves to view this well presented three bedroom terraced property set overlooking a green.The accommodation briefly comprises; entrance porch, entrance hall, lounge and kitchen/diner. From the first floor landing there are three bedrooms and a family..."^^xsd:string ;
+      gr:name "3 Bedroom Terraced House For SaleGrimsbury Square, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Grimsbury Square, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1492173/6093809/13759797/1.jpg" .
+
+dd:g75g64
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Call Bairstow Eves to view this extended three bedroom semi-detached house situated in the popular Hillview area of Banbury.The accommodation briefly comprises of: Entrance hallway, separate living & dining rooms and a kitchen/breakfast room. From the first floor..."^^xsd:string ;
+      gr:name "3 Bedroom Semi Detached House For SaleLanchester Drive, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Lanchester Drive, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1638661/6360976/14533138/1.jpg" .
+
+dd:g75g91
+      dd:hasPrice "160000"^^xsd:double ;
+      gr:includes dd:g75g94 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-terraced-house-in-banbury,ox16-for-gbp-160,000-ref-1492173/" .
+
+dd:g75g34
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Call Bairstow Eves to view this very well presented three bedroom semi detached property in the sought after area of Grimsbury.The property briefly comprises; entrance hall, lounge, dining room, kitchen, sun room and w/c. From the first floor landing are the three..."^^xsd:string ;
+      gr:name "3 Bedroom Semi Detached House For SaleGrimsbury Drive, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Grimsbury Drive, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1659235/6310308/14740199/1.jpg" .
+
+dd:g75g11
+      dd:hasPrice "190000"^^xsd:double ;
+      gr:includes dd:g75g14 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-semi-detached-house-in-banbury,ox16-for-gbp-190,000-ref-1789954/" .
+
+dd:g75g21
+      dd:hasPrice "190000"^^xsd:double ;
+      gr:includes dd:g75g24 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-house-in-banbury,ox16-for-gbp-190,000-ref-1748997/" .
+
+dd:g75g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Call Bairstow Eves to view this immaculately presented two bedroom semi detached bungalow set in the north west side of Banbury.The property briefly comprises; entrance porch, lounge, kitchen, two bedrooms, bathroom and conservatory.The property benefits from; gas..."^^xsd:string ;
+      gr:name "2 Bedroom Semi Detached Bungalow For SaleNursery Drive, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Nursery Drive, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1731285/6680511/15062516/1.jpg" .
+
+dd:g75g14
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "An extremely well presented three bedroom semi-detached property located in this pleasant cul-de-sac within the Hanwell Fields development.The accommodation briefly comprises; Entrance hall, ground floor w/c, kitchen/dining room and living room. From the first floor..."^^xsd:string ;
+      gr:name "3 Bedroom Semi Detached House For SaleParsley Place, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Parsley Place, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1789954/6761408/15315154/1.jpg" .
+
+dd:g75g81
+      dd:hasPrice "168000"^^xsd:double ;
+      gr:includes dd:g75g84 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-semi-detached-house-in-banbury,ox16-for-gbp-168,000-ref-1789234/" .
+
+dd:g75g51
+      dd:hasPrice "180000"^^xsd:double ;
+      gr:includes dd:g75g54 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-terraced-house-in-banbury,ox16-for-gbp-180,000-ref-1645827/" .
+
+dd:g75g41
+      dd:hasPrice "185000"^^xsd:double ;
+      gr:includes dd:g75g44 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-detached-bungalow-in-banbury,ox16-for-gbp-185,000-ref-1754116/" .
+
+dd:g75g74
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A well proportioned two bedroom coach house with an integral garage located on the popular Bloxham development.The accommodation briefly comprises of; Entrance hall, first floor landing, large open plan living room, dining room & kitchen, two bedrooms and..."^^xsd:string ;
+      gr:name "2 Bedroom Flat For SaleAyres Drive, Bloxham, Banbury, OX15"^^xsd:string ;
+      vcard:postal-code "OX15" ;
+      vcard:street-address
+              "Ayres Drive, Bloxham, Banbury, OX15" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1820871/6862476/15569061/1.jpg" .
+
+dd:g75g24
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "No Onward ChainA three bedroom property situated in this highly regarded location, and within close proximity to Local Schools, shops and Horton Hospital.The accommodation b briefly comprises;  Entrance hall, kitchen/Dining room and living room.  From the first floor..."^^xsd:string ;
+      gr:name "3 Bedroom House For SaleHorton View, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Horton View, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1748997/6654265/14988082/1.jpg" .
+
+dd:g75g61
+      dd:hasPrice "180000"^^xsd:double ;
+      gr:includes dd:g75g64 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-semi-detached-house-in-banbury,ox16-for-gbp-180,000-ref-1638661/" .
+
+dd:g75g71
+      dd:hasPrice "170000"^^xsd:double ;
+      gr:includes dd:g75g74 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-flat-in-bloxham,ox15-for-gbp-170,000-ref-1820871/" .
+
+dd:g75g54
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Call Bairstow Eves to view this very well presented three bedroom terraced property in the very sought after Easington area.The property briefly comprises; entrance hall, lounge, refitted kitchen with built in appliances and w/c. From the first floor landing are three..."^^xsd:string ;
+      gr:name "3 Bedroom Terraced House For SaleSpringfield Avenue, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Springfield Avenue, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1645827/6247396/14172308/1.jpg" .
+
+dd:g75g44
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Completley Re-Furbished Two Bedroom Bungalow In Close Proximity To Town.The bungalow has been re-furbished to a high standard throughout and briefly comprises; entrance hall, re-fitted kitchen, lounge, conservatory, re-fitted shower room and two double bedrooms. The..."^^xsd:string ;
+      gr:name "2 Bedroom Detached Bungalow For SaleOld School Place, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Old School Place, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1754116/6380443/14585301/1.jpg" .
+
+dd:g76g54
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "No Onward ChainA well presented two bedroom ground floor apartment with a garden area.The accommodation briefly comprises;  Entrance hall, two bedrooms with en suite to master, and a further bathroom, open plan living, dining and kitchen.Other benefits include;  Gas..."^^xsd:string ;
+      gr:name "2 Bedroom Ground Floor Flat For SaleClarkes Court, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Clarkes Court, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1766327/6484076/14819749/1.jpg" .
+
+dd:g76g21
+      dd:hasPrice "150000"^^xsd:double ;
+      gr:includes dd:g76g24 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-terraced-house-in-banbury,ox16-for-gbp-150,000-ref-1684771/" .
+
+dd:g76g41
+      dd:hasPrice "148000"^^xsd:double ;
+      gr:includes dd:g76g44 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-terraced-house-in-banbury,ox16-for-gbp-148,000-ref-1179398/" .
+
+dd:g76g24
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Call Bairstow Eves to view this three bedroom terraced property in the Easington Area of Banbury.The accommodation briefly comprises; entrance hall, lounge, kitchen and bathroom. From the first floor landing are the three bedrooms.Benefits include; double glazing,..."^^xsd:string ;
+      gr:name "3 Bedroom Terraced House For SaleEasington Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Easington Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1684771/6173973/13995006/1.jpg" .
+
+dd:g76g81
+      dd:hasPrice "140000"^^xsd:double ;
+      gr:includes dd:g76g84 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-terraced-house-in-banbury,ox16-for-gbp-140,000-ref-1662963/" .
+
+dd:g76g34
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A three bedroom property offered with no onward chain.The accommodation briefly comprises; Living room, dining room and kitchen.  From the first floor landing;  Three bedrooms and a family bathroom.Other benefits include; Gas central heating, double glazing, allocated..."^^xsd:string ;
+      gr:name "3 Bedroom Terraced House For SaleSussex Drive, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Sussex Drive, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1788863/6685158/15070134/1.jpg" .
+
+dd:g76g51
+      dd:hasPrice "145000"^^xsd:double ;
+      gr:includes dd:g76g54 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-ground-floor-flat-in-banbury,ox16-for-gbp-145,000-ref-1766327/" .
+
+dd:g76g31
+      dd:hasPrice "149000"^^xsd:double ;
+      gr:includes dd:g76g34 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-terraced-house-in-banbury,ox16-for-gbp-149,000-ref-1788863/" .
+
+dd:g76g84
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A three bedroom end-terraced house located to the West side of Banbury Town.The accommodation briefly comprises; entrance hall, living room, kitchen, wet room, three bedrooms and a family bathroom.Other benefits include front and rear gardens, gas central heating and..."^^xsd:string ;
+      gr:name "3 Bedroom Terraced House For SaleMold Crescent, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Mold Crescent, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1662963/6158050/13960388/1.jpg" .
+
+dd:g76g74
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Call Bairstow Eves to view this well presented three bedroom terraced property set in the west side of Banbury.The property briefly comprises; entrance, lounge, dining room, kitchen. From the first floor landing there are three bedrooms and family bathroom.The property..."^^xsd:string ;
+      gr:name "3 Bedroom Terraced House For SaleArundel Place, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Arundel Place, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1693838/6335281/14415731/1.jpg" .
+
+dd:g76g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A well presented two bedroom house situated within a popular development on the East side of Banbury town.The accommodation briefly comprises: Entrance hallway, kitchen/dining room with built in oven & hob and a living room overlooking the rear garden. From first floor..."^^xsd:string ;
+      gr:name "2 Bedroom Terraced House For SaleWaterloo Drive, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Waterloo Drive, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1632425/5994975/13316235/1.jpg" .
+
+dd:g76g11
+      dd:hasPrice "150000"^^xsd:double ;
+      gr:includes dd:g76g14 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-terraced-house-in-banbury,ox16-for-gbp-150,000-ref-1742416/" .
+
+dd:g76g14
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A three bedroom mid terraced house situated in the popular Grimsbury area of Banbury.The accommodation briefly comprises of: Entrance Porch, entrance hallway, open plan living & dining rooms (previously two separate rooms) and kitchen. From the first floor landing:..."^^xsd:string ;
+      gr:name "3 Bedroom Terraced House For SaleGrimsbury Square, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Grimsbury Square, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1742416/6346621/14441143/1.jpg" .
+
+dd:g76g44
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A well presented three bedroom terraced house situated on the north side of Banbury.The accommodation briefly comprises of; Entrance hallway, living/dining room, kitchen, from the first floor landing; three bedrooms and a family bathroom.Other benefits include; front &..."^^xsd:string ;
+      gr:name "3 Bedroom Terraced House For SaleDanesmoor, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Danesmoor, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1179398/4548897/10470677/1.jpg" .
+
+dd:g76g91
+      dd:hasPrice "130000"^^xsd:double ;
+      gr:includes dd:g76g94 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-semi-detached-house-in-banbury,ox16-for-gbp-130,000-ref-1679580/" .
+
+dd:g76g71
+      dd:hasPrice "140000"^^xsd:double ;
+      gr:includes dd:g76g74 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/3-bedroom-terraced-house-in-banbury,ox16-for-gbp-140,000-ref-1693838/" .
+
+dd:g76g94
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Bairstow Eves are pleased to offer this two bedroom semi detached house situated within a cul-de-sac location within close proximity of Banbury Town.The accommodation comprises of: Entrance hallway, living room, kitchen & bathroom. From the first floor landing: Two..."^^xsd:string ;
+      gr:name "2 Bedroom Semi Detached House For SaleGlanville Gardens, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Glanville Gardens, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1679580/6318376/14366043/1.jpg" .
+
+dd:g76g64
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A good size one bedroom ground floor retirement apartment, constructed by McCarthy Stone in 2009, is situated within close proximity of Banbury town.The accommodation briefly comprises: Entrance hallway, living/dining room, fitted kitchen with built in appliances,..."^^xsd:string ;
+      gr:name "1 Bedroom Ground Floor Flat For SaleSchool Lane, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "School Lane, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1470015/4708470/11264452/1.jpg" .
+
+dd:g76g1
+      dd:hasPrice "155000"^^xsd:double ;
+      gr:includes dd:g76g4 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-terraced-house-in-banbury,ox16-for-gbp-155,000-ref-1632425/" .
+
+dd:g76g61
+      dd:hasPrice "145000"^^xsd:double ;
+      gr:includes dd:g76g64 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/1-bedroom-ground-floor-flat-in-banbury,ox16-for-gbp-145,000-ref-1470015/" .
+
+dd:g77g55
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Location, Specification, StationFinished and released for viewing, a spacious 2 bedroom new apartment concluding the popular Market Quarter development, adjacent to Banbury station. This striking development offers fantastic convenience for the town centre. The..."^^xsd:string ;
+      gr:name "2 Bedroom Ground Floor Flat For SaleMarshall Road, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Marshall Road, Oxfordshire, OX16" ;
+      foaf:depiction "/promotions/newhomes/images/results-listing-item-icon.gif" , "http://images2.propertywide.co.uk/properties/246/1590102/5962223/13263538/1.jpg" .
+
+dd:g77g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A two bedroom end of terrace house with a drive & carport which is also available immediately with no onward chain.The accommodation briefly comprises: Entrance hallway, living room which is open plan to dining room and a refitted kitchen. From the first floor landing:..."^^xsd:string ;
+      gr:name "2 Bedroom Terraced House For SaleEvenlode, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Evenlode, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1382751/5763927/12157172/1.jpg" .
+
+dd:g77g87
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "No Onward ChainA two bedroom top floor apartment located within close proximity to Banbury Railway Station and Town Centre.The accommodation briefly comprises; Entrance hall, living/Dining Room, Kitchen, Two Bedrooms with en-suite to master and a further bathroom.Other..."^^xsd:string ;
+      gr:name "2 Bedroom Upper Floor Flat For SaleAlma Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Alma Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1779464/6680512/15064398/1.jpg" .
+
+dd:g77g24
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A well presented one bedroom property with allocated parking.The accommodation briefly comprises;  Living room and kitchen.  From the first floor landing;  One bedroom and a shower room.Other benefits include;  Gas central heating, double..."^^xsd:string ;
+      gr:name "1 Bedroom Terraced House For SaleThe Camellias, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "The Camellias, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1671598/6621410/14933467/1.jpg" .
+
+dd:g77g52
+      dd:hasPrice "125000"^^xsd:double ;
+      gr:includes dd:g77g55 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-ground-floor-flat-in-oxfordshire,ox16-for-gbp-125,000-ref-1590102/" .
+
+dd:g77g74
+      dd:hasPrice "125000"^^xsd:double ;
+      gr:includes dd:g77g77 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-flat-in-overthorpe,ox17-for-gbp-125,000-ref-1553770/" .
+
+dd:g77g84
+      dd:hasPrice "124950"^^xsd:double ;
+      gr:includes dd:g77g87 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-upper-floor-flat-in-banbury,ox16-for-gbp-124,950-ref-1779464/" .
+
+dd:g77g41
+      dd:hasPrice "125000"^^xsd:double ;
+      gr:includes dd:g77g44 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-ground-floor-flat-in-oxfordshire,ox16-for-gbp-125,000-ref-1590103/" .
+
+dd:g77g44
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Location, Specification, StationFinished and released for viewing, a spacious 2 bedroom new apartment concluding the popular Market Quarter development, adjacent to Banbury station. This striking development offers fantastic convenience for the town centre. The..."^^xsd:string ;
+      gr:name "2 Bedroom Ground Floor Flat For SaleMarshall Road, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Marshall Road, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1590103/5962227/13263544/1.jpg" , "/promotions/newhomes/images/results-listing-item-icon.gif" .
+
+dd:g77g1
+      dd:hasPrice "130000"^^xsd:double ;
+      gr:includes dd:g77g4 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-terraced-house-in-banbury,ox16-for-gbp-130,000-ref-1382751/" .
+
+dd:g77g34
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Location, Specification, StationFinished and released for viewing, a spacious 2 bedroom new apartment concluding the popular Market Quarter development, adjacent to Banbury station. This striking development offers fantastic convenience for the town centre. The..."^^xsd:string ;
+      gr:name "2 Bedroom Ground Floor Flat For SaleMarshall Road, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Marshall Road, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1590105/5989258/13301581/1.jpg" .
+
+dd:g77g66
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Location, Specification, StationFinished and released for viewing, a spacious 2 bedroom new apartment concluding the popular Market Quarter development, adjacent to Banbury station. This striking development offers fantastic convenience for the town centre. The..."^^xsd:string ;
+      gr:name "2 Bedroom Ground Floor Flat For SaleMarshall Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Marshall Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1590100/5983819/13289493/1.jpg" , "/promotions/newhomes/images/results-listing-item-icon.gif" .
+
+dd:g77g97
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Call Bairstow Eves to view this immaculately presented one bedroom apartment, set in the sought after location of the Market Quarter.The property briefly comprises; entrance hall, double bedroom with built in wardrobe, bathroom and open plan living and kitchen area.The..."^^xsd:string ;
+      gr:name "1 Bedroom Flat For SaleMarshall Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Marshall Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1688585/6181030/14015419/1.jpg" .
+
+dd:g77g14
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A two double bedroom duplex apartment arranged over two floors. The property is converted building with two other apartments.The accommodation comprises of: Entrance hallway, first floor landing, two double bedrooms, bathroom and utility room. Second floor landing,..."^^xsd:string ;
+      gr:name "2 Bedroom Flat For SaleMiddleton Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Middleton Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/926935/3660893/5741433/1.jpg" .
+
+dd:g77g11
+      dd:hasPrice "129950"^^xsd:double ;
+      gr:includes dd:g77g14 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-flat-in-banbury,ox16-for-gbp-129,950-ref-926935/" .
+
+dd:g77g77
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "This pleasant two bedroom flat is situated in the popular village of Overthorpe.The property consists of two bedrooms, shower room and open plan living room/kitchen which has spaces suitable for white goods.This flat also benefits from double glazing, allocated parking..."^^xsd:string ;
+      gr:name "2 Bedroom Flat For SaleOverthorpe, Banbury, Northamptonshire, OX17"^^xsd:string ;
+      vcard:postal-code "OX17" ;
+      vcard:street-address
+              "Overthorpe, Banbury, Northamptonshire, OX17" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1553770/5783649/12310369/1.jpg" .
+
+dd:g77g21
+      dd:hasPrice "128000"^^xsd:double ;
+      gr:includes dd:g77g24 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/1-bedroom-terraced-house-in-banbury,ox16-for-gbp-128,000-ref-1671598/" .
+
+dd:g77g31
+      dd:hasPrice "125000"^^xsd:double ;
+      gr:includes dd:g77g34 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-ground-floor-flat-in-oxfordshire,ox16-for-gbp-125,000-ref-1590105/" .
+
+dd:g77g94
+      dd:hasPrice "115000"^^xsd:double ;
+      gr:includes dd:g77g97 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/1-bedroom-flat-in-banbury,ox16-for-gbp-115,000-ref-1688585/" .
+
+dd:g77g63
+      dd:hasPrice "125000"^^xsd:double ;
+      gr:includes dd:g77g66 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-ground-floor-flat-in-banbury,ox16-for-gbp-125,000-ref-1590100/" .
+
+dd:g78g76
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A first floor one bedroom flat situated within close proximity of Banbury town centre.The accommodation comprises; Communal hallway, entrance hall, living room, kitchen, bedroom & bathroom.The property also benefits from; Residents parking to the rear of the block and..."^^xsd:string ;
+      gr:name "1 Bedroom Flat For SalePark Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Park Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1449181/6284227/14276852/1.jpg" .
+
+dd:g78g11
+      dd:hasPrice "115000"^^xsd:double ;
+      gr:includes dd:g78g14 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-upper-floor-flat-in-banbury,ox16-for-gbp-115,000-ref-1138077/" .
+
+dd:g78g14
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A beautifully presented two bedroom third floor retirement apartment located on the East of Banbury. The property comprises of communal entrance hall, private entrance hall, living room,  kitchen, two bedrooms and a bathroom.Other benefits for residents include : A..."^^xsd:string ;
+      gr:name "2 Bedroom Upper Floor Flat For SaleDuke Street, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Duke Street, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1138077/6327508/14389698/1.jpg" .
+
+dd:g78g46
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A ground floor two bedroom apartment situated  within close proximity of Banbury town centre.The accommodation briefly comprises of; entrance hallway, living room, kitchen, two double bedrooms and a bathroom.Benefits also include; double glazing and gas central..."^^xsd:string ;
+      gr:name "2 Bedroom Ground Floor Flat For SaleOld Parr Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Old Parr Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1828029/6857362/15538952/1.jpg" .
+
+dd:g78g56
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A well presented one bedroom apartment located near the centre of Banbury town. The property is within close proximity to the railway station, town centre and m40.The accommodation briefly comprises of: entrance hall, living room, kitchen, bedroom and a bathroom.This..."^^xsd:string ;
+      gr:name "1 Bedroom Flat For SaleVictoria Place, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Victoria Place, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1822095/6898679/15723191/1.jpg" .
+
+dd:g78g1
+      dd:hasPrice "115000"^^xsd:double ;
+      gr:includes dd:g78g4 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-first-floor-flat-in-banbury,ox16-for-gbp-115,000-ref-1427051/" .
+
+dd:g78g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Bairstow Eves are pleased to offer for sale this two bedroom first floor flat.  The accommodation briefly comprises communal entrance, entrance hall, lounge, kitchen, two bedrooms and bathroom.  Outside there is a communal parking..."^^xsd:string ;
+      gr:name "2 Bedroom First Floor Flat For SaleWindmill Close, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Windmill Close, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1427051/6161610/14022053/1.jpg" .
+
+dd:g78g73
+      dd:hasPrice "80000"^^xsd:double ;
+      gr:includes dd:g78g76 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/1-bedroom-flat-in-banbury,ox16-for-asking-price-gbp-80,000-ref-1449181/" .
+
+dd:g78g43
+      dd:hasPrice "100000"^^xsd:double ;
+      gr:includes dd:g78g46 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/2-bedroom-ground-floor-flat-in-banbury,ox16-for-gbp-100,000-ref-1828029/" .
+
+dd:g78g35
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Location, Specification, StationFinished and released for viewing, a spacious 1 bedroom new apartment concluding the popular Market Quarter development, adjacent to Banbury station. This striking development offers fantastic convenience for the town centre. The..."^^xsd:string ;
+      gr:name "1 Bedroom Ground Floor Flat For SaleMarshall Road, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Marshall Road, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1590101/5983823/13289497/1.jpg" , "/promotions/newhomes/images/results-listing-item-icon.gif" .
+
+dd:g78g66
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A one bedroom apartment located within close proximity Banbury town centre.The accommodation briefly comprises; Entrance hall, living room, kitchen, bathroom and double bedroom.Other benefits include; Allocated parking and no onward..."^^xsd:string ;
+      gr:name "1 Bedroom Ground Floor Flat For SaleParklands, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Parklands, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1797657/6736350/15564794/1.jpg" .
+
+dd:g78g32
+      dd:hasPrice "105000"^^xsd:double ;
+      gr:includes dd:g78g35 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/1-bedroom-ground-floor-flat-in-oxfordshire,ox16-for-gbp-105,000-ref-1590101/" .
+
+dd:g78g53
+      dd:hasPrice "100000"^^xsd:double ;
+      gr:includes dd:g78g56 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/1-bedroom-flat-in-banbury,ox16-for-gbp-100,000-ref-1822095/" .
+
+dd:g78g21
+      dd:hasPrice "105000"^^xsd:double ;
+      gr:includes dd:g78g24 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/1-bedroom-ground-floor-flat-in-banbury,ox16-for-gbp-105,000-ref-1590104/" .
+
+dd:g78g63
+      dd:hasPrice "95000"^^xsd:double ;
+      gr:includes dd:g78g66 ;
+      foaf:page "http://www.bairstoweves.co.uk/buy/property/1-bedroom-ground-floor-flat-in-banbury,ox16-for-gbp-95,000-ref-1797657/" .
+
+dd:g78g24
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Location, Specification, StationFinished and released for viewing, a spacious 1 bedroom new apartment concluding the popular Market Quarter development, adjacent to Banbury station. This striking development offers fantastic convenience for the town centre. The..."^^xsd:string ;
+      gr:name "1 Bedroom Ground Floor Flat For SaleMarshall Road, Banbury, Oxfordshire, OX16"^^xsd:string ;
+      vcard:postal-code "OX16" ;
+      vcard:street-address
+              "Marshall Road, Banbury, Oxfordshire, OX16" ;
+      foaf:depiction "http://images2.propertywide.co.uk/properties/246/1590104/5962231/13263550/1.jpg" , "/promotions/newhomes/images/results-listing-item-icon.gif" .
+

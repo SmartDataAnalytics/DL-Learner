@@ -1,0 +1,894 @@
+#49 houses
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+dd:g13g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Situated in a quiet cul-de-sac just moments from fields and beautiful public bridleways, a well presented, modern, 2 bed home, parking and no chain"^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Headington, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.769589"^^xsd:double ;
+      wgs84:long "-1.201319"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Hubble Close,Headington, Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Headington-Sales/dp111695435.jpg?v=9" .
+
+dd:g13g1
+      dd:hasPrice "185000"^^xsd:double ;
+      gr:includes dd:g13g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11695435" .
+
+
+dd:g13g4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Located just off the Cowley Road with its eclectic mix of shops, bars and restaurants, a smart, modern apartment with parking and communal garden."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.746036"^^xsd:double ;
+      wgs84:long "-1.23471"^^xsd:double ;
+      vcard:locality "Central East Oxford" ;
+      vcard:street-address
+              "Leon Close,Central East Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/East-Oxford-Sales/dp111744663.jpg?v=2" .
+
+dd:g13g1
+      dd:hasPrice "185000"^^xsd:double ;
+      gr:includes dd:g13g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11744663" .
+
+dd:g14g1
+      dd:hasPrice "185000"^^xsd:double ;
+      gr:includes dd:g14g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11763051" .
+
+dd:g14g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Taylors Headington are delighted to offer for sale this newly refurbished property Situated within Sandhills this first floor flat comprising entrance hall, lounge, kitchen, shower room and two bedrooms. Further features include off street parking and a rear garden. (contd...)"^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.763753"^^xsd:double ;
+      wgs84:long "-1.18449"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street-address
+              "Headington, Oxford, Oxfordshire" ;
+      foaf:depiction "http://img.findaproperty.com/taylors-countrywide/Headington-Sales/dp111763051.jpg?v=1" .
+
+dd:g15g4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A super ground floor apartment offering well planned accommodation with its own private, south facing rear garden. The property is currently let with a rental income of £825.00 per calendar month."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      vcard:locality "West Oxford, OX2" ;
+      vcard:street-address
+              "Third Acre Rise, West Oxford, OX2" ;
+      foaf:depiction "http://img.findaproperty.com/wiwogr-winkworth/Oxford/dp110859647.jpg?v=6" .
+
+dd:g15g1
+      dd:hasPrice "187500"^^xsd:double ;
+      gr:includes dd:g15g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-10859647" .
+
+dd:g16g1
+      dd:hasPrice "187950"^^xsd:double ;
+      gr:includes dd:g16g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-9730636" .
+
+dd:g16g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Presented in good order throughout, a 2 bedroom first floor maisonette offering excellent access to the A/M40 and the city centre. No onward chain"^^xsd:string ;
+      gr:name "2 bedroom maisonette for sale in Risinghurst, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.763007"^^xsd:double ;
+      wgs84:long "-1.1868"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Green Ridges,Headington" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Headington-Sales/dp19730636.jpg?v=12" .
+
+dd:g17g1
+      dd:hasPrice "189000"^^xsd:double ;
+      gr:includes dd:g17g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-10331614" .
+
+dd:g17g4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Attention Key Workers! An opportunity to live in a fabulous 'key worker' development, presented to the highest standards and with views of parkland"^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.760434"^^xsd:double ;
+      wgs84:long "-1.209255"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Central Headington,Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Headington-Sales/dp110331614.jpg?v=2" .
+
+
+dd:g18g1
+      dd:hasPrice "189950"^^xsd:double ;
+      gr:includes dd:g18g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-10724216" .
+
+dd:g18g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "This recently refurbished two bedroom maisonette is very well presented and convenient for Templars Square Shopping Centre and bus routes to the City."^^xsd:string ;
+      gr:name "2 bedroom maisonette for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.731127"^^xsd:double ;
+      wgs84:long "-1.21398"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Central Cowley,Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/East-Oxford-Sales/dp110724216.jpg?v=3" .
+
+dd:g19g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description """This delightful first floor two bedroomed flat benefits from a generous living space with modern interiors, located in Barton moments from excellent road transport links. 
+ 
+The property comprises spacious reception room, modern kitchen, two double bedrooms, modern bathroom, communal gardens and secure off-street parking. 
+ 
+The property is situated moments from a good range of shops and amenit..."""^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Barton"^^xsd:string ;
+      wgs84:lat "51.765868"^^xsd:double ;
+      wgs84:long "-1.200153"^^xsd:double ;
+      vcard:locality "Barton OX3" ;
+      vcard:street-address
+              "Sherwood Place, Barton OX3" ;
+      foaf:depiction "http://img.findaproperty.com/white-walls-agency/Oxford/dp111673421.jpg?v=13" .
+
+dd:g19g1
+      dd:hasPrice "189950"^^xsd:double ;
+      gr:includes dd:g19g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11673421" .
+
+dd:g20g1
+      dd:hasPrice "190000"^^xsd:double ;
+      gr:includes dd:g20g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-9708552" .
+
+dd:g20g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A first floor two double bedroom apartment with private garden, off road parking and garage situated within a cul de sac.The property further benefits from having its own entrance, gas fired central heating and is offered to the market with no onward chain.Hillsborough Close provides good access to local amenities, bus routes and the ring road."^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.726565"^^xsd:double ;
+      wgs84:long "-1.222826"^^xsd:double ;
+      vcard:street-address
+              "Hillsborough Close Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/cebhgr-chamberlainev/Oxford/dp19708552.jpg?v=3" .
+
+
+dd:g21g1
+      dd:hasPrice "190000"^^xsd:double ;
+      gr:includes dd:g21g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-10614654" .
+
+dd:g21g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A well presented two bedroom top floor apartment. The property has been recently redecorated throughout and its accommodation comprises of, entrance hall, living room, kitchen/breakfast room, two bedrooms and shower room. No Onward Chain! Phone now to view."^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Cowley, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.734095"^^xsd:double ;
+      wgs84:long "-1.212574"^^xsd:double ;
+      vcard:locality "Oxford Road, Cowley, OXFORD, OX4 2BU" ;
+      vcard:street-address
+              "Cedar Court, Oxford Road, Cowley, OXFORD, OX4 2BU" ;
+      foaf:depiction "http://img.findaproperty.com/andrewsestateagents/oxford/dp110614654.jpg?v=1" .
+
+
+dd:g23g1
+      dd:hasPrice "190000"^^xsd:double ;
+      gr:includes dd:g23g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11438770" .
+
+dd:g23g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Well presented two bedroom ground floor apartment close to Templars Square, with two double bedrooms, garage and communal gardens."^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.731062"^^xsd:double ;
+      wgs84:long "-1.220301"^^xsd:double ;
+      vcard:locality "Cowley" ;
+      vcard:street-address
+              "Beauchamp Place,Cowley" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/East-Oxford-Sales/dp111438770.jpg?v=11" .
+
+
+dd:g24g4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Offered to the market is this duplex apartment situated on Wykeham Crescent in Cowley. The property comprises of entrance hall, kitchen and sitting/dining room two bedrooms and a bathroom. The property is offered to the market with no onward chain. Call to view on 01865 396500"^^xsd:string ;
+      gr:name "2 bedroom maisonette for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.729342"^^xsd:double ;
+      wgs84:long "-1.219853"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Wykeham Crescent, Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/andrewsestateagents/oxford/dp111466291.jpg?v=5" .
+
+dd:g24g1
+      dd:hasPrice "195000"^^xsd:double ;
+      gr:includes dd:g24g4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11466291" .
+
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+dd:adl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "An opportunity to purchase a development of 18 apartments situated just off the Oxford Road. Each unit comprises two bedroom, two bathroom accommodation, some with open plan living/ kitchen areas, and others with separate kitchens. (contd...)"^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.737916"^^xsd:double ;
+      wgs84:long "-1.217939"^^xsd:double ;
+      vcard:locality "Oxford Road, Oxford" ;
+      vcard:street-address
+              "Agnes Court, Oxford Road, Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/breckonandbreckon/oxford-apartments-office/dp111629364.jpg?v=1" .
+
+dd:adl1
+      dd:hasPrice "3420000"^^xsd:double ;
+      gr:includes dd:adl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11629364" .
+
+dd:a1dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "The property to be sold is a ground floor retirement apartment, which is one of 34 apartments set in a delightful courtyard setting with the benefit of a warden, lift facility, two meals a day provided, communal laundry room, two residents lounges and guest room for visitors. (contd...)"^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.779298"^^xsd:double ;
+      wgs84:long "-1.270234"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Osberton Road, Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/taylors-countrywide/Headington-Sales/dp110666186.jpg?v=1" .
+
+dd:a1dl1
+      dd:hasPrice "35000"^^xsd:double ;
+      gr:includes dd:a1dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-10666186" .
+
+dd:a2dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A retirement apartment with private balcony overlooking communal gardens set on this popular warden controlled development"^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.779298"^^xsd:double ;
+      wgs84:long "-1.270234"^^xsd:double ;
+      vcard:locality "Summertown" ;
+      vcard:street-address
+              "Charles Ponsonby House,Summertown" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Summertown-Sales/dp111137739.jpg?v=3" .
+
+dd:a2dl1
+      dd:hasPrice "37500"^^xsd:double ;
+      gr:includes dd:a2dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11137739" .
+
+
+dd:a2dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "One bed house"^^xsd:string ;
+      gr:name "1 bedroom terraced house for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.716349"^^xsd:double ;
+      wgs84:long "-1.193109"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street-address
+              "Blacksmiths Meadow, Oxford, Oxfordshire" ;
+      foaf:depiction "http://img.findaproperty.com/catalysthousing/Resales/dp111758446.jpg?v=3" .
+
+dd:a2dl1
+      dd:hasPrice "45000"^^xsd:double ;
+      gr:includes dd:a2dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11758446" .
+
+dd:a3dl1
+      dd:hasPrice "55000"^^xsd:double ;
+      gr:includes dd:a3dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11505183" .
+
+dd:a3dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A modern and well presented two bedroom ground floor apartment in Oxford available on a part buy/part rent basis"^^xsd:string ;
+      gr:name "2 bedroom apartment for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.737353"^^xsd:double ;
+      wgs84:long "-1.215928"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street-address
+              "Owens Way, Oxford, Oxfordshire" ;
+      foaf:depiction "http://img.findaproperty.com/catalysthousing/Resales/dp311505183.jpg?v=1" .
+
+
+dd:a4dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A one bedroom ground floor retirement flat with patio facing the gardens."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.779298"^^xsd:double ;
+      wgs84:long "-1.270234"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Osberton Road,Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Summertown-Sales/dp14438380.jpg?v=6" .
+
+dd:a4dl1
+      dd:hasPrice "65000"^^xsd:double ;
+      gr:includes dd:a4dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-4438380" .
+
+
+dd:a5dl1
+      dd:hasPrice "65000"^^xsd:double ;
+      gr:includes dd:a5dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11389112" .
+
+dd:a5dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Recently refurbished retirement apartment with private terrace and direct garden access on highly regarded retirement complex."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.779298"^^xsd:double ;
+      wgs84:long "-1.270234"^^xsd:double ;
+      vcard:locality "OX2" ;
+      vcard:street-address
+              "Summertown,OX2" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Summertown-Sales/dp111389112.jpg?v=3" .
+
+dd:a6dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A 52 ft narrowboat lovingly maintained and serviced, and currently moored in the desirable North Oxford village of Wolvercote perfect for both experienced and novice boaters."^^xsd:string ;
+      gr:name "1 bedroom house for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.784837"^^xsd:double ;
+      wgs84:long "-1.283409"^^xsd:double ;
+      vcard:locality "Wolvercote" ;
+      vcard:street-address
+              "`Redwing`, Wolvercote" ;
+      foaf:depiction "http://img.findaproperty.com/jamescpenny/sales/dp111420528.jpg?v=1" .
+
+dd:a6dl1
+      dd:hasPrice "65000"^^xsd:double ;
+      gr:includes dd:a6dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11420528" .
+
+
+dd:a7dl1
+      dd:hasPrice "70000"^^xsd:double ;
+      gr:includes dd:a7dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11215027" .
+
+dd:a7dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Recently refurbished retirement apartment with private terrace and direct garden access on highly regarded retirement complex."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.779298"^^xsd:double ;
+      wgs84:long "-1.270234"^^xsd:double ;
+      vcard:locality "OX2" ;
+      vcard:street-address
+              "Summertown,OX2" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Summertown-Sales/dp111215027.jpg?v=3" .
+
+
+dd:a8dl1
+      dd:hasPrice "72500"^^xsd:double ;
+      gr:includes dd:a8dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11613420" .
+
+dd:a8dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A larger than usual one bedroom ground floor apartment in this highly regarded, age restricted development."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.779298"^^xsd:double ;
+      wgs84:long "-1.270234"^^xsd:double ;
+      vcard:locality "Summertown" ;
+      vcard:street-address
+              "Osberton Road,Summertown" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Summertown-Sales/dp111613420.jpg?v=2" .
+
+dd:a9dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Two bedroom first floor apartment"^^xsd:string ;
+      gr:name "2 bedroom apartment for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.737353"^^xsd:double ;
+      wgs84:long "-1.215928"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street-address
+              "Owens Way, Oxford, Oxfordshire" ;
+      foaf:depiction "http://img.findaproperty.com/catalysthousing/Resales/dp111371593.jpg?v=1" .
+
+dd:a9dl1
+      dd:hasPrice "73500"^^xsd:double ;
+      gr:includes dd:a9dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11371593" .
+
+
+dd:bdl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "This 2nd floor one bedroom apartment offers sheltered accommodation with commanding views over open countryside. Available for over 55's."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.758839"^^xsd:double ;
+      wgs84:long "-1.333083"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Parklands,Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Botley-Sales/dp15883639.jpg?v=3" .
+
+dd:bdl1
+      dd:hasPrice "79950"^^xsd:double ;
+      gr:includes dd:bdl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-5883639" .
+
+dd:b1dl1
+      dd:hasPrice "79950"^^xsd:double ;
+      gr:includes dd:b1dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-9685836" .
+
+dd:b1dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A second floor retirement flat for the over 55's in a wonderful rural setting some 3 miles west of Oxford and within a 10 minute drive. The Flat is surrounded by some 23 acres of stunning gardens and parkland and enjoys un-interrupted commanding views across the surrounding countryside and woodland"^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.758839"^^xsd:double ;
+      wgs84:long "-1.333083"^^xsd:double ;
+      vcard:locality "Eynsham Road, Farmoor" ;
+      vcard:street-address
+              "Parklands,Eynsham Road, Farmoor" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Botley-Sales/dp19685836.jpg?v=4" .
+
+
+dd:b2dl1
+      dd:hasPrice "79950"^^xsd:double ;
+      gr:includes dd:b2dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11277271" .
+
+dd:b2dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A second floor retirement apartment offering independent living and served by lift, set in this popular development nestling in the grounds of a former country house. The property enjoys countryside views over parkland towards Farmoor Reservoir. (contd...)"^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Farmoor, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.758839"^^xsd:double ;
+      wgs84:long "-1.333083"^^xsd:double ;
+      vcard:locality "Farmoor, Oxford" ;
+      vcard:street-address
+              "Eynsham Road, Farmoor, Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/taylors-countrywide/Headington-Sales/dp111277271.jpg?v=3" .
+
+
+dd:b3dl1
+      dd:hasPrice "79950"^^xsd:double ;
+      gr:includes dd:b3dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11804209" .
+
+dd:b3dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A second floor retirement flat for the over 55's in a wonderful rural setting some 3 miles west of Oxford and within a 10 minute drive"^^xsd:string ;
+      gr:name "1 bedroom apartment for sale in Farmoor"^^xsd:string ;
+      wgs84:lat "51.758839"^^xsd:double ;
+      wgs84:long "-1.333083"^^xsd:double ;
+      vcard:locality "Oakenholt, Nr Oxford" ;
+      vcard:street-address
+              "Parklands, Oakenholt, Nr Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/-abbeyproperties/Eynsham/dp111804209.jpg?v=4" .
+
+
+dd:b4dl1
+      dd:hasPrice "84000"^^xsd:double ;
+      gr:includes dd:b4dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11259150" .
+
+dd:b4dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "This smart modern ground floor apartment has open plan living/dining room/kitchen, two double bedrooms and allocated parking."^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.74078"^^xsd:double ;
+      wgs84:long "-1.222893"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:street-address
+              "Reliance Way,East Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/East-Oxford-Sales/dp111259150.jpg?v=3" .
+
+dd:b5dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Housenetwork.co.uk are delighted to present this top floor one bedroom flat, offered as 50% shared ownership. The property benefits from; double glazing, central heating, well proportioned rooms, secure intercom building entry, allocated parking and communal gardens. Accommodation comprises; hal..."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.746036"^^xsd:double ;
+      wgs84:long "-1.23471"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire, Ox4 1gs" ;
+      vcard:street-address
+              "Leon close, Oxford, Oxfordshire, Ox4 1gs" ;
+      foaf:depiction "http://img.findaproperty.com/housenetwork/brentwood/dp110478902.jpg?v=3" .
+
+dd:b5dl1
+      dd:hasPrice "85000"^^xsd:double ;
+      gr:includes dd:b5dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-10478902" .
+
+
+dd:b6dl1
+      dd:hasPrice "90000"^^xsd:double ;
+      gr:includes dd:b6dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11041261" .
+
+dd:b6dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A second floor retirement apartment offering independent living and served by lift, set in this popular development nestling in the grounds of a former country house. The property enjoys countryside views over parkland towards Farmoor Reservoir. (contd...)"^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Farmoor, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.758839"^^xsd:double ;
+      wgs84:long "-1.333083"^^xsd:double ;
+      vcard:locality "Farmoor, Oxford" ;
+      vcard:street-address
+              "Eynsham Road, Farmoor, Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/taylors-countrywide/Headington-Sales/dp111041261.jpg?v=1" .
+
+                                                                    
+dd:b7dl1
+      dd:hasPrice "99950"^^xsd:double ;
+      gr:includes dd:b7dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-10845077" .
+
+dd:b7dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Taylors Estate Agents are pleased to offer this one bedroom flat situated on the 6th Floor of Hockmore Tower, the accommodation consists of communal entrance hall via security entry phone system, entrance hall, lounge with views over Cowley, kitchen, bedroom and bathroom, under floor (contd...)"^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.731885"^^xsd:double ;
+      wgs84:long "-1.216913"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street-address
+              "Pound Way, Oxford, Oxfordshire" ;
+      foaf:depiction "http://img.findaproperty.com/taylors-countrywide/Cowley/dp110845077.jpg?v=1" .
+
+
+dd:b8dl1
+      dd:hasPrice "100000"^^xsd:double ;
+      gr:includes dd:b8dl4 ;
+      foaf:page "http://www.findaproperty.com/investment/property-11225192" .
+
+dd:b8dl4
+      a       dd:House ;
+      gr:description "Building plot with detailed planning consent for a 3 bed semi detached house REF: 11/01624/FUL. Scope for alteration to planning for 1 bed flats."^^xsd:string ;
+      gr:name "Land for sale in Noke, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.768546"^^xsd:double ;
+      wgs84:long "-1.204142"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Barton Village Road,Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Headington-Sales/dp111225192.jpg?v=1" .
+
+dd:b9dl1
+      dd:hasPrice "109950"^^xsd:double ;
+      gr:includes dd:b9dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-10965211" .
+
+dd:b9dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description """A ninth floor well proportioned two double bedroomed apartment (with lift), boasting a spacious reception room, amazing views over Oxford and close proximity to public transport. 
+ 
+The property also comprises fitted kitchen, two spacious double bedrooms, fitted wardrobes and bathroom with separate WC. 
+ 
+The property is just moments from the amenities, bars and restaurants in Headington, while..."""^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.750401"^^xsd:double ;
+      wgs84:long "-1.199905"^^xsd:double ;
+      vcard:locality "Wood Farm OX3" ;
+      vcard:street-address
+              "Foresters Tower, Wood Farm OX3" ;
+      foaf:depiction "http://img.findaproperty.com/white-walls-agency/Oxford/dp110965211.jpg?v=1" .
+
+
+dd:b10dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Chancellors are now in receipt of an offer for the sum of £96,000. anyone wishing to place an offer on the property should contact chancellors."^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.750401"^^xsd:double ;
+      wgs84:long "-1.199905"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:street-address
+              "Wood Farm Road,Headington, Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Headington-Sales/dp111160007.jpg?v=1" .
+
+dd:b10dl1
+      dd:hasPrice "109950"^^xsd:double ;
+      gr:includes dd:b10dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11160007" .
+
+dd:b11dl1
+      dd:hasPrice "110000"^^xsd:double ;
+      gr:includes dd:b11dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11230835" .
+
+dd:b11dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description """An ideal first time buyer top floor studio flat presented in good decorative order, offering surrounding parking and good length lease. 
+ 
+The property comprises fitted kitchen, entrance hall, tiled bathroom and bright studio room. 
+ 
+Yew Close is quietly located within Greater Leys, offering close by public transport links towards Oxford Central, also road users have fast access towards A40 (M..."""^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.721436"^^xsd:double ;
+      wgs84:long "-1.187633"^^xsd:double ;
+      vcard:locality "Greater Leys OX4" ;
+      vcard:street-address
+              "Yew Close, Greater Leys OX4" ;
+      foaf:depiction "http://img.findaproperty.com/white-walls-agency/Oxford/dp111230835.jpg?v=1" .
+
+
+dd:b12dl1
+      dd:hasPrice "110000"^^xsd:double ;
+      gr:includes dd:b12dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11470384" .
+
+dd:b12dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A wonderfully charming and well-presented narrow boat, moored in a fantastic central location, offering a good alternative to one-bedroom properties in the area."^^xsd:string ;
+      gr:name "1 bedroom house for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.755048"^^xsd:double ;
+      wgs84:long "-1.267517"^^xsd:double ;
+      vcard:locality "Central Oxford" ;
+      vcard:street-address
+              "`Penguin`s Progress`, Central Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/jamescpenny/sales/dp111470384.jpg?v=3" .
+
+
+dd:b13dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Situated just off the Botley Road is this 2nd floor retirement apartment. The apartment itself offers a double bedroom with built-in wardrobe, kitchen, bathroom and sitting/dining room. One feature worthy of note is that there is plenty of storage throughout. (contd...)"^^xsd:string ;
+      gr:name "1 bedroom house for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.752901"^^xsd:double ;
+      wgs84:long "-1.276309"^^xsd:double ;
+      vcard:locality "Henry Road, Oxford, Oxfordshire" ;
+      vcard:street-address
+              "Tumbling Bay Court, Henry Road, Oxford, Oxfordshire" ;
+      foaf:depiction "http://img.findaproperty.com/breckonandbreckon/oxford-apartments-office/dp15251537.jpg?v=2" .
+
+dd:b13dl1
+      dd:hasPrice "129950"^^xsd:double ;
+      gr:includes dd:b13dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-5251537" .
+
+
+dd:b17dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description """An ideal first time buyer top floor one bedroom apartment, recently refurbished and further benefiting from off-street parking and very long lease length. 
+ 
+The property comprises bright living room, fitted kitchen, entrance hall, tiled bathroom and large double bedroom. 
+ 
+Yew Close is quietly located within Greater Leys, offering close by public transport links towards Oxford Central, also r..."""^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.721436"^^xsd:double ;
+      wgs84:long "-1.187633"^^xsd:double ;
+      vcard:locality "Greater Leys OX4" ;
+      vcard:street-address
+              "Yew Close, Greater Leys OX4" ;
+      foaf:depiction "http://img.findaproperty.com/white-walls-agency/Oxford/dp111693650.jpg?v=3" .
+
+dd:b17dl1
+      dd:hasPrice "134950"^^xsd:double ;
+      gr:includes dd:b17dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11693650" .
+
+
+dd:b18dl1
+      dd:hasPrice "135000"^^xsd:double ;
+      gr:includes dd:b18dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-8538714" .
+
+dd:b18dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description """This Ideally located superb top floor one apartment is situated within an up-market retirement complex, offering well proportioned rooms, parking and use of communal gardens. 
+ 
+The property comprises spacious reception room with green space views, fitted kitchen, one double bedroom with hanging space, modern bathroom and excellent storage space. 
+ 
+Tumbling Bay Court is only a short distance ..."""^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.752901"^^xsd:double ;
+      wgs84:long "-1.276309"^^xsd:double ;
+      vcard:locality "Henry Road OX2" ;
+      vcard:street-address
+              "Tumbling Bay Ct, Henry Road OX2" ;
+      foaf:depiction "http://img.findaproperty.com/white-walls-agency/Oxford/dp18538714.jpg?v=16" .
+
+dd:b19dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A very light are airy one bedroom apartment situated at the front of the block suitable for the over 60s."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.752901"^^xsd:double ;
+      wgs84:long "-1.276309"^^xsd:double ;
+      vcard:locality "Off Botley Road" ;
+      vcard:street-address
+              "Tumbling Bay Court,Off Botley Road" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Botley-Sales/dp19991493.jpg?v=8" .
+
+dd:b19dl1
+      dd:hasPrice "135000"^^xsd:double ;
+      gr:includes dd:b19dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-9991493" .
+
+
+dd:b20dl1
+      dd:hasPrice "135000"^^xsd:double ;
+      gr:includes dd:b20dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11137746" .
+
+dd:b20dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A recently refurbished retirement apartment enjoying a sunny aspect on this highly regarded development on the edge of Summertown."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.783643"^^xsd:double ;
+      wgs84:long "-1.267699"^^xsd:double ;
+      vcard:locality "North Oxford" ;
+      vcard:street-address
+              "Ritchie Court,North Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Summertown-Sales/dp111137746.jpg?v=1" .
+
+
+
+dd:b22dl1
+      dd:hasPrice "139950"^^xsd:double ;
+      gr:includes dd:b22dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-9630106" .
+
+dd:b22dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Positioned within this exclusive retirement development, a 1 bedroom ground floor apartment with no onward chain"^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Headington, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.758673"^^xsd:double ;
+      wgs84:long "-1.218681"^^xsd:double ;
+      vcard:locality "London Road, Headington, Oxford" ;
+      vcard:street-address
+              "The Albany,London Road, Headington, Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Headington-Sales/dp19630106.jpg?v=3" .
+
+
+dd:b23dl1
+      dd:hasPrice "140000"^^xsd:double ;
+      gr:includes dd:b23dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11176805" .
+
+dd:b23dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Spacious, light and airy one bedroom top floor apartment with allocated parking in this sought after location with convenient access to the ring road."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.717404"^^xsd:double ;
+      wgs84:long "-1.232522"^^xsd:double ;
+      vcard:locality "Sandford-On-Thames" ;
+      vcard:street-address
+              "Pheasant Walk,Sandford-On-Thames" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/East-Oxford-Sales/dp111176805.jpg?v=9" .
+
+
+dd:b24dl1
+      dd:hasPrice "141000"^^xsd:double ;
+      gr:includes dd:b24dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-7602260" .
+
+dd:b24dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A first floor well presented one double bedroom flat with a newly fitted kitchen, spacious lounge/dining room, bathroom plus built in wardrobe in the bedroom.  viewings highly recommended."^^xsd:string ;
+      gr:name "1 bedroom apartment for sale in Oxford, Oxfordshire"^^xsd:string ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street-address
+              "Pegasus Road, Oxford, Oxfordshire" ;
+      foaf:depiction "http://img.findaproperty.com/sslbgr-scsaleslettin/sales/dp17602260.jpg?v=1" .
+
+dd:b25dl1
+      dd:hasPrice "142500"^^xsd:double ;
+      gr:includes dd:b25dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11324597" .
+
+dd:b25dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Situated between Cowley and Headington on Normandy Crescent is this two bedroom top floor apartment. The property although of excellent size will require internal updating. The property is being sold with not onwards chain."^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.73705"^^xsd:double ;
+      wgs84:long "-1.198809"^^xsd:double ;
+      vcard:locality "Oxford, OX4 2TF" ;
+      vcard:street-address
+              "Normandy Crescent, Oxford, OX4 2TF" ;
+      foaf:depiction "http://img.findaproperty.com/andrewsestateagents/oxford/dp111324597.jpg?v=1" .
+
+
+dd:b26dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Two bedroom first floor apartment"^^xsd:string ;
+      gr:name "2 bedroom apartment for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.768027"^^xsd:double ;
+      wgs84:long "-1.22181"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street-address
+              "Saxon Way, Oxford, Oxfordshire" ;
+      foaf:depiction "http://img.findaproperty.com/catalysthousing/Resales/dp111371251.jpg?v=2" .
+
+dd:b26dl1
+      dd:hasPrice "143000"^^xsd:double ;
+      gr:includes dd:b26dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11371251" .
+
+dd:b27dl1
+      dd:hasPrice "143000"^^xsd:double ;
+      gr:includes dd:b27dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11448367" .
+
+dd:b27dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A rare opportunity to acquire a 65% share of this very well presented First floor property. Easy access to local amenities and local shops."^^xsd:string ;
+      gr:name "2 bedroom flat for sale in Noke, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.768027"^^xsd:double ;
+      wgs84:long "-1.22181"^^xsd:double ;
+      vcard:locality "Headington Oxford" ;
+      vcard:street-address
+              "Saxon Way,Headington Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/Headington-Sales/dp111448367.jpg?v=11" .
+
+dd:b29dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "This well presented ground floor apartment has an open plan kitchen/sitting room and a communal rear garden. Tenants in-situ until March 2012."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.733341"^^xsd:double ;
+      wgs84:long "-1.200996"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Fern Hill Road,Oxford" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/East-Oxford-Sales/dp19467583.jpg?v=6" .
+
+dd:b29dl1
+      dd:hasPrice "145000"^^xsd:double ;
+      gr:includes dd:b29dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-9467583" .
+
+
+dd:b30dl1
+      dd:hasPrice "145000"^^xsd:double ;
+      gr:includes dd:b30dl4 ;
+      foaf:page "http://www.findaproperty.com/for-sale/property-11316548" .
+
+dd:b30dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Beautifully presented first floor one bedroom apartment with kitchen, sitting/dining room, large private garden and parking."^^xsd:string ;
+      gr:name "1 bedroom flat for sale in Oxford, Oxfordshire"^^xsd:string ;
+      wgs84:lat "51.716933"^^xsd:double ;
+      wgs84:long "-1.189147"^^xsd:double ;
+      vcard:locality "Greater Leys" ;
+      vcard:street-address
+              "Partridge Walk,Greater Leys" ;
+      foaf:depiction "http://img.findaproperty.com/chancellor/East-Oxford-Sales/dp111316548.jpg?v=5" .
+
+
+
+
