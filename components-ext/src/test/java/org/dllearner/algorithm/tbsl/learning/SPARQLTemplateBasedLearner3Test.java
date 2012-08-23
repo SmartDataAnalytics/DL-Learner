@@ -864,6 +864,8 @@ public class SPARQLTemplateBasedLearner3Test
 			
 			learner = new SPARQLTemplateBasedLearner2(model,mappingIndex,pretagged?null:POSTaggerHolder.posTagger);
 			try {learner.init();} catch (ComponentInitException e) {throw new RuntimeException(e);}
+			learner.setGrammarFiles(new String[]{"tbsl/lexicon/english.lex","tbsl/lexicon/english_oxford.lex"});
+			learner.setUseDomainRangeRestriction(false);
 		}								
 
 
