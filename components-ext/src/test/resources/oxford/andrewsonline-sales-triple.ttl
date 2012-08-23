@@ -1,0 +1,3048 @@
+#142 houses
+
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+
+
+
+
+
+dd:b31dl4
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "A fantastic family home, perfectly situated in this charming village within 6 miles of Oxford. It would be difficult to find a property better suited to providing the family with a wonderful standard of living, the main house offering light spacious accommodation, set within 30 acres (approx) of stunning countryside - stables included! The facilities are outstanding: end your busy day in the leisure centre and indulge in a swim, Jacuzzi or sauna, or perhaps a game of badminton, snooker or basketball would suit you best? Whatever your preference, Horton Farm is not to be missed! The area is very well serviced, with Studley Wood golf club immediately opposite, a superb, modern village hall within 400yds and excellent eating out in Brill, Beckley, Forest Hill, Murcott and Worminghall - all within 5 miles."^^xsd:string ;
+      gr:name """Horton Farm The Straight Mile, Horton-Cum-Studley, OXFORD, OX33 1AD                
+                5 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.80418"^^xsd:double ;
+      wgs84:long "-1.14539"^^xsd:double ;
+      vcard:locality "Horton-Cum-Studley" ;
+      vcard:street-address	
+              "Horton Farm The Straight Mile, Horton-Cum-Studley" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/e831f089-ff3c-e111-94a4-00155d64e0e2/Large/18fe9b75-9b85-467a-819e-f63e9cb4ecd5.jpg".
+
+dd:b31dl1
+      dd:hasPrice "1500000"^^xsd:double ;
+      gr:includes dd:b31dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46569/Horton-Farm-The-Straight-Mile-Horton-Cum-Studley-OXFORD-OX33-1AD" .
+
+dd:b32dl1
+      dd:hasPrice "500000"^^xsd:double ;
+      gr:includes dd:b32dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47307/Warren-Hill-Stadhampton-OXFORD-OX44-7UT" .
+
+dd:b32dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Situated to the south of Oxford in the village of Stadhampton and at the end of a no through road backing on to rural fields, giving a real sense of village surroundings."^^xsd:string ;
+      gr:name """Warren Hill, Stadhampton, OXFORD, OX44 7UT
+                3 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.67834"^^xsd:double ;
+      wgs84:long "-1.12972"^^xsd:double ;
+      vcard:locality "Stadhampton" ;
+      vcard:street-address
+              "Warren Hill, Stadhampton" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/c2ea2975-d845-e111-a9bb-00155d010620/Large/0c994ac7-1a20-4d7f-94a8-69bc48388087.jpg".
+
+dd:b33dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Offering superb space, combined with a beautiful garden and off street parking, the property is also very convenient for the local Hospitals - Nuffield & Churchill within ¼ mile and John Radcliffe within ¾  mile."^^xsd:string ;
+      gr:name """York Road, Headington, OXFORD, OX3 8NW                
+                4 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.75455"^^xsd:double ;
+      wgs84:long "-1.20347"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "York Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/53401d65-4044-e111-85d2-00155d011171/Large/1b8279ad-887a-4ad9-aa34-98321e26c098.jpg".
+
+dd:b33dl1
+      dd:hasPrice "500000"^^xsd:double ;
+      gr:includes dd:b33dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47221/York-Road-Headington-OXFORD-OX3-8NW" .
+
+
+dd:b35dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Andrews are delighted to market this beautifully appointed detached dormer style bungalow in the highly desirable village of Wheatley."^^xsd:string  ;
+      gr:name """Littleworth Road, Wheatley, OXFORD, OX33                
+                4 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.74767"^^xsd:double ;
+      wgs84:long "-1.14552"^^xsd:double ;
+      vcard:locality "Wheatley" ;
+      vcard:street-address
+              "Littleworth Road, Wheatley" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/f4ca0057-d0d8-e011-ab15-00155d01225f/Large/af1d2f38-93f0-4a05-8d37-2a82c7d38923.jpg" .
+
+dd:b35dl1
+      dd:hasPrice "485000"^^xsd:double ;
+      gr:includes dd:b35dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/41343/Littleworth-Road-Wheatley-OXFORD-OX33" .
+
+
+dd:b36dl1
+      dd:hasPrice "475000"^^xsd:double ;
+      gr:includes dd:b36dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49141/Haywards-Road-Drayton-ABINGDON-Oxfordshire-OX14-" .
+
+dd:b36dl4
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "The impressive and beautifully maintained southerly rear garden provides a level of privacy, bordered by mature trees and shrubbery with seasonal interest given by the well stocked flower borders.  Ample paved patio space, a water feature and 12' x 24' wooden workshop compliment the outdoor space to the rear whilst a gated block paved drive provides hard standing for several vehicles."^^xsd:string ;
+      gr:name """Haywards Road, Drayton, ABINGDON, Oxfordshire, OX14                 
+                5 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.63808"^^xsd:double ;
+      wgs84:long "-1.31348"^^xsd:double ;
+      vcard:locality "Drayton, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Haywards Road, Drayton, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/4aba21e9-385d-e111-901a-00155d01117c/Large/96acc97a-14ed-4908-8ecb-9fa08bfbaee4.jpg" .
+
+
+dd:b37dl1
+      dd:hasPrice "475000"^^xsd:double ;
+      gr:includes dd:b37dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47209/Millway-Lane-Appleton-ABINGDON-Oxfordshire-OX13" .
+
+dd:b37dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Andrews Estate Agents are delighted to bring to the market this two bedroom detached bungalow situated in an enviable position on the outskirts of the popular village of Appleton."^^xsd:string  ;
+      gr:name """Millway Lane, Appleton, ABINGDON, Oxfordshire, OX13                
+                2 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.70923"^^xsd:double ;
+      wgs84:long "-1.38406"^^xsd:double ;
+      vcard:locality "Appleton, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Millway Lane, Appleton, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/4bb89203-2d44-e111-b4b9-00155d011351/Large/c7b9944b-645c-4079-bb99-c2d071a54c38.jpg"  .
+
+
+dd:b38dl1
+      dd:hasPrice "475000"^^xsd:double ;
+      gr:includes dd:b38dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/53365/The-Avenue-Kennington-OXFORD-OX1" .
+
+dd:b38dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "To the front are two parking areas, one of which is in front of the detached single garage."^^xsd:string  ;
+      gr:name """The Avenue, Kennington, OXFORD, OX1                
+                4 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.7137"^^xsd:double ;
+      wgs84:long "-1.24412"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "The Avenue, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/eb4c667e-808f-e111-8140-00155d01137b/Large/71cac5d5-e538-4078-af69-c7b0c786c72d.jpg" .
+
+
+dd:b39dl4
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "This substantial home offers generous and versatile accommodation to suit most families needs.  On the ground floor there is a charming sitting room, an impressive dining room, kitchen, playroom/fifth bedroom, office and a cloakroom.  Upstairs there are four bedrooms, a nursery and a contemporary shower room and bathroom. Externally there is a fantastic 130' (max) garden to include gated parking and a garage at the far end."^^xsd:string ;
+      gr:name """The Gables, Oxford Road, ABINGDON, Oxfordshire, OX14                
+                5 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.67652"^^xsd:double ;
+      wgs84:long "-1.27689"^^xsd:double ;
+      vcard:locality "Oxford Road, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "The Gables, Oxford Road, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/155c04ae-e187-e111-afe7-00155d0111a9/Large/62dadaf0-4259-4f56-9bb8-5b3a0184732b.jpg" .
+
+dd:b39dl1
+      dd:hasPrice "465000"^^xsd:double ;
+      gr:includes dd:b39dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/52757/The-Gables-Oxford-Road-ABINGDON-Oxfordshire-OX14" .
+
+
+dd:b40dl1
+      dd:hasPrice "425000"^^xsd:double ;
+      gr:includes dd:b40dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/30323/Barlow-Close-Wheatley-OXFORD-OX33" .
+
+dd:b40dl4
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "Also with an attractive, well stocked garden, detached garage and ample off street parking, viewing is a must to fully appreciate this wonderful home."^^xsd:string  ;
+      gr:name """Barlow Close, Wheatley, OXFORD, OX33                
+                5 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.7466"^^xsd:double ;
+      wgs84:long "-1.14765"^^xsd:double ;
+      vcard:locality "Wheatley" ;
+      vcard:street-address
+              "Barlow Close, Wheatley" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/5728c89d-672a-e011-9834-00155d012213/Large/adcbc262-33f3-45cf-b67e-5ab74f876e2e.jpg"  .
+
+
+dd:b41dl1
+      dd:hasPrice "415000"^^xsd:double ;
+      gr:includes dd:b41dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/37371/Merewood-Avenue-Headington-OXFORD-OX3" .
+
+dd:b41dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "The house offers well proportioned living space arranged over three floors which includes, a sitting room with open fire, a large open plan kitchen/breakfast room with double doors leading to the rear garden, a conservatory and utility room."^^xsd:string  ;
+      gr:name """Merewood Avenue, Headington, OXFORD, OX3                
+                4 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.76411"^^xsd:double ;
+      wgs84:long "-1.18441"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Merewood Avenue, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/121c0d4c-fa92-e011-ab3e-00155d0106c9/Large/4947f641-2436-4383-94a4-f8fa524e92fc.jpg" .
+
+dd:b42dl1
+      dd:hasPrice "415000"^^xsd:double ;
+      gr:includes dd:b42dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/37371/Merewood-Avenue-Headington-OXFORD-OX3" .
+
+dd:b42dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "The house offers well proportioned living space arranged over three floors which includes, a sitting room with open fire, a large open plan kitchen/breakfast room with double doors leading to the rear garden, a conservatory and utility room."^^xsd:string  ;
+      gr:name """Merewood Avenue, Headington, OXFORD, OX3                
+                4 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.76411"^^xsd:double ;
+      wgs84:long "-1.18441"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Merewood Avenue, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/121c0d4c-fa92-e011-ab3e-00155d0106c9/Large/4947f641-2436-4383-94a4-f8fa524e92fc.jpg" .
+
+
+dd:b44dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Situated in Central Headington is the rare opportunity to purchase a three double bedroom detached bungalow with double detached garage and a 66' long driveway."^^xsd:string ;
+      gr:name """Osler Road, Headington, OXFORD, OX3 9BJ                
+                3 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.76089"^^xsd:double ;
+      wgs84:long "-1.21367"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Osler Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/df10f68d-e719-e111-ad57-00155d64e0d5/Large/d87e85f5-a0f4-44f2-8a9d-c6862367f3b3.jpg" .
+
+dd:b44dl1
+      dd:hasPrice "400000"^^xsd:double ;
+      gr:includes dd:b44dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/44958/Osler-Road-Headington-OXFORD-OX3-9BJ" .
+
+
+dd:b45dl1
+      dd:hasPrice "395000"^^xsd:double ;
+      gr:includes dd:b45dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49377/Wilkins-Road-Oxford-OX4-2JB" .
+
+dd:b45dl4
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "At the rear you will find the garden complete with a double garage which can be accessed by car from Fern Hill Road. Call Andrews to view on 01865 396500."^^xsd:string ;
+      gr:name """Wilkins Road, Oxford, OX4 2JB                
+                5 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.73532"^^xsd:double ;
+      wgs84:long "-1.20559"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Wilkins Road, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/f2732154-b65f-e111-bc64-00155d010635/Large/79151f51-2144-4e10-9859-84ebbe3e73dc.jpg".
+
+
+dd:b46dl1
+      dd:hasPrice "370000"^^xsd:double ;
+      gr:includes dd:b46dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/51406/73-Ferry-Road-Marston-OXFORD-OX3-0EU" .
+
+dd:b46dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "With spacious accommodation, stunning views over the meadows and Trinity College Playing Fields, and fantastic school catchment, this property is sure to prove popular so call Andrews now to arrange to view."^^xsd:string  ;
+      gr:name """73  Ferry Road, Marston, OXFORD, OX3 0EU                
+                2 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.76016"^^xsd:double ;
+      wgs84:long "-1.23878"^^xsd:double ;
+      vcard:locality "Marston" ;
+      vcard:street-address
+              "73  Ferry Road, Marston" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/fc7f36e4-2777-e111-ae4f-00155d0111a9/Large/008bf647-4ebf-4e93-8925-a29d6a35616d.jpg"  .
+
+
+
+dd:b48dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "This impressive property has been extended and updated to create a versatile and beautifully presented family home. On the ground floor, there is a dual aspect reception room, fantastic kitchen/breakfast room , conservatory, study and cloakroom.  Upstairs offers four bedrooms (three doubles), a bathroom and a shower room.  Externally, there is parking to the front of the property and a delightful rear garden backing on to open fields."^^xsd:string  ;
+      gr:name """Kings Avenue, Marcham, OX13                
+                4 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.67143"^^xsd:double ;
+      wgs84:long "-1.34323"^^xsd:double ;
+      vcard:locality "Marcham" ;
+      vcard:street-address
+              "Kings Avenue, Marcham" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/cf2b6d0e-d7ff-e011-9e74-00155d01133a/Large/ef720ae3-f175-439f-a843-e454262632f6.jpg"  .
+
+dd:b48dl1
+      dd:hasPrice "365000"^^xsd:double ;
+      gr:includes dd:b48dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/43561/Kings-Avenue-Marcham-OX13" .
+
+
+dd:b49dl1
+      dd:hasPrice "360000"^^xsd:double ;
+      gr:includes dd:b49dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50512/Simpsons-Way-Kennington-OXFORD-OX1-5RZ" .
+
+dd:b49dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Andrews Estate Agents are delighted to bring to the market this well presented three bedroom detached house situated in a prominent position in Simpsons Way, Kennington."^^xsd:string ;
+      gr:name """Simpsons Way, Kennington, OXFORD, OX1 5RZ                
+                3 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.71181"^^xsd:double ;
+      wgs84:long "-1.2458"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "Simpsons Way, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/91a7620f-706c-e111-aca0-00155d01137b/Large/3b5722b3-4eee-496c-833b-5b98b8e99bdf.jpg" .
+
+
+dd:b50dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Drayton offers many village amenities to include general village store, post office, post office, two public houses, church, primary school and golf club."^^xsd:string  ;
+      gr:name """Crabtree Lane, DRAYTON, OX14                
+                4 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.64816"^^xsd:double ;
+      wgs84:long "-1.30979"^^xsd:double ;
+      vcard:locality "DRAYTON" ;
+      vcard:street-address
+              "Crabtree Lane, DRAYTON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/ef436959-001d-e011-ad04-00155d64e079/Large/86afc227-07e8-49c2-85bb-52fb6efdb390.jpg"  .
+
+dd:b50dl1
+      dd:hasPrice "355000"^^xsd:double ;
+      gr:includes dd:b50dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/21778/Crabtree-Lane-DRAYTON-OX14" .
+
+
+dd:b52dl4
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "Andrews present to the market this rarely available five bedroom detached house situated on Cornwallis Road in Florence Park."^^xsd:string ;
+      gr:name """Cornwallis Road, Oxford, OX4 3NP                
+                5 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.73503"^^xsd:double ;
+      wgs84:long "-1.22266"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Cornwallis Road, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/2166dfb7-d957-e111-985e-00155d01117c/Large/a30944a6-5e3f-4065-b1bc-00250228a2b3.jpg" .
+
+dd:b52dl1
+      dd:hasPrice "350000"^^xsd:double ;
+      gr:includes dd:b52dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/48741/Cornwallis-Road-Oxford-OX4-3NP" .
+
+
+dd:b53dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Andrews are delighted to present this charming Victorian house located in the highly sought after and historic Old Headington Village.  Old Headington became a Conservation area in 1971 and you would be hard pushed to find another residential area in Oxford that exhibits the same strong sense of community and history in such a pretty yet convenient location."^^xsd:string  ;
+      gr:name """Stoke Place, Headington, OXFORD, OX3 9BX                
+                2 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.76607"^^xsd:double ;
+      wgs84:long "-1.21335"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Stoke Place, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/aed57e46-de19-e111-a674-00155d01134b/Large/4ed6578e-5ba7-4e1c-82d5-564f08cea603.jpg"  .
+
+dd:b53dl1
+      dd:hasPrice "350000"^^xsd:double ;
+      gr:includes dd:b53dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/44951/Stoke-Place-Headington-OXFORD-OX3-9BX" .
+
+dd:b54dl1
+      dd:hasPrice "350000"^^xsd:double ;
+      gr:includes dd:b54dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/42997/Lower-Farm-Cottage-Lower-Road-Garsington-OXFORD-OX44-9DP" .
+
+dd:b54dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "The property itself consists of lounge, dining room, kitchen/breakfast room and an impressive additional reception room measuring 16'4 x 16'4 which over looks the rear garden.  To the first floor there are two double bedrooms, family bathroom and study."^^xsd:string  ;
+      gr:name """Lower Farm Cottage, Lower Road, Garsington, OXFORD, OX44 9DP                
+                2 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.70134"^^xsd:double ;
+      wgs84:long "-1.15695"^^xsd:double ;
+      vcard:locality "Lower Road, Garsington" ;
+      vcard:street-address
+              "Lower Farm Cottage, Lower Road, Garsington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/db751256-80f5-e011-a60d-00155d012270/Large/e587565a-2a07-4263-b501-09ee23ead657.jpg" .
+
+dd:b55dl1
+      dd:hasPrice "349950"^^xsd:double ;
+      gr:includes dd:b55dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50052/Lashford-Lane-Dry-Sandford-ABINGDON-Oxfordshire-OX13-6EB" .
+
+dd:b55dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The property consists of three bedrooms, modern bathroom, 16'9 x 10'9 lounge and has been extended to the rear to provide a kitchen/breakfast room and lovely conservatory. Externally there is off road parking, a detached garage and a delightful 49' x 49' rear garden."^^xsd:string ;
+      gr:name """Lashford Lane, Dry Sandford, ABINGDON, Oxfordshire, OX13 6EB                
+                3 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.70317"^^xsd:double ;
+      wgs84:long "-1.32141"^^xsd:double ;
+      vcard:locality "Dry Sandford, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Lashford Lane, Dry Sandford, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/e073a046-8367-e111-aca0-00155d01137b/Large/d0999f1d-96b6-451b-80e5-402ca27a15be.jpg" .
+
+dd:b56dl1
+      dd:hasPrice "349950"^^xsd:double ;
+      gr:includes dd:b56dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/52395/Links-Road-Kennington-OXFORD-OX1" .
+
+dd:b56dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Viewing comes highly recommended. Please call Andrews on 01865 790079 to arrange your appointment."^^xsd:string ;
+      gr:name """Links Road, Kennington, OXFORD, OX1                
+                3 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.7105"^^xsd:double ;
+      wgs84:long "-1.24712"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "Links Road, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/2ca22ff6-e483-e111-aca0-00155d01137b/Large/a9fffe0e-99eb-4e72-9dcf-5014ca31c33f.jpg".
+
+
+
+dd:b58dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Wootton is conveniently located for both Oxford (within 7 miles) and Abingdon (within 4 miles), offering easy pedestrian access to the many local amenities including a couple of village shops, a chemist, florist, bookshop, dentist, doctors, public house, a church and a highly regarded village school."^^xsd:string  ;
+      gr:name """Cumnor Road, Boars Hill, OXFORD, OX1                
+                3 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.70858"^^xsd:double ;
+      wgs84:long "-1.31391"^^xsd:double ;
+      vcard:locality "Boars Hill" ;
+      vcard:street-address
+              "Cumnor Road, Boars Hill" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/14d323b7-b872-e011-b9c0-00155d0111ea/Large/13c8b246-352d-4087-a5e1-d1dcdaaf1946.jpg" .
+
+dd:b58dl1
+      dd:hasPrice "345000"^^xsd:double ;
+      gr:includes dd:b58dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/35986/Cumnor-Road-Boars-Hill-OXFORD-OX1" .
+
+
+dd:b60dl1
+      dd:hasPrice "335000"^^xsd:double ;
+      gr:includes dd:b60dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/51041/Rose-Hill-Oxford-OX4-4HS" .
+
+dd:b60dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Situated on Rose Hill Road in Oxford is this three bedroom semi detached family home.  The internal decoration is dated but could be restored again to a wonderful family home."^^xsd:string ;
+      gr:name """Rose Hill, Oxford, OX4 4HS                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.73128"^^xsd:double ;
+      wgs84:long "-1.22727"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Rose Hill, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/97b736de-7b72-e111-baf2-00155d0111a9/Large/dbfb02f1-8b84-48f3-8f92-a0fa8583f78b.jpg" .
+
+dd:b61dl1
+      dd:hasPrice "335000"^^xsd:double ;
+      gr:includes dd:b61dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/44281/Spring-Road-ABINGDON-OX14" .
+
+dd:b61dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "This 1930s semi detached home is full of charm and character and has been extended and updated to create a practical and spacious family house.  This unique home is beautifully presented throughout and offers generous and flexible accommodation.  On the ground floor, there is a charming sitting room, contemporary kitchen, dining/family room and cloakroom.  Upstairs offers three bedrooms (two doubles) and a modern bathroom.   Externally there is a gated gravel driveway to the front and a wonderful West-facing garden."^^xsd:string;
+      gr:name """Spring Road, ABINGDON, OX14                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.67382"^^xsd:double ;
+      wgs84:long "-1.2946"^^xsd:double ;
+      vcard:locality "ABINGDON" ;
+      vcard:street-address
+              "Spring Road, ABINGDON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/efdbfe25-770c-e111-b457-00155d01133a/Large/e550dc59-42ec-432d-a17c-d8576fbe82c6.jpg"  .
+
+dd:b62dl1
+      dd:hasPrice "335000"^^xsd:double ;
+      gr:includes dd:b62dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/54272/Links-Road-Kennington-OXFORD-OX1-5RU" .
+
+dd:b62dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The internal accommodation comprises an entrance hall, 17'9 x 11'4 lounge, sun lounge, kitchen, three bedrooms, bathroom and separate WC. Externally there is off road parking, a garage and front and rear gardens."^^xsd:string ;
+      gr:name """Links Road, Kennington, OXFORD, OX1 5RU                
+                3 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.7105"^^xsd:double ;
+      wgs84:long "-1.24712"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "Links Road, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/f1bea923-879b-e111-8140-00155d01137b/Large/c515d47c-bb8d-4209-9325-ffc3881d5249.jpg"  .
+
+
+dd:b64dl1
+      dd:hasPrice "335000"^^xsd:double ;
+      gr:includes dd:b64dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46728/Anna-Pavlova-Close-ABINGDON-Oxfordshire-OX14" .
+
+dd:b64dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A very well presented end of terrace Townhouse in the popular Anna Pavlova development to the West of Abingdon, offering excellent access to local business parks and to transport links both North and Southbound on the A34."^^xsd:string  ;
+      gr:name """Anna Pavlova Close, ABINGDON, Oxfordshire, OX14                
+                4 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.67295"^^xsd:double ;
+      wgs84:long "-1.29823"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Anna Pavlova Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/d58bc081-b43e-e111-b3b1-00155d012298/Large/65f74a34-e164-4cf8-b05e-88f49a94e4df.jpg"  .
+
+
+dd:b65dl1
+      dd:hasPrice "325000"^^xsd:double ;
+      gr:includes dd:b65dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/45357/Manor-Grove-Kennington-OXFORD-OX1" .
+
+dd:b65dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Internal viewing is essential to appreciate what is on offer.  To book your viewing please call the vendors' sole agent on 01865 790079."^^xsd:string , "Situated in the sought-after village of Kennington is this lovely three bedroom detached bungalow."^^xsd:string ;
+      gr:name """Manor Grove, Kennington, OXFORD, OX1                
+                3 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.70878"^^xsd:double ;
+      wgs84:long "-1.24214"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "Manor Grove, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/1619d0b2-7822-e111-91c2-00155d010616/Large/1aa8627f-d9dc-4eeb-a402-072977e2284e.jpg"  .
+
+
+dd:b66dl1
+      dd:hasPrice "325000"^^xsd:double ;
+      gr:includes dd:b66dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50371/Fairfax-Avenue-Marston-Oxford-OX3-0RP" .
+
+dd:b66dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Accommodation comprises; Sitting Room, Dining Room, Kitchen and Office/Bedroom 4 on the ground floor whilst upstairs are three Bedrooms, a Bathroom and Separate WC."^^xsd:string  ;
+      gr:name """Fairfax Avenue, Marston, Oxford, OX3 0RP                
+                3 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.76648"^^xsd:double ;
+      wgs84:long "-1.2417"^^xsd:double ;
+      vcard:locality "Marston, Oxford" ;
+      vcard:street-address
+              "Fairfax Avenue, Marston, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/50b264c4-af6a-e111-881d-00155d0111a9/Large/9bbd8785-2383-41b5-8d15-68f2f4e5ec0a.jpg"  .
+
+
+dd:b67dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A superb detached family home perfectly situated at the end of a cul-de-sac in North Abingdon, within walking distance of Rush Common Primary School."^^xsd:string  ;
+      gr:name """Chilton Close, ABINGDON, Oxfordshire, OX14                
+                4 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.68159"^^xsd:double ;
+      wgs84:long "-1.26872"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Chilton Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/25faf828-c06e-e111-957b-00155d0111a9/Large/fcfe3af1-5c26-4992-be22-35b830b2b2db.jpg" .
+
+dd:b67dl1
+      dd:hasPrice "325000"^^xsd:double ;
+      gr:includes dd:b67dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50775/Chilton-Close-ABINGDON-Oxfordshire-OX14" .
+
+
+dd:b68dl1
+      dd:hasPrice "325000"^^xsd:double ;
+      gr:includes dd:b68dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46665/Swinburne-Road-ABINGDON-Oxfordshire-OX14" .
+
+dd:b68dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Swinburne Road is an extremely popular road of traditional period properties.  It is ideally situated to the North of the town offering pedestrian access to the town centre and its array of shops, restaurants and cafes and beautiful walks along he River Thames which is less than a mile away."^^xsd:string ;
+      gr:name """Swinburne Road, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.67771"^^xsd:double ;
+      wgs84:long "-1.27382"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Swinburne Road, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/031bc99a-e93d-e111-a373-00155d011351/Large/13331804-f58b-497d-a251-580d02ff5a92.jpg"  .
+
+
+dd:b69dl1
+      dd:hasPrice "325000"^^xsd:double ;
+      gr:includes dd:b69dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49978/Oxford-Road-Garsington-Oxford-OX44-9AD" .
+
+dd:b69dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "To the rear there is an enclosed rear garden laid mainly to lawn with patio area, green house and timber framed shed, to the side of the property there is a driveway which leads to the single garage. The property is offered to the market with no onward chain."^^xsd:string  ;
+      gr:name """Oxford Road, Garsington, Oxford, OX44 9AD                
+                3 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.7195"^^xsd:double ;
+      wgs84:long "-1.16717"^^xsd:double ;
+      vcard:locality "Garsington, Oxford" ;
+      vcard:street-address
+              "Oxford Road, Garsington, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/d6fdf821-c466-e111-aca0-00155d01137b/Large/6e960e42-c9cb-45d1-9441-74cdd3b04c70.jpg" .
+
+
+dd:b70dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "The accommodation comprises; Three Reception Rooms, Kitchen and Bathroom on the ground floor, whilst upstairs are four bedrooms and a shower room."^^xsd:string ;
+      gr:name """Bateman Street, Headington, OXFORD, OX3 7BG                
+                4 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.7574"^^xsd:double ;
+      wgs84:long "-1.21108"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Bateman Street, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/7a409ecc-9367-e111-aca0-00155d01137b/Large/18dc23e4-4da0-468c-bc3c-71d6bcf1049b.jpg" .
+
+dd:b70dl1
+      dd:hasPrice "325000"^^xsd:double ;
+      gr:includes dd:b70dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50075/Bateman-Street-Headington-OXFORD-OX3-7BG" .
+
+
+dd:b71dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Early viewing is highly recommended to fully appreciated the generous and stylish accommodation on offer."^^xsd:string  ;
+      gr:name """Morton Close, KIDLINGTON, Oxfordshire, OX5 1BU                
+                4 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.81874"^^xsd:double ;
+      wgs84:long "-1.28741"^^xsd:double ;
+      vcard:locality "KIDLINGTON, Oxfordshire" ;
+      vcard:street-address
+              "Morton Close, KIDLINGTON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/8d49f8e9-459f-e111-832d-00155d0111a9/Large/a8ac50be-9a6a-4eda-a6ef-d08c73e2f6dd.jpg" .
+
+dd:b71dl1
+      dd:hasPrice "320000"^^xsd:double ;
+      gr:includes dd:b71dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/54511/Morton-Close-KIDLINGTON-Oxfordshire-OX5-1BU" .
+
+
+dd:b72dl1
+      dd:hasPrice "320000"^^xsd:double ;
+      gr:includes dd:b72dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47070/Ock-Mill-Close-ABINGDON-Oxfordshire-OX14" .
+
+dd:b72dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "This fabulous home offers generous accommodation over three floors.  On the ground floor there is a garage, cloakroom and contemporary kitchen/diner.  On the first floor, there is an impressive sitting room with a balcony overlooking the garden and river, two bedrooms and a bathroom.  On the second floor, there is a master bedroom with en-suite shower room and another double bedroom.  Externally, the garden is beautiful with a variety of shrubs and plants and a charming seating area to enjoy the view beyond."^^xsd:string  ;
+      gr:name """Ock Mill Close, ABINGDON, Oxfordshire, OX14                
+                4 bedroom, End Terraced Town House"""^^xsd:string ;
+      wgs84:lat "51.6693"^^xsd:double ;
+      wgs84:long "-1.2967"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Ock Mill Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/825adcf0-9f42-e111-9d56-00155d011351/Large/1bfebe94-de34-4694-af12-028555d64c24.jpg"  .
+
+
+dd:b73dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Externally, there are well maintained front and rear gardens and an integral single garage with additional driveway parking. Internal viewing is highly recommended to fully appreciate the accommodation on offer in this impressive family home.  Call sole agents Andrews to arrange your viewing."^^xsd:string  ;
+      gr:name """Kysbie Close, ABINGDON, Oxfordshire, OX14                
+                4 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.68733"^^xsd:double ;
+      wgs84:long "-1.28263"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Kysbie Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/9c4acc9d-a192-e111-a096-00155d0111a9/Large/8164d6c7-f8a4-43ec-be2d-5e76d4a81555.jpg"  .
+
+dd:b73dl1
+      dd:hasPrice "319950"^^xsd:double ;
+      gr:includes dd:b73dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/53555/Kysbie-Close-ABINGDON-Oxfordshire-OX14" .
+
+
+dd:b74dl1
+      dd:hasPrice "315000"^^xsd:double ;
+      gr:includes dd:b74dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50711/Netherwoods-Road-Headington-OXFORD-OX3-8HF" .
+
+dd:b74dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The accommodation comprises; Sitting Room, Dining Room, Kitchen/Breakfast Room and Cloakroom on the ground floor, while upstairs are Three Bedrooms and a bathroom."^^xsd:string ;
+      gr:name """Netherwoods Road, Headington, OXFORD, OX3 8HF                
+                3 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.7567"^^xsd:double ;
+      wgs84:long "-1.19053"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Netherwoods Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/b3d415eb-f06d-e111-aca0-00155d01137b/Large/aadb6443-79a5-48fa-b631-eae024a19f47.jpg"  .
+
+
+dd:b75dl1
+      dd:hasPrice "310000"^^xsd:double ;
+      gr:includes dd:b75dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50524/Kings-Avenue-Marcham-ABINGDON-Oxfordshire-OX13-6QA" .
+
+dd:b75dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Ideally situated in the popular village of Marcham and backing onto fields is this detached four bedroom family home.  Marcham is a picturesque village conveniently located within three miles of Abingdon and ten miles of Oxford.  Within the village, there is a Church, Primary School, Cricket Club and Family Pub."^^xsd:string ;
+      gr:name """Kings Avenue, Marcham, ABINGDON, Oxfordshire, OX13 6QA                
+                4 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.67143"^^xsd:double ;
+      wgs84:long "-1.34323"^^xsd:double ;
+      vcard:locality "Marcham, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Kings Avenue, Marcham, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/40e61955-f46c-e111-aca0-00155d01137b/Large/fccc31c6-c217-4fea-adff-1decbac8a756.jpg" .
+
+
+dd:b76dl1
+      dd:hasPrice "310000"^^xsd:double ;
+      gr:includes dd:b76dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/45174/-Ypres-Way-ABINGDON-Oxfordshire-OX14" .
+
+dd:b76dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Internal viewing is highly recommended to fully appreciate this wonderful home in this prime location."^^xsd:string ;
+      gr:name """Ypres Way, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.67988"^^xsd:double ;
+      wgs84:long "-1.29435"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Ypres Way, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/e34d5562-491f-e111-bf5d-00155d01228c/Large/9e4f7ddf-3215-4604-b6b8-71eef94bff9a.jpg"  .
+
+
+dd:b77dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Andrews are delighted to market this spacious semi-detached house fantastically located within 1/4 mile of the Saxon Way Entrance to the John Radcliffe Hospital.  The property has been extended to provide an additional reception room, bedroom, shower room and utility room which has the potential to be turned into a separate annexe."^^xsd:string  ;
+      gr:name """Upway Road, Headington, OXFORD, OX3 9QH                
+                4 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.76938"^^xsd:double ;
+      wgs84:long "-1.21935"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Upway Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/579c28ea-245e-e111-bc64-00155d010635/Large/42a69465-500e-49e0-b6f3-aadc787fe0a0.jpg"  .
+
+dd:b77dl1
+      dd:hasPrice "300000"^^xsd:double ;
+      gr:includes dd:b77dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49248/Upway-Road-Headington-OXFORD-OX3-9QH" .
+
+
+dd:b78dl1
+      dd:hasPrice "300000"^^xsd:double ;
+      gr:includes dd:b78dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/54949/The-Villas-High-Street-Long-Wittenham-ABINGDON-Oxfordshire-OX14" .
+
+dd:b78dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "An immaculate and characterful home ideally located within the highly sought-after village of Long Wittenham."^^xsd:string  ;
+      gr:name """The Villas High Street, Long Wittenham, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.6415"^^xsd:double ;
+      wgs84:long "-1.20928"^^xsd:double ;
+      vcard:locality "Long Wittenham, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "The Villas High Street, Long Wittenham, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/dce9d72a-7fa5-e111-a152-00155d0111a9/Large/2d59231c-29e4-4dad-9abf-46ba62db33bb.jpg"  .
+
+
+dd:b79dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Although this would be a great opportunity for someone wanting to build their own house, the bungalow itself is charming and would equally suit someone looking for a 2/3 bedroom property with a beautiful garden."^^xsd:string  ;
+      gr:name """Sandleigh Road, Wootton, ABINGDON, OX13                
+                3 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.70584"^^xsd:double ;
+      wgs84:long "-1.32017"^^xsd:double ;
+      vcard:locality "Wootton, ABINGDON" ;
+      vcard:street-address
+              "Sandleigh Road, Wootton, ABINGDON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/331c5614-ddb7-e011-a068-00155d011323/Large/801f3a3a-f9aa-4256-81af-4ad1797a27c4.jpg"  .
+
+dd:b79dl1
+      dd:hasPrice "300000"^^xsd:double ;
+      gr:includes dd:b79dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/39094/Sandleigh-Road-Wootton-ABINGDON-OX13" .
+
+
+dd:b80dl1
+      dd:hasPrice "300000"^^xsd:double ;
+      gr:includes dd:b80dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/51999/Westfields-ABINGDON-Oxfordshire-OX14" .
+
+dd:b80dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A delightful semi-detached home perfectly situated at the end of a cul-de-sac in this sought-after area in North Abingdon.  Westfields is ideally located within 500m of the Albert Park conservation area and its beautiful grounds.  This immaculate property has been updated throughout by the current owners to create a unique and contemporary home.   On the ground floor there is a lovely bay fronted sitting room with folding doors leading to the dining room.  The dining room opens out on to the fantastic kitchen area, both overlooking the charming garden.  Upstairs, bedroom one and bedroom three are currently knocked together to create a wonderful master suite with dressing area.  (The rooms still have the separate doors from the landing and could be turned back into separate bedrooms by the erection of a wall).  There is also a second double bedroom and modern bathroom.  Externally the property has a driveway, attached garage and an enclosed West-facing garden."^^xsd:string  ;
+      gr:name """Westfields, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.67419"^^xsd:double ;
+      wgs84:long "-1.29526"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Westfields, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/a1779276-9f7d-e111-aca0-00155d01137b/Large/f9cef4e4-ee5e-4c0f-9c5f-77061ce58667.jpg"  .
+
+
+dd:b81dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The accommodation comprises: entrance hall, cloakroom, sitting room, dining room, kitchen, three bedrooms and two bathrooms."^^xsd:string ;
+      gr:name """Dorchester Close, Headington, OXFORD, OX3 8SS                
+                3 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.75265"^^xsd:double ;
+      wgs84:long "-1.19681"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Dorchester Close, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/22f58e70-3d32-e111-82cd-00155d01228c/Large/5e3cc46b-c97e-48be-80f0-474a1e09e0d2.jpg" .
+
+dd:b81dl1
+      dd:hasPrice "300000"^^xsd:double ;
+      gr:includes dd:b81dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/45867/Dorchester-Close-Headington-OXFORD-OX3-8SS" .
+
+
+dd:b82dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A fantastic opportunity to purchase this ex-AEA property tucked away at the end of a small cul-de-sac on the sought-after Fitzharrys development.  Aston Close is perfectly situated just a quarter of a mile North of Abingdon Town Centre, offering pedestrian access to the town, bus stops and St Nicholas Primary School."^^xsd:string  ;
+      gr:name """Aston Close, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.67325"^^xsd:double ;
+      wgs84:long "-1.28381"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Aston Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/d8efbe9a-1162-e111-b4f4-00155d0122d5/Large/7990fa1c-aba4-4369-af9a-ecbb2b5e6063.jpg" .
+
+dd:b82dl1
+      dd:hasPrice "300000"^^xsd:double ;
+      gr:includes dd:b82dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49553/Aston-Close-ABINGDON-Oxfordshire-OX14" .
+
+
+dd:b83dl1
+      dd:hasPrice "299950"^^xsd:double ;
+      gr:includes dd:b83dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/52637/Upper-Road-Kennington-OXFORD-OX1-5LW" .
+
+dd:b83dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "This property is available with no onward chain and Andrews strongly recommends viewing with this particular home to fully appreciate the potential on offer. To arrange your viewing please contact the vendors sole agents on 01865 790079."^^xsd:string  ;
+      gr:name """Upper Road, Kennington, OXFORD, OX1 5LW                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.72019"^^xsd:double ;
+      wgs84:long "-1.24825"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "Upper Road, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/abd3276c-3886-e111-afe7-00155d0111a9/Large/2ad39e8c-d1ff-4811-af59-0dfce43ab1bd.jpg"  .
+
+
+dd:b84dl1
+      dd:hasPrice "299950"^^xsd:double ;
+      gr:includes dd:b84dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/54072/Grovelands-Road-Headington-OXFORD-OX3-8HZ" .
+
+dd:b84dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "The accommodation is finished to a high standard and comprises: Through reception room, with kitchen leading off, w/c entrance hall and separate reception/bedroom on the ground floor. Upstairs are three bedrooms and a family bathroom. There are stairs leading to a loft room currently utilised as a bedroom."^^xsd:string  ;
+      gr:name """Grovelands Road, Headington, OXFORD, OX3 8HZ                
+                4 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.7581"^^xsd:double ;
+      wgs84:long "-1.18726"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Grovelands Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/437d5cf0-bb99-e111-8140-00155d01137b/Large/bd295d4d-4644-4197-9959-d7a91eaea94a.jpg"  .
+
+dd:b87dl1
+      dd:hasPrice "299950"^^xsd:double ;
+      gr:includes dd:b87dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46649/Kennington-Road-Kennington-OXFORD-OX1" .
+
+dd:b87dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Situated in the sought-after location of Kennington is this well presented three bedroom semi-detached property which has been updated to a high standard by the current owners. Kennington offers a good range of local facilities, including a village primary school, a public house, a post office/general store and is in the catchment area for Mathew Arnold secondary school."^^xsd:string  ;
+      gr:name """Kennington Road, Kennington, OXFORD, OX1                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.72333"^^xsd:double ;
+      wgs84:long "-1.24811"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "Kennington Road, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/f779d7b9-d83d-e111-b3b1-00155d012298/Large/f50f820c-7781-4150-a9eb-337c9603c783.jpg" .
+
+dd:b91dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "To the outside of the property is an attached garage with a parking space in front. A personal door leads to the rear garden which has a decked area and a lawn."^^xsd:string  ;
+      gr:name """Leigh Croft, Wootton, ABINGDON, Oxfordshire, OX13                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.7086"^^xsd:double ;
+      wgs84:long "-1.31885"^^xsd:double ;
+      vcard:locality "Wootton, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Leigh Croft, Wootton, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/9c9f537a-2448-e111-9680-00155d01117c/Large/ec361d12-88f2-4fcc-ab2d-c45a1c1b826e.jpg" .
+
+dd:b91dl1
+      dd:hasPrice "290000"^^xsd:double ;
+      gr:includes dd:b91dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47516/Leigh-Croft-Wootton-ABINGDON-Oxfordshire-OX13" .
+
+dd:b92dl1
+      dd:hasPrice "290000"^^xsd:double ;
+      gr:includes dd:b92dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/41945/Queens-Avenue-KIDLINGTON-OX5" .
+
+dd:b92dl4
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "Located in the sought-after village of Kidlington, is this impressive and well presented five bedroom house.  The property has been extended and decorated by the current owners to create a spacious and versatile family home."^^xsd:string ;
+      gr:name """Queens Avenue, KIDLINGTON, OX5                
+                5 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.82079"^^xsd:double ;
+      wgs84:long "-1.27493"^^xsd:double ;
+      vcard:locality "KIDLINGTON" ;
+      vcard:street-address
+              "Queens Avenue, KIDLINGTON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/e8cbb4bc-d9e3-e011-9a64-00155d01225f/Large/57e712d5-57f5-4de4-b8b7-246573fc6ce3.jpg" .
+
+dd:b93dl1
+      dd:hasPrice "289950"^^xsd:double ;
+      gr:includes dd:b93dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46768/-High-Street-Culham-ABINGDON-Oxfordshire-OX14-" .
+
+dd:b93dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "This impressive property is deceptively spacious and is decorated in neutral tones throughout. On the ground floor is an entrance hall with wood flooring, dual aspect reception room with multi fuel burner, a smart re-fitted kitchen with Beech work tops, plus a cloakroom. Upstairs offers three bedrooms; the two doubles have built in wardrobes, a re-fitted bathroom and a generous landing area.  A truly lovely family home, an internal viewing is highly recommended to fully appreciate all this house has to offer."^^xsd:string  ;
+      gr:name """High Street, Culham, ABINGDON, Oxfordshire, OX14                 
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.65173"^^xsd:double ;
+      wgs84:long "-1.2677"^^xsd:double ;
+      vcard:locality "Culham, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "High Street, Culham, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/279946c0-2e40-e111-a373-00155d011351/Large/9035fdec-ba14-41d2-b21d-2985d9d0029b.jpg" .
+
+dd:b94dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Andrews Estate Agents are delighted to bring to the market this three bedroom semi-detached property situated on the tree lined Avenue in Kennington."^^xsd:string  ;
+      gr:name """The Avenue, Kennington, OXFORD, OX1                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.7137"^^xsd:double ;
+      wgs84:long "-1.24412"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "The Avenue, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/4bbb448e-384c-e111-bf07-00155d01117c/Large/eea13d20-92f3-4c2d-b56f-9d79b880cd91.jpg"  .
+
+dd:b94dl1
+      dd:hasPrice "285000"^^xsd:double ;
+      gr:includes dd:b94dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47851/The-Avenue-Kennington-OXFORD-OX1" .
+
+dd:b95dl1
+      dd:hasPrice "285000"^^xsd:double ;
+      gr:includes dd:b95dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46831/Cranmer-Road-Oxford-OX4-2QE" .
+
+dd:b95dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "This extended 1930s semi detached property is situated on the popular road of Cranmer Road. The property is conveniently located on Cowley/Headington borders giving you good access to the ring road and hospitals nearby."^^xsd:string  ;
+      gr:name """Cranmer Road, Oxford, OX4 2QE                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.73979"^^xsd:double ;
+      wgs84:long "-1.20267"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Cranmer Road, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/8054682a-5840-e111-b6a1-00155d011351/Large/38bc1a74-29ec-461e-bb95-8814b760fdca.jpg"  .
+
+dd:b96dl1
+      dd:hasPrice "285000"^^xsd:double ;
+      gr:includes dd:b96dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/53767/23-Grovelands-Road-Headington-OXFORD-OX3-8HZ" .
+
+dd:b96dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "To the outside there is a well maintained  enclosed rear garden with single garage which is currently being used just for storage as there is no vehicle access to this but ideal for bike storage and garden furniture."^^xsd:string  ;
+      gr:name """23  Grovelands Road, Headington, OXFORD, OX3 8HZ                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.7581"^^xsd:double ;
+      wgs84:long "-1.18726"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "23  Grovelands Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/3ebf3f14-7094-e111-8140-00155d01137b/Large/72425008-eb31-49af-a892-1c717f0958f8.jpg"  .
+
+
+dd:b98dl1
+      dd:hasPrice "285000"^^xsd:double ;
+      gr:includes dd:b98dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49998/Merewood-Avenue-Headington-OXFORD-OX3-8EG" .
+
+dd:b98dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Located within c. 1/4mile of a bus stop that serves 'The Oxford Tube' and buses to Heathrow and Gatwick Airports and within catchment area for the well regarded 'Sandhills School', we are anticipating a keen interest and urge early viewing."^^xsd:string  ;
+      gr:name """Merewood Avenue, Headington, OXFORD, OX3 8EG                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.76375"^^xsd:double ;
+      wgs84:long "-1.18451"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Merewood Avenue, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/8735f468-d366-e111-aca0-00155d01137b/Large/47ac0bd6-31d2-4acf-be57-b81adc743026.jpg"  .
+
+dd:b99dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Externally, there is a single garage and driveway parking for 5 cars.  The rear garden faces South and is majority laid to lawn."^^xsd:string ;
+      gr:name """Beagle Close, ABINGDON, OX14                
+                4 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.68604"^^xsd:double ;
+      wgs84:long "-1.26344"^^xsd:double ;
+      vcard:locality "ABINGDON" ;
+      vcard:street-address
+              "Beagle Close, ABINGDON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/0a657390-ff1c-e011-ad04-00155d64e079/Large/dd51aac9-71ed-48db-9f85-df687674cc3a.jpg"  .
+
+dd:b99dl1
+      dd:hasPrice "285000"^^xsd:double ;
+      gr:includes dd:b99dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/21726/Beagle-Close-ABINGDON-OX14" .
+
+                                                                     
+
+dd:c1dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "This delightful home offers two  bedrooms and a dual aspect sitting room, front and rear gardens and a garage.  Whilst it could benefit from some cosmetic updating, it has great potential for someone wanting to make their mark on a property in a fantastic location with a fabulous garden."^^xsd:string ;
+      gr:name """St Swithuns Road, Kennington, OXFORD, OX1                
+                2 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.71231"^^xsd:double ;
+      wgs84:long "-1.24591"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "St Swithuns Road, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/33408bad-4fde-e011-ad9c-00155d011331/Large/ee806186-2c14-45a4-90ad-d671d6fe7166.jpg"  .
+
+dd:c1dl1
+      dd:hasPrice "280000"^^xsd:double ;
+      gr:includes dd:c1dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/41648/St-Swithuns-Road-Kennington-OXFORD-OX1" .
+
+dd:c2dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Offering spacious accommodation combined with charming views over Wheatley, car port and off street parking for up to three cars, and a private rear garden, we anticipate keen interest in this property so early viewing comes highly recommended. No onwards Chain!"^^xsd:string ;
+      gr:name """Simons Close, Wheatley, OXFORD, OX33 1SU                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.74587"^^xsd:double ;
+      wgs84:long "-1.14029"^^xsd:double ;
+      vcard:locality "Wheatley" ;
+      vcard:street-address
+              "Simons Close, Wheatley" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/b31e8cff-2f6c-e111-aca0-00155d01137b/Large/faac66ea-02d0-49ba-a865-e1f263616a53.jpg" .
+
+dd:c2dl1
+      dd:hasPrice "280000"^^xsd:double ;
+      gr:includes dd:c2dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50435/Simons-Close-Wheatley-OXFORD-OX33-1SU" .
+
+dd:c3dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A well presented three storey town house perfectly situated towards the end of a no through road in the popular village of Wootton."^^xsd:string  ;
+      gr:name """Werrell Drive, Wootton, Boars Hill, OX1                
+                3 bedroom,  Town House"""^^xsd:string ;
+      wgs84:lat "51.70897"^^xsd:double ;
+      wgs84:long "-1.31928"^^xsd:double ;
+      vcard:locality "Wootton, Boars Hill" ;
+      vcard:street-address
+              "Werrell Drive, Wootton, Boars Hill" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/7581075d-86a6-e011-8c7b-00155d64e0ad/Large/b2d7face-4570-4b5d-b5d1-45fa2ef36ba4.jpg" .
+
+dd:c3dl1
+      dd:hasPrice "280000"^^xsd:double ;
+      gr:includes dd:c3dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/38244/Werrell-Drive-Wootton-Boars-Hill-OX1" .
+
+
+dd:c4dl1
+      dd:hasPrice "275000"^^xsd:double ;
+      gr:includes dd:c4dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/53514/Swinburne-Road-Oxford-OX4-4BG" .
+
+dd:c4dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Andrews Estate Agents present to the market this well presented three bedroom end terraced house situated on Swinburne Road in Donnington Bridge area."^^xsd:string  ;
+      gr:name """Swinburne Road, Oxford, OX4 4BG                
+                3 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.73787"^^xsd:double ;
+      wgs84:long "-1.23889"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Swinburne Road, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/b893a3a4-1f91-e111-a096-00155d0111a9/Large/fe6a0299-489e-431c-8c61-205cc369acc4.jpg".
+
+dd:c5dl1
+      dd:hasPrice "275000"^^xsd:double ;
+      gr:includes dd:c5dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/53229/Aston-Close-ABINGDON-Oxfordshire-OX14" .
+
+dd:c5dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "NEW PRICE - Perfectly situated in pleasant cul-de-sac on the sought-after Fitzharrys Development is this charming ex-AEA semi-detached home."^^xsd:string ;
+      gr:name """Aston Close, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.67325"^^xsd:double ;
+      wgs84:long "-1.28381"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Aston Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/574c4b52-e88d-e111-af7f-00155d0111a9/Large/a7e477f9-feb3-4fbc-8837-b2bc0740a3ac.jpg" .
+
+
+
+
+
+
+
+dd:c6dl1
+      dd:hasPrice "275000"^^xsd:double ;
+      gr:includes dd:c6dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/35956/St-Georges-Manor-Mandelbrote-Drive-Littlemore-OXFORD-OX4" .
+
+dd:c6dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Built in 1846, St George's Manor was converted from an old hospital in 1999 and is set within 10 acres of well manicured grounds and accessed via electric gates giving the development a great sense of security and privacy."^^xsd:string  ;
+      gr:name """St Georges Manor, Mandelbrote Drive, Littlemore, OXFORD, OX4                
+                2 bedroom, Flat"""^^xsd:string ;
+      wgs84:lat "51.71762"^^xsd:double ;
+      wgs84:long "-1.22378"^^xsd:double ;
+      vcard:locality "Mandelbrote Drive, Littlemore" ;
+      vcard:street-address
+              "St Georges Manor, Mandelbrote Drive, Littlemore" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/7644c979-f271-e011-b9c0-00155d0111ea/Large/547c027a-056d-4f32-9cee-dd56c889606f.jpg" .
+
+
+
+
+
+
+
+dd:c7dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The accommodation comprises: Sitting Room, Dining Room, Kitchen, Sun Room, Utility Room and Cloakroom on the ground floor whilst on the first floor are Three Bedrooms and a Bathroom."^^xsd:string ;
+      gr:name """Dene Road, Headington, OXFORD, OX3 7EF                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.74439"^^xsd:double ;
+      wgs84:long "-1.20489"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Dene Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/fbb5ce61-2c62-e111-9612-00155d01137b/Large/0d31b279-8a9e-4b97-a955-08aa1776517f.jpg" .
+
+dd:c7dl1
+      dd:hasPrice "275000"^^xsd:double ;
+      gr:includes dd:c7dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49589/Dene-Road-Headington-OXFORD-OX3-7EF" .
+
+
+
+
+
+
+
+dd:c8dl1
+      dd:hasPrice "275000"^^xsd:double ;
+      gr:includes dd:c8dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/51168/Merewood-Avenue-Headington-OXFORD-OX3-8EQ" .
+
+dd:c8dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Complimented by a stunning split level rear garden with a Westerly aspect and off street parking, this property is not to be missed!"^^xsd:string ;
+      gr:name """Merewood Avenue, Headington, OXFORD, OX3 8EQ                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.76511"^^xsd:double ;
+      wgs84:long "-1.18666"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Merewood Avenue, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/75feb099-6773-e111-aca0-00155d01137b/Large/6af8c8e4-69be-47e0-aabb-eef6c4438cab.jpg".
+
+
+
+
+
+
+
+dd:c9dl1
+      dd:hasPrice "270000"^^xsd:double ;
+      gr:includes dd:c9dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/52160/Ridley-Road-Oxford-OX4-2QJ" .
+
+dd:c9dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The property comprises on the ground floor of entrance hall, sitting room, dining room, kitchen/diner with patio doors to the garden at the rear. On the first floor you will find three bedrooms two of which are doubles and a family bathroom."^^xsd:string ;
+      gr:name """Ridley Road, Oxford, OX4 2QJ                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.73918"^^xsd:double ;
+      wgs84:long "-1.20285"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Ridley Road, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/e600e01c-387f-e111-afe7-00155d0111a9/Large/cf4cce1f-3092-4a2c-af80-463fcf567606.jpg" .
+
+
+
+
+
+
+
+dd:c10dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The property consists on the ground floor of entrance hall, sitting room, dining room, utility room and kitchen/breakfast room with patio doors that lead the garden at the rear. On the first floor you will find three bedrooms and a family bathroom."^^xsd:string  ;
+      gr:name """Littlemore Road, Oxford, OX4 3SU                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.7281"^^xsd:double ;
+      wgs84:long "-1.21892"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Littlemore Road, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/9a1670d0-e695-e111-8140-00155d01137b/Large/e19c25e4-e59a-401a-9b04-e12590096cf8.jpg" .
+
+dd:c10dl1
+      dd:hasPrice "270000"^^xsd:double ;
+      gr:includes dd:c10dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/53877/Littlemore-Road-Oxford-OX4-3SU" .
+
+
+
+
+
+
+
+dd:c11dl1
+      dd:hasPrice "265000"^^xsd:double ;
+      gr:includes dd:c11dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50336/Lockway-ABINGDON-Oxfordshire-OX14" .
+
+dd:c11dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Located in the popular village of Drayton is this extended and converted family home.  The property is presented in excellent decorative order and has to be viewed to appreciate what is on offer."^^xsd:string ;
+      gr:name """Lockway, ABINGDON, Oxfordshire, OX14                
+                4 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.64291"^^xsd:double ;
+      wgs84:long "-1.31562"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Lockway, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/f74196cf-ff69-e111-881d-00155d0111a9/Large/6d69bcd2-d0b3-4dbe-987c-3654aa8bbad9.jpg" .
+
+
+
+
+
+
+
+dd:c12dl1
+      dd:hasPrice "265000"^^xsd:double ;
+      gr:includes dd:c12dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/43469/The-Grates-Cowley-OXFORD-OX4-3LJ" .
+
+dd:c12dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Offered to the market is this well presented 1930s three bedroom semi detached property on the popular road of The Grates in Cowley, with convenient access to Templars Square shopping centre."^^xsd:string  ;
+      gr:name """The Grates, Cowley, OXFORD, OX4 3LJ                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.73038"^^xsd:double ;
+      wgs84:long "-1.21702"^^xsd:double ;
+      vcard:locality "Cowley" ;
+      vcard:street-address
+              "The Grates, Cowley" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/f87c5993-5ffe-e011-9e74-00155d01133a/Large/f4d64480-9042-4547-b8f2-f3cd96ef14c3.jpg" .
+
+
+
+
+
+
+
+
+dd:c14dl1
+      dd:hasPrice "265000"^^xsd:double ;
+      gr:includes dd:c14dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/51087/Clays-Close-Headington-OXFORD-OX3-0NX" .
+
+dd:c14dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description  "Situated on Clays Close in Marston is this well presented three bedroom terraced family home."^^xsd:string ;
+      gr:name """Clays Close, Headington, OXFORD, OX3 0NX                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.77139"^^xsd:double ;
+      wgs84:long "-1.23249"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Clays Close, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/df1c6d1d-a972-e111-aca0-00155d01137b/Large/30c0d50e-43bd-4702-b8b6-2e8761284b2d.jpg" .
+
+
+
+
+
+
+
+dd:c15dl1
+      dd:hasPrice "265000"^^xsd:double ;
+      gr:includes dd:c15dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/52837/Bailey-Road-Oxford-OX4-3HU" .
+
+dd:c15dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The property consists on the ground floor of entrance hall, sitting/diner, kitchen/breakfast room with door leading to the garden at the rear. On the first floor you will three bedrooms two of which are doubles and a family bathroom."^^xsd:string ;
+      gr:name """Bailey Road, Oxford, OX4 3HU                
+                3 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.7313"^^xsd:double ;
+      wgs84:long "-1.21136"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Bailey Road, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/87d1a284-9a88-e111-aca0-00155d01137b/Large/ea310dd1-2229-4630-a20d-95ce937101c9.jpg" .
+
+
+
+
+
+
+
+dd:c16dl1
+      dd:hasPrice "265000"^^xsd:double ;
+      gr:includes dd:c16dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/45866/Stanway-Road-Headington-OXFORD-OX3-8HT" .
+
+dd:c16dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Andrews are delighted to present this spacious 1930's semi-detached home in the consistently popular location of Risinghurst on the outskirts of Headington."^^xsd:string  ;
+      gr:name """Stanway Road, Headington, OXFORD, OX3 8HT                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.75929"^^xsd:double ;
+      wgs84:long "-1.18823"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Stanway Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/4ac98687-3732-e111-82cd-00155d01228c/Large/28fb8ad6-fc4a-47d6-854b-a3b739de36e3.jpg" .
+
+
+
+
+
+
+
+dd:c17dl1
+      dd:hasPrice "260000"^^xsd:double ;
+      gr:includes dd:c17dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46072/66-Gladstone-Road-Headington-OXFORD-OX3-8LS" .
+
+dd:c17dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A deceptively spacious four bedroom house fantastically located on Gladstone Road within 200m of London Road in Headington offering potential buyers a real blank canvas to put their own mark on a property."^^xsd:string ;
+      gr:name """66 Gladstone Road, Headington, OXFORD, OX3 8LS                
+                4 bedroom,  Other"""^^xsd:string ;
+      wgs84:lat "51.76164"^^xsd:double ;
+      wgs84:long "-1.20178"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "66 Gladstone Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/ffd848f9-ed36-e111-b70b-00155d010616/Large/57078280-9f04-4e96-bbfd-48006d0288fc.jpg" .
+
+
+
+
+
+
+
+dd:c18dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Situated in the sought-after village of Wootton is this fantastic three bedroom semi-detached house with a charming garden which is being offered for sale with no onward chain.  Wootton is conveniently located for both Oxford (within 7 miles) and Abingdon (within 4 miles), offering easy pedestrian access to the many local amenities including a couple of village shops, a chemist, florist, dentist, doctors, public house, a church and a highly regarded village school."^^xsd:string ;
+      gr:name """Cumnor Road, Boars Hill, OXFORD, OX1                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.71451"^^xsd:double ;
+      wgs84:long "-1.3197"^^xsd:double ;
+      vcard:locality "Boars Hill" ;
+      vcard:street-address
+              "Cumnor Road, Boars Hill" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/7109b162-99c3-e011-a526-00155d01225f/Large/8465df56-c191-493c-bd68-961afa470b2f.jpg" .
+
+dd:c18dl1
+      dd:hasPrice "255000"^^xsd:double ;
+      gr:includes dd:c18dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/39669/Cumnor-Road-Boars-Hill-OXFORD-OX1" .
+
+
+
+
+
+
+
+dd:c19dl1
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:c19dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/51513/Campbell-Road-Oxford-OX4-3PG" .
+
+dd:c19dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Located on the ever popular development of Florence Park is this three bedroom end of terraced home.  The property will require internal updating but does offer a wonderful project for some keen on moving to this area."^^xsd:string ;
+      gr:name """Campbell Road, Oxford, OX4 3PG                
+                3 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.73304"^^xsd:double ;
+      wgs84:long "-1.224"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Campbell Road, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/79dddacc-f077-e111-ae4f-00155d0111a9/Large/4abf1a6f-6a94-4795-a58c-f01b5ace27bf.jpg" .
+
+
+
+
+
+
+
+dd:c20dl1
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:c20dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/52654/Bodley-Road-Littlemore-OXFORD-OX4-3UB" .
+
+dd:c20dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The property comprises on the ground floor of entrance hall, sitting room, kitchen/diner and then onto a lean to with door leading to the garden complete with workshop with power supply and measuring 16'8 x 11'8. Upstairs you will find three bedrooms two of which are doubles and a family bathroom."^^xsd:string ;
+      gr:name """Bodley Road, Littlemore, OXFORD, OX4 3UB                
+                3 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.72619"^^xsd:double ;
+      wgs84:long "-1.21532"^^xsd:double ;
+      vcard:locality "Littlemore" ;
+      vcard:street-address
+              "Bodley Road, Littlemore" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/b8d4a121-9b87-e111-afe7-00155d0111a9/Large/7af01b25-90ba-4738-b631-cdb25de2bda7.jpg" .
+
+
+
+
+
+
+
+dd:c21dl1
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:c21dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/53711/Weirs-Lane-Oxford-OX1-4UU" .
+
+dd:c21dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Andrews present to the market this three bedroom mid terraced house situated on Weirs Lane in Donnington Bridge area."^^xsd:string  ;
+      gr:name """Weirs Lane, Oxford, OX1 4UU                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.7345"^^xsd:double ;
+      wgs84:long "-1.24874"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Weirs Lane, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/119ee5b3-a893-e111-8140-00155d01137b/Large/dba08ca5-9403-4f8e-9258-07479f1d7679.jpg" .
+
+
+
+
+
+
+
+dd:c22dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "This impressive home has been extended and updated to create a generous and flexible layout on the ground floor to suit most families’ needs.  Downstairs there is a 24’4 x 15’10 lounge/diner, contemporary kitchen/breakfast room and conservatory.  Upstairs offers three bedrooms and a bathroom.  This immaculate home also has the rather unique benefit of two gardens, as it is perfectly positioned to offer private and enclosed gardens to the front and rear.  Additionally there is a detached garage."^^xsd:string ;
+      gr:name """Eldridge Close, ABINGDON, OX14                
+                3 bedroom, Detached House"""^^xsd:string ;
+      wgs84:lat "51.68635"^^xsd:double ;
+      wgs84:long "-1.28191"^^xsd:double ;
+      vcard:locality "ABINGDON" ;
+      vcard:street-address
+              "Eldridge Close, ABINGDON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/30b1c195-3f8b-e011-9099-00155d012247/Large/3087b709-a149-4e45-b2da-7c6fe5b3af18.jpg" .
+
+dd:c22dl1
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:c22dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/36981/Eldridge-Close-ABINGDON-OX14" .
+
+
+
+
+
+
+
+dd:c23dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A charming three bedroom semi-detached house perfectly positioned on a corner plot on the Oxford Road in North Abingdon.  This ex-Harwell house is set back from the road, within two miles of the town centre and is perfectly situated for buses to Oxford and Abingdon."^^xsd:string ;
+      gr:name """Oxford Road, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.68444"^^xsd:double ;
+      wgs84:long "-1.27244"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Oxford Road, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/8fa218bc-78f6-e011-8eb4-00155d012270/Large/3fdf0ece-ac5d-46ca-992f-5bf924e75d9e.jpg" .
+
+dd:c23dl1
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:c23dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/43064/Oxford-Road-ABINGDON-Oxfordshire-OX14" .
+
+
+
+
+
+
+
+dd:c24dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Andrews Estate Agents offer to the market this 1930s three bedroom semi detached property situated on Coleridge Close in Cowley."^^xsd:string ;
+      gr:name """Coleridge Close, Oxford, OX4 3JG                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.7329"^^xsd:double ;
+      wgs84:long "-1.21143"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Coleridge Close, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/18d53bf6-2d40-e111-b3b1-00155d012298/Large/2b2f83a7-996b-40e6-be4c-b0ff3daab600.jpg" .
+
+dd:c24dl1
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:c24dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46765/Coleridge-Close-Oxford-OX4-3JG" .
+
+
+
+
+
+
+
+dd:c25dl1
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:c25dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49813/30-Chestnut-Avenue-Headington-OXFORD-OX3-9JH" .
+
+dd:c25dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "From Andrews:  A superb DETACHED bungalow ripe for RENOVATION and bursting with POTENTIAL."^^xsd:string ;
+      gr:name """30 Chestnut Avenue, Headington, OXFORD, OX3 9JH                
+                2 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.76377"^^xsd:double ;
+      wgs84:long "-1.20677"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "30 Chestnut Avenue, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/b525ac4c-5d64-e111-b4f4-00155d0122d5/Large/7c2ab9f4-515e-44ea-bfa0-ee16c96b8094.jpg" .
+
+
+
+
+
+
+
+dd:c26dl1
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:c26dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46929/3-Bagley-Close-Kennington-OXFORD-OX1" .
+
+dd:c26dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Situated in the sought-after village of Kennington is this charming three bedroom, semi-detached property with a lovely 96' x 24' max rear garden. This three bedroom home has been in the same family since it was built in the 1950s.  Whilst it could benefit from some cosmetic updating, it has great potential for someone wanting to make their mark on a property in a fantastic location with a fabulous garden."^^xsd:string ;
+      gr:name """3 Bagley Close, Kennington, OXFORD, OX1                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.71867"^^xsd:double ;
+      wgs84:long "-1.24871"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "3 Bagley Close, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/3ba0aaad-2f41-e111-be99-00155d64e0e9/Large/d2a9be90-acfa-42fa-8a80-6496f849da3a.jpg" .
+
+
+
+
+
+
+
+dd:c27dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A stunning two double bedroom house perfectly situated in a prestigious gated development in Abingdon Town Centre.  Neave Mews is a charming development of contemporary homes built to an extremely high standard by Lovells in 2004/2005."^^xsd:string ;
+      gr:name """Neave Mews, ABINGDON, Oxfordshire, OX14                
+                2 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.66919"^^xsd:double ;
+      wgs84:long "-1.28405"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Neave Mews, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/214e87b2-3b5d-e111-901a-00155d01117c/Large/f856be4e-ab71-4976-84e9-c1a669a93c15.jpg" .
+
+dd:c27dl1
+      dd:hasPrice "249950"^^xsd:double ;
+      gr:includes dd:c27dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49145/Neave-Mews-ABINGDON-Oxfordshire-OX14" .
+
+
+dd:c28dl1
+      dd:hasPrice "249950"^^xsd:double ;
+      gr:includes dd:c28dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49488/St.-James-Road-Radley-ABINGDON-Oxfordshire-OX14-3AQ" .
+
+dd:c28dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A charming detached bungalow situated in the sought-after village of Radley.  Radley is ideally positioned between Oxford and Abingdon and benefits from a regular bus service between both in addition to a local railway station providing access to London."^^xsd:string ;
+      gr:name """St. James Road, Radley, ABINGDON, Oxfordshire, OX14 3AQ                
+                2 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.68705"^^xsd:double ;
+      wgs84:long "-1.24356"^^xsd:double ;
+      vcard:locality "Radley, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "St. James Road, Radley, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/52cad8a1-5d61-e111-9612-00155d01137b/Large/6faf1c68-67a5-4937-b704-39b683e1aa20.jpg" .
+
+
+dd:c29dl1
+      dd:hasPrice "249950"^^xsd:double ;
+      gr:includes dd:c29dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49558/Forster-Lane-Cumnor-OXFORD-OX2-9QR" .
+
+dd:c29dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Situated in the popular village location of Cumnor is this charming three bedroom house."^^xsd:string ;
+      gr:name """Forster Lane, Cumnor, OXFORD, OX2 9QR                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.73133"^^xsd:double ;
+      wgs84:long "-1.33147"^^xsd:double ;
+      vcard:locality "Cumnor" ;
+      vcard:street-address
+              "Forster Lane, Cumnor" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/0aa99303-1762-e111-9612-00155d01137b/Large/dfd912d2-7a77-4904-a511-abd908397698.jpg" .
+
+
+dd:c30dl1
+      dd:hasPrice "249950"^^xsd:double ;
+      gr:includes dd:c30dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/51867/Crosslands-Drive-ABINGDON-Oxfordshire-OX14-" .
+
+dd:c30dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "An impressive three bedroom family home tucked away in a popular North Abingdon location.  Crosslands Drive is perfectly located just off the Wootton Road, offering convenient access to the local Tesco Express, Abingdon College and the bus stop for the Town and Oxford City Centre."^^xsd:string ;
+      gr:name """Crosslands Drive, ABINGDON, Oxfordshire, OX14                 
+                3 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.68247"^^xsd:double ;
+      wgs84:long "-1.29181"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Crosslands Drive, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/33905d0d-a77c-e111-aca0-00155d01137b/Large/ec6f36a7-1143-467e-a784-c46b4e594e99.jpg" .
+
+
+
+dd:c31dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Located in the village of Yarnton, this pretty cottage which is being offered for sale with no onward chain."^^xsd:string ;
+      gr:name """Wayside Cottages, Woodstock Road, Yarnton, KIDLINGTON, OX5                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.80625"^^xsd:double ;
+      wgs84:long "-1.30096"^^xsd:double ;
+      vcard:locality "Woodstock Road, Yarnton, KIDLINGTON" ;
+      vcard:street-address
+              "Wayside Cottages, Woodstock Road, Yarnton, KIDLINGTON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/0d464298-d025-e011-9834-00155d012213/Large/7c67f9df-09da-4f59-ba3f-323478a53acf.jpg" .
+
+dd:c31dl1
+      dd:hasPrice "249950"^^xsd:double ;
+      gr:includes dd:c31dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/27542/Wayside-Cottages-Woodstock-Road-Yarnton-KIDLINGTON-OX5" .
+
+
+dd:c32dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Offered for sale with no onward chain is this delightful detached bungalow positioned in a cul-de-sac setting in a well regarded area of North Abingdon."^^xsd:string ;
+      gr:name """Hillview Road, ABINGDON, Oxfordshire, OX14                 
+                2 bedroom, Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.68497"^^xsd:double ;
+      wgs84:long "-1.28228"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Hillview Road, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/64f128e7-98ed-e011-b318-00155d012270/Large/84daeaf0-3443-42b2-a7e6-f85be3e851ce.jpg" .
+
+dd:c32dl1
+      dd:hasPrice "249950"^^xsd:double ;
+      gr:includes dd:c32dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/42466/Hillview-Road-ABINGDON-Oxfordshire-OX14-" .
+
+
+dd:c33dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "From Andrews: A fantastic opportunity to purchase this well proportioned mid terrace three bedroomed house in the popular Wood Farm location."^^xsd:string ;
+      gr:name """Nuffield Road, Headington, OXFORD, OX3 8RE                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.74922"^^xsd:double ;
+      wgs84:long "-1.19934"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Nuffield Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/c0442aa6-aa54-e111-bb80-00155d010620/Large/dbfb345f-927b-44f9-9b0a-0fa382f78385.jpg" .
+
+dd:c33dl1
+      dd:hasPrice "245000"^^xsd:double ;
+      gr:includes dd:c33dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/48507/Nuffield-Road-Headington-OXFORD-OX3-8RE" .
+
+
+
+dd:c34dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "An immaculate and charming three bedroom family home tucked away within mature cottage gardens in a popular North Abingdon location."^^xsd:string ;
+      gr:name """Berry Croft, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.68042"^^xsd:double ;
+      wgs84:long "-1.28999"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Berry Croft, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/dab9953c-2fb9-e011-a068-00155d011323/Large/3aba0319-7747-49cf-bb66-95bf84442df6.jpg" .
+
+dd:c34dl1
+      dd:hasPrice "245000"^^xsd:double ;
+      gr:includes dd:c34dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/39184/Berry-Croft-ABINGDON-Oxfordshire-OX14" .
+
+
+
+dd:c35dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A well presented two bedroom ground floor apartment situated on the modern Rivermead development offering access to the Oxford Ring Road and the A34."^^xsd:string ;
+      gr:name """Gordon Woodward Way, Oxford, OX1 4XL                
+                2 bedroom, Flat"""^^xsd:string ;
+      wgs84:lat "51.732"^^xsd:double ;
+      wgs84:long "-1.24797"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Gordon Woodward Way, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/18d8a5a7-a1f1-e011-a60d-00155d012270/Large/b23cac2b-dd72-4244-bae0-587c5e855a25.jpg" .
+
+dd:c35dl1
+      dd:hasPrice "243500"^^xsd:double ;
+      gr:includes dd:c35dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/42763/Gordon-Woodward-Way-Oxford-OX1-4XL" .
+
+
+dd:c36dl1
+      dd:hasPrice "240000"^^xsd:double ;
+      gr:includes dd:c36dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/41313/Coopers-Lane-ABINGDON-Oxfordshire-OX14" .
+
+dd:c36dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A stunning top floor apartment perfectly situated within a prestigious modern development in Abingdon's town centre.  This fantastic apartment forms part of the George Morland conversion conveniently situated just off Ock Street offering pedestrian access to the town centre, good bus links to Oxford and access to the A34."^^xsd:string ;
+      gr:name """Coopers Lane, ABINGDON, Oxfordshire, OX14                
+                2 bedroom, Flat"""^^xsd:string ;
+      wgs84:lat "51.66918"^^xsd:double ;
+      wgs84:long "-1.28619"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Coopers Lane, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/87e9a810-89d8-e011-ad1c-00155d011331/Large/4271dcf6-b1ac-4dd1-88c5-f07cb0ef351d.jpg" .
+
+dd:c37dl1
+      dd:hasPrice "240000"^^xsd:double ;
+      gr:includes dd:c37dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49885/Littlehay-Road-Oxford-OX4-3EG" .
+
+dd:c37dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A brand new two bedroom house situated on the popular road of Littlehay Road and available to own from early May."^^xsd:string ;
+      gr:name """Littlehay Road, Oxford, OX4 3EG                
+                2 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.73636"^^xsd:double ;
+      wgs84:long "-1.21924"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Littlehay Road, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/22c56999-1a65-e111-8a6d-00155d01137b/Large/439c3390-ec63-4805-8bed-060313aa1a7c.jpg" .
+
+
+dd:c38dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Andrews present to the market this three bedroom semi detached house situated on Cowley Road in Littlemore."^^xsd:string ;
+      gr:name """Cowley Road, Littlemore, OXFORD, OX4 3TH                
+                3 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.72641"^^xsd:double ;
+      wgs84:long "-1.21952"^^xsd:double ;
+      vcard:locality "Littlemore" ;
+      vcard:street-address
+              "Cowley Road, Littlemore" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/fec62d3c-6268-e111-aca0-00155d01137b/Large/4da2c3ce-b2e8-4c3b-9007-cec96c0408a6.jpg" .
+
+dd:c38dl1
+      dd:hasPrice "239500"^^xsd:double ;
+      gr:includes dd:c38dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50160/Cowley-Road-Littlemore-OXFORD-OX4-3TH" .
+
+
+
+dd:c39dl1
+      dd:hasPrice "230000"^^xsd:double ;
+      gr:includes dd:c39dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/48897/Ginge-Close-ABINGDON-Oxfordshire-OX14" .
+
+dd:c39dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A two double bedroom bungalow tucked away in a cul-de-sac in a popular North Abingdon location."^^xsd:string ;
+      gr:name """Ginge Close, ABINGDON, Oxfordshire, OX14                
+                2 bedroom, Semi-Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.68562"^^xsd:double ;
+      wgs84:long "-1.26505"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Ginge Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/16cd9455-8d59-e111-985e-00155d01117c/Large/96779758-dfa4-4d72-b80f-5bdaf45dffc4.jpg" .
+
+
+
+
+
+
+
+dd:c40dl1
+      dd:hasPrice "230000"^^xsd:double ;
+      gr:includes dd:c40dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47391/Hollow-Way-Cowley-OX4-2PP" .
+
+dd:c40dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Located just off Hollow Way is this three bedroom, three storey town house."^^xsd:string ;
+      gr:name """Hollow Way, Cowley , OX4 2PP                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.73994"^^xsd:double ;
+      wgs84:long "-1.20549"^^xsd:double ;
+      vcard:locality "Cowley" ;
+      vcard:street-address
+              "Hollow Way, Cowley" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/446db6c4-9c46-e111-a1f1-00155d011351/Large/43eb20d9-501c-4304-b60f-6d8356b92546.jpg" .
+
+
+
+
+
+
+
+dd:c41dl4
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "An impressive four bedroom family home tucked away in a cul-de-sac in a popular South Abingdon location.  Croasdell Close is perfectly situated within half a mile of the River Thames and Abingdon Marina.  It is conveniently located within a mile of Abingdon town centre, with its array of shops, restaurants and cafes and its frequent bus service to Oxford.  The property also offers excellent access to Milton Park (6 miles) and Didcot Parkway (8 miles) with its direct line to London Paddington."^^xsd:string ;
+      gr:name """Croasdell Close, ABINGDON, Oxfordshire, OX14                
+                4 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.65896"^^xsd:double ;
+      wgs84:long "-1.29035"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Croasdell Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/1ad64c16-5539-e111-b70b-00155d010616/Large/04237661-d51d-412e-9ab5-045949ad51a2.jpg" .
+
+dd:c41dl1
+      dd:hasPrice "229950"^^xsd:double ;
+      gr:includes dd:c41dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46321/Croasdell-Close-ABINGDON-Oxfordshire-OX14" .
+
+
+
+
+
+
+
+dd:c42dl1
+      dd:hasPrice "229950"^^xsd:double ;
+      gr:includes dd:c42dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46396/Mayotts-Road-ABINGDON-Oxfordshire-OX14" .
+
+dd:c42dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A truly stunning double-fronted period property tucked away at the end of a cul-de-sac just outside Abingdon's town centre."^^xsd:string ;
+      gr:name """Mayotts Road, ABINGDON, Oxfordshire, OX14                
+                2 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.66973"^^xsd:double ;
+      wgs84:long "-1.2904"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Mayotts Road, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/733e63a2-ee3a-e111-b70b-00155d010616/Large/b2446fbd-6795-48b9-bf08-9b512529b87d.jpg" .
+
+
+
+
+
+
+
+dd:c43dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Andrews Estate Agents are delighted to bring to the market this lovely two bedroom cottage, in need of modernisation, situated in the popular village of Appleton."^^xsd:string ;
+      gr:name """Netherton Road, Appleton, ABINGDON, Oxfordshire, OX13                
+                2 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.70897"^^xsd:double ;
+      wgs84:long "-1.36302"^^xsd:double ;
+      vcard:locality "Appleton, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Netherton Road, Appleton, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/67f375ef-d445-e111-a1f1-00155d011351/Large/c51581d3-f407-478b-b28a-375462fd9108.jpg" .
+
+dd:c43dl1
+      dd:hasPrice "225000"^^xsd:double ;
+      gr:includes dd:c43dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47305/Netherton-Road-Appleton-ABINGDON-Oxfordshire-OX13" .
+
+
+
+
+
+
+
+
+
+dd:c45dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Andrews are delighted to offer to market this stunning ground floor apartment located just 1/4 of a mile from the John Radcliffe Hospital."^^xsd:string ;
+      gr:name """6A  Brookfield Crescent, Headington, OXFORD, OX3 0AZ                
+                2 bedroom, Flat Maisonette"""^^xsd:string ;
+      wgs84:lat "51.76875"^^xsd:double ;
+      wgs84:long "-1.22981"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "6A  Brookfield Crescent, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/b0b8162e-623c-e111-b70b-00155d010616/Large/22494b2a-8f2d-4674-b4e2-e3ac08601cff.jpg" .
+
+dd:c45dl1
+      dd:hasPrice "220000"^^xsd:double ;
+      gr:includes dd:c45dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46524/6A-Brookfield-Crescent-Headington-OXFORD-OX3-0AZ" .
+
+
+
+
+
+
+
+dd:c46dl1
+      dd:hasPrice "220000"^^xsd:double ;
+      gr:includes dd:c46dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/44486/Lower-Flat-139-Old-Road-Headington-OXFORD-OX3-8SY" .
+
+dd:c46dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A superb Edwardian conversion apartment located within just 1/4 mile of the Churchill and Nuffield hospitals and within 1/2 mile of Oxford Brookes University and Shotover Country Park."^^xsd:string ;
+      gr:name """Lower Flat, 139 Old Road, Headington, OXFORD, OX3 8SY                
+                2 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.75356"^^xsd:double ;
+      wgs84:long "-1.20099"^^xsd:double ;
+      vcard:locality "139 Old Road, Headington" ;
+      vcard:street-address
+              "Lower Flat, 139 Old Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/c8ab4171-7710-e111-b552-00155d01133a/Large/2dfb54f2-116c-4077-9c3b-9a49f0d865f1.jpg" .
+
+
+
+
+
+
+
+dd:c47dl1
+      dd:hasPrice "220000"^^xsd:double ;
+      gr:includes dd:c47dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/55101/Asquith-Road-Oxford-OX4-4RJ" .
+
+dd:c47dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Andrews offer to the market this three bedroom terraced property situated on Rose Hill in Oxford."^^xsd:string ;
+      gr:name """Asquith Road, Oxford, OX4 4RJ                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.72437"^^xsd:double ;
+      wgs84:long "-1.22777"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Asquith Road, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/77e45a36-a9a8-e111-8276-00155d0122ee/Large/d8e43ef0-2c4f-468f-839d-481b21db08db.jpg" .
+
+
+
+
+
+
+
+dd:c48dl1
+      dd:hasPrice "219950"^^xsd:double ;
+      gr:includes dd:c48dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/48172/Turner-Close-Oxford-OX4-2UA" .
+
+dd:c48dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Located on Turner Close in Temple Cowley is this well presented three bedroom family home."^^xsd:string ;
+      gr:name """Turner Close, Oxford, OX4 2UA                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.73933"^^xsd:double ;
+      wgs84:long "-1.21067"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Turner Close, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/11448853-bb50-e111-b67c-00155d010620/Large/9a725ae9-8cb4-4845-93c2-7f4d52f4ffb6.jpg" .
+
+
+
+
+
+
+
+dd:c49dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A superb two bedroom apartment in a prestigious modern development situated just to the North of Abingdon Town Centre. Penlon Place is perfectly located offering pedestrian access to both local bus routes and Abingdon's array of town centre shops and restaurants within half a mile."^^xsd:string ;
+      gr:name """Penlon Place, ABINGDON, Oxfordshire, OX14                
+                2 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.67332"^^xsd:double ;
+      wgs84:long "-1.27789"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Penlon Place, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/5ecc17f5-126a-e111-881d-00155d0111a9/Large/63e8c02d-51db-4434-96fd-e89e44886201.jpg" .
+
+dd:c49dl1
+      dd:hasPrice "219950"^^xsd:double ;
+      gr:includes dd:c49dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50348/Penlon-Place-ABINGDON-Oxfordshire-OX14" .
+
+
+
+
+
+
+
+dd:c50dl1
+      dd:hasPrice "219950"^^xsd:double ;
+      gr:includes dd:c50dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/54036/Croasdell-Close-ABINGDON-Oxfordshire-OX14" .
+
+dd:c50dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "An immaculate three bedroom property perfectly positioned in a cul-de-sac in a sought-after South Abingdon location."^^xsd:string ;
+      gr:name """Croasdell Close, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.65896"^^xsd:double ;
+      wgs84:long "-1.29035"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Croasdell Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/a4999525-2099-e111-8140-00155d01137b/Large/6d67e65a-cba6-4b35-9806-b8558c2a34af.jpg" .
+
+
+
+
+
+
+
+dd:c51dl1
+      dd:hasPrice "215000"^^xsd:double ;
+      gr:includes dd:c51dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/45175/Janaway-Littlemore-OXFORD-OX4-4SY" .
+
+dd:c51dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Situated in a Cul-de-sac position between Littlemore and Sandford On Thames is this well presented two bedroom terraced home."^^xsd:string ;
+      gr:name """Janaway, Littlemore, OXFORD, OX4 4SY                
+                2 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.71666"^^xsd:double ;
+      wgs84:long "-1.23042"^^xsd:double ;
+      vcard:locality "Littlemore" ;
+      vcard:street-address
+              "Janaway, Littlemore" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/2f0f6a75-491f-e111-b33f-00155d010616/Large/5b3107b7-68dc-4591-8776-1322d40cf12e.jpg" .
+
+
+
+
+
+
+
+dd:c52dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Andrews Estate Agents are delighted to bring to the market this well presented two bedroom terrace property situated in Kennington."^^xsd:string ;
+      gr:name """Otters Reach, Kennington, OXFORD, OX1                
+                2 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.7159"^^xsd:double ;
+      wgs84:long "-1.24242"^^xsd:double ;
+      vcard:locality "Kennington" ;
+      vcard:street-address
+              "Otters Reach, Kennington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/f23920fe-9164-e111-8a6d-00155d01137b/Large/f8cbcd52-c2c0-459b-9abd-7733b2888cc2.jpg" .
+
+dd:c52dl1
+      dd:hasPrice "215000"^^xsd:double ;
+      gr:includes dd:c52dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49877/Otters-Reach-Kennington-OXFORD-OX1" .
+
+
+
+
+
+
+
+dd:c53dl1
+      dd:hasPrice "215000"^^xsd:double ;
+      gr:includes dd:c53dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/51271/Greenfinch-Close-Greater-Leys-OX4" .
+
+dd:c53dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Situated on Greenfinch Close in Greater Leys is this well proportioned three bedroom terraced home.  The property is let out until 30 August 2013 and is receiving a rental income of £895 pcm until this date."^^xsd:string ;
+      gr:name """Greenfinch Close, Greater Leys, OX4                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.71663"^^xsd:double ;
+      wgs84:long "-1.194"^^xsd:double ;
+      vcard:locality "Greater Leys" ;
+      vcard:street-address
+              "Greenfinch Close, Greater Leys" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/574666c5-c274-e111-aca0-00155d01137b/Large/5c8c1be0-c32e-4f63-ab29-bf1516c96cd9.jpg" .
+
+
+
+
+
+
+
+dd:c54dl1
+      dd:hasPrice "215000"^^xsd:double ;
+      gr:includes dd:c54dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/51686/Marcham-Road-ABINGDON-Oxfordshire-OX14" .
+
+dd:c54dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A truly stunning top floor apartment forming part of a handsome Victorian conversion set within walled gardens.  This elegant apartment is full of charm and character complimented by neutral decor, modern fittings and a contemporary kitchen and bathroom. The property offers generous and versatile accommodation with three bedrooms and an impressive reception room.  Internal viewing is strongly recommended to fully appreciate this unique property."^^xsd:string ;
+      gr:name """Marcham Road, ABINGDON, Oxfordshire, OX14                
+                3 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.6699"^^xsd:double ;
+      wgs84:long "-1.29657"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Marcham Road, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/293f749c-9179-e111-aca0-00155d01137b/Large/e9ff7d23-1c9f-4754-ada6-3ea20f88d888.jpg" .
+
+
+
+
+
+
+
+dd:c55dl1
+      dd:hasPrice "215000"^^xsd:double ;
+      gr:includes dd:c55dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/45216/Crabtree-Lane-DRAYTON-Oxfordshire-OX14" .
+
+dd:c55dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A delightful Victorian cottage perfectly situated in a no-through road in the sought-after village of Drayton.  Amenities within the village include a primary school, church, two pubs, a village store, a hairdressers and a golf club."^^xsd:string ;
+      gr:name """Crabtree Lane, DRAYTON, Oxfordshire, OX14                
+                2 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.64816"^^xsd:double ;
+      wgs84:long "-1.30979"^^xsd:double ;
+      vcard:locality "DRAYTON, Oxfordshire" ;
+      vcard:street-address
+              "Crabtree Lane, DRAYTON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/d125c28f-1120-e111-bf5d-00155d01228c/Large/7a17a906-0192-482e-a0df-7d1a7d63185e.jpg" .
+
+
+
+
+
+
+
+dd:c56dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A delightful three bedroom Victorian home conveniently located on the sought-after Spring Road in Abingdon."^^xsd:string ;
+      gr:name """Spring Road, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.66992"^^xsd:double ;
+      wgs84:long "-1.2954"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Spring Road, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/3b2d958b-3ea3-e111-a3f8-00155d0111a9/Large/4eec9d9d-7358-4a9b-ac46-b77eaf15f29f.jpg" .
+
+dd:c56dl1
+      dd:hasPrice "210000"^^xsd:double ;
+      gr:includes dd:c56dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/54762/Spring-Road-ABINGDON-Oxfordshire-OX14" .
+
+
+
+
+
+
+
+dd:c57dl1
+      dd:hasPrice "210000"^^xsd:double ;
+      gr:includes dd:c57dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47166/Denton-Close-ABINGDON-Oxfordshire-OX14" .
+
+dd:c57dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "NEW PRICE - Tucked away in a cul-de-sac in a sought-after North Abingdon location is this fantastic two bedroom home.  Denton Close is perfectly located within half a mile of Abingdon town centre and the Vale Tennis and Leisure Centre, offering convenient access to Oxford, Radley and Kennington."^^xsd:string ;
+      gr:name """Denton Close, ABINGDON, Oxfordshire, OX14                
+                2 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.67538"^^xsd:double ;
+      wgs84:long "-1.2663"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Denton Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/6dad1bb3-7843-e111-8ae2-00155d011351/Large/5bc10ca1-83b4-4a6b-a407-9ffaf1450628.jpg" .
+
+
+
+
+
+
+
+
+dd:c58dl1
+      dd:hasPrice "209000"^^xsd:double ;
+      gr:includes dd:c58dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49199/Bullstake-Close-Oxford-OX2-0HN" .
+
+dd:c58dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Andrews Estate Agents are delighted to offer to the market this two bedroom bungalow ideally situated just off the Botley Road in West Oxford."^^xsd:string ;
+      gr:name """Bullstake Close, Oxford, OX2 0HN                
+                2 bedroom, Semi-Detached Bungalow"""^^xsd:string ;
+      wgs84:lat "51.75298"^^xsd:double ;
+      wgs84:long "-1.28385"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Bullstake Close, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/3083657e-7a5d-e111-bc64-00155d010635/Large/21d68d41-4ee9-494f-bd47-b92e88da0d6b.jpg" .
+
+
+
+
+
+
+
+dd:c59dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A superb, two double bedroom, first floor apartment, located on a no through Road in Marston."^^xsd:string ;
+      gr:name """Flat B,  Brookfield Crescent, Headington, OXFORD, OX3                
+                2 bedroom, Flat"""^^xsd:string ;
+      wgs84:lat "51.7688"^^xsd:double ;
+      wgs84:long "-1.22989"^^xsd:double ;
+      vcard:locality "Brookfield Crescent, Headington" ;
+      vcard:street-address
+              "Flat B,  Brookfield Crescent, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/1e13f655-9789-e011-abe1-00155d011303/Large/d570f07f-dc09-4c6f-9793-f61e3c21351a.jpg" .
+
+dd:c59dl1
+      dd:hasPrice "200000"^^xsd:double ;
+      gr:includes dd:c59dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/36914/Flat-B-Brookfield-Crescent-Headington-OXFORD-OX3" .
+
+
+
+
+
+
+
+dd:c60dl1
+      dd:hasPrice "199500"^^xsd:double ;
+      gr:includes dd:c60dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/39830/Midwinter-Avenue-MILTON-HEIGHTS-OX14" .
+
+dd:c60dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A modern, well proportioned mid-terrace house offered for sale in superb decorative order with a pretty garden to the rear offering lovely views over open countryside. An ideal location for access to the A34 and to Milton Park."^^xsd:string ;
+      gr:name """Midwinter Avenue, MILTON HEIGHTS, OX14                
+                2 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.61581"^^xsd:double ;
+      wgs84:long "-1.30285"^^xsd:double ;
+      vcard:locality "MILTON HEIGHTS" ;
+      vcard:street-address
+              "Midwinter Avenue, MILTON HEIGHTS" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/8fb6ff98-f8c7-e011-afab-00155d64e0c3/Large/aa96f232-5b0e-4022-8840-980752289d76.jpg" .
+
+
+
+
+
+
+
+dd:c61dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Located in Edward Street is this Victorian two bedroom period home now available for sale."^^xsd:string ;
+      gr:name """Edward Street, ABINGDON, OX14                
+                2 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.67005"^^xsd:double ;
+      wgs84:long "-1.29426"^^xsd:double ;
+      vcard:locality "ABINGDON" ;
+      vcard:street-address
+              "Edward Street, ABINGDON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/349df29d-bb4a-e011-b84e-00155d0113e7/Large/31f1b41f-4397-42ee-b854-1de0848303cc.jpg" .
+
+dd:c61dl1
+      dd:hasPrice "197000"^^xsd:double ;
+      gr:includes dd:c61dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/34191/Edward-Street-ABINGDON-OX14" .
+
+
+
+
+
+
+
+dd:c62dl1
+      dd:hasPrice "195000"^^xsd:double ;
+      gr:includes dd:c62dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/52031/Long-Close-Headington-OXFORD-OX3-8TT" .
+
+dd:c62dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Situated on  Long Close in Wood Farm is this well proportioned two double bedroom ground floor apartment."^^xsd:string ;
+      gr:name """Long Close, Headington, OXFORD, OX3 8TT                
+                2 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.7458"^^xsd:double ;
+      wgs84:long "-1.1971"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Long Close, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/9a734f61-367e-e111-afe7-00155d0111a9/Large/077f4a47-99ed-4cf1-a610-dd0156ff8d4b.jpg" .
+
+
+
+
+
+
+
+dd:c63dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Tucked away in a cul-de-sac in a much desired area of North Abingdon is this impressive two bedroom house.  Ferguson Place is conveniently located just off Audlett Drive, within half a mile of Abingdon Town Centre and The White Horse Leisure Centre."^^xsd:string ;
+      gr:name """Ferguson Place, ABINGDON, Oxfordshire, OX14                
+                2 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.67515"^^xsd:double ;
+      wgs84:long "-1.26135"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Ferguson Place, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/9800879d-c76d-e111-aca0-00155d01137b/Large/cd9d5940-5cbb-4558-b2f1-4027ecc13a16.jpg" .
+
+dd:c63dl1
+      dd:hasPrice "195000"^^xsd:double ;
+      gr:includes dd:c63dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50658/Ferguson-Place-ABINGDON-Oxfordshire-OX14" .
+
+
+
+
+
+
+
+dd:c64dl1
+      dd:hasPrice "190000"^^xsd:double ;
+      gr:includes dd:c64dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/45251/Cedar-Court-Oxford-Road-Cowley-OXFORD-OX4-2BU" .
+
+dd:c64dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Situated on the corner of the Oxford Road and Between Towns Road is this well presented two bedroom top floor apartment."^^xsd:string ;
+      gr:name """Cedar Court,  Oxford Road, Cowley, OXFORD, OX4 2BU                
+                2 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.73414"^^xsd:double ;
+      wgs84:long "-1.21257"^^xsd:double ;
+      vcard:locality "Oxford Road, Cowley" ;
+      vcard:street-address
+              "Cedar Court,  Oxford Road, Cowley" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/d0f889e6-c220-e111-bf5d-00155d01228c/Large/0075073c-c222-49e4-866f-779a0af4c2a1.jpg" .
+
+
+
+
+
+
+
+dd:c65dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A competitively priced three bedroom house situated in an established North Abingdon location and benefiting from an end of cul-de-sac position."^^xsd:string ;
+      gr:name """Daisy Bank, ABINGDON, OX14                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.67642"^^xsd:double ;
+      wgs84:long "-1.2641"^^xsd:double ;
+      vcard:locality "ABINGDON" ;
+      vcard:street-address
+              "Daisy Bank, ABINGDON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/16ba9d96-ff1c-e011-ad04-00155d64e079/Large/a0156fd8-5047-46d7-ac38-4038c335d1cf.jpg" .
+
+dd:c65dl1
+      dd:hasPrice "189950"^^xsd:double ;
+      gr:includes dd:c65dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/21728/Daisy-Bank-ABINGDON-OX14" .
+
+
+
+
+
+
+
+dd:c66dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Offered to the market is this well presented two bedroom flat situated in the cul-de-sac, College Lane in Littlemore within easy reach to Cowley, Oxford and the ring road."^^xsd:string ;
+      gr:name """College Flats, College Lane, Littlemore, Oxford, OX4 4LJ                
+                2 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.72193"^^xsd:double ;
+      wgs84:long "-1.22001"^^xsd:double ;
+      vcard:locality "College Lane, Littlemore, Oxford" ;
+      vcard:street-address
+              "College Flats, College Lane, Littlemore, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/c04a86ab-7788-e111-aca0-00155d01137b/Large/9f6c29b6-041e-48f0-bd6d-63703eb7e394.jpg" .
+
+dd:c66dl1
+      dd:hasPrice "180000"^^xsd:double ;
+      gr:includes dd:c66dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/52803/College-Flats-College-Lane-Littlemore-Oxford-OX4-4LJ" .
+
+
+
+
+
+
+
+dd:c67dl1
+      dd:hasPrice "179950"^^xsd:double ;
+      gr:includes dd:c67dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/41272/Dunmore-Road-ABINGDON-OX14" .
+
+dd:c67dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A charming and deceptively spacious two bedroom mid-terraced house, offered for sale in super decorative order. The property benefits from a modern refitted bathroom and double glazing throughout. Located in North Abingdon offering great access to the A34 North and South bound, local amenities and both primary and secondary schooling."^^xsd:string ;
+      gr:name """Dunmore Road, ABINGDON, OX14                
+                2 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.68367"^^xsd:double ;
+      wgs84:long "-1.28998"^^xsd:double ;
+      vcard:locality "ABINGDON" ;
+      vcard:street-address
+              "Dunmore Road, ABINGDON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/4279b30f-a3d7-e011-ad1c-00155d011331/Large/bf4dd5ab-e342-4560-9108-bb17528cdc78.jpg" .
+
+
+
+
+
+
+
+dd:c68dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A truly stunning apartment forming part of a unique Grade 2 Listed conversion nestled in the heart of Abingdon.  Philips Court is a charming gated development perfectly situated in Abingdon's town centre and conveniently located for access to many of Abingdon's amenities and the River Thames (less than half a mile away)."^^xsd:string ;
+      gr:name """Philips Court Lombard Street, ABINGDON, Oxfordshire, OX14                 
+                2 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.66968"^^xsd:double ;
+      wgs84:long "-1.282"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Philips Court Lombard Street, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/6b8fdc68-c828-e111-b70b-00155d010616/Large/1429fdcc-81fc-4bef-9e31-9b7f0bbf4f24.jpg" .
+
+dd:c68dl1
+      dd:hasPrice "175000"^^xsd:double ;
+      gr:includes dd:c68dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/45602/Philips-Court-Lombard-Street-ABINGDON-Oxfordshire-OX14-" .
+
+
+
+
+
+
+
+dd:c69dl1
+      dd:hasPrice "175000"^^xsd:double ;
+      gr:includes dd:c69dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/46320/Wootton-Road-ABINGDON-Oxfordshire-OX14" .
+
+dd:c69dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A generous and versatile apartment perfectly located just off the Wootton Road, convenient for access to Abingdon's town centre and bus routes to Oxford."^^xsd:string ;
+      gr:name """Wootton Road, ABINGDON, Oxfordshire, OX14                
+                3 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.67767"^^xsd:double ;
+      wgs84:long "-1.28746"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Wootton Road, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/9bfef6d9-5339-e111-b70b-00155d010616/Large/0175885a-f342-43b9-a651-bc4ef176ead6.jpg" .
+
+
+
+
+
+
+
+dd:c70dl1
+      dd:hasPrice "175000"^^xsd:double ;
+      gr:includes dd:c70dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/48400/Linnet-Close-Oxford-OX4-6EL" .
+
+dd:c70dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "Presented to the market is three bedroom terraced property situated on Linnet Close in Blackbird Leys."^^xsd:string ;
+      gr:name """Linnet Close, Oxford, OX4 6EL                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.72294"^^xsd:double ;
+      wgs84:long "-1.20771"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Linnet Close, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/0176cf68-1853-e111-8087-00155d01117c/Large/9f94948c-6099-408f-a8c3-190711277f09.jpg" .
+
+
+
+
+
+
+
+dd:c71dl1
+      dd:hasPrice "175000"^^xsd:double ;
+      gr:includes dd:c71dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50536/Elwes-Close-ABINGDON-Oxfordshire-OX14" .
+
+dd:c71dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A fantastic one bedroom house perfectly situated on a corner plot in a sought-after cul-de-sac in North Abingdon."^^xsd:string ;
+      gr:name """Elwes Close, ABINGDON, Oxfordshire, OX14                
+                1 bedroom, Semi-Detached House"""^^xsd:string ;
+      wgs84:lat "51.67507"^^xsd:double ;
+      wgs84:long "-1.26794"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Elwes Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/a91e9542-006d-e111-881d-00155d0111a9/Large/6a9c8ec5-2659-49b5-bb21-811060a03b0e.jpg" .
+
+
+
+
+
+
+
+dd:c72dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A stunning first floor apartment ideally situated in the highly sought-after Marina development in Abingdon.  Marina Way is a prestigious gated development of stylish apartments and houses set within a mile of Abingdon town centre."^^xsd:string ;
+      gr:name """Marina Way, ABINGDON, Oxfordshire, OX14                
+                2 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.65868"^^xsd:double ;
+      wgs84:long "-1.28499"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Marina Way, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/b2bd5e7b-5244-e111-b4b9-00155d011351/Large/8b70feac-3522-4ea1-878b-57930385b1fd.jpg" .
+
+dd:c72dl1
+      dd:hasPrice "175000"^^xsd:double ;
+      gr:includes dd:c72dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47232/Marina-Way-ABINGDON-Oxfordshire-OX14" .
+
+
+
+
+
+
+
+dd:c73dl1
+      dd:hasPrice "170000"^^xsd:double ;
+      gr:includes dd:c73dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47571/Challenor-Close-ABINGDON-Oxfordshire-OX14" .
+
+dd:c73dl4
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A well proportioned mid-terrace house tucked away in a small development in an established area of South Abingdon, an ideal home for a young family or as a first time purchase."^^xsd:string ;
+      gr:name """Challenor Close, ABINGDON, Oxfordshire, OX14                
+                3 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.65979"^^xsd:double ;
+      wgs84:long "-1.28846"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Challenor Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/80213769-d548-e111-a99e-00155d010620/Large/1077caa7-0f47-4772-851d-12b617bac214.jpg" .
+
+
+
+
+
+
+
+dd:c74dl1
+      dd:hasPrice "160000"^^xsd:double ;
+      gr:includes dd:c74dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47873/Winsmore-Lane-ABINGDON-Oxfordshire-OX14" .
+
+dd:c74dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A Grade 2 Listed cottage tucked away on a charming lane in Abingdon's Town Centre.  Winsmore Lane is perfectly situated for access to many of Abingdon's amenities, the bus stop for Oxford, and the River Thames (less than half a mile away)."^^xsd:string ;
+      gr:name """Winsmore Lane, ABINGDON, Oxfordshire, OX14                
+                1 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.66916"^^xsd:double ;
+      wgs84:long "-1.28475"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Winsmore Lane, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/4e35291e-bc4c-e111-bf07-00155d01117c/Large/57bef5ed-63ab-4e40-84bd-3297ac4235bf.jpg" .
+
+
+
+
+
+
+
+dd:c75dl1
+      dd:hasPrice "160000"^^xsd:double ;
+      gr:includes dd:c75dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/49453/Duffield-Close-ABINGDON-Oxfordshire-OX14-" .
+
+dd:c75dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Ideally located in the ever popular Peachcroft development is this very well presented one bedroom cluster house offering great access to local shops, amenities and a local bus service."^^xsd:string ;
+      gr:name """Duffield Close, ABINGDON, Oxfordshire, OX14                 
+                1 bedroom, End Terraced House"""^^xsd:string ;
+      wgs84:lat "51.68354"^^xsd:double ;
+      wgs84:long "-1.26567"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Duffield Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/7c039818-4a61-e111-9612-00155d01137b/Large/38c7d756-a4a6-441a-bc54-4e98e0045c16.jpg" .
+
+
+
+
+
+
+
+dd:c76dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Situated in Hopkins Court in Cowley is this well presented one bedroom first floor flat offered for sale"^^xsd:string ;
+      gr:name """Flat  Hopkins Court, Cowley, Hollow Way, OXFORD, OX4                
+                1 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.73812"^^xsd:double ;
+      wgs84:long "-1.20733"^^xsd:double ;
+      vcard:locality "Cowley, Hollow Way" ;
+      vcard:street-address
+              "Flat  Hopkins Court, Cowley, Hollow Way" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/03c152f9-cfd8-e011-ab15-00155d01225f/Large/5e5e9187-9e53-4bb0-8444-a632ebc812e5.jpg" .
+
+dd:c76dl1
+      dd:hasPrice "160000"^^xsd:double ;
+      gr:includes dd:c76dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/41342/Flat-Hopkins-Court-Cowley-Hollow-Way-OXFORD-OX4" .
+
+
+
+
+
+
+
+dd:c77dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Ideally located in the ever popular Peachcroft development is this immaculate one bedroom cluster house offering great access to local shops, amenities and a local bus service."^^xsd:string ;
+      gr:name """Norris Close, ABINGDON, Oxfordshire, OX14                
+                1 bedroom, Terraced House"""^^xsd:string ;
+      wgs84:lat "51.68356"^^xsd:double ;
+      wgs84:long "-1.26361"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Norris Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/6b3741af-3a1b-e111-ad57-00155d64e0d5/Large/41fb8469-3d27-4ba5-8ade-6ba32f3f4c95.jpg" .
+
+dd:c77dl1
+      dd:hasPrice "159950"^^xsd:double ;
+      gr:includes dd:c77dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/45012/Norris-Close-ABINGDON-Oxfordshire-OX14" .
+
+
+
+
+
+
+
+dd:c78dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "An impressive apartment ideally situated in Abingdon's Town Centre and with wonderful rooftop views from all rooms.  Banbury Court is perfectly located on the Vineyard, just a short walk from the Town Centre's array of shops, restaurants and cafes."^^xsd:string ;
+      gr:name """Banbury Court, Vineyard, ABINGDON, Oxfordshire, OX14 3NX                
+                2 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.67301"^^xsd:double ;
+      wgs84:long "-1.28106"^^xsd:double ;
+      vcard:locality "Vineyard, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Banbury Court, Vineyard, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/e7ddffed-4869-e111-881d-00155d0111a9/Large/8b46336f-93ee-48a9-bbb8-9766c26cbbb9.jpg" .
+
+dd:c78dl1
+      dd:hasPrice "155000"^^xsd:double ;
+      gr:includes dd:c78dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50278/Banbury-Court-Vineyard-ABINGDON-Oxfordshire-OX14-3NX" .
+
+
+
+
+
+
+
+dd:c79dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Andrews are delighted to market this very well proportioned ground floor apartment within walking distance of Shotover Country Park."^^xsd:string ;
+      gr:name """Grovelands Road, Headington, OXFORD, OX3 8HZ                
+                1 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.7581"^^xsd:double ;
+      wgs84:long "-1.18726"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:street-address
+              "Grovelands Road, Headington" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/a66c37d9-dbf4-e011-a60d-00155d012270/Large/bdcecc2f-b2fc-4df2-a1fe-a09e9ebbefad.jpg" .
+
+dd:c79dl1
+      dd:hasPrice "155000"^^xsd:double ;
+      gr:includes dd:c79dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/42943/Grovelands-Road-Headington-OXFORD-OX3-8HZ" .
+
+
+
+
+
+
+
+dd:c80dl1
+      dd:hasPrice "154995"^^xsd:double ;
+      gr:includes dd:c80dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/42321/Flat-Single-Trees-Rose-Hill-OXFORD-OX4" .
+
+dd:c80dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Situated off the Rose Hill and within the leafy development of Single Trees is this one bedroom ground floor retirement apartment, offered with no onward chain."^^xsd:string ;
+      gr:name """Flat   Single Trees, Rose Hill, OXFORD, OX4                
+                1 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.73112"^^xsd:double ;
+      wgs84:long "-1.22526"^^xsd:double ;
+      vcard:locality "Rose Hill" ;
+      vcard:street-address
+              "Flat   Single Trees, Rose Hill" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/0590de1d-22ea-e011-9694-00155d01133a/Large/e052ece5-341c-4f0e-bdc7-9ca7ee68ed33.jpg" .
+
+
+
+
+
+
+
+dd:c81dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A fantastic second floor apartment ideally situated on the outskirts of Abingdon Town Centre.  Juniper Court is conveniently located on Ock Street for access to the bus stop for Oxford and the A34 for Oxford and Didcot.  It is within half a mile of the town centre with its array of shops and restaurants and less than half a mile from Albert Park and its beautiful grounds."^^xsd:string ;
+      gr:name """Juniper Court, Ock Street, ABINGDON, Oxfordshire, OX14                
+                1 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.66946"^^xsd:double ;
+      wgs84:long "-1.29424"^^xsd:double ;
+      vcard:locality "Ock Street, ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Juniper Court, Ock Street, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/92c9274b-294c-e111-bf07-00155d01117c/Large/eebb60d2-fd78-4854-b63d-f2368ae8c265.jpg" .
+
+dd:c81dl1
+      dd:hasPrice "145000"^^xsd:double ;
+      gr:includes dd:c81dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/47840/Juniper-Court-Ock-Street-ABINGDON-Oxfordshire-OX14" .
+
+
+
+
+
+
+
+dd:c82dl4
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Situated between Cowley and Headington on Normandy Crescent is this two bedroom top floor apartment."^^xsd:string ;
+      gr:name """Normandy Crescent, Oxford, OX4 2TF                
+                2 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.7371"^^xsd:double ;
+      wgs84:long "-1.19881"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street-address
+              "Normandy Crescent, Oxford" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/d2023f8d-4a6f-e111-aca0-00155d01137b/Large/dc2faed2-4bbe-4d9f-b56b-4e6716c19e72.jpg" .
+
+dd:c82dl1
+      dd:hasPrice "142500"^^xsd:double ;
+      gr:includes dd:c82dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50787/Normandy-Crescent-Oxford-OX4-2TF" .
+
+
+
+
+
+
+
+dd:c83dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "An impressive ground floor apartment perfectly situated to the West of Abingdon Town Centre with convenient access to the town, A34 and bus route to Oxford."^^xsd:string ;
+      gr:name """Ock Mill Close, ABINGDON, Oxfordshire, OX14                
+                1 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.6693"^^xsd:double ;
+      wgs84:long "-1.2967"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Ock Mill Close, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/ab5efa56-449b-e111-8140-00155d01137b/Large/87b98629-f646-4169-b4a7-972d2f41242e.jpg" .
+
+dd:c83dl1
+      dd:hasPrice "139950"^^xsd:double ;
+      gr:includes dd:c83dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/54215/Ock-Mill-Close-ABINGDON-Oxfordshire-OX14" .
+
+
+
+
+
+
+
+dd:c84dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A smart ground floor maisonette with its own garden, perfectly situated within half a mile of the River Thames.  The property is conveniently located on Blacknall Road, just to the South of the town.  There is a lovely walk along the River Thames into the Town Centre, which is less than a mile away."^^xsd:string ;
+      gr:name """Blacknall Road, ABINGDON, Oxfordshire, OX14                
+                1 bedroom, Flat Maisonette"""^^xsd:string ;
+      wgs84:lat "51.66453"^^xsd:double ;
+      wgs84:long "-1.2907"^^xsd:double ;
+      vcard:locality "ABINGDON, Oxfordshire" ;
+      vcard:street-address
+              "Blacknall Road, ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/4bba1294-5668-e111-aca0-00155d01137b/Large/642e1481-e708-4802-aba9-f067e3a9601d.jpg" .
+
+dd:c84dl1
+      dd:hasPrice "129950"^^xsd:double ;
+      gr:includes dd:c84dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/50147/Blacknall-Road-ABINGDON-Oxfordshire-OX14" .
+
+
+
+
+
+
+
+dd:c85dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Tucked away in a cul-de-sac on the popular Audlett Drive development is this charming ground floor maisonette.  Clarendon Close is conveniently located within half a mile of Abingdon's Town Centre (with its array of shops and restaurants and frequent bus service to Oxford) and The White Horse Leisure Centre."^^xsd:string ;
+      gr:name """Clarendon Close, ABINGDON, OX14                
+                1 bedroom, Flat Maisonette"""^^xsd:string ;
+      wgs84:lat "51.67493"^^xsd:double ;
+      wgs84:long "-1.26414"^^xsd:double ;
+      vcard:locality "ABINGDON" ;
+      vcard:street-address
+              "Clarendon Close, ABINGDON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/d3b1f4b9-b71d-e111-ad57-00155d64e0d5/Large/8fa49d77-11e2-41a6-93ea-9d6cf070715c.jpg" .
+
+dd:c85dl1
+      dd:hasPrice "119950"^^xsd:double ;
+      gr:includes dd:c85dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/45141/Clarendon-Close-ABINGDON-OX14" .
+
+
+
+
+
+
+
+dd:c86dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A spacious first floor apartment (accessed via stairs or stair lift) commanding an excellent position on this small well planned retirement development located close (within 1 mile) to all local amenities and bus services. The accommodation comprises entrance hall, lounge, kitchen, double bedroom and bathroom. Facilities include resident administrator, 24 hour call service, guest suite, laundry facilities and coded security entrance to apartment building."^^xsd:string ;
+      gr:name """Guardian Court, Headington, New Cross Road, OXFORD, OX3                
+                1 bedroom, Flat"""^^xsd:string ;
+      wgs84:lat "51.75952"^^xsd:double ;
+      wgs84:long "-1.1981"^^xsd:double ;
+      vcard:locality "Headington, New Cross Road" ;
+      vcard:street-address
+              "Guardian Court, Headington, New Cross Road" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/2074ba97-2dba-e011-afab-00155d64e0c3/Large/3ba927d4-d28b-4863-8ef0-6a463e929195.jpg" .
+
+dd:c86dl1
+      dd:hasPrice "112000"^^xsd:double ;
+      gr:includes dd:c86dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/39239/Guardian-Court-Headington-New-Cross-Road-OXFORD-OX3" .
+
+
+
+
+
+
+
+dd:c87dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Located on the Cygnet Court Retirement development is this second floor one bedroom apartment in excellent decorative order and offered with immediate vacant possession."^^xsd:string ;
+      gr:name """Cygnet Court, ABINGDON, OX14                
+                1 bedroom, Flat"""^^xsd:string ;
+      wgs84:lat "51.66747"^^xsd:double ;
+      wgs84:long "-1.28691"^^xsd:double ;
+      vcard:locality "ABINGDON" ;
+      vcard:street-address
+              "Cygnet Court, ABINGDON" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/ade63d9d-5db4-e011-90de-00155d0106e0/Large/7a512fec-751f-4cc6-a40c-d8260f91e579.jpg" .
+
+dd:c87dl1
+      dd:hasPrice "95000"^^xsd:double ;
+      gr:includes dd:c87dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/38939/Cygnet-Court-ABINGDON-OX14" .
+
+
+
+
+
+
+
+dd:c88dl1
+      dd:hasPrice "79950"^^xsd:double ;
+      gr:includes dd:c88dl4 ;
+      foaf:page "http://www.andrewsonline.co.uk/sale/details/37008/Queen-Eleanor-Court-Long-Hanborough-WITNEY-OX29" .
+
+dd:c88dl4
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "Andrews Estate Agents are delighted to offer for sale this one bedroom first floor apartment located on a popular residential road in the heart of this sought after West Oxfordshire Village."^^xsd:string ;
+      gr:name """Queen Eleanor Court, Long Hanborough, WITNEY, OX29                
+                1 bedroom,  Flat"""^^xsd:string ;
+      wgs84:lat "51.82235"^^xsd:double ;
+      wgs84:long "-1.39672"^^xsd:double ;
+      vcard:locality "Long Hanborough, WITNEY" ;
+      vcard:street-address
+              "Queen Eleanor Court, Long Hanborough, WITNEY" ;
+      foaf:depiction "http://crmsharepoint.andrewsonline.co.uk/public/photos/e64862b2-f38b-e011-9099-00155d012247/Large/d298aca3-375e-4b32-ace4-498e86a65eee.jpg" .
+
+

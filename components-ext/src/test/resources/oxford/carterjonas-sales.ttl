@@ -1,0 +1,1134 @@
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+dd:d1dl1
+      dd:hasPrice "3250000"^^xsd:double ;
+      gr:includes dd:d1dl4 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/oxford/oxfordshire/OXF110372.html" .
+
+dd:d1dl4
+      a       dd:House ;
+      dd:bedrooms 6 ;
+      gr:description "A beautifully refurbished and substantial townhouse offering spacious accommodation of approximately 4400 sq ftfinished to the highest standards."^^xsd:string ;
+      gr:name "Linton Road, Oxford, Oxfordshire, OX2"^^xsd:string ;
+      wgs84:lat "51.770073"^^xsd:double ;
+      wgs84:long "-1.258524"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Linton Road, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110372_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d21
+      dd:hasPrice "3200000"^^xsd:double ;
+      gr:includes dd:d1d24 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/oxford/oxfordshire/OXF110367.html" .
+
+dd:d1d24
+      a       dd:House ;
+      dd:bedrooms 6 ;
+      gr:description "A substantial and rarely available west facing Edwardian house offering spacious accommodation and quietly situated in a favoured side road."^^xsd:string ;
+      gr:name "Charlbury Road, Oxford, Oxfordshire, OX2"^^xsd:string ;
+      wgs84:lat "51.769394"^^xsd:double ;
+      wgs84:long "-1.258369"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Charlbury Road, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110367_10.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+dd:d1d34
+      a       dd:House ;
+      dd:bedrooms 6 ;
+      gr:description "A detached Victorian house with west facing garden and previousley used as student accommodation, situated within favoured North Oxford and a short distance from the city centre."^^xsd:string ;
+      gr:name "Banbury Road, Oxford, Oxfordshire, OX2"^^xsd:string ;
+      wgs84:lat "51.765076"^^xsd:double ;
+      wgs84:long "-1.261482"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Banbury Road, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF080116_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d31
+      dd:hasPrice "1850000"^^xsd:double ;
+      gr:includes dd:d1d34 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/oxford/oxfordshire/OXF080116.html" .
+
+dd:d1d44
+      a       dd:House ;
+      dd:bedrooms 8 ;
+      gr:description "A substantial family house surrounded by spacious grounds, situated just south west of Oxford.  In all about 4 acres."^^xsd:string ;
+      gr:name "Frilford Heath, Abingdon, Oxfordshire, OX13"^^xsd:string ;
+      wgs84:lat "51.68685"^^xsd:double ;
+      wgs84:long "-1.352539"^^xsd:double ;
+      vcard:locality "Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Frilford Heath, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF100007_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d41
+      dd:hasPrice "1750000"^^xsd:double ;
+      gr:includes dd:d1d44 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/abingdon/oxfordshire/OXF100007.html" .
+
+
+
+dd:d1d61
+      dd:hasPrice "1250000"^^xsd:double ;
+      gr:includes dd:d1d64 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/summertown/oxford/OXF120040.html" .
+
+dd:d1d64
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A charming and well proportioned early Victorian villa, with attractive walled gardens and scope to extend, subject to planning consent."^^xsd:string ;
+      gr:name "Middle Way, Summertown, Oxford, Oxfordshire, OX2"^^xsd:string ;
+      wgs84:lat "51.780197"^^xsd:double ;
+      wgs84:long "-1.268578"^^xsd:double ;
+      vcard:locality "Summertown, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Middle Way, Summertown, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120040_01.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+dd:d1d71
+      dd:hasPrice "1250000"^^xsd:double ;
+      gr:includes dd:d1d74 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/boars-hill/oxford/OXF120021.html" .
+
+dd:d1d74
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "An attractive four bedroom period farmhouse, quietly situated at the southern edge of this popular village, with stables and pony paddock. In all approximately 1.1 acre."^^xsd:string ;
+      gr:name "Wootton Village, Boars Hill, Oxford, Oxfordshire, OX1"^^xsd:string ;
+      wgs84:lat "51.70743"^^xsd:double ;
+      wgs84:long "-1.31023"^^xsd:double ;
+      vcard:locality "Boars Hill, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Wootton Village, Boars Hill, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120021_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+dd:d1d84
+      a       dd:House ;
+      dd:bedrooms 8 ;
+      gr:description "An attractive and substantial family house of Elizabethan origin, situated at the heart of a popular and accessible village, with walled garden and secondary accommodation potential."^^xsd:string ;
+      gr:name "High Street, Sutton Courtenay, Abingdon, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.63698"^^xsd:double ;
+      wgs84:long "-1.27854"^^xsd:double ;
+      vcard:locality "Sutton Courtenay, Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "High Street, Sutton Courtenay, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120009_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d81
+      dd:hasPrice "1250000"^^xsd:double ;
+      gr:includes dd:d1d84 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/sutton-courtenay/abingdon/OXF120009.html" .
+
+
+
+dd:d1d104
+      a       dd:House ;
+      dd:bedrooms 6 ;
+      gr:description "A six bedroom family house with ancillary accommodation and a range of stables and outbuildings.  In all 14 acres."^^xsd:string ;
+      gr:name "Waterperry Road, Holton, Oxford, Oxfordshire, OX33"^^xsd:string ;
+      wgs84:lat "51.74703"^^xsd:double ;
+      wgs84:long "-1.11376"^^xsd:double ;
+      vcard:locality "Holton, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Waterperry Road, Holton, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110386_32.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d101
+      dd:hasPrice "1100000"^^xsd:double ;
+      gr:includes dd:d1d104 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/holton/oxford/OXF110386.html" .
+
+
+
+
+
+
+
+
+dd:d1d111
+      dd:hasPrice "1100000"^^xsd:double ;
+      gr:includes dd:d1d114 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/stonesfield/witney/OXF110371.html" .
+
+dd:d1d114
+      a       dd:House ;
+      dd:bedrooms 6 ;
+      gr:description "A substantial modern house on a large plot with a spacious attached two bedroom annexe, situated in a quiet edge of village location, with a mature south west facing garden.  In all approximately 2 acres."^^xsd:string ;
+      gr:name "Churchfields, Stonesfield, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.85018"^^xsd:double ;
+      wgs84:long "-1.432313"^^xsd:double ;
+      vcard:locality "Stonesfield, Witney, Oxfordshire" ;
+      vcard:street_address
+              "Churchfields, Stonesfield, Witney, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110371_08.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+
+dd:d1d134
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "RURAL SECLUSION WITH CONTEMPORARY INTERIORS.An outstanding barn conversion, laid out in 2 buildings in a courtyard setting, offering in excess of 3,100 sq ft of flexible accommodation.  Pony paddocks available by separate negotiation."^^xsd:string ;
+      gr:name "Nuneham Park, Nuneham Courtenay, Oxford, Oxfordshire, OX44"^^xsd:string ;
+      wgs84:lat "51.67467"^^xsd:double ;
+      wgs84:long "-1.20129"^^xsd:double ;
+      vcard:locality "Nuneham Courtenay, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Nuneham Park, Nuneham Courtenay, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF080197_32.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/sold.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d131
+      dd:hasPrice "999000"^^xsd:double ;
+      gr:includes dd:d1d134 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/nuneham-courtenay/oxford/OXF080197.html" .
+
+
+
+
+
+
+
+
+dd:d1d144
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A wonderful opportunity to acquire this early Victorian terraced house in the heart of Oxford City, arranged over 4 floors with a west facing garden and garage.Total = sq ft 2,251 / 210 sqm."^^xsd:string ;
+      gr:name "Walton Street, Oxford, Oxfordshire, OX1"^^xsd:string ;
+      wgs84:lat "51.757298"^^xsd:double ;
+      wgs84:long "-1.2637"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Walton Street, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110304_02.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d141
+      dd:hasPrice "950000"^^xsd:double ;
+      gr:includes dd:d1d144 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/oxford/oxfordshire/OXF110304.html" .
+
+
+
+
+
+
+
+
+dd:d1d154
+      a       dd:House ;
+      dd:bedrooms 6 ;
+      gr:description "A delightful 6 bedroom Georgian house with an attached 2 bedroom cottage, separate coach house and exceptional walled rear garden.  Available as a whole or in 2 separate lots.  In all 0.4 acres."^^xsd:string ;
+      gr:name "The Moors, Kidlington, Oxfordshire, OX5"^^xsd:string ;
+      wgs84:lat "51.827297"^^xsd:double ;
+      wgs84:long "-1.285097"^^xsd:double ;
+      vcard:locality "Kidlington, Oxfordshire" ;
+      vcard:street_address
+              "The Moors, Kidlington, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120086_01.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d151
+      dd:hasPrice "895000"^^xsd:double ;
+      gr:includes dd:d1d154 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/kidlington/oxfordshire/OXF120086.html" .
+
+
+
+
+
+
+
+
+dd:d1d161
+      dd:hasPrice "825000"^^xsd:double ;
+      gr:includes dd:d1d164 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/oxford/oxfordshire/OXF120088.html" .
+
+dd:d1d164
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "An immaculately presented four storey town house, situated mid-crescent, with views across the ornamental lake and within walking distance of Summertown."^^xsd:string ;
+      gr:name "Elizabeth Jennings Way, Oxford, Oxfordshire, OX2"^^xsd:string ;
+      wgs84:lat "51.77398"^^xsd:double ;
+      wgs84:long "-1.270262"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Elizabeth Jennings Way, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120088_01.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d174
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "An opportunity to acquire five residential apartments in Headington and south Oxford. Currently let on assured shorthold tenancies producing an income of £45,600 per annum, expected to rise to £46,320 and providing a gross yield of 5.7%."^^xsd:string ;
+      gr:name "Varsity Place, John Towle Close, Oxford, Oxfordshire, OX1"^^xsd:string ;
+      wgs84:lat "51.734554"^^xsd:double ;
+      wgs84:long "-1.253559"^^xsd:double ;
+      vcard:locality "John Towle Close, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Varsity Place, John Towle Close, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120095_03.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d171
+      dd:hasPrice "795000"^^xsd:double ;
+      gr:includes dd:d1d174 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/john-towle-close/oxford/OXF120095.html" .
+
+
+
+
+
+
+
+
+dd:d1d184
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "An opportunity to acquire five residential apartments in Headington and south Oxford. Currently let on assured shorthold tenancies producing an income of £45,600 per annum, expected to rise to £46,320 and providing a gross yield of 5.7%."^^xsd:string ;
+      gr:name "The Dale, Headington, Oxford, Oxfordshire, OX3"^^xsd:string ;
+      wgs84:lat "51.765133"^^xsd:double ;
+      wgs84:long "-1.188483"^^xsd:double ;
+      vcard:locality "Headington, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "The Dale, Headington, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120092_02.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d181
+      dd:hasPrice "795000"^^xsd:double ;
+      gr:includes dd:d1d184 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/headington/oxford/OXF120092.html" .
+
+
+
+
+
+
+
+
+dd:d1d191
+      dd:hasPrice "795000"^^xsd:double ;
+      gr:includes dd:d1d194 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/eynsham/oxfordshire/OXF110064.html" .
+
+dd:d1d194
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "A charming and well proportioned 5 bedroom Grade II listed Georgian house, with a south facing walled garden, in the centre of this historic village."^^xsd:string ;
+      gr:name "Acre End Street, Eynsham, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.780384"^^xsd:double ;
+      wgs84:long "-1.377781"^^xsd:double ;
+      vcard:locality "Eynsham, Oxfordshire" ;
+      vcard:street_address
+              "Acre End Street, Eynsham, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110064_12.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+dd:d1d204
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A beautifully presented period house located in the peaceful hamlet of Garford."^^xsd:string ;
+      gr:name "Garford, Abingdon, Oxfordshire, OX13"^^xsd:string ;
+      wgs84:lat "51.66211"^^xsd:double ;
+      wgs84:long "-1.385592"^^xsd:double ;
+      vcard:locality "Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Garford, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110309_01.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d201
+      dd:hasPrice "750000"^^xsd:double ;
+      gr:includes dd:d1d204 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/abingdon/oxfordshire/OXF110309.html" .
+
+
+
+
+
+
+
+
+dd:d1d211
+      dd:hasPrice "750000"^^xsd:double ;
+      gr:includes dd:d1d214 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/oxford/oxfordshire/OXF090128.html" .
+
+dd:d1d214
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description ""^^xsd:string ;
+      gr:name "Five Mile Drive, Oxford, Oxfordshire, OX2"^^xsd:string ;
+      wgs84:lat "51.78821"^^xsd:double ;
+      wgs84:long "-1.280859"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Five Mile Drive, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs12132_001.jpg&t=buy&r=cj&o=&mp=/var/www/remoting_components/property_search/application_resdev/images/missingPhoto.jpg&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d224
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A wonderful opportunity to acquire this detached period cottage set in approximately 0.46 of an acre, with a delightful south facing garden."^^xsd:string ;
+      gr:name "East End, North Leigh, Oxford, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.82867"^^xsd:double ;
+      wgs84:long "-1.423832"^^xsd:double ;
+      vcard:locality "North Leigh, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "East End, North Leigh, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120082_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d221
+      dd:hasPrice "725000"^^xsd:double ;
+      gr:includes dd:d1d224 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/north-leigh/oxford/OXF120082.html" .
+
+
+
+
+
+
+
+
+dd:d1d234
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A beautifully renovated village house with superb gardens and far-reaching countryside views. In all nearly 0.6 acres."^^xsd:string ;
+      gr:name "Little Minster, Minster Lovell, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.798798"^^xsd:double ;
+      wgs84:long "-1.544223"^^xsd:double ;
+      vcard:locality "Minster Lovell, Witney, Oxfordshire" ;
+      vcard:street_address
+              "Little Minster, Minster Lovell, Witney, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120068_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d231
+      dd:hasPrice "685000"^^xsd:double ;
+      gr:includes dd:d1d234 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/minster-lovell/witney/OXF120068.html" .
+
+
+
+
+
+
+
+
+dd:d1d241
+      dd:hasPrice "675000"^^xsd:double ;
+      gr:includes dd:d1d244 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/abingdon/oxfordshire/OXF110177.html" .
+
+dd:d1d244
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "A 5 bedroom detached house built in the style of the former Mill House with the added advantage of Waterside Living with the River Ock flowing at the bottom of the rear garden."^^xsd:string ;
+      gr:name "Mill Paddock, Abingdon, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.666855"^^xsd:double ;
+      wgs84:long "-1.285674"^^xsd:double ;
+      vcard:locality "Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Mill Paddock, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110177_15.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d254
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "The Burcot is a spacious 5 bedroom family home with 4 reception rooms including a Family/Playroom,  kitchen with fully fitted AEG appliances, 4 bathrooms with Twyford sanitaryware and double integral garage."^^xsd:string ;
+      gr:name "Appleford Road, Sutton Courtenay, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.645447"^^xsd:double ;
+      wgs84:long "-1.264547"^^xsd:double ;
+      vcard:locality "Sutton Courtenay, Oxfordshire" ;
+      vcard:street_address
+              "Appleford Road, Sutton Courtenay, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110253_20.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d251
+      dd:hasPrice "670000"^^xsd:double ;
+      gr:includes dd:d1d254 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/sutton-courtenay/oxfordshire/OXF110253.html" .
+
+
+
+
+
+
+
+
+dd:d1d264
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "A fabulously renovated semi-detached town house, close to the city centre with coach house, garden and off-road parking."^^xsd:string ;
+      gr:name "Botley Road, Oxford, Oxfordshire, OX2"^^xsd:string ;
+      wgs84:lat "51.752552"^^xsd:double ;
+      wgs84:long "-1.277053"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Botley Road, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120075_14.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d261
+      dd:hasPrice "665000"^^xsd:double ;
+      gr:includes dd:d1d264 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/oxford/oxfordshire/OXF120075.html" .
+
+
+
+
+
+
+
+
+dd:d1d274
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "A well presented 5 bedroom family home, situated in the heart of this popular village"^^xsd:string ;
+      gr:name "Lady Place, Sutton Courtenay, Abingdon, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.638546"^^xsd:double ;
+      wgs84:long "-1.276696"^^xsd:double ;
+      vcard:locality "Sutton Courtenay, Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Lady Place, Sutton Courtenay, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120039_19.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d271
+      dd:hasPrice "650000"^^xsd:double ;
+      gr:includes dd:d1d274 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/sutton-courtenay/abingdon/OXF120039.html" .
+
+
+
+
+
+
+
+
+dd:d1d281
+      dd:hasPrice "645000"^^xsd:double ;
+      gr:includes dd:d1d284 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/kidlington/oxfordshire/OXF120072.html" .
+
+dd:d1d284
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "A delightful 6 bedroom Georgian house with a separate coach house and exceptional walled rear garden. Approximately a third of an acre in all."^^xsd:string ;
+      gr:name "The Moors, Kidlington, Oxfordshire, OX5"^^xsd:string ;
+      wgs84:lat "51.827297"^^xsd:double ;
+      wgs84:long "-1.285097"^^xsd:double ;
+      vcard:locality "Kidlington, Oxfordshire" ;
+      vcard:street_address
+              "The Moors, Kidlington, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120072_01.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d294
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "The Wittenham is a desirable and spacious 5 bedroom family home comprising large open plan kitchen/dining room with fully fitted AEG appliances, 2 further reception rooms, 4 bathrooms and detached double garage."^^xsd:string ;
+      gr:name "Appleford Road, Sutton Courtenay, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.645447"^^xsd:double ;
+      wgs84:long "-1.264547"^^xsd:double ;
+      vcard:locality "Sutton Courtenay, Oxfordshire" ;
+      vcard:street_address
+              "Appleford Road, Sutton Courtenay, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110252_10.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d291
+      dd:hasPrice "640000"^^xsd:double ;
+      gr:includes dd:d1d294 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/sutton-courtenay/oxfordshire/OXF110252.html" .
+
+
+
+
+
+
+
+
+dd:d1d301
+      dd:hasPrice "625000"^^xsd:double ;
+      gr:includes dd:d1d304 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/sutton-courtenay/oxfordshire/OXF110226.html" .
+
+dd:d1d304
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "An attractive 5 bedroom family home. Impressive kitchen/breakfast room with central island & range of built in appliances, living room, dining room with bay window, study, 4 bathrooms, garden and a double garage. INCLUDES ALL SOFT FURNISHINGS & FURNITURE."^^xsd:string ;
+      gr:name "Appleford Road, Sutton Courtenay, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.64545"^^xsd:double ;
+      wgs84:long "-1.264121"^^xsd:double ;
+      vcard:locality "Sutton Courtenay, Oxfordshire" ;
+      vcard:street_address
+              "Appleford Road, Sutton Courtenay, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110226_25.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d314
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "An impressive five double bedroom family home in a small gated development of just three houses, situated between Woodstock and Oxford, with large gardens backing on to the village cricket ground.PART EXCHANGE AVAILABLE."^^xsd:string ;
+      gr:name "Woodstock Road East, Begbroke, Kidlington, Oxfordshire, OX5"^^xsd:string ;
+      wgs84:lat "51.82351"^^xsd:double ;
+      wgs84:long "-1.319473"^^xsd:double ;
+      vcard:locality "Begbroke, Kidlington, Oxfordshire" ;
+      vcard:street_address
+              "Woodstock Road East, Begbroke, Kidlington, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXR110007_05.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d311
+      dd:hasPrice "595000"^^xsd:double ;
+      gr:includes dd:d1d314 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/begbroke/kidlington/OXR110007.html" .
+
+
+
+
+
+
+
+
+dd:d1d321
+      dd:hasPrice "595000"^^xsd:double ;
+      gr:includes dd:d1d324 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/begbroke/kidlington/OXR110005.html" .
+
+dd:d1d324
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "An impressive five double bedroom family home in a small gated development of just three houses, situated between Woodstock and Oxford, with large gardens backing on to the village cricket ground.PART EXCHANGE AVAILABLE."^^xsd:string ;
+      gr:name "Woodstock Road East, Begbroke, Kidlington, Oxfordshire, OX5"^^xsd:string ;
+      wgs84:lat "51.82351"^^xsd:double ;
+      wgs84:long "-1.319473"^^xsd:double ;
+      vcard:locality "Begbroke, Kidlington, Oxfordshire" ;
+      vcard:street_address
+              "Woodstock Road East, Begbroke, Kidlington, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXR110005_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d331
+      dd:hasPrice "595000"^^xsd:double ;
+      gr:includes dd:d1d334 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/tubney-wood/abingdon/OXF100381.html" .
+
+dd:d1d334
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A detached four bedroom bungalow with gardens and potential for extension nestled in a private woodland setting."^^xsd:string ;
+      gr:name "The Ride, Tubney Wood, Abingdon, Oxfordshire, OX13"^^xsd:string ;
+      wgs84:lat "51.69871"^^xsd:double ;
+      wgs84:long "-1.351733"^^xsd:double ;
+      vcard:locality "Tubney Wood, Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "The Ride, Tubney Wood, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF100381_12.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d344
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A cedar clad bungalow with stream-side garden and offering potential for redevelopment."^^xsd:string ;
+      gr:name "Water Eaton Road, Oxford, Oxfordshire, OX2"^^xsd:string ;
+      wgs84:lat "51.784023"^^xsd:double ;
+      wgs84:long "-1.259844"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Water Eaton Road, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120001_05.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d341
+      dd:hasPrice "575000"^^xsd:double ;
+      gr:includes dd:d1d344 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/oxford/oxfordshire/OXF120001.html" .
+
+
+
+
+
+
+
+
+dd:d1d354
+      a       dd:House ;
+      dd:bedrooms 5 ;
+      gr:description "An impressive five double bedroom family home in a small gated development of just three houses, situated between Woodstock and Oxford, with large gardens backing on to the village cricket ground. PART EXCHANGE AVAILABLE."^^xsd:string ;
+      gr:name "Woodstock Road East, Begbroke, Kidlington, Oxfordshire, OX5"^^xsd:string ;
+      wgs84:lat "51.82444"^^xsd:double ;
+      wgs84:long "-1.31879"^^xsd:double ;
+      vcard:locality "Begbroke, Kidlington, Oxfordshire" ;
+      vcard:street_address
+              "Woodstock Road East, Begbroke, Kidlington, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXR110006_07.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d351
+      dd:hasPrice "550000"^^xsd:double ;
+      gr:includes dd:d1d354 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/begbroke/kidlington/OXR110006.html" .
+
+
+
+
+
+
+
+
+dd:d1d361
+      dd:hasPrice "550000"^^xsd:double ;
+      gr:includes dd:d1d364 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/sutton-courtenay/oxfordshire/OXF110230.html" .
+
+dd:d1d364
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "LAST ONE REMAINING!  The Steventon is a luxury detached family home with four double bedrooms, master with dressing area, three bathrooms and a versatile downstairs living accommodation.  Turfed rear garden, Double garage, Carpets & ceramic floor tiles throughout."^^xsd:string ;
+      gr:name "Appleford Road, Sutton Courtenay, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.645447"^^xsd:double ;
+      wgs84:long "-1.264547"^^xsd:double ;
+      vcard:locality "Sutton Courtenay, Oxfordshire" ;
+      vcard:street_address
+              "Appleford Road, Sutton Courtenay, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110230_24.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+
+dd:d1d381
+      dd:hasPrice "535000"^^xsd:double ;
+      gr:includes dd:d1d384 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/witney/oxfordshire/OXF120099.html" .
+
+dd:d1d384
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A detached Victorian cottage with views of the Church and scope to extend, subject to planning."^^xsd:string ;
+      gr:name "Church Hanborough, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.812576"^^xsd:double ;
+      wgs84:long "-1.382528"^^xsd:double ;
+      vcard:locality "Witney, Oxfordshire" ;
+      vcard:street_address
+              "Church Hanborough, Witney, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120099_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d394
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A spacious family home with well proportioned rooms and recently updated kitchen and bathroom, situated in one of Headington's most desirable residential roads."^^xsd:string ;
+      gr:name "Staunton Road, Headington, Oxford, Oxfordshire, OX3"^^xsd:string ;
+      wgs84:lat "51.762997"^^xsd:double ;
+      wgs84:long "-1.226096"^^xsd:double ;
+      vcard:locality "Headington, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Staunton Road, Headington, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120117_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d391
+      dd:hasPrice "500000"^^xsd:double ;
+      gr:includes dd:d1d394 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/headington/oxford/OXF120117.html" .
+
+
+
+
+
+
+
+
+dd:d1d404
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "A recently extended and refurbished 4 bedroom detached house on the edge of the desirable Wheatley Village."^^xsd:string ;
+      gr:name "Littleworth Road, Wheatley, Oxford, Oxfordshire, OX33"^^xsd:string ;
+      wgs84:lat "51.746853"^^xsd:double ;
+      wgs84:long "-1.146804"^^xsd:double ;
+      vcard:locality "Wheatley, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Littleworth Road, Wheatley, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110213_02.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d401
+      dd:hasPrice "500000"^^xsd:double ;
+      gr:includes dd:d1d404 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/wheatley/oxford/OXF110213.html" .
+
+
+
+
+
+
+
+
+dd:d1d411
+      dd:hasPrice "475000"^^xsd:double ;
+      gr:includes dd:d1d414 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/wantage/oxfordshire/NEW120245.html" .
+
+dd:d1d414
+      a       dd:House ;
+      gr:description "Land at West Hanney & Denchworth, Oxfordshire80.53 acres (32.59 hectares) of land and woodland with road frontage available in three Lots.Lot 1 - 40.13 acres of arable landLot 2 - 21.67 acres of pasture landLot 3 - 18.73 acres of woodland"^^xsd:string ;
+      gr:name "Land At West Hanney & Denchworth, Wantage, Oxfordshire, OX12"^^xsd:string ;
+      wgs84:lat "51.633667"^^xsd:double ;
+      wgs84:long "-1.410121"^^xsd:double ;
+      vcard:locality "Wantage, Oxfordshire" ;
+      vcard:street_address
+              "Land At West Hanney & Denchworth, Wantage, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/NEW120245_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d421
+      dd:hasPrice "450000"^^xsd:double ;
+      gr:includes dd:d1d424 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/wheatley/oxford/OXF120065.html" .
+
+dd:d1d424
+      a       dd:House ;
+      dd:bedrooms 4 ;
+      gr:description "Located in the heart of Wheatley Village, Vale Brook House is a delightful 4 bedroom detached Georgian house with well stocked established walled gardens."^^xsd:string ;
+      gr:name "High Street, Wheatley, Oxford, Oxfordshire, OX33"^^xsd:string ;
+      wgs84:lat "51.74588"^^xsd:double ;
+      wgs84:long "-1.136683"^^xsd:double ;
+      vcard:locality "Wheatley, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "High Street, Wheatley, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120065_02.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d431
+      dd:hasPrice "450000"^^xsd:double ;
+      gr:includes dd:d1d434 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/headington/oxford/OXF110112.html" .
+
+dd:d1d434
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "Tucked away in this quiet city conservation area a 2 bedroom bungalow with delightful established front and rear gardens."^^xsd:string ;
+      gr:name "Jack Straws Lane, Headington, Oxford, Oxfordshire, OX3"^^xsd:string ;
+      wgs84:lat "51.762707"^^xsd:double ;
+      wgs84:long "-1.2291"^^xsd:double ;
+      vcard:locality "Headington, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Jack Straws Lane, Headington, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110112_01.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d441
+      dd:hasPrice "350000"^^xsd:double ;
+      gr:includes dd:d1d444 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/wheatley/oxford/OXF120016.html" .
+
+dd:d1d444
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A detached 3 bedroom cottage with a south west facing garden and offering a combination of period charm and modern style, situated on the edge of Wheatley village."^^xsd:string ;
+      gr:name "Park Hill, Wheatley, Oxford, Oxfordshire, OX33"^^xsd:string ;
+      wgs84:lat "51.75041"^^xsd:double ;
+      wgs84:long "-1.140942"^^xsd:double ;
+      vcard:locality "Wheatley, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Park Hill, Wheatley, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120016_03.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d451
+      dd:hasPrice "335000"^^xsd:double ;
+      gr:includes dd:d1d454 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/littlemore/oxford/OXF120073.html" .
+
+dd:d1d454
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "A stylish end of terrace townhouse with three double bedrooms and a south-west facing courtyard garden."^^xsd:string ;
+      gr:name "Mandelbrote Drive, Littlemore, Oxford, Oxfordshire, OX4"^^xsd:string ;
+      wgs84:lat "51.718636"^^xsd:double ;
+      wgs84:long "-1.226954"^^xsd:double ;
+      vcard:locality "Littlemore, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Mandelbrote Drive, Littlemore, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120073_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d461
+      dd:hasPrice "319000"^^xsd:double ;
+      gr:includes dd:d1d464 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/sutton-courtenay/oxfordshire/OXF110251.html" .
+
+dd:d1d464
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The Milton is spacious semi-detached home by developers Taylor Wimpey. The accommodation will comprise open-plan living/dining room with French doors to rear garden, Symphony kitchen, Twyford sanitary ware. Carport and off road parking."^^xsd:string ;
+      gr:name "Appleford Road, Sutton Courtenay, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.645447"^^xsd:double ;
+      wgs84:long "-1.264547"^^xsd:double ;
+      vcard:locality "Sutton Courtenay, Oxfordshire" ;
+      vcard:street_address
+              "Appleford Road, Sutton Courtenay, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110251_05.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d474
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The Appleford is a spacious three bedroom semi-detached home comprising living/dining room with French doors to rear garden, kitchen, downstairs cloakroom, bedroom 1 (ensuite), 2 further bedrooms, family bathroom, integral garage."^^xsd:string ;
+      gr:name "Appleford Road, Sutton Courtenay, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.64545"^^xsd:double ;
+      wgs84:long "-1.26455"^^xsd:double ;
+      vcard:locality "Sutton Courtenay, Oxfordshire" ;
+      vcard:street_address
+              "Appleford Road, Sutton Courtenay, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/NEW110363_06.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d471
+      dd:hasPrice "315000"^^xsd:double ;
+      gr:includes dd:d1d474 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/sutton-courtenay/oxfordshire/NEW110363.html" .
+
+
+
+
+
+
+
+
+dd:d1d484
+      a       dd:House ;
+      dd:bedrooms 3 ;
+      gr:description "The Milton is a delightful 3 bedroom semi-detached home in a quiet development. The accommodation will comprise open-plan living/dining room with French doors to rear garden. Carport & off road parking."^^xsd:string ;
+      gr:name "Appleford Road, Sutton Courtenay, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.64551"^^xsd:double ;
+      wgs84:long "-1.263496"^^xsd:double ;
+      vcard:locality "Sutton Courtenay, Oxfordshire" ;
+      vcard:street_address
+              "Appleford Road, Sutton Courtenay, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110250_11.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d481
+      dd:hasPrice "299000"^^xsd:double ;
+      gr:includes dd:d1d484 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/sutton-courtenay/oxfordshire/OXF110250.html" .
+
+
+
+
+
+
+
+
+dd:d1d494
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "An attached two bedroom period cottage with a delightful south facing front garden, situated in the conservation area of Old Kidlington."^^xsd:string ;
+      gr:name "The Moors, Kidlington, Oxfordshire, OX5"^^xsd:string ;
+      wgs84:lat "51.827297"^^xsd:double ;
+      wgs84:long "-1.285097"^^xsd:double ;
+      vcard:locality "Kidlington, Oxfordshire" ;
+      vcard:street_address
+              "The Moors, Kidlington, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120087_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d491
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:d1d494 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/kidlington/oxfordshire/OXF120087.html" .
+
+
+
+
+
+
+
+
+dd:d1d501
+      dd:hasPrice "250000"^^xsd:double ;
+      gr:includes dd:d1d504 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/west-hanney/wantage/OXF090360.html" .
+
+dd:d1d504
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "An end of terrace house in the heart of a popular and thriving village and within reach of excellent road and rail links."^^xsd:string ;
+      gr:name "North Green, West Hanney, Wantage, Oxfordshire, OX12"^^xsd:string ;
+      wgs84:lat "51.6348"^^xsd:double ;
+      wgs84:long "-1.414361"^^xsd:double ;
+      vcard:locality "West Hanney, Wantage, Oxfordshire" ;
+      vcard:street_address
+              "North Green, West Hanney, Wantage, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF090360_03.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d511
+      dd:hasPrice "200000"^^xsd:double ;
+      gr:includes dd:d1d514 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/littlemore/oxford/OXF120032.html" .
+
+dd:d1d514
+      a       dd:House ;
+      dd:bedrooms 2 ;
+      gr:description "A ground floor two bedroom apartment set in extensive landscaped grounds, an ideal investment property with a good rental yield."^^xsd:string ;
+      gr:name "Mandelbrote Drive, Littlemore, Oxford, Oxfordshire, OX4"^^xsd:string ;
+      wgs84:lat "51.716827"^^xsd:double ;
+      wgs84:long "-1.225537"^^xsd:double ;
+      vcard:locality "Littlemore, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Mandelbrote Drive, Littlemore, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF120032_07.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
+
+
+
+
+
+
+dd:d1d524
+      a       dd:House ;
+      dd:bedrooms 1 ;
+      gr:description "A top floor studio apartment in a quiet location close to the city centre with a fully fitted kitchen and bathroom.  An ideal investment property with a good rental yield."^^xsd:string ;
+      gr:name "John Towle Close, Oxford, Oxfordshire, OX1"^^xsd:string ;
+      wgs84:lat "51.734257"^^xsd:double ;
+      wgs84:long "-1.253407"^^xsd:double ;
+      vcard:locality "Oxford, Oxfordshire" ;
+      vcard:street_address
+              "John Towle Close, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXF110437_01.JPG&t=buy&r=cj&o=&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+dd:d1d521
+      dd:hasPrice "130000"^^xsd:double ;
+      gr:includes dd:d1d524 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/oxford/oxfordshire/OXF110437.html" .
+
+
+
+
+
+
+
+
+dd:d1d531
+      dd:hasPrice "60000"^^xsd:double ;
+      gr:includes dd:d1d534 ;
+      foaf:page "http://www.carterjonas.co.uk/properties-for-sale/wolvercote/oxford/OXR110002.html" .
+
+dd:d1d534
+      a       dd:House ;
+      gr:description "0.175 acres of garden land and stabling with frontage to Port Meadow"^^xsd:string ;
+      gr:name "Godstow Road, Wolvercote, Oxford, Oxfordshire, OX2"^^xsd:string ;
+      wgs84:lat "51.783382"^^xsd:double ;
+      wgs84:long "-1.289966"^^xsd:double ;
+      vcard:locality "Wolvercote, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Godstow Road, Wolvercote, Oxford, Oxfordshire" ;
+      foaf:depiction "http://webdata.carterjonas.co.uk/propertysearchfx/image_resize.php?i=/home/httpd/vhosts/carterjonas.waidev5.com/httpdocs/assets/CJ/sales/OXR110002_01.JPG&t=buy&r=cj&o=/home/httpd/remoting_components/property_search/sites/cj/images/underoffer.gif&mp=&bgclr=FFFFFF&&w=632&h=484&bf=1" .
+
+
