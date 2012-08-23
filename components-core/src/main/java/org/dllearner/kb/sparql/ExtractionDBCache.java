@@ -110,6 +110,10 @@ public class ExtractionDBCache {
 		}
 	}
 	
+	public void setFreshnessInMilliseconds(long freshnessInMilliseconds) {
+		this.freshnessInMilliseconds = freshnessInMilliseconds;
+	}
+	
 	public Model executeConstructQuery(SparqlEndpoint endpoint, String query) throws SQLException, UnsupportedEncodingException {
 		return executeConstructQuery(endpoint, query, maxExecutionTimeInSeconds);
 	}
