@@ -460,7 +460,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		T values = map.get(key);
 		if(values == null){
 			try {
-				values = (T) values.getClass().newInstance();
+				values = (T) value.getClass().newInstance();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
