@@ -4,10 +4,8 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,7 +13,6 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.util.Collection;
@@ -61,17 +58,13 @@ import org.dllearner.common.index.HierarchicalIndex;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SOLRIndex;
-import org.dllearner.common.index.SPARQLClassesIndex;
-import org.dllearner.common.index.SPARQLIndex;
-import org.dllearner.common.index.VirtuosoClassesIndex;
-import org.dllearner.common.index.VirtuosoResourcesIndex;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.ini4j.Options;
-import org.junit.*;
-import org.w3c.dom.DOMException;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -111,16 +104,16 @@ public class SPARQLTemplateBasedLearner3Test
 	{test("QALD 2 Benchmark ideally tagged", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
 			SparqlEndpoint.getEndpointDBpedia(),dbpediaLiveCache);}
 
-	@Test public void testOxford() throws IOException
+	@Test public void generateXMLOxford() throws IOException
 	{
 		Model m = loadOxfordModel();
 		List<String> questions = new LinkedList<String>();
 		BufferedReader in = new BufferedReader((new InputStreamReader(getClass().getClassLoader().getResourceAsStream("tbsl/oxford_eval_queries.txt"))));
 		int j=0;
-		for(String line=in.readLine();line!=null;)
+		for(String line;(line=in.readLine())!=null;)
 		{
 			j++;
-			if(j>5) break;
+			if(j>1) break;
 			if(!line.isEmpty()) {questions.add(line.replace("question: ", ""));}
 		}
 		in.close();
@@ -133,7 +126,8 @@ public class SPARQLTemplateBasedLearner3Test
 				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
 				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
 				);
-		generateTestDataMultiThreaded(id2Question, null,m,mappingIndex,OXFORD_PRETAGGED);
+		QueryTestData testData = generateTestDataMultiThreaded(id2Question, null,m,mappingIndex,OXFORD_PRETAGGED);
+		testData.writeQaldXml(new File("log/test.xml"));
 	}
 
 	private Model loadOxfordModel()
@@ -250,7 +244,7 @@ public class SPARQLTemplateBasedLearner3Test
 			generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint,cache);
 		}
 
-		QueryTestData referenceTestData = readQueries(updatedReferenceXML);
+		QueryTestData referenceTestData = QueryTestData.readQaldXml(updatedReferenceXML);
 		logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
 
 		long startLearning = System.currentTimeMillis();
@@ -463,7 +457,7 @@ public class SPARQLTemplateBasedLearner3Test
 		}
 	}
 
-	private static class LearnStatus implements Serializable
+	public static class LearnStatus implements Serializable
 	{
 		public enum Type {OK, TIMEOUT, NO_TEMPLATE_FOUND,QUERY_RESULT_EMPTY,NO_QUERY_LEARNED,EXCEPTION}
 
@@ -693,14 +687,13 @@ public class SPARQLTemplateBasedLearner3Test
 	//	private SPARQLTemplateBasedLearner2 oxfordLearner;
 	//	private SPARQLTemplateBasedLearner2 dbpediaLiveLearner;
 
-	private final ExtractionDBCache oxfordCache = new ExtractionDBCache("cache");
+//	private final ExtractionDBCache oxfordCache = new ExtractionDBCache("cache");
 	private final static ExtractionDBCache dbpediaLiveCache = new ExtractionDBCache("cache");
 
 	private final Knowledgebase dbpediaLiveKnowledgebase = createDBpediaLiveKnowledgebase(dbpediaLiveCache);
 
 	static final SparqlEndpoint dbpediaLiveEndpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	//static SparqlEndpoint oxfordEndpoint;
-	private static final int	MAXIMUM_QUESTIONS	= Integer.MAX_VALUE;
 
 	//	private ResultSet executeDBpediaLiveSelect(String query){return SparqlQuery.convertJSONtoResultSet(dbpediaLiveCache.executeSelectQuery(dbpediaLiveEndpoint, query));}
 
@@ -732,7 +725,7 @@ public class SPARQLTemplateBasedLearner3Test
 		Logger.getRootLogger().setLevel(Level.WARN);
 		Logger.getLogger(Templator.class).setLevel(Level.WARN);
 		Logger.getLogger(Parser.class).setLevel(Level.WARN);
-		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.WARN);
+		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.INFO);
 		//		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.INFO);
 		logger.setLevel(Level.INFO); // TODO: remove when finishing implementation of this class
 		logger.addAppender(new FileAppender(new SimpleLayout(), "log/"+this.getClass().getSimpleName()+".log", false));
@@ -741,131 +734,7 @@ public class SPARQLTemplateBasedLearner3Test
 		//		oxfordLearner = new SPARQLTemplateBasedLearner2(createOxfordKnowledgebase(oxfordCache));
 	}
 
-	private static class QueryTestData implements Serializable
-	{
-		public SortedMap<Integer, String> id2Question = new ConcurrentSkipListMap<Integer, String>();
-		public SortedMap<Integer, String> id2Query = new ConcurrentSkipListMap<Integer, String>();
-		public SortedMap<Integer, Set<String>> id2Answers = new ConcurrentSkipListMap<Integer, Set<String>>();
-		public SortedMap<Integer, LearnStatus> id2LearnStatus = new ConcurrentSkipListMap<Integer, LearnStatus>();
-
-		private static final String persistancePath = "cache/"+SPARQLTemplateBasedLearner3Test.class.getSimpleName()+'/'+QueryTestData.class.getSimpleName();
-
-		public synchronized void write()
-		{
-			try
-			{
-				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(persistancePath)));
-				oos.writeObject(this);
-				oos.close();
-			} catch(IOException e) {throw new RuntimeException(e);}
-		}
-
-		public static QueryTestData read() throws FileNotFoundException, IOException
-		{
-			try
-			{
-				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(persistancePath)));
-				QueryTestData testData = (QueryTestData) ois.readObject();
-				ois.close();
-				return testData;
-			}
-			catch (ClassNotFoundException e){throw new RuntimeException(e);}		
-		}
-
-		public QueryTestData generateAnswers(SparqlEndpoint endpoint, ExtractionDBCache cache)
-		{
-			if(!id2Answers.isEmpty()) {throw new AssertionError("Answers already existing.");}
-			for(int i:id2Query.keySet())
-			{
-				Set<String> uris = getUris(endpoint, id2Query.get(i),cache); 
-				id2Answers.put(i, uris); // empty answer set better transfers intended meaning and doesn't cause NPEs in html generation :-) 
-				if(!uris.isEmpty())	{/*id2Answers.put(i, uris);*/}
-				else				{id2LearnStatus.put(i, LearnStatus.QUERY_RESULT_EMPTY);}
-			}
-			return this;
-		}
-
-
-	}
-
-	private QueryTestData readQueries(final File file)
-	{
-		QueryTestData testData = new QueryTestData();
-		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(file);
-			doc.getDocumentElement().normalize();
-			NodeList questionNodes = doc.getElementsByTagName("question");
-			int id;
-
-			for(int i = 0; i < questionNodes.getLength(); i++)
-			{
-				if(i>=MAXIMUM_QUESTIONS) break; // TODO: remove
-				String question;
-				String query;
-				Set<String> answers = new HashSet<String>();
-				Element questionNode = (Element) questionNodes.item(i);
-				//read question ID
-				id = Integer.valueOf(questionNode.getAttribute("id"));				
-				//Read question
-				question = ((Element)questionNode.getElementsByTagName("string").item(0)).getChildNodes().item(0).getNodeValue().trim();
-				//Read SPARQL query
-				query = ((Element)questionNode.getElementsByTagName("query").item(0)).getChildNodes().item(0).getNodeValue().trim();
-				//				//Read answers
-				//				answers = new HashSet<String>();
-				//				NodeList aswersNodes = questionNode.getElementsByTagName("answer");
-				//				for(int j = 0; j < aswersNodes.getLength(); j++){
-				//					Element answerNode = (Element) aswersNodes.item(j);
-				//					answers.add(((Element)answerNode.getElementsByTagName("uri").item(0)).getChildNodes().item(0).getNodeValue().trim());
-				//				}
-
-				if(!query.equals("OUT OF SCOPE")) // marker in qald benchmark file, will create holes interval of ids (e.g. 1,2,5,7)   
-				{
-					testData.id2Question.put(id, question);
-					testData.id2Query.put(id, query);					
-					Element answersElement = (Element) questionNode.getElementsByTagName("answers").item(0);
-					if(answersElement!=null)
-					{
-						NodeList answerElements = answersElement.getElementsByTagName("answer");						
-						for(int j=0; j<answerElements.getLength();j++)
-						{
-							String answer = ((Element)answerElements.item(j)).getTextContent();
-							answers.add(answer);
-						}
-						testData.id2Answers.put(id, answers);
-					}
-				}				
-				//				question2Answers.put(question, answers);
-
-			}
-		} catch (DOMException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		//		StringBuilder sb = new StringBuilder();
-		//		for(Entry<Integer, String> e : id2Question.entrySet()){
-		//			sb.append(e.getKey()+ ": " + extractSentence(e.getValue()) + "\n");
-		//		}
-		//		try {
-		//			BufferedWriter out = new BufferedWriter(new FileWriter("questions.txt"));
-		//			out.write(sb.toString());
-		//			out.close();
-		//			} 
-		//			catch (IOException e) 
-		//			{ 
-		//			System.out.println("Exception ");
-		//
-		//			}
-		return testData;
-	}
-
-	protected static Set<String> getUris(final SparqlEndpoint endpoint, final String query, ExtractionDBCache cache)
+	public static Set<String> getUris(final SparqlEndpoint endpoint, final String query, ExtractionDBCache cache)
 	{		
 		if(query==null)		{throw new AssertionError("query is null");}
 		if(endpoint==null)	{throw new AssertionError("endpoint is null");}		
@@ -969,8 +838,7 @@ public class SPARQLTemplateBasedLearner3Test
 		{static public final PartOfSpeechTagger posTagger = new SynchronizedStanfordPartOfSpeechTagger();}
 		
 		static private final WordNet wordnet = new WordNet();
-		static private final Options options = new Options();
-		private final boolean pretagged;
+		static private final Options options = new Options();	
 		private final SPARQLTemplateBasedLearner2 learner;
 
 		public LearnQueryCallable(String question, int id, QueryTestData testData, Knowledgebase knowledgeBase,boolean pretagged)
@@ -978,8 +846,8 @@ public class SPARQLTemplateBasedLearner3Test
 			this.question=question;
 			this.id=id;					
 			this.testData=testData;
-			this.pretagged=pretagged;
 			learner = new SPARQLTemplateBasedLearner2(knowledgeBase,pretagged?null:POSTaggerHolder.posTagger,wordnet,options);
+			try {learner.init();} catch (ComponentInitException e) {throw new RuntimeException(e);}
 		}								
 
 		public LearnQueryCallable(String question, int id, QueryTestData testData, Model model,MappingBasedIndex index,boolean pretagged)
@@ -987,20 +855,15 @@ public class SPARQLTemplateBasedLearner3Test
 			this.question=question;
 			this.id=id;					
 			this.testData=testData;
-			this.pretagged=pretagged;
 			MappingBasedIndex mappingIndex= new MappingBasedIndex(
 					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
 					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
 					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
 					SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
 					);
-
+			
 			learner = new SPARQLTemplateBasedLearner2(model,mappingIndex,pretagged?null:POSTaggerHolder.posTagger);
-			try {
-				learner.init();
-			} catch (ComponentInitException e) {
-				e.printStackTrace();
-			}
+			try {learner.init();} catch (ComponentInitException e) {throw new RuntimeException(e);}
 		}								
 
 
