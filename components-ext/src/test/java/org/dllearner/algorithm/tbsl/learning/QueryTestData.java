@@ -33,6 +33,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import com.hp.hpl.jena.rdf.model.Model;
 
 class QueryTestData implements Serializable
 {
@@ -68,12 +69,12 @@ class QueryTestData implements Serializable
 		catch (ClassNotFoundException e){throw new RuntimeException(e);}		
 	}
 
-	public QueryTestData generateAnswers(SparqlEndpoint endpoint, ExtractionDBCache cache)
+	public QueryTestData generateAnswers(SparqlEndpoint endpoint, ExtractionDBCache cache,Model model)
 	{
 		if(!id2Answers.isEmpty()) {throw new AssertionError("Answers already existing.");}
 		for(int i:id2Query.keySet())
 		{
-			Set<String> uris = SPARQLTemplateBasedLearner3Test.getUris(endpoint, id2Query.get(i),cache); 
+			Set<String> uris = SPARQLTemplateBasedLearner3Test.getUris(endpoint, id2Query.get(i),cache,model); 
 			id2Answers.put(i, uris); // empty answer set better transfers intended meaning and doesn't cause NPEs in html generation :-) 
 			if(!uris.isEmpty())	{/*id2Answers.put(i, uris);*/}
 			else				{id2LearnStatus.put(i, LearnStatus.QUERY_RESULT_EMPTY);}
