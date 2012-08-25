@@ -203,8 +203,8 @@ public class EnrichmentServlet extends HttpServlet {
 		final boolean useInference = req.getParameter("use_inference") == null ? false : Boolean.valueOf(req
 				.getParameter("use_inference"));
 		
-		final int maxNrOfReturnedAxioms = req.getParameter("maxNrOfReturnedAxioms") == null ? DEFAULT_MAX_NR_OF_RETURNED_AXIOMS : Integer.parseInt(req.getParameter("maxNrOfReturnedAxioms")); 
-		final int maxExecutionTimeInSeconds = req.getParameter("maxExecutionTimeInSeconds") == null ? DEFAULT_MAX_EXECUTION_TIME_IN_SECONDS : Integer.parseInt(req.getParameter("maxExecutionTimeInSeconds")); 
+		final int maxNrOfReturnedAxioms = req.getParameter("max_returned_axioms") == null ? DEFAULT_MAX_NR_OF_RETURNED_AXIOMS : Integer.parseInt(req.getParameter("max_returned_axioms")); 
+		final int maxExecutionTimeInSeconds = req.getParameter("max_execution_time") == null ? DEFAULT_MAX_EXECUTION_TIME_IN_SECONDS : Integer.parseInt(req.getParameter("max_execution_time")); 
 		final double threshold = req.getParameter("threshold") == null ? DEFAULT_THRESHOLD : Double.parseDouble(req.getParameter("threshold")); 
 
 		String resourceURI = req.getParameter("resource_uri");
