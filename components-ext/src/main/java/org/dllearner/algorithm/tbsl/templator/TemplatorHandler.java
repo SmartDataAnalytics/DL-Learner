@@ -17,6 +17,10 @@ public class TemplatorHandler {
         basictemplator.setGrammarFiles(files);
     }
     
+    public void setVerbose(boolean b) {
+        templator.setVERBOSE(b);
+    }
+    
     public Set<Template> buildTemplates(String s) { 
    		return templator.buildTemplates(s);                       
     }
