@@ -17,6 +17,7 @@ public class TestFrontend {
     public static void main(String[] args) {
 
     	TemplatorHandler handler = new TemplatorHandler(GRAMMAR_FILES);
+        handler.setVerbose(true);
   
         System.out.println("======= SPARQL Templator v0.1 =============");
         System.out.print("\nMode: "); 

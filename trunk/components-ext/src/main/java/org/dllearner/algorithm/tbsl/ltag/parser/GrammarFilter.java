@@ -163,7 +163,7 @@ public class GrammarFilter {
 							if (token.matches(anchor)) {
                                                             								
 								foundCandidates = true;
-								coveredTokens.add(token);
+								coveredTokens.add(anchor.replace(".+",""));
 								
 								// DISAM 
 								String[] newTokenParts = new String[tokenParts.length];
@@ -243,7 +243,7 @@ public class GrammarFilter {
 				buildSlotFor.add(new Pair<String,String>(word,s.trim().substring(s.indexOf("/")+1)));
 				doubles.add(word);
 			} else {
-				System.out.println("Oh no, " + s + " has no POS tag!");
+				logger.error("Oh no, " + s + " has no POS tag!");
 			}
 		}	
 		if (VERBOSE) logger.trace("build slot for: " + buildSlotFor + "\n");
