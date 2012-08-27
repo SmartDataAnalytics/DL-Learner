@@ -504,6 +504,9 @@ DominanceConstraint dc = null;
          else if (type.toString().equals("PROPERTY")) { slottype = SlotType.PROPERTY; }
          else if (type.toString().equals("SYMPROPERTY")) { slottype = SlotType.SYMPROPERTY; }
          else if (type.toString().equals("LITERAL")) { slottype = SlotType.LITERAL; }
+         else if (type.toString().equals("STRING")) { slottype = SlotType.STRING; }
+         else if (type.toString().equals("INTEGER")) { slottype = SlotType.INTEGER; }
+         else if (type.toString().equals("BOOLEAN")) { slottype = SlotType.BOOLEAN; }
          else { slottype = SlotType.UNSPEC; }
 
      {if (true) return new Slot(ref.toString(),slottype,words);}
@@ -884,13 +887,18 @@ DominanceConstraint dc = null;
     return false;
   }
 
+  private boolean jj_3_42() {
+    if (jj_scan_token(B)) return true;
+    return false;
+  }
+
   private boolean jj_3_3() {
     if (jj_3R_3()) return true;
     return false;
   }
 
-  private boolean jj_3_42() {
-    if (jj_scan_token(B)) return true;
+  private boolean jj_3_40() {
+    if (jj_scan_token(C)) return true;
     return false;
   }
 
@@ -910,23 +918,6 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_40() {
-    if (jj_scan_token(C)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_16() {
-    if (jj_3R_7()) return true;
-    if (jj_scan_token(14)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_11() {
-    if (jj_scan_token(LABEL)) return true;
-    if (jj_scan_token(11)) return true;
-    return false;
-  }
-
   private boolean jj_3_41() {
     if (jj_scan_token(A)) return true;
     return false;
@@ -939,6 +930,18 @@ DominanceConstraint dc = null;
     jj_scanpos = xsp;
     if (jj_3_42()) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3R_16() {
+    if (jj_3R_7()) return true;
+    if (jj_scan_token(14)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_11() {
+    if (jj_scan_token(LABEL)) return true;
+    if (jj_scan_token(11)) return true;
     return false;
   }
 
@@ -1131,15 +1134,15 @@ DominanceConstraint dc = null;
     return false;
   }
 
-  private boolean jj_3_7() {
-    if (jj_3R_5()) return true;
-    if (jj_scan_token(6)) return true;
-    return false;
-  }
-
   private boolean jj_3_38() {
     if (jj_scan_token(15)) return true;
     if (jj_3R_13()) return true;
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    if (jj_3R_5()) return true;
+    if (jj_scan_token(6)) return true;
     return false;
   }
 
