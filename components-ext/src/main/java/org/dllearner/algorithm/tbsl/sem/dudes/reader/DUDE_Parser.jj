@@ -458,6 +458,9 @@ Slot Slot() :
 	 else if (type.toString().equals("PROPERTY")) { slottype = SlotType.PROPERTY; }
 	 else if (type.toString().equals("SYMPROPERTY")) { slottype = SlotType.SYMPROPERTY; }
          else if (type.toString().equals("LITERAL")) { slottype = SlotType.LITERAL; }
+         else if (type.toString().equals("STRING")) { slottype = SlotType.STRING; }
+         else if (type.toString().equals("INTEGER")) { slottype = SlotType.INTEGER; }
+         else if (type.toString().equals("BOOLEAN")) { slottype = SlotType.BOOLEAN; }
 	 else { slottype = SlotType.UNSPEC; }
 	   
      return new Slot(ref.toString(),slottype,words);
