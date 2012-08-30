@@ -84,10 +84,9 @@ public class DRS2SPARQL_Converter {
     	
 //        System.out.println("\n--- DRS (before): " + drs); // DEBUG   	
         redundantEqualRenaming(drs); 
-        if (!restructureEmpty(drs)) {
-        	return null;
+        if (!restructureEmpty(drs) || !replaceRegextoken(drs)) {
+           return null;
         }
-        replaceRegextoken(drs);
 //       System.out.println("--- DRS (after) : " + drs); // DEBUG
             
         for (DiscourseReferent referent : drs.collectDRs()) {
@@ -467,11 +466,16 @@ public class DRS2SPARQL_Converter {
         }
     }
     
-    private void replaceRegextoken(DRS drs) {
-        
+    private boolean replaceRegextoken(DRS drs) {
+                        
         Set<Simple_DRS_Condition> cs = new HashSet<Simple_DRS_Condition>();
         for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
-            if(c.getPredicate().equals("regextoken")) cs.add(c);
+            if(c.getPredicate().equals("regextoken")) {
+                for (DiscourseReferent arg : c.getArguments()) {
+                    if (arg.getValue().matches("[1-9]+")) return false;
+                    else cs.add(c);
+                }
+            }
         }
         
         String var;
@@ -554,15 +558,19 @@ public class DRS2SPARQL_Converter {
                 break;
             }
         }
+        return true;
     }
     
 
     private boolean restructureEmpty(DRS drs) {
-    	
+ 
     	Set<Simple_DRS_Condition> emptyConditions = new HashSet<Simple_DRS_Condition>();
         for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
         	if(c.getPredicate().equals("empty") || c.getPredicate().equals("empty_data")) {
-        		emptyConditions.add(c);
+                    for (DiscourseReferent arg : c.getArguments()) {
+                        if (arg.getValue().matches("[1-9]+")) drs.removeCondition(c);
+                        else emptyConditions.add(c);
+                    }
         	}
         }
         if (emptyConditions.isEmpty()) {
