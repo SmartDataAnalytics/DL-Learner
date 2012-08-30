@@ -464,7 +464,7 @@ public class DRS2BasicSPARQL_Converter {
 	}
 	
     private boolean restructureEmpty(DRS drs) {
-    	
+    	        
     	Set<Simple_DRS_Condition> emptyConditions = new HashSet<Simple_DRS_Condition>();
         for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
         	if(c.getPredicate().equals("empty")) {
@@ -528,5 +528,5 @@ public class DRS2BasicSPARQL_Converter {
         	}
         }
         return globalsuccess;
-	}
+	}    
 }
