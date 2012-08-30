@@ -414,7 +414,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 		double confidence = confidenceInterval[1] - confidenceInterval[0];
 		
-		return new AxiomScore(accuracy, confidence);
+		return new AxiomScore(accuracy, confidence, total, success, total-success);
 	}
 	
 	protected double accuracy(int total, int success){
