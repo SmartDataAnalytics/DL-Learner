@@ -35,6 +35,7 @@ import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
@@ -134,7 +135,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 				getIRI().toString());
 		description.getFiller().accept(this);
 		Description d = stack.pop();
-		stack.push(new ObjectSomeRestriction(role, d));		
+		stack.push(new ObjectAllRestriction(role, d));		
 	}
 
 	@Override

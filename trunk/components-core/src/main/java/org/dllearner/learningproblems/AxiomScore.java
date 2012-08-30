@@ -27,12 +27,25 @@ public class AxiomScore extends Score{
 	private double accuracy;
 	private double confidence;
 	
+	private int totalNrOfExamples;
+	private int nrOfpositiveExamples;
+	private int nrOfnegativeExamples;
+	
 	public AxiomScore(double accuracy) {
 		this.accuracy = accuracy;
 	}
 	
 	public AxiomScore(double accuracy, double confidence) {
 		this.accuracy = accuracy;
+		this.confidence = confidence;
+	}
+	
+	public AxiomScore(double accuracy, double confidence, int totalNrOfExamples, int nrOfpositiveExamples, int nrOfnegativeExamples) {
+		this.accuracy = accuracy;
+		this.confidence = confidence;
+		this.totalNrOfExamples = totalNrOfExamples;
+		this.nrOfpositiveExamples = nrOfpositiveExamples;
+		this.nrOfnegativeExamples = nrOfnegativeExamples;
 	}
 
 	@Override
@@ -42,6 +55,18 @@ public class AxiomScore extends Score{
 	
 	public double getConfidence(){
 		return confidence;
+	}
+	
+	public int getTotalNrOfExamples() {
+		return totalNrOfExamples;
+	}
+	
+	public int getNrOfpositiveExamples() {
+		return nrOfpositiveExamples;
+	}
+	
+	public int getNrOfnegativeExamples() {
+		return nrOfnegativeExamples;
 	}
 
 }
