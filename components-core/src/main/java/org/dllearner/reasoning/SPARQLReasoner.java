@@ -109,6 +109,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			cache = new ExtractionDBCache("cache");
 		}
 		classPopularityMap = new HashMap<NamedClass, Integer>();
+		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
 	}
 	
 	public SPARQLReasoner(SparqlEndpointKS ks, ExtractionDBCache cache) {
@@ -116,12 +117,14 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		this.cache = cache;
 		
 		classPopularityMap = new HashMap<NamedClass, Integer>();
+		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
 	}
 	
 	public SPARQLReasoner(OntModel model) {
 		this.model = model;
 		
 		classPopularityMap = new HashMap<NamedClass, Integer>();
+		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
 	}
 	
 	public void precomputePopularity(){

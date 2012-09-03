@@ -194,24 +194,24 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		for(ObjectProperty p : completeDisjointProperties){
 			if(usePropertyPopularity){
 				int overlap = 0;
-				int pop;
+				int otherPopularity;
 				if(ks.isRemote()){
-					pop = reasoner.getPopularity(p);
+					otherPopularity = reasoner.getPopularity(p);
 				} else {
 					Model model = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
-					pop = model.listStatements(null, model.getProperty(p.getName()), (RDFNode)null).toSet().size();
+					otherPopularity = model.listStatements(null, model.getProperty(p.getName()), (RDFNode)null).toSet().size();
 				}
-				//we skip classes with no instances
-				if(pop == 0) continue;
+				//we skip properties with no instances
+				if(otherPopularity == 0) continue;
 				
 				//we compute the estimated precision
-				double precision = accuracy(pop, overlap);
+				double precision = accuracy(otherPopularity, overlap);
 				//we compute the estimated recall
 				double recall = accuracy(popularity, overlap);
 				//compute the overall score
 				double score = 1 - fMEasure(precision, recall);
 				
-				evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(score));
+				evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(score, score, popularity, popularity, 0));
 			} else {
 				evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(1));
 			}
@@ -223,24 +223,24 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
 			p = entry.getKey();
 			int overlap = entry.getValue();
-			int pop;
+			int otherPopularity;
 			if(ks.isRemote()){
-				pop = reasoner.getPopularity(p);
+				otherPopularity = reasoner.getPopularity(p);
 			} else {
 				Model model = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
-				pop = model.listStatements(null, model.getProperty(p.getName()), (RDFNode)null).toSet().size();
+				otherPopularity = model.listStatements(null, model.getProperty(p.getName()), (RDFNode)null).toSet().size();
 			}
-			//we skip classes with no instances
-			if(pop == 0) continue;
+			//we skip properties with no instances
+			if(otherPopularity == 0) continue;
 			
 			//we compute the estimated precision
-			double precision = accuracy(pop, overlap);
+			double precision = accuracy(otherPopularity, overlap);
 			//we compute the estimated recall
 			double recall = accuracy(popularity, overlap);
 			//compute the overall score
 			double score = 1 - fMEasure(precision, recall);
 			
-			evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(score));
+			evalAxiom = new EvaluatedAxiom(new DisjointObjectPropertyAxiom(propertyToDescribe, p), new AxiomScore(score, score, popularity, popularity - overlap, overlap));
 		}
 		
 		property2Count.put(propertyToDescribe, all);
@@ -251,7 +251,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 //		endpoint = new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
 		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(endpoint));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/aircraftTransport"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/league"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.getReasoner().precomputeObjectPropertyPopularity();

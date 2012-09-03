@@ -171,9 +171,9 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		property2Count.remove(propertyToDescribe);
 		
 		EvaluatedAxiom evalAxiom;
-		Set<ObjectProperty> properties;
+		List<ObjectProperty> properties;
 		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
-			properties = new HashSet<ObjectProperty>();
+			properties = new ArrayList<ObjectProperty>();
 			properties.add(propertyToDescribe);
 			properties.add(entry.getKey());
 			int popularity = reasoner.getPropertyCount(entry.getKey());

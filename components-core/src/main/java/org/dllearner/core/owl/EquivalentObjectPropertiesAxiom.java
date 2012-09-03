@@ -19,21 +19,21 @@
 
 package org.dllearner.core.owl;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 public class EquivalentObjectPropertiesAxiom extends PropertyAxiom {
 
 	
 	private static final long serialVersionUID = -1085651734702155330L;
-	private Set<ObjectProperty> equivalentProperties;
+	private Collection<ObjectProperty> equivalentProperties;
 	
-	public EquivalentObjectPropertiesAxiom(Set<ObjectProperty> equivalentProperties) {
+	public EquivalentObjectPropertiesAxiom(Collection<ObjectProperty> equivalentProperties) {
 		this.equivalentProperties = equivalentProperties;
 	}
 	
-	public Set<ObjectProperty> getEquivalentProperties() {
+	public Collection<ObjectProperty> getEquivalentProperties() {
 		return equivalentProperties;
 	}
 
