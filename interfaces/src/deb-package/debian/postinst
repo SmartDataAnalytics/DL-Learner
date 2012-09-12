@@ -1,0 +1,5 @@
+#!/bin/sh
+
+chmod 666 /usr/share/dllearner
+
+exit 0
