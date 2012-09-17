@@ -81,7 +81,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
-/** Tests TSBL against the qald2 benchmark test data with the DBpedia endpoint.
+/** If you just want to test the standard queries, activate justTestTheLastWorkingOnesDBpedia() and testOxford().
+ * Tests TSBL against the qald2 benchmark test data with the DBpedia endpoint.
  * The qald2 endpoint is not used because it may not always be available.
  * To speed up the process at first the test file is read and an updated copy of it is saved that
  * only contains the questions where the reference query does not return a nonempty list of resources.
@@ -105,17 +106,65 @@ public class SPARQLTemplateBasedLearner3Test
 	private static final boolean	OXFORD_PRETAGGED	= false;
 
 	/*@Test*/ public void testDBpedia() throws Exception
-	{test("QALD 2 Benchmark ideally tagged", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
-			SparqlEndpoint.getEndpointDBpedia(),dbpediaLiveCache);}
-
-	/*@Test*/ public void testOxford() throws Exception
 	{
+		File file = generateTestDataIfNecessary(
+				new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
+				SparqlEndpoint.getEndpointDBpedia(),
+				dbpediaLiveCache);
+		test("QALD 2 Benchmark ideally tagged", file,SparqlEndpoint.getEndpointDBpedia(),dbpediaLiveCache,dbpediaLiveKnowledgebase,null,null);
 	}
 
-	@Test public void generateXMLOxford() throws IOException
+	@Test public void testOxford() throws Exception
 	{
-		boolean ADD_POS_TAGS = false;
-		PartOfSpeechTagger posTagger = new StanfordPartOfSpeechTagger();
+		File file = new File(getClass().getClassLoader().getResource("tbsl/evaluation/oxford_working_questions.xml").getFile());
+		test("Oxford 19 working questions", file,null,null,null,loadOxfordModel(),getOxfordMappingIndex());
+	}
+
+//	/*@Test*/ public void testOxford() throws Exception
+//	{
+//		Model model = loadOxfordModel();
+//		QueryTestData testData = QueryTestData.readQaldXml(new File("log/oxford_working_questions.xml"));
+//		// answers are not included at least in the first query TODO: check, why
+//		testData.generateAnswers(null, null, model);
+//		QueryTestData newTestData = generateTestDataMultiThreaded(testData.id2Question, null, model,getOxfordMappingIndex() , OXFORD_PRETAGGED);
+//		newTestData.generateAnswers(null, null, model);
+//		for(int i : testData.id2Question.keySet())
+//		{
+//			logger.info("Comparing answers for question "+testData.id2Question.get(i));
+//			String referenceQuery = testData.id2Query.get(i);
+//			String newQuery = newTestData.id2Query.get(i);			
+//			if(!referenceQuery.equals(newQuery))
+//			{
+//				logger.warn("not equal, reference query: "+referenceQuery+", new query: "+newQuery);
+//				Collection<String> referenceAnswers = testData.id2Answers.get(i);
+//				Collection<String> newAnswers = newTestData.id2Answers.get(i);			
+//				if(!referenceAnswers.equals(newAnswers)) fail("not equal, reference answers: "+referenceAnswers+", new answers: "+newAnswers);
+//			}
+//		}
+//	}
+
+	/** For debugging one question in particular.
+	 */
+	/*@Test*/ public void testSingleQueryOxford()
+	{
+		Logger.getLogger(Templator.class).setLevel(Level.DEBUG);
+		Logger.getLogger(Parser.class).setLevel(Level.DEBUG);
+		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.DEBUG);
+		//		String question = "houses for less than 900000 pounds";
+		String question = "houses/NNS for/IN less/JJR than/IN 900000/CD pounds/NNS";
+		//question = new StanfordPartOfSpeechTagger().tag(question);
+
+		Model model = loadOxfordModel();
+		QueryTestData testData = new QueryTestData();
+		new LearnQueryCallable(question, 0, testData, model, getOxfordMappingIndex(), true).call();
+		logger.info("learned query: "+testData.id2Query.get(0));
+	}
+
+	/*@Test*/ public void generateXMLOxford() throws IOException
+	{
+		boolean ADD_POS_TAGS = true;
+		PartOfSpeechTagger posTagger = null;
+		if(ADD_POS_TAGS) {posTagger=new StanfordPartOfSpeechTagger();}
 		Model model = loadOxfordModel();
 		List<String> questions = new LinkedList<String>();
 		BufferedReader in = new BufferedReader((new InputStreamReader(getClass().getClassLoader().getResourceAsStream("tbsl/oxford_eval_queries.txt"))));
@@ -132,18 +181,23 @@ public class SPARQLTemplateBasedLearner3Test
 		SortedMap<Integer,String> id2Question = new TreeMap<Integer, String>();
 		Iterator<String> it = questions.iterator();
 		for(int i=0;i<questions.size();i++) {id2Question.put(i, it.next());}
-		MappingBasedIndex mappingIndex= new MappingBasedIndex(
-				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
-				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
-				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
-				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
-				);
+		MappingBasedIndex mappingIndex= getOxfordMappingIndex();
 		QueryTestData testData = generateTestDataMultiThreaded(id2Question, null,model,mappingIndex,ADD_POS_TAGS||OXFORD_PRETAGGED);
 		testData.generateAnswers(null, null, model);
 		testData.writeQaldXml(new File("log/test.xml"));
 	}
 
-	private Model loadOxfordModel()
+	public static MappingBasedIndex getOxfordMappingIndex()
+	{
+		return new MappingBasedIndex(
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_class_mappings.txt").getPath(), 
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_resource_mappings.txt").getPath(),
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_dataproperty_mappings.txt").getPath(),
+				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
+				);
+	}
+
+	public static Model loadOxfordModel()
 	{
 		// load it into a model because we can and it's faster and doesn't rely on endpoint availability
 		// the files are located in the paper svn under question-answering-iswc-2012/data
@@ -189,7 +243,7 @@ public class SPARQLTemplateBasedLearner3Test
 			// switch(type) {case "ttl":type="TURTLE";break;case "owl":type="RDF/XML";break;default:throw new RuntimeException("filetype "+ending+" not handled.");} // no Java 1.7 :-(
 			try{
 				//				m.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/data/"+s)), null, type);}catch (FileNotFoundException e) {}
-				m.read(getClass().getClassLoader().getResourceAsStream("oxford/"+s),null, type);}
+				m.read(SPARQLTemplateBasedLearner3Test.class.getClassLoader().getResourceAsStream("oxford/"+s),null, type);}
 			catch(RuntimeException e) {throw new RuntimeException("Could not read into model: "+s,e);} 
 		}
 		//		test("Oxford evaluation questions", new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
@@ -215,9 +269,10 @@ public class SPARQLTemplateBasedLearner3Test
 		}
 	}
 
-	public void test(String title, final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
+	public void test(String title, final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache,Knowledgebase kb, Model model, MappingBasedIndex index)
+			throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
 	{		
-		generateTestDataIfNecessaryAndEvaluateAndWrite(title,referenceXML,endpoint,cache);
+		evaluateAndWrite(title,referenceXML,endpoint,cache,kb,model,index);
 		generateHTML(title); 
 
 		//				if(evaluation.numberOfCorrectAnswers<3) {fail("only " + evaluation.numberOfCorrectAnswers+" correct answers.");}
@@ -245,26 +300,31 @@ public class SPARQLTemplateBasedLearner3Test
 				learnedTestData.write();*/
 	}
 
-	private void generateTestDataIfNecessaryAndEvaluateAndWrite(String title, final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException
+	private File generateTestDataIfNecessary(final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException
 	{
 		String dir = "cache/"+getClass().getSimpleName()+"/";
-
 		new File(dir).mkdirs();
 		File updatedReferenceXML=new File(dir+"updated_"+referenceXML.getName());
+
 		if(!updatedReferenceXML.exists())
 		{
-			logger.info("Generating updated reference for "+title);
+			logger.info("Generating updated reference.");
 			generateUpdatedXML(referenceXML,updatedReferenceXML,endpoint,cache,null);
 		}
+		return updatedReferenceXML;
+	}
 
+	private void evaluateAndWrite(String title,final File updatedReferenceXML, final  SparqlEndpoint endpoint,ExtractionDBCache cache,
+		Knowledgebase kb, Model model, MappingBasedIndex index)
+	{
 		QueryTestData referenceTestData = QueryTestData.readQaldXml(updatedReferenceXML);
 		logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
 
 		long startLearning = System.currentTimeMillis();
-		QueryTestData learnedTestData = generateTestDataMultiThreaded(referenceTestData.id2Question, dbpediaLiveKnowledgebase,null,null,DBPEDIA_PRETAGGED);
+		QueryTestData learnedTestData = generateTestDataMultiThreaded(referenceTestData.id2Question, kb,model,index,DBPEDIA_PRETAGGED);
 		long endLearning = System.currentTimeMillis();
 		logger.info("finished learning after "+(endLearning-startLearning)/1000.0+"s");
-		learnedTestData.generateAnswers(endpoint,cache,null);
+		learnedTestData.generateAnswers(endpoint,cache,model);
 		long endGeneratingAnswers = System.currentTimeMillis();
 		logger.info("finished generating answers in "+(endGeneratingAnswers-endLearning)/1000.0+"s");
 		Evaluation evaluation = evaluate(referenceTestData, learnedTestData); 
@@ -756,7 +816,7 @@ public class SPARQLTemplateBasedLearner3Test
 	public static Set<String> getUris(final SparqlEndpoint endpoint, final String query, ExtractionDBCache cache, Model model)
 	{		
 		if(query==null)		{throw new AssertionError("query is null");}
-//		if(endpoint==null)	{throw new AssertionError("endpoint is null");}		
+		//		if(endpoint==null)	{throw new AssertionError("endpoint is null");}		
 		if(!query.contains("SELECT")&&!query.contains("select")) {return Collections.<String>emptySet();} // abort when not a select query
 		Set<String> uris = new HashSet<String>();
 		//		QueryEngineHTTP qe = new QueryEngineHTTP(DBPEDIA_LIVE_ENDPOINT_URL_STRING, query);		
@@ -851,6 +911,8 @@ public class SPARQLTemplateBasedLearner3Test
 	//
 	//			return kb;
 	//		}
+	/** @author konrad
+	 * Learns a query for a question and puts it into the given testData object. * */
 	private static class LearnQueryCallable implements Callable<LearnStatus>
 	{
 		private final String question;
@@ -897,7 +959,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 		@Override public LearnStatus call()
 		{
-			
+
 			logger.trace("learning question: "+question);					
 			try
 			{			

@@ -494,6 +494,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				max = a.getProminence();
 			}
 		}
+		if(min==max) {return;}
 		for(Allocation a : allocations){
 			double prominence = a.getProminence()/(max-min);
 			a.setProminence(prominence);
@@ -905,13 +906,14 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		if(popularity == null){
 			popularity = Integer.valueOf(0);
 		}
+		System.out.println(popularity);
 
 
 		//		if(cnt == 0){
 		//			return 0;
 		//		} 
 		//		return Math.log(cnt);
-		if(Double.isNaN(popularity)) {throw new AssertionError("prominence NaN for uri "+uri+", slot type "+type);}
+		if(popularity!=popularity) {throw new AssertionError("prominence NaN for uri "+uri+", slot type "+type);}
 		return popularity;
 	}
 
