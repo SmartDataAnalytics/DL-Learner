@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.dllearner.algorithm.tbsl.learning.NoTemplateFoundException;
 import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner2;
+import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner3Test;
+import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
 import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SPARQLIndex;
 import org.dllearner.common.index.VirtuosoClassesIndex;
@@ -46,7 +48,10 @@ public class OxfordEvaluation {
 				OxfordEvaluation.class.getClassLoader().getResource("tbsl/oxford_objectproperty_mappings.txt").getPath()
 				);
 		
-		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
+//		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
+		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2
+				(SPARQLTemplateBasedLearner3Test.loadOxfordModel(),SPARQLTemplateBasedLearner3Test.getOxfordMappingIndex(), new StanfordPartOfSpeechTagger());
+		
 		learner.setMappingIndex(mappingIndex);
 		learner.init();
 		learner.setGrammarFiles(new String[]{"tbsl/lexicon/english.lex","tbsl/lexicon/english_oxford.lex"});

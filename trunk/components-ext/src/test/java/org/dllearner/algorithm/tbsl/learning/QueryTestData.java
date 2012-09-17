@@ -35,7 +35,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import com.hp.hpl.jena.rdf.model.Model;
 
-class QueryTestData implements Serializable
+public class QueryTestData implements Serializable
 {
 	public SortedMap<Integer, String> id2Question = new ConcurrentSkipListMap<Integer, String>();
 	public SortedMap<Integer, String> id2Query = new ConcurrentSkipListMap<Integer, String>();
