@@ -1,0 +1,32 @@
+<beans xmlns="http://www.springframework.org/schema/beans">
+  <bean class="org.dllearner.algorithms.ocel.OCEL" name="alg"/>
+  <bean class="org.dllearner.kb.OWLFile" name="ks">
+    <property name="fileName" value="father.owl"/>
+  </bean>
+  <bean class="org.dllearner.learningproblems.PosNegLPStandard" name="lp">
+    <property name="positiveExamples">
+      <set>
+        <value>http://example.com/father#markus</value>
+        <value>http://example.com/father#stefan</value>
+        <value>http://example.com/father#martin</value>
+      </set>
+    </property>
+    <property name="negativeExamples">
+      <set>
+        <value>http://example.com/father#heinz</value>
+        <value>http://example.com/father#anna</value>
+        <value>http://example.com/father#michelle</value>
+      </set>
+    </property>
+  </bean>
+  <bean class="org.dllearner.cli.CLI" name="cli">
+    <property name="writeSpringConfiguration"/>
+  </bean>
+  <bean class="org.dllearner.reasoning.FastInstanceChecker" name="reasoner">
+    <property name="sources">
+      <set>
+        <ref bean="ks"/>
+      </set>
+    </property>
+  </bean>
+</beans>

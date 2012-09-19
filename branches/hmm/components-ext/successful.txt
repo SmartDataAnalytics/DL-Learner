@@ -1,0 +1,1230 @@
+*****************************************************************
+Which/WDT presidents/NNS of/IN the/DT United/NNP States/NNPS had/VBD more/JJR than/IN three/CD children/NNS
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x COUNT(?v0) AS ?c WHERE {
+	?x ?p6 ?v1 .
+	?x ?p5 ?y .
+	?v0 rdf:type ?p4 .
+	?x rdf:type ?p3 .
+	FILTER(?c > 3) .
+}
+
+>> SLOTS:
+v1: RESOURCE {United States}
+p3: CLASS {presidents,president}
+p4: CLASS {children,child,kid,youngster,minor}
+p5: PROPERTY {had}
+p6: PROPERTY {}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x COUNT(?v0) AS ?c WHERE {
+	?x ?p2 ?y .
+	?v1 ?p0 ?x .
+	?v0 rdf:type ?p1 .
+	FILTER(?c > 3) .
+}
+
+>> SLOTS:
+v1: RESOURCE {United States}
+p0: PROPERTY {presidents,president}
+p1: CLASS {children,child,kid,youngster,minor}
+p2: PROPERTY {had}
+*****************************************************************
+Give/VB me/PRP the/DT official/JJ websites/NNS of/IN actors/NNS of/IN the/DT television/NN show/NN Charmed/VBN
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y ?p5 ?j .
+	?v3 ?p4 ?v0 .
+	?v3 ?p8 ?y .
+	?v3 rdf:type ?p7 .
+	?v0 rdf:type ?p6 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Charmed}
+p4: PROPERTY {}
+p5: PROPERTY {official}
+p6: CLASS {television show}
+p7: CLASS {actors,actor,histrion,player,thespian}
+p8: PROPERTY {websites,website,site}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y ?p9 ?j .
+	?v0 rdf:type ?p11 .
+	?v0 ?p12 ?v3 .
+	?y rdf:type ?p13 .
+	?y ?p10 ?v3 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Charmed}
+p9: PROPERTY {official}
+p10: PROPERTY {}
+p11: CLASS {television show}
+p12: PROPERTY {actors,actor,histrion,player,thespian}
+p13: CLASS {websites,website,site}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 rdf:type ?p16 .
+	?y rdf:type ?p18 .
+	?y ?p15 ?j .
+	?v3 rdf:type ?p17 .
+	?v3 ?p14 ?v0 .
+	?y ?p14 ?v3 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Charmed}
+p14: PROPERTY {}
+p15: PROPERTY {official}
+p16: CLASS {television show}
+p17: CLASS {actors,actor,histrion,player,thespian}
+p18: CLASS {websites,website,site}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y ?p0 ?j .
+	?v0 ?p2 ?v3 .
+	?v3 ?p3 ?y .
+	?v0 rdf:type ?p1 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Charmed}
+p0: PROPERTY {official}
+p1: CLASS {television show}
+p2: PROPERTY {actors,actor,histrion,player,thespian}
+p3: PROPERTY {websites,website,site}
+*****************************************************************
+Who/WP is/VBZ the/DT daughter/NN of/IN Bill/NNP Clinton/NNP married/VBN to/TO
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p1 ?x .
+	?x ?p0 ?y .
+}
+
+>> SLOTS:
+v0: RESOURCE {Bill Clinton}
+p0: PROPERTY {married}
+p1: PROPERTY {daughter,girl}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?x ?p4 ?v0 .
+	?x rdf:type ?p2 .
+	?x ?p3 ?y .
+}
+
+>> SLOTS:
+v0: RESOURCE {Bill Clinton}
+p2: CLASS {daughter,girl}
+p3: PROPERTY {married}
+p4: PROPERTY {}
+*****************************************************************
+Which/WDT river/NN does/VBZ the/DT Brooklyn/NNP Bridge/NNP cross/VB
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p3 ?y .
+	?v0 rdf:type ?p2 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Brooklyn Bridge}
+p2: CLASS {river}
+p3: PROPERTY {cross}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?x ?p1 ?y .
+	?y rdf:type ?p0 .
+}
+
+>> SLOTS:
+x: RESOURCE {Brooklyn Bridge}
+p0: CLASS {river}
+p1: PROPERTY {cross}
+*****************************************************************
+How/WRB many/JJ monarchical/JJ countries/NNS are/VBP there/RB in/IN Europe/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK WHERE {
+	?y ?p1 ?j .
+	?y rdf:type ?p0 .
+	?y ?p2 ?v1 .
+	FILTER(?y == ?y) .
+}
+
+>> SLOTS:
+p0: CLASS {countries,state,nation,country,land}
+p1: PROPERTY {monarchical}
+p2: PROPERTY {}
+*****************************************************************
+Where/WRB did/VBD Abraham/NNP Lincoln/NNP die/VB
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?x ?p0 ?y .
+}
+
+>> SLOTS:
+x: RESOURCE {Abraham Lincoln}
+p0: PROPERTY {diePlace}
+*****************************************************************
+Is/VBZ the/DT wife/NN of/IN President/NNP Obama/NNP called/VBD Michelle/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK WHERE {
+	?v0 ?p0 ?y .
+	?y ?p1 'michelle' .
+}
+
+>> SLOTS:
+v0: RESOURCE {President Obama}
+p0: PROPERTY {wife}
+p1: PROPERTY {title,name}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK WHERE {
+	?y rdf:type ?p2 .
+	?y ?p4 'michelle' .
+	?y ?p3 ?v0 .
+}
+
+>> SLOTS:
+v0: RESOURCE {President Obama}
+p2: CLASS {wife}
+p3: PROPERTY {}
+p4: PROPERTY {title,name}
+*****************************************************************
+Which/WDT states/NNS of/IN Germany/NNP are/VBP governed/VBN by/IN the/DT Social/NNP Democratic/NNP Party/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?v0 ?p1 ?x .
+	?y ?p0 ?x .
+}
+
+>> SLOTS:
+y: RESOURCE {Social Democratic Party}
+v0: RESOURCE {Germany}
+p0: PROPERTY {governed}
+p1: PROPERTY {states,state,province}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?x ?p4 ?v0 .
+	?x rdf:type ?p3 .
+	?y ?p2 ?x .
+}
+
+>> SLOTS:
+y: RESOURCE {Social Democratic Party}
+v0: RESOURCE {Germany}
+p2: PROPERTY {governed}
+p3: CLASS {states,state,province}
+p4: PROPERTY {}
+*****************************************************************
+Which/WDT US/NNP states/NNS possess/VBP gold/NN minerals/NNS
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?x rdf:type ?p2 .
+	?x ?p1 ?j .
+	?y rdf:type ?p3 .
+	?x ?p0 ?y .
+}
+
+>> SLOTS:
+p0: PROPERTY {possess}
+p1: PROPERTY {US}
+p2: CLASS {states,state,province}
+p3: CLASS {gold minerals}
+*****************************************************************
+In/IN which/WDT country/NN does/VBZ the/DT Nile/NNP start/VB
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p3 ?y .
+	?v0 rdf:type ?p2 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Nile}
+p2: CLASS {country,state,nation,land,commonwealth}
+p3: PROPERTY {start}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p1 .
+	?x ?p0 ?y .
+}
+
+>> SLOTS:
+x: RESOURCE {Nile}
+p0: PROPERTY {start}
+p1: CLASS {country,state,nation,land,commonwealth}
+*****************************************************************
+Which/WDT locations/NNS have/VBP more/JJR than/IN two/CD caves/NNS
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x COUNT(?v0) AS ?c WHERE {
+	?x rdf:type ?p2 .
+	?x ?p0 ?y .
+	?v0 rdf:type ?p1 .
+	FILTER(?c > 2) .
+}
+
+>> SLOTS:
+p0: PROPERTY {have}
+p1: CLASS {caves,cave}
+p2: CLASS {locations,location}
+*****************************************************************
+Is/VBZ proinsulin/NNP a/DT protein/NN
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK WHERE {
+	?y rdf:type ?p0 .
+	FILTER(?y == ?y) .
+}
+
+>> SLOTS:
+y: RESOURCE {proinsulin}
+p0: CLASS {protein}
+*****************************************************************
+Which/WDT classis/NN does/VBZ the/DT Millepede/NNP belong/VBP to/TO
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p3 ?y .
+	?v0 rdf:type ?p2 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Millepede}
+p2: CLASS {classis}
+p3: PROPERTY {belong}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?x ?p1 ?y .
+	?y rdf:type ?p0 .
+}
+
+>> SLOTS:
+x: RESOURCE {Millepede}
+p0: CLASS {classis}
+p1: PROPERTY {belong}
+*****************************************************************
+Who/WP created/VBD Goofy/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?x ?p0 ?y .
+}
+
+>> SLOTS:
+y: RESOURCE {Goofy}
+p0: PROPERTY {created}
+*****************************************************************
+Give/VB me/PRP the/DT capitals/NNS of/IN all/DT US/NNP states/NNS
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 rdf:type ?p3 .
+	?v0 ?p5 ?j .
+	?y ?p6 ?v0 .
+	?y rdf:type ?p4 .
+}
+
+>> SLOTS:
+p3: CLASS {states,state,province}
+p4: CLASS {capitals,capital}
+p5: PROPERTY {US}
+p6: PROPERTY {}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y ?p13 ?v0 .
+	?v0 rdf:type ?p11 .
+	?y rdf:type ?p10 .
+	?v0 ?p12 ?j .
+}
+
+>> SLOTS:
+p10: CLASS {capitals,capital}
+p11: CLASS {states,state,province}
+p12: PROPERTY {US}
+p13: PROPERTY {}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p7 ?y .
+	?v0 rdf:type ?p8 .
+	?v0 ?p9 ?j .
+}
+
+>> SLOTS:
+p7: PROPERTY {capitals,capital}
+p8: CLASS {states,state,province}
+p9: PROPERTY {US}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 rdf:type ?p0 .
+	?v0 ?p1 ?y .
+	?v0 ?p2 ?j .
+}
+
+>> SLOTS:
+p0: CLASS {states,state,province}
+p1: PROPERTY {capitals,capital}
+p2: PROPERTY {US}
+*****************************************************************
+Give/VB me/PRP all/DT cities/NNS in/IN New/NNP Jersey/NNP with/IN more/JJR than/IN 100000/CD inhabitants/NNS
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y COUNT(?v0) AS ?c WHERE {
+	?y ?p6 ?v3 .
+	?v3 ?p4 ?v2 .
+	?v0 rdf:type ?p5 .
+	?y rdf:type ?p7 .
+	FILTER(?c > 100000) .
+}
+
+>> SLOTS:
+v3: RESOURCE {New Jersey}
+p4: PROPERTY {}
+p5: CLASS {inhabitants,inhabitant,habitant,dweller,denizen}
+p6: PROPERTY {}
+p7: CLASS {cities,city,metropolis}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y COUNT(?v0) AS ?c WHERE {
+	?y ?p1 ?v1 .
+	?v0 rdf:type ?p0 .
+	?y rdf:type ?p2 .
+	?y ?p3 ?v3 .
+	FILTER(?c > 100000) .
+}
+
+>> SLOTS:
+p0: CLASS {inhabitants,inhabitant,habitant,dweller,denizen}
+p1: PROPERTY {}
+p2: CLASS {cities,city,metropolis}
+p3: PROPERTY {}
+*****************************************************************
+Which/WDT museum/NN exhibits/VBZ The/DT Scream/NNP by/IN Munch/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?y ?p0 ?v1 .
+	?x rdf:type ?p2 .
+	?x ?p1 ?y .
+}
+
+>> SLOTS:
+y: RESOURCE {Scream}
+v1: RESOURCE {Munch}
+p0: PROPERTY {}
+p1: PROPERTY {exhibits}
+p2: CLASS {museum}
+*****************************************************************
+What/WP is/VBZ the/DT revenue/NN of/IN IBM/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p1 .
+	?y ?p2 ?v0 .
+}
+
+>> SLOTS:
+v0: RESOURCE {IBM}
+p1: CLASS {revenue,gross,receipts}
+p2: PROPERTY {}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p0 ?y .
+}
+
+>> SLOTS:
+v0: RESOURCE {IBM}
+p0: PROPERTY {revenue,gross,receipts}
+*****************************************************************
+In/IN which/WDT country/NN is/VBZ the/DT Limerick/NNP Lake/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p0 .
+}
+
+>> SLOTS:
+p0: CLASS {country,state,nation,land,commonwealth}
+*****************************************************************
+Which/WDT television/NN shows/NNS were/VBD created/VBN by/IN Walt/NNP Disney/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?x rdf:type ?p1 .
+	?y ?p0 ?x .
+}
+
+>> SLOTS:
+y: RESOURCE {Walt Disney}
+p0: PROPERTY {created}
+p1: CLASS {television shows}
+*****************************************************************
+Which/WDT mountain/NN is/VBZ the/DT highest/JJS after/IN the/DT Annapurna/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?j ?y WHERE {
+	?y ?p1 ?v1 .
+	?y ?p2 ?j .
+	?y rdf:type ?p0 .
+}
+ORDER BY DESC(?j) 
+LIMIT 1 OFFSET 0
+
+>> SLOTS:
+v1: RESOURCE {Annapurna}
+p0: CLASS {mountain,mount}
+p1: PROPERTY {}
+p2: PROPERTY {highestdegree}
+*****************************************************************
+Which/WDT bridges/NNS are/VBP of/IN the/DT same/JJ type/NN as/IN the/DT Manhattan/NNP Bridge/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y ?p3 ?j .
+	?y rdf:type ?p2 .
+	?y rdf:type ?p0 .
+	?y ?p1 ?v0 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Manhattan Bridge}
+p0: CLASS {bridges,Bridges}
+p1: PROPERTY {}
+p2: CLASS {type}
+p3: PROPERTY {same}
+*****************************************************************
+Which/WDT European/JJ countries/NNS are/VBP a/DT constitutional/JJ monarchy/NN
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p1 .
+	?y ?p2 ?j .
+	?y ?p0 ?v0 .
+	?y rdf:type ?p3 .
+	FILTER(?y == ?y) .
+}
+
+>> SLOTS:
+p0: PROPERTY {European}
+p1: CLASS {monarchy}
+p2: PROPERTY {constitutional}
+p3: CLASS {countries,state,nation,country,land}
+*****************************************************************
+Who/WP is/VBZ the/DT author/NN of/IN WikiLeaks/NNS
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y ?p4 ?v0 .
+	?v0 rdf:type ?p2 .
+	?y rdf:type ?p3 .
+}
+
+>> SLOTS:
+p2: CLASS {WikiLeaks}
+p3: CLASS {author,writer}
+p4: PROPERTY {}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 rdf:type ?p0 .
+	?v0 ?p1 ?y .
+}
+
+>> SLOTS:
+p0: CLASS {WikiLeaks}
+p1: PROPERTY {author,writer}
+*****************************************************************
+Which/WDT state/NN of/IN the/DT United/NNP States/NNPS of/IN America/NNP has/VBZ the/DT highest/JJS density/NN
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?j ?x WHERE {
+	?y ?p9 ?j .
+	?y rdf:type ?p6 .
+	?x rdf:type ?p5 .
+	?x ?p8 ?y .
+	?x ?p7 ?v2 .
+	?x ?p7 ?v0 .
+}
+ORDER BY DESC(?j) 
+LIMIT 1 OFFSET 0
+
+>> SLOTS:
+v0: RESOURCE {America}
+v2: RESOURCE {United States}
+p5: CLASS {state,province}
+p6: CLASS {density,denseness}
+p7: PROPERTY {}
+p8: PROPERTY {has}
+p9: PROPERTY {highestdegree}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?j ?x WHERE {
+	?y rdf:type ?p1 .
+	?x ?p2 ?v0 .
+	?y ?p4 ?j .
+	?x ?p3 ?y .
+	?v2 ?p0 ?x .
+}
+ORDER BY DESC(?j) 
+LIMIT 1 OFFSET 0
+
+>> SLOTS:
+v0: RESOURCE {America}
+v2: RESOURCE {United States}
+p0: PROPERTY {state,province}
+p1: CLASS {density,denseness}
+p2: PROPERTY {}
+p3: PROPERTY {has}
+p4: PROPERTY {highestdegree}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?j ?x WHERE {
+	?x ?p18 ?y .
+	?x rdf:type ?p15 .
+	?x ?p17 ?v0 .
+	?y ?p19 ?j .
+	?v0 ?p17 ?v1 .
+	?y rdf:type ?p16 .
+}
+ORDER BY DESC(?j) 
+LIMIT 1 OFFSET 0
+
+>> SLOTS:
+v0: RESOURCE {United States}
+v1: RESOURCE {America}
+p15: CLASS {state,province}
+p16: CLASS {density,denseness}
+p17: PROPERTY {}
+p18: PROPERTY {has}
+p19: PROPERTY {highestdegree}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?j ?x WHERE {
+	?v0 ?p14 ?x .
+	?y rdf:type ?p10 .
+	?v0 ?p11 ?v1 .
+	?x ?p12 ?y .
+	?y ?p13 ?j .
+}
+ORDER BY DESC(?j) 
+LIMIT 1 OFFSET 0
+
+>> SLOTS:
+v0: RESOURCE {United States}
+v1: RESOURCE {America}
+p10: CLASS {density,denseness}
+p11: PROPERTY {}
+p12: PROPERTY {has}
+p13: PROPERTY {highestdegree}
+p14: PROPERTY {state,province}
+*****************************************************************
+What/WP is/VBZ the/DT currency/NN of/IN the/DT Czech/JJ Republic/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p1 .
+	?y ?p2 ?v0 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Czech Republic}
+p1: CLASS {currency}
+p2: PROPERTY {}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p0 ?y .
+}
+
+>> SLOTS:
+v0: RESOURCE {Czech Republic}
+p0: PROPERTY {currency}
+*****************************************************************
+What/WP is/VBZ the/DT area/NN code/NN of/IN Berlin/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p1 .
+	?y ?p2 ?v0 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Berlin}
+p1: CLASS {area code}
+p2: PROPERTY {}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p0 ?y .
+}
+
+>> SLOTS:
+v0: RESOURCE {Berlin}
+p0: PROPERTY {area code}
+*****************************************************************
+Which/WDT countries/NNS have/VBP more/JJR than/IN two/CD official/JJ languages/NNS
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x COUNT(?v0) AS ?c WHERE {
+	?v0 ?p0 ?j .
+	?x ?p1 ?y .
+	?x rdf:type ?p3 .
+	?v0 rdf:type ?p2 .
+	FILTER(?c > 2) .
+}
+
+>> SLOTS:
+p0: PROPERTY {official}
+p1: PROPERTY {have}
+p2: CLASS {languages,language}
+p3: CLASS {countries,state,nation,country,land}
+*****************************************************************
+Who/WP is/VBZ the/DT owner/NN of/IN Universal/NNP Studios/NNPS
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p0 ?y .
+}
+
+>> SLOTS:
+v0: RESOURCE {Universal Studios}
+p0: PROPERTY {owner,proprietor}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p2 .
+	?y ?p1 ?v0 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Universal Studios}
+p1: PROPERTY {}
+p2: CLASS {owner,proprietor}
+*****************************************************************
+Through/IN which/WDT countries/NNS does/VBZ the/DT Yenisei/NNP river/NN flow/VB
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 rdf:type ?p4 .
+	?v0 ?p5 ?y .
+	?v0 rdf:type ?p7 .
+	?v0 ?p6 ?j .
+}
+
+>> SLOTS:
+p4: CLASS {river}
+p5: PROPERTY {flow}
+p6: PROPERTY {Yenisei}
+p7: CLASS {countries,state,nation,country,land}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?x ?p3 ?j .
+	?x rdf:type ?p1 .
+	?x ?p2 ?y .
+	?y rdf:type ?p0 .
+}
+
+>> SLOTS:
+p0: CLASS {countries,state,nation,country,land}
+p1: CLASS {river}
+p2: PROPERTY {flow}
+p3: PROPERTY {Yenisei}
+*****************************************************************
+When/WRB did/VBD Germany/NNP join/VB the/DT EU/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?z WHERE {
+	?x ?p1 ?z .
+	?x ?p0 ?y .
+}
+
+>> SLOTS:
+y: RESOURCE {EU}
+x: RESOURCE {Germany}
+p0: PROPERTY {join}
+p1: PROPERTY {date}
+*****************************************************************
+Which/WDT monarchs/NNS of/IN the/DT United/NNP Kingdom/NNP were/VBD married/VBN to/TO a/DT German/JJ
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?v0 ?p1 ?x .
+	?x ?p0 ?y .
+}
+
+>> SLOTS:
+y: RESOURCE {German}
+v0: RESOURCE {United Kingdom}
+p0: PROPERTY {married}
+p1: PROPERTY {monarchs,sovereign,monarch}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?x ?p4 ?v0 .
+	?x ?p2 ?y .
+	?x rdf:type ?p3 .
+}
+
+>> SLOTS:
+y: RESOURCE {German}
+v0: RESOURCE {United Kingdom}
+p2: PROPERTY {married}
+p3: CLASS {monarchs,sovereign,monarch}
+p4: PROPERTY {}
+*****************************************************************
+When/WRB was/VBD the/DT Battle/NNP of/IN Gettysburg/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?v2 WHERE {
+	?y ?p0 ?v1 .
+	?y ?p1 ?v2 .
+}
+
+>> SLOTS:
+y: RESOURCE {Battle}
+v1: RESOURCE {Gettysburg}
+p0: PROPERTY {}
+p1: PROPERTY {date}
+*****************************************************************
+What/WP is/VBZ the/DT highest/JJS mountain/NN in/IN Germany/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?j ?y WHERE {
+	?y ?p1 ?v1 .
+	?y ?p2 ?j .
+	?y rdf:type ?p0 .
+}
+ORDER BY DESC(?j) 
+LIMIT 1 OFFSET 0
+
+>> SLOTS:
+v1: RESOURCE {Germany}
+p0: CLASS {mountain,mount}
+p1: PROPERTY {}
+p2: PROPERTY {highestdegree}
+*****************************************************************
+Give/VB me/PRP all/DT soccer/NN clubs/NNS in/IN Spain/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y ?p1 ?v1 .
+	?y rdf:type ?p0 .
+}
+
+>> SLOTS:
+v1: RESOURCE {Spain}
+p0: CLASS {soccer clubs}
+p1: PROPERTY {}
+*****************************************************************
+What/WP are/VBP the/DT official/JJ languages/NNS of/IN the/DT Philippines/NNPS
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y ?p4 ?v0 .
+	?y ?p3 ?j .
+	?y rdf:type ?p2 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Philippines}
+p2: CLASS {languages,language}
+p3: PROPERTY {official}
+p4: PROPERTY {}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p1 ?y .
+	?y ?p0 ?j .
+}
+
+>> SLOTS:
+v0: RESOURCE {Philippines}
+p0: PROPERTY {official}
+p1: PROPERTY {languages,language}
+*****************************************************************
+Who/WP is/VBZ the/DT mayor/NN of/IN New/NNP York/NNP City/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p0 ?y .
+}
+
+>> SLOTS:
+v0: RESOURCE {New York City}
+p0: PROPERTY {mayor}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p1 .
+	?y ?p2 ?v0 .
+}
+
+>> SLOTS:
+v0: RESOURCE {New York City}
+p1: CLASS {mayor}
+p2: PROPERTY {}
+*****************************************************************
+Who/WP designed/VBD the/DT Brooklyn/NNP Bridge/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?x ?p0 ?y .
+}
+
+>> SLOTS:
+y: RESOURCE {Brooklyn Bridge}
+p0: PROPERTY {designed}
+*****************************************************************
+Which/WDT telecommunications/NN organizations/NNS are/VBP located/VBN in/IN Belgium/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p0 .
+	?y ?p1 ?v0 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Belgium}
+p0: CLASS {telecommunications organizations}
+p1: PROPERTY {located}
+*****************************************************************
+What/WP is/VBZ the/DT profession/NN of/IN Frank/NNP Herbert/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p0 ?y .
+}
+
+>> SLOTS:
+v0: RESOURCE {Frank Herbert}
+p0: PROPERTY {profession}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p1 .
+	?y ?p2 ?v0 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Frank Herbert}
+p1: CLASS {profession}
+p2: PROPERTY {}
+*****************************************************************
+What/WP is/VBZ the/DT highest/JJS place/NN of/IN Karakoram/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?j ?y WHERE {
+	?v0 ?p0 ?y .
+	?y ?p1 ?j .
+}
+ORDER BY DESC(?j) 
+LIMIT 1 OFFSET 0
+
+>> SLOTS:
+v0: RESOURCE {Karakoram}
+p0: PROPERTY {place,spot}
+p1: PROPERTY {highestdegree}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?j ?y WHERE {
+	?y ?p2 ?v0 .
+	?y ?p4 ?j .
+	?y rdf:type ?p3 .
+}
+ORDER BY DESC(?j) 
+LIMIT 1 OFFSET 0
+
+>> SLOTS:
+v0: RESOURCE {Karakoram}
+p2: PROPERTY {}
+p3: CLASS {place,spot}
+p4: PROPERTY {highestdegree}
+*****************************************************************
+Give/VB me/PRP the/DT homepage/NN of/IN Forbes/NNP
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?v0 ?p0 ?y .
+}
+
+>> SLOTS:
+v0: RESOURCE {Forbes}
+p0: PROPERTY {homepage}
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?y rdf:type ?p1 .
+	?y ?p2 ?v0 .
+}
+
+>> SLOTS:
+v0: RESOURCE {Forbes}
+p1: CLASS {homepage}
+p2: PROPERTY {}
+*****************************************************************
+Which/WDT companies/NNS are/VBP in/IN the/DT computer/NN software/NN industry/NN
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?v0 WHERE {
+	?v0 rdf:type ?p0 .
+	?v0 rdf:type ?p2 .
+	?v0 rdf:type ?p1 .
+	FILTER(?v0 == ?v0) .
+}
+
+>> SLOTS:
+p0: CLASS {industry}
+p1: CLASS {computer software,software,package}
+p2: CLASS {companies,company}
+*****************************************************************
+What/WP did/VBD Bruce/NNP Carver/NNP die/VB from/IN
+>> QUERY:
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y WHERE {
+	?x ?p0 ?y .
+}
+
+>> SLOTS:
+x: RESOURCE {Bruce Carver}
+p0: PROPERTY {die}

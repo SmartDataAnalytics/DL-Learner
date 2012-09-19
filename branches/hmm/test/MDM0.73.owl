@@ -1,0 +1,3227 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY BMV "http://acl/BMV#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY swrlb "http://www.w3.org/2003/11/swrlb#" >
+    <!ENTITY owl11 "http://www.w3.org/2006/12/owl11#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl11xml "http://www.w3.org/2006/12/owl11-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://acl/BMV#"
+     xml:base="http://acl/BMV"
+     xmlns:BMV="http://acl/BMV#"
+     xmlns:owl11="http://www.w3.org/2006/12/owl11#"
+     xmlns:owl11xml="http://www.w3.org/2006/12/owl11-xml#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"> 
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+  <rdf:Description rdf:about="http://www.w3.org/2006/12/owl11#disjointObjectProperties">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+
+    <!-- http://acl/BMV#Disease_Attributes -->
+
+    <owl:ObjectProperty rdf:about="#Disease_Attributes">
+        <rdfs:domain rdf:resource="#DiseaseTypes"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasDeltaLevel -->
+
+    <owl:ObjectProperty rdf:about="#hasDeltaLevel">
+        <rdfs:range rdf:resource="#BiologicalLevelBasedOutcomes"/>
+        <rdfs:domain rdf:resource="#Adults"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasDeltaRisk -->
+
+    <owl:ObjectProperty rdf:about="#hasDeltaRisk">
+        <rdfs:domain rdf:resource="#Adults"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasDisease -->
+
+    <owl:ObjectProperty rdf:about="#hasDisease">
+        <rdfs:range rdf:resource="#DiseaseTypes"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasGrade -->
+
+    <owl:ObjectProperty rdf:about="#hasGrade">
+        <rdfs:subPropertyOf rdf:resource="#Disease_Attributes"/>
+        <rdfs:range rdf:resource="#Pathological_Grade"/>
+        <rdfs:domain rdf:resource="#DiseaseTypes"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasHRStatus -->
+
+    <owl:ObjectProperty rdf:about="#hasHRStatus">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#BreastAdenoCa"/>
+        <rdfs:range rdf:resource="#HRStatus"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasLNStatus -->
+
+    <owl:ObjectProperty rdf:about="#hasLNStatus">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#DiseaseTypes"/>
+        <rdfs:range rdf:resource="#LNStatus"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasMenopausalStatus -->
+
+    <owl:ObjectProperty rdf:about="#hasMenopausalStatus">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasNegIntent -->
+
+    <owl:ObjectProperty rdf:about="#hasNegIntent">
+        <rdfs:range rdf:resource="#TherapeuticType"/>
+        <owl11:disjointObjectProperties rdf:resource="#hasPosIntent"/>
+        <rdfs:domain rdf:resource="#Adults"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasOutcome -->
+
+    <owl:ObjectProperty rdf:about="#hasOutcome">
+        <rdfs:domain rdf:resource="#Adults"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasPathologicalType -->
+
+    <owl:ObjectProperty rdf:about="#hasPathologicalType">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#Disease_Attributes"/>
+        <rdfs:domain rdf:resource="#DiseaseTypes"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasPosIntent -->
+
+    <owl:ObjectProperty rdf:about="#hasPosIntent">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="#TherapeuticType"/>
+        <rdfs:domain rdf:resource="#Adults"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasPrognosis -->
+
+    <owl:ObjectProperty rdf:about="#hasPrognosis"/>
+    
+
+
+    <!-- http://acl/BMV#hasRisk -->
+
+    <owl:ObjectProperty rdf:about="#hasRisk">
+        <rdfs:domain rdf:resource="#Adults"/>
+        <rdfs:range rdf:resource="#Risk"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasStage -->
+
+    <owl:ObjectProperty rdf:about="#hasStage">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#Disease_Attributes"/>
+        <rdfs:domain rdf:resource="#DiseaseTypes"/>
+        <rdfs:range rdf:resource="#DiseaseStage"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasSymptoms -->
+
+    <owl:ObjectProperty rdf:about="#hasSymptoms">
+        <rdfs:range rdf:resource="#PersistentSideEffects"/>
+        <rdfs:domain rdf:resource="#Adults"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasTreatment -->
+
+    <owl:ObjectProperty rdf:about="#hasTreatment">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Adults"/>
+        <rdfs:range rdf:resource="#TherapeuticType"/>
+        <owl11:disjointObjectProperties rdf:resource="#notHasTreatment"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#hasTreatmentComponent -->
+
+    <owl:ObjectProperty rdf:about="#hasTreatmentComponent">
+        <rdfs:domain rdf:resource="#TherapeuticType"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#notHasPrognosis -->
+
+    <owl:ObjectProperty rdf:about="#notHasPrognosis">
+        <owl11:disjointObjectProperties rdf:resource="#hasPrognosis"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#notHasTreatment -->
+
+    <owl:ObjectProperty rdf:about="#notHasTreatment">
+        <rdfs:domain rdf:resource="#Adults"/>
+        <rdfs:range rdf:resource="#TherapeuticType"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#refersDisease -->
+
+    <owl:ObjectProperty rdf:about="#refersDisease">
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#SymptomTypes"/>
+                    <rdf:Description rdf:about="#DiseaseTypes"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:domain rdf:resource="#Outcomes"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://acl/BMV#refersSubstance -->
+
+    <owl:ObjectProperty rdf:about="#refersSubstance"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://acl/BMV#hasAge -->
+
+    <owl:DatatypeProperty rdf:about="#hasAge">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://acl/BMV#hasDuration -->
+
+    <owl:DatatypeProperty rdf:about="#hasDuration">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#TherapeuticType"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://acl/BMV#hasValue -->
+
+    <owl:DatatypeProperty rdf:about="#hasValue">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;decimal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://acl/BMV#ACTChemoTam -->
+
+    <owl:Class rdf:about="#ACTChemoTam">
+        <rdfs:subClassOf rdf:resource="#ChemoTamRegimeTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#AbsoluteRisk -->
+
+    <owl:Class rdf:about="#AbsoluteRisk">
+        <rdfs:subClassOf rdf:resource="#Risk"/>
+        <owl:disjointWith rdf:resource="#ChangesInSurvival"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Abstract -->
+
+    <owl:Class rdf:about="#Abstract">
+        <rdfs:subClassOf rdf:resource="#MedicalThings"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#AdjuvantTreatment -->
+
+    <owl:Class rdf:about="#AdjuvantTreatment">
+        <rdfs:subClassOf rdf:resource="#TherapeuticType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Adults -->
+
+    <owl:Class rdf:about="#Adults">
+        <owl:disjointWith rdf:resource="#MedicalThings"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Aged50Plus -->
+
+    <owl:Class rdf:about="#Aged50Plus">
+        <rdfs:subClassOf rdf:resource="#Women"/>
+        <owl:disjointWith rdf:resource="#AgedUnder50"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#AgedUnder50 -->
+
+    <owl:Class rdf:about="#AgedUnder50">
+        <rdfs:subClassOf rdf:resource="#Women"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Amenorrheic -->
+
+    <owl:Class rdf:about="#Amenorrheic">
+        <rdfs:subClassOf rdf:resource="#Women"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#AnastrazoleRegimeTypes -->
+
+    <owl:Class rdf:about="#AnastrazoleRegimeTypes">
+        <rdfs:subClassOf rdf:resource="#HormoneRARegimeTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#AnthracyclineChemoTxRegimeTypes -->
+
+    <owl:Class rdf:about="#AnthracyclineChemoTxRegimeTypes">
+        <rdfs:subClassOf rdf:resource="#ChemoTxRegimeTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#BMD -->
+
+    <owl:Class rdf:about="#BMD">
+        <rdfs:subClassOf rdf:resource="#BiologicalLevels"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#BiologicalLevelBasedOutcomes -->
+
+    <owl:Class rdf:about="#BiologicalLevelBasedOutcomes">
+        <rdfs:subClassOf rdf:resource="#Outcomes"/>
+        <owl:disjointWith rdf:resource="#Risk"/>
+        <owl:disjointWith rdf:resource="#ChangeOverallSurvival"/>
+        <owl:disjointWith rdf:resource="#PoorPrognosis"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#BiologicalLevels -->
+
+    <owl:Class rdf:about="#BiologicalLevels">
+        <rdfs:subClassOf rdf:resource="#References"/>
+        <owl:disjointWith rdf:resource="#MenopausalStatus"/>
+        <owl:disjointWith rdf:resource="#Pathological_Grade"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#BreastAdenoCa -->
+
+    <owl:Class rdf:about="#BreastAdenoCa">
+        <rdfs:subClassOf rdf:resource="#BreastCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#BreastCancer -->
+
+    <owl:Class rdf:about="#BreastCancer">
+        <rdfs:subClassOf rdf:resource="#CancerTypes"/>
+        <owl:disjointWith rdf:resource="#ColorectalCancer"/>
+        <owl:disjointWith rdf:resource="#GastricCancer"/>
+        <owl:disjointWith rdf:resource="#EndometrialCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#CMFRegimeTypes -->
+
+    <owl:Class rdf:about="#CMFRegimeTypes">
+        <rdfs:subClassOf rdf:resource="#NonAnthracyclineChemoTxRegimeTypes"/>
+        <rdfs:subClassOf rdf:resource="#PolyChemoTxRegimeTypes"/>
+        <owl:disjointWith rdf:resource="#ECMFRegimeType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#CMFTChemoTam -->
+
+    <owl:Class rdf:about="#CMFTChemoTam">
+        <rdfs:subClassOf rdf:resource="#ChemoTamRegimeTypes"/>
+        <owl:disjointWith rdf:resource="#ACTChemoTam"/>
+        <owl:disjointWith rdf:resource="#PAFTChemoTam"/>
+        <owl:disjointWith rdf:resource="#PFTChemoTam"/>
+        <owl:disjointWith rdf:resource="#MFTChemoTam"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#CancerTypes -->
+
+    <owl:Class rdf:about="#CancerTypes">
+        <rdfs:subClassOf rdf:resource="#DiseaseTypes"/>
+        <owl:disjointWith rdf:resource="#Retinopathy"/>
+        <owl:disjointWith rdf:resource="#Cataracts"/>
+        <owl:disjointWith rdf:resource="#VenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#PersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#OvarianCyst"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#CardiacDisease -->
+
+    <owl:Class rdf:about="#CardiacDisease">
+        <rdfs:subClassOf rdf:resource="#VascularDisease"/>
+        <owl:disjointWith rdf:resource="#Stroke"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Cataracts -->
+
+    <owl:Class rdf:about="#Cataracts">
+        <rdfs:subClassOf rdf:resource="#DiseaseTypes"/>
+        <owl:disjointWith rdf:resource="#VenousThrombosis"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeBMD -->
+
+    <owl:Class rdf:about="#ChangeBMD">
+        <rdfs:subClassOf rdf:resource="#BiologicalLevelBasedOutcomes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeBrCaDFS -->
+
+    <owl:Class rdf:about="#ChangeBrCaDFS">
+        <rdfs:subClassOf rdf:resource="#ChangesInSurvival"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#refersDisease"/>
+                <owl:someValuesFrom rdf:resource="#BreastAdenoCa"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#ChangeEndoCaDFS"/>
+        <owl:disjointWith rdf:resource="#ChangeEndoCaDSS"/>
+        <owl:disjointWith rdf:resource="#ChangeCardiacDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeBrCaDSS -->
+
+    <owl:Class rdf:about="#ChangeBrCaDSS">
+        <rdfs:subClassOf rdf:resource="#ChangesInSurvival"/>
+        <owl:disjointWith rdf:resource="#ChangeBrCaDFS"/>
+        <owl:disjointWith rdf:resource="#ChangeEndoCaDFS"/>
+        <owl:disjointWith rdf:resource="#ChangeEndoCaDSS"/>
+        <owl:disjointWith rdf:resource="#ChangeCardiacDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeCardiacDSS -->
+
+    <owl:Class rdf:about="#ChangeCardiacDSS">
+        <rdfs:subClassOf rdf:resource="#ChangesInSurvival"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeCholesterol -->
+
+    <owl:Class rdf:about="#ChangeCholesterol">
+        <rdfs:subClassOf rdf:resource="#BiologicalLevelBasedOutcomes"/>
+        <owl:disjointWith rdf:resource="#ChangePlasmaPlatelet"/>
+        <owl:disjointWith rdf:resource="#ChangeBMD"/>
+        <owl:disjointWith rdf:resource="#ChangePlasmaFibrinogenLevel"/>
+        <owl:disjointWith rdf:resource="#ChangeLDL"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeEndoCaDFS -->
+
+    <owl:Class rdf:about="#ChangeEndoCaDFS">
+        <rdfs:subClassOf rdf:resource="#ChangesInSurvival"/>
+        <owl:disjointWith rdf:resource="#ChangeCardiacDSS"/>
+        <owl:disjointWith rdf:resource="#ChangeEndoCaDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeEndoCaDSS -->
+
+    <owl:Class rdf:about="#ChangeEndoCaDSS">
+        <rdfs:subClassOf rdf:resource="#ChangesInSurvival"/>
+        <owl:disjointWith rdf:resource="#ChangeCardiacDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeLDL -->
+
+    <owl:Class rdf:about="#ChangeLDL">
+        <rdfs:subClassOf rdf:resource="#BiologicalLevelBasedOutcomes"/>
+        <owl:disjointWith rdf:resource="#ChangePlasmaFibrinogenLevel"/>
+        <owl:disjointWith rdf:resource="#ChangeBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeLumbarBMD -->
+
+    <owl:Class rdf:about="#ChangeLumbarBMD">
+        <rdfs:subClassOf rdf:resource="#ChangeBMD"/>
+        <owl:disjointWith rdf:resource="#ChangeRadialBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeOverallSurvival -->
+
+    <owl:Class rdf:about="#ChangeOverallSurvival">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasValue"/>
+                <owl:someValuesFrom rdf:resource="&xsd;decimal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="#Outcomes"/>
+        <owl:disjointWith rdf:resource="#PoorPrognosis"/>
+        <owl:disjointWith rdf:resource="#Risk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangePlasmaFibrinogenLevel -->
+
+    <owl:Class rdf:about="#ChangePlasmaFibrinogenLevel">
+        <rdfs:subClassOf rdf:resource="#BiologicalLevelBasedOutcomes"/>
+        <owl:disjointWith rdf:resource="#ChangeBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangePlasmaPlatelet -->
+
+    <owl:Class rdf:about="#ChangePlasmaPlatelet">
+        <rdfs:subClassOf rdf:resource="#BiologicalLevelBasedOutcomes"/>
+        <owl:disjointWith rdf:resource="#ChangeBMD"/>
+        <owl:disjointWith rdf:resource="#ChangePlasmaFibrinogenLevel"/>
+        <owl:disjointWith rdf:resource="#ChangeLDL"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRadialBMD -->
+
+    <owl:Class rdf:about="#ChangeRadialBMD">
+        <rdfs:subClassOf rdf:resource="#ChangeBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskBreastCancer -->
+
+    <owl:Class rdf:about="#ChangeRiskBreastCancer">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#refersDisease"/>
+                <owl:allValuesFrom rdf:resource="#BreastCancer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskOvarianCyst"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskCardiacDisease"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskColorectalCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskFatalMI"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskHotFlushes"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskCataracts"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskSideEffects"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskPersistentSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskCardiacDisease -->
+
+    <owl:Class rdf:about="#ChangeRiskCardiacDisease">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskFatalMI"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskPersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskCataracts"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskColorectalCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskOvarianCyst"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskHotFlushes"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskCataracts -->
+
+    <owl:Class rdf:about="#ChangeRiskCataracts">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskColorectalCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskHotFlushes"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskPersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskColorectalCancer -->
+
+    <owl:Class rdf:about="#ChangeRiskColorectalCancer">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskHotFlushes"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskSideEffects"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskEndometrialAbnormality -->
+
+    <owl:Class rdf:about="#ChangeRiskEndometrialAbnormality">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskEndometrialCancer -->
+
+    <owl:Class rdf:about="#ChangeRiskEndometrialCancer">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskFatalMI -->
+
+    <owl:Class rdf:about="#ChangeRiskFatalMI">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskSideEffects"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskHotFlushes"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskColorectalCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskPersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskCataracts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskGastricCancer -->
+
+    <owl:Class rdf:about="#ChangeRiskGastricCancer">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskHotFlushes -->
+
+    <owl:Class rdf:about="#ChangeRiskHotFlushes">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskSideEffects"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskRetinopathy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskOvarianCyst -->
+
+    <owl:Class rdf:about="#ChangeRiskOvarianCyst">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskFatalMI"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskPersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskCataracts"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskColorectalCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskHotFlushes"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskPersistentSideEffects -->
+
+    <owl:Class rdf:about="#ChangeRiskPersistentSideEffects">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskSideEffects"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskHotFlushes"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskColorectalCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskRetinopathy -->
+
+    <owl:Class rdf:about="#ChangeRiskRetinopathy">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskSideEffects"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskSideEffects -->
+
+    <owl:Class rdf:about="#ChangeRiskSideEffects">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangeRiskVenousThrombosis -->
+
+    <owl:Class rdf:about="#ChangeRiskVenousThrombosis">
+        <rdfs:subClassOf rdf:resource="#ChangesInRisk"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#ChangeRiskSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangesInRisk -->
+
+    <owl:Class rdf:about="#ChangesInRisk">
+        <rdfs:subClassOf rdf:resource="#DeltaRisk"/>
+        <owl:disjointWith rdf:resource="#ChangesInSurvival"/>
+        <owl:disjointWith rdf:resource="#AbsoluteRisk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChangesInSurvival -->
+
+    <owl:Class rdf:about="#ChangesInSurvival">
+        <rdfs:subClassOf rdf:resource="#DeltaRisk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChemoTamRegimeTypes -->
+
+    <owl:Class rdf:about="#ChemoTamRegimeTypes">
+        <rdfs:subClassOf rdf:resource="#AdjuvantTreatment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ChemoTxRegimeTypes -->
+
+    <owl:Class rdf:about="#ChemoTxRegimeTypes">
+        <rdfs:subClassOf rdf:resource="#AdjuvantTreatment"/>
+        <owl:disjointWith rdf:resource="#HormoneRARegimeTypes"/>
+        <owl:disjointWith rdf:resource="#ChemoTamRegimeTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ClonidineRegime -->
+
+    <owl:Class rdf:about="#ClonidineRegime">
+        <rdfs:subClassOf rdf:resource="#DrugRegimeTypes"/>
+        <owl:disjointWith rdf:resource="#ChemoTamRegimeTypes"/>
+        <owl:disjointWith rdf:resource="#ChemoTxRegimeTypes"/>
+        <owl:disjointWith rdf:resource="#HormoneRARegimeTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ColorectalCancer -->
+
+    <owl:Class rdf:about="#ColorectalCancer">
+        <rdfs:subClassOf rdf:resource="#CancerTypes"/>
+        <owl:disjointWith rdf:resource="#GastricCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedBrCaDFS -->
+
+    <owl:Class rdf:about="#DecreasedBrCaDFS">
+        <rdfs:subClassOf rdf:resource="#ChangeBrCaDFS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedCardiacDSS -->
+
+    <owl:Class rdf:about="#DecreasedCardiacDSS">
+        <rdfs:subClassOf rdf:resource="#ChangeCardiacDSS"/>
+        <owl:disjointWith rdf:resource="#NoChangeCardiacDSS"/>
+        <owl:disjointWith rdf:resource="#IncreasedCardiacDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedCholesterol -->
+
+    <owl:Class rdf:about="#DecreasedCholesterol">
+        <rdfs:subClassOf rdf:resource="#ChangeCholesterol"/>
+        <owl:disjointWith rdf:resource="#IncreasedCholesterol"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedEndoCaDFS -->
+
+    <owl:Class rdf:about="#DecreasedEndoCaDFS">
+        <rdfs:subClassOf rdf:resource="#ChangeEndoCaDFS"/>
+        <owl:disjointWith rdf:resource="#NoChangeEndoCaDFS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedEndoCaDSS -->
+
+    <owl:Class rdf:about="#DecreasedEndoCaDSS">
+        <rdfs:subClassOf rdf:resource="#ChangeEndoCaDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedLDL -->
+
+    <owl:Class rdf:about="#DecreasedLDL">
+        <rdfs:subClassOf rdf:resource="#ChangeLDL"/>
+        <owl:disjointWith rdf:resource="#IncreasedLDL"/>
+        <owl:disjointWith rdf:resource="#NoChangeLDL"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedLumbarBMD -->
+
+    <owl:Class rdf:about="#DecreasedLumbarBMD">
+        <rdfs:subClassOf rdf:resource="#ChangeLumbarBMD"/>
+        <owl:disjointWith rdf:resource="#NoChangeLumbarBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedOS -->
+
+    <owl:Class rdf:about="#DecreasedOS">
+        <rdfs:subClassOf rdf:resource="#ChangeOverallSurvival"/>
+        <owl:disjointWith rdf:resource="#IncreasedOS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedPlasmaFibrinogenLevel -->
+
+    <owl:Class rdf:about="#DecreasedPlasmaFibrinogenLevel">
+        <rdfs:subClassOf rdf:resource="#ChangePlasmaFibrinogenLevel"/>
+        <owl:disjointWith rdf:resource="#IncreasedPlasmaFibrinogenLevel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedPlasmaPlateletCount -->
+
+    <owl:Class rdf:about="#DecreasedPlasmaPlateletCount">
+        <rdfs:subClassOf rdf:resource="#ChangePlasmaPlatelet"/>
+        <owl:disjointWith rdf:resource="#NoChangePlasmaPlateletCount"/>
+        <owl:disjointWith rdf:resource="#IncreasedPlasmaPlateletCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRadialBMD -->
+
+    <owl:Class rdf:about="#DecreasedRadialBMD">
+        <rdfs:subClassOf rdf:resource="#ChangeRadialBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskBreastCancer -->
+
+    <owl:Class rdf:about="#DecreasedRiskBreastCancer">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskBreastCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskCardiacDisease -->
+
+    <owl:Class rdf:about="#DecreasedRiskCardiacDisease">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskCardiacDisease"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskCardiacDisease"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskCardiacDisease"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskCataracts -->
+
+    <owl:Class rdf:about="#DecreasedRiskCataracts">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskCataracts"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskCataracts"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskCataracts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskColorectalCancer -->
+
+    <owl:Class rdf:about="#DecreasedRiskColorectalCancer">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskColorectalCancer"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskColorectalCancer"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskColorectalCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskEndometrialAbnormality -->
+
+    <owl:Class rdf:about="#DecreasedRiskEndometrialAbnormality">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskEndometrialAbnormality"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskEndometrialAbnormality"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskEndometrialCancer -->
+
+    <owl:Class rdf:about="#DecreasedRiskEndometrialCancer">
+        <rdfs:subClassOf rdf:resource="#DecreasedRiskEndometrialAbnormality"/>
+        <rdfs:subClassOf rdf:resource="#ChangeRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskEndometrialCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskFatalMI -->
+
+    <owl:Class rdf:about="#DecreasedRiskFatalMI">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskFatalMI"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskFatalMI"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskFatalMI"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskHotFlushes -->
+
+    <owl:Class rdf:about="#DecreasedRiskHotFlushes">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskHotFlushes"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskHotFlushes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskOvarianCyst -->
+
+    <owl:Class rdf:about="#DecreasedRiskOvarianCyst">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskOvarianCyst"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskPersistentSideEffects -->
+
+    <owl:Class rdf:about="#DecreasedRiskPersistentSideEffects">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskPersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskPersistentSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskRetinopathy -->
+
+    <owl:Class rdf:about="#DecreasedRiskRetinopathy">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskRetinopathy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskSideEffects -->
+
+    <owl:Class rdf:about="#DecreasedRiskSideEffects">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskSideEffects"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskSideEffects"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskVenousThrombosis -->
+
+    <owl:Class rdf:about="#DecreasedRiskVenousThrombosis">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskVenousThrombosis"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DeltaRisk -->
+
+    <owl:Class rdf:about="#DeltaRisk">
+        <rdfs:subClassOf rdf:resource="#Risk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DiseaseStage -->
+
+    <owl:Class rdf:about="#DiseaseStage">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#ProtoStage1"/>
+                    <rdf:Description rdf:about="#ProtoStage4"/>
+                    <rdf:Description rdf:about="#ProtoStage2"/>
+                    <rdf:Description rdf:about="#ProtoStage3"/>
+                </owl:oneOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#References"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DiseaseTypes -->
+
+    <owl:Class rdf:about="#DiseaseTypes">
+        <rdfs:subClassOf rdf:resource="#Abstract"/>
+        <owl:disjointWith rdf:resource="#SymptomTypes"/>
+        <owl:disjointWith rdf:resource="#Outcomes"/>
+        <owl:disjointWith rdf:resource="#References"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#DrugRegimeTypes -->
+
+    <owl:Class rdf:about="#DrugRegimeTypes">
+        <rdfs:subClassOf rdf:resource="#TherapeuticType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ECMFRegimeType -->
+
+    <owl:Class rdf:about="#ECMFRegimeType">
+        <rdfs:subClassOf rdf:resource="#AnthracyclineChemoTxRegimeTypes"/>
+        <rdfs:subClassOf rdf:resource="#PolyChemoTxRegimeTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ERNeg -->
+
+    <owl:Class rdf:about="#ERNeg">
+        <rdfs:subClassOf rdf:resource="#BreastAdenoCa"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ERPos -->
+
+    <owl:Class rdf:about="#ERPos">
+        <rdfs:subClassOf rdf:resource="#HRPos"/>
+        <rdfs:subClassOf rdf:resource="#BreastAdenoCa"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ERUnknown -->
+
+    <owl:Class rdf:about="#ERUnknown">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Class>
+                        <owl:complementOf rdf:resource="#ERPos"/>
+                    </owl:Class>
+                    <rdf:Description rdf:about="#BreastAdenoCa"/>
+                    <owl:Class>
+                        <owl:complementOf rdf:resource="#ERNeg"/>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#EarlyBreastCancer -->
+
+    <owl:Class rdf:about="#EarlyBreastCancer">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#BreastAdenoCa"/>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="#hasStage"/>
+                                <owl:hasValue rdf:resource="#ProtoStage2"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="#hasStage"/>
+                                <owl:hasValue rdf:resource="#ProtoStage1"/>
+                            </owl:Restriction>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#EarlyCMFTChemoTam -->
+
+    <owl:Class rdf:about="#EarlyCMFTChemoTam">
+        <rdfs:subClassOf rdf:resource="#CMFTChemoTam"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#EndometrialAbnormality -->
+
+    <owl:Class rdf:about="#EndometrialAbnormality">
+        <rdfs:subClassOf rdf:resource="#DiseaseTypes"/>
+        <owl:disjointWith rdf:resource="#OvarianCyst"/>
+        <owl:disjointWith rdf:resource="#Retinopathy"/>
+        <owl:disjointWith rdf:resource="#PersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#Cataracts"/>
+        <owl:disjointWith rdf:resource="#VenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#CancerTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#EndometrialCancer -->
+
+    <owl:Class rdf:about="#EndometrialCancer">
+        <rdfs:subClassOf rdf:resource="#CancerTypes"/>
+        <owl:disjointWith rdf:resource="#GastricCancer"/>
+        <owl:disjointWith rdf:resource="#ColorectalCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#FatalMI -->
+
+    <owl:Class rdf:about="#FatalMI">
+        <rdfs:subClassOf rdf:resource="#MI"/>
+        <owl:disjointWith rdf:resource="#NonFatalMI"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#GastricCancer -->
+
+    <owl:Class rdf:about="#GastricCancer">
+        <rdfs:subClassOf rdf:resource="#CancerTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#HRPos -->
+
+    <owl:Class rdf:about="#HRPos">
+        <rdfs:subClassOf rdf:resource="#BreastAdenoCa"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#HRStatus -->
+
+    <owl:Class rdf:about="#HRStatus">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#ProtoERPos"/>
+                    <rdf:Description rdf:about="#ProtoPRPos"/>
+                    <rdf:Description rdf:about="#ProtoPRNeg"/>
+                    <rdf:Description rdf:about="#ProtoERNeg"/>
+                </owl:oneOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#References"/>
+        <owl:disjointWith rdf:resource="#MenopausalStatus"/>
+        <owl:disjointWith rdf:resource="#Pathological_Grade"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#HormoneRARegimeTypes -->
+
+    <owl:Class rdf:about="#HormoneRARegimeTypes">
+        <rdfs:subClassOf rdf:resource="#AdjuvantTreatment"/>
+        <owl:disjointWith rdf:resource="#ChemoTamRegimeTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#HotFlushes -->
+
+    <owl:Class rdf:about="#HotFlushes">
+        <rdfs:subClassOf rdf:resource="#SymptomTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDFS -->
+
+    <owl:Class rdf:about="#IncreasedBrCaDFS">
+        <rdfs:subClassOf rdf:resource="#ChangeBrCaDFS"/>
+        <owl:disjointWith rdf:resource="#NoChangeBrCaDFS"/>
+        <owl:disjointWith rdf:resource="#DecreasedBrCaDFS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDSS -->
+
+    <owl:Class rdf:about="#IncreasedBrCaDSS">
+        <rdfs:subClassOf rdf:resource="#ChangeBrCaDSS"/>
+        <owl:disjointWith rdf:resource="#NoChangeBrCaDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedCardiacDSS -->
+
+    <owl:Class rdf:about="#IncreasedCardiacDSS">
+        <rdfs:subClassOf rdf:resource="#ChangeCardiacDSS"/>
+        <owl:disjointWith rdf:resource="#NoChangeCardiacDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedCholesterol -->
+
+    <owl:Class rdf:about="#IncreasedCholesterol">
+        <rdfs:subClassOf rdf:resource="#ChangeCholesterol"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedEndoCaDFS -->
+
+    <owl:Class rdf:about="#IncreasedEndoCaDFS">
+        <rdfs:subClassOf rdf:resource="#ChangeEndoCaDFS"/>
+        <owl:disjointWith rdf:resource="#DecreasedEndoCaDFS"/>
+        <owl:disjointWith rdf:resource="#NoChangeEndoCaDFS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedEndoCaDSS -->
+
+    <owl:Class rdf:about="#IncreasedEndoCaDSS">
+        <rdfs:subClassOf rdf:resource="#ChangeEndoCaDSS"/>
+        <owl:disjointWith rdf:resource="#DecreasedEndoCaDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedLDL -->
+
+    <owl:Class rdf:about="#IncreasedLDL">
+        <rdfs:subClassOf rdf:resource="#ChangeLDL"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedLumbarBMD -->
+
+    <owl:Class rdf:about="#IncreasedLumbarBMD">
+        <rdfs:subClassOf rdf:resource="#ChangeLumbarBMD"/>
+        <owl:disjointWith rdf:resource="#NoChangeLumbarBMD"/>
+        <owl:disjointWith rdf:resource="#DecreasedLumbarBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedOS -->
+
+    <owl:Class rdf:about="#IncreasedOS">
+        <rdfs:subClassOf rdf:resource="#ChangeOverallSurvival"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedPlasmaFibrinogenLevel -->
+
+    <owl:Class rdf:about="#IncreasedPlasmaFibrinogenLevel">
+        <rdfs:subClassOf rdf:resource="#ChangePlasmaFibrinogenLevel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedPlasmaPlateletCount -->
+
+    <owl:Class rdf:about="#IncreasedPlasmaPlateletCount">
+        <rdfs:subClassOf rdf:resource="#ChangePlasmaPlatelet"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRadialBMD -->
+
+    <owl:Class rdf:about="#IncreasedRadialBMD">
+        <rdfs:subClassOf rdf:resource="#ChangeRadialBMD"/>
+        <owl:disjointWith rdf:resource="#NoChangeRadialBMD"/>
+        <owl:disjointWith rdf:resource="#DecreasedRadialBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskCardiacDisease -->
+
+    <owl:Class rdf:about="#IncreasedRiskCardiacDisease">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskCardiacDisease"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskCardiacDisease"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskCataracts -->
+
+    <owl:Class rdf:about="#IncreasedRiskCataracts">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskCataracts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskColorectalCancer -->
+
+    <owl:Class rdf:about="#IncreasedRiskColorectalCancer">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskColorectalCancer"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskColorectalCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskEndometrialAbnormality -->
+
+    <owl:Class rdf:about="#IncreasedRiskEndometrialAbnormality">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskEndometrialAbnormality"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskEndometrialAbnormality"/>
+        <owl:disjointWith rdf:resource="#DecreasedRiskEndometrialAbnormality"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskEndometrialCancer -->
+
+    <owl:Class rdf:about="#IncreasedRiskEndometrialCancer">
+        <rdfs:subClassOf rdf:resource="#IncreasedRiskEndometrialAbnormality"/>
+        <rdfs:subClassOf rdf:resource="#ChangeRiskEndometrialCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskFatalMI -->
+
+    <owl:Class rdf:about="#IncreasedRiskFatalMI">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskFatalMI"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskFatalMI"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskGastricCancer -->
+
+    <owl:Class rdf:about="#IncreasedRiskGastricCancer">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskGastricCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskHotFlushes -->
+
+    <owl:Class rdf:about="#IncreasedRiskHotFlushes">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskHotFlushes"/>
+        <owl:disjointWith rdf:resource="#DecreasedRiskHotFlushes"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskHotFlushes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskOvarianCyst -->
+
+    <owl:Class rdf:about="#IncreasedRiskOvarianCyst">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskOvarianCyst"/>
+        <owl:disjointWith rdf:resource="#DecreasedRiskOvarianCyst"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskPersistentSideEffects -->
+
+    <owl:Class rdf:about="#IncreasedRiskPersistentSideEffects">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskPersistentSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskRetinopathy -->
+
+    <owl:Class rdf:about="#IncreasedRiskRetinopathy">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#DecreasedRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskRetiopathy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskSideEffects -->
+
+    <owl:Class rdf:about="#IncreasedRiskSideEffects">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskVenousThrombosis -->
+
+    <owl:Class rdf:about="#IncreasedRiskVenousThrombosis">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#DecreasedRiskVenousThrombosis"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#LNNeg -->
+
+    <owl:Class rdf:about="#LNNeg">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasLNStatus"/>
+                <owl:hasValue rdf:resource="#ProtoLNNeg"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#BreastAdenoCa"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#LNPos -->
+
+    <owl:Class rdf:about="#LNPos">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasLNStatus"/>
+                <owl:hasValue rdf:resource="#ProtoLNPos"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#BreastAdenoCa"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#LNStatus -->
+
+    <owl:Class rdf:about="#LNStatus">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#ProtoLNPos"/>
+                    <rdf:Description rdf:about="#ProtoLNNeg"/>
+                </owl:oneOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#References"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#LateCMFTChemoTam -->
+
+    <owl:Class rdf:about="#LateCMFTChemoTam">
+        <rdfs:subClassOf rdf:resource="#CMFTChemoTam"/>
+        <owl:disjointWith rdf:resource="#EarlyCMFTChemoTam"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#LumbarBMD -->
+
+    <owl:Class rdf:about="#LumbarBMD">
+        <rdfs:subClassOf rdf:resource="#BMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#MFTChemoTam -->
+
+    <owl:Class rdf:about="#MFTChemoTam">
+        <rdfs:subClassOf rdf:resource="#ChemoTamRegimeTypes"/>
+        <owl:disjointWith rdf:resource="#ACTChemoTam"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#MI -->
+
+    <owl:Class rdf:about="#MI">
+        <rdfs:subClassOf rdf:resource="#CardiacDisease"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#MedicalIntervention -->
+
+    <owl:Class rdf:about="#MedicalIntervention">
+        <rdfs:subClassOf rdf:resource="#Abstract"/>
+        <owl:disjointWith rdf:resource="#SymptomTypes"/>
+        <owl:disjointWith rdf:resource="#DiseaseTypes"/>
+        <owl:disjointWith rdf:resource="#References"/>
+        <owl:disjointWith rdf:resource="#Outcomes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#MedicalThings -->
+
+    <owl:Class rdf:about="#MedicalThings"/>
+    
+
+
+    <!-- http://acl/BMV#Men -->
+
+    <owl:Class rdf:about="#Men">
+        <rdfs:subClassOf rdf:resource="#Adults"/>
+        <owl:disjointWith rdf:resource="#Women"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#MenopausalStatus -->
+
+    <owl:Class rdf:about="#MenopausalStatus">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#ProtoPostmenopausal"/>
+                    <rdf:Description rdf:about="#ProtoPremenopausal"/>
+                </owl:oneOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#References"/>
+        <owl:disjointWith rdf:resource="#Pathological_Grade"/>
+        <owl:disjointWith rdf:resource="#Outcomes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeBrCaDFS -->
+
+    <owl:Class rdf:about="#NoChangeBrCaDFS">
+        <rdfs:subClassOf rdf:resource="#ChangeBrCaDFS"/>
+        <owl:disjointWith rdf:resource="#DecreasedBrCaDFS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeBrCaDSS -->
+
+    <owl:Class rdf:about="#NoChangeBrCaDSS">
+        <rdfs:subClassOf rdf:resource="#ChangeBrCaDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeCardiacDSS -->
+
+    <owl:Class rdf:about="#NoChangeCardiacDSS">
+        <rdfs:subClassOf rdf:resource="#ChangeCardiacDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeCholesterol -->
+
+    <owl:Class rdf:about="#NoChangeCholesterol">
+        <rdfs:subClassOf rdf:resource="#ChangeCholesterol"/>
+        <owl:disjointWith rdf:resource="#IncreasedCholesterol"/>
+        <owl:disjointWith rdf:resource="#DecreasedCholesterol"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeEndoCaDFS -->
+
+    <owl:Class rdf:about="#NoChangeEndoCaDFS">
+        <rdfs:subClassOf rdf:resource="#ChangeEndoCaDFS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeEndoCaDSS -->
+
+    <owl:Class rdf:about="#NoChangeEndoCaDSS">
+        <rdfs:subClassOf rdf:resource="#ChangeEndoCaDSS"/>
+        <owl:disjointWith rdf:resource="#DecreasedEndoCaDSS"/>
+        <owl:disjointWith rdf:resource="#IncreasedEndoCaDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeLDL -->
+
+    <owl:Class rdf:about="#NoChangeLDL">
+        <rdfs:subClassOf rdf:resource="#ChangeLDL"/>
+        <owl:disjointWith rdf:resource="#IncreasedLDL"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeLumbarBMD -->
+
+    <owl:Class rdf:about="#NoChangeLumbarBMD">
+        <rdfs:subClassOf rdf:resource="#ChangeLumbarBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeOS -->
+
+    <owl:Class rdf:about="#NoChangeOS">
+        <rdfs:subClassOf rdf:resource="#ChangeOverallSurvival"/>
+        <owl:disjointWith rdf:resource="#DecreasedOS"/>
+        <owl:disjointWith rdf:resource="#IncreasedOS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangePlasmaFibrinogenLevel -->
+
+    <owl:Class rdf:about="#NoChangePlasmaFibrinogenLevel">
+        <rdfs:subClassOf rdf:resource="#ChangePlasmaFibrinogenLevel"/>
+        <owl:disjointWith rdf:resource="#DecreasedPlasmaFibrinogenLevel"/>
+        <owl:disjointWith rdf:resource="#IncreasedPlasmaFibrinogenLevel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangePlasmaPlateletCount -->
+
+    <owl:Class rdf:about="#NoChangePlasmaPlateletCount">
+        <rdfs:subClassOf rdf:resource="#ChangePlasmaPlatelet"/>
+        <owl:disjointWith rdf:resource="#IncreasedPlasmaPlateletCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRadialBMD -->
+
+    <owl:Class rdf:about="#NoChangeRadialBMD">
+        <rdfs:subClassOf rdf:resource="#ChangeRadialBMD"/>
+        <owl:disjointWith rdf:resource="#DecreasedRadialBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskCardiacDisease -->
+
+    <owl:Class rdf:about="#NoChangeRiskCardiacDisease">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskCardiacDisease"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskCataracts -->
+
+    <owl:Class rdf:about="#NoChangeRiskCataracts">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskCataracts"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskCataracts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskColorectalCancer -->
+
+    <owl:Class rdf:about="#NoChangeRiskColorectalCancer">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskColorectalCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskEndometrialAbnormality -->
+
+    <owl:Class rdf:about="#NoChangeRiskEndometrialAbnormality">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskEndometrialAbnormality"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskEndometrialCancer -->
+
+    <owl:Class rdf:about="#NoChangeRiskEndometrialCancer">
+        <rdfs:subClassOf rdf:resource="#NoChangeRiskEndometrialAbnormality"/>
+        <rdfs:subClassOf rdf:resource="#ChangeRiskEndometrialCancer"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskEndometrialCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskFatalMI -->
+
+    <owl:Class rdf:about="#NoChangeRiskFatalMI">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskFatalMI"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskGastricCancer -->
+
+    <owl:Class rdf:about="#NoChangeRiskGastricCancer">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskGastricCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskHotFlushes -->
+
+    <owl:Class rdf:about="#NoChangeRiskHotFlushes">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskHotFlushes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskOvarianCyst -->
+
+    <owl:Class rdf:about="#NoChangeRiskOvarianCyst">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskOvarianCyst"/>
+        <owl:disjointWith rdf:resource="#DecreasedRiskOvarianCyst"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskOvarianCyst"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskPersistentSideEffects -->
+
+    <owl:Class rdf:about="#NoChangeRiskPersistentSideEffects">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskPersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskPersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#DecreasedRiskPersistentSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskRetiopathy -->
+
+    <owl:Class rdf:about="#NoChangeRiskRetiopathy">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#DecreasedRiskRetinopathy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskSideEffects -->
+
+    <owl:Class rdf:about="#NoChangeRiskSideEffects">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskSideEffects"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskSideEffects"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NoChangeVenousRiskThrombosis -->
+
+    <owl:Class rdf:about="#NoChangeVenousRiskThrombosis">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#DecreasedRiskVenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskVenousThrombosis"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NonAnthracyclineChemoTxRegimeTypes -->
+
+    <owl:Class rdf:about="#NonAnthracyclineChemoTxRegimeTypes">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#ChemoTxRegimeTypes"/>
+                    <owl:Class>
+                        <owl:complementOf rdf:resource="#AnthracyclineChemoTxRegimeTypes"/>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#NonFatalMI -->
+
+    <owl:Class rdf:about="#NonFatalMI">
+        <rdfs:subClassOf rdf:resource="#MI"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Outcomes -->
+
+    <owl:Class rdf:about="#Outcomes">
+        <rdfs:subClassOf rdf:resource="#Abstract"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#OvarianCyst -->
+
+    <owl:Class rdf:about="#OvarianCyst">
+        <rdfs:subClassOf rdf:resource="#DiseaseTypes"/>
+        <owl:disjointWith rdf:resource="#Retinopathy"/>
+        <owl:disjointWith rdf:resource="#Cataracts"/>
+        <owl:disjointWith rdf:resource="#PersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#VenousThrombosis"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#PAFTChemoTam -->
+
+    <owl:Class rdf:about="#PAFTChemoTam">
+        <rdfs:subClassOf rdf:resource="#ChemoTamRegimeTypes"/>
+        <owl:disjointWith rdf:resource="#MFTChemoTam"/>
+        <owl:disjointWith rdf:resource="#ACTChemoTam"/>
+        <owl:disjointWith rdf:resource="#PFTChemoTam"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#PFTChemoTam -->
+
+    <owl:Class rdf:about="#PFTChemoTam">
+        <rdfs:subClassOf rdf:resource="#ChemoTamRegimeTypes"/>
+        <owl:disjointWith rdf:resource="#ACTChemoTam"/>
+        <owl:disjointWith rdf:resource="#MFTChemoTam"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Pathological_Grade -->
+
+    <owl:Class rdf:about="#Pathological_Grade">
+        <rdfs:subClassOf rdf:resource="#References"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#PersistentSideEffects -->
+
+    <owl:Class rdf:about="#PersistentSideEffects">
+        <rdfs:subClassOf rdf:resource="#DiseaseTypes"/>
+        <owl:disjointWith rdf:resource="#VenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#Retinopathy"/>
+        <owl:disjointWith rdf:resource="#Cataracts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#PlasmaCholesterol -->
+
+    <owl:Class rdf:about="#PlasmaCholesterol">
+        <rdfs:subClassOf rdf:resource="#BiologicalLevels"/>
+        <owl:disjointWith rdf:resource="#BMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#PolyChemoTxRegimeTypes -->
+
+    <owl:Class rdf:about="#PolyChemoTxRegimeTypes">
+        <rdfs:subClassOf rdf:resource="#ChemoTxRegimeTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#PoorPrognosis -->
+
+    <owl:Class rdf:about="#PoorPrognosis">
+        <rdfs:subClassOf rdf:resource="#Outcomes"/>
+        <owl:disjointWith rdf:resource="#Risk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Postmenopausal -->
+
+    <owl:Class rdf:about="#Postmenopausal">
+        <rdfs:subClassOf rdf:resource="#Women"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Premenopausal -->
+
+    <owl:Class rdf:about="#Premenopausal">
+        <rdfs:subClassOf rdf:resource="#Women"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#RadialBMD -->
+
+    <owl:Class rdf:about="#RadialBMD">
+        <rdfs:subClassOf rdf:resource="#BMD"/>
+        <owl:disjointWith rdf:resource="#LumbarBMD"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ReducedBrCaDSS -->
+
+    <owl:Class rdf:about="#ReducedBrCaDSS">
+        <rdfs:subClassOf rdf:resource="#ChangeBrCaDSS"/>
+        <owl:disjointWith rdf:resource="#NoChangeBrCaDSS"/>
+        <owl:disjointWith rdf:resource="#IncreasedBrCaDSS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#ReducedRiskGastricCancer -->
+
+    <owl:Class rdf:about="#ReducedRiskGastricCancer">
+        <rdfs:subClassOf rdf:resource="#ChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#NoChangeRiskGastricCancer"/>
+        <owl:disjointWith rdf:resource="#IncreasedRiskGastricCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#References -->
+
+    <owl:Class rdf:about="#References">
+        <rdfs:subClassOf rdf:resource="#Abstract"/>
+        <owl:disjointWith rdf:resource="#Outcomes"/>
+        <owl:disjointWith rdf:resource="#SymptomTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Retinopathy -->
+
+    <owl:Class rdf:about="#Retinopathy">
+        <rdfs:subClassOf rdf:resource="#DiseaseTypes"/>
+        <owl:disjointWith rdf:resource="#VenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#Cataracts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Risk -->
+
+    <owl:Class rdf:about="#Risk">
+        <rdfs:subClassOf rdf:resource="#Outcomes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#RiskCancer -->
+
+    <owl:Class rdf:about="#RiskCancer">
+        <rdfs:subClassOf rdf:resource="#AbsoluteRisk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#RiskCataracts -->
+
+    <owl:Class rdf:about="#RiskCataracts">
+        <rdfs:subClassOf rdf:resource="#AbsoluteRisk"/>
+        <owl:disjointWith rdf:resource="#RiskCancer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#RiskEndometrialAbnormality -->
+
+    <owl:Class rdf:about="#RiskEndometrialAbnormality">
+        <rdfs:subClassOf rdf:resource="#AbsoluteRisk"/>
+        <owl:disjointWith rdf:resource="#RiskCancer"/>
+        <owl:disjointWith rdf:resource="#RiskCataracts"/>
+        <owl:disjointWith rdf:resource="#RiskRetinopathy"/>
+        <owl:disjointWith rdf:resource="#RiskOvarianCyst"/>
+        <owl:disjointWith rdf:resource="#RiskEndometrialCa"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#RiskEndometrialCa -->
+
+    <owl:Class rdf:about="#RiskEndometrialCa">
+        <rdfs:subClassOf rdf:resource="#RiskCancer"/>
+        <owl:disjointWith rdf:resource="#RiskCataracts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#RiskOvarianCyst -->
+
+    <owl:Class rdf:about="#RiskOvarianCyst">
+        <rdfs:subClassOf rdf:resource="#AbsoluteRisk"/>
+        <owl:disjointWith rdf:resource="#RiskCataracts"/>
+        <owl:disjointWith rdf:resource="#RiskCancer"/>
+        <owl:disjointWith rdf:resource="#RiskEndometrialCa"/>
+        <owl:disjointWith rdf:resource="#RiskRetinopathy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#RiskRetinopathy -->
+
+    <owl:Class rdf:about="#RiskRetinopathy">
+        <rdfs:subClassOf rdf:resource="#AbsoluteRisk"/>
+        <owl:disjointWith rdf:resource="#RiskEndometrialCa"/>
+        <owl:disjointWith rdf:resource="#RiskCancer"/>
+        <owl:disjointWith rdf:resource="#RiskCataracts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Stroke -->
+
+    <owl:Class rdf:about="#Stroke">
+        <rdfs:subClassOf rdf:resource="#VascularDisease"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#SymptomTypes -->
+
+    <owl:Class rdf:about="#SymptomTypes">
+        <rdfs:subClassOf rdf:resource="#Abstract"/>
+        <owl:disjointWith rdf:resource="#Outcomes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Tamoxifen -->
+
+    <owl:Class rdf:about="#Tamoxifen">
+        <rdfs:subClassOf rdf:resource="#HormoneRARegimeTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Tamoxifen20mg -->
+
+    <owl:Class rdf:about="#Tamoxifen20mg">
+        <rdfs:subClassOf rdf:resource="#TamoxifenByDose"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Tamoxifen2YrCourse -->
+
+    <owl:Class rdf:about="#Tamoxifen2YrCourse">
+        <rdfs:subClassOf rdf:resource="#TamoxifenByLength"/>
+        <owl:disjointWith rdf:resource="#TamoxifenMore5YrCourse"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Tamoxifen30mg -->
+
+    <owl:Class rdf:about="#Tamoxifen30mg">
+        <rdfs:subClassOf rdf:resource="#TamoxifenByDose"/>
+        <owl:disjointWith rdf:resource="#Tamoxifen20mg"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Tamoxifen40mg -->
+
+    <owl:Class rdf:about="#Tamoxifen40mg">
+        <rdfs:subClassOf rdf:resource="#TamoxifenByDose"/>
+        <owl:disjointWith rdf:resource="#Tamoxifen30mg"/>
+        <owl:disjointWith rdf:resource="#Tamoxifen20mg"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Tamoxifen5YrCourse -->
+
+    <owl:Class rdf:about="#Tamoxifen5YrCourse">
+        <rdfs:subClassOf rdf:resource="#TamoxifenByLength"/>
+        <owl:disjointWith rdf:resource="#TamoxifenMore5YrCourse"/>
+        <owl:disjointWith rdf:resource="#Tamoxifen2YrCourse"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#TamoxifenByDose -->
+
+    <owl:Class rdf:about="#TamoxifenByDose">
+        <rdfs:subClassOf rdf:resource="#Tamoxifen"/>
+        <owl:disjointWith rdf:resource="#TamoxifenByLength"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#TamoxifenByLength -->
+
+    <owl:Class rdf:about="#TamoxifenByLength">
+        <rdfs:subClassOf rdf:resource="#Tamoxifen"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#TamoxifenMore5YrCourse -->
+
+    <owl:Class rdf:about="#TamoxifenMore5YrCourse">
+        <rdfs:subClassOf rdf:resource="#TamoxifenByLength"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#TherapeuticType -->
+
+    <owl:Class rdf:about="#TherapeuticType">
+        <rdfs:subClassOf rdf:resource="#MedicalIntervention"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#VascularDisease -->
+
+    <owl:Class rdf:about="#VascularDisease">
+        <rdfs:subClassOf rdf:resource="#DiseaseTypes"/>
+        <owl:disjointWith rdf:resource="#CancerTypes"/>
+        <owl:disjointWith rdf:resource="#PersistentSideEffects"/>
+        <owl:disjointWith rdf:resource="#Retinopathy"/>
+        <owl:disjointWith rdf:resource="#OvarianCyst"/>
+        <owl:disjointWith rdf:resource="#EndometrialAbnormality"/>
+        <owl:disjointWith rdf:resource="#VenousThrombosis"/>
+        <owl:disjointWith rdf:resource="#Cataracts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#VenousThrombosis -->
+
+    <owl:Class rdf:about="#VenousThrombosis">
+        <rdfs:subClassOf rdf:resource="#DiseaseTypes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://acl/BMV#Women -->
+
+    <owl:Class rdf:about="#Women">
+        <rdfs:subClassOf rdf:resource="#Adults"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://acl/BMV#DecreasedBrCaDFS0.5 -->
+
+    <DecreasedBrCaDFS rdf:about="#DecreasedBrCaDFS0.5">
+        <hasValue rdf:datatype="&xsd;decimal">0.5</hasValue>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+    </DecreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#DecreasedBrCaDFS0.8 -->
+
+    <DecreasedBrCaDFS rdf:about="#DecreasedBrCaDFS0.8">
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">0.8</hasValue>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+    </DecreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#DecreasedCholesterol0.88 -->
+
+    <DecreasedCholesterol rdf:about="#DecreasedCholesterol0.88">
+        <hasValue rdf:datatype="&xsd;decimal">0.88</hasValue>
+        <refersSubstance rdf:resource="#PlasmaCholesterolInst"/>
+    </DecreasedCholesterol>
+    
+
+
+    <!-- http://acl/BMV#DecreasedEndoCaDFS0.66 -->
+
+    <DecreasedEndoCaDFS rdf:about="#DecreasedEndoCaDFS0.66">
+        <hasValue rdf:datatype="&xsd;decimal">0.66</hasValue>
+    </DecreasedEndoCaDFS>
+    
+
+
+    <!-- http://acl/BMV#DecreasedEndoCaDSS0.66 -->
+
+    <DecreasedEndoCaDSS rdf:about="#DecreasedEndoCaDSS0.66">
+        <refersDisease rdf:resource="#ProtoEndoCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">0.66</hasValue>
+    </DecreasedEndoCaDSS>
+    
+
+
+    <!-- http://acl/BMV#DecreasedLDL0.88 -->
+
+    <DecreasedLDL rdf:about="#DecreasedLDL0.88"/>
+    
+
+
+    <!-- http://acl/BMV#DecreasedLumbarBMD0.986 -->
+
+    <DecreasedLumbarBMD rdf:about="#DecreasedLumbarBMD0.986">
+        <hasValue rdf:datatype="&xsd;decimal">0.986</hasValue>
+    </DecreasedLumbarBMD>
+    
+
+
+    <!-- http://acl/BMV#DecreasedLumbarBMD0.993 -->
+
+    <DecreasedLumbarBMD rdf:about="#DecreasedLumbarBMD0.993">
+        <refersSubstance rdf:resource="#LumbarBMDLevel"/>
+        <hasValue rdf:datatype="&xsd;decimal">0.993</hasValue>
+    </DecreasedLumbarBMD>
+    
+
+
+    <!-- http://acl/BMV#DecreasedPlasmaFibrinogenLevel0.85 -->
+
+    <DecreasedPlasmaFibrinogenLevel rdf:about="#DecreasedPlasmaFibrinogenLevel0.85">
+        <refersSubstance rdf:resource="#PlasmaFibrinogen"/>
+        <hasValue rdf:datatype="&xsd;decimal">0.85</hasValue>
+    </DecreasedPlasmaFibrinogenLevel>
+    
+
+
+    <!-- http://acl/BMV#DecreasedPlasmaPlateletCount0.92 -->
+
+    <DecreasedPlasmaPlateletCount rdf:about="#DecreasedPlasmaPlateletCount0.92">
+        <refersSubstance rdf:resource="#PlasmaPlatelet"/>
+        <hasValue rdf:datatype="&xsd;decimal">0.92</hasValue>
+    </DecreasedPlasmaPlateletCount>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRadialBMD_NOS -->
+
+    <DecreasedRadialBMD rdf:about="#DecreasedRadialBMD_NOS">
+        <refersSubstance rdf:resource="#RadialBMDLevel"/>
+    </DecreasedRadialBMD>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskBrCa0.01 -->
+
+    <DecreasedRiskBreastCancer rdf:about="#DecreasedRiskBrCa0.01">
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">0.01</hasValue>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+    </DecreasedRiskBreastCancer>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskBrCa0.55 -->
+
+    <DecreasedRiskBreastCancer rdf:about="#DecreasedRiskBrCa0.55">
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">0.55</hasValue>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+    </DecreasedRiskBreastCancer>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskBrCa0.6 -->
+
+    <DecreasedRiskBreastCancer rdf:about="#DecreasedRiskBrCa0.6">
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">0.6</hasValue>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+    </DecreasedRiskBreastCancer>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskCardiacDisease0.68 -->
+
+    <DecreasedRiskCardiacDisease rdf:about="#DecreasedRiskCardiacDisease0.68">
+        <hasValue rdf:datatype="&xsd;decimal">0.68</hasValue>
+        <refersDisease rdf:resource="#ProtoFatalMI"/>
+        <refersDisease rdf:resource="#ProtoNonFatalMI"/>
+    </DecreasedRiskCardiacDisease>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskFatalMI0.37 -->
+
+    <DecreasedRiskFatalMI rdf:about="#DecreasedRiskFatalMI0.37">
+        <refersDisease rdf:resource="#ProtoFatalMI"/>
+        <hasValue rdf:datatype="&xsd;decimal">0.37</hasValue>
+    </DecreasedRiskFatalMI>
+    
+
+
+    <!-- http://acl/BMV#DecreasedRiskHotFlushes0.8 -->
+
+    <DecreasedRiskHotFlushes rdf:about="#DecreasedRiskHotFlushes0.8">
+        <refersDisease rdf:resource="#ProtoHotFlushes"/>
+        <hasValue rdf:datatype="&xsd;decimal">0.8</hasValue>
+    </DecreasedRiskHotFlushes>
+    
+
+
+    <!-- http://acl/BMV#ECMFTypeInstance -->
+
+    <ECMFRegimeType rdf:about="#ECMFTypeInstance"/>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDFS1.05 -->
+
+    <IncreasedBrCaDFS rdf:about="#IncreasedBrCaDFS1.05">
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+    </IncreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDFS1.1 -->
+
+    <IncreasedBrCaDFS rdf:about="#IncreasedBrCaDFS1.1">
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+    </IncreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDFS1.2 -->
+
+    <IncreasedBrCaDFS rdf:about="#IncreasedBrCaDFS1.2">
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">1.2</hasValue>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+    </IncreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDFS1.21 -->
+
+    <IncreasedBrCaDFS rdf:about="#IncreasedBrCaDFS1.21">
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">1.21</hasValue>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+    </IncreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDFS1.3 -->
+
+    <IncreasedBrCaDFS rdf:about="#IncreasedBrCaDFS1.3">
+        <hasValue rdf:datatype="&xsd;decimal">1.3</hasValue>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+    </IncreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDFS1.5 -->
+
+    <IncreasedBrCaDFS rdf:about="#IncreasedBrCaDFS1.5">
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">1.5</hasValue>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+    </IncreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDFS1.7 -->
+
+    <IncreasedBrCaDFS rdf:about="#IncreasedBrCaDFS1.7">
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+    </IncreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDFS1.x -->
+
+    <IncreasedBrCaDFS rdf:about="#IncreasedBrCaDFS1.x">
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+    </IncreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedBrCaDFSREF -->
+
+    <IncreasedBrCaDFS rdf:about="#IncreasedBrCaDFSREF">
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+    </IncreasedBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedCardiacDSS1.52 -->
+
+    <IncreasedCardiacDSS rdf:about="#IncreasedCardiacDSS1.52">
+        <hasValue rdf:datatype="&xsd;decimal">1.52</hasValue>
+    </IncreasedCardiacDSS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedLumbarBMD1.006 -->
+
+    <IncreasedLumbarBMD rdf:about="#IncreasedLumbarBMD1.006"/>
+    
+
+
+    <!-- http://acl/BMV#IncreasedLumbarBMD1.008 -->
+
+    <IncreasedLumbarBMD rdf:about="#IncreasedLumbarBMD1.008"/>
+    
+
+
+    <!-- http://acl/BMV#IncreasedLumbarBMD1.012 -->
+
+    <IncreasedLumbarBMD rdf:about="#IncreasedLumbarBMD1.012"/>
+    
+
+
+    <!-- http://acl/BMV#IncreasedOS1.02 -->
+
+    <IncreasedOS rdf:about="#IncreasedOS1.02">
+        <hasValue rdf:datatype="&xsd;decimal">1.02</hasValue>
+    </IncreasedOS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedOS1.03 -->
+
+    <IncreasedOS rdf:about="#IncreasedOS1.03">
+        <hasValue rdf:datatype="&xsd;decimal">1.03</hasValue>
+    </IncreasedOS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedOS1.1 -->
+
+    <IncreasedOS rdf:about="#IncreasedOS1.1">
+        <hasValue rdf:datatype="&xsd;decimal">1.1</hasValue>
+    </IncreasedOS>
+    
+
+
+    <!-- http://acl/BMV#IncreasedOS1.2 -->
+
+    <IncreasedOS rdf:about="#IncreasedOS1.2"/>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskCRC1.9 -->
+
+    <IncreasedRiskColorectalCancer rdf:about="#IncreasedRiskCRC1.9">
+        <refersDisease rdf:resource="#ProtoColorectalCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">1.9</hasValue>
+    </IncreasedRiskColorectalCancer>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskCataracts1.14 -->
+
+    <IncreasedRiskCataracts rdf:about="#IncreasedRiskCataracts1.14"/>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskEndometrialCancer2.3 -->
+
+    <IncreasedRiskEndometrialCancer rdf:about="#IncreasedRiskEndometrialCancer2.3">
+        <hasValue rdf:datatype="&xsd;decimal">2.3</hasValue>
+        <refersDisease rdf:resource="#ProtoEndoCa"/>
+    </IncreasedRiskEndometrialCancer>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskEndometrialCancer2.53 -->
+
+    <IncreasedRiskEndometrialCancer rdf:about="#IncreasedRiskEndometrialCancer2.53">
+        <refersDisease rdf:resource="#ProtoEndoCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">2.3</hasValue>
+    </IncreasedRiskEndometrialCancer>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskEndometrialCancer4.1 -->
+
+    <IncreasedRiskEndometrialCancer rdf:about="#IncreasedRiskEndometrialCancer4.1">
+        <refersDisease rdf:resource="#ProtoEndoCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">4.1</hasValue>
+    </IncreasedRiskEndometrialCancer>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskEndometrialCancer6.0 -->
+
+    <IncreasedRiskEndometrialCancer rdf:about="#IncreasedRiskEndometrialCancer6.0">
+        <refersDisease rdf:resource="#ProtoEndoCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">6.0</hasValue>
+    </IncreasedRiskEndometrialCancer>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskEndometrialCancer6.4 -->
+
+    <IncreasedRiskEndometrialCancer rdf:about="#IncreasedRiskEndometrialCancer6.4">
+        <hasValue rdf:datatype="&xsd;decimal">6.4</hasValue>
+        <refersDisease rdf:resource="#ProtoEndoCa"/>
+    </IncreasedRiskEndometrialCancer>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskEndometrialCancer7.5 -->
+
+    <IncreasedRiskEndometrialCancer rdf:about="#IncreasedRiskEndometrialCancer7.5">
+        <hasValue rdf:datatype="&xsd;decimal">7.5</hasValue>
+        <refersDisease rdf:resource="#ProtoEndoCa"/>
+    </IncreasedRiskEndometrialCancer>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskGastricCa3.0 -->
+
+    <IncreasedRiskGastricCancer rdf:about="#IncreasedRiskGastricCa3.0">
+        <refersDisease rdf:resource="#ProtoGastricCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">3.0</hasValue>
+    </IncreasedRiskGastricCancer>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskGastricCa3.2 -->
+
+    <IncreasedRiskGastricCancer rdf:about="#IncreasedRiskGastricCa3.2">
+        <refersDisease rdf:resource="#ProtoGastricCa"/>
+        <hasValue rdf:datatype="&xsd;decimal">3.2</hasValue>
+    </IncreasedRiskGastricCancer>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskPersistentSideEffects2.3 -->
+
+    <IncreasedRiskPersistentSideEffects rdf:about="#IncreasedRiskPersistentSideEffects2.3">
+        <refersDisease rdf:resource="#PersistentSideEffectsInst"/>
+    </IncreasedRiskPersistentSideEffects>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskRetinopathy1.52 -->
+
+    <IncreasedRiskRetinopathy rdf:about="#IncreasedRiskRetinopathy1.52">
+        <refersDisease rdf:resource="#ProtoRetinopathy"/>
+    </IncreasedRiskRetinopathy>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskSideEffects23 -->
+
+    <IncreasedRiskSideEffects rdf:about="#IncreasedRiskSideEffects23">
+        <refersDisease rdf:resource="#PersistentSideEffectsInst"/>
+        <hasValue rdf:datatype="&xsd;decimal">23</hasValue>
+    </IncreasedRiskSideEffects>
+    
+
+
+    <!-- http://acl/BMV#IncreasedRiskVenousThrombosis3.4 -->
+
+    <IncreasedRiskVenousThrombosis rdf:about="#IncreasedRiskVenousThrombosis3.4">
+        <refersDisease rdf:resource="#ProtoVenousThrombosis"/>
+        <hasValue rdf:datatype="&xsd;decimal">3.4</hasValue>
+    </IncreasedRiskVenousThrombosis>
+    
+
+
+    <!-- http://acl/BMV#LumbarBMDLevel -->
+
+    <LumbarBMD rdf:about="#LumbarBMDLevel"/>
+    
+
+
+    <!-- http://acl/BMV#MsJones -->
+
+    <Postmenopausal rdf:about="#MsJones">
+        <rdf:type rdf:resource="#Aged50Plus"/>
+        <rdf:type rdf:resource="#Women"/>
+        <hasDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <hasAge rdf:datatype="&xsd;int">53</hasAge>
+    </Postmenopausal>
+    
+
+
+    <!-- http://acl/BMV#NoChangeBrCaDFS1 -->
+
+    <NoChangeBrCaDFS rdf:about="#NoChangeBrCaDFS1">
+        <hasValue rdf:datatype="&xsd;decimal">1.0</hasValue>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNNegStage2BrCa"/>
+        <refersDisease rdf:resource="#ProtoERPosLNPosStage1BrCa"/>
+        <refersDisease rdf:resource="#ProtoERNegLNPosStage2BrCa"/>
+    </NoChangeBrCaDFS>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRadialBMD1.0 -->
+
+    <NoChangeRadialBMD rdf:about="#NoChangeRadialBMD1.0">
+        <hasValue rdf:datatype="&xsd;decimal">1.0</hasValue>
+        <refersSubstance rdf:resource="#RadialBMDLevel"/>
+    </NoChangeRadialBMD>
+    
+
+
+    <!-- http://acl/BMV#NoChangeRiskEndometrialAbnormality1 -->
+
+    <NoChangeRiskEndometrialAbnormality rdf:about="#NoChangeRiskEndometrialAbnormality1">
+        <refersDisease rdf:resource="#ProtoEndoAbnormality"/>
+        <hasValue rdf:datatype="&xsd;decimal">1.0</hasValue>
+    </NoChangeRiskEndometrialAbnormality>
+    
+
+
+    <!-- http://acl/BMV#PersistentSideEffectsInst -->
+
+    <PersistentSideEffects rdf:about="#PersistentSideEffectsInst"/>
+    
+
+
+    <!-- http://acl/BMV#PlasmaCholesterolInst -->
+
+    <PlasmaCholesterol rdf:about="#PlasmaCholesterolInst"/>
+    
+
+
+    <!-- http://acl/BMV#PlasmaFibrinogen -->
+
+    <BiologicalLevels rdf:about="#PlasmaFibrinogen"/>
+    
+
+
+    <!-- http://acl/BMV#PlasmaLDL -->
+
+    <BiologicalLevels rdf:about="#PlasmaLDL"/>
+    
+
+
+    <!-- http://acl/BMV#PlasmaPlatelet -->
+
+    <BiologicalLevels rdf:about="#PlasmaPlatelet"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoACT -->
+
+    <ACTChemoTam rdf:about="#ProtoACT"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoClonidine -->
+
+    <ClonidineRegime rdf:about="#ProtoClonidine"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoColorectalCa -->
+
+    <ColorectalCancer rdf:about="#ProtoColorectalCa"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoERNeg -->
+
+    <HRStatus rdf:about="#ProtoERNeg"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoERNegLNNegStage1BrCa -->
+
+    <EarlyBreastCancer rdf:about="#ProtoERNegLNNegStage1BrCa">
+        <rdf:type rdf:resource="#LNNeg"/>
+        <rdf:type rdf:resource="#ERNeg"/>
+        <hasHRStatus rdf:resource="#ProtoERNeg"/>
+        <hasStage rdf:resource="#ProtoStage1"/>
+        <hasLNStatus rdf:resource="#ProtoLNNeg"/>
+    </EarlyBreastCancer>
+    
+
+
+    <!-- http://acl/BMV#ProtoERNegLNNegStage2BrCa -->
+
+    <ERNeg rdf:about="#ProtoERNegLNNegStage2BrCa">
+        <rdf:type rdf:resource="#LNNeg"/>
+        <rdf:type rdf:resource="#EarlyBreastCancer"/>
+        <hasStage rdf:resource="#ProtoStage2"/>
+        <hasHRStatus rdf:resource="#ProtoERNeg"/>
+        <hasLNStatus rdf:resource="#ProtoLNNeg"/>
+    </ERNeg>
+    
+
+
+    <!-- http://acl/BMV#ProtoERNegLNPosStage1BrCa -->
+
+    <ERNeg rdf:about="#ProtoERNegLNPosStage1BrCa">
+        <rdf:type rdf:resource="#EarlyBreastCancer"/>
+        <rdf:type rdf:resource="#LNPos"/>
+        <hasHRStatus rdf:resource="#ProtoERNeg"/>
+        <hasStage rdf:resource="#ProtoStage1"/>
+        <hasLNStatus rdf:resource="#ProtoLNPos"/>
+    </ERNeg>
+    
+
+
+    <!-- http://acl/BMV#ProtoERNegLNPosStage2BrCa -->
+
+    <ERNeg rdf:about="#ProtoERNegLNPosStage2BrCa">
+        <rdf:type rdf:resource="#EarlyBreastCancer"/>
+        <rdf:type rdf:resource="#LNPos"/>
+        <hasHRStatus rdf:resource="#ProtoERNeg"/>
+        <hasLNStatus rdf:resource="#ProtoLNPos"/>
+        <hasStage rdf:resource="#ProtoStage2"/>
+    </ERNeg>
+    
+
+
+    <!-- http://acl/BMV#ProtoERPos -->
+
+    <HRStatus rdf:about="#ProtoERPos"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoERPosLNNegStage1BrCa -->
+
+    <ERPos rdf:about="#ProtoERPosLNNegStage1BrCa">
+        <rdf:type rdf:resource="#EarlyBreastCancer"/>
+        <rdf:type rdf:resource="#LNNeg"/>
+        <hasStage rdf:resource="#ProtoStage1"/>
+        <hasHRStatus rdf:resource="#ProtoERPos"/>
+        <hasLNStatus rdf:resource="#ProtoLNNeg"/>
+    </ERPos>
+    
+
+
+    <!-- http://acl/BMV#ProtoERPosLNNegStage2BrCa -->
+
+    <ERPos rdf:about="#ProtoERPosLNNegStage2BrCa">
+        <rdf:type rdf:resource="#EarlyBreastCancer"/>
+        <rdf:type rdf:resource="#LNNeg"/>
+        <hasLNStatus rdf:resource="#ProtoLNNeg"/>
+        <hasStage rdf:resource="#ProtoStage2"/>
+        <hasHRStatus rdf:resource="#ProtoERPos"/>
+    </ERPos>
+    
+
+
+    <!-- http://acl/BMV#ProtoERPosLNPosStage1BrCa -->
+
+    <ERPos rdf:about="#ProtoERPosLNPosStage1BrCa">
+        <rdf:type rdf:resource="#EarlyBreastCancer"/>
+        <rdf:type rdf:resource="#LNPos"/>
+        <hasStage rdf:resource="#ProtoStage1"/>
+        <hasHRStatus rdf:resource="#ProtoERPos"/>
+        <hasLNStatus rdf:resource="#ProtoLNPos"/>
+    </ERPos>
+    
+
+
+    <!-- http://acl/BMV#ProtoERPosLNPosStage2BrCa -->
+
+    <EarlyBreastCancer rdf:about="#ProtoERPosLNPosStage2BrCa">
+        <rdf:type rdf:resource="#LNPos"/>
+        <rdf:type rdf:resource="#ERPos"/>
+        <hasLNStatus rdf:resource="#ProtoLNPos"/>
+        <hasHRStatus rdf:resource="#ProtoERPos"/>
+        <hasStage rdf:resource="#ProtoStage2"/>
+    </EarlyBreastCancer>
+    
+
+
+    <!-- http://acl/BMV#ProtoEarlyCMFTChemoTam -->
+
+    <EarlyCMFTChemoTam rdf:about="#ProtoEarlyCMFTChemoTam"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoEndoAbnormality -->
+
+    <EndometrialAbnormality rdf:about="#ProtoEndoAbnormality"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoEndoCa -->
+
+    <EndometrialCancer rdf:about="#ProtoEndoCa"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoEndometrialAbnormality -->
+
+    <EndometrialAbnormality rdf:about="#ProtoEndometrialAbnormality"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoFatalMI -->
+
+    <FatalMI rdf:about="#ProtoFatalMI"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoGastricCa -->
+
+    <GastricCancer rdf:about="#ProtoGastricCa"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoHotFlushes -->
+
+    <HotFlushes rdf:about="#ProtoHotFlushes"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoLNNeg -->
+
+    <LNStatus rdf:about="#ProtoLNNeg"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoLNPos -->
+
+    <LNStatus rdf:about="#ProtoLNPos"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoLateCMFTChemTam -->
+
+    <LateCMFTChemoTam rdf:about="#ProtoLateCMFTChemTam"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoMFTChemoTam -->
+
+    <MFTChemoTam rdf:about="#ProtoMFTChemoTam"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoNoChangeOS -->
+
+    <NoChangeOS rdf:about="#ProtoNoChangeOS">
+        <hasValue rdf:datatype="&xsd;decimal">1.0</hasValue>
+    </NoChangeOS>
+    
+
+
+    <!-- http://acl/BMV#ProtoNonFatalMI -->
+
+    <NonFatalMI rdf:about="#ProtoNonFatalMI"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoPAFTChemoTam -->
+
+    <PAFTChemoTam rdf:about="#ProtoPAFTChemoTam"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoPFTChemoTam -->
+
+    <PFTChemoTam rdf:about="#ProtoPFTChemoTam"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoPRNeg -->
+
+    <HRStatus rdf:about="#ProtoPRNeg"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoPRPos -->
+
+    <HRStatus rdf:about="#ProtoPRPos"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoPoorPrognosis -->
+
+    <PoorPrognosis rdf:about="#ProtoPoorPrognosis"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoPostmenopausal -->
+
+    <MenopausalStatus rdf:about="#ProtoPostmenopausal"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoPremenopausal -->
+
+    <MenopausalStatus rdf:about="#ProtoPremenopausal"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoRetinopathy -->
+
+    <Retinopathy rdf:about="#ProtoRetinopathy"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoStage1 -->
+
+    <DiseaseStage rdf:about="#ProtoStage1"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoStage2 -->
+
+    <DiseaseStage rdf:about="#ProtoStage2"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoStage3 -->
+
+    <DiseaseStage rdf:about="#ProtoStage3"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoStage4 -->
+
+    <DiseaseStage rdf:about="#ProtoStage4"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoStroke -->
+
+    <Stroke rdf:about="#ProtoStroke"/>
+    
+
+
+    <!-- http://acl/BMV#ProtoVenousThrombosis -->
+
+    <VenousThrombosis rdf:about="#ProtoVenousThrombosis"/>
+    
+
+
+    <!-- http://acl/BMV#RadialBMDLevel -->
+
+    <RadialBMD rdf:about="#RadialBMDLevel"/>
+    
+
+
+    <!-- http://acl/BMV#RiskCataracts0.14 -->
+
+    <RiskCataracts rdf:about="#RiskCataracts0.14"/>
+    
+
+
+    <!-- http://acl/BMV#RiskEndometrialAbnormality3.9 -->
+
+    <RiskEndometrialAbnormality rdf:about="#RiskEndometrialAbnormality3.9">
+        <refersDisease rdf:resource="#ProtoEndoAbnormality"/>
+    </RiskEndometrialAbnormality>
+    
+
+
+    <!-- http://acl/BMV#RiskEndometrialCa0.005 -->
+
+    <RiskEndometrialCa rdf:about="#RiskEndometrialCa0.005">
+        <hasValue rdf:datatype="&xsd;decimal">0.05</hasValue>
+    </RiskEndometrialCa>
+    
+
+
+    <!-- http://acl/BMV#RiskOvarianCyst0.06 -->
+
+    <RiskOvarianCyst rdf:about="#RiskOvarianCyst0.06"/>
+    
+
+
+    <!-- http://acl/BMV#RiskOvarianCyst0.11 -->
+
+    <RiskOvarianCyst rdf:about="#RiskOvarianCyst0.11"/>
+    
+
+
+    <!-- http://acl/BMV#RiskRetinopathy0.12 -->
+
+    <RiskRetinopathy rdf:about="#RiskRetinopathy0.12">
+        <hasValue rdf:datatype="&xsd;decimal">0.12</hasValue>
+    </RiskRetinopathy>
+    
+
+
+    <!-- http://acl/BMV#Tam30mg -->
+
+    <Tamoxifen30mg rdf:about="#Tam30mg"/>
+    
+
+
+    <!-- http://acl/BMV#TamA20mg -->
+
+    <Tamoxifen20mg rdf:about="#TamA20mg"/>
+    
+
+
+    <!-- http://acl/BMV#TamC40mg -->
+
+    <Tamoxifen40mg rdf:about="#TamC40mg"/>
+    
+
+
+    <!-- http://acl/BMV#TamD2Yr -->
+
+    <Tamoxifen2YrCourse rdf:about="#TamD2Yr"/>
+    
+
+
+    <!-- http://acl/BMV#TamE5Yr -->
+
+    <Tamoxifen5YrCourse rdf:about="#TamE5Yr"/>
+    
+
+
+    <!-- http://acl/BMV#TamFgt5Yr -->
+
+    <TamoxifenMore5YrCourse rdf:about="#TamFgt5Yr"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <rdf:Description rdf:about="&owl;Thing">
+        <owl:versionInfo rdf:datatype="&xsd;string"
+            >TODO: Sort out LNPos and LNNeg Definitions</owl:versionInfo>
+    </rdf:Description>
+</rdf:RDF>

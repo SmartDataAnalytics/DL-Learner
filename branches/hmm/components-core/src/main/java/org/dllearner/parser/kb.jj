@@ -1,0 +1,401 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/**
+ * KB file parser. 
+ */
+
+options {
+  JDK_VERSION = "1.5";
+  STATIC = false;  
+}
+ 
+PARSER_BEGIN(KBParser) 
+package org.dllearner.parser;
+
+import org.dllearner.core.owl.*;
+import java.io.*;
+import java.net.URL;
+
+public class KBParser {
+
+	public static String internalNamespace = "http://localhost/foo#";
+
+	// method to give all internal stuff an URI (not necessary for DLs, but for OWL ontologies
+	// and it should be possible to represent the internal KB as OWL ontology)
+	public static String getInternalURI(String name) {
+		if(name.startsWith("http://"))
+			return name;
+		else
+			return internalNamespace + name;
+	}
+	
+	public static Description parseConcept(String string) throws ParseException {
+		// when just parsing the string as concept, we have no guarantee
+		// that the parser uses all symbols, e.g. a AND b returns just a
+		// because the brackets were forgotten;
+		// so instead we create an equivalent class axiom and return its
+		// right hand side
+		String eq = "tmp = " + string + ".";
+		KBParser parser = new KBParser(new StringReader(eq));
+		EquivalentClassesAxiom eqAxiom = parser.TBoxEquiv();
+		return eqAxiom.getConcept2();
+	}
+
+	//TODO beware of this function it is evil (author: Sebastian Hellmann)
+    public static Description parseConcept(String string, String namespace) throws ParseException {
+             internalNamespace = namespace;
+              return parseConcept(string);
+    }
+
+	public static KB parseKBFile(String content) throws ParseException {
+		KBParser parser = new KBParser(new StringReader(content));
+		return parser.KB();
+	}
+
+	public static KB parseKBFile(URL url) throws IOException, ParseException {
+		KBParser parser = new KBParser(url.openStream());
+		return parser.KB();
+	}
+
+	public static KB parseKBFile(File file) throws FileNotFoundException, ParseException {
+		KBParser parser = new KBParser(new FileInputStream(file));
+		return parser.KB();
+	}
+
+}
+PARSER_END(KBParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+} 
+
+TOKEN :
+{
+    < COMMAND_END: "." >
+  | < ID: ["a"-"z"] (["_","a"-"z","A"-"Z","0"-"9"])* >
+  | < NUMBER: (["1"-"9"] (["0"-"9"])* | "0") >
+  | < DOUBLE: (["1"-"9"] (["0"-"9"])* | "0") "." (["0"-"9"])* >
+  | < TOP: "TOP" >
+  | < BOTTOM: "BOTTOM" >
+  | < AND: "AND" >
+  | < OR: "OR" >
+  | < EXISTS: "EXISTS" | "SOME" >
+  | < ALL: "ALL" | "FORALL" >
+  | < NOT: "NEG" | "NOT" >
+  | < GE: ">=" >
+  | < LE: "<=" >
+  | < STRING: "\"" (~["\"","\\","\n","\r"])* "\"">
+}
+
+KB KB() :
+{
+	ClassAssertionAxiom conceptAssertion;
+	ObjectPropertyAssertion roleAssertion;
+	PropertyAxiom rBoxAxiom;
+	EquivalentClassesAxiom equality;
+	SubClassAxiom inclusion;
+	KB kb = new KB();
+}
+{
+  (		LOOKAHEAD(Concept() "(" Individual() ")" <COMMAND_END>) conceptAssertion=ABoxConcept()
+  		{ kb.addABoxAxiom(conceptAssertion); }
+  	|	LOOKAHEAD([Not()] ObjectProperty() "(" Individual() ",") roleAssertion = ABoxRole()
+  		{ kb.addABoxAxiom(roleAssertion); }	
+  	|	rBoxAxiom = Transitive()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	| 	rBoxAxiom = Functional()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	|	rBoxAxiom = Symmetric()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	|	rBoxAxiom = Inverse()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	|	rBoxAxiom = Subrole()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	| 	rBoxAxiom = ObjectPropertyDomainAxiom()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	| 	rBoxAxiom = DatatypePropertyDomainAxiom()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }  
+  	| 	rBoxAxiom = ObjectPropertyRangeAxiom()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	| 	rBoxAxiom = DatatypePropertyRangeAxiom()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }  
+  		// da Konfigurationsoptionen ausgeschlossen sind, reicht es bis zum "=" zu suchen
+  	|	LOOKAHEAD(Concept() "=") equality = TBoxEquiv()
+  		{ kb.addTBoxAxiom(equality); }
+  	|	LOOKAHEAD(Concept() ("SUBCLASSOF" | "SUB" )) inclusion = TBoxSub()
+  		{ kb.addTBoxAxiom(inclusion); }
+  )*
+  <EOF>
+  { return kb; }
+}
+
+ClassAssertionAxiom ABoxConcept() : {Description c; Individual i;}
+{
+	c=Concept() "(" i=Individual() ")" <COMMAND_END>
+	{ return new ClassAssertionAxiom(c,i); }	
+}
+
+ObjectPropertyAssertion ABoxRole() : 
+{ 
+	boolean isNegated=false; 
+	ObjectProperty ar;
+	Individual i1,i2;
+}
+{
+   	[Not() {isNegated=true;}] ar=ObjectProperty() "(" i1=Individual() "," i2=Individual() ")" <COMMAND_END>
+   	{
+   		if(isNegated)
+   			throw new Error("negated role assertions not supported yet");
+   		else
+   			return new ObjectPropertyAssertion(ar,i1,i2);
+   	}
+}
+
+TransitiveObjectPropertyAxiom Transitive() : {ObjectProperty ar;}
+{
+   "Transitive" "(" ar=ObjectProperty() ")" <COMMAND_END>
+   { return new TransitiveObjectPropertyAxiom(ar); }
+}
+
+FunctionalObjectPropertyAxiom Functional() : {ObjectProperty ar;}
+{
+   "Functional" "(" ar=ObjectProperty() ")" <COMMAND_END>
+   { return new FunctionalObjectPropertyAxiom(ar); }
+   
+}
+
+SymmetricObjectPropertyAxiom Symmetric() : {ObjectProperty ar;}
+{
+   "Symmetric" "(" ar=ObjectProperty() ")" <COMMAND_END>
+   { return new SymmetricObjectPropertyAxiom(ar); }
+}
+
+InverseObjectPropertyAxiom Inverse() : {ObjectProperty ar1,ar2;}
+{
+   "Inverse" "(" ar1=ObjectProperty() "," ar2=ObjectProperty() ")" <COMMAND_END>
+   { return new InverseObjectPropertyAxiom(ar1,ar2); }
+}
+
+SubObjectPropertyAxiom Subrole() : {ObjectProperty ar1,ar2;}
+{
+   "Subrole" "(" ar1=ObjectProperty() "," ar2=ObjectProperty() ")" <COMMAND_END>
+   { return new SubObjectPropertyAxiom(ar1,ar2);}
+}
+
+EquivalentClassesAxiom TBoxEquiv() : {Description c1,c2;}
+{
+   c1=Concept() "=" c2=Concept() <COMMAND_END>
+   { return new EquivalentClassesAxiom(c1,c2); }
+}
+
+SubClassAxiom TBoxSub() : {Description c1,c2;}
+{
+   c1=Concept() ("SUBCLASSOF" | "SUB" | "SUBCONCEPTOF") c2=Concept() <COMMAND_END>
+   { return new SubClassAxiom(c1,c2);}
+}
+
+ObjectPropertyDomainAxiom ObjectPropertyDomainAxiom() : {ObjectProperty op; Description domain; }
+{
+	("DOMAIN" | "OPDOMAIN" | "OBJECTPROPERTYDOMAIN") "(" op=ObjectProperty() ")" "=" domain=Concept() <COMMAND_END>
+	{ return new ObjectPropertyDomainAxiom(op, domain); }
+}
+
+DatatypePropertyDomainAxiom DatatypePropertyDomainAxiom() : {DatatypeProperty op; Description domain; }
+{
+	( "DPDOMAIN" | "DATATYPEPROPERTYDOMAIN" ) "(" op=DatatypeProperty() ")" "=" domain=Concept() <COMMAND_END>
+	{ return new DatatypePropertyDomainAxiom(op, domain); }
+}
+
+ObjectPropertyRangeAxiom ObjectPropertyRangeAxiom() : {ObjectProperty op; Description range; }
+{
+	("RANGE" | "OPRANGE" | "OBJECTPROPERTYRANGE") "(" op=ObjectProperty() ")" "=" range=Concept() <COMMAND_END>
+	{ return new ObjectPropertyRangeAxiom(op, range); }
+}
+
+DatatypePropertyRangeAxiom DatatypePropertyRangeAxiom() : {DatatypeProperty op; DataRange range; }
+{
+	( "DPRANGE" | "DATATYPEPROPERTYRANGE") "(" op=DatatypeProperty() ")" "=" 
+	( "DOUBLE" { range = OWL2Datatype.DOUBLE.getDatatype(); }
+	| "BOOLEAN" { range = OWL2Datatype.BOOLEAN.getDatatype(); }
+	| "INTEGER" { range = OWL2Datatype.INT.getDatatype(); } )
+	<COMMAND_END>
+	{ return new DatatypePropertyRangeAxiom(op, range); }
+}
+
+Description Concept() : 
+{
+	Description c,c1,c2;
+	NamedClass ac;
+	ObjectProperty ar;
+	DatatypeProperty dp;
+	ObjectProperty op;
+	String s;
+	Individual ind;
+	int i;
+}
+{
+    Top() {return new Thing();}
+  | Bottom() {return new Nothing();}
+  | LOOKAHEAD(2) ac = AtomicConcept() {return ac;}
+  // | s=Id() {return new AtomicConcept(s);}
+  // | s=String() {return new AtomicConcept(s);} 
+  // parse until next AND or OR
+  | LOOKAHEAD( "(" Concept() And())    "(" c1=Concept() And() c2=Concept() ")" 
+  	{return new Intersection(c1,c2);}
+  | LOOKAHEAD( "(" Concept() Or())    "(" c1=Concept() Or() c2=Concept() ")"
+  	{return new Union(c1,c2);}
+  // EXISTS or ALL is sufficient to chose the correct parser branch
+  // | Exists() s=Id() "." c=Concept()
+  // {return new Exists(new AtomicRole(s),c); } 
+  | Exists() ar=ObjectProperty() "." c=Concept()
+  	{return new ObjectSomeRestriction(ar,c); } 
+  // | All() s=Id() "." c=Concept()
+  //	{return new All(new AtomicRole(s),c); }
+  | All() ar=ObjectProperty() "." c=Concept()
+	{return new ObjectAllRestriction(ar,c); }	
+  | Not() c=Concept()
+  	{return new Negation(c); }
+  // | GE() i=Integer() s=Id() "." c=Concept()
+  //	{return new GreaterEqual(i,new AtomicRole(s),c);}
+  | GE() i=Integer() ar=ObjectProperty() "." c=Concept()
+  	{return new ObjectMinCardinalityRestriction(i,ar,c);}  	
+  // | LE() i=Integer() s=Id() "." c=Concept()
+  //	{return new LessEqual(i,new AtomicRole(s),c);}
+  | LE() i=Integer() ar=ObjectProperty() "." c=Concept()
+  	{return new ObjectMaxCardinalityRestriction(i,ar,c);}
+  | LOOKAHEAD(4) "(" dp=DatatypeProperty() "IS" "TRUE" ")" { return new BooleanValueRestriction(dp, true); }
+  | LOOKAHEAD(4) "(" dp=DatatypeProperty() "IS" "FALSE" ")" { return new BooleanValueRestriction(dp, false); }
+  | LOOKAHEAD(4) "(" op=ObjectProperty() "HASVALUE" ind=Individual() ")" { return new ObjectValueRestriction(op, ind); }
+  | "(" dp=DatatypeProperty() "STRINGVALUE" s=String() ")" { return new StringValueRestriction(dp, s); }    	
+}
+
+void Or() : {} { <OR> }
+void And() : {} { <AND> }
+void Top() : {} { <TOP> }
+void Bottom() : {} { <BOTTOM> } 
+void Exists() : {} { <EXISTS> }
+void All() : {} { <ALL> }
+void Not() : {} { <NOT> }
+void GE() : {} { <GE> }
+void LE() : {} { <LE> }
+
+NamedClass AtomicConcept() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return new NamedClass(getInternalURI(name));
+	}
+}
+
+DatatypeProperty DatatypeProperty() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return new DatatypeProperty(getInternalURI(name));
+	}
+}
+
+ObjectProperty ObjectProperty() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return new ObjectProperty(getInternalURI(name));
+	}
+}
+
+Individual Individual() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return new Individual(getInternalURI(name));
+	}
+}
+
+String Id() : 
+{
+  Token t;
+}
+{
+  t=<ID>
+  {
+    // jjtThis.setId(t.image);
+    return t.image;
+  }
+}
+
+double Double() : 
+{
+  Token t;
+}
+{
+  t=<DOUBLE>
+  {
+    return new Double(t.image);
+  }
+}
+
+int Integer() : 
+{
+  Token t;
+}
+{
+  t=<NUMBER>
+  {
+    // jjtThis.setId(t.image);
+    // muss noch in Integer umgewandelt werden
+    return new Integer(t.image);
+  }
+}
+
+String String() : 
+{
+  Token t;
+  String s;
+}
+{
+  t=<STRING>
+  {
+    // jjtThis.setId(t.image);
+    // es werden sofort die Anfuehrungszeichen abgeschnitten
+    s = t.image;
+    s = s.substring(1, s.length() - 1);
+    return s;
+  }
+}

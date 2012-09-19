@@ -1,0 +1,6 @@
+http://dbpedia.org/ontology/writer|written by, written
+http://dbpedia.org/ontology/author|written by, written, author, author of
+http://dbpedia.org/ontology/director|directed by, directed, director
+http://dbpedia.org/ontology/producer|produced by, produced, producer
+http://dbpedia.org/ontology/birthPlace|birth place, birth, born in, born
+http://dbpedia.org/ontology/deathPlace|death place, death, died in, died

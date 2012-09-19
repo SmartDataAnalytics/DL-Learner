@@ -1,0 +1,242 @@
+<html><head><title>DL-Learner components and configuration options</title>
+<style type="text/css">
+body { line-height: 1.6em; font-size: 15px; font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;  }
+#hor-minimalist-a 	{ font-size: 13px;	background: #fff; margin: 30px;	width: 90%;border-collapse: collapse; 	text-align: left; } 
+#hor-minimalist-a th { font-size: 15px;	font-weight: normal; color: #039; padding: 10px 8px; border-bottom: 2px solid #6678b1;	}
+#hor-minimalist-a td	{ color: #669;padding: 9px 8px 0px 8px;	}
+#hor-minimalist-a tbody tr:hover td 	{ color: #009; }
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script><script type="text/javascript" language="javascript">
+//<![CDATA[
+function showOnlyCat(className){
+	 $('div').show(); $('div').not('.'+className).hide(); }
+function showAllCat(){
+  $('div').show() };
+//]]>
+</script>
+</head><body>
+<h1>DL-Learner Components</h1>
+<p>Filter components by implemented interfaces:</p>
+<ul><a href="#" onClick="showAllCat()">show all</a><li><a href="#" onClick="showOnlyCat('KnowledgeSource')">KnowledgeSource</a></li><li><a href="#" onClick="showOnlyCat('ReasonerComponent')">ReasonerComponent</a></li><li><a href="#" onClick="showOnlyCat('LearningProblem')">LearningProblem</a></li><li><a href="#" onClick="showOnlyCat('LearningAlgorithm')">LearningAlgorithm</a><ul><li><a href="#" onClick="showOnlyCat('AxiomLearningAlgorithm')">AxiomLearningAlgorithm</a></li><li><a href="#" onClick="showOnlyCat('ClassExpressionLearningAlgorithm')">ClassExpressionLearningAlgorithm</a></li></ul></li><li><a href="#" onClick="showOnlyCat('RefinementOperator')">RefinementOperator</a></li><li><a href="#" onClick="showOnlyCat('OtherComponent')">other</a></li></ul><p>Click on a component to get an overview on its configuration options.</p><ul>
+<div class="LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.BruteForceLearner">Brute Force Learner</a></li></div>
+<div class="LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.celoe.CELOE">CELOE</a></li></div>
+<div class="LearningProblem"><li><a href="#org.dllearner.learningproblems.ClassLearningProblem">ClassLearningProblem</a></li></div>
+<div class="LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.fuzzydll.FuzzyCELOE">Fuzzy CELOE</a></li></div>
+<div class="ReasonerComponent"><li><a href="#org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner">Fuzzy OWL API Reasoner</a></li></div>
+<div class="LearningProblem"><li><a href="#org.dllearner.learningproblems.FuzzyPosNegLPStandard">FuzzyPosNegLPStandard</a></li></div>
+<div class="KnowledgeSource"><li><a href="#org.dllearner.kb.KBFile">KB File</a></li></div>
+<div class="ReasonerComponent"><li><a href="#org.dllearner.reasoning.OWLAPIReasoner">OWL API Reasoner</a></li></div>
+<div class="LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.ocel.OCEL">OWL Class Expression Learner</a></li></div>
+<div class="KnowledgeSource"><li><a href="#org.dllearner.kb.OWLFile">OWL File</a></li></div>
+<div class="LearningProblem"><li><a href="#org.dllearner.learningproblems.PosNegLPStandard">PosNegLPStandard</a></li></div>
+<div class="LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.RandomGuesser">Random Guesser</a></li></div>
+<div class="KnowledgeSource"><li><a href="#org.dllearner.kb.SparqlEndpointKS">SPARQL endpoint</a></li></div>
+<div class="KnowledgeSource"><li><a href="#org.dllearner.kb.sparql.SparqlKnowledgeSource">SPARQL endpoint fragment</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner">data subPropertyOf axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner">dataproperty domain axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner">dataproperty range learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.DisjointClassesLearner">disjoint classes learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner">disjoint dataproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner">disjoint objectproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner">equivalent dataproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner">equivalent objectproperty axiom learner</a></li></div>
+<div class="ReasonerComponent"><li><a href="#org.dllearner.reasoning.FastInstanceChecker">fast instance checker</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner">functional dataproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner">functional objectproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner">inversefunctional objectproperty axiom learner</a></li></div>
+<div class="OtherComponent"><li><a href="#org.dllearner.algorithms.ocel.MultiHeuristic">multiple criteria heuristic</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner">object subPropertyOf axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner">objectproperty domain axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner">objectproperty range learner</a></li></div>
+<div class="LearningProblem"><li><a href="#org.dllearner.learningproblems.PosOnlyLP">positive only learning problem</a></li></div>
+<div class="LearningAlgorithm"><li><a href="#org.dllearner.algorithm.qtl.QTL">query tree learner</a></li></div>
+<div class="RefinementOperator"><li><a href="#org.dllearner.refinementoperators.RhoDRDown">rho refinement operator</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.SimpleSubclassLearner">simple subclass learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner">symmetric objectproperty axiom learner</a></li></div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner">transitive objectproperty axiom learner</a></li></div>
+</ul>
+<div class="LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.BruteForceLearner"><h2>Brute Force Learner</h2></a>
+<p>short name: bruteForce<br />version: 0.8<br />implements: LearningAlgorithm, ClassExpressionLearningAlgorithm<br /></p>This component does not have configuration options.</div>
+<div class="LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.celoe.CELOE"><h2>CELOE</h2></a>
+<p>short name: celoe<br />version: 1.0<br />implements: LearningAlgorithm, ClassExpressionLearningAlgorithm<br />description: CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>terminateOnNoiseReached</td><td>specifies whether to terminate when noise criterion is met</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>reuseExistingDescription</td><td>If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>filterDescriptionsFollowingFromKB</td><td>If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>maxClassDescriptionTests</td><td>The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)</td><td> int</td><td>0</td><td> false</td></tr>
+<tr><td>maxDepth</td><td>maximum depth of description</td><td> double</td><td>7</td><td> false</td></tr>
+<tr><td>singleSuggestionMode</td><td>Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
+<tr><td>writeSearchTree</td><td>specifies whether to write a search tree</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>startClass</td><td>You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.</td><td> Description</td><td>owl:Thing</td><td> false</td></tr>
+<tr><td>maxNrOfResults</td><td>Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).</td><td> int</td><td>10</td><td> false</td></tr>
+<tr><td>searchTreeFile</td><td>file to use for the search tree</td><td> String</td><td>log/searchTree.txt</td><td> false</td></tr>
+<tr><td>replaceSearchTree</td><td>specifies whether to replace the search tree in the log file after each run or append the new search tree</td><td> boolean</td><td>false</td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningProblem"><a name="org.dllearner.learningproblems.ClassLearningProblem"><h2>ClassLearningProblem</h2></a>
+<p>short name: clp<br />version: 0.6<br />implements: LearningProblem<br /></p>This component does not have configuration options.</div>
+<div class="LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.fuzzydll.FuzzyCELOE"><h2>Fuzzy CELOE</h2></a>
+<p>short name: fceloe<br />version: 0.2<br />implements: LearningAlgorithm, ClassExpressionLearningAlgorithm<br />description: See Fuzzy DL-Learner paper published at ISDA 2011.<br /></p>This component does not have configuration options.</div>
+<div class="ReasonerComponent"><a name="org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner"><h2>Fuzzy OWL API Reasoner</h2></a>
+<p>short name: foar<br />version: 0.2<br />implements: ReasonerComponent<br /></p>This component does not have configuration options.</div>
+<div class="LearningProblem"><a name="org.dllearner.learningproblems.FuzzyPosNegLPStandard"><h2>FuzzyPosNegLPStandard</h2></a>
+<p>short name: fuzzyPosNeg<br />version: 0.2<br />implements: LearningProblem<br /></p>This component does not have configuration options.</div>
+<div class="KnowledgeSource"><a name="org.dllearner.kb.KBFile"><h2>KB File</h2></a>
+<p>short name: kbfile<br />version: 0.8<br />implements: KnowledgeSource<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>url</td><td>URL pointer to the KB file</td><td> String</td><td></td><td> false</td></tr>
+<tr><td>fileName</td><td>relative or absolute path to KB file</td><td> String</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="ReasonerComponent"><a name="org.dllearner.reasoning.OWLAPIReasoner"><h2>OWL API Reasoner</h2></a>
+<p>short name: oar<br />version: 0.8<br />implements: ReasonerComponent<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>owlLinkURL</td><td>The URL to the owl server</td><td> String</td><td></td><td> false</td></tr>
+<tr><td>reasonerType</td><td>The name of the OWL APIReasoner to use {"fact", "hermit", "owllink", "pellet"}</td><td> String</td><td>pellet</td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.ocel.OCEL"><h2>OWL Class Expression Learner</h2></a>
+<p>short name: ocel<br />version: 1.2<br />implements: LearningAlgorithm, ClassExpressionLearningAlgorithm<br /></p>This component does not have configuration options.</div>
+<div class="KnowledgeSource"><a name="org.dllearner.kb.OWLFile"><h2>OWL File</h2></a>
+<p>short name: owlfile<br />version: 0.9<br />implements: KnowledgeSource<br /></p>This component does not have configuration options.</div>
+<div class="LearningProblem"><a name="org.dllearner.learningproblems.PosNegLPStandard"><h2>PosNegLPStandard</h2></a>
+<p>short name: posNegStandard<br />version: 0.8<br />implements: LearningProblem<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy.</td><td> String</td><td>predacc</td><td> false</td></tr>
+<tr><td>useApproximations</td><td>Use Approximations</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.RandomGuesser"><h2>Random Guesser</h2></a>
+<p>short name: randomGuesser<br />version: 0.8<br />implements: LearningAlgorithm, ClassExpressionLearningAlgorithm<br /></p>This component does not have configuration options.</div>
+<div class="KnowledgeSource"><a name="org.dllearner.kb.SparqlEndpointKS"><h2>SPARQL endpoint</h2></a>
+<p>short name: sparql<br />version: 0.2<br />implements: KnowledgeSource<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>defaultGraphs</td><td>no description available</td><td> List</td><td>[]</td><td> false</td></tr>
+<tr><td>namedGraphs</td><td>no description available</td><td> List</td><td>[]</td><td> false</td></tr>
+<tr><td>url</td><td>no description available</td><td> URL</td><td></td><td> true</td></tr>
+</tbody></table>
+</div>
+<div class="KnowledgeSource"><a name="org.dllearner.kb.sparql.SparqlKnowledgeSource"><h2>SPARQL endpoint fragment</h2></a>
+<p>short name: sparqlfrag<br />version: 0.5<br />implements: KnowledgeSource<br /></p>This component does not have configuration options.</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner"><h2>data subPropertyOf axiom learner</h2></a>
+<p>short name: dplsubprop<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DatatypeProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner"><h2>dataproperty domain axiom learner</h2></a>
+<p>short name: dpldomain<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DatatypeProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner"><h2>dataproperty range learner</h2></a>
+<p>short name: dblrange<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DatatypeProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.DisjointClassesLearner"><h2>disjoint classes learner</h2></a>
+<p>short name: cldisjoint<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm, ClassExpressionLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>classToDescribe</td><td></td><td> NamedClass</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner"><h2>disjoint dataproperty axiom learner</h2></a>
+<p>short name: dpldisjoint<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DatatypeProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner"><h2>disjoint objectproperty axiom learner</h2></a>
+<p>short name: opldisjoint<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner"><h2>equivalent dataproperty axiom learner</h2></a>
+<p>short name: dplequiv<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DatatypeProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner"><h2>equivalent objectproperty axiom learner</h2></a>
+<p>short name: oplequiv<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="ReasonerComponent"><a name="org.dllearner.reasoning.FastInstanceChecker"><h2>fast instance checker</h2></a>
+<p>short name: fic<br />version: 0.9<br />implements: ReasonerComponent<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>forAllRetrievalSemantics</td><td>This option controls how to interpret the all quantifier in forall r.C. The standard option isto return all those which do not have an r-filler not in C. The domain semantics is to use thosewhich are in the domain of r and do not have an r-filler not in C. The forallExists semantics is touse those which have at least one r-filler and do not have an r-filler not in C.</td><td> String</td><td>standard</td><td> false</td></tr>
+<tr><td>defaultNegation</td><td>Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.</td><td> boolean</td><td>true</td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner"><h2>functional dataproperty axiom learner</h2></a>
+<p>short name: dplfunc<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> DatatypeProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner"><h2>functional objectproperty axiom learner</h2></a>
+<p>short name: oplfunc<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner"><h2>inversefunctional objectproperty axiom learner</h2></a>
+<p>short name: oplinvfunc<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="OtherComponent"><a name="org.dllearner.algorithms.ocel.MultiHeuristic"><h2>multiple criteria heuristic</h2></a>
+<p>short name: multiheuristic<br />version: 0.7<br />implements: OtherComponent<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>negationPenalty</td><td>no description available</td><td> int</td><td>0</td><td> false</td></tr>
+<tr><td>expansionPenaltyFactor</td><td>no description available</td><td> double</td><td>0.02</td><td> false</td></tr>
+<tr><td>negativeWeight</td><td>no description available</td><td> double</td><td>1.0</td><td> false</td></tr>
+<tr><td>gainBonusFactor</td><td>no description available</td><td> double</td><td>0.5</td><td> false</td></tr>
+<tr><td>nodeChildPenalty</td><td>no description available</td><td> double</td><td>0.0001</td><td> false</td></tr>
+<tr><td>startNodeBonus</td><td>no description available</td><td> double</td><td>0.1</td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner"><h2>object subPropertyOf axiom learner</h2></a>
+<p>short name: oplsubprop<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner"><h2>objectproperty domain axiom learner</h2></a>
+<p>short name: opldomain<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner"><h2>objectproperty range learner</h2></a>
+<p>short name: oplrange<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningProblem"><a name="org.dllearner.learningproblems.PosOnlyLP"><h2>positive only learning problem</h2></a>
+<p>short name: posonlylp<br />version: 0.6<br />implements: LearningProblem<br /></p>This component does not have configuration options.</div>
+<div class="LearningAlgorithm"><a name="org.dllearner.algorithm.qtl.QTL"><h2>query tree learner</h2></a>
+<p>short name: qtl<br />version: 0.8<br />implements: LearningAlgorithm<br /></p>This component does not have configuration options.</div>
+<div class="RefinementOperator"><a name="org.dllearner.refinementoperators.RhoDRDown"><h2>rho refinement operator</h2></a>
+<p>short name: rho<br />version: 0.8<br />implements: RefinementOperator<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>applyAllFilter</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useNegation</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>applyExistsFilter</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useCardinalityRestrictions</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useStringDatatypes</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useHasValueConstructor</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useBooleanDatatypes</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useDoubleDatatypes</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>instanceBasedDisjoints</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useAllConstructor</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>dropDisjuncts</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useExistsConstructor</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>disjointChecks</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.SimpleSubclassLearner"><h2>simple subclass learner</h2></a>
+<p>short name: clsub<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm, ClassExpressionLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>classToDescribe</td><td></td><td> NamedClass</td><td></td><td> true</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner"><h2>symmetric objectproperty axiom learner</h2></a>
+<p>short name: oplsymm<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+<div class="LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner"><h2>transitive objectproperty axiom learner</h2></a>
+<p>short name: opltrans<br />version: 0.1<br />implements: LearningAlgorithm, AxiomLearningAlgorithm<br /></p><table id="hor-minimalist-a"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>propertyToDescribe</td><td></td><td> ObjectProperty</td><td></td><td> false</td></tr>
+</tbody></table>
+</div>
+</body></html>

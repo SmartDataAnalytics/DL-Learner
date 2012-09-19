@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><dataset id="dbpedia-test">
+<question id="23">
+<string>Which/WDT presidents/NNS of/IN the/DT United/NNP States/NNPS had/VBD more/JJR than/IN three/CD children/NNS</string>
+</question>
+<question id="3">
+<string>Give/VB me/PRP the/DT official/JJ websites/NNS of/IN actors/NNS of/IN the/DT television/NN show/NN Charmed/NNP</string>
+</question>
+<question id="37">
+<string>Who/WP is/VBZ the/DT daughter/NN of/IN Bill/NNP Clinton/NNP married/VBN to/TO</string>
+</question>
+<question id="43">
+<string>Which/WDT river/NN does/VBZ the/DT Brooklyn/NNP Bridge/NNP cross/VB</string>
+</question>
+<question id="21">
+<string>How/WRB many/JJ monarchical/JJ countries/NNS are/VBP there/RB in/IN Europe/NNP</string>
+</question>
+<question id="7">
+<string>Where/WRB did/VBD Abraham/NNP Lincoln/NNP die/VB</string>
+</question>
+<question id="10">
+<string>Is/VBZ the/DT wife/NN of/IN President/NNP Obama/NNP called/VBD Michelle/NNP</string>
+</question>
+<question id="28">
+<string>Which/WDT states/NNS of/IN Germany/NNP are/VBP governed/VBN by/IN the/DT Social/NNP Democratic/NNP Party/NNP</string>
+</question>
+<question id="39">
+<string>Which/WDT US/NNP states/NNS possess/VBP gold/NN minerals/NNS</string>
+</question>
+<question id="50">
+<string>In/IN which/WDT country/NN does/VBZ the/DT Nile/NNP start/VB</string>
+</question>
+<question id="44">
+<string>Which/WDT locations/NNS have/VBP more/JJR than/IN two/CD caves/NNS</string>
+</question>
+<question id="30">
+<string>Is/VBZ proinsulin/NNP a/DT protein/NN</string>
+</question>
+<question id="12">
+<string>Which/WDT classis/NN does/VBZ the/DT Millepede/NNP belong/VBP to/TO</string>
+</question>
+<question id="49">
+<string>How/WRB tall/JJ is/VBZ Claudia/NNP Schiffer/NNP</string>
+</question>
+<question id="33">
+<string>Who/WP created/VBD Goofy/NNP</string>
+</question>
+<question id="4">
+<string>Give/VB me/PRP the/DT capitals/NNS of/IN all/DT US/NNP states/NNS</string>
+</question>
+<question id="18">
+<string>Give/VB me/PRP all/DT cities/NNS in/IN New/NNP Jersey/NNP with/IN more/JJR than/IN 100000/CD inhabitants/NNS</string>
+</question>
+<question id="31">
+<string>Which/WDT museum/NN exhibits/VBZ The/DT Scream/NNP by/IN Munch/NNP</string>
+</question>
+<question id="35">
+<string>Is/NNP Egypts/NNPS largest/JJS city/NN also/RB its/PRP$ capital/NN</string>
+</question>
+<question id="27">
+<string>What/WP is/VBZ the/DT revenue/NN of/IN IBM/NNP</string>
+</question>
+<question id="38">
+<string>Which/WDT states/NNS border/VBZ Utah/NNP</string>
+</question>
+<question id="13">
+<string>In/IN which/WDT country/NN is/VBZ the/DT Limerick/NNP Lake/NNP</string>
+</question>
+<question id="32">
+<string>Which/WDT television/NN shows/NNS were/VBD created/VBN by/IN Walt/NNP Disney/NNP</string>
+</question>
+<question id="45">
+<string>Which/WDT mountain/NN is/VBZ the/DT highest/JJS after/IN the/DT Annapurna/NNP</string>
+</question>
+<question id="29">
+<string>In/IN which/WDT films/NNS directed/VBN by/IN Garry/NNP Marshall/NNP was/VBD Julia/NNP Roberts/NNP starring/VBG</string>
+</question>
+<question id="42">
+<string>Which/WDT bridges/NNS are/VBP of/IN the/DT same/JJ type/NN as/IN the/DT Manhattan/NNP Bridge/NNP</string>
+</question>
+<question id="14">
+<string>Was/VBD US/NNP president/NNP Jackson/NNP involved/VBD in/IN a/DT war/NN</string>
+</question>
+<question id="20">
+<string>Which/WDT European/JJ countries/NNS are/VBP a/DT constitutional/JJ monarchy/NN</string>
+</question>
+<question id="40">
+<string>Who/WP is/VBZ the/DT author/NN of/IN WikiLeaks/NNP</string>
+</question>
+<question id="17">
+<string>Which/WDT state/NN of/IN the/DT United/NNP States/NNPS of/IN America/NNP has/VBZ the/DT highest/JJS density/NN</string>
+</question>
+<question id="19">
+<string>What/WP is/VBZ the/DT currency/NN of/IN the/DT Czech/NNP Republic/NNP</string>
+</question>
+<question id="22">
+<string>Which/WDT countries/NNS in/IN the/DT European/NNP Union/NNP adopted/VBD the/DT Euro/NNP</string>
+</question>
+<question id="11">
+<string>What/WP is/VBZ the/DT area/NN code/NN of/IN Berlin/NNP</string>
+</question>
+<question id="9">
+<string>Which/WDT countries/NNS have/VBP more/JJR than/IN two/CD official/JJ languages/NNS</string>
+</question>
+<question id="16">
+<string>Who/WP is/VBZ the/DT owner/NN of/IN Universal/NNP Studios/NNPS</string>
+</question>
+<question id="34">
+<string>Through/IN which/WDT countries/NNS does/VBZ the/DT Yenisei/NNP river/NN flow/VB</string>
+</question>
+<question id="48">
+<string>When/WRB did/VBD Germany/NNP join/VB the/DT EU/NNP</string>
+</question>
+<question id="36">
+<string>Which/WDT monarchs/NNS of/IN the/DT United/NNP Kingdom/NNP were/VBD married/VBN to/TO a/DT German/NN</string>
+</question>
+<question id="8">
+<string>When/WRB was/VBD the/DT Battle/NNP of/IN Gettysburg/NNP</string>
+</question>
+<question id="24">
+<string>What/WP is/VBZ the/DT highest/JJS mountain/NN in/IN Germany/NNP</string>
+</question>
+<question id="26">
+<string>Give/VB me/PRP all/DT soccer/NN clubs/NNS in/IN Spain/NNP</string>
+</question>
+<question id="5">
+<string>What/WP are/VBP the/DT official/JJ languages/NNS of/IN the/DT Philippines/NNPS</string>
+</question>
+<question id="6">
+<string>Who/WP is/VBZ the/DT mayor/NN of/IN New/NNP York/NNP City/NNP</string>
+</question>
+<question id="41">
+<string>Who/WP designed/VBD the/DT Brooklyn/NNP Bridge/NNP</string>
+</question>
+<question id="2">
+<string>Which/WDT telecommunications/NN organizations/NNS are/VBP located/VBN in/IN Belgium/NNP</string>
+</question>
+<question id="15">
+<string>What/WP is/VBZ the/DT profession/NN of/IN Frank/NNP Herbert/NNP</string>
+</question>
+<question id="46">
+<string>What/WP is/VBZ the/DT highest/JJS place/NN of/IN Karakoram/NNP</string>
+</question>
+<question id="25">
+<string>Give/VB me/PRP the/DT homepage/NN of/IN Forbes/NNP</string>
+</question>
+<question id="1">
+<string>Which/WDT companies/NNS are/VBP in/IN the/DT computer/NN software/NN industry/NN</string>
+</question>
+<question id="47">
+<string>What/WP did/VBD Bruce/NNP Carver/NNP die/VB from/IN</string>
+</question>
+</dataset>

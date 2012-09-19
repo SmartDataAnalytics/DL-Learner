@@ -1,0 +1,1293 @@
+This file contains an automatically generated files of all components and their config options.
+
+*********************
+* Knowledge Sources *
+*********************
+
+BEGIN MANUAL PART
+END MANUAL PART
+
+component: SPARQL Endpoint (org.dllearner.kb.sparql.SparqlKnowledgeSource)
+==========================================================================
+
+conf file usage: import ("$url",  "SPARQL");
+
+option name: url
+description: URL of SPARQL Endpoint
+allowed values: URL
+default value: not set (mandatory)
+conf file usage: sparql.url = ;
+
+option name: cacheDir
+description: dir of cache
+allowed values: String [] 
+default value: cache
+conf file usage: sparql.cacheDir = cache;
+
+option name: useCache
+description: If true a Cache is used
+allowed values: boolean
+default value: true
+conf file usage: sparql.useCache = true;
+
+option name: useCacheDatabase
+description: If true, H2 database is used, otherwise one file per query is written.
+allowed values: boolean
+default value: false
+conf file usage: sparql.useCacheDatabase = false;
+
+option name: instances
+description: relevant instances e.g. positive and negative examples in a learning problem
+allowed values: Set<String>
+default value: not set (mandatory)
+conf file usage: sparql.instances = ;
+
+option name: recursionDepth
+description: recursion depth of KB fragment selection
+allowed values: int 
+default value: 1
+conf file usage: sparql.recursionDepth = 1;
+
+option name: predefinedFilter
+description: the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST
+allowed values: String [] 
+default value: not set
+conf file usage: sparql.predefinedFilter = ;
+
+option name: predefinedEndpoint
+description: the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK
+allowed values: String [] 
+default value: not set
+conf file usage: sparql.predefinedEndpoint = ;
+
+option name: predefinedManipulator
+description: the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR
+allowed values: String [] 
+default value: not set
+conf file usage: sparql.predefinedManipulator = ;
+
+option name: predList
+description: list of all ignored roles
+allowed values: Set<String>
+default value: []
+conf file usage: sparql.predList = [];
+
+option name: objList
+description: list of all ignored objects
+allowed values: Set<String>
+default value: []
+conf file usage: sparql.objList = [];
+
+option name: saveExtractedFragment
+description: Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir.Some DBpedia URI will make the XML invalid
+allowed values: boolean
+default value: false
+conf file usage: sparql.saveExtractedFragment = false;
+
+option name: replacePredicate
+description: rule for replacing predicates
+allowed values: List<StringTuple>
+default value: []
+conf file usage: sparql.replacePredicate = [];
+
+option name: replaceObject
+description: rule for replacing predicates
+allowed values: List<StringTuple>
+default value: []
+conf file usage: sparql.replaceObject = [];
+
+option name: breakSuperClassRetrievalAfter
+description: stops a cyclic hierarchy after specified number of classes
+allowed values: int 
+default value: 1000
+conf file usage: sparql.breakSuperClassRetrievalAfter = 1000;
+
+option name: useLits
+description: use Literals in SPARQL query
+allowed values: boolean
+default value: true
+conf file usage: sparql.useLits = true;
+
+option name: getAllSuperClasses
+description: If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.
+allowed values: boolean
+default value: true
+conf file usage: sparql.getAllSuperClasses = true;
+
+option name: closeAfterRecursion
+description: gets all classes for all instances
+allowed values: boolean
+default value: true
+conf file usage: sparql.closeAfterRecursion = true;
+
+option name: getPropertyInformation
+description: gets all types for extracted ObjectProperties
+allowed values: boolean
+default value: false
+conf file usage: sparql.getPropertyInformation = false;
+
+option name: dissolveBlankNodes
+description: determines whether Blanknodes are dissolved. This is a costly function.
+allowed values: boolean
+default value: true
+conf file usage: sparql.dissolveBlankNodes = true;
+
+option name: useImprovedSparqlTupelAquisitor
+description: uses deeply nested SparqlQueries, according to recursion depth, still EXPERIMENTAL
+allowed values: boolean
+default value: false
+conf file usage: sparql.useImprovedSparqlTupelAquisitor = false;
+
+option name: verbosity
+description: control verbosity of output for this component
+allowed values: String [debug, error, info, notice, quiet, warning] 
+default value: warning
+conf file usage: sparql.verbosity = warning;
+
+option name: defaultGraphURIs
+description: a list of all default Graph URIs
+allowed values: Set<String>
+default value: []
+conf file usage: sparql.defaultGraphURIs = [];
+
+option name: namedGraphURIs
+description: a list of all named Graph URIs
+allowed values: Set<String>
+default value: []
+conf file usage: sparql.namedGraphURIs = [];
+
+
+*************
+* Reasoners *
+*************
+
+component: DIG reasoner (org.dllearner.reasoning.DIGReasoner)
+=============================================================
+
+conf file usage: reasoner = digReasoner;
+
+option name: reasonerUrl
+description: URL of the DIG reasoner
+allowed values: String [] 
+default value: not set
+conf file usage: digReasoner.reasonerUrl = ;
+
+option name: writeDIGProtocol
+description: specifies whether or not to write a protocoll of send and received DIG requests
+allowed values: boolean
+default value: false
+conf file usage: digReasoner.writeDIGProtocol = false;
+
+option name: digProtocolFile
+description: the file to store the DIG protocol
+allowed values: String [] 
+default value: log/digProtocol.txt
+conf file usage: digReasoner.digProtocolFile = log/digProtocol.txt;
+
+
+component: fast instance checker (org.dllearner.reasoning.FastInstanceChecker)
+==============================================================================
+
+conf file usage: reasoner = fastInstanceChecker;
+
+option name: reasonerType
+description: FaCT++, HermiT, OWLlink or Pellet to dematerialize
+allowed values: String [fact, hermit, owllink, pellet] 
+default value: pellet
+conf file usage: fastInstanceChecker.reasonerType = pellet;
+
+option name: owlLinkURL
+description: the URL to the remote OWLlink server
+allowed values: URL
+default value: http://localhost:8080/
+conf file usage: fastInstanceChecker.owlLinkURL = http://localhost:8080/;
+
+option name: defaultNegation
+description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
+allowed values: boolean
+default value: true
+conf file usage: fastInstanceChecker.defaultNegation = true;
+
+
+component: fast retrieval reasoner (org.dllearner.reasoning.FastRetrievalReasoner)
+==================================================================================
+
+conf file usage: reasoner = fastRetrievalReasoner;
+
+
+component: OWL API reasoner (org.dllearner.reasoning.OWLAPIReasoner)
+====================================================================
+
+conf file usage: reasoner = owlAPIReasoner;
+
+option name: reasonerType
+description: FaCT++, HermiT, OWLlink or Pellet, which means "fact", "hermit", "owllink" or "pellet"
+allowed values: String [fact, hermit, owllink, pellet] 
+default value: pellet
+conf file usage: owlAPIReasoner.reasonerType = pellet;
+
+option name: owlLinkURL
+description: the URL to the remote OWLlink server
+allowed values: URL
+default value: http://localhost:8080/
+conf file usage: owlAPIReasoner.owlLinkURL = http://localhost:8080/;
+
+
+component: Pellet reasoner (org.dllearner.reasoning.PelletReasoner)
+===================================================================
+
+conf file usage: reasoner = null;
+
+option name: defaultNegation
+description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
+allowed values: boolean
+default value: true
+conf file usage: null.defaultNegation = true;
+
+
+component: Protege internal reasoner (org.dllearner.reasoning.ProtegeReasoner)
+==============================================================================
+
+conf file usage: reasoner = null;
+
+option name: defaultNegation
+description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
+allowed values: boolean
+default value: true
+conf file usage: null.defaultNegation = true;
+
+
+*********************
+* Learning Problems *
+*********************
+
+component: class learning problem (org.dllearner.learningproblems.ClassLearningProblem)
+=======================================================================================
+
+conf file usage: problem = classLearning;
+
+option name: classToDescribe
+description: class of which a description should be learned
+allowed values: URL
+default value: not set (mandatory)
+conf file usage: classLearning.classToDescribe = ;
+
+option name: type
+description: whether to learn an equivalence class or super class axiom
+allowed values: String [equivalence, superClass] 
+default value: equivalence
+conf file usage: classLearning.type = equivalence;
+
+option name: useApproximations
+description: whether to use stochastic approximations for computing accuracy
+allowed values: boolean
+default value: true
+conf file usage: classLearning.useApproximations = true;
+
+option name: approxAccuracy
+description: accuracy of the approximation (only for expert use)
+allowed values: double 
+default value: 0.05
+conf file usage: classLearning.approxAccuracy = 0.05;
+
+option name: accuracyMethod
+description: Specifies, which method/function to use for computing accuracy.
+allowed values: String [fmeasure, generalised_fmeasure, jaccard, pred_acc, standard] 
+default value: standard
+conf file usage: classLearning.accuracyMethod = standard;
+
+option name: checkConsistency
+description: Specify whether to check consistency for solution candidates. This is convenient for user interfaces, but can be performance intensive.
+allowed values: boolean
+default value: true
+conf file usage: classLearning.checkConsistency = true;
+
+option name: maxExecutionTimeInSeconds
+description: algorithm will stop after specified seconds
+allowed values: int 
+default value: 10
+conf file usage: classLearning.maxExecutionTimeInSeconds = 10;
+
+option name: betaSC
+description: Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for super class learning.
+allowed values: double 
+default value: 3.0
+conf file usage: classLearning.betaSC = 3.0;
+
+option name: betaEq
+description: Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for equivalence class learning.
+allowed values: double 
+default value: 1.0
+conf file usage: classLearning.betaEq = 1.0;
+
+
+component: pos neg learning problem (org.dllearner.learningproblems.PosNegLPStandard)
+=====================================================================================
+
+conf file usage: problem = posNegLPStandard;
+
+option name: positiveExamples
+description: positive examples
+allowed values: Set<String>
+default value: not set (mandatory)
+conf file usage: posNegLPStandard.positiveExamples = ;
+
+option name: negativeExamples
+description: negative examples
+allowed values: Set<String>
+default value: not set (mandatory)
+conf file usage: posNegLPStandard.negativeExamples = ;
+
+option name: useRetrievalForClassficiation
+description: Specifies whether to use retrieval or instance checks for testing a concept.
+allowed values: boolean
+default value: false
+conf file usage: posNegLPStandard.useRetrievalForClassficiation = false;
+
+option name: percentPerLenghtUnit
+description: describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one
+allowed values: double  min 0.0 max 1.0
+default value: 0.05
+conf file usage: posNegLPStandard.percentPerLenghtUnit = 0.05;
+
+option name: useMultiInstanceChecks
+description: See UseMultiInstanceChecks enum.
+allowed values: String [never, oneCheck, twoChecks] 
+default value: twoChecks
+conf file usage: posNegLPStandard.useMultiInstanceChecks = twoChecks;
+
+option name: useApproximations
+description: whether to use stochastic approximations for computing accuracy
+allowed values: boolean
+default value: false
+conf file usage: posNegLPStandard.useApproximations = false;
+
+option name: approxAccuracy
+description: accuracy of the approximation (only for expert use)
+allowed values: double 
+default value: 0.05
+conf file usage: posNegLPStandard.approxAccuracy = 0.05;
+
+option name: accuracyMethod
+description: Specifies, which method/function to use for computing accuracy.
+allowed values: String [fmeasure, predacc] 
+default value: predacc
+conf file usage: posNegLPStandard.accuracyMethod = predacc;
+
+
+component: three valued definition learning problem (org.dllearner.learningproblems.PosNegLPStrict)
+===================================================================================================
+
+conf file usage: problem = posNegLPStrict;
+
+option name: positiveExamples
+description: positive examples
+allowed values: Set<String>
+default value: not set (mandatory)
+conf file usage: posNegLPStrict.positiveExamples = ;
+
+option name: negativeExamples
+description: negative examples
+allowed values: Set<String>
+default value: not set (mandatory)
+conf file usage: posNegLPStrict.negativeExamples = ;
+
+option name: useRetrievalForClassficiation
+description: Specifies whether to use retrieval or instance checks for testing a concept.
+allowed values: boolean
+default value: false
+conf file usage: posNegLPStrict.useRetrievalForClassficiation = false;
+
+option name: percentPerLenghtUnit
+description: describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one
+allowed values: double  min 0.0 max 1.0
+default value: 0.05
+conf file usage: posNegLPStrict.percentPerLenghtUnit = 0.05;
+
+option name: useMultiInstanceChecks
+description: See UseMultiInstanceChecks enum.
+allowed values: String [never, oneCheck, twoChecks] 
+default value: twoChecks
+conf file usage: posNegLPStrict.useMultiInstanceChecks = twoChecks;
+
+option name: penaliseNeutralExamples
+description: if set to true neutral examples are penalised
+allowed values: boolean
+default value: not set
+conf file usage: posNegLPStrict.penaliseNeutralExamples = ;
+
+option name: accuracyPenalty
+description: penalty for pos/neg examples which are classified as neutral
+allowed values: double 
+default value: 1.0
+conf file usage: posNegLPStrict.accuracyPenalty = 1.0;
+
+option name: errorPenalty
+description: penalty for pos. examples classified as negative or vice versa
+allowed values: double 
+default value: 3.0
+conf file usage: posNegLPStrict.errorPenalty = 3.0;
+
+
+component: pos only learning problem (org.dllearner.learningproblems.PosOnlyLP)
+===============================================================================
+
+conf file usage: problem = posOnlyLP;
+
+option name: positiveExamples
+description: positive examples
+allowed values: Set<String>
+default value: not set (mandatory)
+conf file usage: posOnlyLP.positiveExamples = ;
+
+
+***********************
+* Learning Algorithms *
+***********************
+
+component: brute force learning algorithm (org.dllearner.algorithms.BruteForceLearner)
+======================================================================================
+
+conf file usage: algorithm = bruteForce;
+
+option name: maxLength
+description: maximum length of generated concepts
+allowed values: int 
+default value: 7
+conf file usage: bruteForce.maxLength = 7;
+
+option name: returnType
+description: Specifies the type which the solution has to belong to (if already) known. This means we inform the learning algorithm that the solution is a subclass of this type.
+allowed values: String [] 
+default value: not set
+conf file usage: bruteForce.returnType = ;
+
+
+component: random guesser learning algorithm (org.dllearner.algorithms.RandomGuesser)
+=====================================================================================
+
+conf file usage: algorithm = random;
+
+option name: numberOfGuesses
+description: number of randomly generated concepts/trees
+allowed values: int 
+default value: 100
+conf file usage: random.numberOfGuesses = 100;
+
+option name: maxDepth
+description: maximum depth of generated concepts/trees
+allowed values: int 
+default value: 5
+conf file usage: random.maxDepth = 5;
+
+
+component: CELOE (org.dllearner.algorithms.celoe.CELOE)
+=======================================================
+
+conf file usage: algorithm = celoe;
+
+option name: useAllConstructor
+description: specifies whether the universal concept constructor is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: celoe.useAllConstructor = true;
+
+option name: useExistsConstructor
+description: specifies whether the existential concept constructor is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: celoe.useExistsConstructor = true;
+
+option name: useHasValueConstructor
+description: specifies whether the hasValue constructor is used in the learning algorithm
+allowed values: boolean
+default value: false
+conf file usage: celoe.useHasValueConstructor = false;
+
+option name: useDataHasValueConstructor
+description: specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties
+allowed values: boolean
+default value: false
+conf file usage: celoe.useDataHasValueConstructor = false;
+
+option name: valueFrequencyThreshold
+description: specifies how often an object must occur as value in order to be considered for hasValue restrictions
+allowed values: int 
+default value: 3
+conf file usage: celoe.valueFrequencyThreshold = 3;
+
+option name: useCardinalityRestrictions
+description: specifies whether CardinalityRestrictions is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: celoe.useCardinalityRestrictions = true;
+
+option name: cardinalityLimit
+description: Gives the maximum number used in cardinality restrictions.
+allowed values: int 
+default value: 5
+conf file usage: celoe.cardinalityLimit = 5;
+
+option name: useNegation
+description: specifies whether negation is used in the learning algorothm
+allowed values: boolean
+default value: false
+conf file usage: celoe.useNegation = false;
+
+option name: useBooleanDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: celoe.useBooleanDatatypes = true;
+
+option name: useDoubleDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: celoe.useDoubleDatatypes = true;
+
+option name: maxExecutionTimeInSeconds
+description: algorithm will stop after specified seconds
+allowed values: int 
+default value: 10
+conf file usage: celoe.maxExecutionTimeInSeconds = 10;
+
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+allowed values: double  min 0.0 max 100.0
+default value: 0.0
+conf file usage: celoe.noisePercentage = 0.0;
+
+option name: maxDepth
+description: maximum depth of description
+allowed values: int 
+default value: 7
+conf file usage: celoe.maxDepth = 7;
+
+option name: maxNrOfResults
+description: Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).
+allowed values: int  min 1 max 100
+default value: 10
+conf file usage: celoe.maxNrOfResults = 10;
+
+option name: maxClassDescriptionTests
+description: The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
+allowed values: int 
+default value: 0
+conf file usage: celoe.maxClassDescriptionTests = 0;
+
+option name: singleSuggestionMode
+description: Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.
+allowed values: boolean
+default value: false
+conf file usage: celoe.singleSuggestionMode = false;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: celoe.instanceBasedDisjoints = true;
+
+option name: filterDescriptionsFollowingFromKB
+description: If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.
+allowed values: boolean
+default value: false
+conf file usage: celoe.filterDescriptionsFollowingFromKB = false;
+
+option name: reuseExistingDescription
+description: If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.
+allowed values: boolean
+default value: false
+conf file usage: celoe.reuseExistingDescription = false;
+
+option name: writeSearchTree
+description: specifies whether to write a search tree
+allowed values: boolean
+default value: false
+conf file usage: celoe.writeSearchTree = false;
+
+option name: searchTreeFile
+description: file to use for the search tree
+allowed values: String [] 
+default value: log/searchTree.txt
+conf file usage: celoe.searchTreeFile = log/searchTree.txt;
+
+option name: replaceSearchTree
+description: specifies whether to replace the search tree in the log file after each run or append the new search tree
+allowed values: boolean
+default value: false
+conf file usage: celoe.replaceSearchTree = false;
+
+
+component: standard EL learning algorithm (org.dllearner.algorithms.el.ELLearningAlgorithm)
+===========================================================================================
+
+conf file usage: algorithm = el;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: el.instanceBasedDisjoints = true;
+
+
+component: disjunctive EL learning algorithm (org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive)
+=========================================================================================================
+
+conf file usage: algorithm = disjunctiveEL;
+
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+allowed values: double  min 0.0 max 100.0
+default value: 0.0
+conf file usage: disjunctiveEL.noisePercentage = 0.0;
+
+option name: startClass
+description: the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)
+allowed values: String [] 
+default value: not set
+conf file usage: disjunctiveEL.startClass = ;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: disjunctiveEL.instanceBasedDisjoints = true;
+
+
+component: genetic programming learning algorithm (org.dllearner.algorithms.gp.GP)
+==================================================================================
+
+conf file usage: algorithm = gp;
+
+option name: selectionType
+description: selection type
+allowed values: String [fps, rankSelection, tournament] 
+default value: rankSelection
+conf file usage: gp.selectionType = rankSelection;
+
+option name: tournamentSize
+description: tournament size (applies only to tournament selection)
+allowed values: int  min 2 max 20
+default value: 3
+conf file usage: gp.tournamentSize = 3;
+
+option name: elitism
+description: specifies whether to use elitism in selection
+allowed values: boolean
+default value: true
+conf file usage: gp.elitism = true;
+
+option name: algorithmType
+description: algorithm type
+allowed values: String [generational, steadyState] 
+default value: steadyState
+conf file usage: gp.algorithmType = steadyState;
+
+option name: mutationProbability
+description: mutation probability
+allowed values: double  min 0.0 max 1.0
+default value: 0.03
+conf file usage: gp.mutationProbability = 0.03;
+
+option name: crossoverProbability
+description: crossover probability
+allowed values: double  min 0.0 max 1.0
+default value: 0.95
+conf file usage: gp.crossoverProbability = 0.95;
+
+option name: hillClimbingProbability
+description: hill climbing probability
+allowed values: double  min 0.0 max 1.0
+default value: 0.0
+conf file usage: gp.hillClimbingProbability = 0.0;
+
+option name: refinementProbability
+description: refinement operator probability (values higher than 0 turn this into a hybrid GP algorithm - see publication)
+allowed values: double  min 0.0 max 1.0
+default value: 0.0
+conf file usage: gp.refinementProbability = 0.0;
+
+option name: numberOfIndividuals
+description: number of individuals
+allowed values: int  min 1
+default value: 100
+conf file usage: gp.numberOfIndividuals = 100;
+
+option name: numberOfSelectedIndividuals
+description: number of selected individuals
+allowed values: int  min 1
+default value: 92
+conf file usage: gp.numberOfSelectedIndividuals = 92;
+
+option name: useFixedNumberOfGenerations
+description: specifies whether to use a fixed number of generations
+allowed values: boolean
+default value: false
+conf file usage: gp.useFixedNumberOfGenerations = false;
+
+option name: generations
+description: number of generations (only valid if a fixed number of generations is used)
+allowed values: int  min 1
+default value: 20
+conf file usage: gp.generations = 20;
+
+option name: postConvergenceGenerations
+description: number of generations after which to stop if no improvement wrt. the best solution has been achieved
+allowed values: int  min 1
+default value: 50
+conf file usage: gp.postConvergenceGenerations = 50;
+
+option name: adc
+description: whether to use automatically defined concept (this invents new helper concepts, but enlarges the search space
+allowed values: boolean
+default value: false
+conf file usage: gp.adc = false;
+
+option name: initMinDepth
+description: minimum depth to use when creating the initial population
+allowed values: int  min 1
+default value: 4
+conf file usage: gp.initMinDepth = 4;
+
+option name: initMaxDepth
+description: maximum depth to use when creating the initial population
+allowed values: int  min 1
+default value: 6
+conf file usage: gp.initMaxDepth = 6;
+
+option name: maxConceptLength
+description: maximum concept length (higher length means lowest possible fitness)
+allowed values: int  min 1
+default value: 75
+conf file usage: gp.maxConceptLength = 75;
+
+
+component: ISLE (org.dllearner.algorithms.isle.ISLE)
+====================================================
+
+conf file usage: algorithm = null;
+
+option name: useAllConstructor
+description: specifies whether the universal concept constructor is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: null.useAllConstructor = true;
+
+option name: useExistsConstructor
+description: specifies whether the existential concept constructor is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: null.useExistsConstructor = true;
+
+option name: useHasValueConstructor
+description: specifies whether the hasValue constructor is used in the learning algorithm
+allowed values: boolean
+default value: false
+conf file usage: null.useHasValueConstructor = false;
+
+option name: useDataHasValueConstructor
+description: specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties
+allowed values: boolean
+default value: false
+conf file usage: null.useDataHasValueConstructor = false;
+
+option name: valueFrequencyThreshold
+description: specifies how often an object must occur as value in order to be considered for hasValue restrictions
+allowed values: int 
+default value: 3
+conf file usage: null.valueFrequencyThreshold = 3;
+
+option name: useCardinalityRestrictions
+description: specifies whether CardinalityRestrictions is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: null.useCardinalityRestrictions = true;
+
+option name: cardinalityLimit
+description: Gives the maximum number used in cardinality restrictions.
+allowed values: int 
+default value: 5
+conf file usage: null.cardinalityLimit = 5;
+
+option name: useNegation
+description: specifies whether negation is used in the learning algorothm
+allowed values: boolean
+default value: false
+conf file usage: null.useNegation = false;
+
+option name: useBooleanDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: null.useBooleanDatatypes = true;
+
+option name: useDoubleDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: null.useDoubleDatatypes = true;
+
+option name: maxExecutionTimeInSeconds
+description: algorithm will stop after specified seconds
+allowed values: int 
+default value: 10
+conf file usage: null.maxExecutionTimeInSeconds = 10;
+
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+allowed values: double  min 0.0 max 100.0
+default value: 0.0
+conf file usage: null.noisePercentage = 0.0;
+
+option name: maxDepth
+description: maximum depth of description
+allowed values: int 
+default value: 7
+conf file usage: null.maxDepth = 7;
+
+option name: maxNrOfResults
+description: Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).
+allowed values: int  min 1 max 100
+default value: 10
+conf file usage: null.maxNrOfResults = 10;
+
+option name: singleSuggestionMode
+description: Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.
+allowed values: boolean
+default value: false
+conf file usage: null.singleSuggestionMode = false;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: null.instanceBasedDisjoints = true;
+
+option name: filterDescriptionsFollowingFromKB
+description: If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.
+allowed values: boolean
+default value: false
+conf file usage: null.filterDescriptionsFollowingFromKB = false;
+
+option name: reuseExistingDescription
+description: If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.
+allowed values: boolean
+default value: false
+conf file usage: null.reuseExistingDescription = false;
+
+
+component: refinement operator based learning algorithm (org.dllearner.algorithms.refinement.ROLearner)
+=======================================================================================================
+
+conf file usage: algorithm = refinement;
+
+option name: writeSearchTree
+description: specifies whether to write a search tree
+allowed values: boolean
+default value: false
+conf file usage: refinement.writeSearchTree = false;
+
+option name: searchTreeFile
+description: file to use for the search tree
+allowed values: String [] 
+default value: log/searchTree.txt
+conf file usage: refinement.searchTreeFile = log/searchTree.txt;
+
+option name: replaceSearchTree
+description: specifies whether to replace the search tree in the log file after each run or append the new search tree
+allowed values: boolean
+default value: false
+conf file usage: refinement.replaceSearchTree = false;
+
+option name: heuristic
+description: specifiy the heuristic to use
+allowed values: String [flexible, lexicographic] 
+default value: lexicographic
+conf file usage: refinement.heuristic = lexicographic;
+
+option name: applyAllFilter
+description: usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)
+allowed values: boolean
+default value: true
+conf file usage: refinement.applyAllFilter = true;
+
+option name: applyExistsFilter
+description: usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
+allowed values: boolean
+default value: true
+conf file usage: refinement.applyExistsFilter = true;
+
+option name: useTooWeakList
+description: try to filter out too weak concepts without sending them to the reasoner
+allowed values: boolean
+default value: true
+conf file usage: refinement.useTooWeakList = true;
+
+option name: useOverlyGeneralList
+description: try to find overly general concept without sending them to the reasoner
+allowed values: boolean
+default value: true
+conf file usage: refinement.useOverlyGeneralList = true;
+
+option name: useShortConceptConstruction
+description: shorten concept to see whether they already exist
+allowed values: boolean
+default value: true
+conf file usage: refinement.useShortConceptConstruction = true;
+
+option name: horizontalExpansionFactor
+description: horizontal expansion factor (see publication for description)
+allowed values: double  min 0.0 max 1.0
+default value: 0.6
+conf file usage: refinement.horizontalExpansionFactor = 0.6;
+
+option name: improveSubsumptionHierarchy
+description: simplify subsumption hierarchy to reduce search space (see publication for description)
+allowed values: boolean
+default value: true
+conf file usage: refinement.improveSubsumptionHierarchy = true;
+
+option name: quiet
+description: may be deprecated soon
+allowed values: boolean
+default value: false
+conf file usage: refinement.quiet = false;
+
+option name: allowedConcepts
+description: concepts the algorithm is allowed to use
+allowed values: Set<String>
+default value: not set
+conf file usage: refinement.allowedConcepts = ;
+
+option name: ignoredConcepts
+description: concepts the algorithm must ignore
+allowed values: Set<String>
+default value: not set
+conf file usage: refinement.ignoredConcepts = ;
+
+option name: allowedRoles
+description: roles the algorithm is allowed to use
+allowed values: Set<String>
+default value: not set
+conf file usage: refinement.allowedRoles = ;
+
+option name: ignoredRoles
+description: roles the algorithm must ignore
+allowed values: Set<String>
+default value: not set
+conf file usage: refinement.ignoredRoles = ;
+
+option name: useAllConstructor
+description: specifies whether the universal concept constructor is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: refinement.useAllConstructor = true;
+
+option name: useExistsConstructor
+description: specifies whether the existential concept constructor is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: refinement.useExistsConstructor = true;
+
+option name: useNegation
+description: specifies whether negation is used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: refinement.useNegation = true;
+
+option name: useCardinalityRestrictions
+description: specifies whether CardinalityRestrictions is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: refinement.useCardinalityRestrictions = true;
+
+option name: useBooleanDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: refinement.useBooleanDatatypes = true;
+
+option name: maxExecutionTimeInSeconds
+description: algorithm will stop after specified seconds
+allowed values: int 
+default value: 0
+conf file usage: refinement.maxExecutionTimeInSeconds = 0;
+
+option name: minExecutionTimeInSeconds
+description: algorithm will run at least specified seconds
+allowed values: int 
+default value: 0
+conf file usage: refinement.minExecutionTimeInSeconds = 0;
+
+option name: guaranteeXgoodDescriptions
+description: algorithm will run until X good (100%) concept descritpions are found
+allowed values: int 
+default value: 1
+conf file usage: refinement.guaranteeXgoodDescriptions = 1;
+
+option name: logLevel
+description: determines the logLevel for this component, can be {TRACE, DEBUG, INFO}
+allowed values: String [] 
+default value: DEBUG
+conf file usage: refinement.logLevel = DEBUG;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: refinement.instanceBasedDisjoints = true;
+
+
+component: OCEL (org.dllearner.algorithms.refinement2.ROLComponent2)
+====================================================================
+
+conf file usage: algorithm = refexamples;
+
+option name: writeSearchTree
+description: specifies whether to write a search tree
+allowed values: boolean
+default value: false
+conf file usage: refexamples.writeSearchTree = false;
+
+option name: searchTreeFile
+description: file to use for the search tree
+allowed values: String [] 
+default value: log/searchTree.txt
+conf file usage: refexamples.searchTreeFile = log/searchTree.txt;
+
+option name: replaceSearchTree
+description: specifies whether to replace the search tree in the log file after each run or append the new search tree
+allowed values: boolean
+default value: false
+conf file usage: refexamples.replaceSearchTree = false;
+
+option name: heuristic
+description: specifiy the heuristic to use
+allowed values: String [flexible, lexicographic] 
+default value: lexicographic
+conf file usage: refexamples.heuristic = lexicographic;
+
+option name: applyAllFilter
+description: usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)
+allowed values: boolean
+default value: true
+conf file usage: refexamples.applyAllFilter = true;
+
+option name: applyExistsFilter
+description: usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
+allowed values: boolean
+default value: true
+conf file usage: refexamples.applyExistsFilter = true;
+
+option name: useTooWeakList
+description: try to filter out too weak concepts without sending them to the reasoner
+allowed values: boolean
+default value: true
+conf file usage: refexamples.useTooWeakList = true;
+
+option name: useOverlyGeneralList
+description: try to find overly general concept without sending them to the reasoner
+allowed values: boolean
+default value: true
+conf file usage: refexamples.useOverlyGeneralList = true;
+
+option name: useShortConceptConstruction
+description: shorten concept to see whether they already exist
+allowed values: boolean
+default value: true
+conf file usage: refexamples.useShortConceptConstruction = true;
+
+option name: horizontalExpansionFactor
+description: horizontal expansion factor (see publication for description)
+allowed values: double  min 0.0 max 1.0
+default value: 0.6
+conf file usage: refexamples.horizontalExpansionFactor = 0.6;
+
+option name: improveSubsumptionHierarchy
+description: simplify subsumption hierarchy to reduce search space (see publication for description)
+allowed values: boolean
+default value: true
+conf file usage: refexamples.improveSubsumptionHierarchy = true;
+
+option name: allowedConcepts
+description: concepts the algorithm is allowed to use
+allowed values: Set<String>
+default value: not set
+conf file usage: refexamples.allowedConcepts = ;
+
+option name: ignoredConcepts
+description: concepts the algorithm must ignore
+allowed values: Set<String>
+default value: not set
+conf file usage: refexamples.ignoredConcepts = ;
+
+option name: allowedRoles
+description: roles the algorithm is allowed to use
+allowed values: Set<String>
+default value: not set
+conf file usage: refexamples.allowedRoles = ;
+
+option name: ignoredRoles
+description: roles the algorithm must ignore
+allowed values: Set<String>
+default value: not set
+conf file usage: refexamples.ignoredRoles = ;
+
+option name: useAllConstructor
+description: specifies whether the universal concept constructor is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: refexamples.useAllConstructor = true;
+
+option name: useExistsConstructor
+description: specifies whether the existential concept constructor is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: refexamples.useExistsConstructor = true;
+
+option name: useHasValueConstructor
+description: specifies whether the hasValue constructor is used in the learning algorithm
+allowed values: boolean
+default value: false
+conf file usage: refexamples.useHasValueConstructor = false;
+
+option name: useDataHasValueConstructor
+description: specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties
+allowed values: boolean
+default value: false
+conf file usage: refexamples.useDataHasValueConstructor = false;
+
+option name: valueFrequencyThreshold
+description: specifies how often an object must occur as value in order to be considered for hasValue restrictions
+allowed values: int 
+default value: 3
+conf file usage: refexamples.valueFrequencyThreshold = 3;
+
+option name: useCardinalityRestrictions
+description: specifies whether CardinalityRestrictions is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: refexamples.useCardinalityRestrictions = true;
+
+option name: cardinalityLimit
+description: Gives the maximum number used in cardinality restrictions.
+allowed values: int 
+default value: 5
+conf file usage: refexamples.cardinalityLimit = 5;
+
+option name: useNegation
+description: specifies whether negation is used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: refexamples.useNegation = true;
+
+option name: useBooleanDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: refexamples.useBooleanDatatypes = true;
+
+option name: useDoubleDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: refexamples.useDoubleDatatypes = true;
+
+option name: useStringDatatypes
+description: specifies whether string datatypes are used in the learning algorothm
+allowed values: boolean
+default value: false
+conf file usage: refexamples.useStringDatatypes = false;
+
+option name: maxExecutionTimeInSeconds
+description: algorithm will stop after specified seconds
+allowed values: int 
+default value: 0
+conf file usage: refexamples.maxExecutionTimeInSeconds = 0;
+
+option name: minExecutionTimeInSeconds
+description: algorithm will run at least specified seconds
+allowed values: int 
+default value: 0
+conf file usage: refexamples.minExecutionTimeInSeconds = 0;
+
+option name: guaranteeXgoodDescriptions
+description: algorithm will run until X good (100%) concept descritpions are found
+allowed values: int 
+default value: 1
+conf file usage: refexamples.guaranteeXgoodDescriptions = 1;
+
+option name: maxClassDescriptionTests
+description: The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
+allowed values: int 
+default value: 0
+conf file usage: refexamples.maxClassDescriptionTests = 0;
+
+option name: logLevel
+description: determines the logLevel for this component, can be {TRACE, DEBUG, INFO}
+allowed values: String [] 
+default value: DEBUG
+conf file usage: refexamples.logLevel = DEBUG;
+
+option name: usePropernessChecks
+description: specifies whether to check for equivalence (i.e. discard equivalent refinements)
+allowed values: boolean
+default value: false
+conf file usage: refexamples.usePropernessChecks = false;
+
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+allowed values: double  min 0.0 max 100.0
+default value: 0.0
+conf file usage: refexamples.noisePercentage = 0.0;
+
+option name: terminateOnNoiseReached
+description: specifies whether to terminate when noise criterion is met
+allowed values: boolean
+default value: true
+conf file usage: refexamples.terminateOnNoiseReached = true;
+
+option name: startClass
+description: the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)
+allowed values: String [] 
+default value: not set
+conf file usage: refexamples.startClass = ;
+
+option name: forceRefinementLengthIncrease
+description: specifies whether nodes should be expanded until only longer refinements are reached
+allowed values: boolean
+default value: not set
+conf file usage: refexamples.forceRefinementLengthIncrease = ;
+
+option name: negativeWeight
+description: Used to penalise errors on negative examples different from those of positive examples (lower = less importance for negatives).
+allowed values: double 
+default value: 1.0
+conf file usage: refexamples.negativeWeight = 1.0;
+
+option name: startNodeBonus
+description: You can use this to give a heuristic bonus on the start node (= initially broader exploration of search space).
+allowed values: double 
+default value: 0.0
+conf file usage: refexamples.startNodeBonus = 0.0;
+
+option name: negationPenalty
+description: Penalty on negations (TODO: better explanation).
+allowed values: int 
+default value: 0
+conf file usage: refexamples.negationPenalty = 0;
+
+option name: expansionPenaltyFactor
+description: describes the reduction in heuristic score one is willing to accept for reducing the length of the concept by one
+allowed values: double 
+default value: 0.02
+conf file usage: refexamples.expansionPenaltyFactor = 0.02;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: refexamples.instanceBasedDisjoints = true;
+
+

@@ -1,0 +1,314 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w5_aus"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w2_nur"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w4_Fisch"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w14_Fang"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w6_Meeresgebieten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w10_eingekauft"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w3_noch"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w16_m%C3%BC%C3%9Ften"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w20_eingehalten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w22_sein"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w19_Bestimmungen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w11_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w15_selbst"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w1_werde"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s42257w0_Au%C3%9Ferdem"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w9_Fangregelungen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w8_internationalen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w23_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w21_worden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w7_mit"/>
+    <rdfs:label>Außerdem werde nur noch Fisch aus Meeresgebieten mit internationalen Fangregelungen eingekauft , und beim Fang selbst müßten die gesetzlichen Bestimmungen eingehalten worden sein .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w17_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w0_Au%C3%9Ferdem"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w12_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w13_beim"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s42257w18_gesetzlichen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w17_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w16_m%C3%BC%C3%9Ften"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w18_gesetzlichen"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w18_gesetzlichen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>gesetzlichen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w17_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w19_Bestimmungen"/>
+    <j.0:hasLemma>gesetzlich</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w9_Fangregelungen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Fangregelungen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w8_internationalen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w10_eingekauft"/>
+    <j.0:hasLemma>Fangregelung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w13_beim">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>beim</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w12_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w14_Fang"/>
+    <j.0:hasLemma>bei</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w22_sein">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>sein</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w21_worden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w23_."/>
+    <j.0:hasLemma>sein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAINF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w8_internationalen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>internationalen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w7_mit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w9_Fangregelungen"/>
+    <j.0:hasLemma>international</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w11_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w10_eingekauft"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w12_und"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w4_Fisch">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Fisch</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w3_noch"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w5_aus"/>
+    <j.0:hasLemma>Fisch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w19_Bestimmungen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Bestimmungen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w18_gesetzlichen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w20_eingehalten"/>
+    <j.0:hasLemma>Bestimmung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w20_eingehalten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>eingehalten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w19_Bestimmungen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w21_worden"/>
+    <j.0:hasLemma>einhalten</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w10_eingekauft">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>eingekauft</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w9_Fangregelungen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w11_%2C"/>
+    <j.0:hasLemma>einkaufen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w0_Au%C3%9Ferdem">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Außerdem</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w1_werde"/>
+    <j.0:hasLemma>außerdem</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PROAV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w14_Fang">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Fang</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w13_beim"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w15_selbst"/>
+    <j.0:hasLemma>Fang</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w5_aus">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>aus</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w4_Fisch"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w6_Meeresgebieten"/>
+    <j.0:hasLemma>aus</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPRART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VMFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w6_Meeresgebieten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Meeresgebieten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w5_aus"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w7_mit"/>
+    <j.0:hasLemma>Meeresgebiet</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryPastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w3_noch">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>noch</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w2_nur"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w4_Fisch"/>
+    <j.0:hasLemma>noch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w23_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w22_sein"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w2_nur">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>nur</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w1_werde"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w3_noch"/>
+    <j.0:hasLemma>nur</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w21_worden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>worden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w20_eingehalten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w22_sein"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PROAV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PronominalAdverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w16_m%C3%BC%C3%9Ften">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>müßten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w15_selbst"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w17_die"/>
+    <j.0:hasLemma>müssen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VMFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w12_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w11_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w13_beim"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w1_werde">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>werde</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w0_Au%C3%9Ferdem"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w2_nur"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w7_mit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>mit</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w6_Meeresgebieten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w8_internationalen"/>
+    <j.0:hasLemma>mit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s42257w15_selbst">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>selbst</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s42257"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s42257w14_Fang"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s42257w16_m%C3%BC%C3%9Ften"/>
+    <j.0:hasLemma>selbst</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+</rdf:RDF>

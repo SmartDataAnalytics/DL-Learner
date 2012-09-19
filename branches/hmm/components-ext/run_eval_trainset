@@ -1,0 +1,1 @@
+mvn -e exec:java -Dexec.mainClass="org.dllearner.algorithm.tbsl.Evaluation" -Dexec.classpathScope="test" -Dexec.args="tbsl/evaluation/dbpedia-train.xml"

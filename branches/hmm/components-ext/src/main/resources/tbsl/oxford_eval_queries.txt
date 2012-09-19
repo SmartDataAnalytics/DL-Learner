@@ -1,0 +1,199 @@
+question: houses in Headington
+
+question: houses in Abingdon with more than 2 bedrooms
+
+question: houses with garden in Wheatley
+
+question: detached houses in Oxford
+
+question: Victorian houses in Oxfordshire
+
+question: Edwardian house in Oxfordshire for less than 1000000
+
+question: houses with double garage
+
+question: houses with large garden and equipped kitchen
+
+question: houses with more than 1 reception room
+
+question: houses with conservatory room and less than 900000 pounds
+
+question: houses in Old Marston
+
+question: family houses with more than 2 bathrooms and more than 4 bedrooms
+
+question: houses close to Iffley Sport Centre
+
+question: houses in Oxford close to the train station
+
+question: houses in Summertown for less than 400000 pounds
+
+question: two floors houses in East Oxford
+
+question: brand new houses in Oxford for less than 500000 pounds
+
+question: houses close to Brookes University
+
+question: houses in Jericho area
+
+question: house close to Headington hospitals
+
+question: modern houses with gas central heating
+
+question: houses with electric heating
+
+question: houses less than 500000 within area OX16
+
+question: houses close to an Italian restaurant
+
+question: houses at walking distance from a pharmacy
+
+question: houses at walking distance from Tesco or Sainsburys shops
+
+question: houses nearby Sheldonian Theatre
+
+question: houses with underfloor heating
+
+question: houses with wood floor
+
+question: houses close to The King's Arms pub
+
+question: houses with a garden that is at least 2 acres big
+
+question: houses with many reception rooms
+
+question: houses built around 1950
+
+question: houses with balcony
+
+question: houses with double glazed windows
+
+question: 2 bedroom houses near Oxford train station 
+ 
+question: 4 bedroom detached houses in Oxford
+ 
+question: studio apartments in Summertown, Oxford
+ 
+question: freehold houses with 2 bedrooms and a living room in Banbury
+ 
+question: houses in Oxford city centre with at most 2 bedrooms	
+ 
+question: victorian town houses in north Oxford
+ 
+question: terrace houses with west facing garden
+ 
+question: modernised end terrace houses with private parking
+ 
+question: three bedroom houses with open fireplace
+ 
+question: houses available from June 15th. 
+
+question: houses on Rawlinson Road 
+
+question: flats near supermarket 
+
+question: give me flats in central Oxford with at least one bedroom below 1000 pounds a month?
+
+question: find 2 bedroom flats in walking distance from the computer science departement!
+
+question: find a property with 2 bedrooms close to some park.
+
+question: find a flat in the area around Cowley Road with 2 bedrooms.
+
+question: find a furnished place with one bedroom close to the Radcliffe Camera.
+
+question: find an unfurnished house with at least 2 bedrooms in Summertown.
+
+question: find a furnished flat with one bedroom for smokers.
+
+question: find a flat with parking in central Oxford.
+
+question: find a representative house in Summertown.
+
+question: which places are offered close to the train station?
+
+question: show me the retirement houses for sale near Oxford. 
+
+question: give me a flat with at least two bathrooms for less than 1000 pounds. 
+
+question: show me a flat which is close to 3 bars.
+
+question: what is the average price of furnished 1 bedroom apartments in Heddington?
+
+question: how many flats are offered in central Oxford below 1000 pounds a month?
+
+question: houses close to The Ashmolean Museum, with more than one bedroom
+
+question: houses in Botley Road
+
+question: houses in Littlemore
+
+question: houses that cost between 600000 and 800000 pounds
+
+question: houses with 3 bedrooms in Florence Park Road
+
+question: houses with front garden and rear garden
+
+question: houses in Oxford, close to Railway Station
+
+question: houses with ample parking
+
+question: house with electric central heating system
+
+question: houses with three en-suites near Oxford
+
+question: houses with countryside views
+
+question: houses with farmland views
+
+question: houses nearby River Thames
+
+question: houses having one utility room or cloakroom
+
+question: houses in Oxfordshire with fireplaces
+
+question: houses with open plan kitchen near Oxford
+
+question: houses with walled garden near Oxford
+
+question: houses with river views
+
+question: houses with gated entrance or in a gated community
+
+question: recently refurbished houses with lift
+
+question: house with balcony and vaulted ceiling
+
+question: house that is a maisonette and on Gloucester Green
+
+question: house in a corner or end-of-terrace plot
+
+question: house with 3 bedrooms, but cheaper than 150000 pounds
+
+question: house with at least 2 reception rooms and a garden
+
+question: house with a courtyard
+
+question: house with a fireplace and a garden that is not communal
+
+question: house with parking but not Victorian
+
+question: house with 3 bathrooms, but not en-suite
+
+question: house in a retirement complex
+
+question: house with double glazing and central heating
+
+question: house with immediately available
+
+question: house listed Grade I or Grade II
+
+question: house that has been recently replumbed
+
+question: house in Witney or Wolvercote
+
+question: house with more than 2 bedrooms, but not in Marston
+
+question: house in Banbury Road
+
+question: house in the area of John Radcliffe hospital

@@ -1,0 +1,513 @@
+
+options {
+  LOOKAHEAD = 2;
+  CHOICE_AMBIGUITY_CHECK = 2;
+  OTHER_AMBIGUITY_CHECK = 1;
+  STATIC = false;
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+  ERROR_REPORTING = true;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = false;
+  IGNORE_CASE = false;
+  USER_TOKEN_MANAGER = false;
+  USER_CHAR_STREAM = false;
+  BUILD_PARSER = true;
+  BUILD_TOKEN_MANAGER = true;
+  SANITY_CHECK = true;
+  FORCE_LA_CHECK = false;
+}
+
+PARSER_BEGIN(DUDE_Parser)
+
+package org.dllearner.algorithm.tbsl.sem.dudes.reader;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.dllearner.algorithm.tbsl.sem.drs.*;
+import org.dllearner.algorithm.tbsl.sem.dudes.data.*;
+import org.dllearner.algorithm.tbsl.sem.util.*;
+import org.dllearner.algorithm.tbsl.sparql.Slot;
+import org.dllearner.algorithm.tbsl.sparql.SlotType;
+
+public class DUDE_Parser {
+
+  /** Main entry point. */
+  public static void main(String args[]) throws ParseException {
+    DUDE_Parser parser = new DUDE_Parser(System.in);
+    parser.Input();
+  }
+
+}
+
+PARSER_END(DUDE_Parser)
+
+/** Root production. */
+void Input() :
+{}
+{
+  DUDE() <EOF>
+}
+
+/** DUDE */
+Dude DUDE() :
+{
+  Token referent;
+  Token label;
+  Type type;
+  List<DRS> drs_list = null;
+  List<DominanceConstraint> constraints = null;
+  List<Argument> arg_list = null;
+  List<Slot> slots = null;
+}
+{
+   "<" referent = dr() ","  label=<LABEL> "," type=Type()  "," "["  (drs_list=DRS_List())? "]"  "," "[" (arg_list = Arg_List())? "]"
+   "," "[" (constraints = DC_List())? "]" "," "[" (slots = Slot_List())? "]" ">"
+   {
+      Dude dude = new Dude();
+      dude.setReferent(referent.toString());
+      dude.setType(type);
+      if (drs_list != null) dude.setComponents(drs_list);
+      dude.setLabel(new Label(label.toString()));
+      if (arg_list != null) dude.setArguments(arg_list);
+      if (constraints != null) dude.setDominanceConstraints(constraints);
+      if (slots != null) dude.setSlots(slots);
+      return dude;	
+   }
+}
+
+DominanceConstraint DominanceConstraint() :
+{
+   Label label1;
+   Label label2;
+   Token domType;
+   DominanceConstraint dc = null;
+}
+{
+	label1 = Label() "<" label2 = Label()
+    {
+	dc = new DominanceConstraint(label1,label2);
+	return dc;
+    }
+
+	|
+
+	label1 = Label() ">" label2 = Label()
+	{
+	dc = new DominanceConstraint(label2,label1);
+	return dc;
+    }
+
+   | 
+
+    label1 = Label() "=" label2 = Label()
+    {
+         	dc = new DominanceConstraint(label1,label2);
+  			dc.setType(DomType.equal);
+  			return dc;
+  	}
+}
+
+
+Label Label() :
+{
+  Token label;
+}
+{
+  
+    label = <LABEL>
+    {
+     return new Label(label.toString());
+    }
+
+    |
+
+    "res(" label = <LABEL> ")"   
+	{
+	  return new Label(label.toString(),Position.res);
+	}
+
+	|
+
+	"scope(" label = <LABEL> ")"
+	{
+	  return new Label(label.toString(),Position.scope);
+    }
+}
+
+
+List<DominanceConstraint> DC_List() :
+{
+List<DominanceConstraint> dc_list = null;
+DominanceConstraint dc = null;
+}
+{
+   dc = DominanceConstraint()  ("," dc_list = DC_List())?
+   {
+       if (dc_list == null)
+       {
+          dc_list = new ArrayList<DominanceConstraint>();
+       }
+
+        dc_list.add(0,dc);
+        return dc_list;
+    }
+
+
+}
+
+
+List<DRS> DRS_List() :
+{
+  DRS drs;
+  List<DRS> drs_list = null;
+}
+{
+   drs = DRS()  ("," drs_list = DRS_List())?
+   {
+       if (drs_list == null)
+       {
+          drs_list = new ArrayList<DRS>();
+       }
+
+        drs_list.add(0,drs);
+        return drs_list;
+    }
+}
+
+List<Argument> Arg_List() :
+{
+  Argument argument;
+  List<Argument> arg_list = null;
+}
+{
+  argument = Argument() ("," arg_list = Arg_List())?
+  {
+       if (arg_list == null)
+       {
+          arg_list = new ArrayList<Argument>();
+       }
+
+        arg_list.add(0,argument);
+        return arg_list;
+    }
+
+}
+
+Argument Argument() :
+{
+  Token label;
+  Token word;
+  Token referent;
+  Type type;
+}
+{
+    "(" label=<LABEL> "," referent = dr() "," word=word()  "," type = Type() ")"
+   {
+       Argument argument = new Argument();
+       argument.setLabel(new Label(label.toString()));
+       argument.setReferent(referent.toString());	
+       argument.setAnchor(word.toString());
+       argument.setType(type);
+       return argument;
+   }
+}
+
+Type Type() :
+{
+  Type argument;
+  Type result;
+  Token word;
+}
+{
+    "<" argument = Type() "," result = Type() ">"
+    {
+        CompositeType type = new CompositeType();
+        type.setArgumentType(argument);
+        type.setResultType(result);
+        return type;
+    }
+   
+   |
+
+   word = word()
+   {
+	    ElementaryType type=null;
+        if (word.toString().equals("e"))
+  	       type = new ElementaryType(ElemType.e);
+        if (word.toString().equals("t"))
+           type = new ElementaryType(ElemType.t);
+	     return type;
+   }	
+}
+
+
+/** DRS */
+DRS DRS() :
+{
+	Set<DiscourseReferent> dr_set = null;
+  	Set<DRS_Condition> conditions = null;
+	DRS drs;
+    Token label;
+
+}
+{
+   label=<LABEL> ":[" (dr_set=DR_Set())? "|" (conditions=Condition_List())? "]"
+    {
+       if (dr_set == null)
+       {
+          dr_set = new HashSet<DiscourseReferent>();
+       }
+       drs = new DRS();
+       drs.setLabel(label.toString());
+       drs.setDiscourseReferents(dr_set);
+       if (conditions != null)
+       drs.setDRSConditions(conditions);
+       return drs;
+    }
+}
+
+/** DR_Set*/
+Set<DiscourseReferent> DR_Set() :
+{
+   Token dr;
+   Set<DiscourseReferent> dr_set=null;
+}
+{
+   dr = dr() ("," dr_set=DR_Set())?
+   {
+      if (dr_set == null)
+      {
+         dr_set= new HashSet<DiscourseReferent>();
+      }
+      if (dr.toString().startsWith("?"))
+      {
+         dr_set.add(new DiscourseReferent(dr.toString().substring(1),true,false));
+      }
+      else if (dr.toString().startsWith("!"))
+      {
+         dr_set.add(new DiscourseReferent(dr.toString().substring(1),false,true));
+      }
+      else
+      {
+		 dr_set.add(new DiscourseReferent(dr.toString(),false,false));
+      }
+      return dr_set;
+   }
+}
+
+Set<DRS_Condition> Condition_List() :
+{
+    DRS_Condition condition= null;
+    Set<DRS_Condition> conditions = null;
+}
+{
+    condition=Condition() ("," conditions=Condition_List())?
+    {
+    if (conditions == null)
+      {
+         conditions = new HashSet<DRS_Condition>();
+      }
+ 	  conditions.add(condition);
+      return conditions;
+  }
+}
+
+DRS_Condition Condition() :
+{
+      List<DiscourseReferent> dr_list;
+      Token dr1;
+      Token dr2;
+      Token dr;
+      Token predicate;
+      Token quantifier;
+      DRS drs1;
+      DRS drs2;	
+}    
+{
+
+    predicate=word() "(" dr_list=DR_List() ")"
+    {
+        Simple_DRS_Condition condition;
+
+        condition = new Simple_DRS_Condition();
+        condition.setPredicate(predicate.toString());
+        condition.setArguments(dr_list);
+        return condition;
+    }
+    
+    |
+   
+    dr1 = dr() "=" dr2 = dr() 
+    {	
+        Simple_DRS_Condition condition;
+
+        condition = new Simple_DRS_Condition();
+        condition.setPredicate("equal");
+        condition.addArgument(new DiscourseReferent(dr1.toString()));
+		condition.addArgument(new DiscourseReferent(dr2.toString()));
+        return condition;
+    }
+
+    |
+
+    "NOT" drs1=DRS()
+    {
+       Negated_DRS drs = new Negated_DRS();
+       drs.setDRS(drs1);
+       return drs;
+    }
+
+    |
+
+    drs1=DRS()  (quantifier=<EVERY> | quantifier=<SOME> | quantifier=<AFEW> | quantifier=<MOST> | quantifier=<THEMOST> | quantifier=<THELEAST> |
+                 quantifier=<HOWMANY> | quantifier=<MANY> | quantifier=<NO>) dr=dr() drs2=DRS()
+    {
+		Complex_DRS_Condition drs;
+        drs = new Complex_DRS_Condition();
+		drs.setRestrictor(drs1);
+        drs.setScope(drs2);	
+		drs.setReferent(new DiscourseReferent(dr.toString()));
+	
+		if (quantifier.toString().equals("EVERY")) {drs.setQuantifier(DRS_Quantifier.EVERY);}
+		if (quantifier.toString().equals("SOME")) {drs.setQuantifier(DRS_Quantifier.SOME);}
+		if (quantifier.toString().equals("MOST")) {drs.setQuantifier(DRS_Quantifier.MOST);}
+		if (quantifier.toString().equals("THEMOST")) {drs.setQuantifier(DRS_Quantifier.THEMOST);}
+		if (quantifier.toString().equals("THELEAST")) {drs.setQuantifier(DRS_Quantifier.THELEAST);}
+		if (quantifier.toString().equals("AFEW")) {drs.setQuantifier(DRS_Quantifier.FEW);}
+		if (quantifier.toString().equals("MANY")) {drs.setQuantifier(DRS_Quantifier.MANY);}
+		if (quantifier.toString().equals("HOWMANY")) {drs.setQuantifier(DRS_Quantifier.HOWMANY);}
+		if (quantifier.toString().equals("NO")) {drs.setQuantifier(DRS_Quantifier.NO);}
+
+	return drs;
+
+    }
+}
+
+/** DR_List*/
+List<DiscourseReferent> DR_List() :
+{
+   Token dr;
+   List<DiscourseReferent> dr_list=null;
+}
+{
+   dr = dr() ("," dr_list=DR_List())?
+   {
+      if (dr_list == null)
+      {
+         dr_list= new ArrayList<DiscourseReferent>();
+      }
+
+      if (dr.toString().startsWith("?")) {
+         dr_list.add(0,new DiscourseReferent(dr.toString().substring(1),true,false));
+      }
+      else if (dr.toString().startsWith("?")) {
+         dr_list.add(0,new DiscourseReferent(dr.toString().substring(1),false,true));
+      }
+      else {
+		 dr_list.add(0,new DiscourseReferent(dr.toString(),false,false));
+      }
+
+      return dr_list;
+   }
+}
+
+
+List<Slot> Slot_List() :
+{
+  Slot slot;
+  List<Slot> slots = null;
+}
+{
+  slot = Slot() ("," slots = Slot_List())?
+  {
+       if (slots == null)
+       {
+         slots = new ArrayList<Slot>();
+       }
+
+        slots.add(slot);
+        return slots;
+    }
+}
+
+Slot Slot() :
+{
+  Token ref;
+  Token type;
+  SlotType slottype = null;
+  List<String> words = null;
+}
+{
+    ref = word() "/" type = word() "/" (words = Word_List())?
+   {
+     if (words == null)
+     {
+       words = new ArrayList<String>();
+     }
+	 if (type.toString().equals("CLASS")) { slottype = SlotType.CLASS; }
+	 else if (type.toString().equals("RESOURCE")) { slottype = SlotType.RESOURCE; }
+	 else if (type.toString().equals("PROPERTY")) { slottype = SlotType.PROPERTY; }
+	 else if (type.toString().equals("SYMPROPERTY")) { slottype = SlotType.SYMPROPERTY; }
+	 else { slottype = SlotType.UNSPEC; }
+	   
+     return new Slot(ref.toString(),slottype,words);
+   }
+}
+
+List<String> Word_List() :
+{
+  Token word;
+  List<String> words = null;
+}
+{
+  word = word() ("^" words = Word_List())?
+  {
+       if (words == null)
+       {
+         words = new ArrayList<String>();
+       }
+
+        words.add(0,word.toString());
+        return words;
+    }
+}
+
+
+TOKEN: {<EVERY: "EVERY">}
+
+TOKEN: {<MOST: "MOST">}
+
+TOKEN: {<SOME: "SOME">}
+
+TOKEN: {<THEMOST: "THEMOST">}
+
+TOKEN: {<THELEAST: "THELEAST">}
+
+TOKEN: {<AFEW: "AFEW">}
+
+TOKEN: {<MANY: "MANY">}
+
+TOKEN: {<NO: "NO">}
+
+TOKEN: {<HOWMANY: "HOWMANY">}
+
+TOKEN: {<LABEL: "l"(["0"-"9"])+>}
+
+TOKEN: {<WORD: (["a"-"z","A"-"Z","_",".","#",":","0"-"9"])+>}
+
+TOKEN: {<DR: (["?","!"])?(["a"-"z","A"-"Z","0"-"9","."])+>}
+
+TOKEN: {<QUOTED_STRING: "\'" (~["\'"])+ "\'" >}
+
+Token dr() : { Token t; }{ (t=<WORD> | t=<DR> | t=<QUOTED_STRING>) { return t; } }
+Token word() : { Token t; }{ (t=<WORD> | t=<DR> | t=<QUOTED_STRING>) { return t; } }
+
+SKIP : { " " | "\t" | "\n" | "\r" }
+
+
+

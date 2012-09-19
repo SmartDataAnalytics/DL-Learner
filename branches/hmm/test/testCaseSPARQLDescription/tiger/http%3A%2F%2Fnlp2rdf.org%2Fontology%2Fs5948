@@ -1,0 +1,246 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w7_Kongress">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Kongress</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w6_Panafrikanistische"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w8_%28"/>
+    <j.0:hasLemma>Kongress</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w11_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w10_%29"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w12_der"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w10_%29">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>)</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w9_PAC"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w11_%2C"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w9_PAC"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w15_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w0_Vollkommen"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s5948w0_Vollkommen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w11_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w6_Panafrikanistische"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w1_unbedeutend"/>
+    <rdfs:label>Vollkommen unbedeutend wurde der radikale schwarze Panafrikanistische Kongress ( PAC ) , der ein Prozent der Stimmen erhielt .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w4_radikale"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w2_wurde"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w7_Kongress"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w12_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w3_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w16_Stimmen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w14_Prozent"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w8_%28"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w5_schwarze"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w13_ein"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w18_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w17_erhielt"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5948w10_%29"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w18_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w17_erhielt"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w3_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w2_wurde"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w4_radikale"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w0_Vollkommen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Vollkommen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w1_unbedeutend"/>
+    <j.0:hasLemma>vollkommen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w8_%28">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>(</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w7_Kongress"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w9_PAC"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w16_Stimmen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Stimmen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w15_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w17_erhielt"/>
+    <j.0:hasLemma>Stimme</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w9_PAC">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>PAC</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w8_%28"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w10_%29"/>
+    <j.0:hasLemma>PAC</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w15_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w14_Prozent"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w16_Stimmen"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w5_schwarze">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>schwarze</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w4_radikale"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w6_Panafrikanistische"/>
+    <j.0:hasLemma>schwarz</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w14_Prozent">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Prozent</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w13_ein"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w15_der"/>
+    <j.0:hasLemma>Prozent</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PRELS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveRelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w13_ein">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ein</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w12_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w14_Prozent"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w4_radikale">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>radikale</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w3_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w5_schwarze"/>
+    <j.0:hasLemma>radikal</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w1_unbedeutend">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>unbedeutend</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w0_Vollkommen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w2_wurde"/>
+    <j.0:hasLemma>unbedeutend</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w6_Panafrikanistische">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Panafrikanistische</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w5_schwarze"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w7_Kongress"/>
+    <j.0:hasLemma>panafrikanistisch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w17_erhielt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>erhielt</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w16_Stimmen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w18_."/>
+    <j.0:hasLemma>erhalten</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w12_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w11_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w13_ein"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PRELS"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5948w2_wurde">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wurde</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5948"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5948w1_unbedeutend"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5948w3_der"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+</rdf:RDF>

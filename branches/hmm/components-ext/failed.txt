@@ -1,0 +1,6 @@
+How/WRB tall/JJ is/VBZ Claudia/NNP Schiffer/NNP
+Is/NNP Egypts/NNPS largest/JJS city/NN also/RB its/PRP$ capital/NN
+Which/WDT states/VBZ border/VBZ Utah/NNP
+In/IN which/WDT films/NNS directed/VBN by/IN Garry/NNP Marshall/NNP was/VBD Julia/NNP Roberts/NNP starring/VBG
+Was/VBD US/NNP president/NNP Jackson/NNP involved/VBD in/IN a/DT war/NN
+Which/WDT countries/NNS in/IN the/DT European/NNP Union/NNP adopted/VBD the/DT Euro/NNP

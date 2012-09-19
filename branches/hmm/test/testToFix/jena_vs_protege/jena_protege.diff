@@ -1,0 +1,538 @@
+--- /tmp/6043-data1.owl
++++ /home/sebastian/svn/idea/dl-learner/examples/nlp2rdf/sample/test.diff
+@@ -1,6 +1,8 @@
+-<http://nlp2rdf.lod2.eu/nif/offset_0_146_The+apple+is+eaten.%0A> <http://nlp2rdf.lod2.eu/schema/string/sourceString> "The apple is eaten.\nThe apple has been eaten.\nThe apple was eaten.\n\nThe boy eats the cake.\nThe boy will eat the cake.\nThe boy has eaten the cake.\n" .
++<file:///tmp/data1.owl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .
++<http://nlp2rdf.lod2.eu/nif/offset_0_146_The+apple+is+eaten.%0A> <http://nlp2rdf.lod2.eu/schema/string/sourceString> "The apple is eaten.\nThe apple has been eaten.\nThe apple was eaten.\n\nThe boy eats the cake.\nThe boy will eat the cake.\nThe boy has eaten the cake." .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_146_The+apple+is+eaten.%0A> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/Document> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_146_The+apple+is+eaten.%0A> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_0_146_The+apple+is+eaten.%0A> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_19_The+apple+is+eaten.> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_0_19_The+apple+is+eaten.> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_19_The+apple+is+eaten.> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_0_9_The+apple> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_19_The+apple+is+eaten.> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_10_18_is+eaten> .
+@@ -29,6 +31,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_0_19_The+apple+is+eaten.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#Feature> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_19_The+apple+is+eaten.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_19_The+apple+is+eaten.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_0_19_The+apple+is+eaten.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_3_The> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "the" .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_3_The> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_4_9_apple> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_3_The> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "DT" .
+@@ -42,11 +45,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_0_3_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Determiner> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_3_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_3_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_0_3_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_9_The+apple> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_0_3_The> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_9_The+apple> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_4_9_apple> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_9_The+apple> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "The apple" .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_9_The+apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Phrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_0_9_The+apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_0_9_The+apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_10_12_is> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "be" .
+ <http://nlp2rdf.lod2.eu/nif/offset_10_12_is> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_10_12_is> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "VBZ" .
+@@ -60,6 +65,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_10_12_is> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_10_12_is> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_10_12_is> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_10_12_is> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_10_18_is+eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_10_12_is> .
+ <http://nlp2rdf.lod2.eu/nif/offset_10_18_is+eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_10_18_is+eaten> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "is eaten" .
+@@ -75,6 +81,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_10_18_is+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn-syntax.owl#VerbPhrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_10_18_is+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_10_18_is+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_10_18_is+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_104_107_eat> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "eat" .
+ <http://nlp2rdf.lod2.eu/nif/offset_104_107_eat> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_108_111_the> .
+ <http://nlp2rdf.lod2.eu/nif/offset_104_107_eat> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "VB" .
+@@ -94,6 +101,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_104_107_eat> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_104_107_eat> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_104_107_eat> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_104_107_eat> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_104_116_eat+the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_104_107_eat> .
+ <http://nlp2rdf.lod2.eu/nif/offset_104_116_eat+the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_108_116_the+cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_104_116_eat+the+cake> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "eat the cake" .
+@@ -109,6 +117,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_104_116_eat+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn-syntax.owl#VerbPhrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_104_116_eat+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_104_116_eat+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_104_116_eat+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_108_111_the> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "the" .
+ <http://nlp2rdf.lod2.eu/nif/offset_108_111_the> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_112_116_cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_108_111_the> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "DT" .
+@@ -122,11 +131,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_108_111_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Determiner> .
+ <http://nlp2rdf.lod2.eu/nif/offset_108_111_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_108_111_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_108_111_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_108_116_the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_108_111_the> .
+ <http://nlp2rdf.lod2.eu/nif/offset_108_116_the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_112_116_cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_108_116_the+cake> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "the cake" .
+ <http://nlp2rdf.lod2.eu/nif/offset_108_116_the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Phrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_108_116_the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_108_116_the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_112_116_cake> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "cake" .
+ <http://nlp2rdf.lod2.eu/nif/offset_112_116_cake> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_116_117_.> .
+ <http://nlp2rdf.lod2.eu/nif/offset_112_116_cake> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "NN" .
+@@ -143,11 +154,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_112_116_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Noun> .
+ <http://nlp2rdf.lod2.eu/nif/offset_112_116_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_112_116_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_112_116_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_116_117_.> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_116_117_.> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_116_117_.> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_116_117_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Word> .
+ <http://nlp2rdf.lod2.eu/nif/offset_116_117_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_116_117_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_121_The> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "the" .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_121_The> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_122_125_boy> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_121_The> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "DT" .
+@@ -161,11 +174,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_118_121_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Determiner> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_121_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_121_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_118_121_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_125_The+boy> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_118_121_The> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_125_The+boy> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_122_125_boy> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_125_The+boy> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "The boy" .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_125_The+boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Phrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_125_The+boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_118_125_The+boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_118_125_The+boy> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_126_144_has+eaten+the+cake> .
+@@ -196,6 +211,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#Feature> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_118_145_The+boy+has+eaten+th> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_122_125_boy> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "boy" .
+ <http://nlp2rdf.lod2.eu/nif/offset_122_125_boy> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_126_129_has> .
+ <http://nlp2rdf.lod2.eu/nif/offset_122_125_boy> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "NN" .
+@@ -212,6 +228,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_122_125_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Noun> .
+ <http://nlp2rdf.lod2.eu/nif/offset_122_125_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_122_125_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_122_125_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_126_129_has> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "have" .
+ <http://nlp2rdf.lod2.eu/nif/offset_126_129_has> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_130_135_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_126_129_has> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "VBZ" .
+@@ -225,6 +242,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_126_129_has> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_126_129_has> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_126_129_has> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_126_129_has> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_126_144_has+eaten+the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_126_129_has> .
+ <http://nlp2rdf.lod2.eu/nif/offset_126_144_has+eaten+the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_130_144_eaten+the+cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_126_144_has+eaten+the+cake> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "has eaten the cake" .
+@@ -240,6 +258,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_126_144_has+eaten+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn-syntax.owl#VerbPhrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_126_144_has+eaten+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_126_144_has+eaten+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_126_144_has+eaten+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_130_135_eaten> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "eat" .
+ <http://nlp2rdf.lod2.eu/nif/offset_130_135_eaten> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_136_139_the> .
+ <http://nlp2rdf.lod2.eu/nif/offset_130_135_eaten> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "VBN" .
+@@ -261,6 +280,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_130_135_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_130_135_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_130_135_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_130_135_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_130_144_eaten+the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_130_135_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_130_144_eaten+the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_136_144_the+cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_130_144_eaten+the+cake> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "eaten the cake" .
+@@ -276,6 +296,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_130_144_eaten+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn-syntax.owl#VerbPhrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_130_144_eaten+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_130_144_eaten+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_130_144_eaten+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "eat" .
+ <http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_18_19_.> .
+@@ -297,6 +318,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_13_18_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_136_139_the> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "the" .
+ <http://nlp2rdf.lod2.eu/nif/offset_136_139_the> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_140_144_cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_136_139_the> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "DT" .
+@@ -310,11 +332,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_136_139_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Determiner> .
+ <http://nlp2rdf.lod2.eu/nif/offset_136_139_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_136_139_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_136_139_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_136_144_the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_136_139_the> .
+ <http://nlp2rdf.lod2.eu/nif/offset_136_144_the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_140_144_cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_136_144_the+cake> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "the cake" .
+ <http://nlp2rdf.lod2.eu/nif/offset_136_144_the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Phrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_136_144_the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_136_144_the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_140_144_cake> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "cake" .
+ <http://nlp2rdf.lod2.eu/nif/offset_140_144_cake> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_144_145_.> .
+ <http://nlp2rdf.lod2.eu/nif/offset_140_144_cake> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "NN" .
+@@ -331,16 +355,19 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_140_144_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Noun> .
+ <http://nlp2rdf.lod2.eu/nif/offset_140_144_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_140_144_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_140_144_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_144_145_.> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_144_145_.> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_144_145_.> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_144_145_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Word> .
+ <http://nlp2rdf.lod2.eu/nif/offset_144_145_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_144_145_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_18_19_.> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_18_19_.> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_18_19_.> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_18_19_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Word> .
+ <http://nlp2rdf.lod2.eu/nif/offset_18_19_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_18_19_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_23_The> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "the" .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_23_The> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_24_29_apple> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_23_The> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "DT" .
+@@ -354,11 +381,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_20_23_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Determiner> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_23_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_23_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_20_23_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_29_The+apple> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_20_23_The> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_29_The+apple> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_24_29_apple> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_29_The+apple> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "The apple" .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_29_The+apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Phrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_29_The+apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_20_29_The+apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_45_The+apple+has+been+e> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_20_29_The+apple> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_45_The+apple+has+been+e> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_20_45_The+apple+has+been+e> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_45_The+apple+has+been+e> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_30_44_has+been+eaten> .
+@@ -388,6 +417,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_20_45_The+apple+has+been+e> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#Feature> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_45_The+apple+has+been+e> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_20_45_The+apple+has+been+e> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_20_45_The+apple+has+been+e> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_24_29_apple> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "apple" .
+ <http://nlp2rdf.lod2.eu/nif/offset_24_29_apple> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_30_33_has> .
+ <http://nlp2rdf.lod2.eu/nif/offset_24_29_apple> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "NN" .
+@@ -404,6 +434,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_24_29_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Noun> .
+ <http://nlp2rdf.lod2.eu/nif/offset_24_29_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_24_29_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_24_29_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_30_33_has> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "have" .
+ <http://nlp2rdf.lod2.eu/nif/offset_30_33_has> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_34_38_been> .
+ <http://nlp2rdf.lod2.eu/nif/offset_30_33_has> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "VBZ" .
+@@ -417,6 +448,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_30_33_has> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_30_33_has> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_30_33_has> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_30_33_has> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_30_44_has+been+eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_30_33_has> .
+ <http://nlp2rdf.lod2.eu/nif/offset_30_44_has+been+eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_34_44_been+eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_30_44_has+been+eaten> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "has been eaten" .
+@@ -432,6 +464,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_30_44_has+been+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn-syntax.owl#VerbPhrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_30_44_has+been+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_30_44_has+been+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_30_44_has+been+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_34_38_been> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "be" .
+ <http://nlp2rdf.lod2.eu/nif/offset_34_38_been> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_39_44_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_34_38_been> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "VBN" .
+@@ -447,6 +480,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_34_38_been> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_34_38_been> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_34_38_been> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_34_38_been> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_34_44_been+eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_34_38_been> .
+ <http://nlp2rdf.lod2.eu/nif/offset_34_44_been+eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_39_44_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_34_44_been+eaten> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "been eaten" .
+@@ -462,6 +496,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_34_44_been+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn-syntax.owl#VerbPhrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_34_44_been+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_34_44_been+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_34_44_been+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_39_44_eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_39_44_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_39_44_eaten> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "eat" .
+ <http://nlp2rdf.lod2.eu/nif/offset_39_44_eaten> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_44_45_.> .
+@@ -485,11 +520,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_39_44_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_39_44_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_39_44_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_39_44_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_44_45_.> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_44_45_.> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_44_45_.> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_44_45_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Word> .
+ <http://nlp2rdf.lod2.eu/nif/offset_44_45_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_44_45_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_49_The> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "the" .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_49_The> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_50_55_apple> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_49_The> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "DT" .
+@@ -503,11 +540,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_46_49_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Determiner> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_49_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_49_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_46_49_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_55_The+apple> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_46_49_The> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_55_The+apple> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_50_55_apple> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_55_The+apple> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "The apple" .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_55_The+apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Phrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_55_The+apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_46_55_The+apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_66_The+apple+was+eaten.> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_46_55_The+apple> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_66_The+apple+was+eaten.> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_46_66_The+apple+was+eaten.> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_66_The+apple+was+eaten.> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_56_65_was+eaten> .
+@@ -536,6 +575,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_46_66_The+apple+was+eaten.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#Feature> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_66_The+apple+was+eaten.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_46_66_The+apple+was+eaten.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_46_66_The+apple+was+eaten.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_4_9_apple> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "apple" .
+ <http://nlp2rdf.lod2.eu/nif/offset_4_9_apple> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_10_12_is> .
+ <http://nlp2rdf.lod2.eu/nif/offset_4_9_apple> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "NN" .
+@@ -552,6 +592,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_4_9_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Noun> .
+ <http://nlp2rdf.lod2.eu/nif/offset_4_9_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_4_9_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_4_9_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_50_55_apple> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "apple" .
+ <http://nlp2rdf.lod2.eu/nif/offset_50_55_apple> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_56_59_was> .
+ <http://nlp2rdf.lod2.eu/nif/offset_50_55_apple> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "NN" .
+@@ -568,6 +609,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_50_55_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Noun> .
+ <http://nlp2rdf.lod2.eu/nif/offset_50_55_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_50_55_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_50_55_apple> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_56_59_was> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "be" .
+ <http://nlp2rdf.lod2.eu/nif/offset_56_59_was> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_60_65_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_56_59_was> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "VBD" .
+@@ -581,6 +623,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_56_59_was> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_56_59_was> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_56_59_was> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_56_59_was> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_56_65_was+eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_56_59_was> .
+ <http://nlp2rdf.lod2.eu/nif/offset_56_65_was+eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_60_65_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_56_65_was+eaten> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "was eaten" .
+@@ -596,6 +639,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_56_65_was+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn-syntax.owl#VerbPhrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_56_65_was+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_56_65_was+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_56_65_was+eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_60_65_eaten> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_60_65_eaten> .
+ <http://nlp2rdf.lod2.eu/nif/offset_60_65_eaten> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "eat" .
+ <http://nlp2rdf.lod2.eu/nif/offset_60_65_eaten> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_65_66_.> .
+@@ -617,11 +661,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_60_65_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_60_65_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_60_65_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_60_65_eaten> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_65_66_.> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_65_66_.> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_65_66_.> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_65_66_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Word> .
+ <http://nlp2rdf.lod2.eu/nif/offset_65_66_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_65_66_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_71_The> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "the" .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_71_The> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_72_75_boy> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_71_The> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "DT" .
+@@ -635,11 +681,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_68_71_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Determiner> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_71_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_71_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_68_71_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_75_The+boy> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_68_71_The> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_75_The+boy> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_72_75_boy> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_75_The+boy> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "The boy" .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_75_The+boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Phrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_75_The+boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_68_75_The+boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_90_The+boy+eats+the+cak> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_68_75_The+boy> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_90_The+boy+eats+the+cak> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_68_90_The+boy+eats+the+cak> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_90_The+boy+eats+the+cak> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_76_89_eats+the+cake> .
+@@ -669,6 +717,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_68_90_The+boy+eats+the+cak> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#Feature> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_90_The+boy+eats+the+cak> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_68_90_The+boy+eats+the+cak> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_68_90_The+boy+eats+the+cak> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_72_75_boy> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "boy" .
+ <http://nlp2rdf.lod2.eu/nif/offset_72_75_boy> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_76_80_eats> .
+ <http://nlp2rdf.lod2.eu/nif/offset_72_75_boy> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "NN" .
+@@ -685,6 +734,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_72_75_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Noun> .
+ <http://nlp2rdf.lod2.eu/nif/offset_72_75_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_72_75_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_72_75_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_76_80_eats> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "eat" .
+ <http://nlp2rdf.lod2.eu/nif/offset_76_80_eats> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_81_84_the> .
+ <http://nlp2rdf.lod2.eu/nif/offset_76_80_eats> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "VBZ" .
+@@ -702,6 +752,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_76_80_eats> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_76_80_eats> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_76_80_eats> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_76_80_eats> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_76_89_eats+the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_76_80_eats> .
+ <http://nlp2rdf.lod2.eu/nif/offset_76_89_eats+the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_81_89_the+cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_76_89_eats+the+cake> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "eats the cake" .
+@@ -717,6 +768,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_76_89_eats+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn-syntax.owl#VerbPhrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_76_89_eats+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_76_89_eats+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_76_89_eats+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_81_84_the> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "the" .
+ <http://nlp2rdf.lod2.eu/nif/offset_81_84_the> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_85_89_cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_81_84_the> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "DT" .
+@@ -730,11 +782,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_81_84_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Determiner> .
+ <http://nlp2rdf.lod2.eu/nif/offset_81_84_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_81_84_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_81_84_the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_81_89_the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_81_84_the> .
+ <http://nlp2rdf.lod2.eu/nif/offset_81_89_the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_85_89_cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_81_89_the+cake> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "the cake" .
+ <http://nlp2rdf.lod2.eu/nif/offset_81_89_the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Phrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_81_89_the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_81_89_the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_85_89_cake> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "cake" .
+ <http://nlp2rdf.lod2.eu/nif/offset_85_89_cake> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_89_90_.> .
+ <http://nlp2rdf.lod2.eu/nif/offset_85_89_cake> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "NN" .
+@@ -751,11 +805,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_85_89_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Noun> .
+ <http://nlp2rdf.lod2.eu/nif/offset_85_89_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_85_89_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_85_89_cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_89_90_.> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_89_90_.> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_89_90_.> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "." .
+ <http://nlp2rdf.lod2.eu/nif/offset_89_90_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Word> .
+ <http://nlp2rdf.lod2.eu/nif/offset_89_90_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_89_90_.> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_117_The+boy+will+eat+the> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_116_117_.> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_117_The+boy+will+eat+the> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_91_117_The+boy+will+eat+the> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_117_The+boy+will+eat+the> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_91_98_The+boy> .
+@@ -786,6 +842,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_91_117_The+boy+will+eat+the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#Feature> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_117_The+boy+will+eat+the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_117_The+boy+will+eat+the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_91_117_The+boy+will+eat+the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_94_The> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "the" .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_94_The> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_95_98_boy> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_94_The> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "DT" .
+@@ -799,11 +856,13 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_91_94_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Determiner> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_94_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_94_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_91_94_The> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_98_The+boy> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_91_94_The> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_98_The+boy> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_95_98_boy> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_98_The+boy> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "The boy" .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_98_The+boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/sso/Phrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_91_98_The+boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> .
++<http://nlp2rdf.lod2.eu/nif/offset_91_98_The+boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_95_98_boy> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "boy" .
+ <http://nlp2rdf.lod2.eu/nif/offset_95_98_boy> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_99_103_will> .
+ <http://nlp2rdf.lod2.eu/nif/offset_95_98_boy> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "NN" .
+@@ -820,6 +879,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_95_98_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Noun> .
+ <http://nlp2rdf.lod2.eu/nif/offset_95_98_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_95_98_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_95_98_boy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_99_103_will> <http://nlp2rdf.lod2.eu/schema/sso/lemma> "will" .
+ <http://nlp2rdf.lod2.eu/nif/offset_99_103_will> <http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://nlp2rdf.lod2.eu/nif/offset_104_107_eat> .
+ <http://nlp2rdf.lod2.eu/nif/offset_99_103_will> <http://nlp2rdf.lod2.eu/schema/sso/posTag> "MD" .
+@@ -835,6 +895,7 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_99_103_will> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Tag> .
+ <http://nlp2rdf.lod2.eu/nif/offset_99_103_will> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn.owl#Verb> .
+ <http://nlp2rdf.lod2.eu/nif/offset_99_103_will> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_99_103_will> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+ <http://nlp2rdf.lod2.eu/nif/offset_99_116_will+eat+the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_104_116_eat+the+cake> .
+ <http://nlp2rdf.lod2.eu/nif/offset_99_116_will+eat+the+cake> <http://nlp2rdf.lod2.eu/schema/sso/child> <http://nlp2rdf.lod2.eu/nif/offset_99_103_will> .
+ <http://nlp2rdf.lod2.eu/nif/offset_99_116_will+eat+the+cake> <http://nlp2rdf.lod2.eu/schema/string/anchorOf> "will eat the cake" .
+@@ -850,47 +911,63 @@
+ <http://nlp2rdf.lod2.eu/nif/offset_99_116_will+eat+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/penn-syntax.owl#VerbPhrase> .
+ <http://nlp2rdf.lod2.eu/nif/offset_99_116_will+eat+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#LinguisticAnnotation> .
+ <http://nlp2rdf.lod2.eu/nif/offset_99_116_will+eat+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/olia/system.owl#UnitOfAnnotation> .
++<http://nlp2rdf.lod2.eu/nif/offset_99_116_will+eat+the+cake> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
++<http://nlp2rdf.lod2.eu/schema/sso/child> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
++<http://nlp2rdf.lod2.eu/schema/sso/firstWord> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
++<http://nlp2rdf.lod2.eu/schema/sso/lastWord> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
++<http://nlp2rdf.lod2.eu/schema/sso/lemma> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
++<http://nlp2rdf.lod2.eu/schema/sso/nextWord> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
++<http://nlp2rdf.lod2.eu/schema/sso/Phrase> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
++<http://nlp2rdf.lod2.eu/schema/sso/Phrase> <http://www.w3.org/2000/01/rdf-schema#comment> "dcc" .
++<http://nlp2rdf.lod2.eu/schema/sso/posTag> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
++<http://nlp2rdf.lod2.eu/schema/sso/Sentence> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
++<http://nlp2rdf.lod2.eu/schema/sso/Word> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
++<http://nlp2rdf.lod2.eu/schema/sso/word> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
++<http://nlp2rdf.lod2.eu/schema/string/anchorOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
++<http://nlp2rdf.lod2.eu/schema/string/Document> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
++<http://nlp2rdf.lod2.eu/schema/string/OffsetBasedString> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
++<http://nlp2rdf.lod2.eu/schema/string/sourceString> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+ <http://purl.org/olia/olia.owl#AuxiliaryVerb> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#AuxiliaryVerb> <http://www.w3.org/2000/01/rdf-schema#comment> "    \n\t\tAn auxiliary verb is a verb which accompanies the lexical verb of a verb phrase, \n\t\tand expresses grammatical distinctions not carried by the lexical verb, such as \n\t\tperson, number, tense aspect, and voice. \n\t\t(http://www.sil.org/linguistics/GlossaryOfLinguisticTerms/WhatIsAnAuxiliaryVerb.htm 19.09.06)\n\t\t\n\t\tBesides modal verbs (\"semiauxiliary\") and \"strict\" auxiliary verbs, also copulas \n\t\tare classified under auxiliary verbs here, as this is a praxis applied in practically every\n\t\tEAGLES-conformant morphosyntactic annotation scheme.\n\n\t\tPart of speech referring to the set of verbs, subordinate to the main lexical verb which help \n\t\tto make distinction in mood, aspect, voice etc.\n        (Crystal 2003; http://www.isocat.org/datcat/DC-1244)\n        " .
++<http://purl.org/olia/olia.owl#AuxiliaryVerb> <http://www.w3.org/2000/01/rdf-schema#comment> "An auxiliary verb is a verb which accompanies the lexical verb of a verb phrase, \n\t\tand expresses grammatical distinctions not carried by the lexical verb, such as \n\t\tperson, number, tense aspect, and voice. \n\t\t(http://www.sil.org/linguistics/GlossaryOfLinguisticTerms/WhatIsAnAuxiliaryVerb.htm 19.09.06)\n\t\t\n\t\tBesides modal verbs (\"semiauxiliary\") and \"strict\" auxiliary verbs, also copulas \n\t\tare classified under auxiliary verbs here, as this is a praxis applied in practically every\n\t\tEAGLES-conformant morphosyntactic annotation scheme.\n\n\t\tPart of speech referring to the set of verbs, subordinate to the main lexical verb which help \n\t\tto make distinction in mood, aspect, voice etc.\n        (Crystal 2003; http://www.isocat.org/datcat/DC-1244)" .
+ <http://purl.org/olia/olia.owl#AuxiliaryVerb> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia.owl#Verb> .
+ <http://purl.org/olia/olia.owl#Clause> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#Clause> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\t\t\tTraditionally sentences are deemed to be composed of major constituents \n\t\t\tknown as clauses, which may be main clauses (not included in a superordinate \n\t\t\tclause) or embedded clauses (included in a superordinate clause) such as \n\t\t\trelative clauses or adverbial clauses. A main clause, unless it is coordinated, \n\t\t\tis equivalent to a simple sentence, and does not need to be separately labelled. \n\t\t\tEmbedded and coordinated clauses, on the other hand, will need to be separately \n\t\t\tidentified. We recommend that such units be identified in the annotation, and \n\t\t\tlabelled either as sentences (S) or as clauses (CL), according to the preference \n\t\t\tspecified in the annotation scheme.\n\n\t\t\tThe reason for allowing choice here is that different theoretical preferences \n\t\t\thave to be accommodated. In some syntactic models, the `clause' category is not \n\t\t\tused (except informally), embedded clauses being marked by included [S] \n\t\t\tconstituents. In other models, clauses are identified as such, even where they \n\t\t\tare coextensive with an independent sentence.\n\n\t\t\tOne solution which commends itself (and is employed in the Lancaster Treebank and \n\t\t\tthe SUSANNE Corpus) is to retain [S ... S] as the delimiter of sentences, whether \n\t\t\tincluded or not, and also to use [S ... S] for the coordinated parts of a compound \n\t\t\tsentence; but to use `clause' labels for subordinate clauses. An example which \n\t\t\tillustrates this division is 12:\n\n\t\t\t(12)  \t[S [S The distinction at issue is relatively clear S] , but [S closer \n\t\t\t\t\texamination reveals [CL that all is not quite so straightforward \n\t\t\t\t\t[CL as it seems CL] CL] S] . S]\n\t\t\t\t\t\n\t\t\tEmbedded (subordinate) clauses are generally identified by some sign of their \n\t\t\tdependence on the superordinate clause or sentence, such as an introductory \n\t\t\tconjunction or a non-finite verb form. It is noticeable that the coordinated \n\t\t\tparts of the compound sentence do not have to be clause-like units with subjects \n\t\t\tand verbs, and to this extent [CL] would be a misleading label to apply to them. \n\t\t\tThis is true, in 13, of so far so good in:\n\n\t\t\t(13)  \t[S [S So far so good S] , but [S now consider gender in adjectives S] . S] \n\t\t\t(http://www.ilc.cnr.it/EAGLES96/segsasg1/node31.html)\n\t\t" .
++<http://purl.org/olia/olia.owl#Clause> <http://www.w3.org/2000/01/rdf-schema#comment> "Traditionally sentences are deemed to be composed of major constituents \n\t\t\tknown as clauses, which may be main clauses (not included in a superordinate \n\t\t\tclause) or embedded clauses (included in a superordinate clause) such as \n\t\t\trelative clauses or adverbial clauses. A main clause, unless it is coordinated, \n\t\t\tis equivalent to a simple sentence, and does not need to be separately labelled. \n\t\t\tEmbedded and coordinated clauses, on the other hand, will need to be separately \n\t\t\tidentified. We recommend that such units be identified in the annotation, and \n\t\t\tlabelled either as sentences (S) or as clauses (CL), according to the preference \n\t\t\tspecified in the annotation scheme.\n\n\t\t\tThe reason for allowing choice here is that different theoretical preferences \n\t\t\thave to be accommodated. In some syntactic models, the `clause' category is not \n\t\t\tused (except informally), embedded clauses being marked by included [S] \n\t\t\tconstituents. In other models, clauses are identified as such, even where they \n\t\t\tare coextensive with an independent sentence.\n\n\t\t\tOne solution which commends itself (and is employed in the Lancaster Treebank and \n\t\t\tthe SUSANNE Corpus) is to retain [S ... S] as the delimiter of sentences, whether \n\t\t\tincluded or not, and also to use [S ... S] for the coordinated parts of a compound \n\t\t\tsentence; but to use `clause' labels for subordinate clauses. An example which \n\t\t\tillustrates this division is 12:\n\n\t\t\t(12)  \t[S [S The distinction at issue is relatively clear S] , but [S closer \n\t\t\t\t\texamination reveals [CL that all is not quite so straightforward \n\t\t\t\t\t[CL as it seems CL] CL] S] . S]\n\t\t\t\t\t\n\t\t\tEmbedded (subordinate) clauses are generally identified by some sign of their \n\t\t\tdependence on the superordinate clause or sentence, such as an introductory \n\t\t\tconjunction or a non-finite verb form. It is noticeable that the coordinated \n\t\t\tparts of the compound sentence do not have to be clause-like units with subjects \n\t\t\tand verbs, and to this extent [CL] would be a misleading label to apply to them. \n\t\t\tThis is true, in 13, of so far so good in:\n\n\t\t\t(13)  \t[S [S So far so good S] , but [S now consider gender in adjectives S] . S] \n\t\t\t(http://www.ilc.cnr.it/EAGLES96/segsasg1/node31.html)" .
+ <http://purl.org/olia/olia.owl#Clause> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia-top.owl#Constituent> .
+ <http://purl.org/olia/olia.owl#CommonNoun> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#CommonNoun> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\t\tA common noun is a noun that signifies a non-specific member of a group.\n\t\t(http://www.sil.org/linguistics/GlossaryOfLinguisticTerms/WhatIsACommonNoun.htm 19.09.06)\n\t" .
++<http://purl.org/olia/olia.owl#CommonNoun> <http://www.w3.org/2000/01/rdf-schema#comment> "A common noun is a noun that signifies a non-specific member of a group.\n\t\t(http://www.sil.org/linguistics/GlossaryOfLinguisticTerms/WhatIsACommonNoun.htm 19.09.06)" .
+ <http://purl.org/olia/olia.owl#CommonNoun> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia.owl#Noun> .
+ <http://purl.org/olia/olia.owl#DeclarativeSentence> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+ <http://purl.org/olia/olia.owl#DeclarativeSentence> <http://www.w3.org/2000/01/rdf-schema#comment> "S|Simple declarative clause, i.e. one that is not introduced by a (possibly empty) subordinating\nconjunction or wh-word and that does not exhibit subject-verb inversion.\n(Santorini 1991)\n\nSimple declarative sentences: \n(S (NP-SBJ Casey) (VP threw (NP the ball))) ...\n\nS \u0081\u00E2\u008F\u00A0\u008F\u00B4 Simple declarative clause, i.e. one that is not introduced by a (possibly empty) subordinating conjunction or wh-word and that does not exhibit subject-verb inversion. \n(Bies et al. 1995)" .
+ <http://purl.org/olia/olia.owl#DeclarativeSentence> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia-top.owl#SentenceTypeFeature> .
+ <http://purl.org/olia/olia.owl#Determiner> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#Determiner> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\t\t\tA determiner is a noun modifier that expresses the reference of a noun or noun phrase \n\t\t\tin the context, including quantity, rather than attributes expressed by adjectives. \n\t\t\tThis part of speech is defined in some languages, such as in English, as it is distinct \n\t\t\tfrom adjectives grammatically, though most English dictionaries still identify the \n\t\t\tdeterminers as adjectives. \n\t\t\t(http://en.wikipedia.org/wiki/Determiner 19.09.06)\n\t\t" .
++<http://purl.org/olia/olia.owl#Determiner> <http://www.w3.org/2000/01/rdf-schema#comment> "A determiner is a noun modifier that expresses the reference of a noun or noun phrase \n\t\t\tin the context, including quantity, rather than attributes expressed by adjectives. \n\t\t\tThis part of speech is defined in some languages, such as in English, as it is distinct \n\t\t\tfrom adjectives grammatically, though most English dictionaries still identify the \n\t\t\tdeterminers as adjectives. \n\t\t\t(http://en.wikipedia.org/wiki/Determiner 19.09.06)" .
+ <http://purl.org/olia/olia.owl#Determiner> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia.owl#PronounOrDeterminer> .
+ <http://purl.org/olia/olia.owl#ModalVerb> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#ModalVerb> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\t\t\tVerb form that is usually used with another verb to express ideas such as possibilities, permission, or intention.\n            (Gil Francopoulo; http://www.isocat.org/datcat/DC-1329)\n\t\t\n\t\t\tA modal verb (also modal, modal auxiliary verb, modal auxiliary) is a type of auxiliary \n\t\t\tverb that is used to indicate modality. The use of auxiliary verbs to express modality \n\t\t\tis characteristic of Germanic languages.\n\t\t\t(http://en.wikipedia.org/wiki/Modal_verb 19.09.06)\n\t\t\t\n\t\t\tIn addition to main and auxiliary verbs, it may be useful (e.g. in English) to recognise an intermediate \n\t\t\tcategory of semi-auxiliary for such verbs as be going to, have got to, ought to.\n\t\t\t(http://www.ilc.cnr.it/EAGLES96/annotate/node18.html#oav1v 20.09.06)\n\t\t\t\n\t\t\tThe auxiliaries in English subdivide into the primary verbs `be', `have', and `do', which can also function \n\t\t\tas main verbs, and the modal auxiliaries such as `can', `will', and `would', which are uninflected, and always \n\t\t\tfunction as auxiliaries.\n\t\t\t(http://www.ilc.cnr.it/EAGLES96/morphsyn/node158.html#SECTION00054800000000000000)\n\t\t" .
++<http://purl.org/olia/olia.owl#ModalVerb> <http://www.w3.org/2000/01/rdf-schema#comment> "Verb form that is usually used with another verb to express ideas such as possibilities, permission, or intention.\n            (Gil Francopoulo; http://www.isocat.org/datcat/DC-1329)\n\t\t\n\t\t\tA modal verb (also modal, modal auxiliary verb, modal auxiliary) is a type of auxiliary \n\t\t\tverb that is used to indicate modality. The use of auxiliary verbs to express modality \n\t\t\tis characteristic of Germanic languages.\n\t\t\t(http://en.wikipedia.org/wiki/Modal_verb 19.09.06)\n\t\t\t\n\t\t\tIn addition to main and auxiliary verbs, it may be useful (e.g. in English) to recognise an intermediate \n\t\t\tcategory of semi-auxiliary for such verbs as be going to, have got to, ought to.\n\t\t\t(http://www.ilc.cnr.it/EAGLES96/annotate/node18.html#oav1v 20.09.06)\n\t\t\t\n\t\t\tThe auxiliaries in English subdivide into the primary verbs `be', `have', and `do', which can also function \n\t\t\tas main verbs, and the modal auxiliaries such as `can', `will', and `would', which are uninflected, and always \n\t\t\tfunction as auxiliaries.\n\t\t\t(http://www.ilc.cnr.it/EAGLES96/morphsyn/node158.html#SECTION00054800000000000000)" .
+ <http://purl.org/olia/olia.owl#ModalVerb> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia.owl#AuxiliaryVerb> .
+ <http://purl.org/olia/olia.owl#NonFiniteVerb> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#NonFiniteVerb> <http://www.w3.org/2000/01/rdf-schema#comment> "\n             Verb forms occurring on their own only in dependent clauses and lacking tense and mood contrasts.\n\t\t\t (adapted from Crystal 2003; http://www.isocat.org/datcat/DC-1332)\n\t\t\t \n\t\t\tA non-finite verb is a verb that is not fully inflected for categories that are marked inflectionally in a language, \n\t\t\tsuch as the following: Tense, Aspect, Modality, Number,  Person.  \n\t\t\t(http://www.sil.org/linguistics/GlossaryOfLinguisticTerms/WhatIsANonfiniteVerb.htm 19.09.06)\n\t\t" .
++<http://purl.org/olia/olia.owl#NonFiniteVerb> <http://www.w3.org/2000/01/rdf-schema#comment> "Verb forms occurring on their own only in dependent clauses and lacking tense and mood contrasts.\n\t\t\t (adapted from Crystal 2003; http://www.isocat.org/datcat/DC-1332)\n\t\t\t \n\t\t\tA non-finite verb is a verb that is not fully inflected for categories that are marked inflectionally in a language, \n\t\t\tsuch as the following: Tense, Aspect, Modality, Number,  Person.  \n\t\t\t(http://www.sil.org/linguistics/GlossaryOfLinguisticTerms/WhatIsANonfiniteVerb.htm 19.09.06)" .
+ <http://purl.org/olia/olia.owl#NonFiniteVerb> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia.owl#Verb> .
+ <http://purl.org/olia/olia.owl#Noun> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#Noun> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\tA noun, or noun substantive, is a part of speech (a word or phrase) which can co-occur with \n\t(in)definite articles and attributive adjectives, and function as the head of a noun phrase.\n\n\tThe word \"noun\" derives from the Latin 'nomen' meaning \"name\", and a traditional definition \n\tof nouns is that they are all and only those expressions that refer to a person, place, \n\tthing, event, substance, quality, idea or an appointment. They serve as the subject or object \n\tof a verb, and the object of a preposition.\n\t(http://en.wikipedia.org/wiki/Noun 19.09.06)\n\t" .
++<http://purl.org/olia/olia.owl#Noun> <http://www.w3.org/2000/01/rdf-schema#comment> "A noun, or noun substantive, is a part of speech (a word or phrase) which can co-occur with \n\t(in)definite articles and attributive adjectives, and function as the head of a noun phrase.\n\n\tThe word \"noun\" derives from the Latin 'nomen' meaning \"name\", and a traditional definition \n\tof nouns is that they are all and only those expressions that refer to a person, place, \n\tthing, event, substance, quality, idea or an appointment. They serve as the subject or object \n\tof a verb, and the object of a preposition.\n\t(http://en.wikipedia.org/wiki/Noun 19.09.06)" .
+ <http://purl.org/olia/olia.owl#Noun> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia-top.owl#MorphosyntacticCategory> .
+ <http://purl.org/olia/olia.owl#Participle> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#Participle> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\tA participle is a lexical item, derived from a verb that has some of the characteristics and functions of both verbs and adjectives.\n\tIn English, participles may be used as adjectives, and in non-finite forms of verbs.\n\t(http://www.sil.org/linguistics/GlossaryOfLinguisticTerms/WhatIsAParticiple.htm 19.09.06)\n\t" .
++<http://purl.org/olia/olia.owl#Participle> <http://www.w3.org/2000/01/rdf-schema#comment> "A participle is a lexical item, derived from a verb that has some of the characteristics and functions of both verbs and adjectives.\n\tIn English, participles may be used as adjectives, and in non-finite forms of verbs.\n\t(http://www.sil.org/linguistics/GlossaryOfLinguisticTerms/WhatIsAParticiple.htm 19.09.06)" .
+ <http://purl.org/olia/olia.owl#Participle> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia.owl#NonFiniteVerb> .
+ <http://purl.org/olia/olia.owl#Phrase> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#Phrase> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\t\t\tPhrase is the class of syntactic constructions that consist of one or more \n\t\t\tsyntactic words, but lack the subject-predicate organization of a clause. \n\t\t\tPhrases get their grammatical characteristics according to what word occupies \n\t\t\tthe head position; thus, all phrases have heads [Crystal 1980, 232-233; Pei \n\t\t\tand Gaynor 1954, 169; Pike and Pike 1982, 453].\n\t\t\t(http://purl.org/linguistics/gold/Phrase)\n\t\t" .
++<http://purl.org/olia/olia.owl#Phrase> <http://www.w3.org/2000/01/rdf-schema#comment> "Phrase is the class of syntactic constructions that consist of one or more \n\t\t\tsyntactic words, but lack the subject-predicate organization of a clause. \n\t\t\tPhrases get their grammatical characteristics according to what word occupies \n\t\t\tthe head position; thus, all phrases have heads [Crystal 1980, 232-233; Pei \n\t\t\tand Gaynor 1954, 169; Pike and Pike 1982, 453].\n\t\t\t(http://purl.org/linguistics/gold/Phrase)" .
+ <http://purl.org/olia/olia.owl#Phrase> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia-top.owl#Constituent> .
+ <http://purl.org/olia/olia.owl#PronounOrDeterminer> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#PronounOrDeterminer> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\t\tThe parts of speech Pronoun, Determiner and Article heavily overlap in their formal and functional \n\t\tcharacteristics, and different analyses for different languages entail separating them out in \n\t\tdifferent ways.\n\t\tIn Eagles, Pronouns and Determiners are placed in one `super-category'. For some descriptions it may \n\t\tbe thought best to treat them as totally different parts of speech.\n\t\t(http://www.ilc.cnr.it/EAGLES96/annotate/node17.html#recp 19.09.06)\n\t" .
++<http://purl.org/olia/olia.owl#PronounOrDeterminer> <http://www.w3.org/2000/01/rdf-schema#comment> "The parts of speech Pronoun, Determiner and Article heavily overlap in their formal and functional \n\t\tcharacteristics, and different analyses for different languages entail separating them out in \n\t\tdifferent ways.\n\t\tIn Eagles, Pronouns and Determiners are placed in one `super-category'. For some descriptions it may \n\t\tbe thought best to treat them as totally different parts of speech.\n\t\t(http://www.ilc.cnr.it/EAGLES96/annotate/node17.html#recp 19.09.06)" .
+ <http://purl.org/olia/olia.owl#PronounOrDeterminer> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia-top.owl#MorphosyntacticCategory> .
+ <http://purl.org/olia/olia.owl#Verb> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#Verb> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\t\tA verb is a part of speech that usually denotes action (\"bring\", \"read\"), \n\t\toccurrence (\"decompose\", \"glitter\"), or a state of being (\"exist\", \"stand\"). \n\t\tDepending on the language, a verb may vary in form according to many factors, \n\t\tpossibly including its tense, aspect, mood and voice. It may also agree with \n\t\tthe person, gender, and/or number of some of its arguments (subject, object, etc.).\n\t\t(http://en.wikipedia.org/wiki/Verb 19.09.06)\n\t" .
++<http://purl.org/olia/olia.owl#Verb> <http://www.w3.org/2000/01/rdf-schema#comment> "A verb is a part of speech that usually denotes action (\"bring\", \"read\"), \n\t\toccurrence (\"decompose\", \"glitter\"), or a state of being (\"exist\", \"stand\"). \n\t\tDepending on the language, a verb may vary in form according to many factors, \n\t\tpossibly including its tense, aspect, mood and voice. It may also agree with \n\t\tthe person, gender, and/or number of some of its arguments (subject, object, etc.).\n\t\t(http://en.wikipedia.org/wiki/Verb 19.09.06)" .
+ <http://purl.org/olia/olia.owl#Verb> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia-top.owl#MorphosyntacticCategory> .
+ <http://purl.org/olia/olia.owl#VerbPhrase> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia.owl#VerbPhrase> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\t\t\tThis category is slightly more difficult to define, since there is disagreement over the extent of the verb phrase.\n\t\t\tIn particular, should the verb phrase include only the words that are verbs, or should it also include the\n\t\t\tcomplements of the verb? In the examples given in this document, and in the sample texts in the appendices, we have\n\t\t\tchosen to include the complements, but it must be noted that this is an open issue, and we are in no way implying\n\t\t\tthat this analysis is preferable to the alternative. The choice to be made at this level, i.e. the inclusion or\n\t\t\texclusion of verbal complements in the Verb Phrase, is shown by the examples in 27 and 28, 27 showing the inclusion\n\t\t\tof the complement of the verb in the verb phrase and 28 excluding the complement:\n\n\t\t\t(27)  \tHe [VP took up [NP a clothes brush NP] VP]\n\t\t\t(28)  \tHe [VP took up VP] [NP a clothes brush NP]\n\n\t\t\tAn advantage in the type of analysis shown in 27 is that the relative levels of the constituents can be shown to a\n\t\t\tgreater extent -- i.e. complements of the verb are included in the verb phrase, while adjuncts and peripheral\n\t\t\tadverbials are left at sentence level.\n\n\t\t\tHowever, in a case where an adjunct occurs before the complement of the verb, the approaches used in 27 and 28 would\n\t\t\tcause problems, since either both the adjunct and the complement would be included as daughters of the verb phrase,\n\t\t\tor both would be daughters of the sentence, rather than keeping the complement as a daughter of the verb phrase and\n\t\t\tthe adjunct as a sister of the verb phrase. These problems may be solved by an additional notation, but at some\n\t\t\tlevel, arbitrariness is inevitable.\n\n\t\t\tRegardless of the choice made over the extent of the Verb Phrase, there arises a problem of discontinuous Verb\n\t\t\tPhrases. A complex verbal construction may be discontinuous, e.g. the auxiliary and the main verb are separated in\n\t\t\tinverted constructions in English, or the main verb is positioned at the end of the sentence in German and Dutch.\n\t\t\tSuch discontinuity can be avoided by having different labels and constituents for the auxiliary verb and the main\n\t\t\tverb, resulting in an analysis as shown in the Dutch example 29 below:\n\n\t\t\t(29)  \t[NP Ze NP] [AUX zullen AUX] [ADVP er ADVP] [VP [NP de VN-agenda \n\t\t\t\t\t[PP voor [NP het komende jaar NP] PP] NP] behandelen VP].\n\t\t\t\t\t\n\t\t\tand in the English interrogative inverted example 30, using the so-called `dummy auxiliary' do:\n\n\t\t\t(30)  \t[AUX Do AUX] [NP they NP] [VP confide [PP in you PP] VP]?\n\n\t\t\tAs with Noun Phrases, Verb Phrases can be identified by a constituency test. In strong constituency languages like\n\t\t\tEnglish, the whole VP can be moved, but not part of it: compare 31 and 32:\n\n\t\t\t(31)  \t  Give in to blackmail, I never will\n\t\t\t(32)  \t*Give in, I never will to blackmail\n\t\t\t\n\t\t\tHowever, there are languages in which constituent tests do not work. These will typically be languages with flexible\n\t\t\tword order, such as Finnish. 33 is an example of a discontinuous VP (Vilkuna 1989: 26):\n\n\t\t\t(33)  \tMaailmaa\tn\u00E4hnyt\th\u00E4n\ton.\n\t\t\t    \tworld-Part\tseen\the\tis\n\t\t\t\t\t`He IS a widely-travelled person.'\n\n\t\t\tFor Finnish, then, evidence for a VP is less convincing than it is for English, and a dependency approach seems the\n\t\t\tmore natural choice. (Covington (1990) provides a parsing strategy for variable word order languages and Covington\n\t\t\t(1991) for parsing discontinuous constituents, both using a dependency syntax approach.)\n\n\t\t\tIn Italian also, constituency tests cannot be applied. This can be shown through the distribution of VP-adverbs\n\t\t\t(e.g. completamente `completely', intenzionalmente `intentionally', attentamente `carefully') and S-adverbs (e.g.\n\t\t\tprobabilmente `probably', certamente `certainly'). In English, these different classes of adverbs have a different\n\t\t\tdistribution within the sentence. In contrast, in Italian, the distinct adverb classes cannot be distinguished on\n\t\t\tthe basis of their distribution in the sentence. S-adverbs and VP-adverbs can occur in the same positions within the\n\t\t\tsentence, as illustrated in examples 34 to 37:\n\n\t\t\t(34)  \tAttentamente/certamente, il bambino ascolt\u00F3 la storia\n\t\t\t\t\t`Carefully/certainly, the child listened to the story'\n\t\t\t(35)  \tIl bambino attentamente/certamente ascolt\u00F3 la storia\n\t\t\t\t\t`The child carefully/certainly listened to the story'\n\t\t\t(36)  \tIl bambino ascolt\u00F3 attentamente/certamente la storia\n\t\t\t\t\t`The child listened carefully/certainly to the story'\n\t\t\t(37)  \tIl bambino ascolt\u00F3 la storia attentamente/certamente\n\t\t\t\t\t`The child listened to the story carefully/certainly'\n\n\t\t\tThus, in Italian as well as other languages, neither the position nor the syntactic context can help to decide\n\t\t\twhether an adverb is an S-adverb or a VP-adverb; this can only be stated by considering its semantic content and the\n\t\t\tway it relates to the content of the predicate or the sentence. This situation has consequences for the success of\n\t\t\tstandard VP-tests. \n\t\t\t(http://www.ilc.cnr.it/EAGLES96/segsasg1/node33.html)\n\t\t" .
++<http://purl.org/olia/olia.owl#VerbPhrase> <http://www.w3.org/2000/01/rdf-schema#comment> "This category is slightly more difficult to define, since there is disagreement over the extent of the verb phrase.\n\t\t\tIn particular, should the verb phrase include only the words that are verbs, or should it also include the\n\t\t\tcomplements of the verb? In the examples given in this document, and in the sample texts in the appendices, we have\n\t\t\tchosen to include the complements, but it must be noted that this is an open issue, and we are in no way implying\n\t\t\tthat this analysis is preferable to the alternative. The choice to be made at this level, i.e. the inclusion or\n\t\t\texclusion of verbal complements in the Verb Phrase, is shown by the examples in 27 and 28, 27 showing the inclusion\n\t\t\tof the complement of the verb in the verb phrase and 28 excluding the complement:\n\n\t\t\t(27)  \tHe [VP took up [NP a clothes brush NP] VP]\n\t\t\t(28)  \tHe [VP took up VP] [NP a clothes brush NP]\n\n\t\t\tAn advantage in the type of analysis shown in 27 is that the relative levels of the constituents can be shown to a\n\t\t\tgreater extent -- i.e. complements of the verb are included in the verb phrase, while adjuncts and peripheral\n\t\t\tadverbials are left at sentence level.\n\n\t\t\tHowever, in a case where an adjunct occurs before the complement of the verb, the approaches used in 27 and 28 would\n\t\t\tcause problems, since either both the adjunct and the complement would be included as daughters of the verb phrase,\n\t\t\tor both would be daughters of the sentence, rather than keeping the complement as a daughter of the verb phrase and\n\t\t\tthe adjunct as a sister of the verb phrase. These problems may be solved by an additional notation, but at some\n\t\t\tlevel, arbitrariness is inevitable.\n\n\t\t\tRegardless of the choice made over the extent of the Verb Phrase, there arises a problem of discontinuous Verb\n\t\t\tPhrases. A complex verbal construction may be discontinuous, e.g. the auxiliary and the main verb are separated in\n\t\t\tinverted constructions in English, or the main verb is positioned at the end of the sentence in German and Dutch.\n\t\t\tSuch discontinuity can be avoided by having different labels and constituents for the auxiliary verb and the main\n\t\t\tverb, resulting in an analysis as shown in the Dutch example 29 below:\n\n\t\t\t(29)  \t[NP Ze NP] [AUX zullen AUX] [ADVP er ADVP] [VP [NP de VN-agenda \n\t\t\t\t\t[PP voor [NP het komende jaar NP] PP] NP] behandelen VP].\n\t\t\t\t\t\n\t\t\tand in the English interrogative inverted example 30, using the so-called `dummy auxiliary' do:\n\n\t\t\t(30)  \t[AUX Do AUX] [NP they NP] [VP confide [PP in you PP] VP]?\n\n\t\t\tAs with Noun Phrases, Verb Phrases can be identified by a constituency test. In strong constituency languages like\n\t\t\tEnglish, the whole VP can be moved, but not part of it: compare 31 and 32:\n\n\t\t\t(31)  \t  Give in to blackmail, I never will\n\t\t\t(32)  \t*Give in, I never will to blackmail\n\t\t\t\n\t\t\tHowever, there are languages in which constituent tests do not work. These will typically be languages with flexible\n\t\t\tword order, such as Finnish. 33 is an example of a discontinuous VP (Vilkuna 1989: 26):\n\n\t\t\t(33)  \tMaailmaa\tn\u00E4hnyt\th\u00E4n\ton.\n\t\t\t    \tworld-Part\tseen\the\tis\n\t\t\t\t\t`He IS a widely-travelled person.'\n\n\t\t\tFor Finnish, then, evidence for a VP is less convincing than it is for English, and a dependency approach seems the\n\t\t\tmore natural choice. (Covington (1990) provides a parsing strategy for variable word order languages and Covington\n\t\t\t(1991) for parsing discontinuous constituents, both using a dependency syntax approach.)\n\n\t\t\tIn Italian also, constituency tests cannot be applied. This can be shown through the distribution of VP-adverbs\n\t\t\t(e.g. completamente `completely', intenzionalmente `intentionally', attentamente `carefully') and S-adverbs (e.g.\n\t\t\tprobabilmente `probably', certamente `certainly'). In English, these different classes of adverbs have a different\n\t\t\tdistribution within the sentence. In contrast, in Italian, the distinct adverb classes cannot be distinguished on\n\t\t\tthe basis of their distribution in the sentence. S-adverbs and VP-adverbs can occur in the same positions within the\n\t\t\tsentence, as illustrated in examples 34 to 37:\n\n\t\t\t(34)  \tAttentamente/certamente, il bambino ascolt\u00F3 la storia\n\t\t\t\t\t`Carefully/certainly, the child listened to the story'\n\t\t\t(35)  \tIl bambino attentamente/certamente ascolt\u00F3 la storia\n\t\t\t\t\t`The child carefully/certainly listened to the story'\n\t\t\t(36)  \tIl bambino ascolt\u00F3 attentamente/certamente la storia\n\t\t\t\t\t`The child listened carefully/certainly to the story'\n\t\t\t(37)  \tIl bambino ascolt\u00F3 la storia attentamente/certamente\n\t\t\t\t\t`The child listened to the story carefully/certainly'\n\n\t\t\tThus, in Italian as well as other languages, neither the position nor the syntactic context can help to decide\n\t\t\twhether an adverb is an S-adverb or a VP-adverb; this can only be stated by considering its semantic content and the\n\t\t\tway it relates to the content of the predicate or the sentence. This situation has consequences for the success of\n\t\t\tstandard VP-tests. \n\t\t\t(http://www.ilc.cnr.it/EAGLES96/segsasg1/node33.html)" .
+ <http://purl.org/olia/olia.owl#VerbPhrase> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia.owl#Phrase> .
+ <http://purl.org/olia/olia-top.owl#Constituent> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/olia-top.owl#Constituent> <http://www.w3.org/2000/01/rdf-schema#comment> "\n\t\t\tConstituents correspond to a GOLD SyntacticConstruction:\n\t\t\tSyntacticConstruction is the class of grammar units that \n\t\t\thave syntactic structure, i.e., consisting of more than \n\t\t\tone syntactic word or construction in a syntactic \n\t\t\tconfiguration. [Crystal 1980, 85-86]. \n\t\t\t(http://www.linguistics-ontology.org/gold/2008)\n\n\t\t\tCorresponds to units of annotation in the EAGLES recommendations for syntactic annotation\n\t\t\t(http://www.ilc.cnr.it/EAGLES96/segsasg1/node29.html#SECTION00052000000000000000)\n\t\t" .
++<http://purl.org/olia/olia-top.owl#Constituent> <http://www.w3.org/2000/01/rdf-schema#comment> "Constituents correspond to a GOLD SyntacticConstruction:\n\t\t\tSyntacticConstruction is the class of grammar units that \n\t\t\thave syntactic structure, i.e., consisting of more than \n\t\t\tone syntactic word or construction in a syntactic \n\t\t\tconfiguration. [Crystal 1980, 85-86]. \n\t\t\t(http://www.linguistics-ontology.org/gold/2008)\n\n\t\t\tCorresponds to units of annotation in the EAGLES recommendations for syntactic annotation\n\t\t\t(http://www.ilc.cnr.it/EAGLES96/segsasg1/node29.html#SECTION00052000000000000000)" .
+ <http://purl.org/olia/olia-top.owl#Constituent> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/olia-top.owl#SyntacticCategory> .
+ <http://purl.org/olia/olia-top.owl#LinguisticConcept> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+ <http://purl.org/olia/olia-top.owl#LinguisticConcept> <http://www.w3.org/2000/01/rdf-schema#comment> "The OLiA ontology specifies linguistic concepts on a theoretical basis, as for concepts used in annotations, see system.owl.\nThere is a great extent of overlap between LinguisticCategories/LinguisticFeatures and Categories/Features as defined in system.owl." .
+@@ -1001,5 +1078,5 @@
+ <http://purl.org/olia/system.owl#LinguisticAnnotation> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+ <http://purl.org/olia/system.owl#LinguisticAnnotation> <http://www.w3.org/2000/01/rdf-schema#comment> "Linguistic annotations pertain to either structural entities (words, tokens, constituents, sentences => UnitOfAnnotation), relations between these (dependency, dominance, coreference, etc. => Relation), or grammatical features attached to these (case, gender, number, agreement, tense, mood, aspect, ... => Feature)." .
+ <http://purl.org/olia/system.owl#UnitOfAnnotation> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+-<http://purl.org/olia/system.owl#UnitOfAnnotation> <http://www.w3.org/2000/01/rdf-schema#comment> "A UnitOfAnnotation is a structural entity that can be annotated, e.g., a word, token, constituent, or another types of markable.\nWord classes, etc., are then modelled as indirect children of UnitOfAnnotation. The division between Features and classes of UnitsOfAnnotation follows conventional standards.\n    " .
++<http://purl.org/olia/system.owl#UnitOfAnnotation> <http://www.w3.org/2000/01/rdf-schema#comment> "A UnitOfAnnotation is a structural entity that can be annotated, e.g., a word, token, constituent, or another types of markable.\nWord classes, etc., are then modelled as indirect children of UnitOfAnnotation. The division between Features and classes of UnitsOfAnnotation follows conventional standards." .
+ <http://purl.org/olia/system.owl#UnitOfAnnotation> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.org/olia/system.owl#LinguisticAnnotation> .

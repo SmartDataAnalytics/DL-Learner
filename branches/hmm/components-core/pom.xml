@@ -1,0 +1,261 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.dllearner</groupId>
+	<artifactId>components-core</artifactId>
+
+	<name>DL Learner Core Components</name>
+	<url>http://aksw.org/Projects/DLLearner</url>
+
+	<parent>
+		<groupId>org.dllearner</groupId>
+		<artifactId>dllearner-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<!--Surefire - for JUnits -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- Uncomment this when the junits are independent of a runtime directory -->
+					<!--<includes> -->
+					<!--<include>org/dllearner/test/junit/*</include> -->
+					<!--</includes> -->
+					<excludes>
+						<exclude>org/dllearner/test/*</exclude>
+						<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
+						<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>
+						<exclude>org/dllearner/test/junit/DisjointClassesLearningTest.java</exclude>
+						<!--This line excludes inner classes -->
+						<exclude>**/*$*</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<!-- Jar the tests up into a separate jar so other components tests' can 
+				leverage them -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<configuration>
+					<header>src/etc/header.txt</header>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<show>public</show>
+					<nohelp>true</nohelp>
+					<destDir>doc/javadoc</destDir>
+					<doctitle>DL-Learner Javadoc</doctitle>
+					<author>true</author>
+					<nodeprecated>false</nodeprecated>
+					<nodeprecatedlist>false</nodeprecatedlist>
+					<noindex>false</noindex>
+					<nonavbar>false</nonavbar>
+					<notree>false</notree>
+					<overview>src/etc/overview.html</overview>
+					<source>1.6</source>
+					<sourcepath>src/main/java</sourcepath>
+					<splitindex>true</splitindex>
+					<stylesheetfile>src/etc/javadoc.css</stylesheetfile>
+					<use>true</use>
+					<version>true</version>
+					<linksource>true</linksource>
+					<bottom>&lt;img style='float:right' src='http://sflogo.sourceforge.net/sflogo.php?group_id=203619&amp;type=1' width='88' height='31' border='0' alt='SourceForge.net Logo' /&gt; DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007-2011 Jens Lehmann</bottom>
+					<encoding>ISO-8859-1</encoding>
+					<windowtitle>DL-Learner Javadoc</windowtitle>
+				</configuration>
+			</plugin>
+
+
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.aksw.commons</groupId>
+			<artifactId>sparql</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>arq</artifactId>
+					<groupId>com.hp.hpl.jena</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>xercesImpl</artifactId>
+					<groupId>xerces</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>any23-core</artifactId>
+					<groupId>org.deri.any23</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- THIS IS FROM THE UNIBAS REPO -->
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi</artifactId>
+		</dependency>
+
+		<!-- THIS IS FROM THE UNIBAS REPO -->
+		<dependency>
+			<groupId>com.owldl</groupId>
+			<artifactId>pellet</artifactId>
+			<exclusions>
+				<exclusion>  <!-- declare the exclusion here -->
+					<groupId>org.mortbay.jetty</groupId>
+					<artifactId>org.mortbay.jetty</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+
+		<!-- Latest JENA ARQ - we have to exclude XercesImpl and use an older version here because use version bei JENA leads to some errors  -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+           
+        </dependency>
+
+		<!--JSON is in Central -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+		</dependency>
+
+
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+        </dependency>
+
+		<dependency>
+			<groupId>com.google.code.factplusplus</groupId>
+			<artifactId>factpp-owlapi</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.owlapi.owllink</groupId>
+			<artifactId>owllink</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.semanticweb.hermit</groupId>
+			<artifactId>hermit</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jamonapi</groupId>
+			<artifactId>jamon</artifactId>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.dig</groupId>
+			<artifactId>dig-xmlbeans</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>fuzzydll</groupId>
+			<artifactId>fuzzydl</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>fuzzydll</groupId>
+			<artifactId>fuzzyowl2fuzzydlparser</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+
+        <!-- This module is a library module, so it needs only to have the slf api dependency to enable logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.5</version>
+		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>commons-pool</groupId>
+        	<artifactId>commons-pool</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>org.semanticweb.elk</groupId>
+        	<artifactId>elk-owlapi</artifactId>
+        	<version>0.3.0</version>
+        </dependency>
+           <dependency>
+        	<groupId>de.tudresden.inf.lat.cel</groupId>
+        	<artifactId>reasoner</artifactId>
+        	<version>0.5.1</version>
+        </dependency>
+         <dependency>
+        	<groupId>de.tudresden.inf.lat.cel</groupId>
+        	<artifactId>jsexp</artifactId>
+        	<version>0.1.0</version>
+        </dependency>
+
+         <dependency>
+         	<groupId>xerces</groupId>
+         	<artifactId>xercesImpl</artifactId>
+         	<version>2.8.0</version>
+         </dependency>
+	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>commons-pool</groupId>
+				<artifactId>commons-pool</artifactId>
+				<version>1.6</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>

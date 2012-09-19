@@ -1,0 +1,221 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w2_Gastgeber">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Gastgeber</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w1_neuseel%C3%A4ndische"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w3_%2C"/>
+    <j.0:hasLemma>Gastgeber</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w5_Jim">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Jim</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w4_Premierminister"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w6_Bolger"/>
+    <j.0:hasLemma>Jim</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w10_Kommuniqu%C3%A9">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Kommuniqué</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w9_das"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w11_ausdr%C3%BCcklich"/>
+    <j.0:hasLemma>Kommuniqué</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w12_als">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>als</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w11_ausdr%C3%BCcklich"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w13_%60%60"/>
+    <j.0:hasLemma>als</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w15_%27%27">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>''</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w14_Sieg"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w16_."/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w16_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w15_%27%27"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w8_bezeichnete">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>bezeichnete</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w7_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w9_das"/>
+    <j.0:hasLemma>bezeichnen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w1_neuseel%C3%A4ndische">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>neuseeländische</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w0_Der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w2_Gastgeber"/>
+    <j.0:hasLemma>neuseeländisch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w14_Sieg">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Sieg</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w13_%60%60"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w15_%27%27"/>
+    <j.0:hasLemma>Sieg</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w13_%60%60">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>``</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w12_als"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w14_Sieg"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w9_das">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>das</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w8_bezeichnete"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w10_Kommuniqu%C3%A9"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w6_Bolger">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Bolger</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w5_Jim"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w7_%2C"/>
+    <j.0:hasLemma>Bolger</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w15_%27%27"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w6_Bolger"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w1_neuseel%C3%A4ndische"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w0_Der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w11_ausdr%C3%BCcklich"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w10_Kommuniqu%C3%A9"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w12_als"/>
+    <rdfs:label>Der neuseeländische Gastgeber , Premierminister Jim Bolger , bezeichnete das Kommuniqué ausdrücklich als `` Sieg '' .</rdfs:label>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s16108w0_Der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w2_Gastgeber"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w7_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w9_das"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w16_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w14_Sieg"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w4_Premierminister"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w3_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w8_bezeichnete"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w5_Jim"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16108w13_%60%60"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w7_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w6_Bolger"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w8_bezeichnete"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w3_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w2_Gastgeber"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w4_Premierminister"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w0_Der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w1_neuseel%C3%A4ndische"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w4_Premierminister">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Premierminister</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w3_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w5_Jim"/>
+    <j.0:hasLemma>Premierminister</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16108w11_ausdr%C3%BCcklich">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ausdrücklich</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s16108"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16108w10_Kommuniqu%C3%A9"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16108w12_als"/>
+    <j.0:hasLemma>ausdrücklich</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+</rdf:RDF>

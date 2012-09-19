@@ -1,0 +1,286 @@
+/**
+ * Copyright (C) 2007-2011, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/**
+ * New version of conf file parser, which prepares a conf file for
+ * conversion into a Spring configuration. 
+ */
+
+options {
+  JDK_VERSION = "1.6";
+  STATIC = false; 
+}
+
+PARSER_BEGIN(ConfParser)
+package org.dllearner.confparser3; 
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.dllearner.cli.ConfFileOption2;
+import org.dllearner.parser.KBParser;
+import org.dllearner.utilities.datastructures.StringTuple;
+
+public class ConfParser {
+	
+	// special directives (those without a property name)
+	private Map<String,ConfFileOption2> specialOptions = new HashMap<String,ConfFileOption2>();
+	
+	// conf file options
+	private List<ConfFileOption2> confOptions = new LinkedList<ConfFileOption2>();
+	private Map<String,ConfFileOption2> confOptionsByProperty = new HashMap<String,ConfFileOption2>();
+	private Map<String,List<ConfFileOption2>> confOptionsByBean = new HashMap<String,List<ConfFileOption2>>();
+	
+	private void addConfOption(ConfFileOption2 confOption) {
+		confOptions.add(confOption);
+		confOptionsByProperty.put(confOption.getPropertyName(), confOption);
+		String beanName = confOption.getBeanName();
+		if(confOptionsByBean.containsKey(beanName))
+			confOptionsByBean.get(beanName).add(confOption);
+		else {
+			LinkedList<ConfFileOption2> optionList = new LinkedList<ConfFileOption2>();
+			optionList.add(confOption);
+			confOptionsByBean.put(beanName,optionList);
+		}
+	}
+	
+	public List<ConfFileOption2> getConfOptions() {
+		return confOptions;
+	}
+	
+	public Map<String,ConfFileOption2> getConfOptionsByProperty() {
+		return confOptionsByProperty;
+	}
+
+	public ConfFileOption2 getConfOptionsByProperty(String propertyName) {
+		return confOptionsByProperty.get(propertyName);
+	}
+	
+	public Map<String,List<ConfFileOption2>> getConfOptionsByBean() {
+		return confOptionsByBean;
+	}
+	
+	public List<ConfFileOption2> getConfOptionsByBean(String beanName) {
+		return confOptionsByBean.get(beanName);
+	}
+	
+	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException {
+		ConfParser parser = new ConfParser(new FileInputStream(filename));
+		parser.Start();
+		return parser;
+	}
+	
+}
+PARSER_END(ConfParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+} 
+
+TOKEN :
+{
+    < COMMAND_END: "." >
+  | < ID: ["a"-"z"] (["_","a"-"z","A"-"Z","0"-"9"])* >
+  | < NUMBER: (["1"-"9"] (["0"-"9"])* | "0") >
+  | < DOUBLE: (["1"-"9"] (["0"-"9"])* | "0") "." (["0"-"9"])* >
+  | < STRING: "\"" (~["\"","\\"])* "\"">
+//  | < STRING: "\"" (~["\"","\\","\n","\r"])* "\"">
+}
+
+void Start() : 
+{
+	ConfFileOption2 confOption;
+}
+{
+  (		confOption = ConfOption()  		  
+  	   { if(confOption.getPropertyName() == null) {
+  	   		specialOptions.put(confOption.getBeanName(),confOption);
+  	     } else { 
+  	     	addConfOption(confOption); 
+  	     } 
+  	   }
+  )*
+  <EOF>
+  { PostProcessor pp = new PostProcessor(confOptions, specialOptions);
+    pp.applyAll(); }
+}
+
+ConfFileOption2 ConfOption() : 
+{
+	boolean containsSubOption=false;
+	String value="", value1="", value2="", tmp="", tmp2=""; 
+	Set<String> values = new HashSet<String>();
+	Map<String,String> tuples = new HashMap<String,String>();
+	Map<String,Double> tuplesD = new HashMap<String,Double>();
+	
+	ConfFileOption2 option = new ConfFileOption2();
+	boolean isBeanRef = false;
+	boolean isBeanCollection = false;
+	String beanName;
+	String propertyName = "";
+	String propertyValue = "";
+	Class<?> propertyType;
+	Object val = null;
+	Double d;
+}
+{
+  beanName=Id() [ "." propertyName = Id() {containsSubOption=true;} ] 
+  "="  (  // two strings separated by a double colon
+         // LOOKAHEAD(2) value1=Id() ":" value2=Id() { useColon = true; }
+         // simple string
+         	propertyValue = Id() {
+         	if(propertyValue.equals("true") || propertyValue.equals("false")) {
+         	   val = Boolean.valueOf(propertyValue); propertyType = Boolean.class;
+         	} else {
+         		val = propertyValue; propertyType = String.class; isBeanRef =  true;
+         	} }
+  		 // simple string enclosed in quotes
+         | propertyValue = String() { val = propertyValue; propertyType = String.class; }
+         | val = Integer() { propertyValue = val.toString(); propertyType = Integer.class;} 
+         | val = Double() { propertyValue = val.toString(); propertyType = Double.class; }
+         // empty set
+         | LOOKAHEAD("{" "}") "{" "}" { val = new HashSet(); propertyType = Set.class; propertyValue = "{}"; }
+         // set with several elements which are quoted
+         | LOOKAHEAD(4) "{" (  LOOKAHEAD(2) tmp=String() { values.add(tmp); propertyValue += "\"" + tmp + "\", ";} "," )* 
+           tmp=String() {values.add(tmp); propertyValue += "\"" + tmp + "\"";} "}" 
+           { propertyType = Set.class; propertyValue = "{"+ propertyValue + "}";; val = values; }
+         // empty bean set
+         | "-" { val = new HashSet(); propertyType = Set.class; propertyValue = "-"; isBeanCollection = true;}
+         // set with several elements which are not quoted
+         | "{" ( LOOKAHEAD(4) tmp=Id() { values.add(tmp); propertyValue += tmp + ", "; } "," )* 
+           ( tmp=Id()) {values.add(tmp); propertyValue += tmp;} "}" 
+           { val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; isBeanCollection = true;}
+         // empty list
+         | LOOKAHEAD("[" "]") "[" "]" { val = new LinkedList(); propertyType = List.class; propertyValue = "[]";}
+         // a list with several elements with tuples
+         // e.g. [("a","b"),("c","d")]
+         | LOOKAHEAD( "[" "(" String() "," String())
+           "[" 
+           ( LOOKAHEAD(6) "(" tmp=String() "," tmp2=String()  ")"
+           { tuples.put(tmp,tmp2); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\"), "; } "," )*
+           "(" tmp=String() "," tmp2=String() ")"
+           { tuples.put(tmp,tmp2); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\")";}
+           "]" { val = tuples; propertyType = List.class; propertyValue = "["+ propertyValue + "]";}  
+         // a list with several elements with doubles
+         // e.g. [("a",1.0),("c",0.7)]
+         | "[" 
+           ( LOOKAHEAD(6) "(" tmp=String() "," d=Double()  ")"
+           { tuplesD.put(tmp,d); propertyValue += "(\""+ tmp + "\",\"" + d.toString() + "\"), "; } "," )*
+           "(" tmp=String() "," d=Double() ")"
+           { tuplesD.put(tmp,d); propertyValue += "(\""+ tmp + "\",\"" + d.toString() + "\")";}
+           "]" { val = tuplesD; propertyType = List.class; propertyValue = "["+ propertyValue + "]";}         
+            )    
+         // <CONF_END>
+  {
+  	option.setBeanRef(isBeanRef);
+  	option.setBeanReferenceCollection(isBeanCollection);
+  	option.setBeanName(beanName);
+ 	if(containsSubOption) {
+  		option.setPropertyName(propertyName);
+  	}
+  	option.setPropertyType(propertyType);
+  	option.setPropertyValue(propertyValue);  
+  	option.setValueObject(val);	
+  	return option;
+  }
+}
+
+String Individual() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return KBParser.getInternalURI(name);
+	}
+}
+
+String ComplexId() :
+{
+  Token t1,t2;
+}
+{
+  LOOKAHEAD(2) t1=<ID> ":" t2=<ID> { return t1.image + ":" + t2.image; }  
+ |t1=<ID> { return t1.image; }
+}
+ 
+
+String Id() : 
+{
+  Token t;
+}
+{
+  t=<ID>
+  {
+    return t.image;
+  }
+}
+
+Double Double() : 
+{
+  Token t;
+}
+{
+  t=<DOUBLE>
+  {
+    return new Double(t.image);
+  }
+}
+
+Integer Integer() : 
+{
+  Token t;
+}
+{
+  t=<NUMBER>
+  {
+    return new Integer(t.image);
+  }
+}
+
+String String() : 
+{
+  Token t;
+  String s;
+}
+{
+  t=<STRING>
+  {
+    // enclosing "" are removed
+    s = t.image;
+    s = s.substring(1, s.length() - 1);
+    return s;
+  }
+}

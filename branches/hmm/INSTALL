@@ -1,0 +1,21 @@
+Requirements
+============
+Java 6 is required. (All other libraries are included in the release.)
+
+Installation
+============
+No further installation is necessary. Just download and extract DL-Learner.
+
+Running Instructions
+====================
+
+Linux (and other systems)
+
+Make sure the file "cli" is executable and run it on the command line 
+followed by the name of the file to process, e.g. 
+"./cli examples/father.conf".
+
+Windows:
+
+Run "cli.bat" followed by the name of the file to process, e.g. 
+"cli.bat examples/father.conf".

@@ -1,0 +1,100 @@
+1: Give me all female Russian astronauts
+2: Give me the birthdays of all actors of the television show Charmed
+3: Who is the daughter of Bill Clinton married to
+4: Which river does the Brooklyn Bridge cross
+5: How many monarchical countries are there in Europe
+6: Where did Abraham Lincoln die
+7: Is the wife of President Obama called Michelle
+8: Which states of Germany are governed by the Social Democratic Party
+9: Which US states possess gold minerals
+10: In which country does the Nile start
+11: Which countries have places with more than two caves
+12: Is proinsulin a protein
+13: Which classis does the Millepede belong to
+14: How tall is Claudia Schiffer
+15: Who created Goofy
+16: Give me the capitals of all countries in Africa
+17: Give me all cities in New Jersey with more than 100000 inhabitants
+18: Which museum exhibits The Scream by Munch
+19: Is Egypts largest city also its capital
+20: How many employees does IBM have
+21: Which states border Illinois
+22: In which country is the Limerick Lake
+23: Which television shows were created by Walt Disney
+24: Which mountain is the highest after the Annapurna
+25: In which films directed by Garry Marshall was Julia Roberts starring
+26: Which bridges are of the same type as the Manhattan Bridge
+27: Was US president Jackson involved in a war
+28: Which European countries have a constitutional monarchy
+29: Which awards did WikiLeaks win
+30: Which state of the USA has the highest population density
+31: What is the currency of the Czech Republic
+32: Which countries in the European Union adopted the Euro
+33: What is the area code of Berlin
+34: Which countries have more than two official languages
+35: Who is the owner of Universal Studios
+36: Through which countries does the Yenisei river flow
+37: When did Finland join the EU
+38: Which monarchs of the United Kingdom were married to a German
+39: When was the Battle of Gettysburg
+40: What is the highest mountain in Australia
+41: Give me all soccer clubs in Spain
+42: What are the official languages of the Philippines
+43: Who is the mayor of New York City
+44: Who designed the Brooklyn Bridge
+45: Which telecommunications organizations are located in Belgium
+46: Is Frank Herbert still alive
+47: What is the highest place of Karakoram
+48: Give me the homepage of Forbes
+49: Give me all companies in the advertising industry
+50: What did Bruce Carver die from
+51: Give me all school types
+52: Which presidents were born in 1945
+53: Give me all presidents of the United States
+54: Who was the wife of US president Lincoln
+55: Who developed the video game World of Warcraft
+56: What is the official website of Tom Cruise
+57: List all episodes of the first season of the HBO television series The Sopranos
+58: Who produced the most films
+59: Give me all people with first name Jimmy
+60: Is there a video game called Battle Chess
+61: Which mountains are higher than the Nanga Parbat
+62: Who created Wikipedia
+63: Give me all actors starring in Batman Begins
+64: Which software has been developed by organizations founded in California
+65: Which companies work in the aerospace industry as well as on nuclear reactor technology
+66: Is Christian Bale starring in Batman Begins
+67: Give me the websites of companies with more than 500000 employees
+68: Which actors were born in Germany
+69: Which caves have more than 3 entrances
+70: Give me all films produced by Hal Roach
+71: Give me all video games published by Mean Hamster Software
+72: Which languages are spoken in Estonia
+73: Who owns Aldi
+74: Which capitals in Europe were host cities of the summer olympic games
+75: Who has been the 5th president of the United States of America
+76: How many films did Hal Roach produce
+77: Which music albums contain the song Last Christmas
+78: Give me all books written by Danielle Steel
+79: Which airports are located in California USA
+80: Give me all Canadian Grunge record labels
+81: Which country has the most official languages
+82: In which programming language is GIMP written
+83: Who produced films starring Natalie Portman
+84: Give me all movies with Tom Cruise
+85: In which films did Julia Roberts as well as Richard Gere play
+86: Give me all female German chancellors
+87: Who wrote the book The pillars of the Earth
+88: How many films did Leonardo DiCaprio star in
+89: Give me all soccer clubs in the Premier League
+90: When was Capcom founded
+91: Which organizations were founded in 1950
+92: What is the highest mountain
+93: Was Natalie Portman born in the United States
+94: Which budget did the first movie of Zdenek Sverak have
+95: How many big fires struck Paris during the Middle Ages
+96: Is Jens Friebe a vegan
+97: How often was Michael Jordan divorced
+98: What is the most beautiful painting
+99: Give me all animal species that live in the Teutoburg Forest
+100: When is the movie Worst Case Scenario going to be in cinemas in the Netherlands

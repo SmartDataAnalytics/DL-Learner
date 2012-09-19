@@ -1,0 +1,472 @@
+
+<!-- Processed by Id: cwm.py,v 1.148 2004/03/21 04:24:32 timbl Exp -->
+<!--     using base file:/home/ndw/hiptop/rdf/vcard.ont-->
+
+
+<rdf:RDF xmlns:cc="http://web.resource.org/cc/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+    <owl:Ontology rdf:about="http://nwalsh.com/rdf/vCard">
+        <dc:creator rdf:resource="http://norman.walsh.name/knows/who#norman-walsh"/>
+        <dc:date>2005-12-12</dc:date>
+        <dc:description>This ontology attempts to model a subset of vCards
+in RDF using modern (circa 2005) RDF best practices. The subset selected
+is the same subset that the microformats community has adopted for use in
+hCard.</dc:description>
+        <dc:rights>Copyright © 2005 Norman Walsh. This work is licensed under the Creative Commons Attribution-NonCommercial License.</dc:rights>
+        <dc:title>An OWL Ontology for vCards</dc:title>
+        <cc:license rdf:resource="http://creativecommons.org/licenses/by-nc/2.0/"/>
+        <rdfs:comment>Norm's attempt at a vCard/hCard RDF ontology.</rdfs:comment>
+    </owl:Ontology>
+
+    <owl:Class rdf:about="http://nwalsh.com/rdf/vCard#Address">
+        <rdfs:comment>Resources that are vCard (postal) addresses.</rdfs:comment>
+        <rdfs:label>vCard Address Class</rdfs:label>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#post-office-box"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#extended-address"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#street-address"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#locality"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#region"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#postal-code"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#country-name"/>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://nwalsh.com/rdf/vCard#Geo">
+        <rdfs:comment>Resources that are vCard geographic locations.</rdfs:comment>
+        <rdfs:label>vCard Geographic Location Class</rdfs:label>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#organization-name"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#organization-unit"/>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://nwalsh.com/rdf/vCard#Name">
+        <rdfs:comment>Resources that are vCard personal names.</rdfs:comment>
+        <rdfs:label>vCard Name Class</rdfs:label>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#family-name"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#given-name"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#additional-name"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#honorific-prefix"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#honorific-suffix"/>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://nwalsh.com/rdf/vCard#Organization">
+        <rdfs:comment>Resources that are vCard organizations.</rdfs:comment>
+        <rdfs:label>vCard Organization Class</rdfs:label>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#latitude"/>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#longitude"/>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://nwalsh.com/rdf/vCard#VCard">
+        <rdfs:comment>Resources that are vCards.</rdfs:comment>
+        <rdfs:label>vCard Class</rdfs:label>
+        <rdfs:subClassOf rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+            <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            <owl:onProperty rdf:resource="http://nwalsh.com/rdf/vCard#rev"/>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#additional-name">
+        <rdfs:comment>An additional part of a person's name.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Name"/>
+        <rdfs:label>additional name</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#adr">
+        <rdfs:comment>A postal or street address of a person.</rdfs:comment>
+        <rdfs:label>address</rdfs:label>
+        <rdfs:range rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#agent">
+        <rdfs:comment>A person that acts as one's agent.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>agent</rdfs:label>
+        <rdfs:range rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#bday">
+        <rdfs:comment>The birthday of a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>birthday</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#category">
+        <rdfs:comment>A category of a vCard.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>category</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#class">
+        <rdfs:comment>A class (e.g., public, private, etc.) of a vCard.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>class</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#country-name">
+        <rdfs:comment>The country of a postal address.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:label>country</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#email">
+        <rdfs:comment>An email address.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>email</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#extended-address">
+        <rdfs:comment>The extended address of a postal address.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:label>extended</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#family-name">
+        <rdfs:comment>A family name part of a person's name.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Name"/>
+        <rdfs:label>family name</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#fax">
+        <rdfs:comment>A fax number of a person.</rdfs:comment>
+        <rdfs:label>Fax</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#tel"/>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#fn">
+        <rdfs:comment>A formatted name of a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>formatted name</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#geo">
+        <rdfs:comment>A geographic location associated with a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>geographic location</rdfs:label>
+        <rdfs:range rdf:resource="http://nwalsh.com/rdf/vCard#Geo"/>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#given-name">
+        <rdfs:comment>A given name part of a person's name.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Name"/>
+        <rdfs:label>given name</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#homeAdr">
+        <rdfs:comment>A home address of a person.</rdfs:comment>
+        <rdfs:label>Home address</rdfs:label>
+        <rdfs:range rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#adr"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#homeTel">
+        <rdfs:comment>A home phone number of a person.</rdfs:comment>
+        <rdfs:label>Home phone</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#tel"/>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#honorific-prefix">
+        <rdfs:comment>An honorific prefix part of a person's name.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Name"/>
+        <rdfs:label>honorific prefix</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#honorific-suffix">
+        <rdfs:comment>An honorific suffix part of a person's name.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Name"/>
+        <rdfs:label>honorific suffix</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#key">
+        <rdfs:comment>A key (e.g, PKI key) of a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>key</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#label">
+        <rdfs:comment>The formatted version of a postal address (a string with embedded line breaks, punctuation, etc.).</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:label>address label</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#latitude">
+        <rdfs:comment>The latitude of a geographic location.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Geo"/>
+        <rdfs:label>latitude</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#locality">
+        <rdfs:comment>The locality (e.g., city) of a postal address.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:label>locality</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#logo">
+        <rdfs:comment>A logo associated with a person or their organization.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>logo</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#longitude">
+        <rdfs:comment>The longitude of a geographic location</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Geo"/>
+        <rdfs:label>longitude</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#mailer">
+        <rdfs:comment>A mailer associated with a vCard.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>mailer</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#mobileEmail">
+        <rdfs:comment>A mobile email address of a person.</rdfs:comment>
+        <rdfs:label>Mobile email</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#email"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#mobileTel">
+        <rdfs:comment>A mobile phone number of a person.</rdfs:comment>
+        <rdfs:label>Mobile phone</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#tel"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#n">
+        <rdfs:comment>The components of the name of a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>name</rdfs:label>
+        <rdfs:range rdf:resource="http://nwalsh.com/rdf/vCard#Name"/>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#note">
+        <rdfs:comment>Notes about a person on a vCard.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>notes</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#org">
+        <rdfs:comment>An organization associated with a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>organization</rdfs:label>
+        <rdfs:range rdf:resource="http://nwalsh.com/rdf/vCard#Organization"/>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#organization-name">
+        <rdfs:comment>The name of an organization.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Organization"/>
+        <rdfs:label>name</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#organization-unit">
+        <rdfs:comment>The name of a unit within an organization.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Organization"/>
+        <rdfs:label>unit</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#personalEmail">
+        <rdfs:comment>An email address unaffiliated with any particular organization or employer; a personal email address.</rdfs:comment>
+        <rdfs:label>Personal email</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#email"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#photo">
+        <rdfs:comment>A photograph of a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>photo</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#post-office-box">
+        <rdfs:comment>The post office box of a postal address.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:label>P.O. Box</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#postal-code">
+        <rdfs:comment>The postal code (e.g., U.S. ZIP code) of a postal address.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:label>postal code</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#region">
+        <rdfs:comment>The region (e.g., state or province) of a postal address.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:label>region</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#rev">
+        <rdfs:comment>The timestamp of a revision of a vCard.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>revision</rdfs:label>
+        <rdfs:range rdf:parseType="Resource">
+            <owl:unionOf rdf:parseType="Resource">
+                <rdf:first rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+                <rdf:rest rdf:parseType="Resource">
+                    <rdf:first rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                </rdf:rest>
+            </owl:unionOf>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#role">
+        <rdfs:comment>A role a person plays within an organization.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>role</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#sort-string">
+        <rdfs:comment>A version of a person's name suitable for collation.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>sort</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#sound">
+        <rdfs:comment>A sound (e.g., a greeting or pronounciation) of a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>sound</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#street-address">
+        <rdfs:comment>The street address of a postal address.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:label>street</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#tel">
+        <rdfs:comment>A telephone number of a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>phone</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#title">
+        <rdfs:comment>A person's title.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>title</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#tz">
+        <rdfs:comment>A timezone associated with a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>timezone</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://nwalsh.com/rdf/vCard#uid">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+        <rdfs:comment>A UID of a person's vCard.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>uid</rdfs:label>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#unlabeledAdr">
+        <rdfs:comment>An (explicitly) unlabeled address of a person.</rdfs:comment>
+        <rdfs:label>address</rdfs:label>
+        <rdfs:range rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#adr"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#unlabeledEmail">
+        <rdfs:comment>An (explicitly) unlabeled email address of a person.</rdfs:comment>
+        <rdfs:label>email</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#email"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#unlabeledTel">
+        <rdfs:comment>An (explicitly) unlabeled phone number of a person.</rdfs:comment>
+        <rdfs:label>phone</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#tel"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#url">
+        <rdfs:comment>A URL associated with a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://nwalsh.com/rdf/vCard#VCard"/>
+        <rdfs:label>url</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#workAdr">
+        <rdfs:comment>A work address of a person.</rdfs:comment>
+        <rdfs:label>Work address</rdfs:label>
+        <rdfs:range rdf:resource="http://nwalsh.com/rdf/vCard#Address"/>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#adr"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#workEmail">
+        <rdfs:comment>A work email address of a person.</rdfs:comment>
+        <rdfs:label>Work email</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#email"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://nwalsh.com/rdf/vCard#workTel">
+        <rdfs:comment>A work phone number of a person.</rdfs:comment>
+        <rdfs:label>Work phone</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://nwalsh.com/rdf/vCard#tel"/>
+    </owl:ObjectProperty>
+</rdf:RDF>

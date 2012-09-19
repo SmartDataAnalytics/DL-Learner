@@ -1,0 +1,214 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/CARD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w10_1991">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>1991</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w9_%3A"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w11_betrug"/>
+    <j.0:hasLemma>1991</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w13_59">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>59</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w12_sie"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w14_Prozent"/>
+    <j.0:hasLemma>59</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w4_Politpoker">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Politpoker</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w3_diesen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w5_wird"/>
+    <j.0:hasLemma>Politpoker</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w3_diesen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>diesen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w2_f%C3%BCr"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w4_Politpoker"/>
+    <j.0:hasLemma>dieser</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PDAT"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w5_wird">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wird</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w4_Politpoker"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w6_die"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w15_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w14_Prozent"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PDAT">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveDemonstrativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w2_f%C3%BCr">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>für</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w1_Test"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w3_diesen"/>
+    <j.0:hasLemma>für</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w12_sie">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>sie</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w11_betrug"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w13_59"/>
+    <j.0:hasLemma>sie</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PPER"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w10_1991"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w6_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w12_sie"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w15_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w11_betrug"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w4_Politpoker"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w3_diesen"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s27089w0_Der"/>
+    <rdfs:label>Der Test für diesen Politpoker wird die Wahlbeteiligung sein : 1991 betrug sie 59 Prozent .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w5_wird"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w0_Der"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w1_Test"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w2_f%C3%BCr"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w13_59"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w8_sein"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w7_Wahlbeteiligung"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w9_%3A"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27089w14_Prozent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w7_Wahlbeteiligung">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Wahlbeteiligung</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w6_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w8_sein"/>
+    <j.0:hasLemma>Wahlbeteiligung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w0_Der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w1_Test"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w11_betrug">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>betrug</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w10_1991"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w12_sie"/>
+    <j.0:hasLemma>betragen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PPER">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w14_Prozent">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Prozent</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w13_59"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w15_."/>
+    <j.0:hasLemma>Prozent</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w6_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w5_wird"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w7_Wahlbeteiligung"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w9_%3A">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>:</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w8_sein"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w10_1991"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w1_Test">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Test</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w0_Der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w2_f%C3%BCr"/>
+    <j.0:hasLemma>Test</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27089w8_sein">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>sein</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27089"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27089w7_Wahlbeteiligung"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27089w9_%3A"/>
+    <j.0:hasLemma>sein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAINF"/>
+  </rdf:Description>
+</rdf:RDF>

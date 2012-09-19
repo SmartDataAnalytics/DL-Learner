@@ -1,0 +1,79 @@
+question: Give me all houses close to The Ashmolean Museum, with more than one bedroom
+
+question: Give me all houses in Botley Road
+
+question: Give me all houses in Littlemore
+
+question: Give me all houses that cost between 600000 and 800000 pounds
+
+question: Give me all houses with 3 bedrooms in Florence Park Road
+
+question: Give me all houses with front garden and rear garden
+
+//question: Give me all houses with 2 bathrooms, 5 bedrooms and at least 1 reception
+
+question: Give me all houses in Oxford, close to Railway Station
+
+question: Give me all houses with ample parking
+
+question: Give me all house with electric central heating system
+
+question: Give me all houses with three en-suites near Oxford
+
+question: Give me all houses with countryside views
+
+question: Give me all houses with farmland views
+
+question: Give me all houses nearby River Thames
+
+question: Give me all houses having one utility room or cloakroom
+
+question: Give me all houses in Oxfordshire with fireplaces
+
+question: Give me all houses with open plan kitchen near Oxford
+
+question: Give me all houses with walled garden near Oxford
+
+question: Give me all houses with river views
+
+question: Give me all houses with gated entrance or in a gated community
+
+question: Give me all recently refurbished houses with lift
+
+question: Give me all houses with balcony and vaulted ceiling
+
+question: Give me all houses that are a maisonette and on Gloucester Green
+
+question: Give me all houses in a corner or end-of-terrace plot
+
+question: Give me all houses with 3 bedrooms, but cheaper than 150000 pounds
+
+question: Give me all houses with at least 2 reception rooms and a garden
+
+question: Give me all houses with a courtyard
+
+question: Give me all houses with fireplace and a garden that is not communal
+
+question: Give me all houses with parking but not Victorian
+
+//question: Give me all houses with 2 to 5 bedrooms, a balcony, and a price less than 450000 pounds
+
+question: Give me all houses with 3 bathrooms, but not en-suite
+
+question: Give me all houses in a retirement complex
+
+question: Give me all houses with double glazing and central heating
+
+question: Give me all houses immediately available
+
+question: Give me all houses listed Grade I or Grade II
+
+question: Give me all houses that have recently replumbed
+
+question: Give me all houses in Witney or Wolvercote
+
+question: Give me all houses with more than 2 bedrooms, but not in Marston
+
+question: Give me all houses in Banbury Road
+
+question: Give me all houses in the area of John Radcliffe hospital

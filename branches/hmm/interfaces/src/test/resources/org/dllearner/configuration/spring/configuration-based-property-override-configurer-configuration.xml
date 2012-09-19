@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean name="testBean" class="org.dllearner.configuration.spring.TestBean">
+        <property name="componentSet">
+            <set>
+                <ref bean="secondBean"/>
+                <ref bean="thirdBean"/>
+                <ref bean="fourthBean"/>
+            </set>
+        </property>
+    </bean>
+
+    <bean name="secondBean" class="org.dllearner.configuration.spring.TestBean"/>
+
+    <bean name="thirdBean" class="org.dllearner.configuration.spring.TestBean"/>
+</beans>

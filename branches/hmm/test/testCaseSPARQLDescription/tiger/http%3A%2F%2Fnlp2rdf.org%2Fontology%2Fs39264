@@ -1,0 +1,403 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKNEG">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NegationParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w6_Liberation">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Liberation</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w5_Tageszeitung"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w7_sagte"/>
+    <j.0:hasLemma>Liberation</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w5_Tageszeitung">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Tageszeitung</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w4_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w6_Liberation"/>
+    <j.0:hasLemma>Tageszeitung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w22_Werk">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Werk</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w21_das"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w23_m%C3%B6glicherweise"/>
+    <j.0:hasLemma>Werk</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w21_das">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>das</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w20_werde"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w22_Werk"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w9_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w8_er"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w10_wenn"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w32_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w31_geschlossen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w26_geplanten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>geplanten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w25_dem"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w27_Termin"/>
+    <j.0:hasLemma>geplant</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PPER">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w3_mit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>mit</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w2_Gespr%C3%A4ch"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w4_der"/>
+    <j.0:hasLemma>mit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w11_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w10_wenn"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w12_Besch%C3%A4ftigten"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w1_einem">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>einem</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w0_In"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w2_Gespr%C3%A4ch"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w16_bald">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>bald</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w15_nicht"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w17_wieder"/>
+    <j.0:hasLemma>bald</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w14_Produktion">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Produktion</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w13_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w15_nicht"/>
+    <j.0:hasLemma>Produktion</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w7_sagte">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>sagte</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w6_Liberation"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w8_er"/>
+    <j.0:hasLemma>sagen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w20_werde">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>werde</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w19_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w21_das"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w10_wenn">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wenn</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w9_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w11_die"/>
+    <j.0:hasLemma>wenn</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KOUS"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w4_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w3_mit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w5_Tageszeitung"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w8_er">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>er</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w7_sagte"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w9_%2C"/>
+    <j.0:hasLemma>er</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PPER"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w12_Besch%C3%A4ftigten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Beschäftigten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w11_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w13_die"/>
+    <j.0:hasLemma>beschäftigter</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w5_Tageszeitung"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w9_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w30_Juli"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w15_nicht"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w25_dem"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w3_mit"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w7_sagte"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w12_Besch%C3%A4ftigten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w17_wieder"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w22_Werk"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w11_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w16_bald"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w26_geplanten"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <rdfs:label>In einem Gespräch mit der Tageszeitung Liberation sagte er , wenn die Beschäftigten die Produktion nicht bald wieder aufnähmen , werde das Werk möglicherweise vor dem geplanten Termin am 31. Juli geschlossen .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w4_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w10_wenn"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w8_er"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w1_einem"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w2_Gespr%C3%A4ch"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w20_werde"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s39264w0_In"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w28_am"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w18_aufn%C3%A4hmen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w31_geschlossen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w13_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w21_das"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w6_Liberation"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w14_Produktion"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w19_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w32_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w24_vor"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w0_In"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w27_Termin"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w23_m%C3%B6glicherweise"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39264w29_31."/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w27_Termin">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Termin</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w26_geplanten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w28_am"/>
+    <j.0:hasLemma>Termin</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w30_Juli">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Juli</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w29_31."/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w31_geschlossen"/>
+    <j.0:hasLemma>Juli</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w2_Gespr%C3%A4ch">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Gespräch</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w1_einem"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w3_mit"/>
+    <j.0:hasLemma>Gespräch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w0_In">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>In</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w1_einem"/>
+    <j.0:hasLemma>in</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KOUS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunctionWithSentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w17_wieder">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wieder</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w16_bald"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w18_aufn%C3%A4hmen"/>
+    <j.0:hasLemma>wieder</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w28_am">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>am</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w27_Termin"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w29_31."/>
+    <j.0:hasLemma>an</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w15_nicht">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>nicht</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w14_Produktion"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w16_bald"/>
+    <j.0:hasLemma>nicht</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PTKNEG"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPRART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w31_geschlossen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>geschlossen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w30_Juli"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w32_."/>
+    <j.0:hasLemma>schließen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w23_m%C3%B6glicherweise">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>möglicherweise</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w22_Werk"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w24_vor"/>
+    <j.0:hasLemma>möglicherweise</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w29_31.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>31.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w28_am"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w30_Juli"/>
+    <j.0:hasLemma>31.</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w24_vor">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>vor</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w23_m%C3%B6glicherweise"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w25_dem"/>
+    <j.0:hasLemma>vor</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w13_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w12_Besch%C3%A4ftigten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w14_Produktion"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w25_dem">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>dem</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w24_vor"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w26_geplanten"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w18_aufn%C3%A4hmen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>aufnähmen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w17_wieder"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w19_%2C"/>
+    <j.0:hasLemma>aufnehmen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39264w19_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39264"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39264w18_aufn%C3%A4hmen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39264w20_werde"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+</rdf:RDF>

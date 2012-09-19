@@ -1,0 +1,358 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w22_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w21_gro%C3%9Fes"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w23_einheitliches"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w3_Kommunisten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Kommunisten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w2_als"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w4_die"/>
+    <j.0:hasLemma>Kommunist</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w20_ein">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ein</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w19_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w21_gro%C3%9Fes"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w25_unabh%C3%A4ngiges">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>unabhängiges</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w24_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w26_China"/>
+    <j.0:hasLemma>unabhängig</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w17_Methode">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Methode</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w16_erfolgreiche"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w18_erwiesen"/>
+    <j.0:hasLemma>Methode</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w27_aufzubauen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>aufzubauen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w26_China"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w28_."/>
+    <j.0:hasLemma>aufbauen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVIZU"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w24_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w22_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w28_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w17_Methode"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w4_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w15_als"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w26_China"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s29380w0_Ihnen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w14_Marxismus"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w3_Kommunisten"/>
+    <rdfs:label>Ihnen war als Kommunisten die Befreiung Chinas gelungen , und damit hatte sich der Marxismus als erfolgreiche Methode erwiesen , ein großes , einheitliches und unabhängiges China aufzubauen .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w5_Befreiung"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w16_erfolgreiche"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w2_als"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w27_aufzubauen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w10_damit"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w19_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w21_gro%C3%9Fes"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w1_war"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w13_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w25_unabh%C3%A4ngiges"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w8_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w20_ein"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w11_hatte"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w23_einheitliches"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w6_Chinas"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w0_Ihnen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w18_erwiesen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w7_gelungen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w12_sich"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29380w9_und"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w6_Chinas">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Chinas</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w5_Befreiung"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w7_gelungen"/>
+    <j.0:hasLemma>China</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w19_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w18_erwiesen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w20_ein"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w28_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w27_aufzubauen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w2_als">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>als</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w1_war"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w3_Kommunisten"/>
+    <j.0:hasLemma>als</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w11_hatte">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>hatte</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w10_damit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w12_sich"/>
+    <j.0:hasLemma>haben</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w8_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w7_gelungen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w9_und"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w0_Ihnen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Ihnen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w1_war"/>
+    <j.0:hasLemma>ihnen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PPER"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w9_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w8_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w10_damit"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w4_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w3_Kommunisten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w5_Befreiung"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w23_einheitliches">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>einheitliches</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w22_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w24_und"/>
+    <j.0:hasLemma>einheitlich</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w12_sich">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>sich</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w11_hatte"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w13_der"/>
+    <j.0:hasLemma>sich</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PRF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w1_war">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>war</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w0_Ihnen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w2_als"/>
+    <j.0:hasLemma>sein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w26_China">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>China</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w25_unabh%C3%A4ngiges"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w27_aufzubauen"/>
+    <j.0:hasLemma>China</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w24_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w23_einheitliches"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w25_unabh%C3%A4ngiges"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PPER">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PRF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ReflexivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w14_Marxismus">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Marxismus</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w13_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w15_als"/>
+    <j.0:hasLemma>Marxismus</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w5_Befreiung">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Befreiung</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w4_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w6_Chinas"/>
+    <j.0:hasLemma>Befreiung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w13_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w12_sich"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w14_Marxismus"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PROAV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PronominalAdverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w7_gelungen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>gelungen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w6_Chinas"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w8_%2C"/>
+    <j.0:hasLemma>gelingen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w18_erwiesen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>erwiesen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w17_Methode"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w19_%2C"/>
+    <j.0:hasLemma>erweisen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVIZU">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InfinitiveWithZu"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w15_als">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>als</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w14_Marxismus"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w16_erfolgreiche"/>
+    <j.0:hasLemma>als</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w21_gro%C3%9Fes">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>großes</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w20_ein"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w22_%2C"/>
+    <j.0:hasLemma>groß</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w10_damit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>damit</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w9_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w11_hatte"/>
+    <j.0:hasLemma>damit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PROAV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29380w16_erfolgreiche">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>erfolgreiche</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29380"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29380w15_als"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29380w17_Methode"/>
+    <j.0:hasLemma>erfolgreich</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,341 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix : <http://example.com/trains#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl2xml: <http://www.w3.org/2006/12/owl2-xml#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foo: <http://example.com/foo#> .
+
+<http://example.com/trains>
+    a owl:Ontology .
+
+:Car
+    a owl:Class .
+
+:ClosedCar
+    a owl:Class ;
+    rdfs:subClassOf :Car ;
+    owl:disjointWith :OpenCar .
+
+:DoubleCar
+    a owl:Class ;
+    rdfs:subClassOf :Car .
+
+:JaggedCar
+    a owl:Class ;
+    rdfs:subClassOf :Car .
+
+:LongCar
+    a owl:Class ;
+    rdfs:subClassOf :Car ;
+    owl:disjointWith :ShortCar .
+
+:OpenCar
+    a owl:Class ;
+    rdfs:subClassOf :Car .
+
+:Shape
+    a owl:Class .
+
+:ShortCar
+    a owl:Class ;
+    rdfs:subClassOf :Car .
+
+:Train
+    a owl:Class .
+
+:car_101
+    :hasShape :u_shaped ;
+    :load :rectangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_102
+    :hasShape :rectangle ;
+    :load :rectangle ;
+    :loadCount :two ;
+    :wheels :two ;
+    a :Car, :LongCar, :OpenCar .
+
+:car_11
+    :hasShape :rectangle ;
+    :load :rectangle ;
+    :loadCount :three ;
+    :wheels :two ;
+    a :Car, :LongCar, :OpenCar .
+
+:car_12
+    :hasShape :rectangle ;
+    :load :triangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :ClosedCar, :ShortCar .
+
+:car_13
+    :hasShape :rectangle ;
+    :load :hexagon ;
+    :loadCount :one ;
+    :wheels :three ;
+    a :Car, :LongCar, :OpenCar .
+
+:car_14
+    :hasShape :rectangle ;
+    :load :circle, :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_21
+    :hasShape :u_shaped ;
+    :load :triangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_22
+    :hasShape :u_shaped ;
+    :load :rectangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_23
+    :hasShape :rectangle ;
+    :load :circle ;
+    :loadCount :two ;
+    :wheels :two ;
+    a :Car, :ClosedCar, :ShortCar .
+
+:car_31
+    :hasShape :rectangle ;
+    :load :circle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_32
+    :hasShape :hexagon ;
+    :load :triangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :ClosedCar, :ShortCar .
+
+:car_33
+    :hasShape :rectangle ;
+    :load :triangle ;
+    :loadCount :one ;
+    :wheels :three ;
+    a :Car, :ClosedCar, :LongCar .
+
+:car_41
+    :hasShape :u_shaped ;
+    :load :triangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_42
+    :hasShape :rectangle ;
+    :load :triangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :DoubleCar, :OpenCar, :ShortCar .
+
+:car_43
+    :hasShape :elipse ;
+    :load :rectangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :ClosedCar, :ShortCar .
+
+:car_44
+    :hasShape :rectangle ;
+    :load :rectangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_51
+    :hasShape :rectangle ;
+    :load :triangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :DoubleCar, :OpenCar, :ShortCar .
+
+:car_52
+    :hasShape :rectangle ;
+    :load :rectangle ;
+    :loadCount :one ;
+    :wheels :three ;
+    a :Car, :ClosedCar, :ShortCar .
+
+:car_53
+    :hasShape :rectangle ;
+    :load :circle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :ClosedCar, :ShortCar .
+
+:car_61
+    :hasShape :rectangle ;
+    :load :circle ;
+    :loadCount :three ;
+    :wheels :two ;
+    a :Car, :ClosedCar, :LongCar .
+
+:car_62
+    :hasShape :rectangle ;
+    :load :triangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_71
+    :hasShape :rectangle ;
+    :load :circle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :DoubleCar, :OpenCar, :ShortCar .
+
+:car_72
+    :hasShape :u_shaped ;
+    :load :triangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_73
+    :hasShape :rectangle ;
+    :loadCount :zero ;
+    :wheels :two ;
+    a :Car, :JaggedCar, :LongCar .
+
+:car_81
+    :hasShape :rectangle ;
+    :load :rectangle ;
+    :loadCount :one ;
+    :wheels :three ;
+    a :Car, :ClosedCar, :LongCar .
+
+:car_82
+    :hasShape :u_shaped ;
+    :load :circle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_91
+    :hasShape :u_shaped ;
+    :load :circle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_92
+    :hasShape :rectangle ;
+    :load :rectangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :JaggedCar, :LongCar .
+
+:car_93
+    :hasShape :rectangle ;
+    :load :rectangle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:car_94
+    :hasShape :u_shaped ;
+    :load :circle ;
+    :loadCount :one ;
+    :wheels :two ;
+    a :Car, :OpenCar, :ShortCar .
+
+:circle
+    a :Shape .
+
+:east1
+    :hasCar :car_11, :car_12, :car_13, :car_14 ;
+    a :Train .
+
+:east2
+    :hasCar :car_21, :car_22, :car_23 ;
+    a :Train .
+
+:east3
+    :hasCar :car_31, :car_32, :car_33 ;
+    a :Train .
+
+:east4
+    :hasCar :car_41, :car_42, :car_43, :car_44 ;
+    a :Train .
+
+:east5
+    :hasCar :car_51, :car_52, :car_53 ;
+    a :Train .
+
+:elipse
+    a :Shape .
+
+:hasCar
+    rdfs:domain :Train ;
+    rdfs:range :Car .
+
+
+:hexagon
+    a :Shape .
+
+
+:one
+    a owl:Thing .
+
+:rectangle
+    a :Shape .
+
+:three
+    a owl:Thing .
+
+:triangle
+    a :Shape .
+
+:two
+    a owl:Thing .
+
+:u_shaped
+    a :Shape .
+
+:west10
+    :hasCar :car_101, :car_102 ;
+    a :Train .
+
+:west6
+    :hasCar :car_61, :car_62 ;
+    a :Train .
+
+:west7
+    :hasCar :car_71, :car_72, :car_73 ;
+    a :Train .
+
+:west8
+    :hasCar :car_81, :car_82 ;
+    a :Train .
+
+:west9
+    :hasCar :car_91, :car_92, :car_93, :car_94 ;
+    a :Train .
+
+
+:zero
+    a owl:Thing .
+
+owl:Thing
+    a owl:Class .
+
+[]
+    a owl:AllDisjointClasses ;
+    owl:members (:Car
+        :Shape
+        :Train
+    ) .
+

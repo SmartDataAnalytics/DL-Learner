@@ -1,0 +1,333 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:j.1="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w2_Aufwertung">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Aufwertung</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w1_starke"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w3_der"/>
+    <j.0:hasLemma>Aufwertung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w0_Die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Die</rdfs:label>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w1_starke"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639syntax505">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/verbPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639syntax507">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w1_starke">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>starke</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w0_Die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w2_Aufwertung"/>
+    <j.0:hasLemma>stark</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/nounPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w7_hohen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>hohen</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w6_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w8_Tarifabschl%C3%BCsse"/>
+    <j.0:hasLemma>hoch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w9_h%C3%A4tten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>hätten</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w8_Tarifabschl%C3%BCsse"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w10_diese"/>
+    <j.0:hasLemma>haben</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w15_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w14_erkl%C3%A4ren"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w16_%60%60"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w19_nun">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>nun</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w18_%27%27"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w20_."/>
+    <j.0:hasLemma>nun</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w5_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w4_Mark"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w6_die"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax506"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639syntax503">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w3_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w2_Aufwertung"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w4_Mark"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w6_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w5_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w7_hohen"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/coordinatedNounPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#Coordination"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639syntax500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PDAT">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveDemonstrativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w11_Hoffnung">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Hoffnung</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w10_diese"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w12_zerst%C3%B6rt"/>
+    <j.0:hasLemma>Hoffnung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w4_Mark">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Mark</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w3_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w5_und"/>
+    <j.0:hasLemma>Mark</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w18_%27%27">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>''</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w17_Weisen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w19_nun"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639syntax508">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w10_diese">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>diese</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w9_h%C3%A4tten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w11_Hoffnung"/>
+    <j.0:hasLemma>dieser</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PDAT"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/verbPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VerbalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w5_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w20_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w3_der"/>
+    <rdfs:label>Die starke Aufwertung der Mark und die hohen Tarifabschlüsse hätten diese Hoffnung zerstört , erklären die `` Weisen '' nun .</rdfs:label>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w14_erkl%C3%A4ren"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w2_Aufwertung"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w17_Weisen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w15_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w16_%60%60"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w1_starke"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s21639w0_Die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w8_Tarifabschl%C3%BCsse"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w11_Hoffnung"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w4_Mark"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w7_hohen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w6_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w18_%27%27"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w0_Die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w9_h%C3%A4tten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w19_nun"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w13_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w12_zerst%C3%B6rt"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s21639w10_diese"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639syntax506">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/coordinatedNounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w13_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w12_zerst%C3%B6rt"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w14_erkl%C3%A4ren"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w14_erkl%C3%A4ren">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>erklären</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w13_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w15_die"/>
+    <j.0:hasLemma>erklären</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639syntax502">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax505"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w17_Weisen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Weisen</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w16_%60%60"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w18_%27%27"/>
+    <j.0:hasLemma>weise</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639syntax504">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax506"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w12_zerst%C3%B6rt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>zerstört</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w11_Hoffnung"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w13_%2C"/>
+    <j.0:hasLemma>zerstören</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax505"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w20_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w19_nun"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w8_Tarifabschl%C3%BCsse">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Tarifabschlüsse</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w7_hohen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w9_h%C3%A4tten"/>
+    <j.0:hasLemma>Tarifabschluß</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639syntax501">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639syntax506"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s21639w16_%60%60">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>``</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s21639w15_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s21639w17_Weisen"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s21639"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+</rdf:RDF>

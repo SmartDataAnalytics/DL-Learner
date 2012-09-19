@@ -1,0 +1,889 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY pdb "http://bio2rdf.org/pdb:" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://dl-learner.org/pdb:"
+     xml:base="http://dl-learner.org/pdb:"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:pdb="http://bio2rdf.org/pdb:">
+    <owl:Ontology rdf:about="http://dl-learner.org/Projects/DLLearner/Protein_Secondary_Structure_Prediction/AA_properties.owl"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/pdb:has_hydrophobicity -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/pdb:has_hydrophobicity">
+        <rdfs:label>has_hydrophobicity</rdfs:label>
+        <rdfs:domain rdf:resource="http://dl-learner.org/pdb:Hydrophobicity"/>
+        <rdfs:subPropertyOf rdf:resource="http://dl-learner.org/pdb:modifier_property"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://dl-learner.org/pdb:has_polarity -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/pdb:has_polarity">
+        <rdfs:label>has_polarity</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://dl-learner.org/pdb:modifier_property"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://dl-learner.org/pdb:has_size -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/pdb:has_size">
+        <rdfs:label>has_size</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://dl-learner.org/pdb:modifier_property"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://dl-learner.org/pdb:modifier_property -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/pdb:modifier_property">
+        <rdfs:label>modifier_property</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://dl-learner.org/pdb:relational_property -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/pdb:relational_property">
+        <rdfs:label>relational_property</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Alanine -->
+
+    <owl:Class rdf:about="&pdb;Alanine">
+        <rdfs:label>Alanine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:unpolar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophobic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:tiny"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Arginine -->
+
+    <owl:Class rdf:about="&pdb;Arginine">
+        <rdfs:label>Arginine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:positive"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophilic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Asparagine -->
+
+    <owl:Class rdf:about="&pdb;Asparagine">
+        <rdfs:label>Asparagine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophilic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:small"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:polar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Aspartic_acid -->
+
+    <owl:Class rdf:about="&pdb;Aspartic_acid">
+        <rdfs:label>Aspartic_acid</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:negative"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:small"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophilic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Cysteine -->
+
+    <owl:Class rdf:about="&pdb;Cysteine">
+        <rdfs:label>Cysteine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:tiny"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophobic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:polar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Glutamic_acid -->
+
+    <owl:Class rdf:about="&pdb;Glutamic_acid">
+        <rdfs:label>Glutamic_acid</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:negative"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophilic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Glutamine -->
+
+    <owl:Class rdf:about="&pdb;Glutamine">
+        <rdfs:label>Glutamine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophilic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:polar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Glycine -->
+
+    <owl:Class rdf:about="&pdb;Glycine">
+        <rdfs:label>Glycine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:unpolar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:tiny"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophobic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Histidine -->
+
+    <owl:Class rdf:about="&pdb;Histidine">
+        <rdfs:label>Histidine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:positive"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:aromatic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Isoleucine -->
+
+    <owl:Class rdf:about="&pdb;Isoleucine">
+        <rdfs:label>Isoleucine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:aliphatic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:unpolar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Leucine -->
+
+    <owl:Class rdf:about="&pdb;Leucine">
+        <rdfs:label>Leucine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:aliphatic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:unpolar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Lysine -->
+
+    <owl:Class rdf:about="&pdb;Lysine">
+        <rdfs:label>Lysine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:positive"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophobic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Methionine -->
+
+    <owl:Class rdf:about="&pdb;Methionine">
+        <rdfs:label>Methionine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:unpolar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophobic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Phenylalanine -->
+
+    <owl:Class rdf:about="&pdb;Phenylalanine">
+        <rdfs:label>Phenylalanine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:unpolar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:aromatic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Proline -->
+
+    <owl:Class rdf:about="&pdb;Proline">
+        <rdfs:label>Proline</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophilic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:unpolar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:small"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Serine -->
+
+    <owl:Class rdf:about="&pdb;Serine">
+        <rdfs:label>Serine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophilic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:polar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:tiny"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Threonine -->
+
+    <owl:Class rdf:about="&pdb;Threonine">
+        <rdfs:label>Threonine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:polar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:small"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:hydrophobic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Tryptophan -->
+
+    <owl:Class rdf:about="&pdb;Tryptophan">
+        <rdfs:label>Tryptophan</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:aromatic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:polar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Tyrosine -->
+
+    <owl:Class rdf:about="&pdb;Tyrosine">
+        <rdfs:label>Tyrosine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:polar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:aromatic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:large"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://bio2rdf.org/pdb:Valine -->
+
+    <owl:Class rdf:about="&pdb;Valine">
+        <rdfs:label>Valine</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Amino_acid"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_size"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:small"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_polarity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:unpolar"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://dl-learner.org/pdb:has_hydrophobicity"/>
+                <owl:hasValue rdf:resource="http://dl-learner.org/pdb:aliphatic"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/pdb:Amino_acid -->
+
+    <owl:Class rdf:about="http://dl-learner.org/pdb:Amino_acid">
+        <rdfs:label>Amino_acid</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Independent_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/pdb:Domain_entity -->
+
+    <owl:Class rdf:about="http://dl-learner.org/pdb:Domain_entity">
+        <rdfs:label>Domain_entity</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/pdb:Hydrophobicity -->
+
+    <owl:Class rdf:about="http://dl-learner.org/pdb:Hydrophobicity">
+        <rdfs:label>Hydrophobicity</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Side_chain_property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/pdb:Independent_entity -->
+
+    <owl:Class rdf:about="http://dl-learner.org/pdb:Independent_entity">
+        <rdfs:label>Independent_entity</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Domain_entity"/>
+        <owl:disjointWith rdf:resource="http://dl-learner.org/pdb:Value"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/pdb:Polarity -->
+
+    <owl:Class rdf:about="http://dl-learner.org/pdb:Polarity">
+        <rdfs:label>Polarity</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Side_chain_property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/pdb:Side_chain_property -->
+
+    <owl:Class rdf:about="http://dl-learner.org/pdb:Side_chain_property">
+        <rdfs:label>Side_chain_property</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Value"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/pdb:Size -->
+
+    <owl:Class rdf:about="http://dl-learner.org/pdb:Size">
+        <rdfs:label>Size</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Side_chain_property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://dl-learner.org/pdb:Value -->
+
+    <owl:Class rdf:about="http://dl-learner.org/pdb:Value">
+        <rdfs:label>Value</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://dl-learner.org/pdb:Domain_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/pdb:aliphatic -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:aliphatic">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Hydrophobicity"/>
+        <rdfs:label>aliphatic</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/pdb:aromatic -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:aromatic">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Hydrophobicity"/>
+        <rdfs:label>aromatic</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/pdb:hydrophilic -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:hydrophilic">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Hydrophobicity"/>
+        <rdfs:label>hydrophilic</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/pdb:hydrophobic -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:hydrophobic">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Hydrophobicity"/>
+        <rdfs:label>hydrophobic</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/pdb:large -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:large">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Size"/>
+        <rdfs:label>large</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/pdb:negative -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:negative">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Polarity"/>
+        <rdfs:label>negative</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/pdb:polar -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:polar">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Polarity"/>
+        <rdfs:label>polar</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/pdb:positive -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:positive">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Polarity"/>
+        <rdfs:label>positive</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/pdb:small -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:small">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Size"/>
+        <rdfs:label>small</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/pdb:tiny -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:tiny">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Size"/>
+        <rdfs:label>tiny</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/pdb:unpolar -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/pdb:unpolar">
+        <rdf:type rdf:resource="http://dl-learner.org/pdb:Polarity"/>
+        <rdfs:label>unpolar</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://dl-learner.org/pdb:Hydrophobicity"/>
+            <rdf:Description rdf:about="http://dl-learner.org/pdb:Polarity"/>
+            <rdf:Description rdf:about="http://dl-learner.org/pdb:Size"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&pdb;Alanine"/>
+            <rdf:Description rdf:about="&pdb;Arginine"/>
+            <rdf:Description rdf:about="&pdb;Asparagine"/>
+            <rdf:Description rdf:about="&pdb;Aspartic_acid"/>
+            <rdf:Description rdf:about="&pdb;Cysteine"/>
+            <rdf:Description rdf:about="&pdb;Glutamic_acid"/>
+            <rdf:Description rdf:about="&pdb;Glutamine"/>
+            <rdf:Description rdf:about="&pdb;Glycine"/>
+            <rdf:Description rdf:about="&pdb;Histidine"/>
+            <rdf:Description rdf:about="&pdb;Isoleucine"/>
+            <rdf:Description rdf:about="&pdb;Leucine"/>
+            <rdf:Description rdf:about="&pdb;Lysine"/>
+            <rdf:Description rdf:about="&pdb;Methionine"/>
+            <rdf:Description rdf:about="&pdb;Phenylalanine"/>
+            <rdf:Description rdf:about="&pdb;Proline"/>
+            <rdf:Description rdf:about="&pdb;Serine"/>
+            <rdf:Description rdf:about="&pdb;Threonine"/>
+            <rdf:Description rdf:about="&pdb;Tryptophan"/>
+            <rdf:Description rdf:about="&pdb;Tyrosine"/>
+            <rdf:Description rdf:about="&pdb;Valine"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net -->
+

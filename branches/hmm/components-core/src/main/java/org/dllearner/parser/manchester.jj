@@ -1,0 +1,165 @@
+/**
+ * Copyright (C) 2011, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+options {
+  JDK_VERSION = "1.5";
+  STATIC = false;  
+}
+ 
+PARSER_BEGIN(ManchesterSyntaxParser) 
+package org.dllearner.parser;
+
+import org.dllearner.core.owl.*;
+import java.io.*;
+import java.net.URL;
+
+public class ManchesterSyntaxParser {
+
+	public static Description parseClassExpression(String classExpression) throws ParseException {
+		ManchesterSyntaxParser parser = new ManchesterSyntaxParser(new StringReader(classExpression));
+		return parser.ClassExpression();
+	}
+
+}
+PARSER_END(ManchesterSyntaxParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+} 
+
+TOKEN :
+{
+    < NUMBER: (["1"-"9"] (["0"-"9"])* | "0") >
+  | < DOUBLE: (["1"-"9"] (["0"-"9"])* | "0") "." (["0"-"9"])* >
+  | < TOP: "TOP" >
+  | < BOTTOM: "BOTTOM" >
+  | < AND: "and" >
+  | < OR: "or" >
+  | < SOME: "some" >
+  | < ONLY: "only" > 
+  | < NOT: "not" >
+  | < GE: ">=" >
+  | < LE: "<=" >
+  // support single quotes and double quotes
+  | < STRING: "\"" (~["\"","\\","\n","\r"])* "\"" | "'" (~["\"","\\","\n","\r"])* "'">
+//  | < URI: "<" (~[">","\\","\n","\r"])* ">" >
+  | < URI:  (~["<",">","\\","\n","\r"])* ":" (~["<",">","\\","\n","\r"])*  >
+  | < URI_PREFIX:  "<" (~[">","\\","\n","\r"])* ":" (~[">","\\","\n","\r"])* ">" >
+//  |  <URI: ["<"] (~[ ">","<", "\"", "{", "}", "^", "\\", "|", "`", "\u0000"-"\u0020"])* ">"? >
+}
+
+Description ClassExpression() : 
+{
+	Description c,c1,c2;
+	String s,s1,s2;
+	int i;
+}
+{
+    <TOP> {return new Thing();}
+  | <BOTTOM> {return new Nothing();}
+  // parse until next AND or OR
+  | LOOKAHEAD( "(" ClassExpression() <AND>)    
+    "(" c1=ClassExpression() <AND> c2=ClassExpression() ")" 
+  	{return new Intersection(c1,c2);}
+  | LOOKAHEAD( "(" ClassExpression() <OR>)    
+    "(" c1=ClassExpression() <OR> c2=ClassExpression() ")"
+  	{return new Union(c1,c2);}
+  | LOOKAHEAD( "(" URI() <SOME>) 
+    "(" s=URI() <SOME> c=ClassExpression() ")"
+  	{return new ObjectSomeRestriction(new ObjectProperty(s),c); } 
+  | LOOKAHEAD( "(" URI() <ONLY>)
+    "(" s=URI() <ONLY> c=ClassExpression() ")"
+	{return new ObjectAllRestriction(new ObjectProperty(s),c); }	
+  | <NOT> c=ClassExpression()
+  	{return new Negation(c); }
+  | <GE> i=Integer() s=URI() "." c=ClassExpression()
+  	{return new ObjectMinCardinalityRestriction(i,new ObjectProperty(s),c);}  	
+  | <LE> i=Integer() s=URI() "." c=ClassExpression()
+  	{return new ObjectMaxCardinalityRestriction(i,new ObjectProperty(s),c);}
+  | LOOKAHEAD(4) 
+    "(" s1=URI() "value" s2=URI() ")" 
+    { return new ObjectValueRestriction(new ObjectProperty(s1), new Individual(s2)); }
+  | LOOKAHEAD(4) 
+    "(" s1=URI() "value" s2=String() ")" 
+    { return new StringValueRestriction(new DatatypeProperty(s1), s2); }
+  // if none of the other cases matches, it is just a named class 
+  | s = URI() {return new NamedClass(s);}   	
+}
+
+double Double() : 
+{
+  Token t;
+}
+{
+  t=<DOUBLE>
+  {
+    return new Double(t.image);
+  }
+}
+
+int Integer() : 
+{
+  Token t;
+}
+{
+  t=<NUMBER>
+  {
+    return new Integer(t.image);
+  }
+}
+
+String String() : 
+{
+  Token t;
+  String s;
+}
+{
+  t=<STRING>
+  {
+    // cut quotes
+    s = t.image;
+    s = s.substring(1, s.length() - 1);
+    return s;
+  }
+}
+
+String URI() : 
+{
+  Token t;
+  String s;
+}
+{
+  // LOOKAHEAD("<")
+  t=<URI_PREFIX> 
+  {
+    // cut "<" and ">"
+    s = t.image;
+    s = s.substring(1, s.length() - 1);
+    return s;
+  }
+  |  t=<URI> { return t.image; }
+}

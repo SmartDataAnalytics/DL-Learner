@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1052.3622"
+   height="744.09448"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   version="1.0"
+   sodipodi:docname="components.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lend"
+       style="overflow:visible;">
+      <path
+         id="path3293"
+         style="font-size:12.0;fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="14.285714 : 167.60966 : 1"
+       inkscape:vp_y="6.1230318e-14 : 1000 : 0"
+       inkscape:vp_z="758.38019 : 167.60966 : 1"
+       inkscape:persp3d-origin="386.33295 : -7.7840387 : 1"
+       id="perspective10" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="232.78182"
+     inkscape:cy="390.30508"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1919"
+     inkscape:window-height="1125"
+     inkscape:window-x="0"
+     inkscape:window-y="25" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ccffaa"
+       id="rect3249"
+       width="1200"
+       height="750"
+       x="-211.42856"
+       y="66.38018" />
+    <rect
+       style="fill:#ffe680;fill-rule:evenodd;stroke:#000000;stroke-width:1.30109656px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect3191"
+       width="438.69891"
+       height="213.6989"
+       x="-189.34946"
+       y="149.74504" />
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:bold;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans Bold"
+       x="202.57141"
+       y="110.66591"
+       id="text3195"><tspan
+         sodipodi:role="line"
+         id="tspan3197"
+         x="202.57141"
+         y="110.66591">Component Manager</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-177.14284"
+       y="187.52304"
+       id="text3199"><tspan
+         sodipodi:role="line"
+         id="tspan3201"
+         x="-177.14284"
+         y="187.52304"
+         style="font-weight:bold;-inkscape-font-specification:Bitstream Vera Sans Bold">Knowledge Source Component</tspan><tspan
+         sodipodi:role="line"
+         x="-177.14284"
+         y="217.52304"
+         id="tspan3203" /><tspan
+         sodipodi:role="line"
+         x="-177.14284"
+         y="247.52304"
+         id="tspan3205">OWL file</tspan><tspan
+         sodipodi:role="line"
+         x="-177.14284"
+         y="277.52304"
+         id="tspan3207">internal knowledge base</tspan><tspan
+         sodipodi:role="line"
+         x="-177.14284"
+         y="307.52304"
+         id="tspan3209">SPARQL endpoint</tspan><tspan
+         sodipodi:role="line"
+         x="-177.14284"
+         y="337.52304"
+         id="tspan3211">Linked Data</tspan></text>
+    <rect
+       style="fill:#ffe680;fill-rule:evenodd;stroke:#000000;stroke-width:1.30109656px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect3251"
+       width="438.69891"
+       height="213.6989"
+       x="530.65057"
+       y="149.74504" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="548.57141"
+       y="188.09447"
+       id="text3213"><tspan
+         sodipodi:role="line"
+         id="tspan3215"
+         x="548.57141"
+         y="188.09447"
+         style="font-weight:bold;-inkscape-font-specification:Bitstream Vera Sans Bold">Learning Problem Component</tspan><tspan
+         sodipodi:role="line"
+         x="548.57141"
+         y="218.09447"
+         id="tspan3217" /><tspan
+         sodipodi:role="line"
+         x="548.57141"
+         y="248.09447"
+         id="tspan3219">learning definitions/</tspan><tspan
+         sodipodi:role="line"
+         x="548.57141"
+         y="278.09448"
+         id="tspan3221">subclass axioms</tspan><tspan
+         sodipodi:role="line"
+         x="548.57141"
+         y="308.09448"
+         id="tspan3223">positive+negative examples/</tspan><tspan
+         sodipodi:role="line"
+         x="548.57141"
+         y="338.09448"
+         id="tspan3225">positive only learning</tspan></text>
+    <rect
+       style="fill:#ffe680;fill-rule:evenodd;stroke:#000000;stroke-width:1.30109656px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect3265"
+       width="438.69891"
+       height="213.6989"
+       x="-189.34946"
+       y="589.74506" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-177.14279"
+       y="626.9516"
+       id="text3227"><tspan
+         sodipodi:role="line"
+         id="tspan3229"
+         x="-177.14279"
+         y="626.9516"
+         style="font-weight:bold;-inkscape-font-specification:Bitstream Vera Sans Bold">Reasoning Service Component</tspan><tspan
+         sodipodi:role="line"
+         x="-177.14279"
+         y="656.9516"
+         id="tspan3231" /><tspan
+         sodipodi:role="line"
+         x="-177.14279"
+         y="686.9516"
+         id="tspan3233">DIG interface</tspan><tspan
+         sodipodi:role="line"
+         x="-177.14279"
+         y="716.9516"
+         id="tspan3235">OWL API interface</tspan><tspan
+         sodipodi:role="line"
+         x="-177.14279"
+         y="746.9516"
+         id="tspan3237">approximate reasoning</tspan></text>
+    <rect
+       style="fill:#ffe680;fill-rule:evenodd;stroke:#000000;stroke-width:1.30109656px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect3255"
+       width="438.69891"
+       height="213.6989"
+       x="530.65057"
+       y="589.74506" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="536.57153"
+       y="628.09448"
+       id="text3239"><tspan
+         sodipodi:role="line"
+         id="tspan3241"
+         x="536.57153"
+         y="628.09448"
+         style="font-weight:bold;-inkscape-font-specification:Bitstream Vera Sans Bold">Learning Algorithm Component</tspan><tspan
+         sodipodi:role="line"
+         x="536.57153"
+         y="658.09448"
+         id="tspan3243" /><tspan
+         sodipodi:role="line"
+         x="536.57153"
+         y="688.09448"
+         id="tspan3245">top-down refinement approaches</tspan><tspan
+         sodipodi:role="line"
+         x="536.57153"
+         y="718.09448"
+         id="tspan3247">extended Genetic Programming</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.49988842;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:4.4996651, 4.4996651;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -102.85717,566.34454 L -99.999997,392.08642"
+       id="path3267" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.49988842;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:4.4996651, 4.4996651;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 873.1464,567.55888 L 876.00357,393.30076"
+       id="path4047" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.77259672;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:5.31779012, 5.31779012;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 514.75661,725.17422 L 265.59085,722.38333"
+       id="path4049" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="362.85712"
+       y="752.66589"
+       id="text4051"><tspan
+         sodipodi:role="line"
+         id="tspan4053"
+         x="362.85712"
+         y="752.66589">uses</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-541.72565"
+       y="850.34766"
+       id="text4055"
+       transform="matrix(0,-1,1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan4057"
+         x="-541.72565"
+         y="850.34766">supports</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-541.64221"
+       y="-120.27205"
+       id="text4059"
+       transform="matrix(0,-1,1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan4061"
+         x="-541.64221"
+         y="-120.27205">based on</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="font-size:24px;fill:#decd87;stroke:#d08544;stroke-width:1.39307344;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4063"
+       sodipodi:cx="424.28571"
+       sodipodi:cy="486.23734"
+       sodipodi:rx="208.57143"
+       sodipodi:ry="52.142857"
+       d="M 632.85713,486.23734 A 208.57143,52.142857 0 1 1 215.71428,486.23734 A 208.57143,52.142857 0 1 1 632.85713,486.23734 z"
+       transform="matrix(0.8390411,0,0,1.0410959,38.43542,-29.268074)" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="259.71429"
+       y="486.95163"
+       id="text4065"><tspan
+         sodipodi:role="line"
+         id="tspan4067"
+         x="259.71429"
+         y="486.95163">configuration options</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.49988842;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:4.4996651, 4.4996651;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 76.749944,376.61081 C 104.32421,446.8263 150.85422,463.33384 201.0357,469.49555"
+       id="path4071"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.49988842;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:4.4996651, 4.4996651;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 76.749944,578.34454 C 104.32421,508.12905 150.85422,491.62151 201.0357,485.4598"
+       id="path4073"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.49988842;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:4.4996651, 4.4996651;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 709.90089,376.55836 C 682.32662,446.77385 635.79661,463.28139 585.61513,469.4431"
+       id="path4077"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.49988842;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:4.4996651, 4.4996651;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 709.89767,578.34454 C 682.3234,508.12905 635.79339,491.62151 585.61191,485.4598"
+       id="path4079"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="92.85714"
+       y="485.52304"
+       id="text4081"><tspan
+         sodipodi:role="line"
+         id="tspan4083"
+         x="92.85714"
+         y="485.52304">offer</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="646.96234"
+       y="484.47031"
+       id="text4085"><tspan
+         sodipodi:role="line"
+         id="tspan4087"
+         x="646.96234"
+         y="484.47031">offer</tspan></text>
+  </g>
+</svg>

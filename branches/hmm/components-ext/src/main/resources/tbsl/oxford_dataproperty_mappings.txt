@@ -1,0 +1,4 @@
+http://www.w3.org/2006/vcard/ns#street-address|address, location, postal code
+http://purl.org/goodrelations/v1#description|description
+http://diadem.cs.ox.ac.uk/ontologies/real-estate#hasPrice|has price, price
+http://diadem.cs.ox.ac.uk/ontologies/real-estate#receptions|receptions, reception room, reception rooms

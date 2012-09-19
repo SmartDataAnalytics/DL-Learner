@@ -1,0 +1,1557 @@
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .                                           
+
+dd:d1d631
+      dd:hasPrice "3250000"^^xsd:double ;
+      gr:includes dd:d1d634 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/7-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF100050-1339001059" .
+
+dd:d1d634
+      a       dd:House ;
+      dd:bedrooms 7 ;
+      gr:description "A landmark detached property in this prime position in North Oxford, currently configured as four flats but could be converted back to a prestigious family home.   This represents an exceptionally rare opportunity to acquire a . . ."^^xsd:string ;
+      gr:name "Banbury Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.768703"^^xsd:double ;
+      wgs84:long "-1.261539"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Banbury Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk/index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100050_02.JPG&width=225&height=156&quality=75&crop=1&chks=492" .
+
+
+dd:d1d641
+      dd:hasPrice "3000000"^^xsd:double ;
+      gr:includes dd:d1d644 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/6-bedroom-property-for-sale-in-Boars-Hill-OX1-jdwrps-OXF080453-1338978312" .
+
+dd:d1d644
+      a       dd:House ;
+      dd:bedrooms 6 ;
+      gr:description "A substantial family house with equestrian facilities in an elevated position overlooking its garden and grounds with spectacular views over the Vale of White Horse.  The house offers approximately 6,200 sq ft of accommodation over . . ."^^xsd:string ;
+      gr:name "Sandy Lane, Boars Hill, Oxford, OX1"^^xsd:string ;
+      wgs84:lat "51.718715"^^xsd:double ;
+      wgs84:long "-1.305528"^^xsd:double ;
+      vcard:locality "Boars Hill, Oxford" ;
+      vcard:street_address
+              "Sandy Lane, Boars Hill, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk/index.php?action=getthumbnail&filepath=../../rps/pictures/OXF080453_01.JPG&width=225&height=156&quality=75&crop=1&chks=492" .
+
+
+dd:d1d651
+      dd:hasPrice "1695000"^^xsd:double ;
+      gr:includes dd:d1d654 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/8-bedroom-property-for-sale-in-Witney-OX29-jdwrps-OXF070180-1335857471" .
+
+dd:d1d654
+      a       dd:House ;
+      dd:bedrooms 8 ;
+      gr:description "Charming period farmhouse dating from the 16th century with approximately 14 acres in a rural setting. It was extended by the current owners and has accommodation over three floors with an impressive vaulted drawing room and . . ."^^xsd:string ;
+      gr:name "Stanton Harcourt, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.741121"^^xsd:double ;
+      wgs84:long "-1.383473"^^xsd:double ;
+      vcard:locality "Witney, Oxfordshire" ;
+      vcard:street_address
+              "Stanton Harcourt, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk/index.php?action=getthumbnail&filepath=../../rps/pictures/OXF070180_11.JPG&width=225&height=156&quality=75&crop=1&chks=492" .
+
+
+dd:d1d661
+      dd:hasPrice "1650000"^^xsd:double ;
+      gr:includes dd:d1d664 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/7-bedroom-property-for-sale-in-Steventon-OX13-jdwrps-OXF110053-1338978298" .
+
+dd:d1d664
+      a       dd:House ;
+      dd:bedrooms 7 ;
+      gr:description "This is a substantial family house with approximately 12 acres with garaging and extensive outbuildings / workshops. The house provides large well proportioned rooms incorporating an open plan kitchen leading through to a large . . ."^^xsd:string ;
+      gr:name "Hanney Road, Steventon, Abingdon, Oxfordshire, OX13"^^xsd:string ;
+      wgs84:lat "51.6302"^^xsd:double ;
+      wgs84:long "-1.35827"^^xsd:double ;
+      vcard:locality "Steventon, Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Hanney Road, Steventon, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk/index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110053_16.JPG&width=225&height=156&quality=75&crop=1&chks=492" .
+
+
+dd:d1d674
+      a       dd:House ;
+      gr:description "An attractive Grade II Listed Cotswold stone farmhouse with yard and buildings with income potential.  5 bedroom farmhouse, stables, farm buildings, offices and paddocks. In a ring fence extending in all about 16 acres. For sale by . . ."^^xsd:string ;
+      gr:name "Burford Road, Black Bourton, Bampton, Oxfordshire, OX18"^^xsd:string ;
+      vcard:locality "Black Bourton, Bampton, Oxfordshire" ;
+      vcard:street_address
+              "Burford Road, Black Bourton, Bampton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk/index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120164_01.JPG&width=225&height=156&quality=75&crop=1&chks=492" .
+
+dd:d1d671
+      dd:hasPrice "1500000"^^xsd:double ;
+      gr:includes dd:d1d674 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/property-for-sale-in-Black-Bourton-OX18-jdwrps-OXF120164-1339152237" .
+
+
+
+dd:d1d731
+      dd:hasPrice "1500000"^^xsd:double ;
+      gr:includes dd:d1d734 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/7-bedroom-property-for-sale-in-Boars-Hill-OX1-jdwrps-OXF090335" .
+
+dd:d1d734
+      a       dd:House ;
+      gr:description """A substantial village house with separate cottage, stables and paddocks situated in approximately 2 acres. 
+
+This is a comfortable family house of which the oldest part dates from the 17th century with later Victorian additions. The property has the distinctive benefit of a separate cottage which was built in 1991 and adjacent to which are an extremely useful range of stores, an office and double garage. There is also stable block with 3 loose boxes opening on to a paddock at the rear. The house sits well back from the road and approached over a shared drive which leads to the front of the house and side. The cottage and outbuildings are well positioned at the side of the house separated by the drive and affording vehicle access to the stables and paddocks. 
+
+The house occupies a delightful position at the foot of Boars Hill in Old Wootton Village The present owners added the spacious kitchen/breakfast room as well as the guest bedroom suite above. It offers a combination of period detail including exposed beams and attractive period fireplaces whilst at the same time more contemporary open plan living which is found in the kitchen/breakfast room which overlooks the garden. 
+
+The cottage offers very well presented accommodation with two ensuite bedrooms, a kitchen/sitting room and a conservatory. It is finished to a high standard with double glazing throughout and is separately rated for utilities and offers an excellent letting opportunity or ancillary accommodation for relatives. 
+
+The gardens are particularly attractive and the property has very distinctive areas of garden. To the front of the house a large area of lawn flanked by the stone wall where there are also a number of mature trees. The lawn continues to the side of the house where there are more formal gardens overlooked by some of the reception rooms and the kitchen/breakfast room. There is a large paved terrace at the rear of the house which makes a delightful outside dining area and also accessed from the kitchen/breakfast room. To one side of the house is a traditional stone and timber frame barn and a five bar gate leads to the stable yard beyond which are the paddocks. In all about 2.1 acres."""^^xsd:string ;
+      gr:name "Wootton Village, Boars Hill, Oxford, OX1"^^xsd:string ;
+      wgs84:lat "51.713054"^^xsd:double ;
+      wgs84:long "-1.310184"^^xsd:double ;
+      vcard:locality "Boars Hill, Oxford" ;
+      vcard:street_address
+              "Wootton Village, Boars Hill, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF090335_03.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1d744
+      a       dd:House ;
+      gr:description "Substantial detached family house offering excellent, spacious and light living accommodation, with the considerable advantage of having all the bedrooms and bathrooms on the same floor.  Of particular note is the unusually large west facing garden to the rear with the whole plot measuring circa 0.35 acre."^^xsd:string ;
+      gr:name "Woodstock Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.78446"^^xsd:double ;
+      wgs84:long "-1.277366"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Woodstock Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100295_14.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d741
+      dd:hasPrice "1450000"^^xsd:double ;
+      gr:includes dd:d1d744 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF100295" .
+
+
+dd:d1d751
+      dd:hasPrice "1400000"^^xsd:double ;
+      gr:includes dd:d1d754 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF120006" .
+
+dd:d1d754
+      a       dd:House ;
+      gr:description """An elegant Grade II Listed mid crescent terraced house in this prime residential location.
+
+The front of the house faces west and enjoys excellent natural light throughout and has one of the larger gardens within the terrace. There are well proportioned, light and airy principal rooms with comfortable family accommodation arranged over four floors. The property would benefit from general modernisation and perhaps extension but offers a rare opportunity to acquire a house in one of the prime residential areas in Central North Oxford. To the rear there is an attractive walled garden with rear access to Dragon Lane."""^^xsd:string ;
+      gr:name "Park Town, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.76679"^^xsd:double ;
+      wgs84:long "-1.25669"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Park Town, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120006_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1d764
+      a       dd:House ;
+      gr:description """Beautifully presented Grade II Listed house with separate annexe, gardens and paddock in this charming west Oxfordshire village.
+
+The house offers a perfect blend of period and contemporary living having been considerably extended and refurbished. Of particular note is the large L shaped reception hall with green oak frame from which there are delightful views over the garden. The annexe is a considerable benefit offering kitchen, sitting room with galleried bedroom and offers approximately 660 sq ft. Attached to this is a triple car port, garage with two offices over. The house sits in the middle of its garden with the paddock just across the road."""^^xsd:string ;
+      gr:name "Northmoor, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.723184"^^xsd:double ;
+      wgs84:long "-1.395139"^^xsd:double ;
+      vcard:locality "Witney, Oxfordshire" ;
+      vcard:street_address
+              "Northmoor, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110084_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d761
+      dd:hasPrice "1350000"^^xsd:double ;
+      gr:includes dd:d1d764 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Witney-OX29-jdwrps-OXF110084" .
+
+
+dd:d1d774
+      a       dd:House ;
+      gr:description "A superb family house with charming gardens in this conservation village. Completed in 1990 and set well back from the road with a delightful, mature garden to the rear, the house offers excellent family accommodation over three floors with an emphasis on space and light."^^xsd:string ;
+      gr:name "Abberbury Road, Iffley Village, Oxford, OX4"^^xsd:string ;
+      wgs84:lat "51.72967"^^xsd:double ;
+      wgs84:long "-1.234776"^^xsd:double ;
+      vcard:locality "Iffley Village, Oxford" ;
+      vcard:street_address
+              "Abberbury Road, Iffley Village, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110253_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d771
+      dd:hasPrice "1275000"^^xsd:double ;
+      gr:includes dd:d1d774 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Iffley-Village-OX4-jdwrps-OXF110253" .
+
+
+dd:d1d781
+      dd:hasPrice "1250000"^^xsd:double ;
+      gr:includes dd:d1d784 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/6-bedroom-property-for-sale-in-Didcot-OX11-jdwrps-OXF100422" .
+
+dd:d1d784
+      a       dd:House ;
+      gr:description """A magnificent early Victorian six bedroom rectory by architect Henry Jones Underwood, with traditional family accommodation, cellars and garaging in excess of 6,000 square feet set in mature enclosed gardens. Formerly the home of famous titled owners and a few minutes walk from Didcot Parkway railway station with trains to London Paddington in 40 minutes.
+
+This substantial house is steeped in history, being the former residence of Baron Dacre of Glanton (the historian Hugh Trevor-Roper) and Baroness Alexandra Dacre (the daughter of Field Marshall Douglas Haig, 1st Earl Haig) and has been sympathetically renovated with great care and attention to detail by the present owners (in conjunction with Peter Grant Construction). 
+
+It now has excellent and versatile accommodation arranged over two floors. Handsome north and south façades, multiple gables, high ceilings, elegant and very generously proportioned rooms, deep sash windows with shutters, moulded cornices, deep skirting boards and attractive fireplaces are predominant features of the house. There is good natural light throughout and a delightful main staircase. The extensive cellars and large loft spaces could be converted subject to the necessary planning consents being obtained."""^^xsd:string ;
+      gr:name "The Old Rectory, Didcot, Oxfordshire, OX11"^^xsd:string ;
+      wgs84:lat "51.610835"^^xsd:double ;
+      wgs84:long "-1.251993"^^xsd:double ;
+      vcard:locality "Didcot, Oxfordshire" ;
+      vcard:street_address
+              "The Old Rectory, Didcot, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100422_09.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1d791
+      dd:hasPrice "1250000"^^xsd:double ;
+      gr:includes dd:d1d794 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Long-Hanborough-OX29-jdwrps-OXF100218" .
+
+dd:d1d794
+      a       dd:House ;
+      gr:description """A handsome family house in 1.6 acres situated on the edge of the village with glorious views over the Evenlode Valley. 
+
+This is a charming home providing generously proportioned family accommodation throughout, approaching 3594 square feet (334 square metres). There are four double bedrooms and four separate reception rooms, in addition to a large kitchen/breakfast room. The majority of the windows in the house have been changed and replaced by the Cotswold Casement Company who have fitted double glazed steel windows. Outside there are gardens and paddocks, detached double garage, open barn and stable. In all 1.6 acres."""^^xsd:string ;
+      gr:name "Millwood End, Long Hanborough, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.828051"^^xsd:double ;
+      wgs84:long "-1.398473"^^xsd:double ;
+      vcard:locality "Long Hanborough, Witney, Oxfordshire" ;
+      vcard:street_address
+              "Millwood End, Long Hanborough, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100218_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1d804
+      a       dd:House ;
+      gr:description """A very well appointed, five year old architecture designed, detached family house in an elevated location on the edge of the village.
+
+The split-level living space has been thoughtfully laid out to maximise an open plan family lifestyle. The kitchen/breakfast and dining/family room all interconnect beautifully as well as opening directly on to the split-level terraces and large south-facing garden. The dining room has floor to ceiling glass walls and a vaulted ceiling, allowing the centre of the house to have an excellent level of natural light and space. The family room has French doors leading out to a large decking area, ideal for entertaining. Upstairs there are five double bedrooms with the master bedroom leading to a balcony, overlooking the private rear garden.
+
+The property has a high-speed network throughout the home allowing for streaming of HD television, audio and telephone connections to all rooms from a centralised source.
+
+At the front there are far reaching views, whilst at the rear there is decking, overlooking the lawn. The setting is enhanced overall by the mature trees, which enclose the property, forming a constant green back drop during all seasons."""^^xsd:string ;
+      gr:name "Windmill Lane, Wheatley, Oxford, OX33"^^xsd:string ;
+      wgs84:lat "51.74303"^^xsd:double ;
+      wgs84:long "-1.1429"^^xsd:double ;
+      vcard:locality "Wheatley, Oxford" ;
+      vcard:street_address
+              "Windmill Lane, Wheatley, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120076_08.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d801
+      dd:hasPrice "1200000"^^xsd:double ;
+      gr:includes dd:d1d804 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Wheatley-OX33-jdwrps-OXF120076" .
+
+
+dd:d1d814
+      a       dd:House ;
+      gr:description """A charmingly extended, refurbished and well proportioned semidetached property dating back to 1899 and built to a design by H W Moore. 
+
+This outstanding family home benefits from many character features associated with this era as well as a rear aspect overlooking St Johns playing fields and off street parking to the front of the property. The accommodation is arranged over four floors and comprises on the first floor a sitting room/dining room, a beautifully extended kitchen/breakfast room/family area with access to a converted basement currently housing a utility, shower room and double bedroom all finished to a high specification. On the first floor there are three bedrooms (master with ensuite) and a well converted loft space provides the fifth bedroom (also with ensuite shower and w.c). To the exterior of the property there is off street parking to the front and a good sized rear garden mainly laid to lawn and backing onto St.Johns playing fields."""^^xsd:string ;
+      gr:name "Frenchay Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.770538"^^xsd:double ;
+      wgs84:long "-1.268809"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Frenchay Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110478_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d811
+      dd:hasPrice "1200000"^^xsd:double ;
+      gr:includes dd:d1d814 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-5-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110478" .
+
+
+dd:d1d824
+      a       dd:House ;
+      gr:description """A Grade II Listed house with separate flat and barn in approximately 2.4 acres of grounds.
+
+The house occupies a delightful position in the centre of the village with mature gardens and grounds with Hakka's Brook flowing through. The house would benefit from updating but offers considerable period detail and character. Attached to the house but with its own access is a converted barn with a self contained flat to the first floor and parking underneath. There is also a separate thatched barn which adjoins the neighbouring property."""^^xsd:string ;
+      gr:name "Main Road, East Hagbourne, Didcot, Oxfordshire, OX11"^^xsd:string ;
+      wgs84:lat "51.590963"^^xsd:double ;
+      wgs84:long "-1.240189"^^xsd:double ;
+      vcard:locality "East Hagbourne, Didcot, Oxfordshire" ;
+      vcard:street_address
+              "Main Road, East Hagbourne, Didcot, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110343_09.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d821
+      dd:hasPrice "1150000"^^xsd:double ;
+      gr:includes dd:d1d824 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-East-Hagbourne-OX11-jdwrps-OXF110343" .
+
+
+dd:d1d834
+      a       dd:House ;
+      gr:description """A charming period house surrounded by its own gardens and paddocks and bordering the River Ock.
+
+The house sits in a most attractive position, set back from this rural village and enjoying country views over its own gardens and paddocks which border the River Ock and towards the church. It is built of stone under a tiled roof. There is accommodation on two floors with considerable period detail including inglenook fireplaces, exposed beams and quarry tiled (old) floors. It is predominantly double glazed. The gardens are well arranged with formal gardens together with lawned areas to the front, side and rear and excellent vegetable high beech hedged garden to the rear. The other side is comprised of a gravel courtyard area between the house and garage building."""^^xsd:string ;
+      gr:name "Garford, Abingdon, Oxfordshire, OX13"^^xsd:string ;
+      wgs84:lat "51.663624"^^xsd:double ;
+      wgs84:long "-1.383445"^^xsd:double ;
+      vcard:locality "Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Garford, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110279_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d831
+      dd:hasPrice "1100000"^^xsd:double ;
+      gr:includes dd:d1d834 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-6-bedroom-property-for-sale-in-Abingdon-OX13-jdwrps-OXF110279" .
+
+
+dd:d1d844
+      a       dd:House ;
+      gr:description "This is a beautifully extended cottage offering light, well proportioned accommodation over two floors. Of particular note is the superb kitchen/conservatory with lantern light over and doors onto the garden. The current owners undertook extensive refurbishment and extension work to the house in 2007/8 when the conservatory was built and the new kitchen installed. At that time the house was double glazed, partially rewired and a new boiler installed. The gardens adjoin Hinksey Wood, which is owned by St John's College."^^xsd:string ;
+      gr:name "Foxcombe Lane, Boars Hill, Oxford, OX1"^^xsd:string ;
+      wgs84:lat "51.71658"^^xsd:double ;
+      wgs84:long "-1.276581"^^xsd:double ;
+      vcard:locality "Boars Hill, Oxford" ;
+      vcard:street_address
+              "Foxcombe Lane, Boars Hill, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110224_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d841
+      dd:hasPrice "1100000"^^xsd:double ;
+      gr:includes dd:d1d844 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/6-bedroom-property-for-sale-in-Boars-Hill-OX1-jdwrps-OXF110224" .
+
+
+dd:d1d854
+      a       dd:House ;
+      gr:description """A detached thatched cottage dating in part from the 17th Century with many period features, delightful gardens, swimming pool, stabling and paddocks in 6.16 acres.
+
+The property occupies a delightful position overlooking its gardens which are south and west facing. There is considerable period detail with inglenook fireplaces, exposed beams, timbers and bread oven. 
+
+The gardens are particularly attractive and adjoin the paddocks on two sides. There are excellent equestrian facilities with Warwick stable block with four loose boxes, store and tack room with large hay store adjacent. There is also separate vehicular access to the road. In all the property comprises 6.16 acres."""^^xsd:string ;
+      gr:name "Chapel Road, South Leigh, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.778859"^^xsd:double ;
+      wgs84:long "-1.442183"^^xsd:double ;
+      vcard:locality "South Leigh, Witney, Oxfordshire" ;
+      vcard:street_address
+              "Chapel Road, South Leigh, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120127_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d851
+      dd:hasPrice "995000"^^xsd:double ;
+      gr:includes dd:d1d854 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-South-Leigh-OX29-jdwrps-OXF120127" .
+
+
+dd:d1d861
+      dd:hasPrice "985000"^^xsd:double ;
+      gr:includes dd:d1d864 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Cumnor-Hill-OX2-jdwrps-OXF110232" .
+
+dd:d1d864
+      a       dd:House ;
+      gr:description "A family house of approximately 2944 sq ft with attached annexe situated just off Cumnor Hill on a desirable road. Well tended gardens featuring an in and out driveway and triple garaging to the front, and a delightful well tended south facing rear garden. Large windows and French doors along with glazed connecting doors let in a good level of natural light to the flexible well presented accommodation. The house is set back from the road behind high brick walls to the front and tall hedge borders to the rear, giving a good degree of privacy."^^xsd:string ;
+      gr:name "Delamare Way, Cumnor Hill, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.742578"^^xsd:double ;
+      wgs84:long "-1.309556"^^xsd:double ;
+      vcard:locality "Cumnor Hill, Oxford" ;
+      vcard:street_address
+              "Delamare Way, Cumnor Hill, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110232_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1d871
+      dd:hasPrice "975000"^^xsd:double ;
+      gr:includes dd:d1d874 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Oxford-OX1-jdwrps-OXF100133" .
+
+dd:d1d874
+      a       dd:House ;
+      gr:description """Attractive Victorian semi detached house on the south side of this favoured side road.
+
+The house has good family accommodation over four floors with an open plan kitchen/breakfast room opening onto the garden. The kitchen was refurbished in 2005 and provides extensive and well fitted maple units with granite work surfaces. The house could be extended further subject to the necessary consents to provide more accommodation if required."""^^xsd:string ;
+      gr:name "Richmond Road, Oxford, OX1"^^xsd:string ;
+      wgs84:lat "51.75713"^^xsd:double ;
+      wgs84:long "-1.264474"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Richmond Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100133_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1d884
+      a       dd:House ;
+      gr:description "Situated within the heart of the Cotswolds The Merrymouth Inn is a 13th century stone built hostelry situated just outside the village of Fifield, 4 miles north of Burford, and 5 miles south of Stow on the Wold."^^xsd:string ;
+      gr:name "Stow Road Fifield, Chipping Norton, Oxfordshire, OX7"^^xsd:string ;
+      wgs84:lat "51.86479"^^xsd:double ;
+      wgs84:long "-1.662946"^^xsd:double ;
+      vcard:locality "Chipping Norton, Oxfordshire" ;
+      vcard:street_address
+              "Stow Road Fifield, Chipping Norton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/KCS121292_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d881
+      dd:hasPrice "975000"^^xsd:double ;
+      gr:includes dd:d1d884 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/property-for-sale-in-Chipping-Norton-OX7-jdwrps-KCS121292" .
+
+
+dd:d1d894
+      a       dd:House ;
+      gr:description """A former coaching inn skilfully and thoughtfully renovated and converted to a high specification to a comfortable bright, airy family house in this popular and convenient south Oxfordshire village. 
+
+The property comprises a sitting room, dining room, family room and a study as well as a high quality fitted kitchen and utility room on the ground floor and on the first floor there are four bedrooms, one of which has an ensuite shower room and there is an additional opulent family bathroom. 
+
+The gardens are predominantly to the rear of the property and are enclosed by electric gates with a large gravelled area providing ample parking for a number of vehicles and also leads to the detached double garage. Screened from this by a laurel hedge is the lawn and formal garden with attractive flower beds, additional patio area and pretty summerhouse with a tiled roof."""^^xsd:string ;
+      gr:name "Main Road, East Hagbourne, Didcot, Oxfordshire, OX11"^^xsd:string ;
+      wgs84:lat "51.592357"^^xsd:double ;
+      wgs84:long "-1.235703"^^xsd:double ;
+      vcard:locality "East Hagbourne, Didcot, Oxfordshire" ;
+      vcard:street_address
+              "Main Road, East Hagbourne, Didcot, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120181_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d891
+      dd:hasPrice "950000"^^xsd:double ;
+      gr:includes dd:d1d894 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-East-Hagbourne-OX11-jdwrps-OXF120181" .
+
+
+dd:d1d904
+      a       dd:House ;
+      gr:description """A substantial imposing period town house with
+flexible accommodation over four floors retaining many period features including attractive fireplaces, cornicing, panelled doors and sash windows.
+The property boasts mature walled rear garden with horse chestnut tree and lawn."""^^xsd:string ;
+      gr:name "Southmoor Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.763141"^^xsd:double ;
+      wgs84:long "-1.270012"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Southmoor Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110326_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1d901
+      dd:hasPrice "950000"^^xsd:double ;
+      gr:includes dd:d1d904 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110326" .
+
+
+dd:d1d911
+      dd:hasPrice "925000"^^xsd:double ;
+      gr:includes dd:d1d914 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF120033" .
+
+dd:d1d914
+      a       dd:House ;
+      gr:description "Description"^^xsd:string ;
+      gr:name "Squitchey Lane, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.78205"^^xsd:double ;
+      wgs84:long "-1.27149"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Squitchey Lane, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120033_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1d921
+      dd:hasPrice "925000"^^xsd:double ;
+      gr:includes dd:d1d924 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF020387" .
+
+dd:d1d924
+      a       dd:House ;
+      gr:description "Substantial detached family house arranged over three floors. Modern, spacious detached property located on Cumnor Hill with accommodation over three floors. There is scope to extend (subject to necessary planning consents), set in 0.67 acres of mature gardens to three sides."^^xsd:string ;
+      gr:name "Cumnor Hill, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.746266"^^xsd:double ;
+      wgs84:long "-1.308722"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Cumnor Hill, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF020387_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1d934
+      a       dd:House ;
+      gr:description """A well presented period property on the south side of this favoured side road close to Summertown amenities.
+
+The property is arranged over four floors including the loft room and offers well proportioned accommodation, with a bedroom with additional bathroom on the lower ground floor. On the ground floor there is a sitting/dining room and open plan kitchen/breakfast and conservatory which leads out on to the garden and to the family room.
+
+On the first floor are three bedrooms and the bathroom. Outside there is off street parking to the front and a well tended rear south facing garden with decked patio and lawn."""^^xsd:string ;
+      gr:name "Oakthorpe Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.775863"^^xsd:double ;
+      wgs84:long "-1.266648"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Oakthorpe Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120102_09.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1d931
+      dd:hasPrice "900000"^^xsd:double ;
+      gr:includes dd:d1d934 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF120102" .
+
+
+dd:d1d941
+      dd:hasPrice "895000"^^xsd:double ;
+      gr:includes dd:d1d944 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/6-9-bedroom-property-for-sale-in-Eynsham-OX29-jdwrps-OXF080369" .
+
+dd:d1d944
+      a       dd:House ;
+      gr:description "This is a most attractive Grade II listed period property, parts of which date from the 17th century. The house offers substantial accommodation over three floors together with extensive cellars comprising in total approximately 5,500 sq ft. It has very well proportioned rooms with good ceiling heights affording excellent natural light and the principal rooms overlook the garden. It has an attractive walled garden to the rear together with a courtyard by the garage with ample parking approached through wooden gates from the road."^^xsd:string ;
+      gr:name "Mill Street, Eynsham, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.78112"^^xsd:double ;
+      wgs84:long "-1.374144"^^xsd:double ;
+      vcard:locality "Eynsham, Witney, Oxfordshire" ;
+      vcard:street_address
+              "Mill Street, Eynsham, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF080369_04.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1d954
+      a       dd:House ;
+      gr:description """An attractive double fronted detached period house set back from the road in a conservation area and with far reaching views across to the Blenheim Estate. 
+
+The property comprises of sitting room, family room, dining room, kitchen, utility, sun room, shower room/sauna and study on the ground floor. On the first floor there are three bedrooms, including the master with an ensuite and family bathroom. On the second floor there are two bedrooms and studio with a feature window and attractive views. 
+
+The property has retained many attractive features including fireplaces, corniced ceilings, wood block flooring and panelled doors and is set in an attractive plot with an in and out driveway, walled private formal rear garden and an orchard with fine views."""^^xsd:string ;
+      gr:name "Millwood End, Long Hanborough, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.827122"^^xsd:double ;
+      wgs84:long "-1.397925"^^xsd:double ;
+      vcard:locality "Long Hanborough, Witney, Oxfordshire" ;
+      vcard:street_address
+              "Millwood End, Long Hanborough, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120192_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d951
+      dd:hasPrice "875000"^^xsd:double ;
+      gr:includes dd:d1d954 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Long-Hanborough-OX29-jdwrps-OXF120192" .
+
+
+dd:d1d961
+      dd:hasPrice "850000"^^xsd:double ;
+      gr:includes dd:d1d964 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-West-Hendred-OX12-jdwrps-OXF120130" .
+
+dd:d1d964
+      a       dd:House ;
+      gr:description """Rarely available in this sought after Downland village, a modern individual, traditionally constructed cottage. 
+
+An individual and traditionally constructed family home with light, well-proportioned and generous accommodation. Built in 2006, it is situated in the West Hendred Conservation Area, in the North Wessex Downs Area of Outstanding Natural Beauty. The West Hendred brook flows through the garden and the cottage is close to open countryside and the Ridgeway National Trail, excellent for walking and riding.
+
+A warm and cosy house, the property is double glazed throughout, with electric powered central heating, under floor to the ground floor. 
+
+The delightful triple aspect drawing room has French doors leading to the terrace and has a large open fireplace. The open plan dining room leads into the garden room and drawing room, ideal for entertaining. The superb kitchen has a range of cream traditional style wall and base units with solid wood work surfaces and Neff built in appliances. In addition, there is a sitting room/study. Upstairs is a master suite of bedroom, dressing room and shower room, four additional bedrooms and family bathroom. 
+
+The garden is easily maintained, being laid to terrace with flower beds and planters. On the far bank of the brook there is a charming wild flower garden and shrubbery. The garden is flanked by the driveway which leads to the detached garage with additional space over."""^^xsd:string ;
+      gr:name "The Millham, West Hendred, Wantage, Oxfordshire, OX12"^^xsd:string ;
+      wgs84:lat "51.59478"^^xsd:double ;
+      wgs84:long "-1.35383"^^xsd:double ;
+      vcard:locality "West Hendred, Wantage, Oxfordshire" ;
+      vcard:street_address
+              "The Millham, West Hendred, Wantage, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120130_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1d974
+      a       dd:House ;
+      gr:description """An attractive Grade II listed 18th century stone house with a classical Georgian facade, overlooking a small green and the tributary to the River Swere in a conservation area.
+
+The property is of natural stone construction under a pitched Welsh grey slate covered roof. The house which is attached offers a wealth of period features including open fireplaces and sash windows and an enclosed private walled garden and swimming pool. In all about 0.25 acres."""^^xsd:string ;
+      gr:name "Brick Hill, Hook Norton, Banbury, Oxfordshire, OX15"^^xsd:string ;
+      wgs84:lat "51.99424"^^xsd:double ;
+      wgs84:long "-1.48227"^^xsd:double ;
+      vcard:locality "Hook Norton, Banbury, Oxfordshire" ;
+      vcard:street_address
+              "Brick Hill, Hook Norton, Banbury, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120073_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1d971
+      dd:hasPrice "850000"^^xsd:double ;
+      gr:includes dd:d1d974 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Hook-Norton-OX15-jdwrps-OXF120073" .
+
+
+dd:d1d984
+      a       dd:House ;
+      gr:description """A beautifully presented house in delightful gardens and grounds.
+
+This is a particularly attractive house built approximately 5/6 years ago well set back from the road and in the midst of its delightful gardens and grounds. The house has very good family accommodation over two floors with scope to extend in to the loft subject to the usual consents. Of particular note is the delightful farmhouse style kitchen/breakfast room and the conservatory from which there are lovely views over the garden. There is under floor heating throughout to the ground floor, double glazing throughout and the house is well insulated. It is situated at the western edge of the village and overlooks fields to the front. It is approached over double wooden gates on to the gravel driveway."""^^xsd:string ;
+      gr:name "Burford Road, Brize Norton, Carterton, Oxfordshire, OX18"^^xsd:string ;
+      wgs84:lat "51.773255"^^xsd:double ;
+      wgs84:long "-1.577643"^^xsd:double ;
+      vcard:locality "Brize Norton, Carterton, Oxfordshire" ;
+      vcard:street_address
+              "Burford Road, Brize Norton, Carterton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110300_15.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1d981
+      dd:hasPrice "850000"^^xsd:double ;
+      gr:includes dd:d1d984 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Brize-Norton-OX18-jdwrps-OXF110300" .
+
+
+dd:d1d991
+      dd:hasPrice "845000"^^xsd:double ;
+      gr:includes dd:d1d994 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Summertown-OX2-jdwrps-OXF100184" .
+
+dd:d1d994
+      a       dd:House ;
+      gr:description """An exceptional opportunity to purchase a detached house with a large rear garden with direct frontage to the river Cherwell and enjoying an exclusive position within a private cul de sac, away from through traffic, yet located in central Summertown. 
+
+Integral garage and additional parking for 1-2 cars to the front. The delightful back garden extends to approximately 156' and comprises a level lawn with terracing, mature shrubs and then a further lower garden area leading to the river."""^^xsd:string ;
+      gr:name "Lonsdale Road, Summertown, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.780993"^^xsd:double ;
+      wgs84:long "-1.258962"^^xsd:double ;
+      vcard:locality "Summertown, Oxford" ;
+      vcard:street_address
+              "Lonsdale Road, Summertown, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100184_11.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e14
+      a       dd:House ;
+      gr:description """A delightful, brick built, semi-detached, Edwardian house with pretty detailing and a double height bay with a projecting roof. 
+
+The current owners have secured planning permission to alter the property thereby greatly improving the living space with two storey rear extension including an excellent master bedroom suite. Planning permission: 12/00299/FUL."""^^xsd:string ;
+      gr:name "Woodstock Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.784656"^^xsd:double ;
+      wgs84:long "-1.277689"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Woodstock Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120022_13.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e11
+      dd:hasPrice "835000"^^xsd:double ;
+      gr:includes dd:d1e14 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF120022" .
+
+
+dd:d1e24
+      a       dd:House ;
+      gr:description "This is a substantial property, providing generously proportioned accommodation with 6 bedrooms, (5 ensuite), 6 reception rooms, conservatory and a large kitchen/breakfast room. The current owners have undertaken a programme of works in their ownership including a new ensuite shower room to the main bedroom, new family bathroom and replastering and decoration of the drawing room amongst others. Outside there is double garaging with workshop, stone barn, swimming pool and attractive south facing gardens with small orchard and paddock in addition. In all the property comprises 1.83 acres."^^xsd:string ;
+      gr:name "Lew, Bampton, Oxfordshire, OX18"^^xsd:string ;
+      wgs84:lat "51.75124"^^xsd:double ;
+      wgs84:long "-1.5367"^^xsd:double ;
+      vcard:locality "Bampton, Oxfordshire" ;
+      vcard:street_address
+              "Lew, Bampton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100269_15.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e21
+      dd:hasPrice "829000"^^xsd:double ;
+      gr:includes dd:d1e24 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/6-bedroom-property-for-sale-in-Bampton-OX18-jdwrps-OXF100269" .
+
+
+dd:d1e34
+      a       dd:House ;
+      gr:description """A rare opportunity to purchase a detached property in a conservation area at the end of a quiet farm lane in Nuneham Park surrounded by rolling countryside.
+
+The property comprises three double bedrooms and a bathroom on the first floor whilst on the ground floor there is a sitting room, dining room, study, farmhouse kitchen, utility room.
+
+Outside there is a detached garage, two loose boxes and formal gardens. There is also the opportunity to rent the adjacent paddock to the east subject to negotiation. 
+
+The main feature of this property is the setting with 360 degree panoramic views of farm and woodland with the animals and wildlife as your nearest neighbours."""^^xsd:string ;
+      gr:name "Nuneham Park, Nuneham Courtenay, Oxford, OX44"^^xsd:string ;
+      wgs84:lat "51.672094"^^xsd:double ;
+      wgs84:long "-1.220075"^^xsd:double ;
+      vcard:locality "Nuneham Courtenay, Oxford" ;
+      vcard:street_address
+              "Nuneham Park, Nuneham Courtenay, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110362_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e31
+      dd:hasPrice "800000"^^xsd:double ;
+      gr:includes dd:d1e34 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Nuneham-Courtenay-OX44-jdwrps-OXF110362" .
+
+
+dd:d1e41
+      dd:hasPrice "800000"^^xsd:double ;
+      gr:includes dd:d1e44 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Chipping-Norton-OX7-jdwrps-KCS111823" .
+
+dd:d1e44
+      a       dd:House ;
+      gr:description "Pooh Corner is a substantial detached Grade II Listed thatched cottage offering a wealth of period character and charm and set in generous landscaped grounds. The period details include flagstone floors, exposed beams and stone work, three large inglenook fireplaces, and a vaulted ceiling to bedroom two."^^xsd:string ;
+      gr:name "Great Rollright, Chipping Norton, Oxfordshire, OX7"^^xsd:string ;
+      wgs84:lat "51.97699"^^xsd:double ;
+      wgs84:long "-1.53016"^^xsd:double ;
+      vcard:locality "Chipping Norton, Oxfordshire" ;
+      vcard:street_address
+              "Great Rollright, Chipping Norton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/KCS111823_10.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e51
+      dd:hasPrice "799950"^^xsd:double ;
+      gr:includes dd:d1e54 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Oxford-OX1-jdwrps-OXF100195" .
+
+dd:d1e54
+      a       dd:House ;
+      gr:description """A detached family house in excellent condition on the outskirts of the city of Oxford.
+
+This a detached family house original constructed in the 1950s and has now been extended and modernized. There are two bright and spacious reception rooms that overlook the rear garden as well as a study to the front of the house. From the kitchen there is an open plan area for dining and further family space with a wood burner. On the first floor there are four bedrooms and three bathrooms as well as a family room/fifth bedroom  accessed by stairs from the kitchen/breakfast room. The gardens are beautifully maintained and planted with a wide range of shrubs and mature trees and also an all weather tennis court. From the house there are views over the neighbouring paddocks. There is a steam flowing through the grounds and a terrace to the rear of the house."""^^xsd:string ;
+      gr:name "Betty Lane, Oxford, OX1"^^xsd:string ;
+      wgs84:lat "51.728776"^^xsd:double ;
+      wgs84:long "-1.262124"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Betty Lane, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100195_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e64
+      a       dd:House ;
+      gr:description "A beautifully restored thatched, detached, 17th Century stone cottage set in attractive south westerly gardens, reroofed with a new reed thatch in 2005 and having planning consent (P10/W1608/EX) for a green oak frame extension providing for an additional living room and an ensuite double bedroom. The accommodation has character afforded by open fireplaces, natural wood, exposed beams, stone walls and flooring, balanced by a contemporary presentation that adds to and enhances the house. There is modern, dimmable lighting throughout. The secluded gardens are tastefully presented and laid out to make the most of the sunny aspect and open outlook across a paddock to the south."^^xsd:string ;
+      gr:name "Middle Road, Stanton St John, Oxford, OX33"^^xsd:string ;
+      wgs84:lat "51.778095"^^xsd:double ;
+      wgs84:long "-1.163234"^^xsd:double ;
+      vcard:locality "Stanton St John, Oxford" ;
+      vcard:street_address
+              "Middle Road, Stanton St John, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100464_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e61
+      dd:hasPrice "745000"^^xsd:double ;
+      gr:includes dd:d1e64 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/2-3-bedroom-property-for-sale-in-Stanton-St-John-OX33-jdwrps-OXF100464" .
+
+
+dd:d1e74
+      a       dd:House ;
+      gr:description """An attractive semi detached house on the south side of this popular side road.
+
+The house has accommodation over three floors and the ground floor rear was extended in 1970 and 1999 and the loft was converted to a bedroom in 1973. The ground floor benefits from a large kitchen/breakfast/family room with French doors opening onto the garden. There is ample parking at the front of the house with access at the side to the rear garden. The garden is south facing and measures  31.1m x  7m (102' x 23') approximately."""^^xsd:string ;
+      gr:name "Victoria Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.782097"^^xsd:double ;
+      wgs84:long "-1.264648"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Victoria Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110446_12.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e71
+      dd:hasPrice "725000"^^xsd:double ;
+      gr:includes dd:d1e74 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110446" .
+
+
+dd:d1e84
+      a       dd:House ;
+      gr:description """A charming Grade II Listed cottage with a wealth of charm and character including fireplaces and exposed beams thoughtfully and carefully restored to a high standard by the owner and believed to date from 1642. 
+
+Entering the property there is the entrance hall with a vaulted ceiling and a cloakroom, this leads through in to an attractive sitting room with exposed beams and inglenook fireplace. From this room you continue on in to the hallway with the elm staircase to the first floor and on in to the dining room with a fine stone fireplace, chequer board tiled floor and beams. Off this room is the kitchen and breakfast area which has panoramic views across the garden to the church and countryside beyond. On the first floor the main bedroom has a high ceiling and exposed beams. The second bedroom has a fine stone fireplace similar to that in the dining room and the third bedroom has its own seating/dressing area. The refitted bathroom is particularly attractive and has under floor heating, a freestanding, ball and claw roll top bath as well as separate shower cubicle. There is a large loft space stretching the length of the cottage. 
+
+The gardens are rustic, mainly laid to lawn and have attractive flower beds, fruit trees and views to the church and countryside beyond and there is also parking behind the five bar gate."""^^xsd:string ;
+      gr:name "Southend, Garsington, Oxford, OX44"^^xsd:string ;
+      wgs84:lat "51.71466"^^xsd:double ;
+      wgs84:long "-1.159836"^^xsd:double ;
+      vcard:locality "Garsington, Oxford" ;
+      vcard:street_address
+              "Southend, Garsington, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120077_11.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e81
+      dd:hasPrice "699950"^^xsd:double ;
+      gr:includes dd:d1e84 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Garsington-OX44-jdwrps-OXF120077" .
+
+
+dd:d1e91
+      dd:hasPrice "699950"^^xsd:double ;
+      gr:includes dd:d1e94 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Harwell-OX11-jdwrps-OXF080446" .
+
+dd:d1e94
+      a       dd:House ;
+      gr:description "This period property is believed to have originated in the 1500s, with a plaque on the gable end wall stating that it was Robert Loder's Charity School from 1644 to 1895. The painted rendered elevations under the tiled roof compliment the verdant and well tended gardens and enclose family accommodation of some considerable character. Extensive refurbishment has created a house which now has that rare combination of exposed timbers, open fireplaces and a character atmosphere married with the practicalities of modern family living provided by a beautiful kitchen/breakfast room and crisp modern bathroom and ensuite facilities."^^xsd:string ;
+      gr:name "School Lane, Harwell, Didcot, Oxfordshire, OX11"^^xsd:string ;
+      wgs84:lat "51.599274"^^xsd:double ;
+      wgs84:long "-1.290116"^^xsd:double ;
+      vcard:locality "Harwell, Didcot, Oxfordshire" ;
+      vcard:street_address
+              "School Lane, Harwell, Didcot, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF080446_07.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1e101
+      dd:hasPrice "695000"^^xsd:double ;
+      gr:includes dd:d1e104 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Harwell-OX11-jdwrps-OXF110400" .
+
+dd:d1e104
+      a       dd:House ;
+      gr:description """Modernised and well presented Grade II Listed house over three floors in this thriving village.
+
+The property has recently been modernised and updated to offer comfortable and flexible family accommodation. There is an open plan kitchen/breakfast room, two reception rooms as well as five bedrooms and two bathrooms arranged over three floors. There is also a useful garage/workshop overlooking the small pretty garden to the rear."""^^xsd:string ;
+      gr:name "High Street, Harwell, Didcot, Oxfordshire, OX11"^^xsd:string ;
+      wgs84:lat "51.59712"^^xsd:double ;
+      wgs84:long "-1.29308"^^xsd:double ;
+      vcard:locality "Harwell, Didcot, Oxfordshire" ;
+      vcard:street_address
+              "High Street, Harwell, Didcot, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110400_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e114
+      a       dd:House ;
+      gr:description "A beautifully presented end of terrace Rousham style house in the catchment area for St Philip and St James school. It has generously proportioned accommodation which is light and stylish and arranged over three floors. There is an allocated parking space to the front, and a particular attraction is the pretty, landscaped rear garden. There is the opportunity to extend the house at the side and rear subject to the necessary consents."^^xsd:string ;
+      gr:name "Stone Meadow, Waterways, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.771462"^^xsd:double ;
+      wgs84:long "-1.273392"^^xsd:double ;
+      vcard:locality "Waterways, Oxford" ;
+      vcard:street_address
+              "Stone Meadow, Waterways, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110301_03.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e111
+      dd:hasPrice "675000"^^xsd:double ;
+      gr:includes dd:d1e114 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Waterways-OX2-jdwrps-OXF110301" .
+
+
+dd:d1e124
+      a       dd:House ;
+      gr:description """A modern town house with versatile family accommodation in this Central North Oxford location.
+
+Built by Berkeley Homes and situated within this popular development this light, well proportioned family home provides comfortable accommodation over three floors. It is well placed for access to city centre, rail and bus station and Port Meadow for walks by the river. There is an open plan kitchen/dining room and conservatory, an integral garage and an enclosed rear garden."""^^xsd:string ;
+      gr:name "Plater Drive, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.766646"^^xsd:double ;
+      wgs84:long "-1.272275"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Plater Drive, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF070503_05.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e121
+      dd:hasPrice "675000"^^xsd:double ;
+      gr:includes dd:d1e124 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF070503" .
+
+
+dd:d1e131
+      dd:hasPrice "665000"^^xsd:double ;
+      gr:includes dd:d1e134 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Stonesfield-OX29-jdwrps-OXF100063" .
+
+dd:d1e134
+      a       dd:House ;
+      gr:description """An attractive home in an enviable edge of village position with glorious far reaching views over open countryside.
+
+Lying at the end of this lane with walks along the Oxfordshire Way down to the river Evenlode and across to the Roman villa at North Leigh, the property enjoys an enviable edge of village position. It presently provides light, nicely proportioned and flexible accommodation. It is set in well tended, pretty gardens, with a swimming pool discreetly placed to the rear of the garden and there are glorious far reaching views over open countryside. The attic space offers scope for conversion to provide considerable accommodation subject to the necessary consents. Drawings have been done to illustrate how the space would be laid out and further details are available from the agents."""^^xsd:string ;
+      gr:name "Brook Lane, Stonesfield, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.84836"^^xsd:double ;
+      wgs84:long "-1.42975"^^xsd:double ;
+      vcard:locality "Stonesfield, Witney, Oxfordshire" ;
+      vcard:street_address
+              "Brook Lane, Stonesfield, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100063_09.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e141
+      dd:hasPrice "660000"^^xsd:double ;
+      gr:includes dd:d1e144 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF100225" .
+
+dd:d1e144
+      a       dd:House ;
+      gr:description """A well presented terraced town house in the catchment area of SS Philip and James primary school.
+
+This attractive, well positioned property on a popular development offers flexible family accommodation over three floors. There is an open plan kitchen/dining  area with French doors leading through to the sitting room which overlooks the rear east facing garden. There are four bedrooms with two bathrooms (one ensuite)."""^^xsd:string ;
+      gr:name "Navigation Way, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.768042"^^xsd:double ;
+      wgs84:long "-1.271598"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Navigation Way, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100225_10.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e154
+      a       dd:House ;
+      gr:description """Substantial property of approximately 3200 sq ft including three potential rooms in the large loft area which could be converted subject to the usual consents to create three additional bedrooms or an annexe. There are also additional outbuildings and a detached period barn which are suitable for conversion subject to necessary consents.
+
+The property sits in attractive gardens approached over a drive and the house and outbuildings are well arranged within the plot. Of particular attraction is the location of the house which is on the edge of the village and yet within easy reach of the facilities available in both the village and Milton Park."""^^xsd:string ;
+      gr:name "School Lane, Milton, Abingdon, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.627232"^^xsd:double ;
+      wgs84:long "-1.296473"^^xsd:double ;
+      vcard:locality "Milton, Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "School Lane, Milton, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100009_08.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e151
+      dd:hasPrice "660000"^^xsd:double ;
+      gr:includes dd:d1e154 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Milton-OX14-jdwrps-OXF100009" .
+
+
+dd:d1e161
+      dd:hasPrice "660000"^^xsd:double ;
+      gr:includes dd:d1e164 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Milton-OX14-jdwrps-OXF100003" .
+
+dd:d1e164
+      a       dd:House ;
+      gr:description """This is an attractive family house standing in mature gardens and grounds. The house has good family accommodation over two floors with underfloor heating throughout, controlled by individual room thermostats. The house was built 6 years ago by the current vendors and still has 4 years NHBC warranty.
+
+It overlooks its south and west facing gardens and is in an attractive setting on the edge of the village."""^^xsd:string ;
+      gr:name "School Lane, Milton, Abingdon, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.627551"^^xsd:double ;
+      wgs84:long "-1.296345"^^xsd:double ;
+      vcard:locality "Milton, Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "School Lane, Milton, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100003_10.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1e171
+      dd:hasPrice "650000"^^xsd:double ;
+      gr:includes dd:d1e174 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Charlbury-OX7-jdwrps-OXF120084" .
+
+dd:d1e174
+      a       dd:House ;
+      gr:description """A family house offering four bedrooms, flexible open plan living areas and an attractive south west facing mature walled garden. 
+
+The house occupies a delightful position within this thriving and vibrant market town enjoying views towards Cornbury Park and the Evenlode Valley. It is built of Cotswold stone under a slate roof and has a wealth of individual charm and character. Whilst being in Charlbury it is located down a private road in its own \"tucked away\" location."""^^xsd:string ;
+      gr:name "Thames Gardens, Charlbury, Chipping Norton, Oxfordshire, OX7"^^xsd:string ;
+      wgs84:lat "51.874297"^^xsd:double ;
+      wgs84:long "-1.485107"^^xsd:double ;
+      vcard:locality "Charlbury, Chipping Norton, Oxfordshire" ;
+      vcard:street_address
+              "Thames Gardens, Charlbury, Chipping Norton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120084_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1e184
+      a       dd:House ;
+      gr:description """This is a detached period cottage which has been modernised and now provides a well proportioned home of charm and character, with feature fireplaces and some exposed timbers and stonework. 
+
+The reception rooms all overlook the pretty gardens, and there is off street parking leading to a detached double garage with store room above."""^^xsd:string ;
+      gr:name "East End, North Leigh, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.82406"^^xsd:double ;
+      wgs84:long "-1.42029"^^xsd:double ;
+      vcard:locality "North Leigh, Witney, Oxfordshire" ;
+      vcard:street_address
+              "East End, North Leigh, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100380_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e181
+      dd:hasPrice "650000"^^xsd:double ;
+      gr:includes dd:d1e184 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-North-Leigh-OX29-jdwrps-OXF100380" .
+
+
+dd:d1e194
+      a       dd:House ;
+      gr:description """A stylish barn conversion with bright, spacious accommodation set around a central staircase and galleried landing.
+
+The property is located on the edge of this popular village and is situation at the end of a shared gravelled driveway."""^^xsd:string ;
+      gr:name "Main Road, Curbridge, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.77599"^^xsd:double ;
+      wgs84:long "-1.5167"^^xsd:double ;
+      vcard:locality "Curbridge, Witney, Oxfordshire" ;
+      vcard:street_address
+              "Main Road, Curbridge, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110463_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e191
+      dd:hasPrice "645000"^^xsd:double ;
+      gr:includes dd:d1e194 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Curbridge-OX29-jdwrps-OXF110463" .
+
+
+dd:d1e204
+      a       dd:House ;
+      gr:description """An extended and modernised house on the edge of the village enjoying spectacular views over open countryside.
+
+The house which is attached, sits in a most attractive position on the edge of the village and enjoys spectacular views to the south and east. It was extended in 2002 and now provides comfortable accommodation over two floors. The kitchen was refurbished with Uber and is now finished to a high standard throughout with doors opening to outside."""^^xsd:string ;
+      gr:name "Toot Baldon, Oxford, OX44"^^xsd:string ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Toot Baldon, Oxford" .
+
+dd:d1e201
+      dd:hasPrice "645000"^^xsd:double ;
+      gr:includes dd:d1e204 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Oxford-OX44-jdwrps-OXF110381" .
+
+
+dd:d1e214
+      a       dd:House ;
+      gr:description """An elegant 3 bedroom duplex apartment with charming enclosed garden and private parking.
+
+It is one of three properties converted and modernised from a large Victorian house. Its principal attraction is its delightful drawing room with a southerly aspect and French doors out on to the private garden. In addition are the double height hall and modern kitchen with electric Aga incorporating AIMS programming system."""^^xsd:string ;
+      gr:name "Squitchey Lane, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.781648"^^xsd:double ;
+      wgs84:long "-1.272536"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Squitchey Lane, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110359_02.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e211
+      dd:hasPrice "625000"^^xsd:double ;
+      gr:includes dd:d1e214 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110359" .
+
+
+dd:d1e221
+      dd:hasPrice "625000"^^xsd:double ;
+      gr:includes dd:d1e224 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/0-2-bedroom-property-for-sale-in-Charlton-on-Otmoor-OX5-jdwrps-OXF110308" .
+
+dd:d1e224
+      a       dd:House ;
+      gr:description "An excellent redevelopment opportunity of an attractive village house with traditional barn, outbuildings and large garden with independent access."^^xsd:string ;
+      gr:name "Blacksmith Lane, Charlton on Otmoor, Kidlington, Oxfordshire, OX5"^^xsd:string ;
+      wgs84:lat "51.837846"^^xsd:double ;
+      wgs84:long "-1.18742"^^xsd:double ;
+      vcard:locality "Charlton on Otmoor, Kidlington, Oxfordshire" ;
+      vcard:street_address
+              "Blacksmith Lane, Charlton on Otmoor, Kidlington, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110308_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1e234
+      a       dd:House ;
+      gr:description "An immaculately presented double fronted Late Georgian town house located in the heart of Kingham."^^xsd:string ;
+      gr:name "Church Street, Kingham, Chipping Norton, Oxfordshire, OX7"^^xsd:string ;
+      wgs84:lat "51.912971"^^xsd:double ;
+      wgs84:long "-1.624002"^^xsd:double ;
+      vcard:locality "Kingham, Chipping Norton, Oxfordshire" ;
+      vcard:street_address
+              "Church Street, Kingham, Chipping Norton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/KCS112994_03.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e231
+      dd:hasPrice "625000"^^xsd:double ;
+      gr:includes dd:d1e234 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Kingham-OX7-jdwrps-KCS112994" .
+
+
+dd:d1e244
+      a       dd:House ;
+      gr:description "An attractive individually designed house over three floors built in 1997 from traditional Cotswold stone under a slate roof. It offers the advantages of a modern  home with double glazing, gas central heating coupled with character features. The property that has been well maintained, has been extensively updated and extended by the current owners. It is situated in South Side, an attractive village street with a number of fine period properties and has the advantage of being set back from the road thus providing ample off street parking in addition to a spacious double garage."^^xsd:string ;
+      gr:name "South Side, Steeple Aston, Bicester, Oxfordshire, OX25"^^xsd:string ;
+      wgs84:lat "51.927694"^^xsd:double ;
+      wgs84:long "-1.309878"^^xsd:double ;
+      vcard:locality "Steeple Aston, Bicester, Oxfordshire" ;
+      vcard:street_address
+              "South Side, Steeple Aston, Bicester, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110467_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e241
+      dd:hasPrice "595000"^^xsd:double ;
+      gr:includes dd:d1e244 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Steeple-Aston-OX25-jdwrps-OXF110467" .
+
+
+dd:d1e254
+      a       dd:House ;
+      gr:description """Stylishly updated modern terraced house just off the Banbury Road in this popular close.
+
+The property is a terraced house which has been extensively modernised and improved by the current owner and has bright airy accommodation with open plan living area and refitted kitchen on the ground floor. Large master bedroom with two further good sized bedrooms and refitted bathroom and a garage."""^^xsd:string ;
+      gr:name "Cunliffe Close, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.772941"^^xsd:double ;
+      wgs84:long "-1.260956"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Cunliffe Close, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110427_10.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e251
+      dd:hasPrice "595000"^^xsd:double ;
+      gr:includes dd:d1e254 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110427" .
+
+
+dd:d1e261
+      dd:hasPrice "595000"^^xsd:double ;
+      gr:includes dd:d1e264 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-4-bedroom-property-for-sale-in-Bampton-Road-OX18-jdwrps-OXF110394" .
+
+dd:d1e264
+      a       dd:House ;
+      gr:description """Pretty barn conversion situated in the village of Black Bourton with good access to the Cotswolds. 
+
+This is a Grade II Listed building of special architectural or historic interest and forms part of a development of former farm buildings located on the edge of the village."""^^xsd:string ;
+      gr:name "Shilbrook Manor, Bampton Road, Black Bourton, Oxfordshire, OX18"^^xsd:string ;
+      wgs84:lat "51.733627"^^xsd:double ;
+      wgs84:long "-1.584649"^^xsd:double ;
+      vcard:locality "Bampton Road, Black Bourton, Oxfordshire" ;
+      vcard:street_address
+              "Shilbrook Manor, Bampton Road, Black Bourton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110394_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e274
+      a       dd:House ;
+      gr:description """Detached house with attractive mature gardens and views in this thriving and well located village.
+
+The property enjoys a prominent position in the village and overlooks its gently sloping garden. It offers scope for further extension by way of a loft conversion, subject  to the necessary consents. There is ample parking at the side and front of the house."""^^xsd:string ;
+      gr:name "Church Road, Wheatley, Oxford, OX33"^^xsd:string ;
+      wgs84:lat "51.746867"^^xsd:double ;
+      wgs84:long "-1.131173"^^xsd:double ;
+      vcard:locality "Wheatley, Oxford" ;
+      vcard:street_address
+              "Church Road, Wheatley, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100108_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e271
+      dd:hasPrice "595000"^^xsd:double ;
+      gr:includes dd:d1e274 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Wheatley-OX33-jdwrps-OXF100108" .
+
+
+dd:d1e284
+      a       dd:House ;
+      gr:description """Stylishly improved detached family house with a large family kitchen and dining area, south facing walled garden and detached garage, overlooking the village church.
+
+The property is constructed of Cotswold stone and has been improved, updated and extended to a high standard by the owners, now arranged over two floors, on the ground floor a large, bright family kitchen and dining area, double aspect sitting room, three bedrooms and a family bathroom. On the first floor a large master bedroom suite with a shower room and dressing area as well as two further bedrooms and a shower room. The village is ideally located for access to the M40 and Bicester North and Town rail stations to London Paddington and Marylebone with a journey time of approximately 60 minutes and are all approximately two miles away."""^^xsd:string ;
+      gr:name "Manor Farm Lane, Chesterton, Bicester, Oxfordshire, OX26"^^xsd:string ;
+      wgs84:lat "51.88757"^^xsd:double ;
+      wgs84:long "-1.18494"^^xsd:double ;
+      vcard:locality "Chesterton, Bicester, Oxfordshire" ;
+      vcard:street_address
+              "Manor Farm Lane, Chesterton, Bicester, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110314_08.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e281
+      dd:hasPrice "585000"^^xsd:double ;
+      gr:includes dd:d1e284 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Chesterton-OX26-jdwrps-OXF110314" .
+
+
+dd:d1e291
+      dd:hasPrice "579500"^^xsd:double ;
+      gr:includes dd:d1e294 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Eynsham-OX29-jdwrps-OXF120012" .
+
+dd:d1e294
+      a       dd:House ;
+      gr:description """A detached family house on a small development in the old part of Eynsham.
+
+The L shaped house is located on a corner plot with a private gated driveway and garden on two sides of the property. The sitting room has sliding doors on to a patio area whilst the kitchen/breakfast room lends itself to an open plan family living space. There are four bedrooms and two well proportioned bathrooms."""^^xsd:string ;
+      gr:name "Orchard Close, Eynsham, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.78141"^^xsd:double ;
+      wgs84:long "-1.36861"^^xsd:double ;
+      vcard:locality "Eynsham, Witney, Oxfordshire" ;
+      vcard:street_address
+              "Orchard Close, Eynsham, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120012_02.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1e304
+      a       dd:House ;
+      gr:description "A double fronted Grade II Listed cottage over 3 floors and situated in a favoured road in this popular market town. The cottage offers many original period features and benefits from three open fireplaces, original floor boards, exposed beams and window seats."^^xsd:string ;
+      gr:name "Church Street, Charlbury, Chipping Norton, Oxfordshire, OX7"^^xsd:string ;
+      wgs84:lat "51.872281"^^xsd:double ;
+      wgs84:long "-1.482738"^^xsd:double ;
+      vcard:locality "Charlbury, Chipping Norton, Oxfordshire" ;
+      vcard:street_address
+              "Church Street, Charlbury, Chipping Norton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/KCS120905_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e301
+      dd:hasPrice "575000"^^xsd:double ;
+      gr:includes dd:d1e304 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Charlbury-OX7-jdwrps-KCS120905" .
+
+
+dd:d1e311
+      dd:hasPrice "565000"^^xsd:double ;
+      gr:includes dd:d1e314 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Longworth-OX13-jdwrps-OXF110271" .
+
+dd:d1e314
+      a       dd:House ;
+      gr:description "Charming double fronted semi-detached cottage with a pretty mature front garden enclosed by a stone wall. Approached by way of a stone path through the front garden, the picturesque front facade gives little indication of the space and thoughtful design that lies within. Within the original cottage, there is a traditional kitchen breakfast room, sitting room, and two bedrooms, both of which are en-suite. A striking glazed extension built in 2005 provides the link from the kitchen to the dining room and to bedrooms three and four. The extension and conversion has provided a new double height dining room with slate flooring and exposed stone walls, and a mezzanine which over looks it. This provides a bright study area and leads to bedroom four. On the ground floor leading off from the new extension is a further bedroom with ensuite facilities. The rear garden is a secluded space perfect for alfresco dining with lawn and mature shrubs and attractive maple trees. Ivy cottage also benefits from a gravelled parking area."^^xsd:string ;
+      gr:name "Tucks Lane, Longworth, Abingdon, Oxfordshire, OX13"^^xsd:string ;
+      wgs84:lat "51.692146"^^xsd:double ;
+      wgs84:long "-1.437798"^^xsd:double ;
+      vcard:locality "Longworth, Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Tucks Lane, Longworth, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110271_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e324
+      a       dd:House ;
+      gr:description "A pretty stone cottage set in approximately 0.5 acres of picturesque gardens through which runs Chilbrook. Refurbished by the present owners the cottage now provides spacious comfortable family accommodation, including a kitchen/breakfast room with bespoke wooden/ hand painted units, separate utility room and shower room. One of the many attractive features is the surprisingly large and delightful garden with garage and outbuilding, all in this delightful west Oxfordshire setting. Note: The private drive is partly owned. There are rights of access across the unowned section, and access is given to other properties across the owned section. No forward chain"^^xsd:string ;
+      gr:name "Barnard Gate, Witney, Oxfordshire, OX29"^^xsd:string ;
+      wgs84:lat "51.793315"^^xsd:double ;
+      wgs84:long "-1.416201"^^xsd:double ;
+      vcard:locality "Witney, Oxfordshire" ;
+      vcard:street_address
+              "Barnard Gate, Witney, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110176_07.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e321
+      dd:hasPrice "565000"^^xsd:double ;
+      gr:includes dd:d1e324 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Witney-OX29-jdwrps-OXF110176" .
+
+
+dd:d1e334
+      a       dd:House ;
+      gr:description """A delightful stone barn in a private setting in this attractive and well placed Oxfordshire village.
+
+The barn is part of a collection of four properties surrounding a gravelled courtyard. The property benefits from having a spacious open plan sitting room with a wood burner surrounded by a stone fireplace and French doors leading to an enclosed west facing garden. There are four well proportioned bedrooms as well as a family bathroom and ensuite shower room."""^^xsd:string ;
+      gr:name "Ball Lane, Tackley, Kidlington, Oxfordshire, OX5"^^xsd:string ;
+      wgs84:lat "51.880959"^^xsd:double ;
+      wgs84:long "-1.308396"^^xsd:double ;
+      vcard:locality "Tackley, Kidlington, Oxfordshire" ;
+      vcard:street_address
+              "Ball Lane, Tackley, Kidlington, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120106_02.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e331
+      dd:hasPrice "550000"^^xsd:double ;
+      gr:includes dd:d1e334 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Tackley-OX5-jdwrps-OXF120106" .
+
+
+dd:d1e341
+      dd:hasPrice "550000"^^xsd:double ;
+      gr:includes dd:d1e344 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Sutton-Courtenay-OX14-jdwrps-OXF110487" .
+
+dd:d1e344
+      a       dd:House ;
+      gr:description """A well presented 3 bedroom terraced house in a popular south Oxfordshire village.
+
+Believed to date back to the 17th Century, January Cottage is a charming home and benefits from careful refurbishment.   Period features such as leaded windows to the front of the cottage and the inglenook fireplace in the sitting-room are combined with a  modern kitchen and bathrooms to provide stylish and comfortable accommodation."""^^xsd:string ;
+      gr:name "Church Street, Sutton Courtenay, Abingdon, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.64573"^^xsd:double ;
+      wgs84:long "-1.27141"^^xsd:double ;
+      vcard:locality "Sutton Courtenay, Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Church Street, Sutton Courtenay, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110487_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e351
+      dd:hasPrice "545000"^^xsd:double ;
+      gr:includes dd:d1e354 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110115" .
+
+dd:d1e354
+      a       dd:House ;
+      gr:description """End of terrace house with double width south facing garden and off street parking. The  garden measures approximately 39.78 x 10.36m (130'6\" x 34' maximum). Built in the early 1900s it has been extended to create very comfortable and well proportioned family accommodation over two floors with double glazing throughout. 
+
+Note: A swift transaction is possible as there is no onward purchase by the owners."""^^xsd:string ;
+      gr:name "Harpes Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.783785"^^xsd:double ;
+      wgs84:long "-1.261545"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Harpes Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110115_06.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e364
+      a       dd:House ;
+      gr:description """Family house with a delightful 140' x 54' garden and principle accommodation on the ground floor plus a first floor bedroom. There is additional loft space which could be converted to make further accommodation if required subject to the necessary consents.
+
+The living accommodation, enhanced by stained wooden skirtings and architrave, has good proportions, making good use of natural light. A conservatory opens onto the rear garden which has a water feature, workshop, large garden shed and aluminium greenhouse. The property is set in the heart of this attractive and well placed hamlet."""^^xsd:string ;
+      gr:name "Garford, Abingdon, Oxfordshire, OX13"^^xsd:string ;
+      wgs84:lat "51.663"^^xsd:double ;
+      wgs84:long "-1.383719"^^xsd:double ;
+      vcard:locality "Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Garford, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110047_14.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e361
+      dd:hasPrice "499950"^^xsd:double ;
+      gr:includes dd:d1e364 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Abingdon-OX13-jdwrps-OXF110047" .
+
+
+dd:d1e374
+      a       dd:House ;
+      gr:description """A pretty, three bedroom, three storey house extended and refurbished to a very high specification in this pleasant side road well placed for the centre of Summertown.
+
+An excellent, contemporary renovation, the house extended and fitted out to a very high standard and specification. Engineered oak flooring and travertine tiling with under floor heating throughout. Integrated Sonos networked stereo control system. Beautifully fitted kitchen/dining room opening onto a stylish, low maintenance rear garden. This outstanding property is very well placed for the Summertown shops and public transport access to the city centre."""^^xsd:string ;
+      gr:name "Grove Street, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.780119"^^xsd:double ;
+      wgs84:long "-1.267477"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Grove Street, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110454_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e371
+      dd:hasPrice "499500"^^xsd:double ;
+      gr:includes dd:d1e374 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110454" .
+
+
+dd:d1e381
+      dd:hasPrice "499500"^^xsd:double ;
+      gr:includes dd:d1e384 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110113" .
+
+dd:d1e384
+      a       dd:House ;
+      gr:description """An extended, semi detached house which has recently been refurbished offering accommodation over three floors.
+
+This is an extended family house offering four bedrooms together with loft room, three reception rooms and bath and shower room. The house has undergone refurbishment and offers well planned accommodation with good natural light throughout. It has Everest double glazing and recently fitted kitchen, bath and shower rooms."""^^xsd:string ;
+      gr:name "Five Mile Drive, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.789737"^^xsd:double ;
+      wgs84:long "-1.277657"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Five Mile Drive, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110113_08.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1e391
+      dd:hasPrice "435000"^^xsd:double ;
+      gr:includes dd:d1e394 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/4-bedroom-property-for-sale-in-Tackley-OX5-jdwrps-OXF080430" .
+
+dd:d1e394
+      a       dd:House ;
+      gr:description "A stone cottage with a pleasant outlook across the village green towards the church, situated in this attractive and most desirable Oxfordshire village. Extended and refurbished the cottage has well presented accommodation with some considerable character combined with the practical and versatile layout that is essential for modern family living. Inglenook fireplace with bread oven, exposed beams and floorboards and a pretty enclosed rear garden enhance the overall charm of this delightful village home."^^xsd:string ;
+      gr:name "The Green, Tackley, Kidlington, Oxfordshire, OX5"^^xsd:string ;
+      wgs84:lat "51.880642"^^xsd:double ;
+      wgs84:long "-1.306968"^^xsd:double ;
+      vcard:locality "Tackley, Kidlington, Oxfordshire" ;
+      vcard:street_address
+              "The Green, Tackley, Kidlington, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF080430_11.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e404
+      a       dd:House ;
+      gr:description """The house was originally built in 1896 to a design of H W Moore, and converted into apartments and refurbished in 1998. There are two double bedrooms, large sitting room, elegant entrance hall, kitchen, bathroom and a useful cloakroom/laundry. The feeling of light and space is enhanced by large windows (including two bay windows) and high ceilings. There is designated parking to the front and the apartment has its own garden to the rear. 
+
+A plan has been attached to these details showing a scheme to change the configuration of the bathroom and kitchen.  This design is for illustrative purposes only but should it be of interest please contact John D. Wood & Co."""^^xsd:string ;
+      gr:name "Banbury Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.768414"^^xsd:double ;
+      wgs84:long "-1.261314"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Banbury Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110302_05.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e401
+      dd:hasPrice "425000"^^xsd:double ;
+      gr:includes dd:d1e404 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/2-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110302" .
+
+
+dd:d1e411
+      dd:hasPrice "420000"^^xsd:double ;
+      gr:includes dd:d1e414 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Chipping-Norton-OX7-jdwrps-OXF100047" .
+
+dd:d1e414
+      a       dd:House ;
+      gr:description "Bliss Mill is a magnificent 19th Century Grade II Listed former textiles mill converted into 43 apartments and cottages. A well-known local landmark, positioned on the edge of the town. Apartment 6 is on the ground floor and enjoys large rooms enhanced by unusually high ceilings and retains much of the building's character with large windows, arched brick ceilings and substantial iron supporting columns. A particular feature of living in Bliss Mill is the leisure complex for the exclusive use of the residents."^^xsd:string ;
+      gr:name "Bliss Mill, Chipping Norton, Oxfordshire, OX7"^^xsd:string ;
+      wgs84:lat "51.938193"^^xsd:double ;
+      wgs84:long "-1.558986"^^xsd:double ;
+      vcard:locality "Chipping Norton, Oxfordshire" ;
+      vcard:street_address
+              "Bliss Mill, Chipping Norton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100047_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e424
+      a       dd:House ;
+      gr:description "Delightful Grade II Listed red brick cottage with extensive river views from an elevated position and overlooking private green. Sandford Lock is a short distance with walks along the towpath."^^xsd:string ;
+      gr:name "River View, Sandford-on-Thames, Oxford, OX4"^^xsd:string ;
+      wgs84:lat "51.709585"^^xsd:double ;
+      wgs84:long "-1.230766"^^xsd:double ;
+      vcard:locality "Sandford-on-Thames, Oxford" ;
+      vcard:street_address
+              "River View, Sandford-on-Thames, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120082_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e421
+      dd:hasPrice "399000"^^xsd:double ;
+      gr:includes dd:d1e424 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Sandford-on-Thames-OX4-jdwrps-OXF120082" .
+
+
+dd:d1e431
+      dd:hasPrice "399000"^^xsd:double ;
+      gr:includes dd:d1e434 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/5-bedroom-property-for-sale-in-Longworth-OX13-jdwrps-OXF110167" .
+
+dd:d1e434
+      a       dd:House ;
+      gr:description """Detached bungalow with outline planning permission to replace with a new building.
+
+Situated along a village lane with views across to the Ridgeway and within easy and convenient reach of the shops and local amenities of Kingston Bagpuize/Southmoor and Millets Farm. The site has outline consent to replace existing bungalow with replacement dwelling. Previously it had full permission to erect a five bedroom, four reception room detached house which was granted in 2000 and renewed in 2005 but has now expired.
+Outline planning reference number LWO/11249/4-X Decision granted 26 May 2011"""^^xsd:string ;
+      gr:name "Springhill, Longworth, Abingdon, Oxfordshire, OX13"^^xsd:string ;
+      wgs84:lat "51.675995"^^xsd:double ;
+      wgs84:long "-1.437361"^^xsd:double ;
+      vcard:locality "Longworth, Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Springhill, Longworth, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110167_04.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1e444
+      a       dd:House ;
+      gr:description """A modern, well presented three bedroom, two bathroom first floor flat with excellent access to Summertown and the city centre.
+
+It also benefits from designated parking, a bicycle rack and a communal garden."""^^xsd:string ;
+      gr:name "Banbury Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.786872"^^xsd:double ;
+      wgs84:long "-1.270485"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Banbury Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110142_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+dd:d1e441
+      dd:hasPrice "395000"^^xsd:double ;
+      gr:includes dd:d1e444 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110142" .
+
+
+dd:d1e454
+      a       dd:House ;
+      gr:description "A semi detached property which has been recently extended and updated by the current owner and now offers family accommodation over three floors with views across meadowland to Oxford."^^xsd:string ;
+      gr:name "North Hinksey Lane, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.74832"^^xsd:double ;
+      wgs84:long "-1.288562"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "North Hinksey Lane, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120041_02.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e451
+      dd:hasPrice "380000"^^xsd:double ;
+      gr:includes dd:d1e454 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-4-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF120041" .
+
+
+dd:d1e461
+      dd:hasPrice "365000"^^xsd:double ;
+      gr:includes dd:d1e464 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/2-bedroom-property-for-sale-in-Burcot-OX14-jdwrps-OXF100326" .
+
+dd:d1e464
+      a       dd:House ;
+      gr:description """A rare opportunity to purchase a spacious riverside property in this highly desirable, converted Victorian manor house, with oak-panelled staircase, stained glass windows, and stunning views over the River Thames, open farmland and Wittenham Clumps.
+
+The manor house is approached via a sweeping, gated driveway flanked by well tended grounds with mature trees and tennis court. The second floor apartment enjoys splendid south-facing views across manicured gardens with ponds and fountains which lead down to the River Thames and uninterrupted views across open farmland to Wittenham Clumps. The apartment has a bright and airy feel with high ceilings, period fireplaces and large windows to the south. It is approached by the oak-panelled stairway from the impressive communal entrance hall. It is set in its own 5 acres of very tranquil surroundings."""^^xsd:string ;
+      gr:name "Riverside House, Burcot, Abingdon, Oxfordshire, OX14"^^xsd:string ;
+      wgs84:lat "51.659751"^^xsd:double ;
+      wgs84:long "-1.197319"^^xsd:double ;
+      vcard:locality "Burcot, Abingdon, Oxfordshire" ;
+      vcard:street_address
+              "Riverside House, Burcot, Abingdon, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100326_01.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+
+dd:d1e471
+      dd:hasPrice "355000"^^xsd:double ;
+      gr:includes dd:d1e474 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/2-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110013" .
+
+dd:d1e474
+      a       dd:House ;
+      gr:description """This south west facing, well proportioned second floor two bedroom apartment is decorated in light colours and has an emphasis on space and the benefit of a lift.
+
+Of particular interest is the large dual aspect open plan kitchen/sitting room fitted with AEG appliances. There is a designated parking space to the front of the building together with communal gardens and a cycle store."""^^xsd:string ;
+      gr:name "Stone Meadow, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.772355"^^xsd:double ;
+      wgs84:long "-1.273685"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Stone Meadow, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110013_07.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1e481
+      dd:hasPrice "345000"^^xsd:double ;
+      gr:includes dd:d1e484 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF070405" .
+
+dd:d1e484
+      a       dd:House ;
+      gr:description """A light, well proportioned, three bedroom ground floor flat with double garage in favoured side road north of the Summertown shops
+ 
+This three bedroom ground floor flat is in a block of just four flats in this favoured side road. There is parking to the rear in addition to a double garage. Each flat owns a quarter share of the freehold."""^^xsd:string ;
+      gr:name "Upland Park Road, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.785985"^^xsd:double ;
+      wgs84:long "-1.271109"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Upland Park Road, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF070405_06.JPG&width=83&height=57&quality=85&crop=1&chks=261" .
+
+
+dd:d1e494
+      a       dd:House ;
+      gr:description """Purpose built ground floor apartment, located in one of Summertown's most sought after roads.
+
+Beautifully presented three bedroom apartment recently updated throughout. The apartment forms part of an L shaped development, with communal garden to the rear of the property and is situated within a quarter mile radius of the Summertown shops, local amenities and the ring road and offers easy access to bus services into the city."""^^xsd:string ;
+      gr:name "Squitchey Lane, Oxford, OX2"^^xsd:string ;
+      wgs84:lat "51.783122"^^xsd:double ;
+      wgs84:long "-1.268556"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:street_address
+              "Squitchey Lane, Oxford" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF110461_10.JPG&width=77&height=57&quality=85&crop=1&chks=255" .
+
+dd:d1e491
+      dd:hasPrice "335000"^^xsd:double ;
+      gr:includes dd:d1e494 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/3-bedroom-property-for-sale-in-Oxford-OX2-jdwrps-OXF110461" .
+
+
+
+
+dd:d1e514
+      a       dd:House ;
+      gr:description """A two bedroom first floor flat situated in a popular residential location which is highly regarded for its mix of amenities and proximity to Summertown and the Oxford ring road.
+
+The accommodation is well presented and has the benefit of a fitted kitchen and a spacious sitting room with views over towards the River Cherwell basin. There is also off road parking for one car."""^^xsd:string ;
+      gr:name "Meadow View, Water Eaton Road, Oxford, Oxfordshire, OX2"^^xsd:string ;
+      vcard:locality "Water Eaton Road, Oxford, Oxfordshire" ;
+      vcard:street_address
+              "Meadow View, Water Eaton Road, Oxford, Oxfordshire" .
+
+dd:d1e511
+      dd:hasPrice "260000"^^xsd:double ;
+      gr:includes dd:d1e514 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/2-bedroom-property-for-sale-in-Water-Eaton-Road-OX2-jdwrps-OXF120144" .
+
+
+
+dd:d1e551
+      dd:hasPrice "90000"^^xsd:double ;
+      gr:includes dd:d1e554 ;
+      foaf:page "http://www.johndwood.co.uk/property-for-sale/property-for-sale-in-Bampton-OX18-jdwrps-OXF120213" .
+
+dd:d1e554
+      a       dd:House ;
+      gr:description "An attractive block of pasture land suitable for equestrian/amenity use in edge of village location.  In all about 2.97 hectares (7.34 acres).  For sale by private treaty as a whole"^^xsd:string ;
+      gr:name "Buckland Road, Bampton, Oxfordshire, OX18"^^xsd:string ;
+      wgs84:lat "51.723876"^^xsd:double ;
+      wgs84:long "-1.537752"^^xsd:double ;
+      vcard:locality "Bampton, Oxfordshire" ;
+      vcard:street_address
+              "Buckland Road, Bampton, Oxfordshire" ;
+      foaf:depiction "http://www.johndwood.co.uk//index.php?action=getthumbnail&filepath=../../rps/pictures/OXF120213_01.JPG&width=83&height=57&quality=85&crop=1&chks=261" .

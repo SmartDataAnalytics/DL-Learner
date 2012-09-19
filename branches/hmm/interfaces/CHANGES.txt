@@ -1,0 +1,2 @@
+release date=20:13 13.10.2009,version=0.2,urgency=low,by=Jens Lehmann,distribution=staging
+ * Test application

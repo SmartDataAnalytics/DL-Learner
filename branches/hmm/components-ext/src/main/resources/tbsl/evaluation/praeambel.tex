@@ -1,0 +1,45 @@
+\documentclass[a4paper,10pt]{scrartcl}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+% \usepackage{ngerman}
+% \usepackage{picins}
+
+% \usepackage{beamerthemetree}
+
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{rotating,makecell}
+\usepackage[hypertex]{hyperref}
+
+\usepackage{listings}
+
+\usepackage{graphicx}
+%\usepackage{verbatim}
+\usepackage{moreverb}
+
+
+\lstdefinelanguage{SPARQL}
+{
+  morestring=[b]",
+%   morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{black},
+  keywordstyle=\color{blue},
+  morekeywords={OPTIONAL, SELECT, DISTINCT, WHERE, FILTER, BOUND, UNION, PREFIX}
+}
+
+\lstset{
+  emph={OPTIONAL, SELECT, BOUND, DISTINCT, WHERE, FILTER, BOUND, UNION, PREFIX}, emphstyle=\color{blue},
+  emph={[2]some,only,min,max,and,or,that,not}, emphstyle={[2]\color{red}},
+  aboveskip={0 em},
+  belowskip={0 em},
+  literate={ö}{{\"o}}1
+           {ä}{{\"a}}1
+           {ü}{{\"u}}1
+}
+
+%opening
+\title{Evaluation}
+\date{}
