@@ -1,7 +1,9 @@
 package org.dllearner.algorithm.tbsl.learning;
 
 import hmm.HiddenMarkovModel;
+import hmm.ResourceInfo;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -511,19 +513,21 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			Query query = template.getQuery();
 			double score = 0;
 			
-			Map<List<String>,Collection<String>> segmentToURIs = new HashMap<List<String>,Collection<String>>();
+			Map<List<String>,List<ResourceInfo>> segmentToURIs = new HashMap<List<String>,List<ResourceInfo>>();
 			for(Slot slot: template.getSlots())
 			{
 				List<String> segment = new LinkedList<String>();
-				segment.add(slot.getWords().get(0)); // TODO: split it up?
-			
-				Set<String> uris = new HashSet<String>();
-																
+				segment.addAll(Arrays.asList(slot.getWords().get(0).split("\\s")));			
+				List<ResourceInfo> resourceInfos = new LinkedList<ResourceInfo>();
+
 				for(IndexResultItem item : getIndexResultItems(slot))
 				{
-					uris.add(item.getUri());					
+					// if this gets used at another place, create a function IndexResultItemToResourceInfo()
+					ResourceInfo info = new ResourceInfo();
+					info.setUri(item.getUri());
+					info.setLabel(item.getLabel());
 				}
-				segmentToURIs.put(segment,uris); 
+				segmentToURIs.put(segment,resources);
 			}
 			HiddenMarkovModel hmm = new HiddenMarkovModel();
 			hmm.initialization();
