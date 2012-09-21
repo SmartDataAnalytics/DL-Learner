@@ -1,6 +1,8 @@
 package org.dllearner.common.index;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class HierarchicalIndex implements Index{
@@ -48,9 +50,15 @@ public class HierarchicalIndex implements Index{
 
 	@Override
 	public IndexResultSet getResourcesWithScores(String queryString, int limit, int offset) {
-		IndexResultSet rs = primaryIndex.getResourcesWithScores(queryString, limit, offset);
+		return getResourcesWithScores(queryString, limit, DEFAULT_OFFSET,Collections.<String>emptyList());
+	}
+
+	@Override public IndexResultSet getResourcesWithScores(String queryString, int limit, int offset,
+			Collection<String> additionalFields)
+	{
+		IndexResultSet rs = primaryIndex.getResourcesWithScores(queryString, limit, offset, additionalFields);
 		if(rs.getItems().size() < limit){
-			rs.add(secondaryIndex.getResourcesWithScores(queryString, limit-rs.getItems().size(), offset));
+			rs.add(secondaryIndex.getResourcesWithScores(queryString, limit-rs.getItems().size(), offset,additionalFields));
 		}
 		return rs;
 	}

@@ -806,7 +806,7 @@ public class SPARQLTemplateBasedLearner3Test
 		Index propertiesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_properties");
 		SOLRIndex boa_propertiesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/boa_fact_detail");
 		boa_propertiesIndex.setSortField("boa-score");
-		propertiesIndex = new HierarchicalIndex(boa_propertiesIndex, propertiesIndex);
+//		propertiesIndex = new HierarchicalIndex(boa_propertiesIndex, propertiesIndex);
 		MappingBasedIndex mappingIndex= new MappingBasedIndex(
 				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("test/dbpedia_class_mappings.txt").getPath(), 
 				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("test/dbpedia_resource_mappings.txt").getPath(),

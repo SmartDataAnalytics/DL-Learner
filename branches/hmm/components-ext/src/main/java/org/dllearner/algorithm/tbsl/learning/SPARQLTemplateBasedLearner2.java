@@ -5,6 +5,7 @@ import hmm.ResourceInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -34,6 +35,7 @@ import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
 import org.dllearner.algorithm.tbsl.util.PopularityMap;
 import org.dllearner.algorithm.tbsl.util.PopularityMap.EntityType;
+import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.IndexResultItem;
 import org.dllearner.common.index.IndexResultSet;
@@ -55,6 +57,8 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.ini4j.Options;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -74,8 +78,11 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 
 	private Mode mode = Mode.BEST_QUERY;
+	private static SimpleIRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 
 	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner2.class);
+	private static final boolean	CREATE_SYNONYMS	= false;
+	private static final Double	BOA_THRESHOLD	=  0.9;
 	private Monitor templateMon = MonitorFactory.getTimeMonitor("template");
 	private Monitor sparqlMon = MonitorFactory.getTimeMonitor("sparql");
 
@@ -371,7 +378,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		logger.debug("Generating SPARQL query templates...");
 		templateMon.start();
 		if(multiThreaded){
-			templates = templateGenerator.buildTemplatesMultiThreaded(question);
+			templates = templateGenerator.buildTemplatesMultiThreaded(question,CREATE_SYNONYMS);
 		} else {
 			templates = templateGenerator.buildTemplates(question);
 		}
@@ -512,8 +519,9 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			SortedSet<WeightedQuery> queries = new TreeSet<WeightedQuery>();
 			Query query = template.getQuery();
 			double score = 0;
-			
+
 			Map<List<String>,List<ResourceInfo>> segmentToURIs = new HashMap<List<String>,List<ResourceInfo>>();
+			Map<String,IndexResultItem> uriUniqueToResultItem = new HashMap<String,IndexResultItem>(); 
 			for(Slot slot: template.getSlots())
 			{
 				List<String> segment = new LinkedList<String>();
@@ -525,9 +533,19 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 					// if this gets used at another place, create a function IndexResultItemToResourceInfo()
 					ResourceInfo info = new ResourceInfo();
 					info.setUri(item.getUri());
-					info.setLabel(item.getLabel());
+					String label = item.getLabel();					
+					// in dbpedia, the last part of the uri is transformed from the english label, reverse the transformation (should almost always work for dbpedia article resources)
+					info.setLabel(label!=null?label:sfp.getShortForm(IRI.create(item.getUri())));
+					// in saedeehs algorithm, the emission probabilty is formed by the string similarity
+					// but we use the lucene index score
+					double max = 0;
+					for(String word: slot.getWords()) {max = Math.max(max, Similarity.getSimilarity(word, info.getLabel()));}					
+					if(max<0||max>1) throw new AssertionError("max is not in [0,1], max="+max);
+					info.setStringSimilarityScore(max);
+
+					resourceInfos.add(info);
 				}
-				segmentToURIs.put(segment,resources);
+				segmentToURIs.put(segment,resourceInfos);
 			}
 			HiddenMarkovModel hmm = new HiddenMarkovModel();
 			hmm.initialization();
@@ -851,11 +869,11 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 
 	private Set<IndexResultItem> getIndexResultItems(Slot slot)
 	{
-//		List<String> uris = new LinkedList<String>();
+		//		List<String> uris = new LinkedList<String>();
 		Set<IndexResultItem> indexResultItems = new HashSet<IndexResultItem>();
-		
+
 		Index index = getIndexBySlotType(slot);
-		
+
 		for(String word : slot.getWords())
 		{
 			IndexResultSet rs = new IndexResultSet();
@@ -876,18 +894,23 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			//use the non manual indexes only if mapping based resultset is not empty and option is set
 			if(!useManualMappingsIfExistOnly || rs.isEmpty()){
 				if(slot.getSlotType() == SlotType.RESOURCE){
-					rs.add(index.getResourcesWithScores(word, 20));
+					rs.add(index.getResourcesWithScores(word, 20,0));
 				} else {
 					if(slot.getSlotType() == SlotType.CLASS){
 						word = PlingStemmer.stem(word); 
 					}
-					rs.add(index.getResourcesWithScores(word, 20));
+					IndexResultSet tmp = index.getResourcesWithScores(word, 20,0,Collections.singleton("boa-score"));
+					for(IndexResultItem item : tmp.getItems())
+					{System.out.println(item);
+						Double boaScore = (Double) item.getFields().get("boa-score");
+						if(boaScore==null||boaScore>BOA_THRESHOLD) rs.addItem(item);
+					}
 				}
 			}
-//			for(IndexResultItem item: rs.getItems())
-//			{
-//				uris.add(item.getUri());
-//			}
+			//			for(IndexResultItem item: rs.getItems())
+			//			{
+			//				uris.add(item.getUri());
+			//			}
 			indexResultItems.addAll(rs.getItems());
 		}
 		return indexResultItems;

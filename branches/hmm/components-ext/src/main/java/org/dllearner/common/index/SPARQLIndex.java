@@ -1,6 +1,7 @@
 package org.dllearner.common.index;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.dllearner.kb.sparql.ExtractionDBCache;
@@ -149,6 +150,12 @@ public class SPARQLIndex implements Index{
 	
 	public Model getModel() {
 		return model;
+	}
+
+	@Override public IndexResultSet getResourcesWithScores(String queryString, int limit, int offset,
+			Collection<String> additionalFields)
+	{
+		throw new UnsupportedOperationException("TODO: implement this later");
 	}
 	
 }
