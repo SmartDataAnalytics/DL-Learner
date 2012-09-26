@@ -105,7 +105,7 @@ public class SPARQLTemplateBasedLearner3Test
 	private static final boolean	DBPEDIA_PRETAGGED	= true;
 	private static final boolean	OXFORD_PRETAGGED	= false;
 
-	/*@Test*/ public void testDBpedia() throws Exception
+	@Test public void testDBpedia() throws Exception
 	{
 		File file = generateTestDataIfNecessary(
 				new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
@@ -162,7 +162,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 	/** For debugging one question in particular.
 	 */
-	@Test public void testSingleQueryDBpedia()
+	/*@Test*/ public void testSingleQueryDBpedia()
 	{
 //		Logger.getLogger(Templator.class).setLevel(Level.DEBUG);
 //		Logger.getLogger(Parser.class).setLevel(Level.DEBUG);
@@ -681,7 +681,7 @@ public class SPARQLTemplateBasedLearner3Test
 		return testData;
 	}
 
-	/**
+	/** Updates question file by removing questions without nonempty resource list answer and adding answers.
 	 * @param file
 	 * @param updatedFile
 	 * @throws ParserConfigurationException 

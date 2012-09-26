@@ -71,17 +71,21 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm{
-
-	enum Mode{
-		BEST_QUERY, BEST_NON_EMPTY_QUERY
-	}
-
+/** The old learner taken over by Konrad Höffner for experiments with the Hidden Markov Algorithm by Saedeeh Shekarpur.
+ * 
+ * */
+public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
+{
+	enum Mode {BEST_QUERY, BEST_NON_EMPTY_QUERY}
 	private Mode mode = Mode.BEST_QUERY;
+	
+	/** used to create a label out of the URI when there is no label available in the SPARQL endpoint.*/
 	private static SimpleIRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 
 	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner2.class);
+	/** synonyms are great but are not used yet by the HMM algorithm. **/
 	private static final boolean	CREATE_SYNONYMS	= false;
+	/** The minimum score of items that are accepted from the Sindice search BOA index. **/
 	private static final Double	BOA_THRESHOLD	=  0.9;
 	private Monitor templateMon = MonitorFactory.getTimeMonitor("template");
 	private Monitor sparqlMon = MonitorFactory.getTimeMonitor("sparql");
@@ -511,8 +515,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 					keywords.add(slot.getWords().get(0));
 				}
 				if(template.getSlots().size()!=3) {continue;}
-				if(!keywords.contains("Mean Hamster Software")) {continue;}
-				if(!keywords.contains("published")) {continue;}
+//				if(!keywords.contains("Mean Hamster Software")) {continue;}
+//				if(!keywords.contains("published")) {continue;}
 				System.out.println("\"keywords\": "+keywords);
 			}
 			System.out.println(template);
@@ -542,7 +546,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 					for(String word: slot.getWords()) {max = Math.max(max, Similarity.getSimilarity(word, info.getLabel()));}					
 					if(max<0||max>1) throw new AssertionError("max is not in [0,1], max="+max);
 					info.setStringSimilarityScore(max);
-
+					if(!info.setTypeFromDBpediaURI()) throw new AssertionError("could not set type for info "+info);
+					System.err.println("info with type: "+info);
 					resourceInfos.add(info);
 				}
 				segmentToURIs.put(segment,resourceInfos);
