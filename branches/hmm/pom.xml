@@ -180,7 +180,7 @@
 			<dependency>
 				<groupId>org.apache.jena</groupId>
 				<artifactId>jena-core</artifactId>
-				<version>2.7.2</version>
+				<version>2.7.3</version>
 			</dependency>
 			<!--SwingX is in central -->
 			<dependency>
@@ -240,7 +240,7 @@
 			<dependency>
 				<groupId>org.apache.jena</groupId>
 				<artifactId>jena-arq</artifactId>
-				<version>2.9.2</version>
+				<version>2.9.3</version>
 			</dependency>
 
 			<!--Junits -->
@@ -506,8 +506,12 @@
 			<url>http://elk-reasoner.googlecode.com/svn/m2/releases</url>
             <releases/>
 		</repository>
+		<repository>
+  			<id>apache-repo-releases</id>
+  			<url>https://repository.apache.org/content/repositories/releases/</url>
+  			<releases><enabled>true</enabled></releases>
+			</repository>		
 	</repositories>
-
 	<distributionManagement>
 		<repository>
 			<id>archiva.internal</id>
