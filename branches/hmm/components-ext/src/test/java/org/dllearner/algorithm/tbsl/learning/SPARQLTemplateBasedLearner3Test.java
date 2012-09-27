@@ -55,7 +55,6 @@ import org.dllearner.algorithm.tbsl.nlp.SynchronizedStanfordPartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
-import org.dllearner.common.index.HierarchicalIndex;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SOLRIndex;
@@ -104,6 +103,7 @@ public class SPARQLTemplateBasedLearner3Test
 	private static final File evaluationFolder = new File("cache/evaluation");
 	private static final boolean	DBPEDIA_PRETAGGED	= true;
 	private static final boolean	OXFORD_PRETAGGED	= false;
+	private static final int MAX_NUMBER_OF_QUESTIONS = 10;
 
 	@Test public void testDBpedia() throws Exception
 	{
@@ -120,28 +120,28 @@ public class SPARQLTemplateBasedLearner3Test
 		test("Oxford 19 working questions", file,null,null,null,loadOxfordModel(),getOxfordMappingIndex());
 	}
 
-//	/*@Test*/ public void testOxford() throws Exception
-//	{
-//		Model model = loadOxfordModel();
-//		QueryTestData testData = QueryTestData.readQaldXml(new File("log/oxford_working_questions.xml"));
-//		// answers are not included at least in the first query TODO: check, why
-//		testData.generateAnswers(null, null, model);
-//		QueryTestData newTestData = generateTestDataMultiThreaded(testData.id2Question, null, model,getOxfordMappingIndex() , OXFORD_PRETAGGED);
-//		newTestData.generateAnswers(null, null, model);
-//		for(int i : testData.id2Question.keySet())
-//		{
-//			logger.info("Comparing answers for question "+testData.id2Question.get(i));
-//			String referenceQuery = testData.id2Query.get(i);
-//			String newQuery = newTestData.id2Query.get(i);			
-//			if(!referenceQuery.equals(newQuery))
-//			{
-//				logger.warn("not equal, reference query: "+referenceQuery+", new query: "+newQuery);
-//				Collection<String> referenceAnswers = testData.id2Answers.get(i);
-//				Collection<String> newAnswers = newTestData.id2Answers.get(i);			
-//				if(!referenceAnswers.equals(newAnswers)) fail("not equal, reference answers: "+referenceAnswers+", new answers: "+newAnswers);
-//			}
-//		}
-//	}
+	//	/*@Test*/ public void testOxford() throws Exception
+	//	{
+	//		Model model = loadOxfordModel();
+	//		QueryTestData testData = QueryTestData.readQaldXml(new File("log/oxford_working_questions.xml"));
+	//		// answers are not included at least in the first query TODO: check, why
+	//		testData.generateAnswers(null, null, model);
+	//		QueryTestData newTestData = generateTestDataMultiThreaded(testData.id2Question, null, model,getOxfordMappingIndex() , OXFORD_PRETAGGED);
+	//		newTestData.generateAnswers(null, null, model);
+	//		for(int i : testData.id2Question.keySet())
+	//		{
+	//			logger.info("Comparing answers for question "+testData.id2Question.get(i));
+	//			String referenceQuery = testData.id2Query.get(i);
+	//			String newQuery = newTestData.id2Query.get(i);			
+	//			if(!referenceQuery.equals(newQuery))
+	//			{
+	//				logger.warn("not equal, reference query: "+referenceQuery+", new query: "+newQuery);
+	//				Collection<String> referenceAnswers = testData.id2Answers.get(i);
+	//				Collection<String> newAnswers = newTestData.id2Answers.get(i);			
+	//				if(!referenceAnswers.equals(newAnswers)) fail("not equal, reference answers: "+referenceAnswers+", new answers: "+newAnswers);
+	//			}
+	//		}
+	//	}
 
 	/** For debugging one question in particular.
 	 */
@@ -164,23 +164,23 @@ public class SPARQLTemplateBasedLearner3Test
 	 */
 	/*@Test*/ public void testSingleQueryDBpedia()
 	{
-//		Logger.getLogger(Templator.class).setLevel(Level.DEBUG);
-//		Logger.getLogger(Parser.class).setLevel(Level.DEBUG);
-//		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.DEBUG);
+		//		Logger.getLogger(Templator.class).setLevel(Level.DEBUG);
+		//		Logger.getLogger(Parser.class).setLevel(Level.DEBUG);
+		//		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.DEBUG);
 		//		String question = "houses for less than 900000 pounds";
 		String question = "Give/VB me/PRP all/DT video/JJ games/NNS published/VBN by/IN Mean/NNP Hamster/NNP Software/NNP";
-//		String question = "give me all video games published by mean hamster software";
-//		String question = "Give me all video games published by Mean Hamster Software";		
-//		question = new StanfordPartOfSpeechTagger().tag(question);
-//		System.out.println(question);
+		//		String question = "give me all video games published by mean hamster software";
+		//		String question = "Give me all video games published by Mean Hamster Software";		
+		//		question = new StanfordPartOfSpeechTagger().tag(question);
+		//		System.out.println(question);
 
-//		Model model = loadOxfordModel();
+		//		Model model = loadOxfordModel();
 		QueryTestData testData = new QueryTestData();
 		new LearnQueryCallable(question, 0, testData, dbpediaLiveKnowledgebase, true).call();
 		logger.info("learned query: "+testData.id2Query.get(0));
 	}
-	
-	/*@Test*/ public void generateXMLOxford() throws IOException
+
+	/*@Test*/  public void generateXMLOxford() throws IOException
 	{
 		boolean ADD_POS_TAGS = true;
 		PartOfSpeechTagger posTagger = null;
@@ -192,7 +192,7 @@ public class SPARQLTemplateBasedLearner3Test
 		for(String line;(line=in.readLine())!=null;)
 		{
 			j++;
-			//			if(j>5) break; // TODO: remove later
+			if(j>5) break; // TODO: remove later
 			String question = line.replace("question: ", "").trim();
 			if(ADD_POS_TAGS&&!OXFORD_PRETAGGED) {question = posTagger.tag(question);}
 			if(!line.trim().isEmpty()) {questions.add(question);}
@@ -291,7 +291,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 	public void test(String title, final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache,Knowledgebase kb, Model model, MappingBasedIndex index)
 			throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
-	{		
+			{		
 		evaluateAndWrite(title,referenceXML,endpoint,cache,kb,model,index);
 		generateHTML(title); 
 
@@ -318,7 +318,7 @@ public class SPARQLTemplateBasedLearner3Test
 					logger.info("Old test data not loadable, creating it and exiting.");					
 				}
 				learnedTestData.write();*/
-	}
+			}
 
 	private File generateTestDataIfNecessary(final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException
 	{
@@ -335,9 +335,10 @@ public class SPARQLTemplateBasedLearner3Test
 	}
 
 	private void evaluateAndWrite(String title,final File updatedReferenceXML, final  SparqlEndpoint endpoint,ExtractionDBCache cache,
-		Knowledgebase kb, Model model, MappingBasedIndex index)
+			Knowledgebase kb, Model model, MappingBasedIndex index)
 	{
-		QueryTestData referenceTestData = QueryTestData.readQaldXml(updatedReferenceXML);
+
+		QueryTestData referenceTestData = QueryTestData.readQaldXml(updatedReferenceXML,MAX_NUMBER_OF_QUESTIONS);
 		logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
 
 		long startLearning = System.currentTimeMillis();
@@ -350,11 +351,6 @@ public class SPARQLTemplateBasedLearner3Test
 		Evaluation evaluation = evaluate(referenceTestData, learnedTestData); 
 		logger.info(evaluation);
 		evaluation.write();
-	}
-
-	private void evaluateAndWrite()
-	{
-
 	}
 
 	/** evaluates a data set against a reference.
@@ -673,8 +669,8 @@ public class SPARQLTemplateBasedLearner3Test
 		//			try {testData.id2Answers.put(i,getUris(endpoint, learnedQuery));}
 		//			catch(Exception e) {logger.warn("Error with learned query "+learnedQuery+" for question "+question+" at endpoint "+endpoint+": "+e.getLocalizedMessage());}
 
-		long end = System.currentTimeMillis();
-		//			logger.debug(String.format("Generated query \"%s\" after %d ms", learnedQuery,end-start));
+		//		long end = System.currentTimeMillis();
+		//		logger.trace(String.format("Generated query \"%s\" after %d ms", learnedQuery,end-start));
 
 
 		//		logger.info(String.format("Learned queries for %d of %d questions.",successes,id2Question.size()));
@@ -779,7 +775,7 @@ public class SPARQLTemplateBasedLearner3Test
 	//	int successfullTestThreadRuns = 0;
 
 	/** */
-	private static final String DBPEDIA_LIVE_ENDPOINT_URL_STRING	= "http://live.dbpedia.org/sparql";
+	//	private static final String DBPEDIA_LIVE_ENDPOINT_URL_STRING	= "http://live.dbpedia.org/sparql";
 
 	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner3Test.class);
 
@@ -806,7 +802,7 @@ public class SPARQLTemplateBasedLearner3Test
 		Index propertiesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_properties");
 		SOLRIndex boa_propertiesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/boa_fact_detail");
 		boa_propertiesIndex.setSortField("boa-score");
-//		propertiesIndex = new HierarchicalIndex(boa_propertiesIndex, propertiesIndex);
+		//		propertiesIndex = new HierarchicalIndex(boa_propertiesIndex, propertiesIndex);
 		MappingBasedIndex mappingIndex= new MappingBasedIndex(
 				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("test/dbpedia_class_mappings.txt").getPath(), 
 				SPARQLTemplateBasedLearner2.class.getClassLoader().getResource("test/dbpedia_resource_mappings.txt").getPath(),

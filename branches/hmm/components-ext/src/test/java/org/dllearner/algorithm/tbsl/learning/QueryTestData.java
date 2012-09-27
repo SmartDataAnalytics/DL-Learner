@@ -11,7 +11,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,11 +36,11 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 public class QueryTestData implements Serializable
 {
+	private static final long	serialVersionUID	= 1L;
 	public SortedMap<Integer, String> id2Question = new ConcurrentSkipListMap<Integer, String>();
 	public SortedMap<Integer, String> id2Query = new ConcurrentSkipListMap<Integer, String>();
 	public SortedMap<Integer, Set<String>> id2Answers = new ConcurrentSkipListMap<Integer, Set<String>>();
 	public SortedMap<Integer, LearnStatus> id2LearnStatus = new ConcurrentSkipListMap<Integer, LearnStatus>();
-	private static final int	MAXIMUM_QUESTIONS	= Integer.MAX_VALUE;
 
 	private static final String persistancePath = "cache/"+SPARQLTemplateBasedLearner3Test.class.getSimpleName()+'/'+QueryTestData.class.getSimpleName();
 
@@ -85,8 +84,9 @@ public class QueryTestData implements Serializable
 	/** reads test data from a QALD2 benchmark XML file, including questions, queries and answers.
 	 * each question needs to have a query but not necessarily an answer.
 	 * @param file a QALD benchmark XML file 
+	 * @param MAX_NUMBER_OF_QUESTIONS the maximum number of questions read from the file. 
 	 * @return the test data read from the XML file */
-	public static QueryTestData readQaldXml(final File file)
+	public static QueryTestData readQaldXml(final File file, int MAX_NUMBER_OF_QUESTIONS)
 	{
 		QueryTestData testData = new QueryTestData();
 		try {
@@ -99,7 +99,7 @@ public class QueryTestData implements Serializable
 
 			for(int i = 0; i < questionNodes.getLength(); i++)
 			{
-				if(i>=MAXIMUM_QUESTIONS) break; // TODO: remove later?
+				if(i>MAX_NUMBER_OF_QUESTIONS) break;
 				String question;
 				String query;
 				Set<String> answers = new HashSet<String>();

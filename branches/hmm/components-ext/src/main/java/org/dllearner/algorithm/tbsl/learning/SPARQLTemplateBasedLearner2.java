@@ -9,15 +9,20 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.apache.commons.collections15.MultiMap;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
@@ -49,7 +54,6 @@ import org.dllearner.common.index.Index;
 import org.dllearner.common.index.IndexResultItem;
 import org.dllearner.common.index.IndexResultSet;
 import org.dllearner.common.index.MappingBasedIndex;
-import org.dllearner.common.index.SOLRIndex;
 import org.dllearner.common.index.SPARQLDatatypePropertiesIndex;
 import org.dllearner.common.index.SPARQLIndex;
 import org.dllearner.common.index.SPARQLObjectPropertiesIndex;
@@ -70,7 +74,6 @@ import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Options;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
@@ -83,10 +86,6 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.sparql.expr.ExprAggregator;
-import com.hp.hpl.jena.sparql.expr.ExprVar;
-import com.hp.hpl.jena.sparql.expr.aggregate.AggCount;
-import com.hp.hpl.jena.sparql.expr.aggregate.Aggregator;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -95,19 +94,18 @@ import com.jamonapi.MonitorFactory;
  * */
 public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 {
-	public static boolean useHMM = true;
-	
+	private static final boolean USE_HMM = false;
+	/** synonyms are great but are not used yet by the HMM algorithm. **/
+	private static final boolean	HMM_USE_SYNONYMS	= false;
+		/** The minimum score of items that are accepted from the Sindice search BOA index. **/
+	private static final Double	BOA_THRESHOLD	=  0.9;
 	enum Mode {BEST_QUERY, BEST_NON_EMPTY_QUERY}
 	private Mode mode = Mode.BEST_QUERY;
 	
 	/** used to create a label out of the URI when there is no label available in the SPARQL endpoint.*/
 	private static SimpleIRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
-
 	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner2.class);
-	/** synonyms are great but are not used yet by the HMM algorithm. **/
-	private static final boolean	CREATE_SYNONYMS	= false;
-	/** The minimum score of items that are accepted from the Sindice search BOA index. **/
-	private static final Double	BOA_THRESHOLD	=  0.9;
+
 	private Monitor templateMon = MonitorFactory.getTimeMonitor("template");
 	private Monitor sparqlMon = MonitorFactory.getTimeMonitor("sparql");
 
@@ -403,7 +401,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		logger.debug("Generating SPARQL query templates...");
 		templateMon.start();
 		if(multiThreaded){
-			templates = templateGenerator.buildTemplatesMultiThreaded(question,CREATE_SYNONYMS);
+			templates = templateGenerator.buildTemplatesMultiThreaded(question,!USE_HMM||HMM_USE_SYNONYMS);
 		} else {
 			templates = templateGenerator.buildTemplates(question);
 		}
@@ -420,7 +418,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		}
 
 		//get the weighted query candidates
-		generatedQueries = getWeightedSPARQLQueries(templates);
+		generatedQueries = getWeightedSPARQLQueries(templates,USE_HMM);
 		sparqlQueryCandidates = new ArrayList<WeightedQuery>();
 		int i = 0;
 		for(WeightedQuery wQ : generatedQueries){
@@ -519,12 +517,14 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 
 	}
 
-	public Set<String> getRelevantKeywords(){
-		return relevantKeywords;
-	}
+	public Set<String> getRelevantKeywords(){return relevantKeywords;}
 
-	// just for testing the HMM integration, getWeightedSPARQLQueriesOld is the original one
-	private SortedSet<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates)
+	private SortedSet<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates, boolean hmm)
+	{
+		return hmm?getWeightedSPARQLQueriesWithHMM(templates):getWeightedSPARQLQueriesWithoutHMM(templates);
+	}
+	
+	private SortedSet<WeightedQuery> getWeightedSPARQLQueriesWithHMM(Set<Template> templates)
 	{
 		// for testing 
 		for(Template template: templates)
@@ -621,7 +621,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		return null;
 	}
 
-	private SortedSet<WeightedQuery> getWeightedSPARQLQueriesOld(Set<Template> templates){
+	private SortedSet<WeightedQuery> getWeightedSPARQLQueriesWithoutHMM(Set<Template> templates){
 		logger.debug("Generating SPARQL query candidates...");
 
 		Map<Slot, Set<Allocation>> slot2Allocations = new TreeMap<Slot, Set<Allocation>>(new Comparator<Slot>() {
@@ -1295,6 +1295,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		}
 		return indexResultItems;
 	}
+	
 	class SlotProcessor implements Callable<Map<Slot, SortedSet<Allocation>>>{
 
 		private Slot slot;

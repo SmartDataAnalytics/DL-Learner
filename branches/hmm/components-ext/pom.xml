@@ -34,10 +34,10 @@
             <groupId>com.jamonapi</groupId>
             <artifactId>jamon</artifactId>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.aksw.commons</groupId>
             <artifactId>sparql</artifactId>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>org.apache.solr</groupId>
