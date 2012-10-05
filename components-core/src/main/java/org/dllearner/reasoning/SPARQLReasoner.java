@@ -300,6 +300,52 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		return hierarchy;
 	}
 	
+	public final ClassHierarchy prepareSubsumptionHierarchyFast() {
+		logger.info("Preparing subsumption hierarchy ...");
+		long startTime = System.currentTimeMillis();
+		ConceptComparator conceptComparator = new ConceptComparator();
+		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, SortedSet<Description>>(
+				conceptComparator);
+		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, SortedSet<Description>>(
+				conceptComparator);
+		
+		String queryTemplate = "SELECT * WHERE {?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup} LIMIT <%d> OFFSET <%d>";
+		int limit = 1000;
+		int offset = 0;
+		boolean repeat = true;
+		while(repeat){
+			repeat = false;
+			String query = String.format(queryTemplate, limit, offset);
+			ResultSet rs = executeSelectQuery(query);
+			QuerySolution qs;
+			while(rs.hasNext()){
+				repeat = true;
+				qs = rs.next();
+				Description sub = new NamedClass(qs.get("sub").asResource().getURI());
+				Description sup = new NamedClass(qs.get("sup").asResource().getURI());
+				//add subclasses
+				SortedSet<Description> subClasses = subsumptionHierarchyDown.get(sup);
+				if(subClasses == null){
+					subClasses = new TreeSet<Description>(conceptComparator);
+					subsumptionHierarchyDown.put(sup, subClasses);
+				}
+				subClasses.add(sub);
+				//add superclasses
+				SortedSet<Description> superClasses = subsumptionHierarchyUp.get(sub);
+				if(superClasses == null){
+					superClasses = new TreeSet<Description>(conceptComparator);
+					subsumptionHierarchyUp.put(sub, superClasses);
+				}
+				superClasses.add(sup);
+			}
+			offset += limit;
+		}
+		
+		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
+		hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
+		return hierarchy;
+	}
+	
 	public Model loadSchema(){
 		Model model = ModelFactory.createDefaultModel();
 		
@@ -971,6 +1017,36 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		}
 		return subProperties;
 	}
+	
+	public SortedSet<ObjectProperty> getEquivalentProperties(ObjectProperty objectProperty) {
+		SortedSet<ObjectProperty> superProperties = new TreeSet<ObjectProperty>();
+		String query = String.format("SELECT ?equ {<%s> <%s> ?equ. FILTER(isIRI(?equ))}", 
+				objectProperty.getURI().toString(),
+				OWL.equivalentProperty.getURI()
+		);
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			superProperties.add(new ObjectProperty(qs.getResource("equ").getURI()));
+		}
+		return superProperties;
+	}
+	
+	public SortedSet<DatatypeProperty> getEquivalentProperties(DatatypeProperty objectProperty) {
+		SortedSet<DatatypeProperty> superProperties = new TreeSet<DatatypeProperty>();
+		String query = String.format("SELECT ?equ {<%s> <%s> ?equ. FILTER(isIRI(?equ))}", 
+				objectProperty.getURI().toString(),
+				OWL.equivalentProperty.getURI()
+		);
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			superProperties.add(new DatatypeProperty(qs.getResource("equ").getURI()));
+		}
+		return superProperties;
+	}
 
 	@Override
 	public TreeSet<ObjectProperty> getMostGeneralProperties() {
@@ -1125,16 +1201,16 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 //		e.execSelect();
 		
 		
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://rae2001.rkbexplorer.com/sparql/")));
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql/")));
 		SPARQLReasoner r = new SPARQLReasoner(ks);
 		long startTime = System.currentTimeMillis();
-		ClassHierarchy h = r.prepareSubsumptionHierarchy();
+		ClassHierarchy h = r.prepareSubsumptionHierarchyFast();
 		System.out.println(h.toString(false));
 //		Model schema = r.loadSchema();
 //		for(Statement st : schema.listStatements().toList()){
 //			System.out.println(st);
 //		}
-		System.out.println(h.getSubClasses(new NamedClass("http://acm.rkbexplorer.com/ontologies/acm#A"), false));
+		System.out.println(h.getSubClasses(new NamedClass("http://dbpedia.org/ontology/Bridge"), false));
 		System.out.println("Time needed: " + (System.currentTimeMillis()-startTime) + "ms");
 		
 	}

@@ -31,9 +31,11 @@ import org.dllearner.core.owl.IrreflexiveObjectPropertyAxiom;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -52,6 +54,9 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 
 	public IrreflexiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		
+		posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS {?s ?p ?s} }");
+		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?s. }");
 	}
 	
 	public ObjectProperty getPropertyToDescribe() {
@@ -82,26 +87,24 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		} else {
 			runSPARQL1_0_Mode();
 		}
-
-		
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private void runSPARQL1_0_Mode() {
-		Model model = ModelFactory.createDefaultModel();
+		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			model.add(newModel);
+			workingModel.add(newModel);
 			// get all instance s with <s p o>
 			query = String.format(
 					"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
 					propertyToDescribe);
-			ResultSet rs = executeSelectQuery(query, model);
+			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int all = 0;
 			while (rs.hasNext()) {
@@ -113,7 +116,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 			// get number of instances s where not exists <s p s>
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER(?s != ?o)}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query, model);
+			rs = executeSelectQuery(query, workingModel);
 			int irreflexive = 0;
 			while (rs.hasNext()) {
 				qs = rs.next();
@@ -134,41 +137,32 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 	}
 	
 	private void runSPARQL1_1_Mode() {
-		// get all instance s with <s p o>
-		String query = String.format(
-				"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
-				propertyToDescribe);
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		int all = 0;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			all = qs.getLiteral("all").getInt();
+		int total = reasoner.getPopularity(propertyToDescribe);
 
-		}
-
-		// get number of instances s where not exists <s p s>
-		query = "SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER(?s != ?o)}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		rs = executeSelectQuery(query);
-		int irreflexive = 0;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			irreflexive = qs.getLiteral("irreflexive").getInt();
-		}
-
-		if (all > 0) {
+		if (total > 0) {
+			int irreflexive = 0;
+			String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER NOT EXISTS{?s <%s> ?s}}", propertyToDescribe.getName(), propertyToDescribe.getName());
+			ResultSet rs = executeSelectQuery(query);
+			if (rs.hasNext()) {
+				irreflexive = rs.next().getLiteral("irreflexive").getInt();
+			}
+			
 			currentlyBestAxioms.add(new EvaluatedAxiom(
 					new IrreflexiveObjectPropertyAxiom(propertyToDescribe),
-					computeScore(all, irreflexive), declaredAsIrreflexive));
+					computeScore(total, irreflexive), declaredAsIrreflexive));
 		}
 	}
 	
 	public static void main(String[] args) throws Exception {
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql")));
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://[2001:638:902:2010:0:168:35:138]/sparql")));
+		
+		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
+		reasoner.prepareSubsumptionHierarchy();
 		
 		IrreflexiveObjectPropertyAxiomLearner l = new IrreflexiveObjectPropertyAxiomLearner(ks);
+		l.setReasoner(reasoner);
 		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/author"));
+		l.init();
 		l.start();
 		
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(10, 0.75));

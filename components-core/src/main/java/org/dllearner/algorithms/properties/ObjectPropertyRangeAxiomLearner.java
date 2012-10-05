@@ -19,13 +19,9 @@
 
 package org.dllearner.algorithms.properties;
 
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Set;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -33,7 +29,7 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.KBElement;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
@@ -47,19 +43,29 @@ import org.slf4j.LoggerFactory;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 @ComponentAnn(name="objectproperty range learner", shortName="oplrange", version=0.1)
 public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyRangeAxiomLearner.class);
-	private Map<Individual, SortedSet<Description>> individual2Types;
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private ObjectProperty propertyToDescribe;
 	
 	public ObjectPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
-		super.iterativeQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?ind ?type WHERE {?s ?p ?ind. ?ind a ?type.}");
+		
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
+	
 	}
 	
 	public ObjectProperty getPropertyToDescribe() {
@@ -72,7 +78,6 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 
 	@Override
 	public void start() {
-		iterativeQueryTemplate.setIri("p", propertyToDescribe.getName());
 		logger.info("Start learning...");
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
@@ -95,89 +100,116 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 			}
 		}
 		
-		runIterativeQueryMode();
+		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
+			runSingleQueryMode();
+		} else {
+			runSPARQL1_0_Mode();
+		}
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private void runSingleQueryMode(){
+		String query = String.format("SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
+		ResultSet rs = executeSelectQuery(query);
+		int nrOfSubjects = rs.next().getLiteral("cnt").getInt();
 		
-	}
-	
-	private void runIterativeQueryMode(){
-		individual2Types = new HashMap<Individual, SortedSet<Description>>();
-		while(!terminationCriteriaSatisfied() && !fullDataLoaded){
-			ResultSet rs = fetchData();
-			processData(rs);
-			buildEvaluatedAxioms();
+		query = String.format("SELECT ?type (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o. ?o a ?type.} GROUP BY ?type ORDER BY DESC(?cnt)", propertyToDescribe.getName());
+		rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			NamedClass range = new NamedClass(qs.getResource("type").getURI());
+			int cnt = qs.getLiteral("cnt").getInt();
+			if(!range.getURI().equals(Thing.uri)){
+				currentlyBestAxioms.add(new EvaluatedAxiom(new ObjectPropertyRangeAxiom(propertyToDescribe, range), computeScore(nrOfSubjects, cnt)));
+			}
 		}
 	}
 	
-	private void processData(ResultSet rs){
-		QuerySolution qs;
-		Individual ind;
-		Description type;
-		SortedSet<Description> types;
-		int cnt = 0;
-		while(rs.hasNext()){
-			cnt++;
-			qs = rs.next();
-			if(qs.get("type").isURIResource()){
-				types = new TreeSet<Description>();
-				ind = new Individual(qs.getResource("ind").getURI());
-				type = new NamedClass(qs.getResource("type").getURI());
-				types.add(type);
-				if(reasoner.isPrepared()){
-					if(reasoner.getClassHierarchy().contains(type)){
-						types.addAll(reasoner.getClassHierarchy().getSuperClasses(type));
+	private void runSPARQL1_0_Mode() {
+		workingModel = ModelFactory.createDefaultModel();
+		int limit = 1000;
+		int offset = 0;
+		String baseQuery  = "CONSTRUCT {?o a ?type.} WHERE {?s <%s> ?o. ?o a ?type.} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+		Model newModel = executeConstructQuery(query);
+		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
+			workingModel.add(newModel);
+			// get number of distinct subjects
+			query = "SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s a ?type.}";
+			ResultSet rs = executeSelectQuery(query, workingModel);
+			QuerySolution qs;
+			int all = 1;
+			while (rs.hasNext()) {
+				qs = rs.next();
+				all = qs.getLiteral("all").getInt();
+			}
+			
+			// get class and number of instances
+			query = "SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type.} GROUP BY ?type ORDER BY DESC(?cnt)";
+			rs = executeSelectQuery(query, workingModel);
+			
+			if (all > 0) {
+				currentlyBestAxioms.clear();
+				while(rs.hasNext()){
+					qs = rs.next();
+					Resource type = qs.get("type").asResource();
+					//omit owl:Thing as trivial domain
+					if(type.equals(OWL.Thing)){
+						continue;
+					}
+					currentlyBestAxioms.add(new EvaluatedAxiom(
+							new ObjectPropertyRangeAxiom(propertyToDescribe, new NamedClass(type.getURI())),
+							computeScore(all, qs.get("cnt").asLiteral().getInt())));
+				}
+				
+			}
+			offset += limit;
+			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+			newModel = executeConstructQuery(query);
+			fillWithInference(newModel);
+		}
+	}
+	
+	private void fillWithInference(Model model){
+		Model additionalModel = ModelFactory.createDefaultModel();
+		if(reasoner.isPrepared()){
+			for(StmtIterator iter = model.listStatements(null, RDF.type, (RDFNode)null); iter.hasNext();){
+				Statement st = iter.next();
+				Description cls = new NamedClass(st.getObject().asResource().getURI());
+				if(reasoner.getClassHierarchy().contains(cls)){
+					for(Description sup : reasoner.getClassHierarchy().getSuperClasses(cls)){
+						additionalModel.add(st.getSubject(), st.getPredicate(), model.createResource(sup.toString()));
 					}
 				}
-				addToMap(individual2Types, ind, types);
 			}
 		}
-		lastRowCount = cnt;
+		model.add(additionalModel);
 	}
-
-	private void buildEvaluatedAxioms(){
-		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
-		Map<Description, Integer> result = new HashMap<Description, Integer>();
-		for(Entry<Individual, SortedSet<Description>> entry : individual2Types.entrySet()){
-			for(Description nc : entry.getValue()){
-				Integer cnt = result.get(nc);
-				if(cnt == null){
-					cnt = Integer.valueOf(1);
-				} else {
-					cnt = Integer.valueOf(cnt + 1);
-				}
-				result.put(nc, cnt);
-			}
-		}
-		
-		//omit owl:Thing
-		result.remove(new NamedClass(Thing.instance.getURI()));
-		
-		EvaluatedAxiom evalAxiom;
-		int total = individual2Types.keySet().size();
-		for(Entry<Description, Integer> entry : sortByValues(result)){
-			evalAxiom = new EvaluatedAxiom(new ObjectPropertyRangeAxiom(propertyToDescribe, entry.getKey()),
-					computeScore(total, entry.getValue()));
-			if(existingAxioms.contains(evalAxiom.getAxiom())){
-				evalAxiom.setAsserted(true);
-			}
-			axioms.add(evalAxiom);
-		}
-		
-		currentlyBestAxioms = axioms;
+	
+	@Override
+	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
+		ObjectPropertyRangeAxiom axiom = (ObjectPropertyRangeAxiom) evAxiom.getAxiom();
+		posExamplesQueryTemplate.setIri("type", axiom.getRange().toString());
+		return super.getPositiveExamples(evAxiom);
+	}
+	
+	@Override
+	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
+		ObjectPropertyRangeAxiom axiom = (ObjectPropertyRangeAxiom) evAxiom.getAxiom();
+		negExamplesQueryTemplate.setIri("type", axiom.getRange().toString());
+		return super.getNegativeExamples(evAxiom);
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://[2001:638:902:2010:0:168:35:138]/sparql")));
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
 		reasoner.prepareSubsumptionHierarchy();
 		
 		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/ideology"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/currency"));
 		l.setMaxExecutionTimeInSeconds(10);
 //		l.setReturnOnlyNewAxioms(true);
 		l.init();

@@ -20,12 +20,7 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Set;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -36,15 +31,19 @@ import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
-import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.KBElement;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 @ComponentAnn(name="dataproperty range learner", shortName="dblrange", version=0.1)
 public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorithm {
@@ -56,6 +55,9 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 	
 	public DataPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?o ?p ?s. FILTER (DATATYPE(?s) = ?dt)}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?o ?p ?s. FILTER (DATATYPE(?s) != ?dt)}");
+	
 	}
 	
 	public DatatypeProperty getPropertyToDescribe() {
@@ -72,82 +74,101 @@ public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorith
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		//get existing range
-		DataRange existingRange = reasoner.getRange(propertyToDescribe);
-		if(existingRange != null){
-			existingAxioms.add(new DatatypePropertyRangeAxiom(propertyToDescribe, existingRange));
-			logger.debug("Existing range: " + existingRange);
+		
+		if(returnOnlyNewAxioms){
+			//get existing ranges
+			DataRange existingRange = reasoner.getRange(propertyToDescribe);
+			if(existingRange != null){
+				existingAxioms.add(new DatatypePropertyRangeAxiom(propertyToDescribe, existingRange));
+			}
 		}
 		
-		//get objects with datatypes
-		Map<Individual, SortedSet<Datatype>> individual2Datatypes = new HashMap<Individual, SortedSet<Datatype>>();
-		boolean repeat = true;
-		int limit = 1000;
-		while(!terminationCriteriaSatisfied() && repeat){
-			int ret = addIndividualsWithTypes(individual2Datatypes, limit, fetchedRows);
-			currentlyBestAxioms = buildEvaluatedAxioms(individual2Datatypes);
-			fetchedRows += 1000;
-			repeat = (ret == limit);
+		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
+			runSingleQueryMode();
+		} else {
+			runSPARQL1_0_Mode();
 		}
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
-
-	private List<EvaluatedAxiom> buildEvaluatedAxioms(Map<Individual, SortedSet<Datatype>> individual2Types){
-		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
-		Map<Datatype, Integer> result = new HashMap<Datatype, Integer>();
-		for(Entry<Individual, SortedSet<Datatype>> entry : individual2Types.entrySet()){
-			for(Datatype nc : entry.getValue()){
-				Integer cnt = result.get(nc);
-				if(cnt == null){
-					cnt = Integer.valueOf(1);
-				} else {
-					cnt = Integer.valueOf(cnt + 1);
-				}
-				result.put(nc, cnt);
-			}
-		}
-		
-		EvaluatedAxiom evalAxiom;
-		int total = individual2Types.keySet().size();
-		for(Entry<Datatype, Integer> entry : sortByValues(result)){
-			evalAxiom = new EvaluatedAxiom(new DatatypePropertyRangeAxiom(propertyToDescribe, entry.getKey()),
-					computeScore(total, entry.getValue()));
-			if(existingAxioms.contains(evalAxiom.getAxiom())){
-				evalAxiom.setAsserted(true);
-			}
-			axioms.add(evalAxiom);
-		}
-		
-		return axioms;
-	}
 	
-	
-	private int addIndividualsWithTypes(Map<Individual, SortedSet<Datatype>> ind2Datatypes, int limit, int offset){
-		String query = String.format("SELECT ?ind (DATATYPE(?val) AS ?datatype) WHERE {?ind <%s> ?val.} LIMIT %d OFFSET %d", propertyToDescribe.getName(), limit, offset);
+	private void runSingleQueryMode(){
 		
+		String query = String.format("SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
 		ResultSet rs = executeSelectQuery(query);
-		Individual ind;
-		Datatype newType;
+		int nrOfSubjects = rs.next().getLiteral("cnt").getInt();
+		
+		query = String.format("SELECT (DATATYPE(?o) AS ?type) (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.} GROUP BY DATATYPE(?o)", propertyToDescribe.getName());
+		rs = executeSelectQuery(query);
 		QuerySolution qs;
-		SortedSet<Datatype> types;
-		int cnt = 0;
 		while(rs.hasNext()){
-			cnt++;
-			newType = null;
 			qs = rs.next();
-			ind = new Individual(qs.getResource("ind").getURI());
-			if(qs.getResource("datatype") != null){
-				newType = new Datatype(qs.getResource("datatype").getURI());
-				types = ind2Datatypes.get(ind);
-				if(types == null){
-					types = new TreeSet<Datatype>();
-					ind2Datatypes.put(ind, types);
-				}
-				types.add(newType);
+			if(qs.get("type") != null){
+				DataRange range = new Datatype(qs.get("type").asLiteral().getLexicalForm());
+				int cnt = qs.getLiteral("cnt").getInt();
+				currentlyBestAxioms.add(new EvaluatedAxiom(new DatatypePropertyRangeAxiom(propertyToDescribe, range), computeScore(nrOfSubjects, cnt)));
+			} 
+		}
+	}
+
+	private void runSPARQL1_0_Mode() {
+		workingModel = ModelFactory.createDefaultModel();
+		int limit = 1000;
+		int offset = 0;
+		String baseQuery  = "CONSTRUCT {?s <%s> ?o} WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		Model newModel = executeConstructQuery(query);
+		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
+			workingModel.add(newModel);
+			// get number of distinct subjects
+			query = "SELECT (COUNT(?o) AS ?all) WHERE {?s ?p ?o.}";
+			ResultSet rs = executeSelectQuery(query, workingModel);
+			QuerySolution qs;
+			int all = 1;
+			while (rs.hasNext()) {
+				qs = rs.next();
+				all = qs.getLiteral("all").getInt();
 			}
 			
+			// get class and number of instances
+//			query = "SELECT (DATATYPE(?o) AS ?dt) (COUNT(?o) AS ?cnt) WHERE{?s ?p ?o} GROUP BY DATATYPE(?o) ORDER BY DESC(?cnt)";
+			query = "SELECT ?dt (COUNT(?o) AS ?cnt) " +
+					"WHERE {" +
+					"{" +
+					"SELECT (DATATYPE(?o) AS ?dt) ?o WHERE{?s ?p ?o}" +
+					"}" +
+					"}" +
+					"GROUP BY ?dt";
+			rs = executeSelectQuery(query, workingModel);
+			
+			if (all > 0) {
+				currentlyBestAxioms.clear();
+				while(rs.hasNext()){
+					qs = rs.next();
+					Resource type = qs.get("dt").asResource();
+					currentlyBestAxioms.add(new EvaluatedAxiom(
+							new DatatypePropertyRangeAxiom(propertyToDescribe, new Datatype(type.getURI())),
+							computeScore(all, qs.get("cnt").asLiteral().getInt())));
+				}
+				
+			}
+			offset += limit;
+			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			newModel = executeConstructQuery(query);
 		}
-		return cnt;
+	}
+	
+	@Override
+	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
+		DatatypePropertyRangeAxiom axiom = (DatatypePropertyRangeAxiom) evAxiom.getAxiom();
+		posExamplesQueryTemplate.setIri("dt", axiom.getRange().toString());
+		return super.getPositiveExamples(evAxiom);
+	}
+	
+	@Override
+	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
+		DatatypePropertyRangeAxiom axiom = (DatatypePropertyRangeAxiom) evAxiom.getAxiom();
+		negExamplesQueryTemplate.setIri("dt", axiom.getRange().toString());
+		return super.getNegativeExamples(evAxiom);
 	}
 	
 	public static void main(String[] args) throws Exception{

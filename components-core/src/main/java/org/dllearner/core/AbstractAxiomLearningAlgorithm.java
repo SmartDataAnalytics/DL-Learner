@@ -37,9 +37,12 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.KBElement;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -58,20 +61,20 @@ import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
-import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_Regex;
 import com.hp.hpl.jena.sparql.expr.E_Str;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
-import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.resultset.ResultSetMem;
 import com.hp.hpl.jena.sparql.syntax.ElementFilter;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.util.NodeFactory;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -278,7 +281,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 				if(model.size() == 0){
 					fullDataLoaded = true;
 				}
-
+				logger.info("Got " + model.size() + " triples.");
 				return model;
 			} catch (QueryExceptionHTTP e) {
 				if(e.getCause() instanceof SocketTimeoutException){
@@ -332,7 +335,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	protected ResultSet executeSelectQuery(String query, Model model) {
 		logger.debug("Sending query on local model\n{} ...", query);
-		QueryExecution qexec = QueryExecutionFactory.create(query, model);
+		QueryExecution qexec = QueryExecutionFactory.create(QueryFactory.create(query, Syntax.syntaxARQ), model);
 		ResultSet rs = qexec.execSelect();;
 
 		return rs;
@@ -473,13 +476,19 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		filterNamespaces.add(namespace);
 	}
 	
-	protected SortedSet<Individual> getPositiveExamples(EvaluatedAxiom axiom){
+	public Set<KBElement> getPositiveExamples(EvaluatedAxiom axiom){
 		if(workingModel != null){
-			SortedSet<Individual> posExamples = new TreeSet<Individual>();
+			SortedSet<KBElement> posExamples = new TreeSet<KBElement>();
 			
 			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
+			RDFNode node;
 			while(rs.hasNext()){
-				posExamples.add(new Individual(rs.next().get("s").asResource().getURI()));
+				node = rs.next().get("s");
+				if(node.isResource()){
+					posExamples.add(new Individual(node.asResource().getURI()));
+				} else if(node.isLiteral()){
+					posExamples.add(new TypedConstant(node.asLiteral().getLexicalForm(), new Datatype(node.asLiteral().getDatatypeURI())));
+				}
 			}
 			
 			return posExamples;
@@ -488,13 +497,19 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		}
 	}
 	
-	protected SortedSet<Individual> getNegativeExamples(EvaluatedAxiom axiom){
+	public Set<KBElement> getNegativeExamples(EvaluatedAxiom axiom){
 		if(workingModel != null){
-			SortedSet<Individual> negExamples = new TreeSet<Individual>();
+			SortedSet<KBElement> negExamples = new TreeSet<KBElement>();
 			
 			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
+			RDFNode node;
 			while(rs.hasNext()){
-				negExamples.add(new Individual(rs.next().get("s").asResource().getURI()));
+				node = rs.next().get("s");
+				if(node.isResource()){
+					negExamples.add(new Individual(node.asResource().getURI()));
+				} else if(node.isLiteral()){
+					negExamples.add(new TypedConstant(node.asLiteral().getLexicalForm(), new Datatype(node.asLiteral().getDatatypeURI())));
+				}
 			}
 			
 			return negExamples;
@@ -503,7 +518,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		}
 	}
 	
-	protected void explainScore(EvaluatedAxiom evAxiom){
+	public void explainScore(EvaluatedAxiom evAxiom){
 		int posExampleCnt = getPositiveExamples(evAxiom).size();
 		int negExampleCnt = getNegativeExamples(evAxiom).size();
 		int total = posExampleCnt + negExampleCnt;
@@ -512,6 +527,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		sb.append("######################################").append(lb);
 		sb.append("Explanation:").append(lb);
 		sb.append("Score(").append(evAxiom.getAxiom()).append(") = ").append(evAxiom.getScore().getAccuracy()).append(lb);
+		sb.append("Fragment size:\t").append(workingModel.size()).append(" triples").append(lb);
 		sb.append("Total number of resources:\t").append(total).append(lb);
 		sb.append("Number of positive examples:\t").append(posExampleCnt).append(lb);
 		sb.append("Number of negative examples:\t").append(negExampleCnt).append(lb);
@@ -520,7 +536,11 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		System.out.println(sb.toString());
 	}
 	
-	protected static <E> void printSubset(Collection<E> collection, int maxSize){
+	public long getEvaluatedFramentSize(){
+		return workingModel.size();
+	}
+	
+	public static <E> void printSubset(Collection<E> collection, int maxSize){
 		StringBuffer sb = new StringBuffer();
 		int i = 0;
 		Iterator<E> iter = collection.iterator();

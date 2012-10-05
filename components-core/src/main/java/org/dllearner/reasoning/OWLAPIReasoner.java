@@ -104,7 +104,9 @@ import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
 import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.FreshEntitiesException;
 import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
+import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 import org.semanticweb.owlapi.reasoner.IndividualNodeSetPolicy;
 import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.Node;
@@ -112,8 +114,10 @@ import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.NullReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
+import org.semanticweb.owlapi.reasoner.TimeOutException;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -607,8 +611,22 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         // Pellet returns a set of nodes of named classes, which are more
         // general than the actual domain/range
-        NodeSet<OWLClass> set = reasoner.getObjectPropertyDomains(prop, false);
-        return getDescriptionFromReturnedDomain(set);
+        NodeSet<OWLClass> set;
+		try {
+			set = reasoner.getObjectPropertyDomains(prop, false);
+			return getDescriptionFromReturnedDomain(set);
+		} catch (InconsistentOntologyException e) {
+			e.printStackTrace();
+		} catch (FreshEntitiesException e) {
+			e.printStackTrace();
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		} catch (ReasonerInterruptedException e) {
+			e.printStackTrace();
+		} catch(de.tudresden.inf.lat.cel.owlapi.UnsupportedReasonerOperationInCelException e){
+			e.printStackTrace();
+		}
+        return Thing.instance;
 
     }
 
@@ -625,13 +643,27 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public Description getRangeImpl(ObjectProperty objectProperty) {
         OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
 
-        NodeSet<OWLClass> set = reasoner.getObjectPropertyRanges(prop, true);
-        if (set.isEmpty()) return new Thing();
-        OWLClass oc = set.iterator().next().getRepresentativeElement();
-        if (oc.isOWLThing()) {
-            return Thing.instance;
-        }
-        return new NamedClass(oc.toStringID());
+        NodeSet<OWLClass> set;
+		try {
+			set = reasoner.getObjectPropertyRanges(prop, true);
+			 if (set.isEmpty()) return new Thing();
+		        OWLClass oc = set.iterator().next().getRepresentativeElement();
+		        if (oc.isOWLThing()) {
+		            return Thing.instance;
+		        }
+		        return new NamedClass(oc.toStringID());
+		} catch (InconsistentOntologyException e) {
+			e.printStackTrace();
+		} catch (FreshEntitiesException e) {
+			e.printStackTrace();
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		} catch (ReasonerInterruptedException e) {
+			e.printStackTrace();
+		} catch(de.tudresden.inf.lat.cel.owlapi.UnsupportedReasonerOperationInCelException e){
+			e.printStackTrace();
+		}
+       return Thing.instance;
 
     }
 
@@ -894,8 +926,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         try {
             OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI.create(iri));
-            new PelletReasonerFactory().createReasoner(ontology);
+            ontology = manager.loadOntologyFromOntologyDocument(new File("../test/phaenotype/mp-equivalence-axioms-subq.owl"));
+//            new PelletReasonerFactory().createReasoner(ontology);
             System.out.println("Reasoner loaded succesfully.");
+            CelReasoner r = new CelReasoner(ontology);
         } catch (Exception e) {
             e.printStackTrace();
         }

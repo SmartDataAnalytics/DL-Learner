@@ -22,6 +22,7 @@ package org.dllearner.algorithms.properties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.log4j.ConsoleAppender;
@@ -34,6 +35,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.KBElement;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
@@ -54,7 +56,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 @ComponentAnn(name="objectproperty domain axiom learner", shortName="opldomain", version=0.1)
 public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgorithm {
@@ -86,7 +87,6 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	
 	@Override
 	public void start() {
-		iterativeQueryTemplate.setIri("p", propertyToDescribe.getName());
 		logger.info("Start learning...");
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
@@ -133,7 +133,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 			}
 			
 			// get class and number of instances
-			query = "SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type.} GROUP BY ?type";
+			query = "SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type.} GROUP BY ?type ORDER BY DESC(?cnt)";
 			rs = executeSelectQuery(query, workingModel);
 			
 			if (all > 0) {
@@ -175,14 +175,14 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	}
 	
 	@Override
-	protected SortedSet<Individual> getPositiveExamples(EvaluatedAxiom evAxiom) {
+	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
 		ObjectPropertyDomainAxiom axiom = (ObjectPropertyDomainAxiom) evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
-	protected SortedSet<Individual> getNegativeExamples(EvaluatedAxiom evAxiom) {
+	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
 		ObjectPropertyDomainAxiom axiom = (ObjectPropertyDomainAxiom) evAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
 		return super.getNegativeExamples(evAxiom);
@@ -193,7 +193,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
 		org.apache.log4j.Logger.getLogger(DataPropertyDomainAxiomLearner.class).setLevel(Level.INFO);		
 		
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
 		reasoner.prepareSubsumptionHierarchy();

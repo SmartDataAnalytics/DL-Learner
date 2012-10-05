@@ -35,6 +35,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -53,6 +54,9 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 
 	public TransitiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		
+		posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o1. ?o1 ?p ?o2. ?s ?p ?o2}");
+		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o1. ?o1 ?p ?o2. FILTER NOT EXISTS {?s ?p ?o2 }}");
 	}
 
 	public ObjectProperty getPropertyToDescribe() {
@@ -89,18 +93,18 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	
 
 	private void runSPARQL1_0_Mode(){
-		Model model = ModelFactory.createDefaultModel();
+		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			model.add(newModel);
+			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			ResultSet rs = executeSelectQuery(query, model);
+			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int total = 0;
 			while(rs.hasNext()){
@@ -109,7 +113,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			}
 			query = "SELECT (COUNT(*) AS ?transitive) WHERE {?s <%s> ?o. ?o <%s> ?o1. ?s <%s> ?o1.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query, model);
+			rs = executeSelectQuery(query, workingModel);
 			int transitive = 0;
 			while(rs.hasNext()){
 				qs = rs.next();
@@ -128,7 +132,7 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	}
 	
 	private void runSPARQL1_1_Mode(){
-		String query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1.}";
+		String query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o. ?o <%s> ?o1. FILTER(?s != ?o && ?o != ?o1)}";
 		query = query.replace("%s", propertyToDescribe.getURI().toString());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -137,16 +141,17 @@ public class TransitiveObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			qs = rs.next();
 			total = qs.getLiteral("total").getInt();
 		}
-		query = "SELECT (COUNT(*) AS ?transitive) WHERE {?s <%s> ?o. ?o <%s> ?o1. ?s <%s> ?o1.}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		rs = executeSelectQuery(query);
-		int transitive = 0;
-		while(rs.hasNext()){
-			qs = rs.next();
-			transitive = qs.getLiteral("transitive").getInt();
-		}
-		System.out.println(total);
+		
 		if(total > 0){
+			query = "SELECT (COUNT(*) AS ?transitive) WHERE {?s <%s> ?o. ?o <%s> ?o1. ?s <%s> ?o1. FILTER(?s != ?o && ?o != ?o1)}";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			rs = executeSelectQuery(query);
+			int transitive = 0;
+			while(rs.hasNext()){
+				qs = rs.next();
+				transitive = qs.getLiteral("transitive").getInt();
+			}
+			
 			currentlyBestAxioms.add(new EvaluatedAxiom(new TransitiveObjectPropertyAxiom(propertyToDescribe),
 					computeScore(total, transitive), declaredAsTransitive));
 		}

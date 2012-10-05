@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -36,7 +35,6 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.DatatypePropertyDomainAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -44,7 +42,6 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.slf4j.Logger;
@@ -103,12 +100,31 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 			}
 		}
 		
-		runIterativeQueryMode();
+		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
+			runSingleQueryMode();
+		} else {
+			runIterativeQueryMode();
+		}
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private void runSingleQueryMode(){
+		String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
+		ResultSet rs = executeSelectQuery(query);
+		int nrOfSubjects = rs.next().getLiteral("cnt").getInt();
 		
+		query = String.format("SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o. ?s a ?type.} GROUP BY ?type", propertyToDescribe.getName());
+		rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			NamedClass domain = new NamedClass(qs.getResource("type").getURI());
+			int cnt = qs.getLiteral("cnt").getInt();
+			if(!domain.getURI().equals(Thing.uri)){
+				currentlyBestAxioms.add(new EvaluatedAxiom(new ObjectPropertyDomainAxiom(propertyToDescribe, domain), computeScore(nrOfSubjects, cnt)));
+				
+			}
+		}
 	}
 	
 	private void runIterativeQueryMode(){
