@@ -19,9 +19,7 @@
 
 package org.dllearner.algorithms;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,11 +107,11 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 
 	@Override
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
+		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
 		for(EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)){
-			axioms.add(new EvaluatedAxiom(new SubClassAxiom(classToDescribe, ed.getDescription()), new AxiomScore(ed.getAccuracy())));
+			currentlyBestAxioms.add(new EvaluatedAxiom(new SubClassAxiom(classToDescribe, ed.getDescription()), new AxiomScore(ed.getAccuracy())));
 		}
-		return axioms;
+		return currentlyBestAxioms;
 	}
 
 	@Override
@@ -145,6 +143,16 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 			}
 		}
 		
+		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
+			runSingleQueryMode();
+		} else {
+			runSPARQL1_0_Mode();
+		}
+		
+		logger.info("...finished in {}ms. (Got {} rows)", (System.currentTimeMillis()-startTime), fetchedRows);
+	}
+	
+	private void runSPARQL1_0_Mode(){
 		Map<Individual, SortedSet<Description>> ind2Types = new HashMap<Individual, SortedSet<Description>>();
 		int limit = 1000;
 		boolean repeat = true;
@@ -153,9 +161,26 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 			createEvaluatedDescriptions(ind2Types);
 			fetchedRows += 1000;
 		}
-
+	}
+	
+	private void runSingleQueryMode(){
+		int total = reasoner.getPopularity(classToDescribe);
 		
-		logger.info("...finished in {}ms. (Got {} rows)", (System.currentTimeMillis()-startTime), fetchedRows);
+		if(total > 0){
+			String query = String.format("SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a <%s>. ?s a ?type} GROUP BY ?type ORDER BY DESC(?cnt)", classToDescribe.getName());
+			ResultSet rs = executeSelectQuery(query);
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				if(!qs.get("type").isAnon()){
+					NamedClass sup = new NamedClass(qs.getResource("type").getURI());
+					int overlap = qs.get("cnt").asLiteral().getInt();
+					if(!sup.getURI().equals(Thing.uri) && ! classToDescribe.equals(sup)){//omit owl:Thing and the class to describe itself
+						currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(sup, computeScore(total, overlap)));
+					}
+				}
+			}
+		}
 	}
 	
 	public NamedClass getClassToDescribe() {
@@ -234,8 +259,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"),
-				Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
 		reasoner.prepareSubsumptionHierarchy();
@@ -244,7 +268,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm implem
 		l.setReasoner(reasoner);
 		l.setReturnOnlyNewAxioms(true);
 		
-		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 10);
+		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", 50);
 		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/SoccerClub"));
 		l.init();
 		l.start();

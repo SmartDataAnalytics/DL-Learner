@@ -19,6 +19,7 @@
 
 package org.dllearner.core.owl;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,6 +32,10 @@ public class EquivalentObjectPropertiesAxiom extends PropertyAxiom {
 	
 	public EquivalentObjectPropertiesAxiom(Collection<ObjectProperty> equivalentProperties) {
 		this.equivalentProperties = equivalentProperties;
+	}
+	
+	public EquivalentObjectPropertiesAxiom(ObjectProperty... equivalentProperties) {
+		this.equivalentProperties = Arrays.asList(equivalentProperties);
 	}
 	
 	public Collection<ObjectProperty> getEquivalentProperties() {

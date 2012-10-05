@@ -33,6 +33,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -51,6 +52,10 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 
 	public ReflexiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		
+		posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?s.}");
+		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS {?s ?p ?s} }");
+	
 	}
 	
 	public ObjectProperty getPropertyToDescribe() {
@@ -82,24 +87,22 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			runSPARQL1_0_Mode();
 		}
 		
-		
-		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private void runSPARQL1_0_Mode() {
-		Model model = ModelFactory.createDefaultModel();
+		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			model.add(newModel);
+			workingModel.add(newModel);
 			// get fraction of instances s with <s p s>
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?total) WHERE {?s <%s> ?o.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			ResultSet rs = executeSelectQuery(query, model);
+			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int total = 0;
 			while (rs.hasNext()) {
@@ -108,7 +111,7 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			}
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?reflexive) WHERE {?s <%s> ?s.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query, model);
+			rs = executeSelectQuery(query, workingModel);
 			int reflexive = 0;
 			while (rs.hasNext()) {
 				qs = rs.next();
@@ -129,26 +132,15 @@ public class ReflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	}
 	
 	private void runSPARQL1_1_Mode() {
-		// get fraction of instances s with <s p s>
-		String query = "SELECT (COUNT(DISTINCT ?s) AS ?total) WHERE {?s <%s> ?o.}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		int total = 0;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			total = qs.getLiteral("total").getInt();
-		}
-		query = "SELECT (COUNT(DISTINCT ?s) AS ?reflexive) WHERE {?s <%s> ?s.}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		rs = executeSelectQuery(query);
-		int reflexive = 0;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			reflexive = qs.getLiteral("reflexive").getInt();
-
-		}
+		int total = reasoner.getPopularity(propertyToDescribe);
 		if (total > 0) {
+			int reflexive = 0;
+			String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?reflexive) WHERE {?s <%s> ?s.}",propertyToDescribe.getName());
+			ResultSet rs = executeSelectQuery(query);
+			if (rs.hasNext()) {
+				reflexive = rs.next().getLiteral("reflexive").getInt();
+			}
+			
 			currentlyBestAxioms.add(new EvaluatedAxiom(
 					new ReflexiveObjectPropertyAxiom(propertyToDescribe),
 					computeScore(total, reflexive), declaredAsReflexive));

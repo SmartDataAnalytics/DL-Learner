@@ -47,7 +47,6 @@ import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.Heuristics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,12 +156,45 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		}
 		
 		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
-			runSPARQL1_1_Mode();
+//			runSPARQL1_1_Mode();
+			runSingleQueryMode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	}
+	
+	private void runSingleQueryMode(){
+		//compute the overlap if exist
+		Map<NamedClass, Integer> class2Overlap = new HashMap<NamedClass, Integer>(); 
+		String query = String.format("SELECT ?type (COUNT(*) AS ?cnt) WHERE {?s a <%s>. ?s a ?type.} GROUP BY ?type", classToDescribe.getName());
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			NamedClass cls = new NamedClass(qs.getResource("type").getURI());
+			int cnt = qs.getLiteral("cnt").getInt();
+			class2Overlap.put(cls, cnt);
+		}
+		//for each property in knowledge base
+		for(NamedClass cls : allClasses){
+			//get the popularity
+			int otherPopularity = reasoner.getPopularity(cls);
+			if(otherPopularity == 0){//skip empty properties
+				continue;
+			}
+			//get the overlap
+			int overlap = class2Overlap.containsKey(cls) ? class2Overlap.get(cls) : 0;
+			//compute the estimated precision
+			double precision = accuracy(otherPopularity, overlap);
+			//compute the estimated recall
+			double recall = accuracy(popularity, overlap);
+			//compute the final score
+			double score = 1 - fMEasure(precision, recall);
+			
+			currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(cls, new AxiomScore(score)));
+		}
 	}
 	
 	private void runSPARQL1_0_Mode(){
