@@ -62,6 +62,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.prefs.Preferences;
 
 import joptsimple.OptionException;
@@ -76,6 +78,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
 import org.dllearner.algorithms.celoe.CELOE;
@@ -113,6 +116,7 @@ import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -135,6 +139,7 @@ import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.DLLearnerAxiomConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
@@ -153,6 +158,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
@@ -160,6 +166,7 @@ import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
 import org.semanticweb.owlapi.reasoner.TimeOutException;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -176,11 +183,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  * @author Jens Lehmann
  * 
  */
-public class EnrichmentEvaluation {
+public class EnrichmentEvaluationMultithreaded {
 
-	private static Logger logger = Logger.getLogger(EnrichmentEvaluation.class);
+	private static Logger logger = Logger.getLogger(EnrichmentEvaluationMultithreaded.class);
 	
-	private final int maxNrOfThreads = 1;
+	private final int maxNrOfThreads = 4;
 	
 	// max. number of attempts per algorithm and entity, because to many queries 
 	// in a short time could cause blocking by the endpoint
@@ -192,11 +199,11 @@ public class EnrichmentEvaluation {
 	private final int delayInMilliseconds = 5000;
 
 	// max. execution time for each learner for each entity
-	private int maxExecutionTimeInSeconds = 10;
+	private int maxExecutionTimeInSeconds = 25;
 
 	// number of axioms which will be learned/considered (only applies to
 	// some learners)
-	private int nrOfAxiomsToLearn = 10;
+	private int nrOfAxiomsToLearn = 50;
 	
 	// only axioms with a score above this threshold will be considered
 	private double threshold = 0.7;
@@ -225,7 +232,10 @@ public class EnrichmentEvaluation {
 	
 	private SPARQLReasoner sparqlReasoner;
 	
-	public EnrichmentEvaluation(SparqlEndpoint endpoint) {
+	private Map<Class<? extends LearningAlgorithm>, Set<OWLAxiom>> algorithm2Ontology;
+	private OWLOntologyManager manager;
+	
+	public EnrichmentEvaluationMultithreaded(SparqlEndpoint endpoint) {
 		this.endpoint = endpoint;
 		
 		prefixes = new HashMap<String,String>();
@@ -236,11 +246,11 @@ public class EnrichmentEvaluation {
 		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
 		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
 		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(ObjectPropertyDomainAxiomLearner.class);
 		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
-		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
 		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(AsymmetricObjectPropertyAxiomLearner.class);
 		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
@@ -249,18 +259,20 @@ public class EnrichmentEvaluation {
 		objectPropertyAlgorithms.add(InverseObjectPropertyAxiomLearner.class);
 
 		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-//		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
-//		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
+		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
 		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class);
-//		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
-//		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
-//		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
+		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
 		classAlgorithms.add(CELOE.class);
 		classAlgorithms.add(DisjointClassesLearner.class);
 		classAlgorithms.add(SimpleSubclassLearner.class);
 		
+		algorithm2Ontology = new HashMap<Class<? extends LearningAlgorithm>, Set<OWLAxiom>>();
+		manager = OWLManager.createOWLOntologyManager();
 		
 		initDBConnection();
 		loadCurrentDBpediaOntology2();
@@ -359,193 +371,198 @@ public class EnrichmentEvaluation {
 
 	}
 	
-	private void evaluateObjectProperties(SparqlEndpointKS ks)throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
+	private void evaluateObjectProperties(final SparqlEndpointKS ks)throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
 		Set<ObjectProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllObjectProperties();
 		logger.info("Evaluating " + properties.size() + " object properties...");
-
-		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
-			int objectProperties = 0;
+		
+		for (final Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
 			Thread.sleep(5000);
-			String algName = "";
-				for (ObjectProperty property : properties) {
-					
-					try {
-						// dynamically invoke constructor with SPARQL knowledge source
-						AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
-								SparqlEndpointKS.class).newInstance(ks);
-						((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
-						((AbstractAxiomLearningAlgorithm)learner).addFilterNamespace(NAMESPACE);
-						ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
-						ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
-								maxExecutionTimeInSeconds);
-						learner.init();
-						// learner.setPropertyToDescribe(property);
-						// learner.setMaxExecutionTimeInSeconds(10);
-						algName = AnnComponentManager.getName(learner);
-						
-						boolean emptyEntity = sparqlReasoner.getPopularity(property) == 0;
-						if(emptyEntity){
-							logger.warn("Empty entity: " + property);
-						}
-						
-						if(emptyEntity){
-							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0, false);
-						} else {
-							int attempt = 0;
-							long startTime = 0;
-							boolean timeout = true;
-							while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
-								if(attempt > 1){
-									try {
-										logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
-										Thread.sleep(delayInMilliseconds);
-									} catch (InterruptedException e) {
-										e.printStackTrace();
-									}
-								}
-								logger.info("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
-								startTime = System.currentTimeMillis();
-								try {
-									((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
-									learner.start();
-									timeout = ((AbstractAxiomLearningAlgorithm)learner).isTimeout();
-								} catch (Exception e) {
-									if(e.getCause() instanceof SocketTimeoutException){
-										
-									} else {
-										e.printStackTrace();
-									}
-								}
-							}
-							
-							long runTime = System.currentTimeMillis() - startTime;
-							List<EvaluatedAxiom> learnedAxioms = learner
-									.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-							if(timeout && learnedAxioms.isEmpty()){
-								writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
-							} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
-								writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
-							} else {
-								for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
-									double score = learnedAxiom.getScore().getAccuracy();
-									if (Double.isNaN(score)) {
-										score = -1;
-									}
-									writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
-											score, runTime, isEntailed(learnedAxiom));
-								}
-							}
-						}
-						
-						objectProperties++;
-						if (maxObjectProperties != 0 && objectProperties == maxObjectProperties) {
-							break;
-						}
-					
-					} catch (Exception e) {
-						logger.error("Error occured for object property " + property.getName() + " with algorithm " + algName , e);
-					}
-				}
 			
-		}
-	}
-	
-	private void evaluateDataProperties(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
-		Set<DatatypeProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
-		logger.info("Evaluating " + properties.size() + " data properties...");
-		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
-			int dataProperties = 0;
-			Thread.sleep(5000);
-			String algName = "";
-			for (DatatypeProperty property : properties) {
-				Thread.sleep(1000);
-				try{
-				// dynamically invoke constructor with SPARQL knowledge source
-				AxiomLearningAlgorithm learner = algorithmClass.getConstructor(
-						SparqlEndpointKS.class).newInstance(ks);
-				((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
-				((AbstractAxiomLearningAlgorithm)learner).addFilterNamespace(NAMESPACE);
-				ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
-				ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
-						maxExecutionTimeInSeconds);
-				learner.init();
-				// learner.setPropertyToDescribe(property);
-				// learner.setMaxExecutionTimeInSeconds(10);
-				algName = AnnComponentManager.getName(learner);
+			Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+			algorithm2Ontology.put(algorithmClass, axioms);
+			int propCnt = 0;
+			ExecutorService threadPool = Executors.newFixedThreadPool(maxNrOfThreads);
+			for (final ObjectProperty property : properties) {
 				
-				boolean emptyEntity = sparqlReasoner.getPopularity(property) == 0;
-				if(emptyEntity){
-					logger.warn("Empty entity: " + property);
-				}
-				if(emptyEntity){
-					writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0, false);
-				} else {
-					int attempt = 0;
-					long startTime = 0;
-					boolean timeout = true;
-					while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
-						if(attempt > 1){
-							try {
-								logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
-								Thread.sleep(delayInMilliseconds);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-						logger.info("Applying " + algName + " on " + property + " ... (Attempt " + attempt + ")");
-						startTime = System.currentTimeMillis();
-						try {
-							((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
-							learner.start();
-							timeout = ((AbstractAxiomLearningAlgorithm)learner).isTimeout();
-						} catch (Exception e) {
-							if(e.getCause() instanceof SocketTimeoutException){
-								
-							} else {
-								e.printStackTrace();
-							}
-						}
-					}
+				threadPool.execute(new Runnable() {
 					
-					long runTime = System.currentTimeMillis() - startTime;
-					List<EvaluatedAxiom> learnedAxioms = learner
-							.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-					if(timeout && learnedAxioms.isEmpty()){
-						writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
-					} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
-						writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
-					} else {
-						for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
-							double score = learnedAxiom.getScore().getAccuracy();
-							if (Double.isNaN(score)) {
-								score = -1;
+					@Override
+					public void run() {
+						String algName = "";
+						try {
+							AxiomLearningAlgorithm learner = algorithmClass.getConstructor(SparqlEndpointKS.class).newInstance(
+									ks);
+							((AbstractAxiomLearningAlgorithm) learner).setReasoner(sparqlReasoner);
+							((AbstractAxiomLearningAlgorithm) learner).addFilterNamespace(NAMESPACE);
+							ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
+							ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
+							learner.init();
+							algName = AnnComponentManager.getName(learner);
+
+							boolean emptyEntity = sparqlReasoner.getPopularity(property) == 0;
+							if (emptyEntity) {
+								logger.warn("Empty entity: " + property);
 							}
-							writeToDB(property.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
-									score, runTime, isEntailed(learnedAxiom));
+
+							if (emptyEntity) {
+								writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0,
+										false);
+							} else {
+								applyLearningAlgorithm(learner, property);
+
+							}
+
+						} catch (Exception e) {
+							logger.error("Error occured for object property " + property.getName() + " with algorithm "
+									+ algName, e);
 						}
 					}
-				}
+				});
 				
-				dataProperties++;
-				if (maxDataProperties != 0 && dataProperties == maxDataProperties) {
+				propCnt++;
+				if (maxObjectProperties != 0 && propCnt == maxObjectProperties) {
 					break;
 				}
 				
-			} catch (Exception e) {
-				logger.error("Error occured for data property " + property.getName() + " with algorithm " + algName , e);
 			}
+			threadPool.shutdown();
+			while (!threadPool.isTerminated()) {
+
 			}
 		}
 	}
 	
-	private void evaluateClasses(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
+	private void applyLearningAlgorithm(AxiomLearningAlgorithm algorithm, Entity entity){
+		int attempt = 0;
+		long startTime = 0;
+		boolean timeout = true;
+		String algName = AnnComponentManager.getName(algorithm);
+		while(((AbstractAxiomLearningAlgorithm)algorithm).isTimeout() && attempt++ < maxAttempts){
+			if(attempt > 1){
+				try {
+					logger.warn("Got timeout in " + algName + " for entity " + entity.getName() + ". Waiting " + delayInMilliseconds + " ms ...");
+					Thread.sleep(delayInMilliseconds);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			logger.info("Applying " + algName + " on " + entity.toString() + " ... (Attempt " + attempt + ")");
+			startTime = System.currentTimeMillis();
+			try {
+				((AbstractAxiomLearningAlgorithm)algorithm).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
+				algorithm.start();
+				timeout = ((AbstractAxiomLearningAlgorithm)algorithm).isTimeout();
+			} catch (Exception e) {
+				if(e.getCause() instanceof SocketTimeoutException){
+					
+				} else {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		long runTime = System.currentTimeMillis() - startTime;
+		List<EvaluatedAxiom> learnedAxioms = algorithm
+				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
+		
+		if(timeout && learnedAxioms.isEmpty()){
+			writeToDB(entity.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
+		} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
+			writeToDB(entity.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
+		} else {
+			for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+				double score = learnedAxiom.getScore().getAccuracy();
+				if (Double.isNaN(score)) {
+					score = -1;
+				}
+				writeToDB(entity.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
+						score, runTime, isEntailed(learnedAxiom));
+				if(score >= threshold){
+					algorithm2Ontology.get(algorithm.getClass()).add(OWLAPIAxiomConvertVisitor.convertAxiom(learnedAxiom.getAxiom()));
+				}
+			}
+		}
+		
+	}
+	
+	private void evaluateDataProperties(final SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
+		Set<DatatypeProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
+		logger.info("Evaluating " + properties.size() + " data properties...");
+		for (final Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
+			Thread.sleep(5000);
+			int propCnt = 0;
+			
+			Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+			algorithm2Ontology.put(algorithmClass, axioms);
+
+			ExecutorService threadPool = Executors.newFixedThreadPool(maxNrOfThreads);
+			for (final DatatypeProperty property : properties) {
+				
+				threadPool.execute(new Runnable() {
+					
+					@Override
+					public void run() {
+						String algName = "";
+						try {
+							AxiomLearningAlgorithm learner = algorithmClass.getConstructor(SparqlEndpointKS.class).newInstance(
+									ks);
+							((AbstractAxiomLearningAlgorithm) learner).setReasoner(sparqlReasoner);
+							((AbstractAxiomLearningAlgorithm) learner).addFilterNamespace(NAMESPACE);
+							ConfigHelper.configure(learner, "propertyToDescribe", property.toString());
+							ConfigHelper.configure(learner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
+							learner.init();
+							algName = AnnComponentManager.getName(learner);
+
+							boolean emptyEntity = sparqlReasoner.getPopularity(property) == 0;
+							if (emptyEntity) {
+								logger.warn("Empty entity: " + property);
+							}
+
+							if (emptyEntity) {
+								writeToDB(property.toManchesterSyntaxString(baseURI, prefixes), algName, "EMPTY_ENTITY", 0, 0,
+										false);
+							} else {
+								applyLearningAlgorithm(learner, property);
+
+							}
+
+						} catch (Exception e) {
+							logger.error("Error occured for data property " + property.getName() + " with algorithm "
+									+ algName, e);
+						}
+					}
+				});
+				
+				propCnt++;
+				if (maxDataProperties != 0 && propCnt == maxDataProperties) {
+					break;
+				}
+				
+			}
+			threadPool.shutdown();
+			while (!threadPool.isTerminated()) {
+
+			}
+		}
+	}
+	
+	private void evaluateClasses(final SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
 		Set<NamedClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
 		logger.info("Evaluating " + classes.size() + " classes...");
-		for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
+		for (final Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
+			ExecutorService threadPool = null;
+			if(algorithmClass == CELOE.class){
+				
+			} else {
+				threadPool = Executors.newFixedThreadPool(maxNrOfThreads);
+			}
 			int classesCnt = 0;
 			Thread.sleep(5000);
-			for (NamedClass cls : classes) {
-
+			
+			Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+			algorithm2Ontology.put(algorithmClass, axioms);
+			
+			for (final NamedClass cls : classes) {
 				try{
 					String algName = "";
 					if(algorithmClass == CELOE.class){
@@ -566,62 +583,47 @@ public class EnrichmentEvaluation {
 						if(algorithmClass == CELOE.class){
 							logger.info("Applying " + algName + " on " + cls + " ... ");
 							learnedAxioms = applyCELOE(ks, cls, false);
-						} else {
-							
-							// dynamically invoke constructor with SPARQL knowledge source
-							LearningAlgorithm learner = algorithmClass.getConstructor(
-									SparqlEndpointKS.class).newInstance(ks);
-							((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
-							ConfigHelper.configure(learner, "classToDescribe", cls.toString());
-							ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
-									maxExecutionTimeInSeconds);
-							learner.init();
-							// learner.setPropertyToDescribe(property);
-							// learner.setMaxExecutionTimeInSeconds(10);
-							int attempt = 0;
-							
-							timeout = true;
-							while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
-								if(attempt > 1){
-									try {
-										logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
-										Thread.sleep(delayInMilliseconds);
-									} catch (InterruptedException e) {
-										e.printStackTrace();
+							long runTime = System.currentTimeMillis() - startTime;
+							if(timeout && learnedAxioms.isEmpty()){
+								writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
+							} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
+								writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
+							} else {
+								for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+									double score = learnedAxiom.getScore().getAccuracy();
+									if (Double.isNaN(score)) {
+										score = -1;
 									}
-								}
-								logger.info("Applying " + algName + " on " + cls + " ... (Attempt " + attempt + ")");
-								startTime = System.currentTimeMillis();
-								try {
-									((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
-									learner.start();
-									timeout = ((AbstractAxiomLearningAlgorithm)learner).isTimeout();
-								} catch (Exception e) {
-									e.printStackTrace();
+									writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
+											score, runTime, isEntailed(learnedAxiom));
 								}
 							}
-							learnedAxioms = ((AxiomLearningAlgorithm)learner).getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn);
-						}
-						
-						
-						long runTime = System.currentTimeMillis() - startTime;
-						
-						if(timeout && learnedAxioms.isEmpty()){
-							writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "TIMEOUT", 0, runTime, false);
-						} else if (learnedAxioms == null || learnedAxioms.isEmpty()) {
-							writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes), algName, "NULL", 0, runTime, false);
 						} else {
-							for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
-								double score = learnedAxiom.getScore().getAccuracy();
-								if (Double.isNaN(score)) {
-									score = -1;
+							threadPool.execute(new Runnable() {
+								
+								@Override
+								public void run() {
+									String algName = "";
+									try {
+										LearningAlgorithm learner = algorithmClass.getConstructor(
+												SparqlEndpointKS.class).newInstance(ks);
+										algName = AnnComponentManager.getName(learner);
+										((AbstractAxiomLearningAlgorithm)learner).setReasoner(sparqlReasoner);
+										ConfigHelper.configure(learner, "classToDescribe", cls.toString());
+										ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
+												maxExecutionTimeInSeconds);
+										learner.init();
+										applyLearningAlgorithm((AxiomLearningAlgorithm) learner, cls);
+									} catch (Exception e) {
+										logger.error("Error occured for class " + cls.getName() + " with algorithm "
+												+ algName, e);
+									} 
 								}
-								writeToDB(cls.toManchesterSyntaxString(baseURI, prefixes) .toString(), algName, learnedAxiom.getAxiom().toManchesterSyntaxString(baseURI, prefixes),
-										score, runTime, isEntailed(learnedAxiom));
-							}
+							});
+							
 						}
+						
 					}
-					
 					
 					classesCnt++;
 					if (maxClasses != 0 && classesCnt == maxClasses) {
@@ -630,6 +632,12 @@ public class EnrichmentEvaluation {
 					
 				} catch(Exception e){
 					logger.error("Error occured for class " + cls.getName(), e);
+				}
+			}
+			if(algorithmClass != CELOE.class){
+				threadPool.shutdown();
+				while (!threadPool.isTerminated()) {
+
 				}
 			}
 		}
@@ -739,6 +747,7 @@ public class EnrichmentEvaluation {
 		table1.append(" algorithm & Avg. \\#suggestions & Avg. runtime in ms & timeout in \\% & Avg. score & Avg. maximum score\\\\\\midrule\n");
 		
 		for(Class<? extends LearningAlgorithm> algo : algorithms){
+		
 			String algoName = algo.getAnnotation(ComponentAnn.class).name();
 			
 			//get number of entities
@@ -825,7 +834,7 @@ public class EnrichmentEvaluation {
 		
 		// get all entities in database because we compute recall only for axioms of entities which we have tested
 		// we use only entities for which triples in the endpoint are contained
-		java.sql.ResultSet rs = conn.prepareStatement("SELECT DISTINCT entity FROM evaluation WHERE axiom != 'NULL'").executeQuery();
+		java.sql.ResultSet rs = conn.prepareStatement("SELECT DISTINCT entity FROM evaluation WHERE axiom != 'EMPTY_ENTITY'").executeQuery();
 		Set<OWLEntity> allEntities = new HashSet<OWLEntity>();
 		Set<OWLEntity> classes = new HashSet<OWLEntity>();
 		Set<OWLEntity> objectProperties = new HashSet<OWLEntity>();
@@ -848,11 +857,12 @@ public class EnrichmentEvaluation {
 		
 		
 		//compute recall for each axiom type
-		ps = conn.prepareStatement("SELECT axiom, entailed, score FROM evaluation WHERE algorithm=? AND score>=?");
+		ps = conn.prepareStatement("SELECT axiom, entailed, score FROM evaluation WHERE algorithm=? AND score>=0 AND entity=?");
 		Set<OWLEntity> entities = null;
 		for(Entry<AxiomType<? extends OWLAxiom>, List<Class<? extends LearningAlgorithm>>> entry : axiomType2Algorithm.entrySet()){
 			AxiomType<? extends OWLAxiom> type = entry.getKey();
 			algorithms = entry.getValue();
+			entities = null;
 			if(classAlgorithms.containsAll(algorithms)){
 				entities = classes;
 			} else if(objectPropertyAlgorithms.containsAll(algorithms)){
@@ -861,39 +871,88 @@ public class EnrichmentEvaluation {
 				entities = dataProperties;
 			}
 			
+			
+			DefaultPrefixManager pm = new DefaultPrefixManager();
+			pm.setPrefix("dbo:", "http://dbpedia.org/ontology/");
+			
+			Set<String> missedAxioms = new TreeSet<String>();
+			Set<String> additionalAxioms = new TreeSet<String>();
+			Map<String, Double> foundAndNotEntailedAxioms = new TreeMap<String, Double>();
+			
 			if(entities != null){
-				ps.setString(1, algorithms.get(0).getAnnotation(ComponentAnn.class).name());
-				ps.setDouble(2, threshold);
+				//write learned axioms in separate TTL file
+				new File("evaluation/ontologies").mkdirs();
+				OWLOntology ontology = manager.createOntology(IRI.create("http://dl-learner.org/ontologies/" + type.getName() + ".owl"));
+				if(algorithm2Ontology.containsKey(algorithms.get(0))){
+					manager.addAxioms(ontology, algorithm2Ontology.get(algorithms.get(0)));
+					manager.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream(new File("evaluation/ontologies/" + type.getName() + ".ttl")));
+				}
 				
-				//get all found axioms for specific axiom type 
-				Set<String> foundAxioms = new TreeSet<String>();
-				Map<String, Double> foundAndNotEntailedAxioms = new TreeMap<String, Double>();
-				rs = ps.executeQuery();
-				String axiom;
-				boolean entailed;
-				double score;
-				while(rs.next()){
-					axiom = rs.getString(1);
-					entailed = rs.getBoolean(2);
-					score = rs.getDouble(3);
+				for(OWLEntity entity : entities){
+					Map<String, Double> axiom2Score = new HashMap<String, Double>();
+					ps.setString(1, algorithms.get(0).getAnnotation(ComponentAnn.class).name());
+//					ps.setDouble(2, threshold);
+					ps.setString(2, pm.getShortForm(entity));
 					
-					foundAxioms.add(axiom);
-					if(!entailed){
-						foundAndNotEntailedAxioms.put(axiom, score);
+					//get all found axioms for specific axiom type 
+					Set<String> foundAxioms = new TreeSet<String>();
+					Map<String, Double> foundAndNotEntailedAxiomsTmp = new TreeMap<String, Double>();
+					rs = ps.executeQuery();
+					String axiom;
+					boolean entailed;
+					double score;
+					boolean emptyEntity = false;
+					while(rs.next()){
+						axiom = rs.getString(1);
+						if(axiom.equalsIgnoreCase("empty_entity")){
+							emptyEntity = true;
+						}
+						entailed = rs.getBoolean(2);
+						score = rs.getDouble(3);
+						if(!emptyEntity){
+							if(score>=threshold){
+								foundAxioms.add(axiom);
+								if(!entailed){
+									foundAndNotEntailedAxiomsTmp.put(axiom, score);
+								}
+							} else {
+								axiom2Score.put(axiom, score);
+							}
+							
+						}
 					}
+					
+					//get all axioms in the reference ontology for a specific axiom type
+					Set<String> relevantAxioms = getRelevantAxioms2(type, Collections.singleton(entity));
+					//compute the axioms which are in the reference ontology, but not be computed by the learning algorithm
+					Set<String> missedAxiomsTmp = org.mindswap.pellet.utils.SetUtils.difference(relevantAxioms, foundAxioms);
+					
+					Set<String> tmp = new TreeSet<String>();
+					for(String ax : missedAxiomsTmp){
+						if(emptyEntity){
+							tmp.add(ax + "\t(EMPTY_ENTITY)");
+						} else if(axiom2Score.containsKey(ax)){
+							tmp.add(ax + "\t(" + axiom2Score.get(ax) + ")");
+						} else {
+							tmp.add(ax);
+						}
+					}
+					missedAxiomsTmp = tmp;
+					
+					missedAxioms.addAll(missedAxiomsTmp);
+					//compute the additional found axioms which were not entailed
+					for(String relAxiom : relevantAxioms){
+						foundAndNotEntailedAxiomsTmp.remove(relAxiom);
+					}
+					Set<String> additionalAxiomsTmp = foundAndNotEntailedAxiomsTmp.keySet();
+					additionalAxioms.addAll(additionalAxiomsTmp);
+					foundAndNotEntailedAxioms.putAll(foundAndNotEntailedAxiomsTmp);
 				}
 				
-				//get all axioms in the reference ontology for a specific axiom type
-				Set<String> relevantAxioms = getRelevantAxioms2(type, entities);
-				//compute the axioms which are in the reference ontology, but not be computed by the learning algorithm
-				Set<String> missedAxioms = org.mindswap.pellet.utils.SetUtils.difference(relevantAxioms, foundAxioms);
-				//compute the additional found axioms which were not entailed
-				for(String relAxiom : relevantAxioms){
-					foundAndNotEntailedAxioms.remove(relAxiom);
-				}
-				Set<String> additionalAxioms = foundAndNotEntailedAxioms.keySet();
 				
-				int total = relevantAxioms.size();
+				
+				
+				int total = getRelevantAxioms2(type, entities).size();
 				int found = total - missedAxioms.size();
 				
 				table2.
@@ -1357,7 +1416,7 @@ public class EnrichmentEvaluation {
 			
 			boolean dropTables = (Boolean) options.valueOf("drop");
 
-			EnrichmentEvaluation ee = new EnrichmentEvaluation(se);
+			EnrichmentEvaluationMultithreaded ee = new EnrichmentEvaluationMultithreaded(se);
 			if(dropTables){
 				ee.dropAndCreateTable();
 			}
