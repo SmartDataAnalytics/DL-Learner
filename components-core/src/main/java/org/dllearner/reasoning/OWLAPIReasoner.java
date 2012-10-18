@@ -636,11 +636,19 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	public boolean hasTypeImpl(Description concept, Individual individual) {
 		boolean test = false;
 		OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
-		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
-		try {
-			test = reasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));
-		} catch (Exception e) {
-			test = true;
+		OWLNamedIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
+//		try {
+//			test = reasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));
+//		} catch (Exception e) {
+//			test = true;
+//		}
+		if(d.isAnonymous()){
+			throw new UnsupportedOperationException("Can not do type checking for complex class expressions.");
+		}
+		for(OWLClass type : reasoner.getTypes(i, false).getFlattened()){
+			if(type.equals(d.asOWLClass())){
+				return true;
+			}
 		}
 		return test;
 	}
