@@ -58,7 +58,7 @@ public class Query implements Serializable {
                 unions = new HashSet<SPARQL_Union>();
 	}
 	
-	//copy constructor
+	/** copy constructor*/
 	public Query(Query query){
 		this.qt = query.getQt();
 		Set<SPARQL_Term> selTerms = new HashSet<SPARQL_Term>();

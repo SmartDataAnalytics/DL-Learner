@@ -114,7 +114,7 @@ public class SPARQLTemplateBasedLearner3Test
 		test("QALD 2 Benchmark ideally tagged", file,SparqlEndpoint.getEndpointDBpedia(),dbpediaLiveCache,dbpediaLiveKnowledgebase,null,null);
 	}
 
-	@Test public void testOxford() throws Exception
+	/*@Test*/ public void testOxford() throws Exception
 	{
 		File file = new File(getClass().getClassLoader().getResource("tbsl/evaluation/oxford_working_questions.xml").getFile());
 		test("Oxford 19 working questions", file,null,null,null,loadOxfordModel(),getOxfordMappingIndex());
@@ -160,6 +160,26 @@ public class SPARQLTemplateBasedLearner3Test
 		logger.info("learned query: "+testData.id2Query.get(0));
 	}
 
+	/** For debugging one question in particular.
+	 */
+	@Test public void testSingleQueryDBpedia()
+	{
+//		Logger.getLogger(Templator.class).setLevel(Level.DEBUG);
+//		Logger.getLogger(Parser.class).setLevel(Level.DEBUG);
+//		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.DEBUG);
+		//		String question = "houses for less than 900000 pounds";
+		String question = "Give/VB me/PRP all/DT video/JJ games/NNS published/VBN by/IN Mean/NNP Hamster/NNP Software/NNP";
+//		String question = "give me all video games published by mean hamster software";
+//		String question = "Give me all video games published by Mean Hamster Software";		
+//		question = new StanfordPartOfSpeechTagger().tag(question);
+//		System.out.println(question);
+
+//		Model model = loadOxfordModel();
+		QueryTestData testData = new QueryTestData();
+		new LearnQueryCallable(question, 0, testData, dbpediaLiveKnowledgebase, true).call();
+		logger.info("learned query: "+testData.id2Query.get(0));
+	}
+	
 	/*@Test*/ public void generateXMLOxford() throws IOException
 	{
 		boolean ADD_POS_TAGS = true;
@@ -935,6 +955,7 @@ public class SPARQLTemplateBasedLearner3Test
 			learner = new SPARQLTemplateBasedLearner2(knowledgeBase,pretagged?null:POSTaggerHolder.posTagger,wordnet,options);
 			try {learner.init();} catch (ComponentInitException e) {throw new RuntimeException(e);}
 			learner.setUseIdealTagger(pretagged);
+			learner.setGrammarFiles(new String[]{"tbsl/lexicon/english.lex"});
 		}								
 
 		public LearnQueryCallable(String question, int id, QueryTestData testData, Model model,MappingBasedIndex index,boolean pretagged)
