@@ -225,6 +225,8 @@ public class Cache implements Serializable {
 		
 		return (String) entry.get(2);
 	}
+	
+	
 
 	/**
 	 * Adds an entry to the cache.
@@ -328,7 +330,7 @@ public class Cache implements Serializable {
 		totaltime.stop();
 		return result;
 	}
-	
+		
 	public boolean executeSparqlAskQuery(SparqlQuery query) {
 		String str = getCacheEntry(query.getSparqlQueryString());
 		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
