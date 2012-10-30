@@ -1,27 +1,19 @@
 package org.dllearner.algorithm.tbsl.learning;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
+import hmm.HiddenMarkovModel;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import org.apache.commons.collections15.MultiMap;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.tbsl.nlp.Lemmatizer;
 import org.dllearner.algorithm.tbsl.nlp.LingPipeLemmatizer;
@@ -31,13 +23,7 @@ import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.sparql.Allocation;
 import org.dllearner.algorithm.tbsl.sparql.Query;
-import org.dllearner.algorithm.tbsl.sparql.SPARQL_Filter;
-import org.dllearner.algorithm.tbsl.sparql.SPARQL_Pair;
-import org.dllearner.algorithm.tbsl.sparql.SPARQL_PairType;
-import org.dllearner.algorithm.tbsl.sparql.SPARQL_Property;
 import org.dllearner.algorithm.tbsl.sparql.SPARQL_QueryType;
-import org.dllearner.algorithm.tbsl.sparql.SPARQL_Triple;
-import org.dllearner.algorithm.tbsl.sparql.SPARQL_Value;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
@@ -46,13 +32,10 @@ import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
 import org.dllearner.algorithm.tbsl.util.PopularityMap;
 import org.dllearner.algorithm.tbsl.util.PopularityMap.EntityType;
-import org.dllearner.algorithm.tbsl.util.Similarity;
-import org.dllearner.algorithm.tbsl.util.UnknownPropertyHelper.SymPropertyDirection;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.IndexResultItem;
 import org.dllearner.common.index.IndexResultSet;
 import org.dllearner.common.index.MappingBasedIndex;
-import org.dllearner.common.index.SOLRIndex;
 import org.dllearner.common.index.SPARQLDatatypePropertiesIndex;
 import org.dllearner.common.index.SPARQLIndex;
 import org.dllearner.common.index.SPARQLObjectPropertiesIndex;
@@ -63,19 +46,13 @@ import org.dllearner.common.index.VirtuosoPropertiesIndex;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Options;
-
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -85,10 +62,6 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.sparql.expr.ExprAggregator;
-import com.hp.hpl.jena.sparql.expr.ExprVar;
-import com.hp.hpl.jena.sparql.expr.aggregate.AggCount;
-import com.hp.hpl.jena.sparql.expr.aggregate.Aggregator;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -516,358 +489,88 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		return relevantKeywords;
 	}
 
-	private SortedSet<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates){
-		logger.debug("Generating SPARQL query candidates...");
-
-		Map<Slot, Set<Allocation>> slot2Allocations = new TreeMap<Slot, Set<Allocation>>(new Comparator<Slot>() {
-
-			@Override
-			public int compare(Slot o1, Slot o2) {
-				if(o1.getSlotType() == o2.getSlotType()){
-					return o1.getToken().compareTo(o2.getToken());
-				} else {
-					return -1;
+	// just for testing the HMM integration, getWeightedSPARQLQueriesOld is the original one
+	private SortedSet<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates)
+	{
+		// for testing 
+		for(Template template: templates)
+		{
+			{
+				ArrayList<String> keywords = new ArrayList<String>();
+				for(Slot slot: template.getSlots())
+				{
+					keywords.add(slot.getWords().get(0));
 				}
+				if(template.getSlots().size()!=3) {continue;}
+				if(!keywords.contains("Mean Hamster Software")) {continue;}
+				if(!keywords.contains("published")) {continue;}
+				System.out.println("\"keywords\": "+keywords);
 			}
-		});
-		slot2Allocations = Collections.synchronizedMap(new HashMap<Slot, Set<Allocation>>());
-
-
-		SortedSet<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
-
-		Set<Allocation> allocations;
-
-		for(Template t : templates){
-			logger.info("Processing template:\n" + t.toString());			
-			allocations = new TreeSet<Allocation>();
-			boolean containsRegex = t.getQuery().toString().toLowerCase().contains("(regex(");
-
-			ExecutorService executor = Executors.newFixedThreadPool(t.getSlots().size());
-			List<Future<Map<Slot, SortedSet<Allocation>>>> list = new ArrayList<Future<Map<Slot, SortedSet<Allocation>>>>();
-
-			long startTime = System.currentTimeMillis();
-
-			for (Slot slot : t.getSlots()) {
-				if(!slot2Allocations.containsKey(slot)){//System.out.println(slot + ": " + slot.hashCode());System.out.println(slot2Allocations);
-					Callable<Map<Slot, SortedSet<Allocation>>> worker = new SlotProcessor(slot);
-					Future<Map<Slot, SortedSet<Allocation>>> submit = executor.submit(worker);
-					list.add(submit);
-				} 
-			}
-
-			for (Future<Map<Slot, SortedSet<Allocation>>> future : list) {
-				try {
-					Map<Slot, SortedSet<Allocation>> result = future.get();
-					Entry<Slot, SortedSet<Allocation>> item = result.entrySet().iterator().next();
-					slot2Allocations.put(item.getKey(), item.getValue());
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					e.printStackTrace();
+			System.out.println(template);
+			SortedSet<WeightedQuery> queries = new TreeSet<WeightedQuery>();
+			Query query = template.getQuery();
+			double score = 0;
+			
+			Map<List<String>,Collection<String>> segmentToURIs = new HashMap<List<String>,Collection<String>>();
+			for(Slot slot: template.getSlots())
+			{
+				List<String> segment = new LinkedList<String>();
+				segment.add(slot.getWords().get(0)); // TODO: split it up?
+			
+				Set<String> uris = new HashSet<String>();
+																
+				for(IndexResultItem item : getIndexResultItems(slot))
+				{
+					uris.add(item.getUri());					
 				}
+				segmentToURIs.put(segment,uris); 
 			}
+			HiddenMarkovModel hmm = new HiddenMarkovModel();
+			hmm.initialization();
+			hmm.startMarkovModel(segmentToURIs,true);
+			MultiMap<Double,List<String>> paths = hmm.getPaths();
 
-			executor.shutdown();
+			//			System.out.println(hmm.getPaths());
+			// die keywords jetzt in sadeehs algorithmus reinwerfen 
+			// da kommen jetzt pfade raus mit unterschiedlichen wahrscheinlichkeiten	
+			//			HiddenMarkovModel HMM = new HiddenMarkovModel();
+			//			HMM.StartMarkovModel();
+			// jetzt die variablen aus der query ersetzen mit den kandidaten
+			// ranked list der pfade, die die observation sequence generieren
 
-
-			/*for(Slot slot : t.getSlots()){
-				allocations = slot2Allocations2.get(slot);
-				if(allocations == null){
-					allocations = computeAllocations(slot, 10);
-					slot2Allocations2.put(slot, allocations);
-				}
-				slot2Allocations.put(slot, allocations);
-
-				//for tests add the property URI with http://dbpedia.org/property/ namespace
-				//TODO should be replaced by usage of a separate SOLR index
-				Set<Allocation> tmp = new HashSet<Allocation>();
-				if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
-					for(Allocation a : allocations){
-						String uri = "http://dbpedia.org/property/" + a.getUri().substring(a.getUri().lastIndexOf("/")+1);
-						Allocation newA = new Allocation(uri, a.getSimilarity(), a.getProminence());
-						newA.setScore(a.getScore()-0.000001);
-						tmp.add(newA);
+			for(Double d : paths.keySet())
+			{
+				for(List<String> path : paths.get(d))
+				{
+					Query q = new Query(query);
+					// TODO: which variable stands for which resource? do it randomly now to check if the replacement works and then correct the order later 
+					System.out.println(q.getVariablesAsStringList());
+					System.out.println();
+					int i = 0;
+					for(String var : q.getVariablesAsStringList())
+					{						
+						q.replaceVarWithURI(var, path.get(i));
+						i++;
 					}
-				}
-				allocations.addAll(tmp);
-			}*/
-			logger.debug("Time needed: " + (System.currentTimeMillis() - startTime) + "ms");
+					System.out.println(q);
 
-			Set<WeightedQuery> queries = new HashSet<WeightedQuery>();
-			Query cleanQuery = t.getQuery();
-			queries.add(new WeightedQuery(cleanQuery));
 
-			Set<WeightedQuery> tmp = new TreeSet<WeightedQuery>();
-			List<Slot> sortedSlots = new ArrayList<Slot>();
-			Set<Slot> classSlots = new HashSet<Slot>();
-			for(Slot slot : t.getSlots()){
-				if(slot.getSlotType() == SlotType.CLASS){
-					sortedSlots.add(slot);
-					classSlots.add(slot);
+					WeightedQuery wQuery = new WeightedQuery(q, score);
+					queries.add(wQuery);
 				}
 			}
-			for(Slot slot : t.getSlots()){
-				if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.OBJECTPROPERTY || slot.getSlotType() == SlotType.DATATYPEPROPERTY){
-					sortedSlots.add(slot);
-				}
-			}
-			for(Slot slot : t.getSlots()){
-				if(!sortedSlots.contains(slot)){
-					sortedSlots.add(slot);
-				}
-			}
-			//add for each SYMPROPERTY Slot the reversed query
-			for(Slot slot : sortedSlots){
-				for(WeightedQuery wQ : queries){
-					if(slot.getSlotType() == SlotType.SYMPROPERTY || slot.getSlotType() == SlotType.OBJECTPROPERTY){
-						Query reversedQuery = new Query(wQ.getQuery());
-						reversedQuery.getTriplesWithVar(slot.getAnchor()).iterator().next().reverse();
-						tmp.add(new WeightedQuery(reversedQuery));
-					}
-					tmp.add(wQ);
-				}
-				queries.clear();
-				queries.addAll(tmp);
-				tmp.clear();
-			}
-
-			for(Slot slot : sortedSlots){
-				if(!slot2Allocations.get(slot).isEmpty()){
-					for(Allocation a : slot2Allocations.get(slot)){
-						for(WeightedQuery query : queries){
-							Query q = new Query(query.getQuery());
-
-							boolean drop = false;
-							if(useDomainRangeRestriction){
-								if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
-									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
-										String objectVar = triple.getValue().getName();
-										String subjectVar = triple.getVariable().getName();
-										//											System.out.println(triple);
-										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(objectVar)){
-											//												System.out.println(typeTriple);
-											if(true){//reasoner.isObjectProperty(a.getUri())){
-												Description range = reasoner.getRange(new ObjectProperty(a.getUri()));
-												//													System.out.println(a);
-												if(range != null){
-													Set<Description> allRanges = new HashSet<Description>();
-													SortedSet<Description> superClasses;
-													if(range instanceof NamedClass){
-														superClasses = reasoner.getSuperClasses(range);
-														allRanges.addAll(superClasses);
-													} else {
-														for(Description nc : range.getChildren()){
-															superClasses = reasoner.getSuperClasses(nc);
-															allRanges.addAll(superClasses);
-														}
-													}
-													allRanges.add(range);
-													allRanges.remove(new NamedClass(Thing.instance.getURI()));
-
-													Set<Description> allTypes = new HashSet<Description>();
-													String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
-													Description type = new NamedClass(typeURI);
-													superClasses = reasoner.getSuperClasses(type);
-													allTypes.addAll(superClasses);
-													allTypes.add(type);
-
-													if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
-														drop = true;
-													} 
-												}
-											} else {
-												drop = true;
-											}
-
-										}
-										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(subjectVar)){
-											Description domain = reasoner.getDomain(new ObjectProperty(a.getUri()));
-											//												System.out.println(a);
-											if(domain != null){
-												Set<Description> allDomains = new HashSet<Description>();
-												SortedSet<Description> superClasses;
-												if(domain instanceof NamedClass){
-													superClasses = reasoner.getSuperClasses(domain);
-													allDomains.addAll(superClasses);
-												} else {
-													for(Description nc : domain.getChildren()){
-														superClasses = reasoner.getSuperClasses(nc);
-														allDomains.addAll(superClasses);
-													}
-												}
-												allDomains.add(domain);
-												allDomains.remove(new NamedClass(Thing.instance.getURI()));
-
-												Set<Description> allTypes = new HashSet<Description>();
-												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
-												Description type = new NamedClass(typeURI);
-												superClasses = reasoner.getSuperClasses(type);
-												allTypes.addAll(superClasses);
-												allTypes.add(type);
-
-												if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
-													drop = true;												
-												} else {
-
-												}
-											}
-										}
-									}
-								}
-							}
-
-							if(!drop){
-								if(slot.getSlotType() == SlotType.RESOURCE){//avoid queries where predicate is data property and object resource->add REGEX filter in this case
-									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
-										SPARQL_Value object = triple.getValue();
-										if(object.isVariable() && object.getName().equals(slot.getAnchor())){//only consider triple where SLOT is in object position
-											SPARQL_Property predicate = triple.getProperty();
-											if(!predicate.isVariable()){//only consider triple where predicate is URI
-												String predicateURI = predicate.getName().replace("<", "").replace(">", "");
-												if(isDatatypeProperty(predicateURI)){//if data property
-													q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
-															object, "'" + slot.getWords().get(0) + "'", SPARQL_PairType.REGEX)));
-												} else {
-													q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-												}
-											} else {
-												q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-											}
-										} else {
-											q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-										}
-									}
-								} else {
-									q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-								}
-								WeightedQuery w = new WeightedQuery(q);
-								double newScore = query.getScore() + a.getScore();
-								w.setScore(newScore);
-								w.addAllocations(query.getAllocations());
-								w.addAllocation(a);
-								tmp.add(w);
-							}
+			//System.exit(0);
+			return queries;
+			//			>> SLOTS:
+			//				y0: RESOURCE {Mean Hamster Software}
+			//				p0: OBJECTPROPERTY {published,print}
+			//				p1: CLASS {video games}
 
 
-						}
-					}
-					//lower queries with FILTER-REGEX
-					if(containsRegex){
-						for(WeightedQuery wQ : tmp){
-							wQ.setScore(wQ.getScore() - 0.01);
-						}
-					}
-
-					queries.clear();
-					queries.addAll(tmp);//System.out.println(tmp);
-					tmp.clear();
-				} else {//Add REGEX FILTER if resource slot is empty and predicate is datatype property
-					if(slot.getSlotType() == SlotType.RESOURCE){
-						for(WeightedQuery query : queries){
-							Query q = query.getQuery();
-							for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
-								SPARQL_Value object = triple.getValue();
-								if(object.isVariable() && object.getName().equals(slot.getAnchor())){//only consider triple where SLOT is in object position
-									SPARQL_Property predicate = triple.getProperty();
-									if(!predicate.isVariable()){//only consider triple where predicate is URI
-										String predicateURI = predicate.getName().replace("<", "").replace(">", "");
-										if(isDatatypeProperty(predicateURI)){//if data property
-											q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
-													object, "'" + slot.getWords().get(0) + "'", SPARQL_PairType.REGEX)));
-										}
-									}
-								}
-							}
-
-						}
-
-					} else {
-						if(slot.getSlotType() == SlotType.SYMPROPERTY){
-							for(WeightedQuery wQ : queries){
-								List<SPARQL_Triple> triples = wQ.getQuery().getTriplesWithVar(slot.getAnchor());
-								for(SPARQL_Triple triple : triples){
-									String typeVar;
-									String resourceURI;
-									SymPropertyDirection direction;
-									if(triple.getValue().isVariable()){
-										direction = SymPropertyDirection.VAR_RIGHT;
-										typeVar = triple.getValue().getName();
-										resourceURI = triple.getVariable().getName();
-									} else {
-										direction = SymPropertyDirection.VAR_LEFT;
-										typeVar = triple.getVariable().getName();
-										resourceURI = triple.getValue().getName();
-									}
-									resourceURI = resourceURI.replace("<", "").replace(">", "");
-									List<SPARQL_Triple> typeTriples = wQ.getQuery().getRDFTypeTriples(typeVar);
-									for(SPARQL_Triple typeTriple : typeTriples){
-										String typeURI = typeTriple.getValue().getName().replace("<", "").replace(">", "");
-										//										List<Entry<String, Integer>> mostFrequentProperties = UnknownPropertyHelper.getMostFrequentProperties(endpoint, cache, typeURI, resourceURI, direction);
-										//										for(Entry<String, Integer> property : mostFrequentProperties){
-										//											wQ.getQuery().replaceVarWithURI(slot.getAnchor(), property.getKey());
-										//											wQ.setScore(wQ.getScore() + 0.1);
-										//										}
-									}
-
-								}
-							}
-						}
-					}
-					//					else if(slot.getSlotType() == SlotType.CLASS){
-					//						String token = slot.getWords().get(0);
-					//						if(slot.getToken().contains("house")){
-					//							String regexToken = token.replace("houses", "").replace("house", "").trim();
-					//							try {
-					//								Map<Slot, SortedSet<Allocation>> ret = new SlotProcessor(new Slot(null, SlotType.CLASS, Collections.singletonList("house"))).call();
-					//								SortedSet<Allocation> alloc = ret.entrySet().iterator().next().getValue();
-					//								if(alloc != null && !alloc.isEmpty()){
-					//									String uri = alloc.first().getUri();
-					//									for(WeightedQuery query : queries){
-					//										Query q = query.getQuery();
-					//										for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
-					//											SPARQL_Term subject = triple.getVariable();
-					//											SPARQL_Term object = new SPARQL_Term("desc");
-					//											object.setIsVariable(true);
-					//											object.setIsURI(false);
-					//											q.addCondition(new SPARQL_Triple(subject, new SPARQL_Property("<http://purl.org/goodrelations/v1#description>"), object));
-					//											q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
-					//													object, "'" + regexToken + "'", SPARQL_PairType.REGEX)));
-					//										}
-					//										q.replaceVarWithURI(slot.getAnchor(), uri);
-					//										
-					//									}
-					//								}
-					//							} catch (Exception e) {
-					//								e.printStackTrace();
-					//							}
-					//						}
-					//					}
-
-
-				}
-
-			}
-			for (Iterator<WeightedQuery> iterator = queries.iterator(); iterator.hasNext();) {
-				WeightedQuery wQ = iterator.next();
-				if(dropZeroScoredQueries){
-					if(wQ.getScore() <= 0){
-						iterator.remove();
-					}
-				} else {
-					if(t.getSlots().size()==0) throw new AssertionError("no slots for query "+wQ);
-					wQ.setScore(wQ.getScore()/t.getSlots().size());
-				}
-
-			}
-			allQueries.addAll(queries);
-			List<Query> qList = new ArrayList<Query>();
-			for(WeightedQuery wQ : queries){//System.err.println(wQ.getQuery());
-				qList.add(wQ.getQuery());
-			}
-			template2Queries.put(t, qList);
+			//			System.out.println(template);			
 		}
-		logger.debug("...done in ");
-		return allQueries;
+		// 		
+		return null;
 	}
 
 	private double getProminenceValue(String uri, SlotType type){
@@ -1142,100 +845,50 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 
 	}
 
-	class SlotProcessor implements Callable<Map<Slot, SortedSet<Allocation>>>{
-
-		private Slot slot;
-
-		public SlotProcessor(Slot slot) {
-			this.slot = slot;
-		}
-
-		@Override
-		public Map<Slot, SortedSet<Allocation>> call() throws Exception {
-			Map<Slot, SortedSet<Allocation>> result = new HashMap<Slot, SortedSet<Allocation>>();
-			result.put(slot, computeAllocations(slot));
-			return result;
-		}
-
-		private SortedSet<Allocation> computeAllocations(Slot slot){
-			logger.debug("Computing allocations for slot: " + slot);
-			SortedSet<Allocation> allocations = new TreeSet<Allocation>();
-
-			Index index = getIndexBySlotType(slot);
-
-			IndexResultSet rs;
-			for(String word : slot.getWords()){
-				rs = new IndexResultSet();
-				if(mappingIndex != null){
-					SlotType type = slot.getSlotType();
-					if(type == SlotType.CLASS){
-						rs.add(mappingIndex.getClassesWithScores(word));
-					} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY){
-						rs.add(mappingIndex.getPropertiesWithScores(word));
-					} else if(type == SlotType.DATATYPEPROPERTY){
-						rs.add(mappingIndex.getDatatypePropertiesWithScores(word));
-					} else if(type == SlotType.OBJECTPROPERTY){
-						rs.add(mappingIndex.getObjectPropertiesWithScores(word));
-					} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
-						rs.add(mappingIndex.getResourcesWithScores(word));
-					}
+	private Set<IndexResultItem> getIndexResultItems(Slot slot)
+	{
+//		List<String> uris = new LinkedList<String>();
+		Set<IndexResultItem> indexResultItems = new HashSet<IndexResultItem>();
+		
+		Index index = getIndexBySlotType(slot);
+		
+		for(String word : slot.getWords())
+		{
+			IndexResultSet rs = new IndexResultSet();
+			if(mappingIndex != null){
+				SlotType type = slot.getSlotType();
+				if(type == SlotType.CLASS){
+					rs.add(mappingIndex.getClassesWithScores(word));
+				} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY){
+					rs.add(mappingIndex.getPropertiesWithScores(word));
+				} else if(type == SlotType.DATATYPEPROPERTY){
+					rs.add(mappingIndex.getDatatypePropertiesWithScores(word));
+				} else if(type == SlotType.OBJECTPROPERTY){
+					rs.add(mappingIndex.getObjectPropertiesWithScores(word));
+				} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
+					rs.add(mappingIndex.getResourcesWithScores(word));
 				}
-				//use the non manual indexes only if mapping based resultset is not empty and option is set
-				if(!useManualMappingsIfExistOnly || rs.isEmpty()){
-					if(slot.getSlotType() == SlotType.RESOURCE){
-						rs.add(index.getResourcesWithScores(word, 20));
-					} else {
-						if(slot.getSlotType() == SlotType.CLASS){
-							word = PlingStemmer.stem(word); 
-						}
-						rs.add(index.getResourcesWithScores(word, 20));
-					}
-				}
-
-
-				for(IndexResultItem item : rs.getItems()){
-					double similarity = Similarity.getSimilarity(word, item.getLabel());
-					//					//get the labels of the redirects and compute the highest similarity
-					//					if(slot.getSlotType() == SlotType.RESOURCE){
-					//						Set<String> labels = getRedirectLabels(item.getUri());
-					//						for(String label : labels){
-					//							double tmp = Similarity.getSimilarity(word, label);
-					//							if(tmp > similarity){
-					//								similarity = tmp;
-					//							}
-					//						}
-					//					}
-					double prominence = getProminenceValue(item.getUri(), slot.getSlotType());
-					allocations.add(new Allocation(item.getUri(), prominence, similarity));
-				}
-
 			}
-
-			normProminenceValues(allocations);
-
-			computeScore(allocations);
-			logger.debug("Found " + allocations.size() + " allocations for slot " + slot);
-			return new TreeSet<Allocation>(allocations);
-		}
-
-		private Index getIndexBySlotType(Slot slot){
-			Index index = null;
-			SlotType type = slot.getSlotType();
-			if(type == SlotType.CLASS){
-				index = classesIndex;
-			} else if(type == SlotType.PROPERTY || type == SlotType.SYMPROPERTY){
-				index = propertiesIndex;
-			} else if(type == SlotType.DATATYPEPROPERTY){
-				index = datatypePropertiesIndex;
-			} else if(type == SlotType.OBJECTPROPERTY){
-				index = objectPropertiesIndex;
-			} else if(type == SlotType.RESOURCE || type == SlotType.UNSPEC){
-				index = resourcesIndex;
+			//use the non manual indexes only if mapping based resultset is not empty and option is set
+			if(!useManualMappingsIfExistOnly || rs.isEmpty()){
+				if(slot.getSlotType() == SlotType.RESOURCE){
+					rs.add(index.getResourcesWithScores(word, 20));
+				} else {
+					if(slot.getSlotType() == SlotType.CLASS){
+						word = PlingStemmer.stem(word); 
+					}
+					rs.add(index.getResourcesWithScores(word, 20));
+				}
 			}
-			return index;
+//			for(IndexResultItem item: rs.getItems())
+//			{
+//				uris.add(item.getUri());
+//			}
+			indexResultItems.addAll(rs.getItems());
 		}
-
+		return indexResultItems;
 	}
+
 
 	public String getTaggedInput()
 	{
@@ -1255,32 +908,32 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		return isDatatypeProperty;
 	}
 
-	/**
-	 * @param args
-	 * @throws NoTemplateFoundException 
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
-	 * @throws InvalidFileFormatException 
-	 */
-	public static void main(String[] args) throws Exception {
-		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
-				Collections.<String>singletonList(""), Collections.<String>emptyList());
-		Index resourcesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_resources");
-		Index classesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_classes");
-		Index propertiesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_properties");
-
-		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
-		learner.init();
-
-		String question = "What is the highest mountain?";
-
-		learner.setQuestion(question);
-		learner.learnSPARQLQueries();
-		System.out.println("Learned query:\n" + learner.getBestSPARQLQuery());
-		System.out.println("Lexical answer type is: " + learner.getTemplates().iterator().next().getLexicalAnswerType());
-		System.out.println(learner.getLearnedPosition());
-
-	}
+	//	/**
+	//	 * @param args
+	//	 * @throws NoTemplateFoundException 
+	//	 * @throws IOException 
+	//	 * @throws FileNotFoundException 
+	//	 * @throws InvalidFileFormatException 
+	//	 */
+	//	public static void main(String[] args) throws Exception {
+	//		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://greententacle.techfak.uni-bielefeld.de:5171/sparql"), 
+	//				Collections.<String>singletonList(""), Collections.<String>emptyList());
+	//		Index resourcesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_resources");
+	//		Index classesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_classes");
+	//		Index propertiesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/dbpedia_properties");
+	//
+	//		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(endpoint, resourcesIndex, classesIndex, propertiesIndex);
+	//		learner.init();
+	//
+	//		String question = "What is the highest mountain?";
+	//
+	//		learner.setQuestion(question);
+	//		learner.learnSPARQLQueries();
+	//		System.out.println("Learned query:\n" + learner.getBestSPARQLQuery());
+	//		System.out.println("Lexical answer type is: " + learner.getTemplates().iterator().next().getLexicalAnswerType());
+	//		System.out.println(learner.getLearnedPosition());
+	//
+	//	}
 
 
 
