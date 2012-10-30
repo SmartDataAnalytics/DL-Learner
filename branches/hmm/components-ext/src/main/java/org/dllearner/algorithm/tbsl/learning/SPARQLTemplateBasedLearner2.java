@@ -90,15 +90,13 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 /** The old learner taken over by Konrad Höffner for experiments with the Hidden Markov Algorithm by Saedeeh Shekarpur.
- * 
  * */
 public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 {
-	private static final boolean USE_HMM = false;
 	/** synonyms are great but are not used yet by the HMM algorithm. **/
-	private static final boolean	HMM_USE_SYNONYMS	= false;
+	private static final boolean	HMM_USE_SYNONYMS	= true;
 		/** The minimum score of items that are accepted from the Sindice search BOA index. **/
-	private static final Double	BOA_THRESHOLD	=  0.9;
+	private static final Double	BOA_THRESHOLD	=  0.5;
 	enum Mode {BEST_QUERY, BEST_NON_EMPTY_QUERY}
 	private Mode mode = Mode.BEST_QUERY;
 	
@@ -394,35 +392,37 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		//		templateMon.reset();
 		//		sparqlMon.reset();
 	}
-
-	public void learnSPARQLQueries() throws NoTemplateFoundException{
+	public void learnSPARQLQueries() throws NoTemplateFoundException
+	{
+		learnSPARQLQueries(false);
+	}
+	
+	public void learnSPARQLQueries(boolean useHMM) throws NoTemplateFoundException
+	{
 		reset();
 		//generate SPARQL query templates
 		logger.debug("Generating SPARQL query templates...");
 		templateMon.start();
 		if(multiThreaded){
-			templates = templateGenerator.buildTemplatesMultiThreaded(question,!USE_HMM||HMM_USE_SYNONYMS);
+			templates = templateGenerator.buildTemplatesMultiThreaded(question,!useHMM||HMM_USE_SYNONYMS);
 		} else {
 			templates = templateGenerator.buildTemplates(question);
 		}
 		templateMon.stop();
 		logger.debug("Done in " + templateMon.getLastValue() + "ms.");
 		relevantKeywords.addAll(templateGenerator.getUnknownWords());
-		if(templates.isEmpty()){
-			throw new NoTemplateFoundException();
-
-		}
-		logger.debug("Templates:");
-		for(Template t : templates){
-			logger.debug(t);
-		}
+		if(templates.isEmpty()){throw new NoTemplateFoundException();}
+//		logger.debug("Templates:");
+//		for(Template t : templates){
+//			logger.debug(t);
+//		}
 
 		//get the weighted query candidates
-		generatedQueries = getWeightedSPARQLQueries(templates,USE_HMM);
+		generatedQueries = getWeightedSPARQLQueries(templates,useHMM);
 		sparqlQueryCandidates = new ArrayList<WeightedQuery>();
 		int i = 0;
 		for(WeightedQuery wQ : generatedQueries){
-			logger.debug(wQ.explain());
+			logger.trace(wQ.explain());
 			sparqlQueryCandidates.add(wQ);
 			if(i == maxTestedQueries){
 				break;
@@ -526,52 +526,61 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	
 	private SortedSet<WeightedQuery> getWeightedSPARQLQueriesWithHMM(Set<Template> templates)
 	{
-		// for testing 
+		List<String> vars = new LinkedList<String>();
+		if(templates.isEmpty()) throw new AssertionError("no templates");
+		SortedSet<WeightedQuery> queries = new TreeSet<WeightedQuery>();
 		for(Template template: templates)
 		{
 			{
 				ArrayList<String> keywords = new ArrayList<String>();
 				for(Slot slot: template.getSlots())
 				{
-					keywords.add(slot.getWords().get(0));
+					if(!slot.getWords().isEmpty())
+					{
+						// we don't have synonyms for hmm at the moment, so there should be just one word 
+						if(slot.getWords().size()!=1) throw new AssertionError("more than one word with hmm for slot: "+slot.getWords());
+						keywords.add(slot.getWords().get(0));
+						vars.add(slot.getAnchor());
+					}									
 				}
-				if(template.getSlots().size()!=3) {continue;}
 //				if(!keywords.contains("Mean Hamster Software")) {continue;}
 //				if(!keywords.contains("published")) {continue;}
-				System.out.println("\"keywords\": "+keywords);
+				logger.debug("\"keywords\": "+keywords);
 			}
-			System.out.println(template);
-			SortedSet<WeightedQuery> queries = new TreeSet<WeightedQuery>();
+			System.out.println(template);			
 			Query query = template.getQuery();
 			double score = 0;
 
 			Map<List<String>,List<ResourceInfo>> segmentToURIs = new HashMap<List<String>,List<ResourceInfo>>();
-			Map<String,IndexResultItem> uriUniqueToResultItem = new HashMap<String,IndexResultItem>(); 
+//			Map<String,IndexResultItem> uriUniqueToResultItem = new HashMap<String,IndexResultItem>(); 
 			for(Slot slot: template.getSlots())
 			{
-				List<String> segment = new LinkedList<String>();
-				segment.addAll(Arrays.asList(slot.getWords().get(0).split("\\s")));			
-				List<ResourceInfo> resourceInfos = new LinkedList<ResourceInfo>();
+				if(!slot.getWords().isEmpty()){
+					List<String> segment = new LinkedList<String>();
+					segment.addAll(Arrays.asList(slot.getWords().get(0).split("\\s")));			
+					List<ResourceInfo> resourceInfos = new LinkedList<ResourceInfo>();
 
-				for(IndexResultItem item : getIndexResultItems(slot))
-				{
-					// if this gets used at another place, create a function IndexResultItemToResourceInfo()
-					ResourceInfo info = new ResourceInfo();
-					info.setUri(item.getUri());
-					String label = item.getLabel();					
-					// in dbpedia, the last part of the uri is transformed from the english label, reverse the transformation (should almost always work for dbpedia article resources)
-					info.setLabel(label!=null?label:sfp.getShortForm(IRI.create(item.getUri())));
-					// in saedeehs algorithm, the emission probabilty is formed by the string similarity
-					// but we use the lucene index score
-					double max = 0;
-					for(String word: slot.getWords()) {max = Math.max(max, Similarity.getSimilarity(word, info.getLabel()));}					
-					if(max<0||max>1) throw new AssertionError("max is not in [0,1], max="+max);
-					info.setStringSimilarityScore(max);
-					if(!info.setTypeFromDBpediaURI()) throw new AssertionError("could not set type for info "+info);
-					System.err.println("info with type: "+info);
-					resourceInfos.add(info);
+					for(IndexResultItem item : getIndexResultItems(slot))
+					{
+						// if this gets used at another place, create a function IndexResultItemToResourceInfo()
+						ResourceInfo info = new ResourceInfo();
+						info.setUri(item.getUri());
+						String label = item.getLabel();					
+						// in dbpedia, the last part of the uri is transformed from the english label, reverse the transformation (should almost always work for dbpedia article resources)
+						info.setLabel(label!=null?label:sfp.getShortForm(IRI.create(item.getUri())));
+						// in saedeehs algorithm, the emission probabilty is formed by the string similarity
+						// but we use the lucene index score
+						double max = 0;
+						for(String word: slot.getWords()) {max = Math.max(max, Similarity.getSimilarity(word, info.getLabel()));}					
+						if(max<0||max>1) throw new AssertionError("max is not in [0,1], max="+max);
+						info.setStringSimilarityScore(max);
+						if(!info.setTypeFromDBpediaURI()) throw new AssertionError("could not set type for info "+info);
+						System.err.println("info with type: "+info);
+						resourceInfos.add(info);
+					}
+					segmentToURIs.put(segment,resourceInfos);
 				}
-				segmentToURIs.put(segment,resourceInfos);
+				
 			}
 			HiddenMarkovModel hmm = new HiddenMarkovModel();
 			hmm.initialization();
@@ -595,10 +604,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 					System.out.println(q.getVariablesAsStringList());
 					System.out.println();
 					int i = 0;
-					for(String var : q.getVariablesAsStringList())
-					{						
-						q.replaceVarWithURI(var, path.get(i));
-						i++;
+					for(String uri : path){
+						uri = uri.trim();
+						String var = vars.get(path.indexOf(uri));
+						q.replaceVarWithURI(var, uri);
 					}
 					System.out.println(q);
 
@@ -607,8 +616,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 					queries.add(wQuery);
 				}
 			}
-			//System.exit(0);
-			return queries;
+			//System.exit(0);			
 			//			>> SLOTS:
 			//				y0: RESOURCE {Mean Hamster Software}
 			//				p0: OBJECTPROPERTY {published,print}
@@ -618,10 +626,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			//			System.out.println(template);			
 		}
 		// 		
-		return null;
+		return queries;		
 	}
 
-	private SortedSet<WeightedQuery> getWeightedSPARQLQueriesWithoutHMM(Set<Template> templates){
+	@SuppressWarnings("unused") private SortedSet<WeightedQuery> getWeightedSPARQLQueriesWithoutHMM(Set<Template> templates){
 		logger.debug("Generating SPARQL query candidates...");
 
 		Map<Slot, Set<Allocation>> slot2Allocations = new TreeMap<Slot, Set<Allocation>>(new Comparator<Slot>() {
@@ -640,11 +648,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 
 		SortedSet<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
 
-		Set<Allocation> allocations;
-
-		for(Template t : templates){
-			logger.info("Processing template:\n" + t.toString());			
-			allocations = new TreeSet<Allocation>();
+		for(Template t : templates)
+		{
+			logger.info("Processing template:\n" + t.toString());
+//			Set<Allocation> allocations = new TreeSet<Allocation>();
 			boolean containsRegex = t.getQuery().toString().toLowerCase().contains("(regex(");
 
 			ExecutorService executor = Executors.newFixedThreadPool(t.getSlots().size());
@@ -653,7 +660,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			long startTime = System.currentTimeMillis();
 
 			for (Slot slot : t.getSlots()) {
-				if(!slot2Allocations.containsKey(slot)){//System.out.println(slot + ": " + slot.hashCode());System.out.println(slot2Allocations);
+				if(!slot2Allocations.containsKey(slot)){
 					Callable<Map<Slot, SortedSet<Allocation>>> worker = new SlotProcessor(slot);
 					Future<Map<Slot, SortedSet<Allocation>>> submit = executor.submit(worker);
 					list.add(submit);
@@ -668,7 +675,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			}
 
@@ -734,7 +742,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				queries.clear();
 				queries.addAll(tmp);
 				tmp.clear();
-			}
+			}			
 
 			for(Slot slot : sortedSlots){
 				if(!slot2Allocations.get(slot).isEmpty()){
@@ -743,104 +751,104 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 							Query q = new Query(query.getQuery());
 
 							boolean drop = false;
-							if(useDomainRangeRestriction){
-								if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
-									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
-										String objectVar = triple.getValue().getName();
-										String subjectVar = triple.getVariable().getName();
-										//											System.out.println(triple);
-										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(objectVar)){
-											//												System.out.println(typeTriple);
-											if(true){//reasoner.isObjectProperty(a.getUri())){
-												Description range = reasoner.getRange(new ObjectProperty(a.getUri()));
-												//													System.out.println(a);
-												if(range != null){
-													Set<Description> allRanges = new HashSet<Description>();
-													SortedSet<Description> superClasses;
-													if(range instanceof NamedClass){
-														superClasses = reasoner.getSuperClasses(range);
-														allRanges.addAll(superClasses);
-													} else {
-														for(Description nc : range.getChildren()){
-															superClasses = reasoner.getSuperClasses(nc);
-															allRanges.addAll(superClasses);
-														}
-													}
-													allRanges.add(range);
-													allRanges.remove(new NamedClass(Thing.instance.getURI()));
-
-													Set<Description> allTypes = new HashSet<Description>();
-													String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
-													Description type = new NamedClass(typeURI);
-													superClasses = reasoner.getSuperClasses(type);
-													allTypes.addAll(superClasses);
-													allTypes.add(type);
-
-													if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
-														drop = true;
-													} 
-												}
-											} else {
-												drop = true;
-											}
-
-										}
-										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(subjectVar)){
-											Description domain = reasoner.getDomain(new ObjectProperty(a.getUri()));
-											//												System.out.println(a);
-											if(domain != null){
-												Set<Description> allDomains = new HashSet<Description>();
-												SortedSet<Description> superClasses;
-												if(domain instanceof NamedClass){
-													superClasses = reasoner.getSuperClasses(domain);
-													allDomains.addAll(superClasses);
-												} else {
-													for(Description nc : domain.getChildren()){
-														superClasses = reasoner.getSuperClasses(nc);
-														allDomains.addAll(superClasses);
-													}
-												}
-												allDomains.add(domain);
-												allDomains.remove(new NamedClass(Thing.instance.getURI()));
-
-												Set<Description> allTypes = new HashSet<Description>();
-												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
-												Description type = new NamedClass(typeURI);
-												superClasses = reasoner.getSuperClasses(type);
-												allTypes.addAll(superClasses);
-												allTypes.add(type);
-
-												if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
-													drop = true;												
-												} else {
-
-												}
-											}
-										}
-									}
-								}
-							}
+//							if(useDomainRangeRestriction){
+//								if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.SYMPROPERTY){
+//									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
+//										String objectVar = triple.getValue().getName();
+//										String subjectVar = triple.getVariable().getName();
+//
+//										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(objectVar)){
+//
+//											if(true){//reasoner.isObjectProperty(a.getUri())){
+//												Description range = reasoner.getRange(new ObjectProperty(a.getUri()));
+//
+//												if(range != null){
+//													Set<Description> allRanges = new HashSet<Description>();
+//													SortedSet<Description> superClasses;
+//													if(range instanceof NamedClass){
+//														superClasses = reasoner.getSuperClasses(range);
+//														allRanges.addAll(superClasses);
+//													} else {
+//														for(Description nc : range.getChildren()){
+//															superClasses = reasoner.getSuperClasses(nc);
+//															allRanges.addAll(superClasses);
+//														}
+//													}
+//													allRanges.add(range);
+//													allRanges.remove(new NamedClass(Thing.instance.getURI()));
+//
+//													Set<Description> allTypes = new HashSet<Description>();
+//													String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
+//													Description type = new NamedClass(typeURI);
+//													superClasses = reasoner.getSuperClasses(type);
+//													allTypes.addAll(superClasses);
+//													allTypes.add(type);
+//
+//													if(!org.mindswap.pellet.utils.SetUtils.intersects(allRanges, allTypes)){
+//														drop = true;
+//													} 
+//												}
+//											} else {
+//												drop = true;
+//											}
+//
+//										}
+//										for(SPARQL_Triple typeTriple : q.getRDFTypeTriples(subjectVar)){
+//											Description domain = reasoner.getDomain(new ObjectProperty(a.getUri()));
+//
+//											if(domain != null){
+//												Set<Description> allDomains = new HashSet<Description>();
+//												SortedSet<Description> superClasses;
+//												if(domain instanceof NamedClass){
+//													superClasses = reasoner.getSuperClasses(domain);
+//													allDomains.addAll(superClasses);
+//												} else {
+//													for(Description nc : domain.getChildren()){
+//														superClasses = reasoner.getSuperClasses(nc);
+//														allDomains.addAll(superClasses);
+//													}
+//												}
+//												allDomains.add(domain);
+//												allDomains.remove(new NamedClass(Thing.instance.getURI()));
+//
+//												Set<Description> allTypes = new HashSet<Description>();
+//												String typeURI = typeTriple.getValue().getName().substring(1,typeTriple.getValue().getName().length()-1);
+//												Description type = new NamedClass(typeURI);
+//												superClasses = reasoner.getSuperClasses(type);
+//												allTypes.addAll(superClasses);
+//												allTypes.add(type);
+//
+//												if(!org.mindswap.pellet.utils.SetUtils.intersects(allDomains, allTypes)){
+//													drop = true;												
+//												} else {
+//
+//												}
+//											}
+//										}
+//									}
+//								}
+//							}
 
 							if(!drop){
 								if(slot.getSlotType() == SlotType.RESOURCE){//avoid queries where predicate is data property and object resource->add REGEX filter in this case
 									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
 										SPARQL_Value object = triple.getValue();
-										if(object.isVariable() && object.getName().equals(slot.getAnchor())){//only consider triple where SLOT is in object position
-											SPARQL_Property predicate = triple.getProperty();
-											if(!predicate.isVariable()){//only consider triple where predicate is URI
-												String predicateURI = predicate.getName().replace("<", "").replace(">", "");
-												if(isDatatypeProperty(predicateURI)){//if data property
-													q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
-															object, "'" + slot.getWords().get(0) + "'", SPARQL_PairType.REGEX)));
-												} else {
-													q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-												}
-											} else {
-												q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-											}
-										} else {
-											q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-										}
+//										if(object.isVariable() && object.getName().equals(slot.getAnchor())){//only consider triple where SLOT is in object position
+//											SPARQL_Property predicate = triple.getProperty();
+//											if(!predicate.isVariable()){//only consider triple where predicate is URI
+//												String predicateURI = predicate.getName().replace("<", "").replace(">", "");
+//												if(isDatatypeProperty(predicateURI)){//if data property
+//													q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
+//															object, "'" + slot.getWords().get(0) + "'", SPARQL_PairType.REGEX)));
+//												} else {
+//													q.replaceVarWithURI(slot.getAnchor(), a.getUri());
+//												}
+//											} else {
+//												q.replaceVarWithURI(slot.getAnchor(), a.getUri());
+//											}
+//										} else {
+//										
+//										}
 									}
 								} else {
 									q.replaceVarWithURI(slot.getAnchor(), a.getUri());
@@ -864,7 +872,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 					}
 
 					queries.clear();
-					queries.addAll(tmp);//System.out.println(tmp);
+					queries.addAll(tmp);
 					tmp.clear();
 				} else {//Add REGEX FILTER if resource slot is empty and predicate is datatype property
 					if(slot.getSlotType() == SlotType.RESOURCE){
@@ -952,6 +960,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				}
 
 			}
+			
 			for (Iterator<WeightedQuery> iterator = queries.iterator(); iterator.hasNext();) {
 				WeightedQuery wQ = iterator.next();
 				if(dropZeroScoredQueries){
@@ -966,11 +975,12 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			}
 			allQueries.addAll(queries);
 			List<Query> qList = new ArrayList<Query>();
-			for(WeightedQuery wQ : queries){//System.err.println(wQ.getQuery());
+			for(WeightedQuery wQ : queries){
 				qList.add(wQ.getQuery());
 			}
 			template2Queries.put(t, qList);
 		}
+		logger.debug(allQueries);
 		logger.debug("...done in ");
 		return allQueries;
 	}
@@ -1011,14 +1021,13 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		if(popularity == null){
 			popularity = Integer.valueOf(0);
 		}
-		System.out.println(popularity);
-
+		logger.trace("popularity: "+popularity);
 
 		//		if(cnt == 0){
 		//			return 0;
 		//		} 
 		//		return Math.log(cnt);
-		if(popularity!=popularity) {throw new AssertionError("prominence NaN for uri "+uri+", slot type "+type);}
+		if(Double.isNaN(popularity)) {throw new AssertionError("prominence NaN for uri "+uri+", slot type "+type);}
 		return popularity;
 	}
 

@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,9 +13,12 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -36,6 +40,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,6 +49,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.commons.collections15.BidiMap;
+import org.apache.commons.collections15.bidimap.DualHashBidiMap;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -69,7 +77,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import cern.colt.Arrays;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -99,25 +106,150 @@ import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
 // problem mit "In/IN which/WDT films/NNS did/VBD Julia/NNP Roberts/NNP as/RB well/RB as/IN Richard/NNP Gere/NNP play/NN"
 public class SPARQLTemplateBasedLearner3Test
-{			
+{
+	private static final boolean	USE_HMM	= false;
 	private static final File evaluationFolder = new File("cache/evaluation");
 	private static final boolean	DBPEDIA_PRETAGGED	= true;
 	private static final boolean	OXFORD_PRETAGGED	= false;
-	private static final int MAX_NUMBER_OF_QUESTIONS = 10;
+	private static final int MAX_NUMBER_OF_QUESTIONS = 20;	
+	private static final boolean WHITELIST_ONLY = false;
+	private static final Set<Integer> WHITELIST = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(new Integer[] {4})));
 
-	@Test public void testDBpedia() throws Exception
+	/*@Test*/ public void testDBpedia() throws Exception
 	{
 		File file = generateTestDataIfNecessary(
 				new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
 				SparqlEndpoint.getEndpointDBpedia(),
 				dbpediaLiveCache);
-		test("QALD 2 Benchmark ideally tagged", file,SparqlEndpoint.getEndpointDBpedia(),dbpediaLiveCache,dbpediaLiveKnowledgebase,null,null);
+		test("QALD 2 Benchmark ideally tagged", file,SparqlEndpoint.getEndpointDBpedia(),dbpediaLiveCache,dbpediaLiveKnowledgebase,null,null,DBPEDIA_PRETAGGED);
 	}
 
-	/*@Test*/ public void testOxford() throws Exception
+	//	private char[] hmmHtmlRow(String question, String string, String string2, String string3, Set<String> set, Set<String> set2,
+	//			Set<String> set3, LearnStatus learnStatus, LearnStatus learnStatus2)
+	//	{
+	//		return null;
+	//	}
+
+	private static boolean probablySparqlSelectQuery(String s)
+	{
+		s=s.toLowerCase();
+		return s.contains("select")&&s.contains("{")&&s.contains("}");
+	}
+
+	/** returns an html table row representation &lt;tr&gt;&lt;td&gt;t(o_1)&lt;/td&gt;...&lt;td&gt;t(o_n)&lt;/td&gt;&lt;/tr&gt; of the string representation of objects,
+	 * transformed by escaping HTML characters, setting fixed width on SPARQL queries and shortening and linking of dbpedia resource URIs.  
+	 */
+	// unescaped form from the top: <tr><td>t(o_1)</td>...<td>t(o_n)</td></tr>
+	private static String htmlTableTr(Object... tds)
+	{
+		System.out.println();
+		StringBuilder sb = new StringBuilder();		
+		// shorten and link dbpedia resource uris
+		Pattern p = Pattern.compile("http://dbpedia\\.org/resource/([\\w]*)");		
+
+		for(Object td: tds)
+		{
+			if(td==null) {sb.append("<td></td>");continue;}
+			sb.append("<td>");
+
+			// probably a SPARQL query? use fixed font width.
+			String s =  StringEscapeUtils.escapeHtml(td.toString());			 
+			if(probablySparqlSelectQuery(s)) {s="<pre>"+s+"</pre>";}
+			else {s =(p.matcher(s).replaceAll("<a href=\"$0\">dbpedia:$1</a>"));}
+
+			sb.append(s);
+			sb.append("</td>");
+		}
+		return sb.toString();
+	}	
+
+	@SuppressWarnings("unchecked") /*@Test*/ public void evaluateHMMAgainstNormalAndBenchmark() throws FileNotFoundException
+	{		
+		// get the newest evaluations from both with and without hmm
+		SortedMap<Long,Evaluation> evaluations = new TreeMap<Long,Evaluation>(Collections.reverseOrder());
+		evaluations.putAll(Evaluation.read());
+		Evaluation newestWithHmm = null;
+		Evaluation newestWithoutHmm = null;
+
+		for(Iterator<Long> it = evaluations.keySet().iterator();it.hasNext()&&(newestWithHmm==null||newestWithoutHmm==null);)
+		{
+			Evaluation e = evaluations.get(it.next());
+			if(e.testData.hmm)
+			{if(newestWithHmm==null) {newestWithHmm=e;}}			
+			else if(newestWithoutHmm==null) {newestWithoutHmm=e;}
+		}
+		if(newestWithHmm==null||newestWithoutHmm==null) {logger.warn("No pair of evaluations for Aborting.");return;}
+
+		Set<String> intersectionOfQuestions = new HashSet<String>(newestWithHmm.testData.id2Question.values());
+		intersectionOfQuestions.retainAll(newestWithoutHmm.testData.id2Question.values());
+		if(intersectionOfQuestions.isEmpty()) {logger.warn("No common questions. Aborting.");return;}
+
+		Set<String> questionsOnlyCorrectWithHMM = new HashSet<String> (intersectionOfQuestions);
+		questionsOnlyCorrectWithHMM.retainAll(newestWithHmm.correctlyAnsweredQuestions);
+		questionsOnlyCorrectWithHMM.removeAll(newestWithoutHmm.correctlyAnsweredQuestions);		
+
+		Set<String> questionsOnlyCorrectWithoutHMM = new HashSet<String> (intersectionOfQuestions);
+		questionsOnlyCorrectWithoutHMM.retainAll(newestWithoutHmm.correctlyAnsweredQuestions);
+		questionsOnlyCorrectWithoutHMM.removeAll(newestWithHmm.correctlyAnsweredQuestions);
+
+		PrintWriter out = new PrintWriter("log/evaluatehmm.html");
+		String title = "Evaluation of HMM vs the normal disambiguation.";
+
+		out.println("<!DOCTYPE html><html>\n<head><title>"+title+"</title></head>\n<body>\n<table border='1'>");							
+		out.println("<tr><th>Question</th><th>Query with HMM</th><th>Query without HMM</th><th>Reference Query</th>" +
+				"<th>Answers with HMM</th><th>Answers without HMM</th><th>Reference Answers</th><th>Status with HMM</th><th>Status without HMM</th></tr>");
+
+		// most of the time it should be enough to assume that the keys are equal, but this could introduce subtle bugs  
+		BidiMap<String,Integer> question2IdWithHmm = new DualHashBidiMap<Integer,String>(newestWithHmm.testData.id2Question).inverseBidiMap();
+		BidiMap<String,Integer> question2IdWithoutHmm = new DualHashBidiMap<Integer,String>(newestWithoutHmm.testData.id2Question).inverseBidiMap();
+		//		if(newestWithHmm.correctlyAnsweredQuestions.contains(question)!=newestWithoutHmm.correctlyAnsweredQuestions.contains(question)) {..}
+
+		for(Set<String> c : new Set[] {questionsOnlyCorrectWithHMM, questionsOnlyCorrectWithoutHMM})
+		{
+			for(String question: c)
+			{
+				int idWithHmm = question2IdWithHmm.get(question);
+				int idWithoutHmm = question2IdWithoutHmm.get(question);						
+				out.println(htmlTableTr(
+						question,
+						newestWithHmm.testData.id2Query.get(idWithHmm),
+						newestWithoutHmm.testData.id2Query.get(idWithoutHmm),
+						newestWithHmm.referenceData.id2Query.get(idWithHmm),
+						newestWithHmm.testData.id2Answers.get(idWithHmm),
+						newestWithoutHmm.testData.id2Answers.get(idWithoutHmm),
+						newestWithHmm.referenceData.id2Answers.get(idWithHmm),
+						newestWithHmm.testData.id2LearnStatus.get(idWithHmm),
+						newestWithoutHmm.testData.id2LearnStatus.get(idWithoutHmm)
+						));
+			}
+		}	
+
+		//		Integer id = question2Id.get(question);
+		//		if(evaluation.testData.id2Answers.get(id)==null) {System.err.println(question);continue;}
+		//		out.println(
+		//				"<tr><td>"+question+"</td>"+
+		//						"<td><code><pre>"+escapePre(evaluation.testData.id2Query.get(id))+"</pre></code></td>"+
+		//						"<td><code><pre>"+escapePre(evaluation.referenceData.id2Query.get(id))+"</pre></code></td>"+
+		//						"<td><ul>"+getAnswerHTMLList(evaluation.testData.id2Answers.get(id).toArray(new String[0]))+"</ul></td>"+
+		//						"<td><ul>"+getAnswerHTMLList(evaluation.referenceData.id2Answers.get(id).toArray(new String[0]))+"</ul></td>"+
+		//						"<td>"+evaluation.testData.id2LearnStatus.get(id)+"</td></tr>");					
+
+
+
+
+
+		logger.info(questionsOnlyCorrectWithHMM.size()+" questions only correct with hmm, "+
+				questionsOnlyCorrectWithoutHMM.size()+" questions only correct without hmm");
+
+		// generate a html description of it
+
+		out.close();
+	}
+
+	@Test public void testOxford() throws Exception
 	{
 		File file = new File(getClass().getClassLoader().getResource("tbsl/evaluation/oxford_working_questions.xml").getFile());
-		test("Oxford 19 working questions", file,null,null,null,loadOxfordModel(),getOxfordMappingIndex());
+		test("Oxford 19 working questions", file,null,null,null,loadOxfordModel(),getOxfordMappingIndex(),OXFORD_PRETAGGED);
 	}
 
 	//	/*@Test*/ public void testOxford() throws Exception
@@ -180,7 +312,7 @@ public class SPARQLTemplateBasedLearner3Test
 		logger.info("learned query: "+testData.id2Query.get(0));
 	}
 
-	/*@Test*/  public void generateXMLOxford() throws IOException
+	/*@Test*/  @SuppressWarnings("null") public void generateXMLOxford() throws IOException
 	{
 		boolean ADD_POS_TAGS = true;
 		PartOfSpeechTagger posTagger = null;
@@ -289,10 +421,10 @@ public class SPARQLTemplateBasedLearner3Test
 		}
 	}
 
-	public void test(String title, final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache,Knowledgebase kb, Model model, MappingBasedIndex index)
+	public void test(String title, final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache,Knowledgebase kb, Model model, MappingBasedIndex index,boolean pretagged)
 			throws ParserConfigurationException, SAXException, IOException, TransformerException, ComponentInitException, NoTemplateFoundException
 			{		
-		evaluateAndWrite(title,referenceXML,endpoint,cache,kb,model,index);
+		evaluateAndWrite(title,referenceXML,endpoint,cache,kb,model,index,pretagged);
 		generateHTML(title); 
 
 		//				if(evaluation.numberOfCorrectAnswers<3) {fail("only " + evaluation.numberOfCorrectAnswers+" correct answers.");}
@@ -335,14 +467,14 @@ public class SPARQLTemplateBasedLearner3Test
 	}
 
 	private void evaluateAndWrite(String title,final File updatedReferenceXML, final  SparqlEndpoint endpoint,ExtractionDBCache cache,
-			Knowledgebase kb, Model model, MappingBasedIndex index)
+			Knowledgebase kb, Model model, MappingBasedIndex index,boolean pretagged)
 	{
 
-		QueryTestData referenceTestData = QueryTestData.readQaldXml(updatedReferenceXML,MAX_NUMBER_OF_QUESTIONS);
+		QueryTestData referenceTestData = QueryTestData.readQaldXml(updatedReferenceXML,MAX_NUMBER_OF_QUESTIONS,WHITELIST_ONLY,WHITELIST);
 		logger.info(title+" subset loaded with "+referenceTestData.id2Question.size()+" questions.");
 
 		long startLearning = System.currentTimeMillis();
-		QueryTestData learnedTestData = generateTestDataMultiThreaded(referenceTestData.id2Question, kb,model,index,DBPEDIA_PRETAGGED);
+		QueryTestData learnedTestData = generateTestDataMultiThreaded(referenceTestData.id2Question, kb,model,index,pretagged);
 		long endLearning = System.currentTimeMillis();
 		logger.info("finished learning after "+(endLearning-startLearning)/1000.0+"s");
 		learnedTestData.generateAnswers(endpoint,cache,model);
@@ -376,6 +508,17 @@ public class SPARQLTemplateBasedLearner3Test
 			String referenceQuery = reference.id2Query.get(i);
 			String suspectQuery = suspect.id2Query.get(i);
 			// reference is required to contain answers for every key so we shouldn't get NPEs here (even though it could be the empty set but that shouldn't happen because only questions with nonempty answers are included in the updated reference)
+			if(reference.id2Answers.get(i)==null)
+			{
+				logger.warn("no reference answers for question "+i+" ("+question+")");
+				continue;
+			}
+			if(suspect.id2Answers.get(i)==null)
+			{
+				logger.warn("no suspect answers for question "+i+" ("+question+")");
+				continue;
+			}			
+			
 			if(referenceQuery.equals(suspectQuery)||reference.id2Answers.get(i).equals(suspect.id2Answers.get(i)))
 			{
 				evaluation.correctlyAnsweredQuestions.add(question);
@@ -456,9 +599,12 @@ public class SPARQLTemplateBasedLearner3Test
 			} catch(IOException e) {throw new RuntimeException(e);}
 		}
 
+		/**
+		 * @return the evaluations by timestamp, sorted ascending (from oldest to newest)
+		 */
 		public static SortedMap<Long,Evaluation> read()
 		{
-			SortedMap<Long,Evaluation> evaluations = new ConcurrentSkipListMap<Long,Evaluation>();
+			SortedMap<Long,Evaluation> evaluations = new ConcurrentSkipListMap<Long,Evaluation>();			
 			evaluationFolder.mkdirs();
 			File[] files = evaluationFolder.listFiles();		
 			for(int i=0;i<files.length;i++) {evaluations.put(Long.valueOf(files[i].getName()),read(files[i]));}
@@ -603,6 +749,7 @@ public class SPARQLTemplateBasedLearner3Test
 	private QueryTestData generateTestDataMultiThreaded(SortedMap<Integer, String> id2Question,Knowledgebase kb,Model model, MappingBasedIndex index,boolean pretagged)
 	{
 		QueryTestData testData = new QueryTestData();
+		testData.hmm = USE_HMM;
 		// -- only create the learner parameters once to save time -- 
 		//		PartOfSpeechTagger posTagger = new StanfordPartOfSpeechTagger();		
 		//		WordNet wordnet = new WordNet();
@@ -792,15 +939,32 @@ public class SPARQLTemplateBasedLearner3Test
 
 	//	private ResultSet executeDBpediaLiveSelect(String query){return SparqlQuery.convertJSONtoResultSet(dbpediaLiveCache.executeSelectQuery(dbpediaLiveEndpoint, query));}
 
+	private static boolean httpResponseOK(String url) throws MalformedURLException, IOException
+	{		
+			HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+			connection.setRequestMethod("HEAD");
+			int responseCode = connection.getResponseCode();
+			return responseCode == 200;
+	}
 
 	private static Knowledgebase createDBpediaLiveKnowledgebase(ExtractionDBCache cache)
 	{		
-		SOLRIndex resourcesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_resources");
+		String resourcesURL = "http://dbpedia.aksw.org:8080/solr/dbpedia_resources123";
+		String classesURL = "http://dbpedia.aksw.org:8080/solr/dbpedia_classes";
+		String propertiesURL = "http://dbpedia.aksw.org:8080/solr/dbpedia_properties";
+		String boaPropertiesURL = "http://139.18.2.173:8080/solr/boa_fact_detail";
+		
+//		for(String url : new String[] {resourcesURL,classesURL,propertiesURL,boaPropertiesURL})
+//		{
+//			try{if(!httpResponseOK(url)) throw new RuntimeException("Http response not 200 for url "+url);} catch(Exception e) {throw new RuntimeException(e);}
+//		}
+		
+		SOLRIndex resourcesIndex = new SOLRIndex(resourcesURL);
 		resourcesIndex.setPrimarySearchField("label");
 		//			resourcesIndex.setSortField("pagerank");
-		Index classesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_classes");
-		Index propertiesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_properties");
-		SOLRIndex boa_propertiesIndex = new SOLRIndex("http://139.18.2.173:8080/solr/boa_fact_detail");
+		Index classesIndex = new SOLRIndex(classesURL);
+		Index propertiesIndex = new SOLRIndex(propertiesURL);
+		SOLRIndex boa_propertiesIndex = new SOLRIndex(boaPropertiesURL);
 		boa_propertiesIndex.setSortField("boa-score");
 		//		propertiesIndex = new HierarchicalIndex(boa_propertiesIndex, propertiesIndex);
 		MappingBasedIndex mappingIndex= new MappingBasedIndex(
@@ -820,10 +984,12 @@ public class SPARQLTemplateBasedLearner3Test
 		Logger.getRootLogger().setLevel(Level.WARN);
 		Logger.getLogger(Templator.class).setLevel(Level.WARN);
 		Logger.getLogger(Parser.class).setLevel(Level.WARN);
-		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.WARN);
+		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.DEBUG);
 		//		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.INFO);
 		logger.setLevel(Level.INFO); // TODO: remove when finishing implementation of this class
 		logger.addAppender(new FileAppender(new SimpleLayout(), "log/"+this.getClass().getSimpleName()+".log", false));
+
+		//		Logger.getRootLogger().removeAllAppenders();
 
 		//		oxfordEndpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());		
 		//		oxfordLearner = new SPARQLTemplateBasedLearner2(createOxfordKnowledgebase(oxfordCache));
@@ -846,8 +1012,9 @@ public class SPARQLTemplateBasedLearner3Test
 		}
 		catch(QueryExceptionHTTP e)
 		{
-			logger.error("Error getting uris for query "+query+" at endpoint "+endpoint,e);
-			return Collections.<String>emptySet();
+			throw new QueryExceptionHTTP("Error getting uris for query "+query+" at endpoint "+endpoint,e);
+			//			logger.error("Error getting uris for query "+query+" at endpoint "+endpoint,e);
+			//			return Collections.<String>emptySet();
 		}
 		String variable = "?uri";
 		resultsetloop:
@@ -976,14 +1143,13 @@ public class SPARQLTemplateBasedLearner3Test
 
 		@Override public LearnStatus call()
 		{
-
 			logger.trace("learning question: "+question);					
 			try
 			{			
 				// learn query
 
 				learner.setQuestion(question);						
-				learner.learnSPARQLQueries();						
+				learner.learnSPARQLQueries(USE_HMM);						
 				String learnedQuery = learner.getBestSPARQLQuery();
 				testData.id2Question.put(id, question);
 				if(learnedQuery!=null&&!learnedQuery.isEmpty())
@@ -994,6 +1160,11 @@ public class SPARQLTemplateBasedLearner3Test
 				logger.trace("learned query for question "+question+": "+learnedQuery);
 
 				//						Set<String> learnedURIs = getUris(DBPEDIA_LIVE_ENDPOINT_URL_STRING,learnedQuery);
+			}
+			catch(AssertionError e )
+			{
+				// this is the only exception that we want to halt on
+				throw new RuntimeException(e);
 			}
 			catch(NoTemplateFoundException e)
 			{		
@@ -1070,7 +1241,7 @@ public class SPARQLTemplateBasedLearner3Test
 			out.println("<!DOCTYPE html><html>\n<head><title>"+title+"</title></head>\n<body>\n<table border='1'>");
 			if(queriesAvailable)
 			{				
-				out.println("<tr><th>Question</th><th>Learned Query</th><th>Reference Query</th><th>Learned Answers</th><th>Reference Answers</th></tr>");
+				out.println("<tr><th>Question</th><th>Learned Query</th><th>Reference Query</th><th>Learned Answers</th><th>Reference Answers</th><th>Error Type</th></tr>");
 				for(String question: questions)
 				{
 					Integer id = question2Id.get(question);
@@ -1080,8 +1251,9 @@ public class SPARQLTemplateBasedLearner3Test
 									"<td><code><pre>"+escapePre(evaluation.testData.id2Query.get(id))+"</pre></code></td>"+
 									"<td><code><pre>"+escapePre(evaluation.referenceData.id2Query.get(id))+"</pre></code></td>"+
 									"<td><ul>"+getAnswerHTMLList(evaluation.testData.id2Answers.get(id).toArray(new String[0]))+"</ul></td>"+
-									"<td><ul>"+getAnswerHTMLList(evaluation.referenceData.id2Answers.get(id).toArray(new String[0]))+"</ul></td></tr>");					
-				}								
+									"<td><ul>"+getAnswerHTMLList(evaluation.referenceData.id2Answers.get(id).toArray(new String[0]))+"</ul></td>"+
+									"<td>"+evaluation.testData.id2LearnStatus.get(id)+"</td></tr>");					
+				}
 			} else
 			{				
 				out.println("<tr><th>Question</th><th>Error Type</th></tr>");
