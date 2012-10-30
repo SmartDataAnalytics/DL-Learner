@@ -19,12 +19,14 @@ public class ABoxQueryGenerator {
     public String createQuery(Set<String> individuals, String aboxfilter) {
         Monitor monABoxQueryGeneration = MonitorFactory.getTimeMonitor("ABox query generator").start();
         StringBuilder builder = new StringBuilder();
+        builder.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
         builder.append("CONSTRUCT {?s ?p ?o  } ");
-        builder.append("{ ?s ?p ?o . ");
+        builder.append("{ ?s ?p ?o . " );
         builder.append(makeInFilter("?s", individuals));
         if (aboxfilter != null) {
             builder.append(aboxfilter);
         }
+        builder.append("FILTER (! (?p=rdf:type))");
         builder.append("}");
         monABoxQueryGeneration.stop();
         return builder.toString();

@@ -158,11 +158,11 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
             ABoxQueryGenerator aGenerator = new ABoxQueryGenerator();
             for (int i = 0; i < recursionDepth; i++) {
                 if (instancesSet.isEmpty()) {
-                    log.warn("no new instances found more recursions (recursion " + i + ")  " + instancesSet.size() + " new instances");
+                    log.warn("no new instances found more recursions (recursion {} )  {} new instances", i,instancesSet.size());
 
                 }
 
-                log.info("processing (recursion " + i + ")  " + instancesSet.size() + " new instances");
+                log.info("processing (recursion  {} ) {} new instances",i,instancesSet.size());
                 queryString = aGenerator.createQuery(instancesSet, aboxfilter);
 //                System.out.println(queryString);
                 log.debug("SPARQL: {}", queryString);
@@ -185,7 +185,8 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
 
             }
 
-
+            log.info("recursion depth: {} reached, {} new instances",recursionDepth,instancesSet.size());
+            
             //queryString = aGenerator.createLastQuery(instances, model, filters);
             //log.debug("SPARQL: {}", queryString);
 
