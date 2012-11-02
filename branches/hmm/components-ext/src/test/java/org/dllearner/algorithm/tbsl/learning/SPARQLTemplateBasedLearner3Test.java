@@ -1,5 +1,6 @@
 package org.dllearner.algorithm.tbsl.learning;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -18,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +35,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutionException;
@@ -64,6 +68,8 @@ import org.dllearner.algorithm.tbsl.nlp.WordNet;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
 import org.dllearner.common.index.Index;
+import org.dllearner.common.index.IndexResultItem;
+import org.dllearner.common.index.IndexResultSet;
 import org.dllearner.common.index.MappingBasedIndex;
 import org.dllearner.common.index.SOLRIndex;
 import org.dllearner.core.ComponentInitException;
@@ -111,7 +117,7 @@ public class SPARQLTemplateBasedLearner3Test
 	private static final File evaluationFolder = new File("cache/evaluation");
 	private static final boolean	DBPEDIA_PRETAGGED	= true;
 	private static final boolean	OXFORD_PRETAGGED	= false;
-	private static final int MAX_NUMBER_OF_QUESTIONS = 20;	
+	private static final int MAX_NUMBER_OF_QUESTIONS = Integer.MAX_VALUE;	
 	private static final boolean WHITELIST_ONLY = false;
 	private static final Set<Integer> WHITELIST = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(new Integer[] {4})));
 
@@ -246,7 +252,7 @@ public class SPARQLTemplateBasedLearner3Test
 		out.close();
 	}
 
-	@Test public void testOxford() throws Exception
+	/*@Test*/ public void testOxford() throws Exception
 	{
 		File file = new File(getClass().getClassLoader().getResource("tbsl/evaluation/oxford_working_questions.xml").getFile());
 		test("Oxford 19 working questions", file,null,null,null,loadOxfordModel(),getOxfordMappingIndex(),OXFORD_PRETAGGED);
@@ -518,7 +524,7 @@ public class SPARQLTemplateBasedLearner3Test
 				logger.warn("no suspect answers for question "+i+" ("+question+")");
 				continue;
 			}			
-			
+
 			if(referenceQuery.equals(suspectQuery)||reference.id2Answers.get(i).equals(suspect.id2Answers.get(i)))
 			{
 				evaluation.correctlyAnsweredQuestions.add(question);
@@ -941,24 +947,78 @@ public class SPARQLTemplateBasedLearner3Test
 
 	private static boolean httpResponseOK(String url) throws MalformedURLException, IOException
 	{		
-			HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-			connection.setRequestMethod("HEAD");
-			int responseCode = connection.getResponseCode();
-			return responseCode == 200;
+		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+		connection.setRequestMethod("HEAD");
+		int responseCode = connection.getResponseCode();
+		return responseCode == 200;
+	}
+
+	static final String resourcesURL = "http://dbpedia.aksw.org:8080/solr/dbpedia_resources";
+	static final String classesURL = "http://dbpedia.aksw.org:8080/solr/dbpedia_classes";
+	static final String propertiesURL = "http://dbpedia.aksw.org:8080/solr/dbpedia_properties";
+	static final String boaPropertiesURL = "http://139.18.2.173:8080/solr/boa_fact_detail";
+
+	public boolean isOnline(String url)
+	{
+		try
+		{					
+			URL u = new URL (url ); 
+			HttpURLConnection huc =  ( HttpURLConnection )  u.openConnection (); 
+			huc.setRequestMethod ("GET"); 
+			huc.connect () ; 
+			//		   OutputStream os = huc.getOutputStream (  ) ; 
+			int code = huc.getResponseCode (  ) ;
+			if(code!=404) logger.warn("Response code "+code+" for url "+url);
+			return code==404;
+		}
+		catch(Throwable t) {logger.warn("Exception when checking availability of url "+url,t);return false;}		
+	}
+
+	// gets called by setup() 
+	/*@Test*/ public void testSolrOnline()
+	{
+		String[] solrServerUrls = {resourcesURL,classesURL,propertiesURL,boaPropertiesURL};
+		String suffix = "/admin";
+		for(String url : solrServerUrls)
+		{
+			url+=suffix;
+			if(!isOnline(url)) fail();
+		}		
+	}
+
+	protected void testIndex(Index index, String[][] entities)
+	{				
+		for(int i=0;i<entities.length;i++)
+		{			
+			IndexResultSet rs = index.getResourcesWithScores(entities[i][0]);			
+			Set<IndexResultItem> items = new TreeSet<IndexResultItem>(rs.getItems());
+			ArrayList<IndexResultItem> itemList = new ArrayList<IndexResultItem>(items);
+			// the right resource should have the top or second from the top score
+			String uri = items.iterator().next().getUri();
+			IndexResultItem secondItem = itemList.size()<2?null:itemList.get(1);
+			String secondUri = secondItem==null?null:secondItem.getUri();
+			assertTrue(entities[i][1]+"!="+uri+" "+items,entities[i][1].equals(uri)||entities[i][1].equals(secondUri));
+		}		
+	}
+	
+	@Test public void testSolrGoodResults()
+	{
+		Knowledgebase dbpedia = createDBpediaLiveKnowledgebase(dbpediaLiveCache);
+		
+		testIndex(dbpedia.getResourceIndex(),new String[][]
+				{{"Brooklyn Bridge","http://dbpedia.org/resource/Brooklyn_Bridge"},{"Estonia","http://dbpedia.org/resource/Estonia"},
+					{"Germany","http://dbpedia.org/resource/Germany"}});
+		testIndex(dbpedia.getPropertyIndex(),new String[][] {{"born in","http://dbpedia.org/ontology/birthPlace"}});
 	}
 
 	private static Knowledgebase createDBpediaLiveKnowledgebase(ExtractionDBCache cache)
 	{		
-		String resourcesURL = "http://dbpedia.aksw.org:8080/solr/dbpedia_resources123";
-		String classesURL = "http://dbpedia.aksw.org:8080/solr/dbpedia_classes";
-		String propertiesURL = "http://dbpedia.aksw.org:8080/solr/dbpedia_properties";
-		String boaPropertiesURL = "http://139.18.2.173:8080/solr/boa_fact_detail";
-		
-//		for(String url : new String[] {resourcesURL,classesURL,propertiesURL,boaPropertiesURL})
-//		{
-//			try{if(!httpResponseOK(url)) throw new RuntimeException("Http response not 200 for url "+url);} catch(Exception e) {throw new RuntimeException(e);}
-//		}
-		
+
+		//		for(String url : new String[] {resourcesURL,classesURL,propertiesURL,boaPropertiesURL})
+		//		{
+		//			try{if(!httpResponseOK(url)) throw new RuntimeException("Http response not 200 for url "+url);} catch(Exception e) {throw new RuntimeException(e);}
+		//		}
+
 		SOLRIndex resourcesIndex = new SOLRIndex(resourcesURL);
 		resourcesIndex.setPrimarySearchField("label");
 		//			resourcesIndex.setSortField("pagerank");
@@ -988,7 +1048,7 @@ public class SPARQLTemplateBasedLearner3Test
 		//		Logger.getLogger(SPARQLTemplateBasedLearner2.class).setLevel(Level.INFO);
 		logger.setLevel(Level.INFO); // TODO: remove when finishing implementation of this class
 		logger.addAppender(new FileAppender(new SimpleLayout(), "log/"+this.getClass().getSimpleName()+".log", false));
-
+		testSolrOnline();
 		//		Logger.getRootLogger().removeAllAppenders();
 
 		//		oxfordEndpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());		
