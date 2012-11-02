@@ -24,6 +24,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,8 +51,10 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.gui.Config;
 import org.dllearner.gui.ConfigSave;
+import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -66,6 +72,7 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -89,6 +96,7 @@ public class DBpediaClassLearnerCELOE {
 			.getLogger(DBpediaClassLearnerCELOE.class);
 
 	SparqlEndpoint sparqlEndpoint = null;
+	private Cache cache;
 
 	public DBpediaClassLearnerCELOE() {
 		// OPTIONAL: if you want to do some case distinctions in the learnClass
@@ -100,6 +108,7 @@ public class DBpediaClassLearnerCELOE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		cache = new Cache("basCache");
 	}
 
 	public static void main(String args[])
@@ -110,20 +119,21 @@ public class DBpediaClassLearnerCELOE {
 			Monitor mon = MonitorFactory.start("Learn DBpedia");
 			KB kb = dcl.learnAllClasses(classesToLearn);
 			mon.stop();
-			kb.export(new File("/home/dcherix/dllearner/old/result.owl"),
+			kb.export(new File("/home/dcherix/dllearner/old/result"+i+".owl"),
 					OntologyFormat.RDF_XML);
 			// Set<String> pos =
 			// dcl.getPosEx("http://dbpedia.org/ontology/Person");
 			// dcl.getNegEx("http://dbpedia.org/ontology/Person", pos);
-			logger.info("Test " + i + ":\n"
+			logger.info("Test" + i + ":\n"
 					+ JamonMonitorLogger.getStringForAllSortedByLabel());
+			System.gc();
 		}
 	}
 
 	public KB learnAllClasses(Set<String> classesToLearn) {
 		KB kb = new KB();
 		for (String classToLearn : classesToLearn) {
-			logger.info("Leraning class: " + classToLearn);
+			logger.info("Leanring class: " + classToLearn);
 			try {
 				Description d = learnClass(classToLearn);
 				if (d == null
@@ -141,6 +151,7 @@ public class DBpediaClassLearnerCELOE {
 			} catch (Exception e) {
 				logger.warn("", e);
 			}
+			this.dropCache();
 		}
 
 		return kb;
@@ -175,6 +186,7 @@ public class DBpediaClassLearnerCELOE {
 		ks.setUrl(new URL(endpointurl));
 		ks.setUseLits(false);
 		ks.setUseCacheDatabase(true);
+		ks.setUseCache(true);
 		ks.setRecursionDepth(1);
 		ks.setCloseAfterRecursion(true);
 		ks.setSaveExtractedFragment(true);
@@ -252,12 +264,18 @@ public class DBpediaClassLearnerCELOE {
 	// }
 	//
 	public Set<String> getPosEx(String clazz) throws Exception {
-		SparqlTemplate st = SparqlTemplate.getInstance("instancesOfClass.vm");
-		st.setLimit(0);
-		VelocityContext vc = st.getVelocityContext();
-		vc.put("class", clazz);
-		String queryString = st.getQuery();
-		return this.executeResourceQuery(queryString);
+//		SparqlTemplate st = SparqlTemplate.getInstance("instancesOfClass.vm");
+//		st.setLimit(0);
+//		VelocityContext vc = st.getVelocityContext();
+//		vc.put("class", clazz);
+//		String queryString = st.getQuery();
+		StringBuilder queryString = new StringBuilder();
+		queryString.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
+		queryString.append(" SELECT ?instances WHERE { ?instances rdf:type <");
+		queryString.append(clazz);
+		queryString.append("> }");
+		System.out.println(queryString);
+		return this.executeResourceQuery(queryString.toString());
 	}
 
 	/**
@@ -337,7 +355,7 @@ public class DBpediaClassLearnerCELOE {
 		logger.info("using class for negatives: " + targetClass);
 		if (targetClass != null) {
 			SparqlTemplate st = SparqlTemplate
-					.getInstance("instancesOfClass.vm");
+					.getInstance("instancesOfClass2.vm");
 			st.setLimit(0);
 			VelocityContext vc = st.getVelocityContext();
 			vc.put("class", targetClass);
@@ -386,10 +404,11 @@ public class DBpediaClassLearnerCELOE {
 	}
 
 	public Set<String> executeResourceQuery(String queryString) {
-		Query query = QueryFactory.create(queryString);
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointurl,
-				query);
-		ResultSet resultSet = qexec.execSelect();
+//		Query query = QueryFactory.create(queryString);
+//		QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointurl,
+//				query);
+//		ResultSet resultSet = qexec.execSelect();
+		ResultSetRewindable resultSet = SparqlQuery.convertJSONtoResultSet(cache.executeSparqlQuery(new SparqlQuery(queryString,sparqlEndpoint)));
 		QuerySolution solution;
 		Set<String> results = new HashSet<String>();
 		while (resultSet.hasNext()) {
@@ -400,10 +419,11 @@ public class DBpediaClassLearnerCELOE {
 	}
 
 	public Set<String> executeClassQuery(String queryString) {
-		Query query = QueryFactory.create(queryString);
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointurl,
-				query);
-		ResultSet resultSet = qexec.execSelect();
+//		Query query = QueryFactory.create(queryString);
+//		QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointurl,
+//				query);
+//		ResultSet resultSet = qexec.execSelect();
+		ResultSetRewindable resultSet = SparqlQuery.convertJSONtoResultSet(cache.executeSparqlQuery(new SparqlQuery(queryString,sparqlEndpoint)));
 		QuerySolution solution;
 		Set<String> results = new HashSet<String>();
 		while (resultSet.hasNext()) {
@@ -413,4 +433,24 @@ public class DBpediaClassLearnerCELOE {
 		return results;
 	}
 
+	private void dropCache(){
+		try {
+			Class.forName("org.h2.Driver");
+			String databaseName="extraction";
+			String databaseDirectory="cache";
+			Connection conn = DriverManager.getConnection("jdbc:h2:"+databaseDirectory+"/"+databaseName, "sa", "");
+			Statement st = conn.createStatement();
+			st.execute("DELETE FROM QUERY_CACHE");
+			st.close();
+			conn.close();
+			System.gc();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 }

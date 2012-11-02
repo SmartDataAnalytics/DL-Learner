@@ -107,7 +107,7 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 
 	public static void main(String args[])
 			throws LearningProblemUnsupportedException, IOException, Exception {
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 4; i++) {
 			NewSparqlCompDBpediaClassLearnerCELOE dcl = new NewSparqlCompDBpediaClassLearnerCELOE();
 			Set<String> classesToLearn = dcl.getClasses();
 			
@@ -129,8 +129,7 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 	public KB learnAllClasses(Set<String> classesToLearn) {
 		KB kb = new KB();
 		for (String classToLearn : classesToLearn) {
-			logger.info(classToLearn);
-			System.out.println(classToLearn);
+			logger.info("learning "+classToLearn);
 			try {
 				Description d = learnClass(classToLearn);
 				if (d == null
@@ -148,6 +147,7 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 			} catch (Exception e) {
 				logger.warn("", e);
 			}
+			System.gc();
 		}
 
 		return kb;
@@ -254,10 +254,7 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 		for (OntClass ontClass : classes) {
 			results.add(ontClass.getURI());
 			i++;
-			if (i == 100)
-				break;
 		}
-		System.out.println(results.size());
 		return results;
 	}
 

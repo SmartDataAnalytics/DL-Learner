@@ -21,6 +21,7 @@ package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,8 +33,13 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DataPropertyEditor;
+import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DisjointDatatypePropertyAxiom;
+import org.dllearner.core.owl.GenericDatatypePropertyAssertion;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.KBElement;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -42,8 +48,10 @@ import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -64,6 +72,9 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 	
 	public DisjointDataPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p1 ?o. FILTER NOT EXISTS{?s ?p ?o}}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p ?o. }");
 	}
 	
 	public DatatypeProperty getPropertyToDescribe() {
@@ -94,7 +105,8 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		allDataProperties.remove(propertyToDescribe);
 		
 		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
-			runSPARQL1_1_Mode();
+//			runSPARQL1_1_Mode();
+			runSingleQueryMode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
@@ -102,21 +114,52 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
+	private void runSingleQueryMode(){
+		//compute the overlap if exist
+		Map<ObjectProperty, Integer> property2Overlap = new HashMap<ObjectProperty, Integer>(); 
+		String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p", propertyToDescribe.getName());
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			ObjectProperty prop = new ObjectProperty(qs.getResource("p").getURI());
+			int cnt = qs.getLiteral("cnt").getInt();
+			property2Overlap.put(prop, cnt);
+		}
+		//for each property in knowledge base
+		for(DatatypeProperty p : allDataProperties){
+			//get the popularity
+			int otherPopularity = reasoner.getPopularity(p);
+			if(otherPopularity == 0){//skip empty properties
+				continue;
+			}
+			//get the overlap
+			int overlap = property2Overlap.containsKey(p) ? property2Overlap.get(p) : 0;
+			//compute the estimated precision
+			double precision = accuracy(otherPopularity, overlap);
+			//compute the estimated recall
+			double recall = accuracy(popularity, overlap);
+			//compute the final score
+			double score = 1 - fMEasure(precision, recall);
+			
+			currentlyBestAxioms.add(new EvaluatedAxiom(new DisjointDatatypePropertyAxiom(propertyToDescribe, p), new AxiomScore(score)));
+		}
+	}
+	
 	private void runSPARQL1_0_Mode() {
-		Model model = ModelFactory.createDefaultModel();
+		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s ?p ?o.} WHERE {?s <%s> ?o. ?s ?p ?o.} LIMIT %d OFFSET %d";
+		String countQuery = "SELECT ?p (COUNT(?s) AS ?count) WHERE {?s ?p ?o.} GROUP BY ?p";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		Map<DatatypeProperty, Integer> result = new HashMap<DatatypeProperty, Integer>();
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			model.add(newModel);
-			query = "SELECT ?p (COUNT(?s) AS ?count) WHERE {?s ?p ?o.} GROUP BY ?p";
-			
+			workingModel.add(newModel);
 			DatatypeProperty prop;
 			Integer oldCnt;
-			ResultSet rs = executeSelectQuery(query, model);
+			ResultSet rs = executeSelectQuery(countQuery, workingModel);
 			QuerySolution qs;
 			while(rs.hasNext()){
 				qs = rs.next();
@@ -135,7 +178,7 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 			
 			
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 		
@@ -251,6 +294,56 @@ public class DisjointDataPropertyAxiomLearner extends AbstractAxiomLearningAlgor
 		
 		property2Count.put(propertyToDescribe, all);
 		return axioms;
+	}
+	
+	@Override
+	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
+		DisjointDatatypePropertyAxiom axiom = (DisjointDatatypePropertyAxiom) evAxiom.getAxiom();
+		posExamplesQueryTemplate.setIri("p", axiom.getDisjointRole().getName());
+		if(workingModel != null){
+			Set<KBElement> posExamples = new HashSet<KBElement>();
+			
+			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
+			Individual subject;
+			Literal object;
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				subject = new Individual(qs.getResource("s").getURI());
+				object = qs.getLiteral("o");
+				posExamples.add(new GenericDatatypePropertyAssertion(
+						propertyToDescribe, subject, object.getLexicalForm(), new Datatype(object.getDatatypeURI())));
+			}
+			
+			return posExamples;
+		} else {
+			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+		}
+	}
+	
+	@Override
+	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
+		DisjointDatatypePropertyAxiom axiom = (DisjointDatatypePropertyAxiom) evAxiom.getAxiom();
+		negExamplesQueryTemplate.setIri("p", axiom.getDisjointRole().getName());
+		if(workingModel != null){
+			Set<KBElement> negExamples = new TreeSet<KBElement>();
+			
+			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
+			Individual subject;
+			Literal object;
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				subject = new Individual(qs.getResource("s").getURI());
+				object = qs.getLiteral("o");
+				negExamples.add(new GenericDatatypePropertyAssertion(
+						propertyToDescribe, subject, object.getLexicalForm(), new Datatype(object.getDatatypeURI())));
+			}
+			
+			return negExamples;
+		} else {
+			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+		}
 	}
 	
 	public static void main(String[] args) throws Exception{

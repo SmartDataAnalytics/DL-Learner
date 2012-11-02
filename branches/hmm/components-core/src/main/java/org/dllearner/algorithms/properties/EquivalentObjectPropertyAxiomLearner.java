@@ -22,27 +22,27 @@ package org.dllearner.algorithms.properties;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.EquivalentObjectPropertiesAxiom;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.KBElement;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -58,6 +58,9 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	
 	public EquivalentObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p ?o}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p1 ?o. FILTER NOT EXISTS{?s ?p ?o}}");
+	
 	}
 	
 	public ObjectProperty getPropertyToDescribe() {
@@ -74,119 +77,128 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
 		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		//get existing super properties
-		SortedSet<ObjectProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
-		logger.debug("Existing super properties: " + existingSuperProperties);
+		
+		if(returnOnlyNewAxioms){
+			//get existing domains
+			SortedSet<ObjectProperty> existingEquivalentProperties = reasoner.getEquivalentProperties(propertyToDescribe);
+			if(existingEquivalentProperties != null && !existingEquivalentProperties.isEmpty()){
+				for(ObjectProperty supProp : existingEquivalentProperties){
+					existingAxioms.add(new EquivalentObjectPropertiesAxiom(propertyToDescribe, supProp));
+				}
+			}
+		}
 		
 		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
-			runSPARQL1_1_Mode();
+			runSingleQueryMode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
-		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
+	private void runSingleQueryMode(){
+		int total = reasoner.getPopularity(propertyToDescribe);
+		
+		if(total > 0){
+			String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p", propertyToDescribe.getName());
+			ResultSet rs = executeSelectQuery(query);
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				ObjectProperty prop = new ObjectProperty(qs.getResource("p").getURI());
+				int cnt = qs.getLiteral("cnt").getInt();
+				if(!prop.equals(propertyToDescribe)){
+					currentlyBestAxioms.add(new EvaluatedAxiom(new EquivalentObjectPropertiesAxiom(propertyToDescribe, prop), computeScore(total, cnt)));
+				}
+			}
+		}
+	}
+	
 	private void runSPARQL1_0_Mode() {
-		Model model = ModelFactory.createDefaultModel();
+		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s ?p ?o.} WHERE {?s <%s> ?o. ?s ?p ?o.} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
-		Map<ObjectProperty, Integer> result = new HashMap<ObjectProperty, Integer>();
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			model.add(newModel);
-			query = "SELECT ?p (COUNT(?s) AS ?count) WHERE {?s ?p ?o.} GROUP BY ?p";
+			workingModel.add(newModel);
+			// get number of triples
+			int all = (int)workingModel.size();
 			
-			ObjectProperty prop;
-			Integer oldCnt;
-			ResultSet rs = executeSelectQuery(query, model);
-			QuerySolution qs;
-			while(rs.hasNext()){
-				qs = rs.next();
-				prop = new ObjectProperty(qs.getResource("p").getURI());
-				int newCnt = qs.getLiteral("count").getInt();
-				oldCnt = result.get(prop);
-				if(oldCnt == null){
-					oldCnt = Integer.valueOf(newCnt);
+			if (all > 0) {
+				// get class and number of instances
+				query = "SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s ?p ?o.} GROUP BY ?p ORDER BY DESC(?cnt)";
+				ResultSet rs = executeSelectQuery(query, workingModel);
+				
+				currentlyBestAxioms.clear();
+				QuerySolution qs;
+				ObjectProperty prop;
+				while(rs.hasNext()){
+					qs = rs.next();
+					prop = new ObjectProperty(qs.get("p").asResource().getURI());
+					//omit property to describe as it is trivial
+					if(prop.equals(propertyToDescribe)){
+						continue;
+					}
+					currentlyBestAxioms.add(new EvaluatedAxiom(
+							new EquivalentObjectPropertiesAxiom(propertyToDescribe, prop),
+							computeScore(all, qs.get("cnt").asLiteral().getInt())));
 				}
-				result.put(prop, oldCnt);
-				qs.getLiteral("count").getInt();
+				
 			}
-			if(!result.isEmpty()){
-				currentlyBestAxioms = buildAxioms(result);
-			}
-			
-			
 			offset += limit;
 			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
-		
 	}
 	
-	private void runSPARQL1_1_Mode() {
-		//get subjects with types
-				int offset = 0;
-				String queryTemplate = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(?s) AS ?count) WHERE {?s ?p ?o.?p a owl:ObjectProperty." +
-				"{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" +
-				"}";
-				String query;
-				Map<ObjectProperty, Integer> result = new HashMap<ObjectProperty, Integer>();
-				ObjectProperty prop;
-				Integer oldCnt;
-				boolean repeat = true;
-				
-				while(!terminationCriteriaSatisfied() && repeat){
-					query = String.format(queryTemplate, propertyToDescribe, limit, offset);
-					ResultSet rs = executeSelectQuery(query);
-					QuerySolution qs;
-					repeat = false;
-					while(rs.hasNext()){
-						qs = rs.next();
-						prop = new ObjectProperty(qs.getResource("p").getURI());
-						int newCnt = qs.getLiteral("count").getInt();
-						oldCnt = result.get(prop);
-						if(oldCnt == null){
-							oldCnt = Integer.valueOf(newCnt);
-						} else {
-							oldCnt += newCnt;
-						}
-						result.put(prop, oldCnt);
-						repeat = true;
-					}
-					if(!result.isEmpty()){
-						currentlyBestAxioms = buildAxioms(result);
-						offset += limit;
-					}
-					
-				}
-		
-	}
-	
-	private List<EvaluatedAxiom> buildAxioms(Map<ObjectProperty, Integer> property2Count){
-		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
-		Integer all = property2Count.get(propertyToDescribe);
-		property2Count.remove(propertyToDescribe);
-		
-		EvaluatedAxiom evalAxiom;
-		List<ObjectProperty> properties;
-		for(Entry<ObjectProperty, Integer> entry : sortByValues(property2Count)){
-			properties = new ArrayList<ObjectProperty>();
-			properties.add(propertyToDescribe);
-			properties.add(entry.getKey());
-			int popularity = reasoner.getPropertyCount(entry.getKey());
-//			int total = popularity;
-			int total = Math.max(popularity, all);
-			int success = entry.getValue();//System.out.println(entry.getKey());System.out.println(entry.getKey());System.out.println(total);System.out.println(success);
-			Score score = computeScore(total, success);//System.out.println(entry + ": " + score.getAccuracy());
-			evalAxiom = new EvaluatedAxiom(new EquivalentObjectPropertiesAxiom(properties),score);
-			axioms.add(evalAxiom);
+	@Override
+	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
+		EquivalentObjectPropertiesAxiom axiom = (EquivalentObjectPropertiesAxiom) evAxiom.getAxiom();
+		posExamplesQueryTemplate.setIri("p", axiom.getEquivalentProperties().iterator().next().toString());
+		if(workingModel != null){
+			Set<KBElement> posExamples = new HashSet<KBElement>();
+			
+			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
+			Individual subject;
+			Individual object;
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				subject = new Individual(qs.getResource("s").getURI());
+				object = new Individual(qs.getResource("o").getURI());
+				posExamples.add(new ObjectPropertyAssertion(propertyToDescribe, subject, object));
+			}
+			
+			return posExamples;
+		} else {
+			throw new UnsupportedOperationException("Getting positive examples is not possible.");
 		}
-		
-		property2Count.put(propertyToDescribe, all);
-		return axioms;
+	}
+	
+	@Override
+	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
+		EquivalentObjectPropertiesAxiom axiom = (EquivalentObjectPropertiesAxiom) evAxiom.getAxiom();
+		negExamplesQueryTemplate.setIri("p", axiom.getEquivalentProperties().iterator().next().toString());
+		if(workingModel != null){
+			Set<KBElement> negExamples = new TreeSet<KBElement>();
+			
+			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
+			Individual subject;
+			Individual object;
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				subject = new Individual(qs.getResource("s").getURI());
+				object = new Individual(qs.getResource("o").getURI());
+				negExamples.add(new ObjectPropertyAssertion(propertyToDescribe, subject, object));
+			}
+			
+			return negExamples;
+		} else {
+			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+		}
 	}
 	
 	public static void main(String[] args) throws Exception{

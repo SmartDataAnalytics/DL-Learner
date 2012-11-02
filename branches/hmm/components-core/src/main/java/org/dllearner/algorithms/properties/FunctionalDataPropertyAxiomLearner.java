@@ -32,6 +32,7 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -50,6 +51,9 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 
 	public FunctionalDataPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		
+		posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s ?p ?o1. FILTER NOT EXISTS {?s ?p ?o2. FILTER(?o1 != ?o2)} }");
+		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s ?p ?o1. ?s ?p ?o2. FILTER(?o1 != ?o2)}");
 	}
 	
 	public DatatypeProperty getPropertyToDescribe() {
@@ -85,19 +89,19 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 	}
 	
 	private void runSPARQL1_0_Mode() {
-		Model model = ModelFactory.createDefaultModel();
+		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			model.add(newModel);
+			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = String.format(
 					"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
 					propertyToDescribe.getName());
-			ResultSet rs = executeSelectQuery(query, model);
+			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int all = 1;
 			while (rs.hasNext()) {
@@ -107,7 +111,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 			// get number of instances of s with <s p o> <s p o1> where o != o1
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o1)} }";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query, model);
+			rs = executeSelectQuery(query, workingModel);
 			int functional = 1;
 			while (rs.hasNext()) {
 				qs = rs.next();
@@ -128,23 +132,21 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 	}
 	
 	private void runSPARQL1_1_Mode() {
-		// get number of instances of s with <s p o>
 		int numberOfSubjects = reasoner.getSubjectCountForProperty(propertyToDescribe, getRemainingRuntimeInMilliSeconds());
 		if(numberOfSubjects == -1){
 			logger.warn("Early termination: Got timeout while counting number of distinct subjects for given property.");
 			return;
 		}
-		// get number of instances of s with <s p o> <s p o1> where o != o1
-		String query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o1)} }";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		ResultSet rs = executeSelectQuery(query);
-		int functional = 1;
-		QuerySolution qs;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			functional = qs.getLiteral("functional").getInt();
-		}
+		
 		if (numberOfSubjects > 0) {
+			int functional = 0;
+			String query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o1)} }";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			ResultSet rs = executeSelectQuery(query);
+			if (rs.hasNext()) {
+				functional = rs.next().getLiteral("functional").getInt();
+			}
+			
 			currentlyBestAxioms.add(new EvaluatedAxiom(
 					new FunctionalDatatypePropertyAxiom(propertyToDescribe),
 					computeScore(numberOfSubjects, functional),

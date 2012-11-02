@@ -19,10 +19,10 @@
 
 package org.dllearner.core.owl;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Jens Lehmann
@@ -38,6 +38,10 @@ public class DisjointClassesAxiom extends TerminologicalAxiom {
 	
 	public DisjointClassesAxiom(Collection<Description> descriptions) {
 		this.descriptions = descriptions;
+	}
+	
+	public DisjointClassesAxiom(Description ... descriptions) {
+		this.descriptions = Arrays.asList(descriptions);
 	}
 
 	/* (non-Javadoc)

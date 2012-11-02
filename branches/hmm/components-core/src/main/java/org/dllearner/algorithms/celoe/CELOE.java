@@ -21,6 +21,7 @@ package org.dllearner.algorithms.celoe;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -218,11 +219,11 @@ public class CELOE extends AbstractCELA {
 //		configurator = new CELOEConfigurator(this);
 	}
 
-//	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
-//		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
-//		problems.add(AbstractLearningProblem.class);
-//		return problems;
-//	}
+	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
+		problems.add(AbstractLearningProblem.class);
+		return problems;
+	}
 	
 	public static String getName() {
 		return "CELOE";

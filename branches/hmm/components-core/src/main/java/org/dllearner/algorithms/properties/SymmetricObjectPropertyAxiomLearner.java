@@ -34,6 +34,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -52,6 +53,9 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 
 	public SymmetricObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		
+		posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s ?p ?o. ?o ?p ?s}");
+		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS {?o ?p ?s}}");
 	}
 
 	public ObjectProperty getPropertyToDescribe() {
@@ -87,18 +91,18 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	}
 	
 	private void runSPARQL1_0_Mode(){
-		Model model = ModelFactory.createDefaultModel();
+		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			model.add(newModel);
+			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			ResultSet rs = executeSelectQuery(query, model);
+			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int total = 0;
 			while(rs.hasNext()){
@@ -107,7 +111,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			}
 			query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query, model);
+			rs = executeSelectQuery(query, workingModel);
 			int symmetric = 0;
 			while(rs.hasNext()){
 				qs = rs.next();
@@ -127,26 +131,17 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	}
 	
 	private void runSPARQL1_1_Mode(){
-		String query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		int total = 0;
-		while(rs.hasNext()){
-			qs = rs.next();
-			total = qs.getLiteral("total").getInt();
-		}
-		query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		rs = executeSelectQuery(query);
-		int symmetric = 0;
-		while(rs.hasNext()){
-			qs = rs.next();
-			symmetric = qs.getLiteral("symmetric").getInt();
-		}
-		
+		int total = reasoner.getPopularity(propertyToDescribe);
 		
 		if(total > 0){
+			int symmetric = 0;
+			String query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s}";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			ResultSet rs = executeSelectQuery(query);
+			if(rs.hasNext()){
+				symmetric = rs.next().getLiteral("symmetric").getInt();
+			}
+			
 			currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
 					computeScore(total, symmetric), declaredAsSymmetric));
 		}

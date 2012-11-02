@@ -19,9 +19,7 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -35,6 +33,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -53,6 +52,9 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 
 	public InverseFunctionalObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		
+		posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?o1 ?p ?s. FILTER NOT EXISTS {?o2 ?p ?s. FILTER(?o1 != ?o2)} }");
+		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?o1 ?p ?s. ?o2 ?p ?s. FILTER(?o1 != ?o2)}");
 	}
 	
 	public ObjectProperty getPropertyToDescribe() {
@@ -84,25 +86,23 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 			runSPARQL1_0_Mode();
 		}
 		
-		
-		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private void runSPARQL1_0_Mode() {
-		Model model = ModelFactory.createDefaultModel();
+		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			model.add(newModel);
+			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = String.format(
 					"SELECT (COUNT(DISTINCT ?o) AS ?all) WHERE {?s <%s> ?o.}",
 					propertyToDescribe.getName());
-			ResultSet rs = executeSelectQuery(query, model);
+			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int all = 1;
 			while (rs.hasNext()) {
@@ -112,7 +112,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 			// get number of instances of s with <s p o> <s p o1> where o != o1
 			query = "SELECT (COUNT(DISTINCT ?o) AS ?inversefunctional) WHERE {?s1 <%s> ?o. FILTER NOT EXISTS {?s2 <%s> ?o. FILTER(?s1 != ?s2)}}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query, model);
+			rs = executeSelectQuery(query, workingModel);
 			int inverseFunctional = 1;
 			while (rs.hasNext()) {
 				qs = rs.next();
@@ -141,18 +141,20 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 			logger.warn("Early termination: Got timeout while counting number of distinct objects for given property.");
 			return;
 		}
-		// get number of instances of s with <s p o> <s p o1> where o != o1
-		String query = "SELECT (COUNT(DISTINCT ?o) AS ?inversefunctional) WHERE {?s1 <%s> ?o. FILTER NOT EXISTS {?s2 <%s> ?o. FILTER(?s1 != ?s2)}}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		ResultSet rs = executeSelectQuery(query);
-		int inverseFunctional = 1;
-		QuerySolution qs;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			inverseFunctional = qs.getLiteral("inversefunctional")
-					.getInt();
-		}
+		
 		if (numberOfObjects > 0) {
+			// get number of instances of s with <s p o> <s p o1> where o != o1
+			String query = "SELECT (COUNT(DISTINCT ?o) AS ?inversefunctional) WHERE {?s1 <%s> ?o. FILTER NOT EXISTS {?s2 <%s> ?o. FILTER(?s1 != ?s2)}}";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			ResultSet rs = executeSelectQuery(query);
+			int inverseFunctional = 1;
+			QuerySolution qs;
+			while (rs.hasNext()) {
+				qs = rs.next();
+				inverseFunctional = qs.getLiteral("inversefunctional")
+						.getInt();
+			}
+			
 			currentlyBestAxioms
 					.add(new EvaluatedAxiom(
 							new InverseFunctionalObjectPropertyAxiom(

@@ -20,11 +20,7 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -32,7 +28,6 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -103,7 +98,7 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
-		while(!terminationCriteriaSatisfied() && newModel.size() != 0){System.out.println(query);
+		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = String.format(
@@ -147,17 +142,19 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			logger.warn("Early termination: Got timeout while counting number of distinct subjects for given property.");
 			return;
 		}
-		// get number of instances of s with <s p o> <s p o1> where o != o1
-		String query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o2)} }";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		int functional = 1;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			functional = qs.getLiteral("functional").getInt();
-		}
+		
 		if (numberOfSubjects > 0) {
+			// get number of instances of s with <s p o> <s p o1> where o != o1
+			String query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o2)} }";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			ResultSet rs = executeSelectQuery(query);
+			QuerySolution qs;
+			int functional = 1;
+			while (rs.hasNext()) {
+				qs = rs.next();
+				functional = qs.getLiteral("functional").getInt();
+			}
+			
 			currentlyBestAxioms.add(new EvaluatedAxiom(
 					new FunctionalObjectPropertyAxiom(propertyToDescribe),
 					computeScore(numberOfSubjects, functional),

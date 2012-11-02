@@ -22,6 +22,8 @@ package org.dllearner.algorithms.properties;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -29,12 +31,15 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.core.owl.AsymmetricObjectPropertyAxiom;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.KBElement;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -53,6 +58,9 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 
 	public AsymmetricObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?o ?p ?s}}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. ?o ?p ?s}");
+	
 	}
 
 	public ObjectProperty getPropertyToDescribe() {
@@ -88,18 +96,18 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	}
 	
 	private void runSPARQL1_0_Mode(){
-		Model model = ModelFactory.createDefaultModel();
+		workingModel  = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			model.add(newModel);
+			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			ResultSet rs = executeSelectQuery(query, model);
+			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int total = 0;
 			while(rs.hasNext()){
@@ -108,7 +116,7 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			}
 			query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s.}";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
-			rs = executeSelectQuery(query, model);
+			rs = executeSelectQuery(query, workingModel);
 			int symmetric = 0;
 			while(rs.hasNext()){
 				qs = rs.next();
@@ -127,26 +135,57 @@ public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		}
 	}
 	
+	@Override
+	public SortedSet<KBElement> getPositiveExamples(EvaluatedAxiom axiom) {
+		if(workingModel != null){
+			SortedSet<KBElement> allExamples = new TreeSet<KBElement>();
+			ParameterizedSparqlString query = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o.}");
+			query.setIri("p", propertyToDescribe.getName());
+			ResultSet rs = executeSelectQuery(query.toString(), workingModel);
+			while(rs.hasNext()){
+				allExamples.add(new Individual(rs.next().get("s").asResource().getURI()));
+			}
+			SortedSet<KBElement> negExamples = getNegativeExamples(axiom);
+			
+			SortedSet<KBElement> posExamples = new TreeSet<KBElement>(allExamples);
+			posExamples.removeAll(negExamples);
+			
+			
+			return posExamples;
+		} else {
+			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+		}
+	}
+	
+	@Override
+	public SortedSet<KBElement> getNegativeExamples(EvaluatedAxiom axiom) {
+		if(workingModel != null){
+			SortedSet<KBElement> negExamples = new TreeSet<KBElement>();
+			ParameterizedSparqlString query = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o.?o ?p ?s}");
+			query.setIri("p", propertyToDescribe.getName());
+			ResultSet rs = executeSelectQuery(query.toString(), workingModel);
+			while(rs.hasNext()){
+				negExamples.add(new Individual(rs.next().get("s").asResource().getURI()));
+			}
+			
+			return negExamples;
+		} else {
+			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+		}
+	}
+	
 	private void runSPARQL1_1_Mode(){
-		String query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		int total = 0;
-		while(rs.hasNext()){
-			qs = rs.next();
-			total = qs.getLiteral("total").getInt();
-		}
-		query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s.}";
-		query = query.replace("%s", propertyToDescribe.getURI().toString());
-		rs = executeSelectQuery(query);
-		int symmetric = 0;
-		while(rs.hasNext()){
-			qs = rs.next();
-			symmetric = qs.getLiteral("symmetric").getInt();
-		}
-		int asymmetric = total - symmetric;
+		int total = reasoner.getPopularity(propertyToDescribe);
+		
 		if(total > 0){
+			int asymmetric = 0;
+			String query = "SELECT (COUNT(*) AS ?asymmetric) WHERE {?s <%s> ?o. FILTER NOT EXISTS{?o <%s> ?s.}}";
+			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			ResultSet rs = executeSelectQuery(query);
+			if(rs.hasNext()){
+				asymmetric = rs.next().getLiteral("asymmetric").getInt();
+			}
+			
 			currentlyBestAxioms.add(new EvaluatedAxiom(new AsymmetricObjectPropertyAxiom(propertyToDescribe),
 					computeScore(total, asymmetric), declaredAsymmetric));
 		}

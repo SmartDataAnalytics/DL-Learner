@@ -180,6 +180,8 @@ public class EnrichmentEvaluation {
 
 	private static Logger logger = Logger.getLogger(EnrichmentEvaluation.class);
 	
+	private final int maxNrOfThreads = 1;
+	
 	// max. number of attempts per algorithm and entity, because to many queries 
 	// in a short time could cause blocking by the endpoint
 	private final int maxAttempts = 5; 
@@ -247,15 +249,15 @@ public class EnrichmentEvaluation {
 		objectPropertyAlgorithms.add(InverseObjectPropertyAxiomLearner.class);
 
 		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
-		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class); 
-		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
+//		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
+//		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
+		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class);
+//		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
+//		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
+//		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
-//		classAlgorithms.add(CELOE.class);
+		classAlgorithms.add(CELOE.class);
 		classAlgorithms.add(DisjointClassesLearner.class);
 		classAlgorithms.add(SimpleSubclassLearner.class);
 		
@@ -859,52 +861,54 @@ public class EnrichmentEvaluation {
 				entities = dataProperties;
 			}
 			
-			ps.setString(1, algorithms.get(0).getAnnotation(ComponentAnn.class).name());
-			ps.setDouble(2, threshold);
-			
-			//get all found axioms for specific axiom type 
-			Set<String> foundAxioms = new TreeSet<String>();
-			Map<String, Double> foundAndNotEntailedAxioms = new TreeMap<String, Double>();
-			rs = ps.executeQuery();
-			String axiom;
-			boolean entailed;
-			double score;
-			while(rs.next()){
-				axiom = rs.getString(1);
-				entailed = rs.getBoolean(2);
-				score = rs.getDouble(3);
+			if(entities != null){
+				ps.setString(1, algorithms.get(0).getAnnotation(ComponentAnn.class).name());
+				ps.setDouble(2, threshold);
 				
-				foundAxioms.add(axiom);
-				if(!entailed){
-					foundAndNotEntailedAxioms.put(axiom, score);
+				//get all found axioms for specific axiom type 
+				Set<String> foundAxioms = new TreeSet<String>();
+				Map<String, Double> foundAndNotEntailedAxioms = new TreeMap<String, Double>();
+				rs = ps.executeQuery();
+				String axiom;
+				boolean entailed;
+				double score;
+				while(rs.next()){
+					axiom = rs.getString(1);
+					entailed = rs.getBoolean(2);
+					score = rs.getDouble(3);
+					
+					foundAxioms.add(axiom);
+					if(!entailed){
+						foundAndNotEntailedAxioms.put(axiom, score);
+					}
 				}
+				
+				//get all axioms in the reference ontology for a specific axiom type
+				Set<String> relevantAxioms = getRelevantAxioms2(type, entities);
+				//compute the axioms which are in the reference ontology, but not be computed by the learning algorithm
+				Set<String> missedAxioms = org.mindswap.pellet.utils.SetUtils.difference(relevantAxioms, foundAxioms);
+				//compute the additional found axioms which were not entailed
+				for(String relAxiom : relevantAxioms){
+					foundAndNotEntailedAxioms.remove(relAxiom);
+				}
+				Set<String> additionalAxioms = foundAndNotEntailedAxioms.keySet();
+				
+				int total = relevantAxioms.size();
+				int found = total - missedAxioms.size();
+				
+				table2.
+				append(type.getName()).append(" & ").
+				append( found + "/" + total ).append(" & ").
+				append(additionalAxioms.size()).
+				append(" & & & \\\\\n");
+				System.out.println(type.getName() + ": " + found + "/" + total);
+				
+				
+				//write additional axioms with score into file
+				writeToDisk(type, foundAndNotEntailedAxioms);
+				//write missed axioms into file
+				writeToDisk(type, missedAxioms);
 			}
-			
-			//get all axioms in the reference ontology for a specific axiom type
-			Set<String> relevantAxioms = getRelevantAxioms2(type, entities);
-			//compute the axioms which are in the reference ontology, but not be computed by the learning algorithm
-			Set<String> missedAxioms = org.mindswap.pellet.utils.SetUtils.difference(relevantAxioms, foundAxioms);
-			//compute the additional found axioms which were not entailed
-			for(String relAxiom : relevantAxioms){
-				foundAndNotEntailedAxioms.remove(relAxiom);
-			}
-			Set<String> additionalAxioms = foundAndNotEntailedAxioms.keySet();
-			
-			int total = relevantAxioms.size();
-			int found = total - missedAxioms.size();
-			
-			table2.
-			append(type.getName()).append(" & ").
-			append( found + "/" + total ).append(" & ").
-			append(additionalAxioms.size()).
-			append(" & & & \\\\\n");
-			System.out.println(type.getName() + ": " + found + "/" + total);
-			
-			
-			//write additional axioms with score into file
-			writeToDisk(type, foundAndNotEntailedAxioms);
-			//write missed axioms into file
-			writeToDisk(type, missedAxioms);
 		}
 		
 		table2.append("\\end{tabulary}");

@@ -99,6 +99,7 @@ public final class ComponentManager {
             "org.dllearner.kb.OWLFile",
             "org.dllearner.kb.KBFile",
             "org.dllearner.kb.sparql.SparqlKnowledgeSource",
+            "org.dllearner.kb.sparql.simple.SparqlSimpleExtractor",
             "org.dllearner.kb.OWLAPIOntology",
 //            "org.dllearner.kb.SparqlEndpointKS",
 //reasoners
