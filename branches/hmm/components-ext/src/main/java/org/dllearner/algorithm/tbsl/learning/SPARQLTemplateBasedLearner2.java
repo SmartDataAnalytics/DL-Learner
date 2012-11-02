@@ -713,6 +713,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			Set<WeightedQuery> tmp = new TreeSet<WeightedQuery>();
 			List<Slot> sortedSlots = new ArrayList<Slot>();
 			Set<Slot> classSlots = new HashSet<Slot>();
+			// TODO: can this be optimized to be in just one loop? (but I guess it won't give a noticable performance benefit anyways...)
 			for(Slot slot : t.getSlots()){
 				if(slot.getSlotType() == SlotType.CLASS){
 					sortedSlots.add(slot);

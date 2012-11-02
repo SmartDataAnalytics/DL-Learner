@@ -117,11 +117,11 @@ public class SPARQLTemplateBasedLearner3Test
 	private static final File evaluationFolder = new File("cache/evaluation");
 	private static final boolean	DBPEDIA_PRETAGGED	= true;
 	private static final boolean	OXFORD_PRETAGGED	= false;
-	private static final int MAX_NUMBER_OF_QUESTIONS = Integer.MAX_VALUE;	
-	private static final boolean WHITELIST_ONLY = false;
+	private static final int MAX_NUMBER_OF_QUESTIONS = 20;	
+	private static final boolean WHITELIST_ONLY = true;
 	private static final Set<Integer> WHITELIST = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(new Integer[] {4})));
 
-	/*@Test*/ public void testDBpedia() throws Exception
+	@Test public void testDBpedia() throws Exception
 	{
 		File file = generateTestDataIfNecessary(
 				new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
@@ -767,7 +767,7 @@ public class SPARQLTemplateBasedLearner3Test
 		Map<Integer,Future<LearnStatus>> futures = new HashMap<Integer,Future<LearnStatus>>();
 
 		//		List<FutureTask> todo = new ArrayList<FutureTask>(id2Question.size());
-		ExecutorService service = Executors.newFixedThreadPool(1);
+		ExecutorService service = Executors.newCachedThreadPool();// newFixedThreadPool(1);
 
 		for(int i: id2Question.keySet())
 		{//if(i != 78)continue;
@@ -1001,7 +1001,7 @@ public class SPARQLTemplateBasedLearner3Test
 		}		
 	}
 	
-	@Test public void testSolrGoodResults()
+	/*@Test*/ public void testSolrGoodResults()
 	{
 		Knowledgebase dbpedia = createDBpediaLiveKnowledgebase(dbpediaLiveCache);
 		
