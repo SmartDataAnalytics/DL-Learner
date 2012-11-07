@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Slot implements Serializable{
+public class Slot implements Serializable, Comparable<Slot> {
 
 	private static final long serialVersionUID = 8672756914248710435L;
 	
@@ -164,7 +164,7 @@ public class Slot implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Slot other = (Slot) obj;
-		if(other.type == type && other.token == token){
+		if(other.type == type && other.token.equals(token)){
 			return true;
 		}
 		return false;
@@ -177,6 +177,23 @@ public class Slot implements Serializable{
 		result = prime * result + ((token == null) ? 0 : token.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
+	}
+
+	@Override
+	public int compareTo(Slot o)
+	{
+		if(this.equals(o)) return 0;
+		// sort by slot type
+		int t = type.compareTo(o.type);
+		if(t!=0) return t;
+		return token.compareTo(o.token);
+		// sort by 
+		
+//		if(o1.getSlotType() == o2.getSlotType()){
+//			return o1.getToken().compareTo(o2.getToken());
+//		} else {
+//			return -1;
+//		}
 	}
 	
 	

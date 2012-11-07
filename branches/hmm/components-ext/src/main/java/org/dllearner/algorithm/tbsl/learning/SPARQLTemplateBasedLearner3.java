@@ -762,7 +762,7 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 				learnedPos++;
 				List<String> results;
 				try {
-					logger.info("Testing query:\n" + query);
+					logger.debug("Testing query:\n" + query);
 					com.hp.hpl.jena.query.Query q = QueryFactory.create(query.getQuery().toString(), Syntax.syntaxARQ);
 					q.setLimit(1);
 					ResultSet rs = executeSelect(q.toString());
@@ -805,7 +805,7 @@ public class SPARQLTemplateBasedLearner3 implements SparqlQueryLearningAlgorithm
 		} else if(queryType == SPARQL_QueryType.ASK){
 			for(WeightedQuery query : queries){
 				learnedPos++;
-				logger.info("Testing query:\n" + query);
+				logger.debug("Testing query:\n" + query);
 				boolean result = executeAskQuery(query.getQuery().toString());
 				learnedSPARQLQueries.add(query);
 //				if(stopIfQueryResultNotEmpty && result){

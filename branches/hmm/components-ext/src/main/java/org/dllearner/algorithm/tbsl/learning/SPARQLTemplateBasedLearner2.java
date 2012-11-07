@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -98,7 +99,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		/** The minimum score of items that are accepted from the Sindice search BOA index. **/
 	private static final Double	BOA_THRESHOLD	=  0.5;
 	enum Mode {BEST_QUERY, BEST_NON_EMPTY_QUERY}
-	private Mode mode = Mode.BEST_QUERY;
+	private Mode mode = Mode.BEST_NON_EMPTY_QUERY;
 	
 	/** used to create a label out of the URI when there is no label available in the SPARQL endpoint.*/
 	private static SimpleIRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
@@ -521,6 +522,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 
 	private SortedSet<WeightedQuery> getWeightedSPARQLQueries(Set<Template> templates, boolean hmm)
 	{
+//		return getWeightedSPARQLQueriesNew(templates);
 		return hmm?getWeightedSPARQLQueriesWithHMM(templates):getWeightedSPARQLQueriesWithoutHMM(templates);
 	}
 	
@@ -628,14 +630,42 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		// 		
 		return queries;		
 	}
-
-	@SuppressWarnings("unused") private SortedSet<WeightedQuery> getWeightedSPARQLQueriesWithoutHMM(Set<Template> templates){
-		logger.debug("Generating SPARQL query candidates...");
-
+	
+	/** removes templates which have empty slots */
+	protected Set<Template> goodTemplates(Set<Template> templates)
+	{
+		Set<Template> remainingTemplates = new HashSet<Template>();
+		templates:
+		for(Template t: templates)
+		{
+			for (Slot slot : t.getSlots()) {if(slot.getWords().isEmpty()) {continue templates;}	}
+			remainingTemplates.add(t);
+		}
+		return remainingTemplates;
+	}
+	
+	/** There seems to be a bug in the other getWeightedSPARQLQueries... functions, so this is a new implementation
+	 */
+	protected SortedSet<WeightedQuery> getWeightedSPARQLQueriesNew(Set<Template> templates)
+	{		
+		logger.debug("Generating SPARQL query candidates (new implementation)...");
+		
+		List<String> vars = new LinkedList<String>();
+		if(templates.isEmpty()) throw new AssertionError("no templates");
+		templates = goodTemplates(templates);
+		if(templates.isEmpty()) throw new AssertionError("no good templates");
+		
 		Map<Slot, Set<Allocation>> slot2Allocations = new TreeMap<Slot, Set<Allocation>>(new Comparator<Slot>() {
 
 			@Override
 			public int compare(Slot o1, Slot o2) {
+				System.err.println(o1.getToken());
+				System.err.println(o2.getToken());
+				if(o1.getToken().equalsIgnoreCase("river")||o2.getToken().equalsIgnoreCase("river"))
+				{
+					int nop = 5;
+					System.err.println(nop);
+				}
 				if(o1.getSlotType() == o2.getSlotType()){
 					return o1.getToken().compareTo(o2.getToken());
 				} else {
@@ -643,18 +673,59 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				}
 			}
 		});
-		slot2Allocations = Collections.synchronizedMap(new HashMap<Slot, Set<Allocation>>());
+//		slot2Allocations = Collections.synchronizedMap(slot2Allocations);
 
+		SortedSet<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
+		
+		SortedSet<WeightedQuery> queries = new TreeSet<WeightedQuery>();
+		
+		for(Template t : templates)
+		{
+//			logger.debug("Processing template:\n" + t.toString());
+			for (Slot slot : t.getSlots())
+			{
+				// get candidates for slot
+				if(!slot2Allocations.containsKey(slot))
+				{
+				slot2Allocations.put(slot,new SlotProcessor(slot).computeAllocations(slot));
+				}
+			}
+		}
+		logger.info(slot2Allocations.size()+" allocations: "+slot2Allocations);
+		
+		if(1==1) System.exit(1);
+		return queries;
+	}
+
+	@SuppressWarnings("unused") private SortedSet<WeightedQuery> getWeightedSPARQLQueriesWithoutHMM(Set<Template> templates){
+		logger.debug("Generating SPARQL query candidates...");
+
+		SortedMap<Slot, Set<Allocation>> slot2Allocations = new TreeMap<Slot, Set<Allocation>>();
+//				new Comparator<Slot>() {
+//
+//			@Override
+//			public int compare(Slot o1, Slot o2) {
+//				if(o1.equals(o2)) return 0;
+//				return -1;
+////				if(o1.getSlotType() == o2.getSlotType()){
+////					return o1.getToken().compareTo(o2.getToken());
+////				} else {
+////					return -1;
+////				}
+//			}
+//		});	
+		slot2Allocations = Collections.synchronizedSortedMap(slot2Allocations);
+		
 
 		SortedSet<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
 
 		for(Template t : templates)
 		{
-			logger.info("Processing template:\n" + t.toString());
+			logger.debug("Processing template:\n" + t.toString());
 //			Set<Allocation> allocations = new TreeSet<Allocation>();
 			boolean containsRegex = t.getQuery().toString().toLowerCase().contains("(regex(");
 
-			ExecutorService executor = Executors.newFixedThreadPool(t.getSlots().size());
+			ExecutorService executor =  Executors.newSingleThreadExecutor();//Executors.newFixedThreadPool(t.getSlots().size());
 			List<Future<Map<Slot, SortedSet<Allocation>>>> list = new ArrayList<Future<Map<Slot, SortedSet<Allocation>>>>();
 
 			long startTime = System.currentTimeMillis();
@@ -670,7 +741,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			for (Future<Map<Slot, SortedSet<Allocation>>> future : list) {
 				try {
 					Map<Slot, SortedSet<Allocation>> result = future.get();
-					Entry<Slot, SortedSet<Allocation>> item = result.entrySet().iterator().next();
+
+					Entry<Slot, SortedSet<Allocation>> item = result.entrySet().iterator().next();		
 					slot2Allocations.put(item.getKey(), item.getValue());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -743,9 +815,22 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				queries.clear();
 				queries.addAll(tmp);
 				tmp.clear();
-			}			
+			}
 
-			for(Slot slot : sortedSlots){
+			Set<Slot> unhandledSlots = new HashSet<Slot>(sortedSlots);
+			unhandledSlots.removeAll(slot2Allocations.keySet());
+			if(!unhandledSlots.isEmpty())
+			{
+				logger.error("the following slots are unhandled: "+unhandledSlots);
+			}
+			for(Slot slot : sortedSlots)
+			{				
+				Set<Allocation> allocations = slot2Allocations.get(slot);
+				if(allocations==null)
+				{
+					System.err.println("no allocations for slot "+slot);
+
+				}
 				if(!slot2Allocations.get(slot).isEmpty()){
 					for(Allocation a : slot2Allocations.get(slot)){
 						for(WeightedQuery query : queries){
@@ -832,9 +917,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 
 							if(!drop){
 								if(slot.getSlotType() == SlotType.RESOURCE){//avoid queries where predicate is data property and object resource->add REGEX filter in this case
+									q.replaceVarWithURI(slot.getAnchor(), a.getUri());
 									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
 										SPARQL_Value object = triple.getValue();
-//										if(object.isVariable() && object.getName().equals(slot.getAnchor())){//only consider triple where SLOT is in object position
+										if(object.isVariable() && object.getName().equals(slot.getAnchor())){//only consider triple where SLOT is in object position
 //											SPARQL_Property predicate = triple.getProperty();
 //											if(!predicate.isVariable()){//only consider triple where predicate is URI
 //												String predicateURI = predicate.getName().replace("<", "").replace(">", "");
@@ -849,7 +935,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 //											}
 //										} else {
 //										
-//										}
+										}
 									}
 								} else {
 									q.replaceVarWithURI(slot.getAnchor(), a.getUri());
@@ -1306,6 +1392,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		return indexResultItems;
 	}
 	
+	/** Computes candidates for a slot by using an index. * */
 	class SlotProcessor implements Callable<Map<Slot, SortedSet<Allocation>>>{
 
 		private Slot slot;
@@ -1322,7 +1409,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		}
 
 		private SortedSet<Allocation> computeAllocations(Slot slot){
-			logger.debug("Computing allocations for slot: " + slot);
+			logger.trace("Computing allocations for slot: " + slot);
 			SortedSet<Allocation> allocations = new TreeSet<Allocation>();
 
 			Index index = getIndexBySlotType(slot);
@@ -1378,7 +1465,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			normProminenceValues(allocations);
 
 			computeScore(allocations);
-			logger.debug("Found " + allocations.size() + " allocations for slot " + slot);
+			logger.trace(allocations.size() + " allocations for slot " + slot);
 			return new TreeSet<Allocation>(allocations);
 		}
 
