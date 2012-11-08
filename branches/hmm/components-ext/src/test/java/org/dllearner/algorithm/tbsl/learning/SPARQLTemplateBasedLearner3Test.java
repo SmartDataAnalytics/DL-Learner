@@ -115,31 +115,32 @@ import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 // problem mit "In/IN which/WDT films/NNS did/VBD Julia/NNP Roberts/NNP as/RB well/RB as/IN Richard/NNP Gere/NNP play/NN"
 public class SPARQLTemplateBasedLearner3Test
 {
-	private static final boolean	USE_HMM	= false;
-	private static final File evaluationFolder = new File("cache/evaluation");
-	private static final boolean	DBPEDIA_PRETAGGED	= true;
-	private static final boolean	OXFORD_PRETAGGED	= false;
-	private static final int MAX_NUMBER_OF_QUESTIONS = Integer.MAX_VALUE;	
-	private static final boolean WHITELIST_ONLY = false;
-	private static final Set<Integer> WHITELIST = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(new Integer[] {4})));
-	private static final boolean	GENERATE_HTML_ONLY	= false;
+	protected static final boolean	USE_HMM	= false;
+	protected static final File evaluationFolder = new File("cache/evaluation");
+	protected static final boolean	DBPEDIA_PRETAGGED	= true;
+	protected static final boolean	OXFORD_PRETAGGED	= false;
+	protected static final int MAX_NUMBER_OF_QUESTIONS = Integer.MAX_VALUE;	
+	protected static final boolean WHITELIST_ONLY = false;
+	protected static final Set<Integer> WHITELIST = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(new Integer[] {4})));
+	protected static final boolean	GENERATE_HTML_ONLY	= false;
+	protected static final int	MAX_THREADS	= 10;
 
 	@Test public void testDBpedia() throws Exception
 	{
 		File file = generateTestDataIfNecessary(
 				new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
-				SparqlEndpoint.getEndpointDBpedia(),
+				SparqlEndpoint.getEndpointDBpediaLiveAKSW(),
 				dbpediaLiveCache);
 		test("QALD 2 Benchmark ideally tagged", file,SparqlEndpoint.getEndpointDBpedia(),dbpediaLiveCache,dbpediaLiveKnowledgebase,null,null,DBPEDIA_PRETAGGED);
 	}
 
-	//	private char[] hmmHtmlRow(String question, String string, String string2, String string3, Set<String> set, Set<String> set2,
+	//	protected char[] hmmHtmlRow(String question, String string, String string2, String string3, Set<String> set, Set<String> set2,
 	//			Set<String> set3, LearnStatus learnStatus, LearnStatus learnStatus2)
 	//	{
 	//		return null;
 	//	}
 
-	private static boolean probablySparqlSelectQuery(String s)
+	protected static boolean probablySparqlSelectQuery(String s)
 	{
 		s=s.toLowerCase();
 		return s.contains("select")&&s.contains("{")&&s.contains("}");
@@ -149,7 +150,7 @@ public class SPARQLTemplateBasedLearner3Test
 	 * transformed by escaping HTML characters, setting fixed width on SPARQL queries and shortening and linking of dbpedia resource URIs.  
 	 */
 	// unescaped form from the top: <tr><td>t(o_1)</td>...<td>t(o_n)</td></tr>
-	private static String htmlTableTr(Object... tds)
+	protected static String htmlTableTr(Object... tds)
 	{
 		System.out.println();
 		StringBuilder sb = new StringBuilder();		
@@ -461,7 +462,7 @@ public class SPARQLTemplateBasedLearner3Test
 				learnedTestData.write();*/
 			}
 
-	private File generateTestDataIfNecessary(final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException
+	protected File generateTestDataIfNecessary(final File referenceXML,final  SparqlEndpoint endpoint,ExtractionDBCache cache) throws ParserConfigurationException, SAXException, IOException, TransformerException
 	{
 		String dir = "cache/"+getClass().getSimpleName()+"/";
 		new File(dir).mkdirs();
@@ -475,7 +476,7 @@ public class SPARQLTemplateBasedLearner3Test
 		return updatedReferenceXML;
 	}
 
-	private void evaluateAndWrite(String title,final File updatedReferenceXML, final  SparqlEndpoint endpoint,ExtractionDBCache cache,
+	protected void evaluateAndWrite(String title,final File updatedReferenceXML, final  SparqlEndpoint endpoint,ExtractionDBCache cache,
 			Knowledgebase kb, Model model, MappingBasedIndex index,boolean pretagged)
 	{
 
@@ -498,7 +499,7 @@ public class SPARQLTemplateBasedLearner3Test
 	 * @param reference the test data assumed to be correct. needs to contain the answers for all queries.
 	 * @param suspect the test data to compare with the reference.
 	 * if a query for a question does not match and the answers are not provided or don't match as well then the question is marked as incorrectly answered.*/
-	private static Evaluation evaluate(QueryTestData reference, QueryTestData suspect)
+	protected static Evaluation evaluate(QueryTestData reference, QueryTestData suspect)
 	{
 		//		Diff d = diffTestData(reference,testData);	
 		Evaluation evaluation = new Evaluation(suspect,reference);
@@ -560,7 +561,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 	static class Evaluation implements Serializable
 	{		
-		private static final long	serialVersionUID	= 6L;
+		protected static final long	serialVersionUID	= 6L;
 		final QueryTestData testData;
 		final QueryTestData referenceData;
 		int numberOfQuestions = 0;
@@ -640,7 +641,7 @@ public class SPARQLTemplateBasedLearner3Test
 			return evaluations;
 		}
 
-		private static Evaluation read(File file)
+		protected static Evaluation read(File file)
 		{
 			try
 			{
@@ -739,7 +740,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 		public final Type type;
 
-		private static final long	serialVersionUID	= 1L;
+		protected static final long	serialVersionUID	= 1L;
 		public static final LearnStatus OK = new LearnStatus(Type.OK,null);
 		public static final LearnStatus TIMEOUT = new LearnStatus(Type.TIMEOUT,null);
 		public static final LearnStatus NO_TEMPLATE_FOUND = new LearnStatus(Type.NO_TEMPLATE_FOUND,null);
@@ -748,7 +749,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 		public final Exception exception;
 
-		private LearnStatus(Type type, Exception exception) {this.type=type;this.exception = exception;}
+		protected LearnStatus(Type type, Exception exception) {this.type=type;this.exception = exception;}
 
 		public static LearnStatus exceptionStatus(Exception cause)
 		{
@@ -782,7 +783,7 @@ public class SPARQLTemplateBasedLearner3Test
 	 * @throws MalformedURLException
 	 * @throws ComponentInitException
 	 */
-	private QueryTestData generateTestDataMultiThreaded(SortedMap<Integer, String> id2Question,Knowledgebase kb,Model model, MappingBasedIndex index,boolean pretagged)
+	protected QueryTestData generateTestDataMultiThreaded(SortedMap<Integer, String> id2Question,Knowledgebase kb,Model model, MappingBasedIndex index,boolean pretagged)
 	{
 		QueryTestData testData = new QueryTestData();
 		testData.hmm = USE_HMM;
@@ -797,7 +798,7 @@ public class SPARQLTemplateBasedLearner3Test
 		Map<Integer,Future<LearnStatus>> futures = new HashMap<Integer,Future<LearnStatus>>();
 
 		//		List<FutureTask> todo = new ArrayList<FutureTask>(id2Question.size());
-		ExecutorService service = Executors.newCachedThreadPool();// newFixedThreadPool(1);
+		ExecutorService service = Executors.newFixedThreadPool(MAX_THREADS);
 
 		for(int i: id2Question.keySet())
 		{//if(i != 78)continue;
@@ -809,7 +810,7 @@ public class SPARQLTemplateBasedLearner3Test
 			String question = id2Question.get(i);
 			try
 			{
-				testData.id2LearnStatus.put(i,futures.get(i).get(30, TimeUnit.MINUTES));				
+				testData.id2LearnStatus.put(i,futures.get(i).get(30, TimeUnit.SECONDS));				
 			}
 			catch (InterruptedException e)
 			{
@@ -868,7 +869,7 @@ public class SPARQLTemplateBasedLearner3Test
 	 * @throws SAXException 
 	 * @throws TransformerException 
 	 */
-	private void generateUpdatedXML(File originalFile, File updatedFile,SparqlEndpoint endpoint, ExtractionDBCache cache,Model model) throws ParserConfigurationException, SAXException, IOException, TransformerException
+	protected void generateUpdatedXML(File originalFile, File updatedFile,SparqlEndpoint endpoint, ExtractionDBCache cache,Model model) throws ParserConfigurationException, SAXException, IOException, TransformerException
 	{
 		logger.info(String.format("Updating question file \"%s\" by removing questions without nonempty resource list answer and adding answers.\n" +
 				" Saving the result to file \"%s\"",originalFile.getPath(),updatedFile.getPath()));
@@ -951,31 +952,30 @@ public class SPARQLTemplateBasedLearner3Test
 		//		}
 	}
 
-
 	int correctMatches = 0;
 	int numberOfNoTemplateFoundExceptions = 0;
 	int numberOfOtherExceptions = 0;
 	//	int successfullTestThreadRuns = 0;
 
 	/** */
-	//	private static final String DBPEDIA_LIVE_ENDPOINT_URL_STRING	= "http://live.dbpedia.org/sparql";
+	//	protected static final String DBPEDIA_LIVE_ENDPOINT_URL_STRING	= "http://live.dbpedia.org/sparql";
 
 	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner3Test.class);
 
-	//	private SPARQLTemplateBasedLearner2 oxfordLearner;
-	//	private SPARQLTemplateBasedLearner2 dbpediaLiveLearner;
+	//	protected SPARQLTemplateBasedLearner2 oxfordLearner;
+	//	protected SPARQLTemplateBasedLearner2 dbpediaLiveLearner;
 
-	//	private final ExtractionDBCache oxfordCache = new ExtractionDBCache("cache");
-	private final static ExtractionDBCache dbpediaLiveCache = new ExtractionDBCache("cache");
+	//	protected final ExtractionDBCache oxfordCache = new ExtractionDBCache("cache");
+	protected final static ExtractionDBCache dbpediaLiveCache = new ExtractionDBCache("cache");
 
-	private final Knowledgebase dbpediaLiveKnowledgebase = createDBpediaLiveKnowledgebase(dbpediaLiveCache);
+	protected final Knowledgebase dbpediaLiveKnowledgebase = createDBpediaLiveKnowledgebase(dbpediaLiveCache);
 
 	static final SparqlEndpoint dbpediaLiveEndpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	//static SparqlEndpoint oxfordEndpoint;
 
-	//	private ResultSet executeDBpediaLiveSelect(String query){return SparqlQuery.convertJSONtoResultSet(dbpediaLiveCache.executeSelectQuery(dbpediaLiveEndpoint, query));}
+	//	protected ResultSet executeDBpediaLiveSelect(String query){return SparqlQuery.convertJSONtoResultSet(dbpediaLiveCache.executeSelectQuery(dbpediaLiveEndpoint, query));}
 
-	private static boolean httpResponseOK(String url) throws MalformedURLException, IOException
+	protected static boolean httpResponseOK(String url) throws MalformedURLException, IOException
 	{		
 		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 		connection.setRequestMethod("HEAD");
@@ -1041,7 +1041,7 @@ public class SPARQLTemplateBasedLearner3Test
 		testIndex(dbpedia.getPropertyIndex(),new String[][] {{"born in","http://dbpedia.org/ontology/birthPlace"}});
 	}
 
-	private static Knowledgebase createDBpediaLiveKnowledgebase(ExtractionDBCache cache)
+	protected static Knowledgebase createDBpediaLiveKnowledgebase(ExtractionDBCache cache)
 	{		
 
 		//		for(String url : new String[] {resourcesURL,classesURL,propertiesURL,boaPropertiesURL})
@@ -1138,7 +1138,7 @@ public class SPARQLTemplateBasedLearner3Test
 		return uris;
 	}
 
-	private static String urlDecode(String url){
+	protected static String urlDecode(String url){
 		String decodedURL = null;
 		try {
 			decodedURL = URLDecoder.decode(url, "UTF-8");
@@ -1150,7 +1150,7 @@ public class SPARQLTemplateBasedLearner3Test
 	}
 
 
-	//	private ResultSet executeOxfordSelect(String query){return SparqlQuery.convertJSONtoResultSet(oxfordCache.executeSelectQuery(oxfordEndpoint, query));}
+	//	protected ResultSet executeOxfordSelect(String query){return SparqlQuery.convertJSONtoResultSet(oxfordCache.executeSelectQuery(oxfordEndpoint, query));}
 
 	//	@Test public void benchmarkCreateOxfordKnowledgeBase()
 	//	{
@@ -1164,7 +1164,7 @@ public class SPARQLTemplateBasedLearner3Test
 	//		System.out.println(diff+" millis as a whole, "+diff/1000.0+" millis per run");
 	//	}
 
-	//		private Knowledgebase createOxfordKnowledgebase(ExtractionDBCache cache)
+	//		protected Knowledgebase createOxfordKnowledgebase(ExtractionDBCache cache)
 	//		{
 	//			URL url;
 	//			try{url = new URL("http://lgd.aksw.org:8900/sparql");} catch(Exception e) {throw new RuntimeException(e);}
@@ -1186,19 +1186,19 @@ public class SPARQLTemplateBasedLearner3Test
 	//		}
 	/** @author konrad
 	 * Learns a query for a question and puts it into the given testData object. * */
-	private static class LearnQueryCallable implements Callable<LearnStatus>
+	protected static class LearnQueryCallable implements Callable<LearnStatus>
 	{
-		private final String question;
-		//		private final String endpoint;
-		private final int id;
-		private final QueryTestData testData;
+		protected final String question;
+		//		protected final String endpoint;
+		protected final int id;
+		protected final QueryTestData testData;
 
-		static private class POSTaggerHolder
+		static protected class POSTaggerHolder
 		{static public final PartOfSpeechTagger posTagger = new SynchronizedStanfordPartOfSpeechTagger();}
 
-		static private final WordNet wordnet = new WordNet();
-		static private final Options options = new Options();	
-		private final SPARQLTemplateBasedLearner2 learner;
+		static protected final WordNet wordnet = new WordNet();
+		static protected final Options options = new Options();	
+		protected final SPARQLTemplateBasedLearner2 learner;
 
 		public LearnQueryCallable(String question, int id, QueryTestData testData, Knowledgebase knowledgeBase,boolean pretagged)
 		{
@@ -1294,9 +1294,9 @@ public class SPARQLTemplateBasedLearner3Test
 		return sb.toString();
 	}
 
-	private static String escapePre(String s) {return s.replace("<", "&lt;").replace(">", "&gt;");}
+	protected static String escapePre(String s) {return s.replace("<", "&lt;").replace(">", "&gt;");}
 
-	private static String getAnswerHTMLList(String[] answers)
+	protected static String getAnswerHTMLList(String[] answers)
 	{
 		StringBuilder sbAnswers = new StringBuilder();					
 		final int MAX = 10;
@@ -1327,7 +1327,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 	/** Generates the HTML string content for one of the 4 colored bars which represent the correctly, incorrectly and unanswered question.
 	 * Also creates and links to a file which contains the questions.*/
-	private static String createColoredColumn(/*@NonNull*/ File link,/*@NonNull*/ String title,/*@NonNull*/ String color,/*@NonNull*/ Collection<String> questions, int numberOfQuestionsTotal, boolean queriesAvailable,boolean jaccard, Evaluation evaluation)
+	protected static String createColoredColumn(/*@NonNull*/ File link,/*@NonNull*/ String title,/*@NonNull*/ String color,/*@NonNull*/ Collection<String> questions, int numberOfQuestionsTotal, boolean queriesAvailable,boolean jaccard, Evaluation evaluation)
 	{				
 		final StringBuilder sb = new StringBuilder();
 		sb.append("<a href='"+link.getAbsolutePath()+"' title='"+title+" ("+questions.size()+"/"+(numberOfQuestionsTotal==0?"":numberOfQuestionsTotal)+")'>");
@@ -1465,13 +1465,13 @@ public class SPARQLTemplateBasedLearner3Test
 		}
 		catch (Exception e){throw new RuntimeException(e);}				
 	}
-	//	private void updateFile(File originalFile, File updatedFile, String endpoint)
+	//	protected void updateFile(File originalFile, File updatedFile, String endpoint)
 	//	{
 	//
 	//
 	//	}
 
-	//	private void test(File file) throws MalformedURLException, InterruptedException
+	//	protected void test(File file) throws MalformedURLException, InterruptedException
 	//	{
 	//		SortedMap<Integer, String> id2Question = new TreeMap<Integer, String>();
 	//		SortedMap<Integer, String> id2Query = new TreeMap<Integer, String>();
@@ -1547,5 +1547,5 @@ public class SPARQLTemplateBasedLearner3Test
 	//		//fail("Not yet implemented");
 	//	}
 
-	private static ResultSet executeSelect(SparqlEndpoint endpoint, String query,  ExtractionDBCache cache){return SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));}
+	protected static ResultSet executeSelect(SparqlEndpoint endpoint, String query,  ExtractionDBCache cache){return SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));}
 }

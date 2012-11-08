@@ -76,6 +76,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.ini4j.Options;
+import org.openjena.atlas.logging.Log;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -654,26 +655,8 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		if(templates.isEmpty()) throw new AssertionError("no templates");
 		templates = goodTemplates(templates);
 		if(templates.isEmpty()) throw new AssertionError("no good templates");
-		
-		Map<Slot, Set<Allocation>> slot2Allocations = new TreeMap<Slot, Set<Allocation>>(new Comparator<Slot>() {
-
-			@Override
-			public int compare(Slot o1, Slot o2) {
-				System.err.println(o1.getToken());
-				System.err.println(o2.getToken());
-				if(o1.getToken().equalsIgnoreCase("river")||o2.getToken().equalsIgnoreCase("river"))
-				{
-					int nop = 5;
-					System.err.println(nop);
-				}
-				if(o1.getSlotType() == o2.getSlotType()){
-					return o1.getToken().compareTo(o2.getToken());
-				} else {
-					return -1;
-				}
-			}
-		});
-//		slot2Allocations = Collections.synchronizedMap(slot2Allocations);
+		logger.debug(templates.size()+" good templates found.");
+		Map<Slot, Set<Allocation>> slot2Allocations = Collections.synchronizedSortedMap(new TreeMap<Slot, Set<Allocation>>());
 
 		SortedSet<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
 		
@@ -725,31 +708,25 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 //			Set<Allocation> allocations = new TreeSet<Allocation>();
 			boolean containsRegex = t.getQuery().toString().toLowerCase().contains("(regex(");
 
-			ExecutorService executor =  Executors.newSingleThreadExecutor();//Executors.newFixedThreadPool(t.getSlots().size());
-			List<Future<Map<Slot, SortedSet<Allocation>>>> list = new ArrayList<Future<Map<Slot, SortedSet<Allocation>>>>();
+			ExecutorService executor =  Executors.newSingleThreadExecutor();//Executors.newFixedThreadPool(t.getSlots().size());			
 
 			long startTime = System.currentTimeMillis();
-
+			Map<Future,Slot> futureToSlot = new HashMap<Future,Slot>();
+			
 			for (Slot slot : t.getSlots()) {
 				if(!slot2Allocations.containsKey(slot)){
-					Callable<Map<Slot, SortedSet<Allocation>>> worker = new SlotProcessor(slot);
-					Future<Map<Slot, SortedSet<Allocation>>> submit = executor.submit(worker);
-					list.add(submit);
+					Callable<SortedSet<Allocation>> worker = new SlotProcessor(slot);
+					Future<SortedSet<Allocation>> submit = executor.submit(worker);
+					futureToSlot.put(submit, slot);
 				} 
 			}
 
-			for (Future<Map<Slot, SortedSet<Allocation>>> future : list) {
+			for (Future<SortedSet<Allocation>> future : futureToSlot.keySet())
+			{
 				try {
-					Map<Slot, SortedSet<Allocation>> result = future.get();
-
-					Entry<Slot, SortedSet<Allocation>> item = result.entrySet().iterator().next();		
-					slot2Allocations.put(item.getKey(), item.getValue());
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-//					e.printStackTrace();
-					throw new RuntimeException(e);
-				}
+					SortedSet<Allocation> result = future.get();						
+					slot2Allocations.put(futureToSlot.get(future), result);
+				} catch (InterruptedException e) {e.printStackTrace();} catch (ExecutionException e) {e.printStackTrace();throw new RuntimeException(e);}
 			}
 
 			executor.shutdown();
@@ -1393,19 +1370,18 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 	
 	/** Computes candidates for a slot by using an index. * */
-	class SlotProcessor implements Callable<Map<Slot, SortedSet<Allocation>>>{
-
-		private Slot slot;
+	class SlotProcessor implements Callable<SortedSet<Allocation>>
+	{
+		public final Slot slot;
 
 		public SlotProcessor(Slot slot) {
 			this.slot = slot;
 		}
 
 		@Override
-		public Map<Slot, SortedSet<Allocation>> call() throws Exception {
-			Map<Slot, SortedSet<Allocation>> result = new HashMap<Slot, SortedSet<Allocation>>();
-			result.put(slot, computeAllocations(slot));
-			return result;
+		public SortedSet<Allocation> call() throws Exception
+		{
+			return computeAllocations(slot);
 		}
 
 		private SortedSet<Allocation> computeAllocations(Slot slot){
