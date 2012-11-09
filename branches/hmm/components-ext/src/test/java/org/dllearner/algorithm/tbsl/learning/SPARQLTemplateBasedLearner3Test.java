@@ -115,15 +115,15 @@ import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 // problem mit "In/IN which/WDT films/NNS did/VBD Julia/NNP Roberts/NNP as/RB well/RB as/IN Richard/NNP Gere/NNP play/NN"
 public class SPARQLTemplateBasedLearner3Test
 {
-	protected static final boolean	USE_HMM	= true;
+	protected static final boolean	USE_HMM	= false;
 	protected static final File evaluationFolder = new File("cache/evaluation");
 	protected static final boolean	DBPEDIA_PRETAGGED	= true;
 	protected static final boolean	OXFORD_PRETAGGED	= false;
-	protected static final int MAX_NUMBER_OF_QUESTIONS = 100;	
+	protected static final int MAX_NUMBER_OF_QUESTIONS = Integer.MAX_VALUE;	
 	protected static final boolean WHITELIST_ONLY = false;
 	protected static final Set<Integer> WHITELIST = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(new Integer[] {4})));
 	protected static final boolean	GENERATE_HTML_ONLY	= false;
-	protected static final int	MAX_THREADS	= 10;
+	protected static final int	MAX_THREADS	= 1;
 
 	/*@Test*/ public void testDBpedia() throws Exception
 	{
@@ -252,7 +252,7 @@ public class SPARQLTemplateBasedLearner3Test
 		out.close();
 	}
 
-	@Test public void testOxford() throws Exception
+	/*@Test*/ public void testOxford() throws Exception
 	{
 		File file = new File(getClass().getClassLoader().getResource("tbsl/evaluation/oxford_working_questions.xml").getFile());
 		test("Oxford 19 working questions", file,null,null,null,loadOxfordModel(),getOxfordMappingIndex(),OXFORD_PRETAGGED);
@@ -318,19 +318,16 @@ public class SPARQLTemplateBasedLearner3Test
 		logger.info("learned query: "+testData.id2Query.get(0));
 	}
 
-	/*@Test*/  @SuppressWarnings("null") public void generateXMLOxford() throws IOException
-	{
+	@Test  @SuppressWarnings("null") public void generateXMLOxford() throws IOException
+	{		
 		boolean ADD_POS_TAGS = true;
 		PartOfSpeechTagger posTagger = null;
 		if(ADD_POS_TAGS) {posTagger=new StanfordPartOfSpeechTagger();}
 		Model model = loadOxfordModel();
 		List<String> questions = new LinkedList<String>();
 		BufferedReader in = new BufferedReader((new InputStreamReader(getClass().getClassLoader().getResourceAsStream("tbsl/oxford_eval_queries.txt"))));
-		int j=0;
 		for(String line;(line=in.readLine())!=null;)
 		{
-			j++;
-			if(j>5) break; // TODO: remove later
 			String question = line.replace("question: ", "").trim();
 			if(ADD_POS_TAGS&&!OXFORD_PRETAGGED) {question = posTagger.tag(question);}
 			if(!line.trim().isEmpty()) {questions.add(question);}
@@ -340,9 +337,13 @@ public class SPARQLTemplateBasedLearner3Test
 		Iterator<String> it = questions.iterator();
 		for(int i=0;i<questions.size();i++) {id2Question.put(i, it.next());}
 		MappingBasedIndex mappingIndex= getOxfordMappingIndex();
+		logger.info("generating sparql queries for questions");
 		QueryTestData testData = generateTestDataMultiThreaded(id2Question, null,model,mappingIndex,ADD_POS_TAGS||OXFORD_PRETAGGED);
+		logger.info("generating answers for sparql queries");
 		testData.generateAnswers(null, null, model);
+		logger.info("writing test data to benchmark file");
 		testData.writeQaldXml(new File("log/test.xml"));
+		logger.info("finished generating oxford benchmark file, "+testData.id2Question.values().size()+"questions, "+testData.id2Query.size()+" SPARQL queries, "+testData.id2Answers.size()+" answers.");
 	}
 
 	public static MappingBasedIndex getOxfordMappingIndex()
