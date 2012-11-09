@@ -96,7 +96,7 @@ import com.jamonapi.MonitorFactory;
 public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 {
 	/** synonyms are great but are not used yet by the HMM algorithm. **/
-	private static final boolean	HMM_USE_SYNONYMS	= true;
+	private static final boolean	HMM_USE_SYNONYMS	= false;
 		/** The minimum score of items that are accepted from the Sindice search BOA index. **/
 	private static final Double	BOA_THRESHOLD	=  0.5;
 	enum Mode {BEST_QUERY, BEST_NON_EMPTY_QUERY}

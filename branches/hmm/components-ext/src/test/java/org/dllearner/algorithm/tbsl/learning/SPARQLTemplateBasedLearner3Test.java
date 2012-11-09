@@ -115,17 +115,17 @@ import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 // problem mit "In/IN which/WDT films/NNS did/VBD Julia/NNP Roberts/NNP as/RB well/RB as/IN Richard/NNP Gere/NNP play/NN"
 public class SPARQLTemplateBasedLearner3Test
 {
-	protected static final boolean	USE_HMM	= false;
+	protected static final boolean	USE_HMM	= true;
 	protected static final File evaluationFolder = new File("cache/evaluation");
 	protected static final boolean	DBPEDIA_PRETAGGED	= true;
 	protected static final boolean	OXFORD_PRETAGGED	= false;
-	protected static final int MAX_NUMBER_OF_QUESTIONS = Integer.MAX_VALUE;	
+	protected static final int MAX_NUMBER_OF_QUESTIONS = 100;	
 	protected static final boolean WHITELIST_ONLY = false;
 	protected static final Set<Integer> WHITELIST = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(new Integer[] {4})));
 	protected static final boolean	GENERATE_HTML_ONLY	= false;
 	protected static final int	MAX_THREADS	= 10;
 
-	@Test public void testDBpedia() throws Exception
+	/*@Test*/ public void testDBpedia() throws Exception
 	{
 		File file = generateTestDataIfNecessary(
 				new File(getClass().getClassLoader().getResource("tbsl/evaluation/qald2-dbpedia-train-tagged(ideal).xml").getFile()),
@@ -244,10 +244,6 @@ public class SPARQLTemplateBasedLearner3Test
 		//						"<td><ul>"+getAnswerHTMLList(evaluation.referenceData.id2Answers.get(id).toArray(new String[0]))+"</ul></td>"+
 		//						"<td>"+evaluation.testData.id2LearnStatus.get(id)+"</td></tr>");					
 
-
-
-
-
 		logger.info(questionsOnlyCorrectWithHMM.size()+" questions only correct with hmm, "+
 				questionsOnlyCorrectWithoutHMM.size()+" questions only correct without hmm");
 
@@ -256,7 +252,7 @@ public class SPARQLTemplateBasedLearner3Test
 		out.close();
 	}
 
-	/*@Test*/ public void testOxford() throws Exception
+	@Test public void testOxford() throws Exception
 	{
 		File file = new File(getClass().getClassLoader().getResource("tbsl/evaluation/oxford_working_questions.xml").getFile());
 		test("Oxford 19 working questions", file,null,null,null,loadOxfordModel(),getOxfordMappingIndex(),OXFORD_PRETAGGED);
@@ -362,39 +358,37 @@ public class SPARQLTemplateBasedLearner3Test
 	public static Model loadOxfordModel()
 	{
 		// load it into a model because we can and it's faster and doesn't rely on endpoint availability
-		// the files are located in the paper svn under question-answering-iswc-2012/data
+		// the files are located in the paper svn under http://diadem.cs.ox.ac.uk/svn/papers/oxpath/question-answering-iswc-2012/data/ and data_v2
 		// ls *ttl | xargs -I @ echo \"@\",
+		//find -type f | sed -r "s|\./(.*)|\"\1\",|"
 		final String[] rdf = {
-				"abbeys-sales-triple.ttl",
-				"andrewsonline-sales-triple.ttl",
-				"anker-sales-triple.ttl",
-				"bairstoweves-sales-triple.ttl",
-				"ballards-sales-triple.ttl",
-				"breckon-sales-triple.ttl",
-				"buckellandballard-sales-triple.ttl",
-				"carterjonas-sales.ttl",
-				"churchgribben-salse-triple.ttl",
-				"findaproperty-sales-triple.ttl",
-				"johnwood-sales-triple.ttl",
-				"martinco-letting-triples.ttl",
-				"scottfraser-letting-triples.ttl",
-				"scottfraser-sales-triples.ttl",
-				"scottsymonds-sales-triple.ttl",
-				"scrivenerandreinger-sales-triple.ttl",
-				"sequencehome-sales-triple.ttl",
-				"teampro-sales.ttl",
-				"thomasmerrifield-sales-triples.ttl",
-				"wwagency-letting-triple_with-XSD.ttl",
-				"wwagency-sales-triple_with-XSD.ttl",
-				// ls links/*ttl | xargs -I @ echo \"@\",
-				"links/allNear.ttl",
-				"links/all_walking_distance.ttl",
-				"links/lgd_data.ttl",
-				// ls schema/* | xargs -I @ echo \"@\",
-				"schema/goodRelations.owl",
-				"schema/LGD-Dump-110406-Ontology.nt",
-				"schema/ontology.ttl",
-				"schema/vCard.owl"
+		"andrewsonline-sales-triple.ttl",
+		"johnwood-sales-triple.ttl",
+		"wwagency.ttl",
+		"findaproperty-sales-triple.ttl",
+		"carterjonas-sales.ttl",
+		"breckon.ttl",
+		"sequencehome.ttl",
+		"schema/ontology.ttl",
+		"schema/goodRelations.owl",
+		"schema/vCard.owl",
+		"schema/LGD-Dump-110406-Ontology.nt",
+		"hodson.ttl",
+		"thomasmerrifield.ttl",
+		"churchgribben.ttl",
+		"bairstoweves-sales-triple.ttl",
+		"anker.ttl",
+		"martinco-letting-triples.ttl",
+		"scrivenerandreinger.ttl",
+		"ballards.ttl",
+		"teamprop.ttl",
+		"abbeys-sales-triple.ttl",
+		"links/ontology.ttl",
+		"links/lgd_data.ttl",
+		"links/allNear.ttl",
+		"links/all_walking_distance.ttl",
+		"scottsymonds.ttl",
+		"scottfraser.ttl"
 		};
 		Model m = ModelFactory.createDefaultModel();
 		for(final String s:rdf)
@@ -810,7 +804,7 @@ public class SPARQLTemplateBasedLearner3Test
 			String question = id2Question.get(i);
 			try
 			{
-				testData.id2LearnStatus.put(i,futures.get(i).get(30, TimeUnit.SECONDS));				
+				testData.id2LearnStatus.put(i,futures.get(i).get(USE_HMM?120:30, TimeUnit.SECONDS));				
 			}
 			catch (InterruptedException e)
 			{

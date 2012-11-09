@@ -196,5 +196,4 @@ public class Slot implements Serializable, Comparable<Slot> {
 //		}
 	}
 	
-	
 }
