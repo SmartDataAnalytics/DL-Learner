@@ -23,7 +23,6 @@ dd:g13g1
       gr:includes dd:g13g4 ;
       foaf:page "http://www.findaproperty.com/for-sale/property-11695435" .
 
-
 dd:g13g4
       a       dd:House ;
       dd:bedrooms 1 ;

@@ -1,0 +1,1179 @@
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix huhu:    <http://google.com/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix lulu:    <http://loolge.com/> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+dd:v1743291232485413c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Kelburne Road, Oxford
+                    This extended and recently refurbished 1930's semi detached house is offered for sale with lots of benefits including three bedrooms, two reception rooms, driveway leading to the garage and off road parking to the front of the property."""^^xsd:string ;
+      gr:name "Kelburne Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102199_IMG_00.jpg" .
+
+dd:v1743291241579370c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Warburg Crescent, Oxford
+                    Allen & Harris are pleased to Offer to the Market this Two Bedroom First Floor Flat in Blackbird Leys. Accommodation comprises Entrance Hall, Lounge, Kitchen, Two Bedrooms and Bathroom."""^^xsd:string ;
+      gr:name "Warburg Crescent, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102194_IMG_00.jpg" .
+
+dd:v1743291233167306c
+      gr:includes dd:v1743291233218956c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102186&src=1&index=25&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291243547020c
+      gr:includes dd:v1743291243595126c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI102905&src=1&index=67&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291233455640c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Redmoor Close, Oxford
+                    This well presented Four Bedroom Semi Detached House in Littlemore would make an ideal Family Home with Lounge, Kitchen/Diner, Utility Room & Cloakroom downstairs, Four Bedrooms and Bathroom upstairs. Front and Rear Garden with Driveway Parking for Two Cars."""^^xsd:string ;
+      gr:name "Redmoor Close, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102162_IMG_00.jpg" .
+
+dd:v1743291232237869c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Herschel Crescent, Oxford
+                    From Allen and Harris: This well presented spacious family home offers two reception rooms, an extended kitchen, three bedrooms, family bathroom and a good sized rear garden with garage. We would recommend a viewing."""^^xsd:string ;
+      gr:name "Herschel Crescent, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102206_IMG_00.jpg" .
+
+dd:v1743291237641243c
+      gr:includes dd:v1743291237692492c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101882&src=1&index=43&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291231509945c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Croft Road, Marston, Oxford
+                    Offered to the market this four bedroom property in Marston. It has recently been extended to include a 21ft refitted kitchen/dining room. Conveniently located to local schools and amenities with great bus routes to Oxford City centre. For sale with NO ONWARD CHAIN."""^^xsd:string ;
+      gr:name "Croft Road, Marston, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Marston, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101863_IMG_00.jpg" .
+
+dd:v1743291229259294c
+      gr:includes dd:v1743291229325020c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH100741&src=1&index=7&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291240777468c
+      gr:includes dd:v1743291240834341c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102185&src=1&index=55&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291241081445c
+      a       dd:House ;
+      dd:bedrooms "1"^^xsd:int ;
+      gr:description """Appletree Close, Oxford
+                    This super coach house is the perfect compromise for anyone looking for a detached property, with a garden, garage and spacious living accommodation! Situated in Greater Leys, this lovely property is tucked away in a cul-de-sac, and is presented in very good condition throughout."""^^xsd:string ;
+      gr:name "Appletree Close, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102244_IMG_00.jpg" .
+
+dd:v1743291238454368c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Field Avenue, Oxford
+                    This fantastic property would make an ideal family home. Situated in Blackbird Leys, the property is presented in very good condition throughout. There is an attractive rear garden, along with spacious living accommodation and three good sized bedrooms."""^^xsd:string ;
+      gr:name "Field Avenue, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102214_IMG_00.jpg" .
+
+dd:v1743291233218956c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Kelburne Road, Oxford
+                    This three bedroom semi detached house has been extended to provide an additional room with en- suite facility, which could be used as a fourth bedroom, study or third reception room. The property has a beautiful rear garden, and driveway parking to the front."""^^xsd:string ;
+      gr:name "Kelburne Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102186_IMG_00.jpg" .
+
+dd:v1743291238172934c
+      gr:includes dd:v1743291238223091c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102242&src=1&index=43&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291238646455c
+      gr:includes dd:v1743291238697328c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101841&src=1&index=43&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291240558591c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Pulker Close, Oxford
+                    This two bedroom ground floor apartment is situated within walking distance of Cowley centre. The property is double glazed throughout, and backs on to a beautiful communal garden. There is no onward chain."""^^xsd:string ;
+      gr:name "Pulker Close, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102239_IMG_00.jpg" .
+
+dd:v1743291235503965c
+      gr:includes dd:v1743291235553522c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI102997&src=1&index=31&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291235068507c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Allin Close, Oxford
+                    An excellent opportunity to purchase this four bedroom end terrace family home close to local bus routes into Oxford City Centre. The property offers lounge/diner, kitchen, utility room, cloakroom, en-suite to master and family bathroom. Other features include double glazing and gardens."""^^xsd:string ;
+      gr:name "Allin Close, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102192_IMG_00.jpg" .
+
+dd:v1743291242018102c
+      gr:includes dd:v1743291242068793c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102100&src=1&index=61&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291241284318c
+      gr:includes dd:v1743291241335204c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102197&src=1&index=55&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291237983172c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Brocklesby Road, Oxford
+                    This good size Semi-Detached House in Littlemore is Offered For Sale with No Onward Chain. Benefits include Downstairs Cloakroom, Large Rear Garden and Of Road Parking to the front for circa 4 Cars."""^^xsd:string ;
+      gr:name "Brocklesby Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102105_IMG_00.jpg" .
+
+dd:v1743291236520355c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Medhurst Way, Littlemore, Oxford
+                    Medhurst Way is an attractive development in Littlemore within easy reach of the Ring Road and A34. This great ground floor apartment has two bedrooms with en-suite to the master, lounge/dining room, kitchen, bathroom and allocated parking space."""^^xsd:string ;
+      gr:name "Medhurst Way, Littlemore, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Littlemore, Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102149_IMG_00.jpg" .
+
+dd:v1743291239994697c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Copse Lane, Marston, Oxford
+                    Allen & Harris are pleased to offer for sale this two bedroom maisonette located in the popular area of Marston and ideally situated for the John Radcliffe Hospital. The property benefits include living room, bathroom, fitted kitchen and private rear garden."""^^xsd:string ;
+      gr:name "Copse Lane, Marston, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Marston, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101836_IMG_00.jpg" .
+
+dd:v1743291238405575c
+      gr:includes dd:v1743291238454368c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102214&src=1&index=43&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291239465029c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Pulker Close, Oxford
+                    A fantastic opportunity to acquire a spacious, first floor two bedroom duplex apartment located in Cowley. Benefits include double glazed windows, balcony, communal gardens and off road parking. No Onward Chain."""^^xsd:string ;
+      gr:name "Pulker Close, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102201_IMG_00.jpg" .
+
+dd:v1743291226315573c
+      gr:includes dd:v1743291226395621c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101886&src=1&index=7&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291231229669c
+      gr:includes dd:v1743291231277783c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101887&src=1&index=13&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291242068793c
+      a       dd:House ;
+      dd:bedrooms "1"^^xsd:int ;
+      gr:description """Rose Hill, Oxford
+                    Allen & Harris are delighted to Offer for Sale this First Floor Apartment on the the Singletree Development for the over 55's situated just off Rose Hill. The property comprises Entrance Hall, Lounge, Kitchen, Bedroom, Bathroom and communal Gardens. To arrange a viewing call 01865 711441"""^^xsd:string ;
+      gr:name "Rose Hill, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102100_IMG_00.jpg" .
+
+dd:v1743291231045146c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Otters Reach, Kennington, Oxford
+                    Situated in the village of Kennington is this large extended four bedroom semi detached family home. Situated between Abingdon & Oxford. The location of the property is ideal for commuters with Radley & Oxford train stations only a short distance away with its service to Reading & London."""^^xsd:string ;
+      gr:name "Otters Reach, Kennington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Kennington, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI102916_IMG_00.jpg" .
+
+dd:v1743291228393361c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Foster Road, Abingdon
+                    A detached family home offering spacious & flexible accommodation throughout. The property offers four double bedrooms with en-suite to master, two receptions & converted garage providing a third reception/fifth bedroom with w.c. Locally there is excellent schooling, amenities & easy access to A34."""^^xsd:string ;
+      gr:name "Foster Road, Abingdon"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Abingdon" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI103026_IMG_00.jpg" .
+
+dd:v1743291224732165c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Rose Hill, Oxford
+                    This extremely spacious extended three bedroom 1930's house has a range of benefits including an adjoining one bedroom apartment, two large reception rooms, a modern kitchen and bathroom, three large bedrooms, a garage and an well tended rear garden."""^^xsd:string ;
+      gr:name "Rose Hill, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102210_IMG_00.jpg" .
+
+dd:v1743291243064995c
+      gr:includes dd:v1743291243116576c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI102668&src=1&index=67&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291237010537c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Allder Close, Abingdon
+                    A well presented detached family home situated in north Abingdon. Accommodation comprises three bedrooms, sitting/dining room, recently re-fitted kitchen, utility room and bathroom. Further features include easy access for the A34, Oxford and Didcot with it's main line to London."""^^xsd:string ;
+      gr:name "Allder Close, Abingdon"^^xsd:string ;
+      wgs84:lat "51.67018119999999"^^xsd:double ;
+      wgs84:long "-1.2818752"^^xsd:double ;
+      vcard:locality "Abingdon" ;
+      vcard:postal-code "OX14 5BD" ;
+      vcard:street-address
+              "1 High Street ABINGDON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI102943_IMG_00.jpg" .
+
+dd:v1743291243312129c
+      gr:includes dd:v1743291243360820c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102204&src=1&index=67&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291235299826c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Saxon Way, Headington, Oxford
+                    Attractive, purpose built two double bedroom maisonette located in the Headington area. It allows for excellent access to the JR hospital and headington amenities. The property has been finished to a high standard and is offered for sale with No Onward Chain."""^^xsd:string ;
+      gr:name "Saxon Way, Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101864_IMG_00.jpg" .
+
+dd:v1743291236705367c
+      gr:includes dd:v1743291236754499c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102043&src=1&index=37&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291230133338c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Valentia Road, Headington, Oxford
+                    This Semi  Detached House in Headington is Offered For Sale with No Onward Chain and has Three Bedrooms, Kitchen/Diner, Lounge and Off Road Parking to the front. Convenient for Brookes University and local hospitals making it an ideal family home or investment property.  Investors Only."""^^xsd:string ;
+      gr:name "Valentia Road, Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101706_IMG_00.jpg" .
+
+dd:v1743291232669866c
+      gr:includes dd:v1743291232718174c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH101427&src=1&index=19&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291231461525c
+      gr:includes dd:v1743291231509945c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101863&src=1&index=19&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291180972734c
+      gr:includes dd:v1743291185439644c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI103009&src=1&index=1&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291233406699c
+      gr:includes dd:v1743291233455640c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102162&src=1&index=25&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291235981212c
+      gr:includes dd:v1743291236034972c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102223&src=1&index=37&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291230995274c
+      gr:includes dd:v1743291231045146c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI102916&src=1&index=13&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291232718174c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Herschel Crescent, Oxford
+                    This beautifully presented house has been extended to provide a large modern kitchen to the rear, along with a downstairs shower room. There is a spacious living/dining room as well as three bedrooms and family bathroom to the first floor. There is also a private driveway to the front and side."""^^xsd:string ;
+      gr:name "Herschel Crescent, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH101427_IMG_00.jpg" .
+
+dd:v1743291241335204c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Court Farm Road, Oxford
+                    Allen & Harris are pleased to Offer for Sale with No Onward Chain this Three Bedroom End Terrace House in Rose Hill with Off Road Parking to the side for 2-3 cars. The property requires updating and will then make a good family home."""^^xsd:string ;
+      gr:name "Court Farm Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102197_IMG_00.jpg" .
+
+dd:v1743291242384553c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Knights Road, Oxford
+                    Offered to the market a spacious two bedroom flat, situated in Blackbird Leys. Accommodation within comprises of lounge, kitchen, two bedrooms and a bathroom. The flat also offers electric heating and a balcony. This would be an ideal buy to let of investment opportunity."""^^xsd:string ;
+      gr:name "Knights Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH101408_IMG_00.jpg" .
+
+dd:v1743291234765048c
+      gr:includes dd:v1743291234814954c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102240&src=1&index=31&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291239165118c
+      gr:includes dd:v1743291239216537c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH101976&src=1&index=49&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291241826067c
+      a       dd:House ;
+      dd:bedrooms "1"^^xsd:int ;
+      gr:description """Rose Hill, Oxford
+                    Allen & Harris are delighted to offer this ground floor apartment situated in the popular and sought after Singletree Development for the over 55's. The property provides an Entrance Hall, Lounge with access to own Garden, Kitchen, Double Bedroom, Bathroom and communal Gardens."""^^xsd:string ;
+      gr:name "Rose Hill, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101900_IMG_00.jpg" .
+
+dd:v1743291241766884c
+      gr:includes dd:v1743291241826067c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101900&src=1&index=61&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291239692357c
+      gr:includes dd:v1743291239746128c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102198&src=1&index=49&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291233953414c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Gwyneth Road, Oxford
+                    This beautifully presented Semi Detached House in Littlemore has many benefits including Eco Vision Solar Panels, Kitchen/Dining Room, Downstairs Cloakroom, Conservatory with Bi-fold Doors leading to the attractive private rear garden."""^^xsd:string ;
+      gr:name "Gwyneth Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102233_IMG_00.jpg" .
+
+dd:v1743291242333162c
+      gr:includes dd:v1743291242384553c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH101408&src=1&index=61&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291235020192c
+      gr:includes dd:v1743291235068507c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102192&src=1&index=31&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291225175474c
+      gr:includes dd:v1743291225278168c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI103024&src=1&index=7&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291240834341c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """College Lane Flat, Littlemore, Oxford
+                    This beautifully presented and deceptively spacious First Floor Maisonette is well worth viewing! This unusually large property offers two double bedrooms, a fantastic living/dining room with fireplace, modern kitchen & bathroom. There is also a garage and shared rear garden."""^^xsd:string ;
+      gr:name "College Lane Flat, Littlemore, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Littlemore, Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102185_IMG_00.jpg" .
+
+dd:v1743291240291630c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Nowell Road, Oxford
+                    This very well presented recently built Ground Floor Apartment is situated in Rose Hill. The accommodation comprises Open Plan Living Accommodation with French Doors off the Lounge Area, Two Double Bedrooms, Two Bathrooms, Allocated Parking and Communal Gardens."""^^xsd:string ;
+      gr:name "Nowell Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102169_IMG_00.jpg" .
+
+dd:v1743291224145093c
+      gr:includes dd:v1743291224236413c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101718&src=1&index=1&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291236470018c
+      gr:includes dd:v1743291236520355c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102149&src=1&index=37&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291185439644c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Whitecross, Abingdon
+                    A stunning period property situated on a private road just north of Abingdon. Spacious and flexible internal accommodation is complimented by excellent outside space to the front and rear, which is also accessible from the adjoining annexe. A must view!!"""^^xsd:string ;
+      gr:name "Whitecross, Abingdon"^^xsd:string ;
+      wgs84:lat "51.67018119999999"^^xsd:double ;
+      wgs84:long "-1.2818752"^^xsd:double ;
+      vcard:locality "Abingdon" ;
+      vcard:postal-code "OX14 5BD" ;
+      vcard:street-address
+              "1 High Street ABINGDON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI103009_IMG_00.jpg" .
+
+dd:v1743291230809965c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Mathews Way, Wootton, Abingdon
+                    Situated in the village of Wootton is this extended semi detached family home. Offering excellent access to local amenities & bus routes for Abingdon & Oxford. The property boasts three good size reception rooms, utility room, family bathroom, four/five bedrooms with en suite to master."""^^xsd:string ;
+      gr:name "Mathews Way, Wootton, Abingdon"^^xsd:string ;
+      wgs84:lat "51.67018119999999"^^xsd:double ;
+      wgs84:long "-1.2818752"^^xsd:double ;
+      vcard:locality "Wootton, Abingdon" ;
+      vcard:postal-code "OX14 5BD" ;
+      vcard:street-address
+              "1 High Street ABINGDON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI102963_IMG_00.jpg" .
+
+dd:v1743291241528718c
+      gr:includes dd:v1743291241579370c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102194&src=1&index=61&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291236942988c
+      gr:includes dd:v1743291237010537c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI102943&src=1&index=37&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291234256423c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Thames View Road, Oxford
+                    Allen & Harris are delighted to Offer For Sale this Three Bedroom End Terrace House in Rose Hill. The property comprises Entrance Hall, Cloakroom, Lounge/Diner, Second Reception, Kitchen, Three Bedrooms, Bathroom and Garden."""^^xsd:string ;
+      gr:name "Thames View Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102036_IMG_00.jpg" .
+
+dd:v1743291237395561c
+      gr:includes dd:v1743291237445104c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI102637&src=1&index=37&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291230567802c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Liddiard Close, Kennington, Oxford
+                    A 2 bedroom detached bungalow situated in Kennington. The property which has planning permission in place for a rear extension also benefits from southerly facing rear garden, conservatory, garage & driveway providing parking for several vehicles and excellent transport links to Oxford & Abingdon."""^^xsd:string ;
+      gr:name "Liddiard Close, Kennington, Oxford"^^xsd:string ;
+      wgs84:lat "51.67018119999999"^^xsd:double ;
+      wgs84:long "-1.2818752"^^xsd:double ;
+      vcard:locality "Kennington, Oxford" ;
+      vcard:postal-code "OX14 5BD" ;
+      vcard:street-address
+              "1 High Street ABINGDON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI102982_IMG_00.jpg" .
+
+dd:v1743291239412042c
+      gr:includes dd:v1743291239465029c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102201&src=1&index=49&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291237934636c
+      gr:includes dd:v1743291237983172c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102105&src=1&index=43&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291243360820c
+      a       dd:House ;
+      dd:bedrooms "1"^^xsd:int ;
+      gr:description """Kiln Close, Sandford-On-Thames, Oxford
+                    Allen & Harris are delighted to Offer For Sale this One Bedroom Corner Plot Park Home in Sandford on Thames within easy access of the ring road. Benefits include Brick Built Skirt, LPG gas radiator central heating and Garden with Car Parking Space."""^^xsd:string ;
+      gr:name "Kiln Close, Sandford-On-Thames, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Sandford-On-Thames, Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102204_IMG_00.jpg" .
+
+dd:v1743291241029097c
+      gr:includes dd:v1743291241081445c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102244&src=1&index=55&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291234447499c
+      gr:includes dd:v1743291234533303c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101879&src=1&index=31&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291229325020c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Herschel Crescent, Littlemore, Oxford
+                    A superb opportunity to purchase this immaculate two bedroom property with the added bonus of a separate detached one/ two bedroom annex. The property benefits from two double bedrooms, en-suite, extended kitchen, enclosed gardens, off street parking  and the potential to extend into the loft (STP)."""^^xsd:string ;
+      gr:name "Herschel Crescent, Littlemore, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Littlemore, Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH100741_IMG_00.jpg" .
+
+dd:v1743291242625783c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Pebble Hill, Radley, Abingdon
+                    Situated on the picturesque Pebble Hill site is this spacious double unit park home. Accommodation offers three bedrooms, lounge, kitchen and bathroom. Features include off street parking, gardens, double glazing and central heating. Call now for an appointment."""^^xsd:string ;
+      gr:name "Pebble Hill, Radley, Abingdon"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Radley, Abingdon" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI103029_IMG_00.jpg" .
+
+dd:v1743291232982150c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Oliver Road, Oxford
+                    This recently refurbished and extended three bedroom house is offered for sale with no onward chain. The property benefits from having  two reception rooms, a new kitchen and bathroom, gas central heating and brand new double-glazed windows.  To view please call 01865 711441"""^^xsd:string ;
+      gr:name "Oliver Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102074_IMG_00.jpg" .
+
+dd:v1743291242814623c
+      gr:includes dd:v1743291242864715c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101842&src=1&index=61&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291227524296c
+      gr:includes dd:v1743291228393361c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI103026&src=1&index=7&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291233902915c
+      gr:includes dd:v1743291233953414c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102233&src=1&index=25&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291225278168c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Lodge Hill, Abingdon
+                    A three bedroom bungalow, which is situated just to the north of Abingdon and positioned on a large private plot with great potential to extend having previously had planning permission in place. With excellent access for the A34 and Oxford. Please call now for further information."""^^xsd:string ;
+      gr:name "Lodge Hill, Abingdon"^^xsd:string ;
+      wgs84:lat "51.67018119999999"^^xsd:double ;
+      wgs84:long "-1.2818752"^^xsd:double ;
+      vcard:locality "Abingdon" ;
+      vcard:postal-code "OX14 5BD" ;
+      vcard:street-address
+              "1 High Street ABINGDON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI103024_IMG_00.jpg" .
+
+dd:v1743291235740579c
+      gr:includes dd:v1743291235789283c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102129&src=1&index=31&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291238697328c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Barton Village Road, Headington, Oxford
+                    Allen & Harris are pleased to offer to the market this property in the Headington area. It is situated on a no through road with great views of the local nature reserve. With easy access to London bus links and Oxford City Centre. It will appeal to a wide range of buyers. Viewing Recommended!"""^^xsd:string ;
+      gr:name "Barton Village Road, Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101841_IMG_00.jpg" .
+
+dd:v1743291224648700c
+      gr:includes dd:v1743291224732165c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102210&src=1&index=1&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291231277783c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Forest Road, Headington, Oxford
+                    A MUST VIEW PROPERTY!.  STUNNING  three bedroom semi-detached family home situated in the popular area of Risinghurst. A property not to be missed."""^^xsd:string ;
+      gr:name "Forest Road, Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101887_IMG_00.jpg" .
+
+dd:v1743291239216537c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Nightingale Avenue, Oxford
+                    A unique opportunity to acquire a property in Greater Leys with three double bedrooms. This spacious property is within close proximity to many local amenities including the Ozone complex. In addition to the living accommodation the property boasts a downstairs cloakroom, integral garage and garden"""^^xsd:string ;
+      gr:name "Nightingale Avenue, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH101976_IMG_00.jpg" .
+
+dd:v1743291235789283c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Nowell Road, Oxford
+                    This very well presented recently built End Terrace House is situated in Rose Hill. Benefits include Three Bedrooms with En-Suite to Master, Lounge, Downstairs Cloakroom and Rear Garden and Front Garden with Off Road Parking for One Car."""^^xsd:string ;
+      gr:name "Nowell Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102129_IMG_00.jpg" .
+
+dd:v1743291226395621c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Burdell Avenue, Headington, Oxford
+                    A much improved and extended four bedroom family home providing a flexible and spacious living area. The property is located in one of the areas popular locations giving good access to Headingtons good schools and amenities."""^^xsd:string ;
+      gr:name "Burdell Avenue, Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101886_IMG_00.jpg" .
+
+dd:v1743291223787267c
+      gr:includes dd:v1743291223865268c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102094&src=1&index=1&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291229656428c
+      gr:includes dd:v1743291229715192c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI102758&src=1&index=13&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291234814954c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Blay Close, Oxford
+                    This large four bedroom house would make an ideal family home or buy to let investment. The property is in good condition throughout and benefits from two modern kitchen areas, an attractive living room, downstairs shower room and driveway parking."""^^xsd:string ;
+      gr:name "Blay Close, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102240_IMG_00.jpg" .
+
+dd:v1743291224236413c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """London Road, Headington, Oxford
+                    This detached house is situated close to the ring road, A40 and walking distance of Headington. The property offers two reception rooms, kitchen, utility room, cloakroom, four bedrooms, en-suite, bathroom & loft room. This would make an ideal family home or investment buy."""^^xsd:string ;
+      gr:name "London Road, Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101718_IMG_00.jpg" .
+
+dd:v1743291229715192c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Poplar Grove, Kennington, Oxford
+                    A large family home situated in the sought after village of Kennington. Located close to local schools, ammienties & offering good transport links, this much improved detached property offers wet room, lounge, dining room, conservatory, store room, 4/5 bedrooms and family bathroom."""^^xsd:string ;
+      gr:name "Poplar Grove, Kennington, Oxford"^^xsd:string ;
+      wgs84:lat "51.67018119999999"^^xsd:double ;
+      wgs84:long "-1.2818752"^^xsd:double ;
+      vcard:locality "Kennington, Oxford" ;
+      vcard:postal-code "OX14 5BD" ;
+      vcard:street-address
+              "1 High Street ABINGDON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI102758_IMG_00.jpg" .
+
+dd:v1743291243116576c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Bayworth Park, Bayworth, Abingdon
+                    An extended park home situated on the picturesque Bayworth Park site. Accommodation offers two/three bedrooms, sitting room, kitchen, study/bedroom three, shower room and bathroom. Other features include off road parking, gas central heating, double glazing and stunning views over open countryside."""^^xsd:string ;
+      gr:name "Bayworth Park, Bayworth, Abingdon"^^xsd:string ;
+      wgs84:lat "51.67018119999999"^^xsd:double ;
+      wgs84:long "-1.2818752"^^xsd:double ;
+      vcard:locality "Bayworth, Abingdon" ;
+      vcard:postal-code "OX14 5BD" ;
+      vcard:street-address
+              "1 High Street ABINGDON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI102668_IMG_00.jpg" .
+
+dd:v1743291239746128c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Monks Close, Oxford
+                    Allen & Harris are pleased to present to the market this three bedroom mid-terrace family home which is offered for sale in very good condition throughout. There is a fitted kitchen with utility room and attractive rear garden with decking.Internal viewing recommended."""^^xsd:string ;
+      gr:name "Monks Close, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102198_IMG_00.jpg" .
+
+dd:v1743291231989582c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Kelburne Road, Oxford
+                    Allen & Harris are delighted to present to the market this extended semi detached property on this sought after road. The property offers fantastic open plan reception space and the kitchen diner creates a great atmosphere to entertain and enjoy the enclosed rear garden."""^^xsd:string ;
+      gr:name "Kelburne Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102215_IMG_00.jpg" .
+
+dd:v1743291233658463c
+      gr:includes dd:v1743291233708115c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102187&src=1&index=25&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291240506719c
+      gr:includes dd:v1743291240558591c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102239&src=1&index=55&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291239942730c
+      gr:includes dd:v1743291239994697c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101836&src=1&index=49&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291223547585c
+      a       dd:House ;
+      dd:bedrooms "5"^^xsd:int ;
+      gr:description """Rose Hill, Oxford
+                    Allen & Harris offer to the market this Five bedroom detached property. The property boasts fantastic sized living accommodation as well as good local amenities.  This property is currently going through some renovation work which will completed upon exchange of contracts."""^^xsd:string ;
+      gr:name "Rose Hill, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102006_IMG_00.jpg" .
+
+dd:v1743291238223091c
+      a       dd:House ;
+      dd:bedrooms "1"^^xsd:int ;
+      gr:description """Burra Close, Sandford-On-Thames, Oxford
+                    This perfect, spacious one bedroom apartment has many benefits including river frontage, an attractive kitchen, a beautiful living/dining room, high ceilings throughout, a sunny double bedroom and a very modern en-suite shower room. Riverside living at its finest!"""^^xsd:string ;
+      gr:name "Burra Close, Sandford-On-Thames, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Sandford-On-Thames, Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102242_IMG_00.jpg" .
+
+dd:v1743291236034972c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Redmoor Close, Oxford
+                    Situated in Littlemore, this immaculate three bedroom house is offered for sale by Allen and Harris. This beautiful house has many benefits including a large rear garden and a fantastic modern refitted kitchen and utility room."""^^xsd:string ;
+      gr:name "Redmoor Close, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102223_IMG_00.jpg" .
+
+dd:v1743291232933017c
+      gr:includes dd:v1743291232982150c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102074&src=1&index=25&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291232187391c
+      gr:includes dd:v1743291232237869c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102206&src=1&index=19&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291223865268c
+      a       dd:House ;
+      dd:bedrooms "5"^^xsd:int ;
+      gr:description """Gidley Way, Horspath, Oxford
+                    This five bedroom/three reception room property set in the popular village of Horspath is presented to a good standard and offers flexible accommodation. The property will appeal to a diverse range of buyers looking for a good sized family home. Please call 01865 711441 to arrange a viewing."""^^xsd:string ;
+      gr:name "Gidley Way, Horspath, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Horspath, Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102094_IMG_00.jpg" .
+
+dd:v1743291235251784c
+      gr:includes dd:v1743291235299826c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101864&src=1&index=31&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291226895758c
+      gr:includes dd:v1743291226986456c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101905&src=1&index=7&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291225744073c
+      gr:includes dd:v1743291225820199c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI102962&src=1&index=7&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291230760518c
+      gr:includes dd:v1743291230809965c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI102963&src=1&index=13&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291240229461c
+      gr:includes dd:v1743291240291630c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102169&src=1&index=55&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291236754499c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Bergamot Place, Oxford
+                    This well presented Link Detached House is Offered For Sale in Greater Leys and comprises Lounge, Downstairs Cloakroom, Three Bedrooms with En-Suite to Master, Family Bathroom, Rear Garden, Garage and Driveway Parking."""^^xsd:string ;
+      gr:name "Bergamot Place, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102043_IMG_00.jpg" .
+
+dd:v1743291236225964c
+      gr:includes dd:v1743291236274935c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102226&src=1&index=37&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291231929634c
+      gr:includes dd:v1743291231989582c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102215&src=1&index=19&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291234533303c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Flexney Place, Headington, Oxford
+                    ** INVESTMENT OPPORTUNITY ** Three/Four bedroom property providing excellent access to Headington town centre with its many amenities and good schooling."""^^xsd:string ;
+      gr:name "Flexney Place, Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101879_IMG_00.jpg" .
+
+dd:v1743291231692201c
+      gr:includes dd:v1743291231742558c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102034&src=1&index=19&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291225820199c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Foxborough Road, Radley, Abingdon
+                    Situated in the village of Radley is this large three bedroom detached family home, offering deceptively spacious accommodation including lounge, dining area, utility area, conservatory, family bathroom & separate shower room. Features include enclosed rear garden, garage & good size driveway."""^^xsd:string ;
+      gr:name "Foxborough Road, Radley, Abingdon"^^xsd:string ;
+      wgs84:lat "51.67018119999999"^^xsd:double ;
+      wgs84:long "-1.2818752"^^xsd:double ;
+      vcard:locality "Radley, Abingdon" ;
+      vcard:postal-code "OX14 5BD" ;
+      vcard:street-address
+              "1 High Street ABINGDON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI102962_IMG_00.jpg" .
+
+dd:v1743291223476399c
+      gr:includes dd:v1743291223547585c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102006&src=1&index=1&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291238945290c
+      a       dd:House ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """Bernwood Road, Headington, Oxford
+                    Allen & Harris are pleased to Offer for Sale this Three / Four Bedroom Semi Detached House in the popular area of Headington. The property comprises Entrance Hall, Lounge, Dining Room, Study / Bedroom Four, Kitchen, Utility Room, Family Room, Three Bedroom, Bathroom, Garage and Gardens."""^^xsd:string ;
+      gr:name "Bernwood Road, Headington, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Headington, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101291_IMG_00.jpg" .
+
+dd:v1743291237445104c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Bayworth Lane, Boars Hill, Oxford
+                    Rarely to the market comes this two bed retirement bungalow located on the exclusive Beaumont House development Boars Hill.  With a close care arrangement the property offers a wealth of charm and excellent views over the communal grounds."""^^xsd:string ;
+      gr:name "Bayworth Lane, Boars Hill, Oxford"^^xsd:string ;
+      wgs84:lat "51.67018119999999"^^xsd:double ;
+      wgs84:long "-1.2818752"^^xsd:double ;
+      vcard:locality "Boars Hill, Oxford" ;
+      vcard:postal-code "OX14 5BD" ;
+      vcard:street-address
+              "1 High Street ABINGDON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI102637_IMG_00.jpg" .
+
+dd:v1743291230503028c
+      gr:includes dd:v1743291230567802c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI102982&src=1&index=13&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291230059176c
+      gr:includes dd:v1743291230133338c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101706&src=1&index=13&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291237692492c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Morton Avenue, Kidlington
+                    A Two bed end of terrace property conveniently situated in this popular road giving good access to Kidlingtons many amenities and good schooling. The property has a garage in a nearby block and is offered for sale with no ongoing chain"""^^xsd:string ;
+      gr:name "Morton Avenue, Kidlington"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Kidlington" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101882_IMG_00.jpg" .
+
+dd:v1743291226986456c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Old Road, Shotover Hill, Oxford
+                    A stunning three bedroom detached family home situated in a sought after position allowing good access to the towns many amenities and good schooling. The property provides a generous living/dining room, fitted kitchen, downstairs cloakroom and front and rear gardens giving good degrees of privacy."""^^xsd:string ;
+      gr:name "Old Road, Shotover Hill, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Shotover Hill, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101905_IMG_00.jpg" .
+
+dd:v1743291242575701c
+      gr:includes dd:v1743291242625783c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=ABI103029&src=1&index=61&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291238896832c
+      gr:includes dd:v1743291238945290c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=HED101291&src=1&index=49&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291236274935c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Thistle Drive, Oxford
+                    This well presented  and spacious Three Bedroom family home is situated in Greater Leys. Benefits include Kitchen/Diner and Covered Car Port Off Road parking. To arrange a viewing call 01865 711441."""^^xsd:string ;
+      gr:name "Thistle Drive, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102226_IMG_00.jpg" .
+
+dd:v1743291235553522c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Waxes Close, Abingdon
+                    A deceptively large three bedroom family home on the popular Peachcroft estate. Situated close to local amenities,  Radley train station and an excellent bus service for Abingdon & Oxford. The accommodation offers lounge, re-fitted kitchen, WC & bathroom. Call now to arrange a viewing."""^^xsd:string ;
+      gr:name "Waxes Close, Abingdon"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Abingdon" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI102997_IMG_00.jpg" .
+
+dd:v1743291233708115c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """Kelburne Road, Oxford
+                    This Three Bedroom Semi Detached Property in Cowley is Offered to the Market with No Onward Chain and benefits from having Two Reception Rooms, Front & Rear Garden and Off Road Parking. Call 01865 711441 to arrange a viewing."""^^xsd:string ;
+      gr:name "Kelburne Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102187_IMG_00.jpg" .
+
+dd:v1743291234198311c
+      gr:includes dd:v1743291234256423c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102036&src=1&index=25&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291242864715c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Littleworth Park, Littleworth, Oxford
+                    Allen & Harris are pleased to offer to the market this two bedroom park home situated in the highly desired area of Wheatley. The property comprises of 2 bedrooms, living room, dinning area and kitchen and is fitted with double glazing and gas central heating throughout"""^^xsd:string ;
+      gr:name "Littleworth Park, Littleworth, Oxford"^^xsd:string ;
+      wgs84:lat "51.7605076"^^xsd:double ;
+      wgs84:long "-1.2103304"^^xsd:double ;
+      vcard:locality "Littleworth, Oxford" ;
+      vcard:postal-code "OX3 9HZ" ;
+      vcard:street-address
+              "129-131 London Road HEADINGTON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1806_HED101842_IMG_00.jpg" .
+
+dd:v1743291232437100c
+      gr:includes dd:v1743291232485413c ;
+      foaf:page "http://www.sequencehome.co.uk/buy/property-details?r=RSH102199&src=1&index=19&searchType=buy&geographyName=Oxford%2c+Oxfordshire&radius=5.0&includeSSTC=0%2c%5bwait%3d3%5d" .
+
+dd:v1743291231742558c
+      a       dd:House ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """White Road, Oxford
+                    This well presented extended Semi Detached Family House offers versatile accommodation comprising Three Reception Rooms, Three Bedrooms, Family Shower Room and Attic Room, Good Size Garden to the Rear and Off Road Parking to the Front."""^^xsd:string ;
+      gr:name "White Road, Oxford"^^xsd:string ;
+      wgs84:lat "51.7275065"^^xsd:double ;
+      wgs84:long "-1.2247324"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX4 4HX" ;
+      vcard:street-address
+              "82 Rose Hill OXFORD ROSE" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1819_RSH102034_IMG_00.jpg" .
+
+dd:v1743291243595126c
+      a       dd:House ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """Pebble Hill, Radley, Abingdon
+                    Situated on the popular Pebble Hill site is this two bedroom extended park home. The site has good acces to the local bus service to both Oxford & Abingdon, the local village of kennington has many local aminites such as shops, doctors & pubs. Features of the property offer off street parking & GCH."""^^xsd:string ;
+      gr:name "Pebble Hill, Radley, Abingdon"^^xsd:string ;
+      wgs84:lat "51.67018119999999"^^xsd:double ;
+      wgs84:long "-1.2818752"^^xsd:double ;
+      vcard:locality "Radley, Abingdon" ;
+      vcard:postal-code "OX14 5BD" ;
+      vcard:street-address
+              "1 High Street ABINGDON" ;
+      foaf:depiction "http://media.sequencehome.co.uk/property/medium/1722_ABI102905_IMG_00.jpg" .
+

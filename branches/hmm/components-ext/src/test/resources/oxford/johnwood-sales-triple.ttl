@@ -22,7 +22,6 @@ dd:d1d634
               "Banbury Road, Oxford" ;
       foaf:depiction "http://www.johndwood.co.uk/index.php?action=getthumbnail&filepath=../../rps/pictures/OXF100050_02.JPG&width=225&height=156&quality=75&crop=1&chks=492" .
 
-
 dd:d1d641
       dd:hasPrice "3000000"^^xsd:double ;
       gr:includes dd:d1d644 ;

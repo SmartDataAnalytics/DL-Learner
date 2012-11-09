@@ -1,0 +1,935 @@
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix huhu:    <http://google.com/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix lulu:    <http://loolge.com/> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+dd:v1743304883818004c
+      a       dd:House ;
+      gr:description "An extended three bedroom semi detached house built of brick with a tiled roof situated in a convienient location within easy access of local shops, Sainsbury supermarket and bus route to Oxford city centre."^^xsd:string ;
+      gr:name "KIDLINGTON, Oxfordshire" ;
+      wgs84:lat "51.8118959"^^xsd:double ;
+      wgs84:long "-1.283934"^^xsd:double ;
+      vcard:postal-code "OX51EJ" ;
+      vcard:street-address
+              "KIDLINGTON, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=9695536&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304879572407c
+      a       dd:House ;
+      gr:description "Semi detached house within a short walk of Woodstock town centre. This comfortable property has been improved by the present owners and has scope to extend to the side subject to planning consent."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8498661"^^xsd:double ;
+      wgs84:long "-1.3506945"^^xsd:double ;
+      vcard:postal-code "OX201JT" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=10972409&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304885180520c
+      dd:hasPrice "179500.0"^^xsd:double ;
+      gr:includes dd:v1743304885265685c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=414111" .
+
+dd:v1743304879042847c
+      dd:hasPrice "310000.0"^^xsd:double ;
+      gr:includes dd:v1743304879138348c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=420460" .
+
+dd:v1743304871587370c
+      dd:hasPrice "495000.0"^^xsd:double ;
+      gr:includes dd:v1743304871741100c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=389158" .
+
+dd:v1743304882217497c
+      dd:hasPrice "245000.0"^^xsd:double ;
+      gr:includes dd:v1743304882342132c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=395622" .
+
+dd:v1743304872975019c
+      a       dd:House ;
+      gr:description "Situated on a private development an attractive stone cottage, built to a high specification about three years ago. The property has light and spacious accommodation on three floors and is situated within easy reach of Blenheim Park and Woodstock town centre."^^xsd:string ;
+      gr:name "Bladon, Oxfordshire" ;
+      wgs84:lat "51.8286396"^^xsd:double ;
+      wgs84:long "-1.3509706"^^xsd:double ;
+      vcard:postal-code "OX201AQ" ;
+      vcard:street-address
+              "Bladon, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=11503086&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304877269201c
+      a       dd:House ;
+      gr:description "A well-proportioned apartment presented in good condition throughout with exceptional views over the Glyme Valley, forming part of an exclusive retirement development.  The complex comprises cottages and apartments, situated on an elevated position within a short walk of Woodstock town centre.  The development is set in private landscaped gardens and is managed by a secretary who lives on the premises.  The property provides a high level of security with a video entry phone system installed."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.84910559999999"^^xsd:double ;
+      wgs84:long "-1.3546542"^^xsd:double ;
+      vcard:postal-code "OX201UA" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=12971547&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304875725699c
+      dd:hasPrice "360000.0"^^xsd:double ;
+      gr:includes dd:v1743304875841369c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=292874" .
+
+dd:v1743304884878432c
+      dd:hasPrice "179950.0"^^xsd:double ;
+      gr:includes dd:v1743304885028018c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=419034" .
+
+dd:v1743304875106045c
+      a       dd:House ;
+      gr:description "An extended semi-detached family house with rendered elevations and a tiled roof, situated in this popular village within easy access of Woodstock town centre.  The property has been substantially extended in recent years to provide and entrance hall, cloak room, living room, separate dining room, kitchen and utility room on the ground floor.  On the first floor there are four well proportioned bedrooms, one with en-suite shower room and family bathroom.  Outside, there is a large detached garage with store room above which could be used as an office/store room."^^xsd:string ;
+      gr:name "WOOTTON, Oxfordshire" ;
+      wgs84:lat "51.8778084"^^xsd:double ;
+      wgs84:long "-1.3651967"^^xsd:double ;
+      vcard:postal-code "OX201EQ" ;
+      vcard:street-address
+              "WOOTTON, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=20949049&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304885482408c
+      a       dd:House ;
+      gr:description "Situated within a short walk of Woodstock town centre a ground floor flat having well proportioned rooms briefly consisting; entrance hall, living room, kitchen, two bedrooms and bathroom.  Outside, there is a single garage below the flat approached from Brook Hill."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8488607"^^xsd:double ;
+      wgs84:long "-1.3575467"^^xsd:double ;
+      vcard:postal-code "OX201TY" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=13948857&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304870734181c
+      a       dd:House ;
+      gr:description "A rare opportunity to purchase a spacious extended detached family house situated within one mile of Woodstock town centre. The property has good size rooms and lovely views over open countryside to the rear. The accommodation briefly consists of an entrance hall, cloaks/shower room, study/play room, spacious living room, dining room, kitchen/breakfast room and utility room on the ground floor. On the first floor there are four good size bedrooms and family bathroom. The master bedroom has a dressing room/bedroom five leading to a balcony and en-suite shower room.Outside, there is a double carport and the rear garden is private with an open partly covered pergola for alfresco dining with an open log fireplace. There is a large storeroom behind the garage, which would be ideal to use as a workshop."^^xsd:string ;
+      gr:name "BLADON, Nr WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8364929"^^xsd:double ;
+      wgs84:long "-1.3419755"^^xsd:double ;
+      vcard:postal-code "OX201PU" ;
+      vcard:street-address
+              "BLADON, Nr WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=19330933&w=300&ol=images/Sold Subject To Contract-brief.gif" .
+
+dd:v1743304881543113c
+      dd:hasPrice "255000.0"^^xsd:double ;
+      gr:includes dd:v1743304881633487c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=405975" .
+
+dd:v1743304881095178c
+      dd:hasPrice "275000.0"^^xsd:double ;
+      gr:includes dd:v1743304881180743c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=412921" .
+
+dd:v1743304884417161c
+      dd:hasPrice "190000.0"^^xsd:double ;
+      gr:includes dd:v1743304884505988c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=362931" .
+
+dd:v1743304877973307c
+      a       dd:House ;
+      gr:description "Situated approximately four miles North of Woodstock is this attractive cottage style semi-detached house having been extended in recent years to provide a cloakroom and utility/dining room.  The property is on an elevated position with lovely views over open countryside and benefits from oil fired central heating and double glazed windows. The accommodation briefly consists of an entrance porch, living room, kitchen/breakfast room, dining/utility room, cloakroom and conservatory on the ground floor.  On the first floor there are two double bedrooms and bathroom.  Outside, there is a large well tended rear garden, large gravelled front garden with parking for several cars."^^xsd:string ;
+      gr:name "Kiddington, Oxfordshire" ;
+      wgs84:lat "51.8960991"^^xsd:double ;
+      wgs84:long "-1.407171"^^xsd:double ;
+      vcard:postal-code "OX201BG" ;
+      vcard:street-address
+              "Kiddington, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=23050228&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304882084540c
+      a       dd:House ;
+      gr:description "Spacious split level terraced town house offering well proportioned open-plan accommodation situated on the popular Hensington Gate development overlooking farmland to the rear.  The property has double glazed windows, gas-fired central heating and a ground floor cloakroom."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8466106"^^xsd:double ;
+      wgs84:long "-1.3424667"^^xsd:double ;
+      vcard:postal-code "OX201PE" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=11792574&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304876283470c
+      a       dd:House ;
+      gr:description "A first floor duplex apartment within a short distance of Woodstock town centre."^^xsd:string ;
+      gr:name "Woodstock, " ;
+      wgs84:lat "51.8492465"^^xsd:double ;
+      wgs84:long "-1.3459706"^^xsd:double ;
+      vcard:postal-code "OX201LF" ;
+      vcard:street-address
+              "Woodstock," ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=21451252&w=300&ol=images/Sold Subject To Contract-brief.gif" .
+
+dd:v1743304883597756c
+      a       dd:House ;
+      gr:description "Modern terraced house believed to have been built in the 1980s of reconstructed stone and a tiled roof.  The property has well-proportioned accommodation briefly consisting of an entrance hall, living room, separate dining room and modern kitchen on the ground floor.  On the first floor there are three bedrooms and family bathroom.  To the rear is an enclosed private garden with shed/workshop, single garage in nearby block and additional car parking space."^^xsd:string ;
+      gr:name "Stonesfield, Oxfordshire" ;
+      wgs84:lat "51.8539309"^^xsd:double ;
+      wgs84:long "-1.4307523"^^xsd:double ;
+      vcard:postal-code "OX298QF" ;
+      vcard:street-address
+              "Stonesfield, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=20267175&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304876153959c
+      dd:hasPrice "350000.0"^^xsd:double ;
+      gr:includes dd:v1743304876283470c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=420021" .
+
+dd:v1743304872309468c
+      a       dd:House ;
+      gr:description "A well proportioned retirement penthouse flat forming part of an exclusive development of cottages and apartments."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.84910559999999"^^xsd:double ;
+      wgs84:long "-1.3546542"^^xsd:double ;
+      vcard:postal-code "OX201UA" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=8323613&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304870871270c
+      dd:hasPrice "625000.0"^^xsd:double ;
+      gr:includes dd:v1743304870973119c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=146244" .
+
+dd:v1743304879270413c
+      dd:hasPrice "295000.0"^^xsd:double ;
+      gr:includes dd:v1743304879354657c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=400000" .
+
+dd:v1743304881999671c
+      dd:hasPrice "250000.0"^^xsd:double ;
+      gr:includes dd:v1743304882084540c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=382284" .
+
+dd:v1743304881862380c
+      a       dd:House ;
+      gr:description "An attractive period cottage on an elevated position within a short walk of St Martins Church.  The property has a private secluded garden and has a separate self-contained annexe with living/kitchen area and shower room. There is a separate detached workshop/studio. The cottage accommodation briefly consists of an entrance porch, living room, kitchen, two bedrooms and bathroom. The property is heated by gas-fired central heating and has a secluded west facing garden."^^xsd:string ;
+      gr:name "BLADON, Oxfordshire" ;
+      wgs84:lat "51.8299794"^^xsd:double ;
+      wgs84:long "-1.3509804"^^xsd:double ;
+      vcard:postal-code "OX201RW" ;
+      vcard:street-address
+              "BLADON, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=11422040&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304881407617c
+      a       dd:House ;
+      gr:description "Charming period cottage set in the heart of this popular village within a short walk of St Martins Church the buriel place of Sir Winston Churchill.The property has been substantially improved by the present owner and has a pretty well stocked garden with views towards Blenheim estate."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8293083"^^xsd:double ;
+      wgs84:long "-1.3499452"^^xsd:double ;
+      vcard:postal-code "OX201RS" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=6708413&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304884063392c
+      a       dd:House ;
+      gr:description "Situated in a no-through road close to Abingdon town centre, a well-proportioned semi-detached family home built of brick with a tiled roof.  The accommodation briefly consists of a cloakroom, living room, fitted kitchen/dining room, three well-proportioned bedrooms and family bathroom.   Outside, there is an enclosed rear garden with pedestrian access and single garage in nearby block.  This comfortable house has double glazed windows and is heated by gas fired central heating."^^xsd:string ;
+      gr:name "ABINGDON, Oxfordshire" ;
+      wgs84:lat "51.6686424"^^xsd:double ;
+      wgs84:long "-1.2890571"^^xsd:double ;
+      vcard:postal-code "OX145DX" ;
+      vcard:street-address
+              "ABINGDON, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=23330525&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304870168943c
+      dd:hasPrice "975000.0"^^xsd:double ;
+      gr:includes dd:v1743304870258732c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=254823" .
+
+dd:v1743304884725696c
+      a       dd:House ;
+      gr:description "An unusual detached stone built cottage situated in a quiet location, yet within easy reach of the town centre."^^xsd:string ;
+      gr:name "Woodstock, Oxfordshire" ;
+      vcard:postal-code "OX291JF" ;
+      vcard:street-address
+              "Woodstock, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=10700709&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304877512984c
+      a       dd:House ;
+      gr:description "A rare opportunity to purchase a larger than average brick built semi-detached house with a tiled roof.  The property has a large rear garden and is conveniently situated within a short walk of local schools and Woodstock town centre."^^xsd:string ;
+      gr:name "Woodstock, Oxfordshire" ;
+      wgs84:lat "51.8486206"^^xsd:double ;
+      wgs84:long "-1.344978"^^xsd:double ;
+      vcard:postal-code "OX201LL" ;
+      vcard:street-address
+              "Woodstock, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=22423263&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304874298707c
+      a       dd:House ;
+      gr:description "A rare opportunity to purchase an individual detached bungalow built in the late 1960s of brick with a tiled roof by J. A Pye (Oxford) Ltd.  The property is in need of some updating and situated on a good-sized plot off Cumnor Hill within easy access of the excellent shopping facilities of Botley Parade and Oxford City Centre.  VIEW BY APPOINTMENT TEL: 01993 812123 OR 07770 636939"^^xsd:string ;
+      gr:name "Cumnor Hill - Oxford, Oxford" ;
+      wgs84:lat "51.7412091"^^xsd:double ;
+      wgs84:long "-1.3098319"^^xsd:double ;
+      vcard:postal-code "OX29JG" ;
+      vcard:street-address
+              "Cumnor Hill - Oxford, Oxford" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=12785133&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304879712115c
+      dd:hasPrice "295000.0"^^xsd:double ;
+      gr:includes dd:v1743304879806877c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=224562" .
+
+dd:v1743304883053699c
+      dd:hasPrice "230000.0"^^xsd:double ;
+      gr:includes dd:v1743304883137807c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=222874" .
+
+dd:v1743304884282277c
+      a       dd:House ;
+      gr:description "A modern terrace house built of reconstructed stone with a tiled roof situated in a private close within easy access of Witney and Woodstock town centre.  The accommodation has been well planned and briefly consists of an entrance hall, fitted kitchen, good size living room with French doors to the rear garden, two well proportioned bedrooms and family bathroom.  The property is heated by gas-fired central heating and has double glazed windows."^^xsd:string ;
+      gr:name "Long Hanborough, Witney" ;
+      wgs84:lat "51.824422"^^xsd:double ;
+      wgs84:long "-1.4016987"^^xsd:double ;
+      vcard:postal-code "OX298QL" ;
+      vcard:street-address
+              "Long Hanborough, Witney" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=15898330&w=300&ol=images/Sold Subject To Contract-brief.gif" .
+
+dd:v1743304883137807c
+      a       dd:House ;
+      gr:description "A rare opportunity to purchase a ground floor apartment with a private courtyard garden situated in the heart of this popular town.  The accommodation briefly consists of an entrance hall, living room, kitchen, two bedrooms and shower room.  The property has double glazed windows and is heated by night storage heating."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8467266"^^xsd:double ;
+      wgs84:long "-1.353672"^^xsd:double ;
+      vcard:postal-code "OX201TG" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=5658853&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304879138348c
+      a       dd:House ;
+      gr:description "A well-proportioned apartment presented in good condition throughout with exceptional views over the Glyme Valley, forming part of an exclusive retirement development.  The complex comprises cottages and apartments, situated on an elevated position within a short walk of Woodstock town centre.  The development is set in private landscaped gardens and is managed by a secretary who lives on the premises.   The property provides a high level of security with a video entry phone system installed."^^xsd:string ;
+      gr:name "Woodstock, Oxfordshire" ;
+      wgs84:lat "51.84910559999999"^^xsd:double ;
+      wgs84:long "-1.3546542"^^xsd:double ;
+      vcard:postal-code "OX201UA" ;
+      vcard:street-address
+              "Woodstock, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=21693548&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304877181591c
+      dd:hasPrice "349000.0"^^xsd:double ;
+      gr:includes dd:v1743304877269201c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=387903" .
+
+dd:v1743304879354657c
+      a       dd:House ;
+      gr:description "Situated on the popular Barn Piece development an extended detached family chalet house backing onto open farmland. The property is in need of refurbishment throughout and the accommodation briefly consists of an entrance porch, entrance hall, living room, bedroom/family room, en-suite bathroom, bedroom and kitchen on the ground floor. On the first floor there are two bedrooms, bathroom and separate WC."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8537962"^^xsd:double ;
+      wgs84:long "-1.359088"^^xsd:double ;
+      vcard:postal-code "OX201YB" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=15844159&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304878907413c
+      a       dd:House ;
+      gr:description "A rare opportunity to purchase an attractive terraced town house situated within a short walk of Woodstock town centre."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.84897549999999"^^xsd:double ;
+      wgs84:long "-1.3489797"^^xsd:double ;
+      vcard:postal-code "OX201JH" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=11554047&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304886643280c
+      a       dd:House ;
+      gr:description "Rare opportunity to puchase a single garage within level walk of town centre, The garage is built of block with a felt flat roof and has a replacement up and over door."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8475642"^^xsd:double ;
+      wgs84:long "-1.3506695"^^xsd:double ;
+      vcard:postal-code "OX201PD" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=9998670&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304876954537c
+      dd:hasPrice "350000.0"^^xsd:double ;
+      gr:includes dd:v1743304877042279c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=413715" .
+
+dd:v1743304878112762c
+      dd:hasPrice "325000.0"^^xsd:double ;
+      gr:includes dd:v1743304878199902c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=360084" .
+
+dd:v1743304886547787c
+      dd:hasPrice "7000.0"^^xsd:double ;
+      gr:includes dd:v1743304886643280c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=346404" .
+
+dd:v1743304871254721c
+      a       dd:House ;
+      gr:description "Situated on the popular Cadogan Park development within a short walk of  Woodstock town centre an individual detached family house built in the 1950s of reconstructed stone with a tiled roof. In recent years the present occupiers have extended the rear of the garage to provide an extra bedroom/study and utility room. Outside, the rear garden extends to approximately 100 and is private with many mature shrubs and trees."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8460566"^^xsd:double ;
+      wgs84:long "-1.347933"^^xsd:double ;
+      vcard:postal-code "OX201UW" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=8647809&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304823424664c
+      dd:hasPrice "1050000.0"^^xsd:double ;
+      gr:includes dd:v1743304869929442c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=146255" .
+
+dd:v1743304883495739c
+      dd:hasPrice "209000.0"^^xsd:double ;
+      gr:includes dd:v1743304883597756c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=417071" .
+
+dd:v1743304870258732c
+      a       dd:House ;
+      gr:description "Orchard Barn was built early in the 20th Century.  This attractive timber clad converted barn provides for a spacious detached family home with well-proportioned rooms with exposed beams. Immediately adjacent to the main house is a one-bedroom cottage with an integral garage.This house has a L-shaped large garden, approximately one acre, which is maintained to a high standard with neat hedgerows and trees.  A small orchard takes up part of the garden.  A pergola forms an attractive feature viewed from the sitting room.  Immediately behind the cottage is a good size heated swimming pool 360 x 180 (10.9m x 5.4m) surrounded in concrete paving slabs with high hedgerow and timber fence.  The gravelled drive provides access from the road to both the house and the cottage."^^xsd:string ;
+      gr:name "Clifton Hampden, Oxfordshire" ;
+      wgs84:lat "51.6587233"^^xsd:double ;
+      wgs84:long "-1.2099895"^^xsd:double ;
+      vcard:postal-code "OX143EW" ;
+      vcard:street-address
+              "Clifton Hampden, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=6382696&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304879806877c
+      a       dd:House ;
+      gr:description "Situated in a popular village location within easy reach of the market town of Witney, a three bedroom link detached house having been improved and extended in recent years."^^xsd:string ;
+      gr:name "North Leigh, Oxfordshire" ;
+      wgs84:lat "51.808211"^^xsd:double ;
+      wgs84:long "-1.4419453"^^xsd:double ;
+      vcard:postal-code "OX296RF" ;
+      vcard:street-address
+              "North Leigh, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=5672208&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304878561766c
+      dd:hasPrice "315000.0"^^xsd:double ;
+      gr:includes dd:v1743304878649534c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=423319" .
+
+dd:v1743304870518647c
+      a       dd:House ;
+      gr:description "Tulip Tree House is an individual stone built detached family house situated off a private drive in the popular town of Charlbury. The property is presented in good decorative order throughout and has been run as a bed & breakfast by the present owner."^^xsd:string ;
+      gr:name "CHARLBURY, Oxfordshire" ;
+      wgs84:lat "51.8722517"^^xsd:double ;
+      wgs84:long "-1.4827383"^^xsd:double ;
+      vcard:postal-code "OX73PP" ;
+      vcard:street-address
+              "CHARLBURY, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=7128444&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304886324221c
+      dd:hasPrice "100000.0"^^xsd:double ;
+      gr:includes dd:v1743304886410834c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=402935" .
+
+dd:v1743304880743433c
+      a       dd:House ;
+      gr:description "A well presented and substantially improved detached bungalow situated in a private residential road within easy access of Woodstock and Oxford City centre.  The accommodation is well planned and briefly consists of an entrance porch, spacious living room, fitted kitchen, double glazed conservatory, two bedrooms and bathroom.  Outside, there is a private enclosed garden and single garage.  This comfortable property is heated by gas-fired central heating and has replacement double glazed windows."^^xsd:string ;
+      gr:name "Begbroke, Oxfordshire" ;
+      wgs84:lat "51.8237533"^^xsd:double ;
+      wgs84:long "-1.3153331"^^xsd:double ;
+      vcard:postal-code "OX51RW" ;
+      vcard:street-address
+              "Begbroke, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=12066967&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304883731155c
+      dd:hasPrice "205000.0"^^xsd:double ;
+      gr:includes dd:v1743304883818004c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=339562" .
+
+dd:v1743304877648646c
+      dd:hasPrice "325000.0"^^xsd:double ;
+      gr:includes dd:v1743304877749471c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=413436" .
+
+dd:v1743304882618378c
+      dd:hasPrice "230000.0"^^xsd:double ;
+      gr:includes dd:v1743304882703678c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=288090" .
+
+dd:v1743304880655406c
+      dd:hasPrice "285000.0"^^xsd:double ;
+      gr:includes dd:v1743304880743433c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=383572" .
+
+dd:v1743304876815969c
+      a       dd:House ;
+      gr:description "An individual split-level bungalow built in the 1970s of reconstructed stone with a slate and felt flat roof.  The property is presented in good decorative order throughout and briefly consists of an entrance hall, cloakroom, living/dining room with views over open farmland, fitted kitchen, breakfast room, four bedrooms and family bathroom with separate shower.  The property is heated by oil-fired central heating with mains gas coal effect fire, and has double glazed windows."^^xsd:string ;
+      gr:name "Middle Barton, OXFORDSHIRE" ;
+      wgs84:lat "51.9260824"^^xsd:double ;
+      wgs84:long "-1.3621312"^^xsd:double ;
+      vcard:postal-code "OX77BX" ;
+      vcard:street-address
+              "Middle Barton, OXFORDSHIRE" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=18282542&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304876499186c
+      dd:hasPrice "350000.0"^^xsd:double ;
+      gr:includes dd:v1743304876588253c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=400853" .
+
+dd:v1743304875481640c
+      a       dd:House ;
+      gr:description "An individual extended detached family house with rendered elevations and a tiled roof conveiniently situated within good access of Witney, Woodstock and a short walk of the Co-op supermarket."^^xsd:string ;
+      gr:name "Long Hanborough, Oxfordshire" ;
+      wgs84:lat "51.8244054"^^xsd:double ;
+      wgs84:long "-1.3949375"^^xsd:double ;
+      vcard:postal-code "OX298BE" ;
+      vcard:street-address
+              "Long Hanborough, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=10700681&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304880272379c
+      a       dd:House ;
+      gr:description "Situated in a convenient position within a short walk of Woodstock town centre a 1950s semi-detached house with scope to extend to the side subject to planning consent.  The property has rendered elevations with a tiled roof and flat roof store attached to the rear. The accommodation briefly consists of an entrance hall, living / dining room, kitchen, three bedrooms and bathroom.  The property is heated by gas-fired central heating.  Outside there are good-sized gardens and parking."^^xsd:string ;
+      gr:name "Woodstock, Oxfordshire" ;
+      wgs84:lat "51.8474338"^^xsd:double ;
+      wgs84:long "-1.3498439"^^xsd:double ;
+      vcard:postal-code "OX201PA" ;
+      vcard:street-address
+              "Woodstock, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=17512805&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304880411300c
+      dd:hasPrice "287000.0"^^xsd:double ;
+      gr:includes dd:v1743304880498570c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=396725" .
+
+dd:v1743304878199902c
+      a       dd:House ;
+      gr:description "A modern detached family house built in the mid 1970s having been extended and improved in recent years to provide well-proportioned rooms."^^xsd:string ;
+      gr:name "BICESTER, Oxfordshire" ;
+      wgs84:lat "51.906392"^^xsd:double ;
+      wgs84:long "-1.1753598"^^xsd:double ;
+      vcard:postal-code "OX262JA" ;
+      vcard:street-address
+              "BICESTER, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=10495281&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304885703047c
+      a       dd:House ;
+      gr:description "Situated in a cul-de-sac location, a third floor apartment with views over Blenheim park and Woodstock town centre.  The property has well-proportioned accommodation and briefly consists of: an entrance hall, good size living room, kitchen, three bedrooms and bathroom.  The property is heated by gas-fired central heating and has replacement double glazed windows."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8460306"^^xsd:double ;
+      wgs84:long "-1.3546401"^^xsd:double ;
+      vcard:postal-code "OX201UH" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=11453474&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304880498570c
+      a       dd:House ;
+      gr:description "Situated on the edge of this popular village overlooking open countryside, a three bedroom house having been improved in recent years with the addition of a double glazed conservatory, refitted kitchen, bathroom and double glazed windows."^^xsd:string ;
+      gr:name "Stonesfield, Oxfordshire" ;
+      wgs84:lat "51.85691730000001"^^xsd:double ;
+      wgs84:long "-1.4273315"^^xsd:double ;
+      vcard:postal-code "OX298HB" ;
+      vcard:street-address
+              "Stonesfield, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=15021663&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304882921325c
+      a       dd:House ;
+      gr:description "Situated within a short walk of the town centre an extended terrace house having well proportioned accommodation briefly consisting an entrance porch, living room, kitchen/dining room, conservatory, three bedrooms and bathroom. Outside, there is an attractive enclosed rear garden and single garage in nearby block. This comfortable home is heated by gas fired central heating and has replacement double glazed windows."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8475642"^^xsd:double ;
+      wgs84:long "-1.3506695"^^xsd:double ;
+      vcard:postal-code "OX201PD" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=10927083&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304884505988c
+      a       dd:House ;
+      gr:description "A modern brick built semi-detached house with a tiled roof situated off a private drive in this popular residential area of Bicester."^^xsd:string ;
+      gr:name "BICESTER, Oxfordshire" ;
+      wgs84:lat "51.904343"^^xsd:double ;
+      wgs84:long "-1.1767782"^^xsd:double ;
+      vcard:postal-code "OX262GT" ;
+      vcard:street-address
+              "BICESTER, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=10615206&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304874984907c
+      dd:hasPrice "390000.0"^^xsd:double ;
+      gr:includes dd:v1743304875106045c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=418885" .
+
+dd:v1743304883973866c
+      dd:hasPrice "200000.0"^^xsd:double ;
+      gr:includes dd:v1743304884063392c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=425412" .
+
+dd:v1743304878818094c
+      dd:hasPrice "310000.0"^^xsd:double ;
+      gr:includes dd:v1743304878907413c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=380852" .
+
+dd:v1743304872117836c
+      dd:hasPrice "455000.0"^^xsd:double ;
+      gr:includes dd:v1743304872309468c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=309010" .
+
+dd:v1743304881180743c
+      a       dd:House ;
+      gr:description "Presented to a high standard a three bedroom family house situated on the popular Kings Meadow development. The property has been substantially improved in recent years by the present owners and the accommodation briefly consists on an entrance porch, good size living room, cloak room, fitted kitchen/breakfst room, three well proportioned bedrooms and family bathroom. The property has double glazed windows and is heated by gas fired central heating."^^xsd:string ;
+      gr:name "Bicester, Oxfordshire" ;
+      wgs84:lat "51.9046445"^^xsd:double ;
+      wgs84:long "-1.169781"^^xsd:double ;
+      vcard:postal-code "OX262FD" ;
+      vcard:street-address
+              "Bicester, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=23049680&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304875324201c
+      dd:hasPrice "375000.0"^^xsd:double ;
+      gr:includes dd:v1743304875481640c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=364945" .
+
+dd:v1743304878649534c
+      a       dd:House ;
+      gr:description "Situated in a Cul-de-Sac location a substantially extended house built of brick with a tiled roof.  The property is presented in good decorative order throughout and briefly consists of an entrance hall, cloaks/shower room, utility room, fitted kitchen/dining room and separate living room on the ground floor.  On the first floor there are four well-proportioned bedrooms, family bathroom and en-suite shower room to the main bedroom.  This comfortable house is heated by gas fired central heating, double glazed windows and a single garage."^^xsd:string ;
+      gr:name "Middle Barton, Oxfordshire" ;
+      wgs84:lat "51.9301261"^^xsd:double ;
+      wgs84:long "-1.3633829"^^xsd:double ;
+      vcard:postal-code "ox77hn" ;
+      vcard:street-address
+              "Middle Barton, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=23057011&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304877424857c
+      dd:hasPrice "339000.0"^^xsd:double ;
+      gr:includes dd:v1743304877512984c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=422742" .
+
+dd:v1743304880957908c
+      a       dd:House ;
+      gr:description "Situated within a short walk of the town centre a substantially extended end terrace house built of brick with a tiled roof.  The accommodation has been well planned and briefly consists of entrance hall, cloakroom, living room, kitchen / dining room, 4 bedrooms, family bathroom and en-suite shower room.  Outside, there is a small enclosed patio garden, rear garden with pedestrian access onto Hensington Road and single garage."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.84886239999999"^^xsd:double ;
+      wgs84:long "-1.3480522"^^xsd:double ;
+      vcard:postal-code "OX201LR" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=13056846&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304869929442c
+      a       dd:House ;
+      gr:description "Stone built Grade II listed family house set in large grounds overlooking the River Evenlode. The property includes a most attractive bridge stretching over the river and has grounds surrounding the house with many mature trees."^^xsd:string ;
+      gr:name "Woodstock, " ;
+      wgs84:lat "51.8260782"^^xsd:double ;
+      wgs84:long "-1.3593507"^^xsd:double ;
+      vcard:postal-code "OX201LE" ;
+      vcard:street-address
+              "Woodstock," ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=4871561&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304878421630c
+      a       dd:House ;
+      gr:description "Situated in a private cul-de-sac, an attractive detached bungalow built in the late 1970s of reconstructed stone with a tiled roof, having well proportioned rooms and enclosed private rear garden.  The accommodation briefly consists of an entrance hall, cloakroom, split-level living / dining room, kitchen, utility room, three bedrooms and family bathroom.  This comfortable dwelling is heating by oil-fired central heating and has double glazed windows."^^xsd:string ;
+      gr:name "Combe, Oxfordshire" ;
+      wgs84:lat "51.8422734"^^xsd:double ;
+      wgs84:long "-1.4060636"^^xsd:double ;
+      vcard:postal-code "OX298PG" ;
+      vcard:street-address
+              "Combe, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=18349023&w=300&ol=images/Sold Subject To Contract-brief.gif" .
+
+dd:v1743304885028018c
+      a       dd:House ;
+      gr:description "A well proportioned second floor apartment situated in a popular residential location backing onto the Glyme Valley.  The accommodation briefly consists of a communal entrance hall, entrance hall, living room, kitchen, two bedrooms and a bathroom.  Outside, there are communal gardens and a single garage in nearby block."^^xsd:string ;
+      gr:name "Woodstock, Oxfordshire" ;
+      wgs84:lat "51.8510517"^^xsd:double ;
+      wgs84:long "-1.3521147"^^xsd:double ;
+      vcard:postal-code "OX201LB" ;
+      vcard:street-address
+              "Woodstock, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=20950432&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304885921614c
+      a       dd:House ;
+      gr:description "A rare opportunity to purchase a detached former stable built of stone with a slate roof situated in a private location off a public footpath.  The property constists of a living room with multi-fuel stove, kitchen, bedroom and bathroom."^^xsd:string ;
+      gr:name "Middle Barton, Oxfordshire" ;
+      wgs84:lat "51.9260824"^^xsd:double ;
+      wgs84:long "-1.3621312"^^xsd:double ;
+      vcard:postal-code "OX77BX" ;
+      vcard:street-address
+              "Middle Barton, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=9948349&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304880042279c
+      a       dd:House ;
+      gr:description "A rare opportunity to purchase a well presented chalet semi-detached house with views to the rear over open countryside.  The property has been improved by the present owner with an open plan fitted kitchen/dining room, shower room, double glazed windows and hardwood internal doors."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8537962"^^xsd:double ;
+      wgs84:long "-1.359088"^^xsd:double ;
+      vcard:postal-code "OX201YB" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=6082377&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304885397152c
+      dd:hasPrice "175000.0"^^xsd:double ;
+      gr:includes dd:v1743304885482408c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=392461" .
+
+dd:v1743304871741100c
+      a       dd:House ;
+      gr:description "Built about twenty years ago, part of a small select development of detached homes built around a substantial Victorian house on the edge of Blenheim Park.  In recent years, the property has been most thoughtfully extended and updated by the present owners, now having flexible accommodation with an established rear garden and a southerly aspect.  The double garage has been designed so that part of the garage can be converted into a garden room, there are wide folding glazed doors to the side of the building and a play/hobbies room in the roof space."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.834436"^^xsd:double ;
+      wgs84:long "-1.3471865"^^xsd:double ;
+      vcard:postal-code "OX201XA" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=13279372&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304885265685c
+      a       dd:House ;
+      gr:description "Situated on the edge of Bloxham, a modern coach house property presented in excellent decorative order throughout.  The accommodation briefly consists of an entrance porch with stairs leading to the first floor landing, kitchen/living room with appliances, two good size bedrooms and bathroom.  This comfortable coach house has double glazed windows, gas-fired central heating and good quality natural wood polished flooring to most rooms.  Outside there is a single garage and private enclosed rear garden."^^xsd:string ;
+      gr:name "Bloxham, Oxfordshire" ;
+      wgs84:lat "52.0147686"^^xsd:double ;
+      wgs84:long "-1.3688708"^^xsd:double ;
+      vcard:postal-code "OX154FT" ;
+      vcard:street-address
+              "Bloxham, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=19167648&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304885835495c
+      dd:hasPrice "147500.0"^^xsd:double ;
+      gr:includes dd:v1743304885921614c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=345284" .
+
+dd:v1743304877749471c
+      a       dd:House ;
+      gr:description "An attractive stone and rendered Grade II listed cottage having been substantially improved by the present owners situated on the north side of Woodstock town centre."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8511716"^^xsd:double ;
+      wgs84:long "-1.360882"^^xsd:double ;
+      vcard:postal-code "OX201XR" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=18908991&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304879938759c
+      dd:hasPrice "295000.0"^^xsd:double ;
+      gr:includes dd:v1743304880042279c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=243010" .
+
+dd:v1743304886146113c
+      a       dd:House ;
+      gr:description "Situated in a cul-de-sac location a second floor apartment with views over Blenheim Park and Woodstock town centre.  The property is need of refurbishment throughout.PUBLIC NOTICEWE ARE ACTING FOR THE MORTGAGES AND HAVE RECEIVED AN OFFER OF £145,000 ON:2ND FF,31 COCKPIT CLOSE, WOODSTOCK,OXFORDSHIRE OX20 1UHANY INTERESTED PARTIES MUST SUBMIT ANY HIGHER OFFERS IN WRITING TO THE SELLING AGENT BEFORE AN EXCHANGE OF CONTRACTS TAKES PLACE."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8460306"^^xsd:double ;
+      wgs84:long "-1.3546401"^^xsd:double ;
+      vcard:postal-code "OX201UH" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=13000940&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304884641033c
+      dd:hasPrice "180000.0"^^xsd:double ;
+      gr:includes dd:v1743304884725696c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=364946" .
+
+dd:v1743304875841369c
+      a       dd:House ;
+      gr:description "An end terraced grade 2 listed cottage situated on the north side of the town with nearby access into Blenheim park. The property has undergone substantial improvement retaining many of the period features.VACANT POSSESION"^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8511716"^^xsd:double ;
+      wgs84:long "-1.360882"^^xsd:double ;
+      vcard:postal-code "OX201XR" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=7634496&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304883272704c
+      dd:hasPrice "225000.0"^^xsd:double ;
+      gr:includes dd:v1743304883358364c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=422502" .
+
+dd:v1743304878333962c
+      dd:hasPrice "325000.0"^^xsd:double ;
+      gr:includes dd:v1743304878421630c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=412155" .
+
+dd:v1743304886060092c
+      dd:hasPrice "147500.0"^^xsd:double ;
+      gr:includes dd:v1743304886146113c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=388144" .
+
+dd:v1743304882342132c
+      a       dd:House ;
+      gr:description "A rare opportunity to purchase a stone built period terrace cottage situated on the north side of the town centre with lovely open views to the rear over the Glyme Valley. The property is in need of refurbishment throughout but has retained many of its original features. The accommodation briefly consists of an entrance hall, living room, dining room, kitchen and bathroom on the ground floor.  On the first floor there are two single bedrooms.  Outside, there is good size  rear garden."^^xsd:string ;
+      gr:name "WOODSTOCK, Oxfordshire" ;
+      wgs84:lat "51.8487646"^^xsd:double ;
+      wgs84:long "-1.3564157"^^xsd:double ;
+      vcard:postal-code "OX201TX" ;
+      vcard:street-address
+              "WOODSTOCK, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=14697976&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304876588253c
+      a       dd:House ;
+      gr:description "A modern family house having been maintained to a high standard by the present owners. Located in a convenient elevated position the property enjoys views over the Wychwood Forest and approximately a ten minute walk from main line Charlbury rail station. The accommodation briefly consists of an entrance hall, cloaks/shower room, living room with gas log effect stove and a pleasant view over the well stocked rear garden, refitted kitchen/dining room and study on the ground floor. On the first floor there are three well proportioned bedrooms and family bathroom. Outside, there is an attractive enclosed rear garden with raised timber deck area. The front half of the garage has been converted into a workshop/utility room. This comfortable well presented home is heated by gas-fired central heating and has replacement double glazed windows.NO CHAIN!"^^xsd:string ;
+      gr:name "Charlbury, Oxfordshire" ;
+      wgs84:lat "51.8722347"^^xsd:double ;
+      wgs84:long "-1.4768704"^^xsd:double ;
+      vcard:postal-code "OX73SY" ;
+      vcard:street-address
+              "Charlbury, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=15987540&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304879488142c
+      dd:hasPrice "295000.0"^^xsd:double ;
+      gr:includes dd:v1743304879572407c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=371689" .
+
+dd:v1743304885615982c
+      dd:hasPrice "160000.0"^^xsd:double ;
+      gr:includes dd:v1743304885703047c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=380390" .
+
+dd:v1743304870973119c
+      a       dd:House ;
+      gr:description "An individual and substantial detached family house offering flexible, light, spacious and immaculately presented accommodation within a thriving Oxfordshire village.Stonesfield is predominantly a stone village, with a thriving community, approximately 4 miles west of Woodstock.  The village is well placed for commuters, with the A44 giving access to Oxford and the M40.  Stonesfield has a primary school, a village shop, a post office, hairdressers, library, 13th century parish church and a pub/restaurant.  The Cotswold countryside and country walks are on your doorstep.DIRECTIONSFrom Woodstock take the A44 north towards Chipping Norton.  Proceed along this road until you reach Judds Garage and the Duke of Marlborough public house, taking the left turn signposted Stonesfield and Charlbury.  Bear left at Ditchley Gate towards Stonesfield village.  On entering Stonesfield, proceed through the village, past the shop, turning right at the T-junction in front of The White Horse pub. Take the second right turn into Farley Lane where the driveway to Greville House will be found on the right hand side.LOCAL AUTHORITYWest Oxfordshire District Council. Tel:01993 702941Council Tax Band G. Amount Payable:£2,366.02"^^xsd:string ;
+      gr:name "Stonesfield, " ;
+      wgs84:lat "51.85691730000001"^^xsd:double ;
+      wgs84:long "-1.4273315"^^xsd:double ;
+      vcard:postal-code "OX298HB" ;
+      vcard:street-address
+              "Stonesfield," ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=4871463&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304872803193c
+      dd:hasPrice "395000.0"^^xsd:double ;
+      gr:includes dd:v1743304872975019c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=380534" .
+
+dd:v1743304880187572c
+      dd:hasPrice "295000.0"^^xsd:double ;
+      gr:includes dd:v1743304880272379c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=409221" .
+
+dd:v1743304882703678c
+      a       dd:House ;
+      gr:description "Modern semi detached house presented in excellent decorative order throughout having well planned accommodation briefly consisting entrance hall, cloakroom, living room, fitted kitchen, two bedrooms and bathroom. Outside, there is a private enclosed garden with pedestrian access to the front."^^xsd:string ;
+      gr:name "Stonesfield, Oxfordshire" ;
+      wgs84:lat "51.8527187"^^xsd:double ;
+      wgs84:long "-1.4255263"^^xsd:double ;
+      vcard:postal-code "OX298EJ" ;
+      vcard:street-address
+              "Stonesfield, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=7475046&w=300&ol=images/Sold-brief.gif" .
+
+dd:v1743304881772839c
+      dd:hasPrice "255000.0"^^xsd:double ;
+      gr:includes dd:v1743304881862380c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=380159" .
+
+dd:v1743304877885977c
+      dd:hasPrice "325000.0"^^xsd:double ;
+      gr:includes dd:v1743304877973307c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=424028" .
+
+dd:v1743304886410834c
+      a       dd:House ;
+      gr:description "Homewell House was constructed by McCarthy and Stone (Developments Ltd) and consists of forty properties on four floors each served by a lift.  The house manager can be contacted from various points within each property in case of an emergency.  Periods when the house manager is not available there is a 24 hour care line response system.No. 12 is a ground floor apartment with an entrance hall, living room, kitchen, bedroom and bathroom.  The lease states that the principle occupier of the apartment is aged over 60 years and the additional occupier over the age of 55 years."^^xsd:string ;
+      gr:name "Kidlington, Oxfordshire" ;
+      wgs84:lat "51.8272904"^^xsd:double ;
+      wgs84:long "-1.2856924"^^xsd:double ;
+      vcard:postal-code "OX52XT" ;
+      vcard:street-address
+              "Kidlington, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=16835943&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304876726901c
+      dd:hasPrice "350000.0"^^xsd:double ;
+      gr:includes dd:v1743304876815969c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=410870" .
+
+dd:v1743304877042279c
+      a       dd:House ;
+      gr:description "A modern detached early 1960s bungalow having been extended and improved by the present owners.  The property enjoys a good size garden adjoining open farmland and has replacement double glazed windows and is heated by gas fired central heating.  The accommodation briefly consists of an entrance hall, living room with coal effect gas open fire, kitchen with view over open farm land, separate dining room, three well proportioned bedrooms, one with en-suite shower room and family bathroom.  Outside, there is a good size garage with workshop area and wc to the rear and to the rear of the garage is a brick built workshop/storeroom."^^xsd:string ;
+      gr:name "Middle Barton, Oxfordshire" ;
+      wgs84:lat "51.9260824"^^xsd:double ;
+      wgs84:long "-1.3621312"^^xsd:double ;
+      vcard:postal-code "OX77BX" ;
+      vcard:street-address
+              "Middle Barton, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=19006811&w=300&ol=images/Available-brief.gif" .
+
+dd:v1743304882836235c
+      dd:hasPrice "230000.0"^^xsd:double ;
+      gr:includes dd:v1743304882921325c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=370394" .
+
+dd:v1743304871139776c
+      dd:hasPrice "575000.0"^^xsd:double ;
+      gr:includes dd:v1743304871254721c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=316633" .
+
+dd:v1743304870395297c
+      dd:hasPrice "795000.0"^^xsd:double ;
+      gr:includes dd:v1743304870518647c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=278086" .
+
+dd:v1743304881321211c
+      dd:hasPrice "269000.0"^^xsd:double ;
+      gr:includes dd:v1743304881407617c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=265313" .
+
+dd:v1743304870647954c
+      dd:hasPrice "675000.0"^^xsd:double ;
+      gr:includes dd:v1743304870734181c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=414421" .
+
+dd:v1743304880873495c
+      dd:hasPrice "280000.0"^^xsd:double ;
+      gr:includes dd:v1743304880957908c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=388383" .
+
+dd:v1743304883358364c
+      a       dd:House ;
+      gr:description "Situated on the east side of Woodstock, a well-proportioned semi-detached bungalow with good size gardens in need of refurbishment throughout.  The accommodation briefly consists of an entrance hall, living room with kitchen off, two bedrooms and bathroom.  Outside there is a good sized rear garden with vehicular access to single garage."^^xsd:string ;
+      gr:name "Woodstock, Oxfordshire" ;
+      wgs84:lat "51.8502227"^^xsd:double ;
+      wgs84:long "-1.3436772"^^xsd:double ;
+      vcard:postal-code "OX201LQ" ;
+      vcard:street-address
+              "Woodstock, Oxfordshire" ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=22351591&w=300&ol=images/Under Offer-brief.gif" .
+
+dd:v1743304884197177c
+      dd:hasPrice "195000.0"^^xsd:double ;
+      gr:includes dd:v1743304884282277c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=400536" .
+
+dd:v1743304873383778c
+      dd:hasPrice "395000.0"^^xsd:double ;
+      gr:includes dd:v1743304874298707c ;
+      foaf:page "http://www.scottsymonds.co.uk/propertyDetails.php?pid=386852" .
+
+dd:v1743304881633487c
+      a       dd:House ;
+      gr:description "Modern ground floor apartment in a gated development of eight similar properties situated on the east side of Woodstock town centre.  The property is presented in excellent condition and the accommodation briefly consists of an entrance hall, good size living room, kitchen, two bedrooms, en-suite shower room and bathroom.  Outside there are communal gardens and secure parking for two cars."^^xsd:string ;
+      gr:name "Woodstock, " ;
+      wgs84:lat "51.8492465"^^xsd:double ;
+      wgs84:long "-1.3459706"^^xsd:double ;
+      vcard:postal-code "OX201LF" ;
+      vcard:street-address
+              "Woodstock," ;
+      foaf:depiction "http://www.scottsymonds.co.uk/getImg.php?id=16778441&w=300&ol=images/Sold-brief.gif" .
+

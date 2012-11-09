@@ -1,11 +1,10 @@
-#58 houses
 @prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
 @prefix foaf:    <http://xmlns.com/foaf/0.1/> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 @prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
 @prefix gr:      <http://purl.org/goodrelations/v1#> .
 @prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
-
+ 
 dd:g73g81
       dd:hasPrice "255000"^^xsd:double ;
       gr:includes dd:g73g84 ;

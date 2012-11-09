@@ -1,0 +1,3452 @@
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix huhu:    <http://google.com/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix lulu:    <http://loolge.com/> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+dd:v1742198875064746c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Four bedroom terrace with attractive far reaching views across fields situated in a small close in the Old Marston Village Conservation Area. Conveniently placed for access into the city, The Cherwell School, Summertown shops and the John Radcliffe Hospital.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Barns Hay, Old Marston Village" ;
+      wgs84:lat "51.7754779"^^xsd:double ;
+      wgs84:long "-1.2389557"^^xsd:double ;
+      vcard:locality "Old Marston Village" ;
+      vcard:postal-code "OX30PN" ;
+      vcard:street-address
+              "Barns Hay" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_001481.pdf" .
+
+dd:v1742198901364187c
+      dd:hasPrice "200000.0"^^xsd:double ;
+      gr:includes dd:v1742198901430558c ;
+      foaf:page "http://scottfraser.co.uk/SHP01010/leopold-street-east-oxford" .
+
+dd:v1742198899814825c
+      dd:hasPrice "210000.0"^^xsd:double ;
+      gr:includes dd:v1742198899882984c ;
+      foaf:page "http://scottfraser.co.uk/SHP03339/manor-court-headington" .
+
+dd:v1742198874254576c
+      dd:hasPrice "450000.0"^^xsd:double ;
+      gr:includes dd:v1742198874331782c ;
+      foaf:page "http://scottfraser.co.uk/SHP02846/gardiner-street-headington" .
+
+dd:v1742198873166659c
+      dd:hasPrice "465000.0"^^xsd:double ;
+      gr:includes dd:v1742198873242512c ;
+      foaf:page "http://scottfraser.co.uk/SWP03214/middle-town-hailey" .
+
+dd:v1742198898650594c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Situated in a cul de sac off Corn Street, a three bedroom two storey cottage with sitting room featuring an open fireplace and kitchen opening into dining/garden room.  To the rear is an enclosed garden and useful storage area.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Lowell Place, Witney" ;
+      wgs84:lat "51.785246"^^xsd:double ;
+      wgs84:long "-1.4911414"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX286DX" ;
+      vcard:street-address
+              "Lowell Place" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002833.pdf" .
+
+dd:v1742198898034676c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Spacious semi-detached property in modern development.  Well-presented four bedroom accommodation with two separate receptions rooms arranged over three floors.  Conveniently situated within close proximity to the Business Park, ring road, local amenities and public transport.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Cranston Court, Rose Hill" ;
+      wgs84:lat "51.7272007"^^xsd:double ;
+      wgs84:long "-1.2233622"^^xsd:double ;
+      vcard:locality "Rose Hill" ;
+      vcard:postal-code "OX44HR" ;
+      vcard:street-address
+              "Cranston Court" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003432.pdf" .
+
+dd:v1742198882762118c
+      dd:hasPrice "385000.0"^^xsd:double ;
+      gr:includes dd:v1742198882834589c ;
+      foaf:page "http://scottfraser.co.uk/SHP03287/coverley-road-headington" .
+
+dd:v1742198863045331c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Panoramic town and country views from ROOF TOP TERRACE and principal rooms. PERIOD TOWN HOUSE ranging over four levels and situated on a sought after city side road. This attractive property has been sensitively refurbished by the present owners retaining many of its ORIGINAL FEATURES and has approval as permitted development (11/02708/PDC) for a further top floor level of accommodation comprising bedroom eyrie with terrace and ensuite. NO ONWARD CHAIN, immediate vacant possession available.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Hill Top Road, Oxford" ;
+      wgs84:lat "51.7494436"^^xsd:double ;
+      wgs84:long "-1.2244874"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX41PB" ;
+      vcard:street-address
+              "Hill Top Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003431.pdf" .
+
+dd:v1742198902307391c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Ground floor apartment with well-appointed interiors. Recently refurbished accommodation including two double bedrooms, its own private garden and is available for sale with no onward chain.  Conveniently situated for the city centre, John Radcliffe Hospital, local amenities and public transport links.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Copse Lane, Marston" ;
+      wgs84:lat "51.7677136"^^xsd:double ;
+      wgs84:long "-1.2299276"^^xsd:double ;
+      vcard:locality "Marston" ;
+      vcard:postal-code "OX30AT" ;
+      vcard:street-address
+              "Copse Lane" .
+
+dd:v1742198877304780c
+      dd:hasPrice "425000.0"^^xsd:double ;
+      gr:includes dd:v1742198877398846c ;
+      foaf:page "http://scottfraser.co.uk/SHP01490/cross-street-st-clements" .
+
+dd:v1742198881521617c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Character home in central Headington. Impressive semi detached period residence with generous three reception room, three double bedroom accommodation. Sideaccess to 105' rear garden which benefits from a storage/workshop/potential office space. Offered for sale with no onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Windmill Road, Headington" ;
+      wgs84:lat "51.7567717"^^xsd:double ;
+      wgs84:long "-1.2083237"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37BT" ;
+      vcard:street-address
+              "Windmill Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003347.pdf" .
+
+dd:v1742198868516035c
+      dd:hasPrice "550000.0"^^xsd:double ;
+      gr:includes dd:v1742198868597930c ;
+      foaf:page "http://scottfraser.co.uk/SHP00476/margaret-road-headington" .
+
+dd:v1742198862667751c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Handsome stone cottage set in 0.24 acres in the centre of the one of Oxfordshire's most sought after villages. Well appointed character accommodation comprises three reception rooms, three bedrooms and conservatory with a south/westerly aspect overlooking impressive gardens with a range of stone outbuildings.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Middle Road, Stanton St John" ;
+      wgs84:lat "51.7788058"^^xsd:double ;
+      wgs84:long "-1.1636557"^^xsd:double ;
+      vcard:locality "Stanton St John" ;
+      vcard:postal-code "OX331HD" ;
+      vcard:street-address
+              "Middle Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003137.pdf" .
+
+dd:v1742198872883304c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Split level home in enviable edge of town location. Designed to make the most of its wonderful position overlooking meadows, this modern home offers excellent family accommodation complemented by a landscaped garden and double garage. Four bedrooms (one en-suite), three receptions, re-fitted kitchen, bathroom and balcony with exceptional views. Further details and photographs available shortly.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Crawley Road, Witney" ;
+      wgs84:lat "51.7940361"^^xsd:double ;
+      wgs84:long "-1.4883166"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX281HX" ;
+      vcard:street-address
+              "Crawley Road" .
+
+dd:v1742198872067154c
+      dd:hasPrice "495000.0"^^xsd:double ;
+      gr:includes dd:v1742198872144306c ;
+      foaf:page "http://scottfraser.co.uk/SHP03261/ramsay-road-headington" .
+
+dd:v1742198876210455c
+      dd:hasPrice "430000.0"^^xsd:double ;
+      gr:includes dd:v1742198876285532c ;
+      foaf:page "http://scottfraser.co.uk/SHP03340/london-road-headington" .
+
+dd:v1742198894600710c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """A link detached three bedroom family home with a walled rear garden, parking and garage. Within the Headington Quarry Conservation Area with excellent transport links and easy access to the hospitals. Close to Headington Quarry Nursery & Windmill Primary Schools, both judged 'good' by Ofsted.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Trinity Road, Headington Quarry" ;
+      wgs84:lat "51.7583798"^^xsd:double ;
+      wgs84:long "-1.1962121"^^xsd:double ;
+      vcard:locality "Headington Quarry" ;
+      vcard:postal-code "OX38LQ" ;
+      vcard:street-address
+              "Trinity Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002875.pdf" .
+
+dd:v1742198900237534c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Two double bedroom semi detached home. Situated in a pedestrian only area on the edge of Madley Park a well presented property ideal for first time buyers or for investment. Enclosed rear garden, detached garage and parking. End of chain.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Park View Road, Witney" ;
+      wgs84:lat "51.7889066"^^xsd:double ;
+      wgs84:long "-1.4690341"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX281GA" ;
+      vcard:street-address
+              "Park View Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002709.pdf" .
+
+dd:v1742198900537489c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """River views in central Oxford. A unique city address suitable equally as a work space or a convenient pied-a-terre, benefitting from a balcony and eligibility for residents permit parking. Offered for sale with no onward chain.        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Folly Bridge, Oxford City" ;
+      wgs84:lat "51.7460337"^^xsd:double ;
+      wgs84:long "-1.2561511"^^xsd:double ;
+      vcard:locality "Oxford City" ;
+      vcard:postal-code "OX14LB" ;
+      vcard:street-address
+              "Folly Bridge" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/SHP02097_b.pdf" .
+
+dd:v1742198883182266c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Located on the banks of the River Thames. Set in this desirable riverside development with delightful landscaped gardens. Spacious and versatile four bedroom accommodation available with no onward chain.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Leander Way, Oxford" ;
+      wgs84:lat "51.7324001"^^xsd:double ;
+      wgs84:long "-1.2472379"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX14XR" ;
+      vcard:street-address
+              "Leander Way" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003221.pdf" .
+
+dd:v1742198881786461c
+      dd:hasPrice "390000.0"^^xsd:double ;
+      gr:includes dd:v1742198881859512c ;
+      foaf:page "http://scottfraser.co.uk/SHP03420/temple-road-temple-cowley" .
+
+dd:v1742198857721572c
+      dd:hasPrice "875000.0"^^xsd:double ;
+      gr:includes dd:v1742198857799028c ;
+      foaf:page "http://scottfraser.co.uk/SHP03288/sandfield-road-headington" .
+
+dd:v1742198896414050c
+      dd:hasPrice "265000.0"^^xsd:double ;
+      gr:includes dd:v1742198896480864c ;
+      foaf:page "http://scottfraser.co.uk/SHP03234/dorchester-close-headington" .
+
+dd:v1742198872430483c
+      dd:hasPrice "485000.0"^^xsd:double ;
+      gr:includes dd:v1742198872510358c ;
+      foaf:page "http://scottfraser.co.uk/SWP01832/newland-mill-witney" .
+
+dd:v1742198892690584c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Well presented detached three bedroom bungalow situated on good sized plot with off road parking and garage.  The property has a a sitting room opening into large conservatory, the fitted kitchen has a host of top of the range Miele appliances and the property is double glazed throughout with gas fired central heating.  End of Chain sale.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Brize Norton Road, Minster Lovell" ;
+      wgs84:lat "51.7912131"^^xsd:double ;
+      wgs84:long "-1.5476199"^^xsd:double ;
+      vcard:locality "Minster Lovell" ;
+      vcard:postal-code "OX290SG" ;
+      vcard:street-address
+              "Brize Norton Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003148.pdf" .
+
+dd:v1742198864495425c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "4"^^xsd:int ;
+      gr:description """Substantial period residence with character features and well appointed interiors. Double fronted home with attractive elevations featuring round bay windows with red brick under a slate roof. The accommodation is arranged around a central staircase and features four bedrooms with family bathroom and shower room on the first floor.There a four separate reception rooms on the ground floor plus a cloakroom, study and a lower level playroom. In addition a garage to one side offers potential for a home office or studio on an existing mezzanine with skylights. The location is excellent for central Headington amenities, the ring road and London and airport buses.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 4"""^^xsd:string ;
+      gr:name "Northfield Road, Headington" ;
+      wgs84:lat "51.7636277"^^xsd:double ;
+      wgs84:long "-1.2010312"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX39EW" ;
+      vcard:street-address
+              "Northfield Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003131.pdf" .
+
+dd:v1742198873535067c
+      dd:hasPrice "450000.0"^^xsd:double ;
+      gr:includes dd:v1742198873611098c ;
+      foaf:page "http://scottfraser.co.uk/SWP03238/manor-road-witney" .
+
+dd:v1742198885845171c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Contemporary ground floor garden apartment situated in a prime city side road close to the Summertown shops. Two double bedroom accommodation with stylish interiors, private decked garden and allocated parking.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Davenant Road, North Oxford" ;
+      wgs84:lat "51.7857891"^^xsd:double ;
+      wgs84:long "-1.2757069"^^xsd:double ;
+      vcard:locality "North Oxford" ;
+      vcard:postal-code "OX28BY" ;
+      vcard:street-address
+              "Davenant Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003282.pdf" .
+
+dd:v1742198856580845c
+      dd:hasPrice "1250000.0"^^xsd:double ;
+      gr:includes dd:v1742198856685590c ;
+      foaf:page "http://scottfraser.co.uk/SHP01889/jack-straws-lane-headington" .
+
+dd:v1742198892942444c
+      dd:hasPrice "300000.0"^^xsd:double ;
+      gr:includes dd:v1742198893015169c ;
+      foaf:page "http://scottfraser.co.uk/SWP03117/chadlington-road-chipping-norton" .
+
+dd:v1742198898897178c
+      dd:hasPrice "230000.0"^^xsd:double ;
+      gr:includes dd:v1742198898987415c ;
+      foaf:page "http://scottfraser.co.uk/SHP01403/cranston-court-rose-hill" .
+
+dd:v1742198867624819c
+      dd:hasPrice "550000.0"^^xsd:double ;
+      gr:includes dd:v1742198867702612c ;
+      foaf:page "http://scottfraser.co.uk/SHP03229/kelham-hall-drive-wheatley" .
+
+dd:v1742198886106208c
+      dd:hasPrice "350000.0"^^xsd:double ;
+      gr:includes dd:v1742198886179045c ;
+      foaf:page "http://scottfraser.co.uk/SHP03484/highbank-close-headington" .
+
+dd:v1742198875345139c
+      dd:hasPrice "435000.0"^^xsd:double ;
+      gr:includes dd:v1742198875445639c ;
+      foaf:page "http://scottfraser.co.uk/SHP03353/stapleton-road-headington" .
+
+dd:v1742198879080010c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Attractive period family home. Bay fronted semi-detached property, extended by the current owners to provide comfortable four bedroom family accommodation arranged over three floors. Located in the heart of central Headington, close to all local amenities, and with the benefit of off street parking.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Windmill Road, Headington" ;
+      wgs84:lat "51.7567744"^^xsd:double ;
+      wgs84:long "-1.2087293"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37BZ" ;
+      vcard:street-address
+              "Windmill Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003176.pdf" .
+
+dd:v1742198894299893c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """City home offering scope for improvement. Three bedroom, two reception room accommodation that would now benefit from updating and adapting. Situated on a no through road close to The Plain and bus stops to London, and just a few moments walk from South Park. No onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Union Street, East Oxford" ;
+      wgs84:lat "51.7488514"^^xsd:double ;
+      wgs84:long "-1.2356659"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX41JP" ;
+      vcard:street-address
+              "Union Street" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003136.pdf" .
+
+dd:v1742198866857937c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Stone cottage in Old Headington conservation area. Delightful character cottage with period features in historic village within the city. Arranged over three floors the well appointed accommodation comprises, three bedrooms and bathroom upstairs with two main reception rooms, study, kitchen, bathroom and basement on the lower floors. The location near St Andrews church is ideal for central Headington amenities, London and airport bus stops, Brookes University and Headington hospitals.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Larkins Lane, Headington" ;
+      wgs84:lat "51.7653914"^^xsd:double ;
+      wgs84:long "-1.2105784"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX39DW" ;
+      vcard:street-address
+              "Larkins Lane" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002016.pdf" .
+
+dd:v1742198890004834c
+      dd:hasPrice "325000.0"^^xsd:double ;
+      gr:includes dd:v1742198890075103c ;
+      foaf:page "http://scottfraser.co.uk/SHP03360/shorte-close-headington" .
+
+dd:v1742198884187331c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Superbly presented detached home overlooking communal green. Three storey townhouse with luxurious upgrades from the original specification to the bathrooms and kitchen. Also worthy of particular note is the impressive master suite which occupies the entire top floor of the house and has dressing room and high quality bathroom. Madley Park is a popular residential area, well served by local amenities and with a regular bus service into central Witney.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Waterford Road, Witney" ;
+      wgs84:lat "51.7889471"^^xsd:double ;
+      wgs84:long "-1.4680332"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX281FF" ;
+      vcard:street-address
+              "Waterford Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003277.pdf" .
+
+dd:v1742198904174533c
+      dd:hasPrice "137500.0"^^xsd:double ;
+      gr:includes dd:v1742198904240280c ;
+      foaf:page "http://scottfraser.co.uk/SWP02224/chase-house-carterton" .
+
+dd:v1742198891633760c
+      dd:hasPrice "310000.0"^^xsd:double ;
+      gr:includes dd:v1742198891700602c ;
+      foaf:page "http://scottfraser.co.uk/SWP03467/busby-close-clanfield" .
+
+dd:v1742198889350112c
+      dd:hasPrice "330000.0"^^xsd:double ;
+      gr:includes dd:v1742198889416329c ;
+      foaf:page "http://scottfraser.co.uk/SWP03371/newland-witney" .
+
+dd:v1742198904523895c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """INVESTMENT BUYERS ONLY  - Currently tenanted until May 2013 earning £575 pcm. Ground floor studio apartment situated in the centre of Eynsham. Open plan living area, with a bespoke bedroom, shower room and a parking space.        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Thames Street, Eynsham" ;
+      wgs84:lat "51.7807331"^^xsd:double ;
+      wgs84:long "-1.3738507"^^xsd:double ;
+      vcard:locality "Eynsham" ;
+      vcard:postal-code "OX294HF" ;
+      vcard:street-address
+              "Thames Street" .
+
+dd:v1742198882517255c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Attractive semi detached house now requiring refurbishment situated on the edge of the city within the Cherwell School catchment area. Bay fronted three bedroom, two reception room accommodation with the potential to extend subject to the necessary consents and offered for sale with no onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Templar Road, North Oxford" ;
+      wgs84:lat "51.7903039"^^xsd:double ;
+      wgs84:long "-1.2686317"^^xsd:double ;
+      vcard:locality "North Oxford" ;
+      vcard:postal-code "OX28LT" ;
+      vcard:street-address
+              "Templar Road" .
+
+dd:v1742198857054705c
+      a       dd:House ;
+      dd:bathrooms "4"^^xsd:int ;
+      dd:bedrooms "7"^^xsd:int ;
+      dd:receptions "5"^^xsd:int ;
+      gr:description """Detached Victorian residence arranged as house and three apartments. Set in wooded grounds, an attractive period property offering flexible accommodation suitable as a home with income or for a variety of other uses subject to necessary consents. Redbrick elevations are complemented by a stone pillared porch and stone mullioned windows. The main house is vacant and offers four bedroom accommodation with original features including high ceilings, tall sash windows, fireplaces and shutters. The three apartments are let on Assured Shorthold Tenancies with two months notice required for vacant possession. The house and apartments require updating and this is reflected in the current rents which are substantially below market values.        
+         
+            Bedrooms 7 |
+            Bathrooms 4 |
+            Receptions 5"""^^xsd:string ;
+      gr:name "Quarry Road, Headington" ;
+      wgs84:lat "51.756411"^^xsd:double ;
+      wgs84:long "-1.200008"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX38NU" ;
+      vcard:street-address
+              "Quarry Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003052.pdf" .
+
+dd:v1742198904731424c
+      dd:hasPrice "117500.0"^^xsd:double ;
+      gr:includes dd:v1742198904797286c ;
+      foaf:page "http://scottfraser.co.uk/SWP02222/chase-house-carterton" .
+
+dd:v1742198901722579c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Individual contemporary apartment. Immaculate and stylish flat with high quality modern fittings, a private entrance and allocated parking, opening onto a central courtyard, and tucked away from the road in the heart of the lively East Oxford community.        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Magdalen Road, East Oxford" ;
+      wgs84:lat "51.7418343"^^xsd:double ;
+      wgs84:long "-1.236436"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX41RH" ;
+      vcard:street-address
+              "Magdalen Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003361.pdf" .
+
+dd:v1742198877667816c
+      dd:hasPrice "420000.0"^^xsd:double ;
+      gr:includes dd:v1742198877741380c ;
+      foaf:page "http://scottfraser.co.uk/SHP03352/stapleton-road-headington" .
+
+dd:v1742198869736333c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """An exciting new home by David Wilson Homes at Kingsmere Village, Bicester, Oxford.The Somerville is stylishly designed over three storeys and benefits from a luxurious kitchen/family room along with a large lounge.        
+         
+            Bedrooms 5 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "de Lacey Fields, Bicester" ;
+      wgs84:lat "51.8938688"^^xsd:double ;
+      wgs84:long "-1.1755599"^^xsd:double ;
+      vcard:locality "Bicester" ;
+      vcard:postal-code "OX261RS" ;
+      vcard:street-address
+              "de Lacey Fields" .
+
+dd:v1742198887722006c
+      dd:hasPrice "345000.0"^^xsd:double ;
+      gr:includes dd:v1742198887789828c ;
+      foaf:page "http://scottfraser.co.uk/SHP03390/langley-close-headington" .
+
+dd:v1742198880337464c
+      dd:hasPrice "395000.0"^^xsd:double ;
+      gr:includes dd:v1742198880410677c ;
+      foaf:page "http://scottfraser.co.uk/SWP03459/college-farm-chadlington" .
+
+dd:v1742198858918300c
+      dd:hasPrice "850000.0"^^xsd:double ;
+      gr:includes dd:v1742198859027228c ;
+      foaf:page "http://scottfraser.co.uk/SWP03061/longfield-duns-tew" .
+
+dd:v1742198863759859c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Attractive double fronted residence on prime North Oxford side road. Generous three bedroom, three reception room accommodation over two floors with charmingperiod features, and with the benefit of garage parking to the rear. Located on a quiet residential side road within walking distance of the Summertown shopping parade andits fantastic range of shops, cafes and restaurants.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Islip Road, North Oxford" ;
+      wgs84:lat "51.784277"^^xsd:double ;
+      wgs84:long "-1.263931"^^xsd:double ;
+      vcard:locality "North Oxford" ;
+      vcard:postal-code "OX27SN" ;
+      vcard:street-address
+              "Islip Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003065.pdf" .
+
+dd:v1742198865215913c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Striking family home on the edge of the city. Spacious four double bedroom accommodation arranged over three floors with fashionable interiors including designer hand painted Sebastian Sellers kitchen, integrated appliances, luxury bath and shower rooms and stunning family room overlooking large private garden. No onward chain.Bespoke Hand Painted  Sebastian Sellers Kitchen Integrated Fridge/Freezer, Washing Machine, Tumble Drier & DishwasherStainless Steel Range with Five Burner Gas Hob, Electric Oven & Extractor HoodWhite Suites to Bathrooms, Cloakroom & EnsuiteAsh Veneered Doors with Chrome Door FurnitureWardrobes/Cupboards to all BedroomsGas Fired Central Heating & Double GlazingRemainder of NHBC Building WarrantyTV & CAT 5 Telephone/Computer Cabling to Principal Rooms        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Sunderland Avenue, North Oxford" ;
+      wgs84:lat "51.7883894"^^xsd:double ;
+      wgs84:long "-1.277463"^^xsd:double ;
+      vcard:locality "North Oxford" ;
+      vcard:postal-code "OX28DU" ;
+      vcard:street-address
+              "Sunderland Avenue" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_000506.pdf" .
+
+dd:v1742198862956683c
+      dd:hasPrice "680000.0"^^xsd:double ;
+      gr:includes dd:v1742198863045331c ;
+      foaf:page "http://scottfraser.co.uk/SHP03431/hill-top-road-oxford" .
+
+dd:v1742198886527728c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """New, convenient and ready to move into - Oxford's newest address is now launched.A select mews style development of just seven stylish detached and semi detached houses in a private setting. Convenient for city cycle paths, Summertown, Oxford/London buses, the JR and Oxford Brookes University. Prices range from £260,000 to £360,000. Please call for full specification and to arrange your private viewing.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Highbank Close, Headington" ;
+      wgs84:lat "51.7669383"^^xsd:double ;
+      wgs84:long "-1.2309842"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30LT" ;
+      vcard:street-address
+              "Highbank Close" .
+
+dd:v1742198860055661c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Detached home with stylish interiors on popular tree lined road. Discreetly located residence with deceptively spacious accommodation featuring four bedrooms, and superb open plan living spaces. Located on the edge of sought after Iffley Village conservation area with its period homes, stone walls, Iffley Lock and Norman church.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Abberbury Road, Iffley Village" ;
+      wgs84:lat "51.7296837"^^xsd:double ;
+      wgs84:long "-1.2345412"^^xsd:double ;
+      vcard:locality "Iffley Village" ;
+      vcard:postal-code "OX44ET" ;
+      vcard:street-address
+              "Abberbury Road" .
+
+dd:v1742198898987415c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Modern mid terrace investment property situated on the edge of the city.  Spacious three bedroom accommodation with private garden and allocated parking space situated in quiet residential development.  The property is currently achieving a rental income of £1,100 with HMO license.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Cranston Court, Rose Hill" ;
+      wgs84:lat "51.7272007"^^xsd:double ;
+      wgs84:long "-1.2233622"^^xsd:double ;
+      vcard:locality "Rose Hill" ;
+      vcard:postal-code "OX44HR" ;
+      vcard:street-address
+              "Cranston Court" .
+
+dd:v1742198902861836c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Well presented and spacious  two bedroom top floor purpose built apartment tucked away in the centre of Witney with a wide range of facilities within easy walking distance.  The light and airy accommodation comprises entrance/study area, inner hall, sitting room, two bedrooms with built in wardrobes, fitted kitchen and attractive bathroom suite in white.  Allocated parking, electric heating and roof top views. End of chain sale.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "The Old Coachyard, Witney" ;
+      wgs84:lat "51.7885608"^^xsd:double ;
+      wgs84:long "-1.4842611"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX286JB" ;
+      vcard:street-address
+              "The Old Coachyard" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003523.pdf" .
+
+dd:v1742198900169893c
+      dd:hasPrice "205000.0"^^xsd:double ;
+      gr:includes dd:v1742198900237534c ;
+      foaf:page "http://scottfraser.co.uk/SWP02709/park-view-road-witney" .
+
+dd:v1742198891397960c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """An exciting new home by David Wilson Homes at Kingsmere, Bicester, Oxford.The Merton is a two and a half storey, three bedroom home with an open plan combined kitchen/dining/family area on the ground floor.  Downstairs also includes a study and utility room.  The first floor features the lounge and master bedroom with en suite shower room.  The second floor has two further double bedrooms and a family bathroom.  It also includes an oversized single garage.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "de Lacy Fields, Bicester" ;
+      wgs84:lat "51.8938688"^^xsd:double ;
+      wgs84:long "-1.1755599"^^xsd:double ;
+      vcard:locality "Bicester" ;
+      vcard:postal-code "OX261RS" ;
+      vcard:street-address
+              "de Lacy Fields" .
+
+dd:v1742198815347197c
+      dd:hasPrice "1500000.0"^^xsd:double ;
+      gr:includes dd:v1742198853846756c ;
+      foaf:page "http://scottfraser.co.uk/SHP03067/gathorne-road-headington" .
+
+dd:v1742198879007277c
+      dd:hasPrice "400000.0"^^xsd:double ;
+      gr:includes dd:v1742198879080010c ;
+      foaf:page "http://scottfraser.co.uk/SHP03176/windmill-road-headington" .
+
+dd:v1742198889416329c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Three/four bedroom Victorian cottage arranged over two floors beautifully presented throughout with refitted bathrooms and kitchen in a contemporary style.  The sitting room has a working open fireplace, dining area open into kitchen leading to pergola covered garden area.  Master bedroom has an en-suite shower room and walk-in wardrobe.  The gardens are well tended, laid to lawn with attractively stocked borders and to the rear an off road parking space within the curtilage of the property. Double glazing and gas central heating.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Newland, Witney" ;
+      wgs84:lat "51.7880423"^^xsd:double ;
+      wgs84:long "-1.4747854"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX283JQ" ;
+      vcard:street-address
+              "Newland" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003371.pdf" .
+
+dd:v1742198885455599c
+      dd:hasPrice "360000.0"^^xsd:double ;
+      gr:includes dd:v1742198885527726c ;
+      foaf:page "http://scottfraser.co.uk/SHP03527/friday-lane-wheatley" .
+
+dd:v1742198895510222c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Park-Side Apartment. On the ground floor of this highly regarded building a stroll from the city, a stylishly presented property fronting extensive communal grounds, and in a most private and sheltered setting adjacent to South Park. Generous two double bedroom accommodation, with bathroom and additional ensuite shower room. With the benefit of garage and residents parking, and providing excellent access to St Clements, Headington hospitals and buses to London.        
+         
+            Bedrooms 2 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Granville Court, Headington" ;
+      wgs84:lat "51.7530253"^^xsd:double ;
+      wgs84:long "-1.2318144"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30HS" ;
+      vcard:street-address
+              "Granville Court" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003233.pdf" .
+
+dd:v1742198893015169c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Spacious three bedroom 1950s semi detached house in this rural hamlet between Charlbury (Mainline Station to London Paddington and Oxford) and Chipping Norton town.  The property would benefit from updating to include new kitchens and bathroom, re-carpeting and redecorating but would make a suitable home for a family with its large garden and proximity to a children's play area. Gas fired central heating, double glazing, useful workshop/outbuilding and garage.  Rural views to front - End of Chain Sale.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Chadlington Road, Chipping Norton" ;
+      wgs84:lat "51.8940042"^^xsd:double ;
+      wgs84:long "-1.4938672"^^xsd:double ;
+      vcard:locality "Chipping Norton" ;
+      vcard:postal-code "OX73JT" ;
+      vcard:street-address
+              "Chadlington Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003117.pdf" .
+
+dd:v1742198879336565c
+      dd:hasPrice "400000.0"^^xsd:double ;
+      gr:includes dd:v1742198879409479c ;
+      foaf:page "http://scottfraser.co.uk/SHP03113/godstow-road-wolvercote" .
+
+dd:v1742198881371361c
+      dd:hasPrice "395000.0"^^xsd:double ;
+      gr:includes dd:v1742198881521617c ;
+      foaf:page "http://scottfraser.co.uk/SHP03347/windmill-road-headington" .
+
+dd:v1742198856980091c
+      dd:hasPrice "1000000.0"^^xsd:double ;
+      gr:includes dd:v1742198857054705c ;
+      foaf:page "http://scottfraser.co.uk/SHP03052/quarry-road-headington" .
+
+dd:v1742198888360917c
+      dd:hasPrice "342000.0"^^xsd:double ;
+      gr:includes dd:v1742198888428889c ;
+      foaf:page "http://scottfraser.co.uk/SHP02420/st-georges-manor-oxford" .
+
+dd:v1742198890402025c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Brand new three bedroom semi-detached house in central Witney. Contemporary kitchen/ breakfast room with fitted appliances and French doors opening out onto patio, sitting room, three bedrooms, study, family bathroom and ensuite to master bedroom. Enclosed rear garden and two allocated parking spaces.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Kernahan Way, Witney" ;
+      wgs84:lat "51.7848307"^^xsd:double ;
+      wgs84:long "-1.4849675"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX286FA" ;
+      vcard:street-address
+              "Kernahan Way" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002748.pdf" .
+
+dd:v1742198902515540c
+      dd:hasPrice "185000.0"^^xsd:double ;
+      gr:includes dd:v1742198902579996c ;
+      foaf:page "http://scottfraser.co.uk/SHP03237/emden-house-headington" .
+
+dd:v1742198873242512c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Spacious detached family home which has been extended to provide over 2,000 square feet comprising sitting room, family room, beautiful conservatory, well appointed kitchen/breakfast room whilst on the first floor there are four good sized bedrooms and three bathrooms.  The attic has been converted to provide a 24 foot hobbies room and there is ample off road parking and a large garden backing onto school playing fields.        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Middle Town, Hailey" ;
+      wgs84:lat "51.813376"^^xsd:double ;
+      wgs84:long "-1.4904187"^^xsd:double ;
+      vcard:locality "Hailey" ;
+      vcard:postal-code "OX299TA" ;
+      vcard:street-address
+              "Middle Town" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003214.pdf" .
+
+dd:v1742198860763348c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "4"^^xsd:int ;
+      gr:description """Period village home with contemporary extension and far reaching rural views. Attractive stone and thatched, grade II listed cottage believed to date back to the early 18th century and set in a plot approaching half an acre. Modern stone wing creates a new reception hall, garaging, cellar storage and a versatile first floor office/studio or family room. The property has a wealth of original features and is set in this popular village conservation area on the outskirts of Oxford. No onward chain. The sellers will be having the thatched roof overhauled before sale with a new ridge and new back.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 4"""^^xsd:string ;
+      gr:name "Wheatley Road, Forest Hill" ;
+      wgs84:lat "51.7652458"^^xsd:double ;
+      wgs84:long "-1.1497053"^^xsd:double ;
+      vcard:locality "Forest Hill" ;
+      vcard:postal-code "OX331ES" ;
+      vcard:street-address
+              "Wheatley Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002698.pdf" .
+
+dd:v1742198903078879c
+      dd:hasPrice "159950.0"^^xsd:double ;
+      gr:includes dd:v1742198903143516c ;
+      foaf:page "http://scottfraser.co.uk/SWP03461/high-street-witney" .
+
+dd:v1742198882187140c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Period home with contemporary interiors. Family house with beautifully presented three bedroom accommodation with two separate reception areas including an impressive kitchen/breakfast room opening onto a landscaped garden. Refurbished to an impressive standard, the property is also centrally located in the heart of Headington just a short walk from all of its amenities, and the local, London airport and bus connections.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Windmill Road, Headington" ;
+      wgs84:lat "51.7567717"^^xsd:double ;
+      wgs84:long "-1.2083237"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37BT" ;
+      vcard:street-address
+              "Windmill Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003309.pdf" .
+
+dd:v1742198890075103c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Modern townhouse with well-appointed interiors.  Well-presented recently renovated accommodation with fitted kitchen, two spacious reception rooms and a private west facing rear garden.  Offered for sale with no onward chain.  Conveniently situated to the Headington Hospitals, London and Airport Buses, A/M 40 and Brookes University.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Shorte Close, Headington" ;
+      wgs84:lat "51.7433641"^^xsd:double ;
+      wgs84:long "-1.1974779"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37FG" ;
+      vcard:street-address
+              "Shorte Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003360.pdf" .
+
+dd:v1742198877741380c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Edwardian home in sought after residential side road. Attractive halls adjoining end of terrace family property with three bedroom accommodation over two floors. Theconvenient position gives easy access to the University and Headington hospitals. There are also bus stops on the London Road providing regular services to Oxford, London, Heathrow and Gatwick. No onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Stapleton Road, Headington" ;
+      wgs84:lat "51.7548753"^^xsd:double ;
+      wgs84:long "-1.2138041"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37LX" ;
+      vcard:street-address
+              "Stapleton Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003352.pdf" .
+
+dd:v1742198899219245c
+      dd:hasPrice "227500.0"^^xsd:double ;
+      gr:includes dd:v1742198899286599c ;
+      foaf:page "http://scottfraser.co.uk/SWP03424/newland-close-eynsham" .
+
+dd:v1742198895146133c
+      dd:hasPrice "284500.0"^^xsd:double ;
+      gr:includes dd:v1742198895212705c ;
+      foaf:page "http://scottfraser.co.uk/SWP02842/millwood-farm-barns-long-hanborough" .
+
+dd:v1742198886179045c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """New, convenient and ready to move into - Oxford's newest address is now launched.A select mews style development of just seven stylish detached and semi detached houses in a private setting. Convenient for city cycle paths, Summertown, Oxford/London buses, the JR and Oxford Brookes University. Prices range from £260,000 to £360,000. Please call for full specification and to arrange your private viewing.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Highbank Close, Headington" ;
+      wgs84:lat "51.7669383"^^xsd:double ;
+      wgs84:long "-1.2309842"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30LT" ;
+      vcard:street-address
+              "Highbank Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003484.pdf" .
+
+dd:v1742198876954394c
+      dd:hasPrice "425000.0"^^xsd:double ;
+      gr:includes dd:v1742198877028689c ;
+      foaf:page "http://scottfraser.co.uk/SWP02095/woodstock-road-witney" .
+
+dd:v1742198897352937c
+      dd:hasPrice "250000.0"^^xsd:double ;
+      gr:includes dd:v1742198897421038c ;
+      foaf:page "http://scottfraser.co.uk/SHP03286/windsor-street-headington" .
+
+dd:v1742198858611987c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Sabine is a four bedroom three bathroom18th century stone and timber barn which has been converted to provide open plan contemporary living whilst retaining a wealth of traditional architectural features.  The property is a perfect blend of old and new, traditional and contemporary, providing a truly inspiring living space, modern amenities in a character setting. Note an additional area of PADDOCK is available by separate negotiation.        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Cumnor Road, Farmoor" ;
+      wgs84:lat "51.7580041"^^xsd:double ;
+      wgs84:long "-1.347521"^^xsd:double ;
+      vcard:locality "Farmoor" ;
+      vcard:postal-code "OX29NS" ;
+      vcard:street-address
+              "Cumnor Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003138.pdf" .
+
+dd:v1742198889730886c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """End terrace property in popular side road of East Avenue.  Well- presented three bedroom accommodation benefiting from a generous landscaped rear garden, off-street parking and offered for sale with no onward chain.  Situated conveniently to the Cowley Road amenities, public transport links and London/Airport Buses.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Ablett Close, East Oxford" ;
+      wgs84:lat "51.7491046"^^xsd:double ;
+      wgs84:long "-1.2331266"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX41XH" ;
+      vcard:street-address
+              "Ablett Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003418.pdf" .
+
+dd:v1742198903143516c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Modern end-of-terrace home in the heart of Witney. Double bedroom, shower room, open-plan reception room/kitchen and ground floor cloakroom.  Garden area. Gas fired central heating and double glazing.        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "High Street, Witney" ;
+      wgs84:lat "51.787488"^^xsd:double ;
+      wgs84:long "-1.483583"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX286JA" ;
+      vcard:street-address
+              "High Street" .
+
+dd:v1742198902579996c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Retirement Apartment situated on the edge of Old Headington.  First floor accommodation with fully fitted kitchen, light and airy sitting room anattractive views of communal gardens.  Conveniently situated within close proximity of Waitrose Supermarket & London/Airport buses. Please see the link below for further information;http://www.emdenhouse.com/index.html        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Emden House, Headington" ;
+      wgs84:lat "51.764259"^^xsd:double ;
+      wgs84:long "-1.2093085"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX39JU" ;
+      vcard:street-address
+              "Emden House" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003237.pdf" .
+
+dd:v1742198895212705c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Barn conversion in small courtyard development in select part of this thriving village. Converted approximately 16 years ago, a mid-terrace home presented in good order throughout. Long Hanborough has many amenities including shops, surgery, dentist, public houses and a direct train line to London Paddington.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Millwood Farm Barns, Long Hanborough" ;
+      wgs84:lat "51.8272403"^^xsd:double ;
+      wgs84:long "-1.4007327"^^xsd:double ;
+      vcard:locality "Long Hanborough" ;
+      vcard:postal-code "OX298RB" ;
+      vcard:street-address
+              "Millwood Farm Barns" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002842.pdf" .
+
+dd:v1742198901957626c
+      dd:hasPrice "190000.0"^^xsd:double ;
+      gr:includes dd:v1742198902022857c ;
+      foaf:page "http://scottfraser.co.uk/SWP02929/collier-crescent-witney" .
+
+dd:v1742198891020073c
+      dd:hasPrice "315000.0"^^xsd:double ;
+      gr:includes dd:v1742198891087447c ;
+      foaf:page "http://scottfraser.co.uk/SHP02840/st-christophers-place-oxford" .
+
+dd:v1742198895445251c
+      dd:hasPrice "275000.0"^^xsd:double ;
+      gr:includes dd:v1742198895510222c ;
+      foaf:page "http://scottfraser.co.uk/SHP03233/granville-court-headington" .
+
+dd:v1742198874612060c
+      dd:hasPrice "450000.0"^^xsd:double ;
+      gr:includes dd:v1742198874691017c ;
+      foaf:page "http://scottfraser.co.uk/SWP03486/meadow-lane-fulbrook" .
+
+dd:v1742198883507331c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Well-appointed townhouse in modern development.  Spacious four bedroom contemporary accommodation arranged over three floors including fitted kitchen and rear landscaped garden.  Situated within close proximity for Oxford Business Park, local amenities and public transport links. Offered for sale with no onward chain.        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Reliance Way, East Oxford" ;
+      wgs84:lat "51.7418408"^^xsd:double ;
+      wgs84:long "-1.2209823"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX42FU" ;
+      vcard:street-address
+              "Reliance Way" .
+
+dd:v1742198861426891c
+      dd:hasPrice "750000.0"^^xsd:double ;
+      gr:includes dd:v1742198861502824c ;
+      foaf:page "http://scottfraser.co.uk/SHP03429/staunton-road-headington" .
+
+dd:v1742198877398846c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "4"^^xsd:int ;
+      gr:description """Investment opportunity in St Clements. Four bedroom, four reception room accommodation, available to purchase with five tenants in occupation, until August 2013 at £2000 per calendar month. HMO compliant for a five bed let, but potential with alteration to produce a higher return as a six bed.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 4"""^^xsd:string ;
+      gr:name "Cross Street, St Clements" ;
+      wgs84:lat "51.7500074"^^xsd:double ;
+      wgs84:long "-1.2378337"^^xsd:double ;
+      vcard:locality "St Clements" ;
+      vcard:postal-code "OX41BZ" ;
+      vcard:street-address
+              "Cross Street" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_001490.pdf" .
+
+dd:v1742198859027228c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Select development of six exceptional new homes in a sought after village location on the edge of the Cotswolds. The houses by traditional local builders Pye Homes are due for completion in Winter  this year and offer a range of versatile and well designed family accommodation with spacious well appointed interiors. Buyers will be able to create their own fully integrated kitchen with units from John Nicholls and personalise kitchen and bathrooms with tiles from Minoli. A brochure in PDF or print form is available on request and visits to site can be booked strictly by appointment through our offices.        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Longfield, Duns Tew" ;
+      wgs84:lat "51.9526417"^^xsd:double ;
+      wgs84:long "-1.3345297"^^xsd:double ;
+      vcard:locality "Duns Tew" ;
+      vcard:postal-code "OX256JL" ;
+      vcard:street-address
+              "Longfield" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003061.pdf" .
+
+dd:v1742198879409479c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Extended period home located in this sought after village with superb views across Port Meadow. Spacious and well presented family living space including an impressive sitting room with a vaulted ceiling and patio doors onto pleasant rear garden, which benefits from rear access. Offered for sale with no onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Godstow Road, Wolvercote" ;
+      wgs84:lat "51.7844032"^^xsd:double ;
+      wgs84:long "-1.2887617"^^xsd:double ;
+      vcard:locality "Wolvercote" ;
+      vcard:postal-code "OX28NZ" ;
+      vcard:street-address
+              "Godstow Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003113.pdf" .
+
+dd:v1742198862592430c
+      dd:hasPrice "695000.0"^^xsd:double ;
+      gr:includes dd:v1742198862667751c ;
+      foaf:page "http://scottfraser.co.uk/SHP03137/middle-road-stanton-st-john" .
+
+dd:v1742198886454335c
+      dd:hasPrice "350000.0"^^xsd:double ;
+      gr:includes dd:v1742198886527728c ;
+      foaf:page "http://scottfraser.co.uk/SHP03483/highbank-close-headington" .
+
+dd:v1742198902022857c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Well presented two double bedroom maisonette in central Witney. With the benefit of a private entrance, the delightful first floor maisonette provides spacious living accommodation including a contemporary fitted kitchen/ breakfast room and separate sitting room. Situated in the centre of Witney with convenient access to the Marriotts Walk development and local amenities.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Collier Crescent, Witney" ;
+      wgs84:lat "51.7887648"^^xsd:double ;
+      wgs84:long "-1.4877528"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX286GN" ;
+      vcard:street-address
+              "Collier Crescent" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002929.pdf" .
+
+dd:v1742198883839593c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Having been the subject of an extensive programme of extension and refurbishment, this semi-detached bungalow is presented in excellent order throughout and is located in this sought after area just off Cumnor Hill. Further details available shortly.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Norreys Road, Oxford" ;
+      wgs84:lat "51.7369362"^^xsd:double ;
+      wgs84:long "-1.3249579"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX29PU" ;
+      vcard:street-address
+              "Norreys Road" .
+
+dd:v1742198861827256c
+      dd:hasPrice "750000.0"^^xsd:double ;
+      gr:includes dd:v1742198861903444c ;
+      foaf:page "http://scottfraser.co.uk/SWP03060/longfield-duns-tew" .
+
+dd:v1742198868875589c
+      dd:hasPrice "545000.0"^^xsd:double ;
+      gr:includes dd:v1742198868950727c ;
+      foaf:page "http://scottfraser.co.uk/SHP02522/highfield-avenue-headington" .
+
+dd:v1742198896480864c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Duplex apartment with woodland views. Set within a private gated development amongst three acres of mature communal grounds, stylish two double bedroom accommodation comprises south westerly facing sitting room, fitted kitchen, cloakroom and family bathroom. Conveniently located approximately a mile from The Churchill Hospital, Nuffield Orthopaedic Centre and bus stops to London.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Dorchester Close, Headington" ;
+      wgs84:lat "51.7526475"^^xsd:double ;
+      wgs84:long "-1.1968064"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX38SS" ;
+      vcard:street-address
+              "Dorchester Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003234.pdf" .
+
+dd:v1742198880670098c
+      dd:hasPrice "395000.0"^^xsd:double ;
+      gr:includes dd:v1742198880779022c ;
+      foaf:page "http://scottfraser.co.uk/SHP03409/burrows-close-headington" .
+
+dd:v1742198880081949c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Centrally located link detached family home. Well-presented bay fronted property in a prime Headington location, and offering further potential to extend subject to usual consents. Set back from the road on the corner with Franklin Road, and within walking distance of local amenities, Headington hospitals and Brookes University. No onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Headley Way, Headington" ;
+      wgs84:lat "51.760295"^^xsd:double ;
+      wgs84:long "-1.2229686"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37TA" ;
+      vcard:street-address
+              "Headley Way" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003232.pdf" .
+
+dd:v1742198873611098c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Well presented and spacious home on a corner plot at the end of a cul de sac.  The property has been extended and offers a 22 foot living room opening into a private garden, a further garden/family room also opens into the garden.  The kitchen is well fitted with contemporary shaker style units in cream and built in appliances.  The master bedroom has a vaulted ceiling and ensuite with large walk in shower. The gardens extend to the rear and side of the property and a driveway with off road parking leads to a double garage.        
+         
+            Bedrooms 5 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Manor Road, Witney" ;
+      wgs84:lat "51.7805777"^^xsd:double ;
+      wgs84:long "-1.4743502"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX283UQ" ;
+      vcard:street-address
+              "Manor Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003238.pdf" .
+
+dd:v1742198892621706c
+      dd:hasPrice "300000.0"^^xsd:double ;
+      gr:includes dd:v1742198892690584c ;
+      foaf:page "http://scottfraser.co.uk/SWP03148/brize-norton-road-minster-lovell" .
+
+dd:v1742198899882984c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Two bedroom ground floor leasehold apartment requiring updating situated in a prime central side road with the Manor Hospital on the door step and Brookes University close by. Offered for sale with no onward chain.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Manor Court, Headington" ;
+      wgs84:lat "51.7597832"^^xsd:double ;
+      wgs84:long "-1.2162979"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37SD" ;
+      vcard:street-address
+              "Manor Court" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003339.pdf" .
+
+dd:v1742198883766432c
+      dd:hasPrice "374950.0"^^xsd:double ;
+      gr:includes dd:v1742198883839593c ;
+      foaf:page "http://scottfraser.co.uk/SWP03400/norreys-road-oxford" .
+
+dd:v1742198903442184c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Purpose built second floor apartment. Two bedroom and two bathroom stylish apartment with contemporary interiors, fitted kitchen and allocated parking space.        
+         
+            Bedrooms 2 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Northfield Road, Witney" ;
+      wgs84:lat "51.7897604"^^xsd:double ;
+      wgs84:long "-1.4669653"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX281FY" ;
+      vcard:street-address
+              "Northfield Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002201.pdf" .
+
+dd:v1742198884093726c
+      dd:hasPrice "369950.0"^^xsd:double ;
+      gr:includes dd:v1742198884187331c ;
+      foaf:page "http://scottfraser.co.uk/SWP03277/waterford-road-witney" .
+
+dd:v1742198896791818c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """New, convenient and ready to move into - Oxford's newest address is now launched.A select mews style development of just seven stylish detached and semi detached houses in a private setting. Convenient for city cycle paths, Summertown, Oxford/London buses, the JR and Oxford Brookes University. Prices range from £260,000 to £360,000. Please call for full specification and to arrange your private viewing.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Highbank Close, Headington" ;
+      wgs84:lat "51.7669383"^^xsd:double ;
+      wgs84:long "-1.2309842"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30LT" ;
+      vcard:street-address
+              "Highbank Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003482.pdf" .
+
+dd:v1742198893706389c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Charming period home in central location. Tastefully presented and extended character cottage ideally situated to take advantage of the Headington amenities. Two double bedroom accommodation and two generous separate reception rooms, an additional loft space and pretty westerly facing garden with a right of way providing side access. The central location gives easy access to Brookes University and the Headington hospitals. The open spaces of Bury Knowle Park with its famous house and library and Shotover Country Park are also nearby.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "New High Street, Headington" ;
+      wgs84:lat "51.7573238"^^xsd:double ;
+      wgs84:long "-1.2128923"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37AQ" ;
+      vcard:street-address
+              "New High Street" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003417.pdf" .
+
+dd:v1742198891087447c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Stunningly remodelled and extended family home with superb city views. A spacious three bedroom, two bathroom property which has been impressively improved to a high standard by the current owners and is located at the end of a quiet cul de sac.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "St Christophers Place, Oxford" ;
+      wgs84:lat "51.7379977"^^xsd:double ;
+      wgs84:long "-1.2123157"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX42HS" ;
+      vcard:street-address
+              "St Christophers Place" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002840.pdf" .
+
+dd:v1742198858145344c
+      dd:hasPrice "850000.0"^^xsd:double ;
+      gr:includes dd:v1742198858243966c ;
+      foaf:page "http://scottfraser.co.uk/SHP03357/harcourt-hill-oxford" .
+
+dd:v1742198859971794c
+      dd:hasPrice "825000.0"^^xsd:double ;
+      gr:includes dd:v1742198860055661c ;
+      foaf:page "http://scottfraser.co.uk/SHP03356/abberbury-road-iffley-village" .
+
+dd:v1742198882834589c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Extended family accommodation circa 2000 sq ft.  Flexible living accommodation currently arranged as a four bedroom house with a separate annexe.  Fitted kitchen with breakfast bar, spacious sitting room with open fireplace, separate dining room, delightful south facing gardens and off-street parking.  Conveniently situated within close proximity to the Headington Hospitals, London/Airport Buses and Brookes University.        
+         
+            Bedrooms 5 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Coverley Road, Headington" ;
+      wgs84:lat "51.744654"^^xsd:double ;
+      wgs84:long "-1.2073623"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37EY" ;
+      vcard:street-address
+              "Coverley Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003287.pdf" .
+
+dd:v1742198904797286c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """* Investment opportunity* Recently constructed, three purpose built apartments in central Carterton. Brand new two first floor one bedroom apartments and one top floor two bedroom apartment in the centre of the town offering a range of every day facilities with wider shopping at Cheltenham and Oxford. Currently tenanted for 12 months rental income  £525 pcm.        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Chase House, Carterton" ;
+      wgs84:lat "51.7603861"^^xsd:double ;
+      wgs84:long "-1.5954951"^^xsd:double ;
+      vcard:locality "Carterton" ;
+      vcard:postal-code "OX183AG" ;
+      vcard:street-address
+              "Chase House" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002222.pdf" .
+
+dd:v1742198890732566c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Attractive Victoria bay fronted investment property in popular side road in East Oxford.  Currently let at £1400 pcm until July 2013 this three bedroom accommodation offers scope for further modernisation and extension subject to the necessary planning consents and is available for sale with no onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "St Marys Road, East Oxford" ;
+      wgs84:lat "51.7451531"^^xsd:double ;
+      wgs84:long "-1.2352068"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX41QD" ;
+      vcard:street-address
+              "St Marys Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003035.pdf" .
+
+dd:v1742198891700602c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Three bedroom detached house, third bedroom with adjacent shower room on ground floor plus three further reception rooms.  Well presented throughout with fitted kitchen, refitted first floor bathroom, large garage, car port, off road parking and gardens.  Views across allotments to countryside at rear.  Double glazing and oil central heating.  END of CHAIN. Great village.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Busby Close, Clanfield" ;
+      wgs84:lat "51.7156049"^^xsd:double ;
+      wgs84:long "-1.5913784"^^xsd:double ;
+      vcard:locality "Clanfield" ;
+      vcard:postal-code "OX182RD" ;
+      vcard:street-address
+              "Busby Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003467.pdf" .
+
+dd:v1742198878314489c
+      dd:hasPrice "410000.0"^^xsd:double ;
+      gr:includes dd:v1742198878387226c ;
+      foaf:page "http://scottfraser.co.uk/SHP03550/de-lacy-fields-bicester" .
+
+dd:v1742198901430558c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Contemporary garden flat with parking. Superb apartment in a select development, with one double bedroom, bathroom and open plan living space backing onto a pleasant courtyard. Offered for sale with no onward chain.        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Leopold Street, East Oxford" ;
+      wgs84:lat "51.744332"^^xsd:double ;
+      wgs84:long "-1.2347717"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX41TY" ;
+      vcard:street-address
+              "Leopold Street" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_001010.pdf" .
+
+dd:v1742198868950727c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Attractive semi detached home at the far end of this popular cul de sac. Bay fronted period house with large, private garden and driveway parking. The generous accommodation features three bedroom, three reception and two bathroom accommodation including a family room/office and utility room extension, and offers further scope to extend subject to the usual consents.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Highfield Avenue, Headington" ;
+      wgs84:lat "51.7547797"^^xsd:double ;
+      wgs84:long "-1.216993"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37LR" ;
+      vcard:street-address
+              "Highfield Avenue" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002522.pdf" .
+
+dd:v1742198899286599c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Completely refurbished home close to village centre. Having been extensively updated, this mid-terrace home now offers excellent family accommodation with the benefit of immediate vacant possession. The many amenities that Eynsham has to offer are close at hand including a supermarket, butcher, baker, post office, public houses, primary and secondary schools to name but a few. There is also an excellent bus service giving access to both Witney and Oxford.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Newland Close, Eynsham" ;
+      wgs84:lat "51.7819408"^^xsd:double ;
+      wgs84:long "-1.3727178"^^xsd:double ;
+      vcard:locality "Eynsham" ;
+      vcard:postal-code "OX294LE" ;
+      vcard:street-address
+              "Newland Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003424.pdf" .
+
+dd:v1742198868169940c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Attractive bay fronted terrace house extended to provide larger than average five bedroom family accommodation with spacious interlinked reception areas. Set in a sought after side road near the restaurants and cafés of East Oxford whilst only a short walk from the City via St Clements and The Plain. Also a short walk from South Park and the East Oxford Farmers Market.        
+         
+            Bedrooms 5 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Princes Street, Oxford" ;
+      wgs84:lat "51.7489298"^^xsd:double ;
+      wgs84:long "-1.2366496"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX41DD" ;
+      vcard:street-address
+              "Princes Street" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003497.pdf" .
+
+dd:v1742198859616591c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Select development of six exceptional new homes in a sought after village location on the edge of the Cotswolds. The houses by traditional local builders Pye Homes are due for completion in Winter this year and offer a range of versatile and well designed family accommodation with spacious well appointed interiors. Buyers will be able to create their own fully integrated kitchen with units from John Nicholls and personalise kitchen and bathrooms with tiles from Minoli. A brochure in PDF or print form is available on request and visits to site can be booked strictly by appointment through our offices.        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Longfield, Duns Tew" ;
+      wgs84:lat "51.9526417"^^xsd:double ;
+      wgs84:long "-1.3345297"^^xsd:double ;
+      vcard:locality "Duns Tew" ;
+      vcard:postal-code "OX256JL" ;
+      vcard:street-address
+              "Longfield" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003059.pdf" .
+
+dd:v1742198881108705c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Pleasant three bedroom detached bungalow set in beautiful gardens with a rural outlook. Spacious accommodation comprising kitchen/ breakfast room, dining room, sitting room, three double bedrooms and family bathroom. Driveway parking and garage.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Burr Close, Sutton" ;
+      wgs84:lat "51.7526782"^^xsd:double ;
+      wgs84:long "-1.3939983"^^xsd:double ;
+      vcard:locality "Sutton" ;
+      vcard:postal-code "OX295SJ" ;
+      vcard:street-address
+              "Burr Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003209.pdf" .
+
+dd:v1742198860402380c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Spacious Georgian style residence in quiet city conservation area. On a sought after private residential road of similar quality homes this detached house offers generous family accommodation. Built in 1973 and in the same ownership since then the property does now require some updating. The location is ideal for Brookes University, Headington hospitals and cycle path across Marston Meadows and South Parks Road into the city.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Rolfe Place, Headington" ;
+      wgs84:lat "51.7612054"^^xsd:double ;
+      wgs84:long "-1.2287632"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30DS" ;
+      vcard:street-address
+              "Rolfe Place" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003118.pdf" .
+
+dd:v1742198878069694c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """An exciting new home by David Wilson Homes at Kingsmere Village, Bicester, Oxford.Four bedroom house over three floors with a kitchen leading to the dining area, French doors to the garden and a separate utility room.  On the first floor the lounge opens onto a terrace plus there is a double bedroom with dual access en suite.  On the second floor is the master bedroom with en suite, two further double bedrooms and a family bathroom with separate shower.  The Lincoln also includes an oversized single garage.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "de Lacey Fields, Bicester" ;
+      wgs84:lat "51.8938688"^^xsd:double ;
+      wgs84:long "-1.1755599"^^xsd:double ;
+      vcard:locality "Bicester" ;
+      vcard:postal-code "OX261RS" ;
+      vcard:street-address
+              "de Lacey Fields" .
+
+dd:v1742198870753142c
+      dd:hasPrice "500000.0"^^xsd:double ;
+      gr:includes dd:v1742198870859264c ;
+      foaf:page "http://scottfraser.co.uk/SHP03359/jeune-street-st-clements" .
+
+dd:v1742198877997332c
+      dd:hasPrice "410000.0"^^xsd:double ;
+      gr:includes dd:v1742198878069694c ;
+      foaf:page "http://scottfraser.co.uk/SHP03560/de-lacey-fields-bicester" .
+
+dd:v1742198861903444c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Select development of six exceptional new homes in a sought after village location on the edge of the Cotswolds. The houses by traditional local builders Pye Homes are due for completion in Winter  this year and offer a range of versatile and well designed family accommodation with spacious well appointed interiors. Buyers will be able to create their own fully integrated kitchen with units from John Nicholls and personalise kitchen and bathrooms with tiles from Minoli. A brochure in PDF or print form is available on request and visits to site can be booked strictly by appointment through our offices.        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Longfield, Duns Tew" ;
+      wgs84:lat "51.9526417"^^xsd:double ;
+      wgs84:long "-1.3345297"^^xsd:double ;
+      vcard:locality "Duns Tew" ;
+      vcard:postal-code "OX256JL" ;
+      vcard:street-address
+              "Longfield" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003060.pdf" .
+
+dd:v1742198897657586c
+      dd:hasPrice "240000.0"^^xsd:double ;
+      gr:includes dd:v1742198897725674c ;
+      foaf:page "http://scottfraser.co.uk/SWP03048/moorland-close-witney" .
+
+dd:v1742198884447340c
+      dd:hasPrice "365000.0"^^xsd:double ;
+      gr:includes dd:v1742198884520072c ;
+      foaf:page "http://scottfraser.co.uk/SHP03436/howard-street-east-oxford" .
+
+dd:v1742198882444687c
+      dd:hasPrice "385000.0"^^xsd:double ;
+      gr:includes dd:v1742198882517255c ;
+      foaf:page "http://scottfraser.co.uk/SHP03551/templar-road-north-oxford" .
+
+dd:v1742198872510358c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Situated at the end of a cul-de-sac siding onto open meadows, a spacious five bedroom three bathroom detached house arranged over three floors.  The property has a good sized sitting room, separate dining room, study, kitchen/breakfast room, utility and cloakroom on the ground floor.  There are well tended gardens to the front and rear and a detached double garage with off road driveway parking for at least two vehicles.        
+         
+            Bedrooms 5 |
+            Bathrooms 3 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Newland Mill, Witney" ;
+      wgs84:lat "51.7873742"^^xsd:double ;
+      wgs84:long "-1.4761704"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX283SZ" ;
+      vcard:street-address
+              "Newland Mill" .
+
+dd:v1742198873895877c
+      dd:hasPrice "450000.0"^^xsd:double ;
+      gr:includes dd:v1742198873971367c ;
+      foaf:page "http://scottfraser.co.uk/SHP02913/tubney" .
+
+dd:v1742198859540864c
+      dd:hasPrice "850000.0"^^xsd:double ;
+      gr:includes dd:v1742198859616591c ;
+      foaf:page "http://scottfraser.co.uk/SHP03059/longfield-duns-tew" .
+
+dd:v1742198878736882c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Ready made investment. Extended over two floors, this substantial semi-detached house is situated on a corner plot with driveway parking and a garage accessed from York Avenue. Currently let on an Assured Shorthold Tenancy at £1980 PCM until 31 July 2013.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "York Road, Headington" ;
+      wgs84:lat "51.7544027"^^xsd:double ;
+      wgs84:long "-1.2029527"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX38NW" ;
+      vcard:street-address
+              "York Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003440.pdf" .
+
+dd:v1742198860689357c
+      dd:hasPrice "795000.0"^^xsd:double ;
+      gr:includes dd:v1742198860763348c ;
+      foaf:page "http://scottfraser.co.uk/SHP02698/wheatley-road-forest-hill" .
+
+dd:v1742198855669285c
+      dd:hasPrice "1500000.0"^^xsd:double ;
+      gr:includes dd:v1742198855771393c ;
+      foaf:page "http://scottfraser.co.uk/SHP03345/harberton-mead-headington" .
+
+dd:v1742198865143748c
+      dd:hasPrice "595000.0"^^xsd:double ;
+      gr:includes dd:v1742198865215913c ;
+      foaf:page "http://scottfraser.co.uk/SHP00506/sunderland-avenue-north-oxford" .
+
+dd:v1742198888112362c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Contemporary detached family home. Situated on the sought after Little Oxford development, extremely well presented three bedroom accommodation with a pleasant southerly facing garden and attached garage. Conveniently located for the Headington hospitals, Oxford Brookes University and local public transport networks. Offered for sale with no onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Demesne Furze, Headington" ;
+      wgs84:lat "51.7519433"^^xsd:double ;
+      wgs84:long "-1.2177084"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37XD" ;
+      vcard:street-address
+              "Demesne Furze" .
+
+dd:v1742198869291773c
+      dd:hasPrice "535000.0"^^xsd:double ;
+      gr:includes dd:v1742198869368403c ;
+      foaf:page "http://scottfraser.co.uk/SHP03170/hill-top-road-east-oxford" .
+
+dd:v1742198886843796c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Well-presented duplex arranged over two floors located in sought after side road in North Oxford.  Accommodation includes contemporary fitted kitchen, ample storage and its own private balcony.  Situated conveniently for Summertown, well known for its parade of boutique shops and cafés.        
+         
+            Bedrooms 2 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Ilbury Court, North Oxford" ;
+      wgs84:lat "51.7845876"^^xsd:double ;
+      wgs84:long "-1.2675354"^^xsd:double ;
+      vcard:locality "North Oxford" ;
+      vcard:postal-code "OX27TG" ;
+      vcard:street-address
+              "Ilbury Court" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003220.pdf" .
+
+dd:v1742198864866895c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Detached residence and adjoining studio annexe. Set in an elevated position on a large plot close to the Churchill Hospital, Nuffield Orthepedic Centre, Brookes University and the open spaces of Shotover Country Park. Four bedroom family home offering well proportioned living accommodation, the potential to provide an additional income and established gardens in excess of 130.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "The Slade, Headington" ;
+      wgs84:lat "51.7516788"^^xsd:double ;
+      wgs84:long "-1.2050953"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37DX" ;
+      vcard:street-address
+              "The Slade" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_001543.pdf" .
+
+dd:v1742198903351029c
+      dd:hasPrice "159950.0"^^xsd:double ;
+      gr:includes dd:v1742198903442184c ;
+      foaf:page "http://scottfraser.co.uk/SWP02201/northfield-road-witney" .
+
+dd:v1742198889044755c
+      dd:hasPrice "335000.0"^^xsd:double ;
+      gr:includes dd:v1742198889112625c ;
+      foaf:page "http://scottfraser.co.uk/SHP03321/marlborough-road-oxford" .
+
+dd:v1742198890333059c
+      dd:hasPrice "325000.0"^^xsd:double ;
+      gr:includes dd:v1742198890402025c ;
+      foaf:page "http://scottfraser.co.uk/SWP02748/kernahan-way-witney" .
+
+dd:v1742198905011288c
+      dd:hasPrice "117500.0"^^xsd:double ;
+      gr:includes dd:v1742198905075761c ;
+      foaf:page "http://scottfraser.co.uk/SWP02223/chase-house-carterton" .
+
+dd:v1742198866327755c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Must be viewed inside to appreciate the internal space and overall size of the plot. Individual detached home on the edge of this popular village. Impressive family home set within extensive gardens and with the benefit of ample parking and double garage. Spacious entrance hall, two reception rooms, kitchen/breakfast room, utility room, cloakroom, ground floor bedroom with en-suite, four first floor bedrooms (one en-suite) and family bathroom. No onward chain.        
+         
+            Bedrooms 5 |
+            Bathrooms 3 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Cassington Road, Eynsham" ;
+      wgs84:lat "51.7832187"^^xsd:double ;
+      wgs84:long "-1.3662202"^^xsd:double ;
+      vcard:locality "Eynsham" ;
+      vcard:postal-code "OX294LF" ;
+      vcard:street-address
+              "Cassington Road" .
+
+dd:v1742198863408146c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Original stone barn converted to provide c.1,900 square feet of accommodation over two floors.  The well appointed accommodation provides living room and dining area, fitted kitchen with cream units, granite work surface and Rayburn, utility and cloakroom.  Vaulted master bedroom with ensuite, bedroom two with ensuite and two further bedrooms and bathroom. To the front of the property there is a large garden and gravelled driveway with ample parking.  To the rear is a walled garden extending to 90ft and mainly laid to lawn with separate vegetable area. To the side of the house is a large private walled patio area to include a hot tub. Stable yard and additional 3.5 acres of paddock available including a ménage by separate negotiation.        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Hailey Road, Witney" ;
+      wgs84:lat "51.7848307"^^xsd:double ;
+      wgs84:long "-1.4849675"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX289UJ" ;
+      vcard:street-address
+              "Hailey Road" .
+
+dd:v1742198866745351c
+      dd:hasPrice "565000.0"^^xsd:double ;
+      gr:includes dd:v1742198866857937c ;
+      foaf:page "http://scottfraser.co.uk/SHP02016/larkins-lane-headington" .
+
+dd:v1742198858243966c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Turn key accommodation in this dramatic new city home with stunning and spacious interiors. On the Western edge of the city this beautifully finished property offers the very best in turn key accommodation. From the high ceilings of the open plan living area to the luxury fully equipped kitchen, from the tiled and mirrored shower rooms to the spacious bedrooms, attention has been paid to every detail to help create an  exceptional home. The accommodation is arranged around an attractive slate courtyard and enjoys an open aspect across new lawns to the gardens and fields beyond. Visit the Raleigh House web site at http://raleigh-house-oxford.webeden.co.uk/ Features include: Oak Front Door & Panelled Internal Doors - Extensive Range of Grey High Gloss \"Rot Punkt\" Kitchen Units with Central Island - Hi-Line Chrome Handles, White Composite Work Tops & Glass Splash backs - \"Neff\" Appliances Include Island Five Burner Gas Hob & Twin Electric Ovens - Integrated Dish Washer , Fridge, Freezer & \"Elica\" Chandelier Cooker Hood - White, Chrome, Glass & Travertine Bath & Shower Rooms - Double Fumed Dark Oak Floors with Tiled Wet Areas & Carpeted Bedrooms - Low Maintenance Monocouche Through Colour Render & Cedar Cladding - Aluminium Windows, & Bi-fold Doors with Matching Gutters & Down Pipes - Wired for Home Cinema in Living Room & TV/Sky Prepared Points - Recessed Low Energy Lighting, Security System & Hard Wired Smoke Alarms - Drive way Parking & Double Garage with Cedar Electric Up & Over Door - Under Floor Heating Via Worcester Bosch Gas Condensing Boiler - 300 Litre Pressurised Hot Water System - Slate Courtyard & Paths Outside Power Points, Lights & Tap - 10 Year National House Building Council Warrantee  IMMEDIATE VACANT POSSESSION AVAILABLE        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Harcourt Hill, Oxford" ;
+      wgs84:lat "51.7416961"^^xsd:double ;
+      wgs84:long "-1.287477"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX29AS" ;
+      vcard:street-address
+              "Harcourt Hill" .
+
+dd:v1742198888770308c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """ONLY ONE HOUSE REMAINING - We were instructed by Thomas Homes to commence marketing Highbank Close on 20 September and we have already reserved six houses. New, convenient and ready to move into - Highbank Close is Oxford's newest address.  A select mews style development of just seven stylish detached and semi detached houses in a private setting. Convenient for city cycle paths, Summertown, Oxford/London buses, the JR and Oxford Brookes University.        
+         
+            Bedrooms 2 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Highbank Close, Headington" ;
+      wgs84:lat "51.7669383"^^xsd:double ;
+      wgs84:long "-1.2309842"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30LT" ;
+      vcard:street-address
+              "Highbank Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003478.pdf" .
+
+dd:v1742198896719563c
+      dd:hasPrice "260000.0"^^xsd:double ;
+      gr:includes dd:v1742198896791818c ;
+      foaf:page "http://scottfraser.co.uk/SHP03482/highbank-close-headington" .
+
+dd:v1742198855771393c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      dd:receptions "4"^^xsd:int ;
+      gr:description """Handsome city residence in wooded corner of conservation area. Architect designed family home in sought after location. Spacious, well appointed accommodation, featuring two fine reception rooms, family room, double aspect kitchen breakfast room, five double bedrooms and three bathrooms. The property is set back from the private road and surrounded by gated gardens of circa 0.5 acres with driveway parking and a double garage.  Visit New Place Harberton Meads own website at http://new-place-oxford.webeden.co.uk/        
+         
+            Bedrooms 5 |
+            Bathrooms 3 |
+            Receptions 4"""^^xsd:string ;
+      gr:name "Harberton Mead, Headington" ;
+      wgs84:lat "51.7616286"^^xsd:double ;
+      wgs84:long "-1.2288719"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30DB" ;
+      vcard:street-address
+              "Harberton Mead" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003345.pdf" .
+
+dd:v1742198893937722c
+      dd:hasPrice "295000.0"^^xsd:double ;
+      gr:includes dd:v1742198894004848c ;
+      foaf:page "http://scottfraser.co.uk/SWP03096/rectory-crescent-middle-barton" .
+
+dd:v1742198878653678c
+      dd:hasPrice "400000.0"^^xsd:double ;
+      gr:includes dd:v1742198878736882c ;
+      foaf:page "http://scottfraser.co.uk/SHP03440/york-road-headington" .
+
+dd:v1742198884520072c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Investment opportunity in East Oxford. Extended bay fronted period terrace with garage and parking currently let at £1725 PCM until August 2013.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Howard Street, East Oxford" ;
+      wgs84:lat "51.739781"^^xsd:double ;
+      wgs84:long "-1.233140"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX43BE" ;
+      vcard:street-address
+              "Howard Street" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003436.pdf" .
+
+dd:v1742198872809305c
+      dd:hasPrice "479950.0"^^xsd:double ;
+      gr:includes dd:v1742198872883304c ;
+      foaf:page "http://scottfraser.co.uk/SWP03515/crawley-road-witney" .
+
+dd:v1742198865498284c
+      dd:hasPrice "589000.0"^^xsd:double ;
+      gr:includes dd:v1742198865570873c ;
+      foaf:page "http://scottfraser.co.uk/SHP03556/de-lacy-fields-bicester" .
+
+dd:v1742198904459677c
+      dd:hasPrice "125000.0"^^xsd:double ;
+      gr:includes dd:v1742198904523895c ;
+      foaf:page "http://scottfraser.co.uk/SWP03300/thames-street-eynsham" .
+
+dd:v1742198865570873c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """An exciting new home by David Wilson Homes at Kingsmere, Bicester, Oxford.Five bedroom home with a large lounge, kitchen and dining room plus a downstairs study and WC.  The first floor has four bedrooms, one with a dressing room and en suite, plus a family bathroom.  On the second floor there is a further bedroom with an ensuite, dressing room and spacious den.        
+         
+            Bedrooms 5 |
+            Bathrooms 3 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "de Lacy Fields, Bicester" ;
+      wgs84:lat "51.8938688"^^xsd:double ;
+      wgs84:long "-1.1755599"^^xsd:double ;
+      vcard:locality "Bicester" ;
+      vcard:postal-code "OX261RS" ;
+      vcard:street-address
+              "de Lacy Fields" .
+
+dd:v1742198853846756c
+      a       dd:House ;
+      dd:bathrooms "6"^^xsd:int ;
+      dd:bedrooms "9"^^xsd:int ;
+      dd:receptions "6"^^xsd:int ;
+      gr:description """Investment opportunity - Attractive contemporary scheme comprising five well appointed apartments all currently let on Assured Shorthold Tenancies with planning permission for a further duplex apartment. Situated in a sought after residential side road conveniently situated for the Headington hospitals, Brookes University and the London/Airport buses. For further information please contact Adrian Wraight on 01865 759500.        
+         
+            Bedrooms 9 |
+            Bathrooms 6 |
+            Receptions 6"""^^xsd:string ;
+      gr:name "Gathorne Road, Headington" ;
+      wgs84:lat "51.7555618"^^xsd:double ;
+      wgs84:long "-1.2062441"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX38NF" ;
+      vcard:street-address
+              "Gathorne Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003067.pdf" .
+
+dd:v1742198870016899c
+      dd:hasPrice "510000.0"^^xsd:double ;
+      gr:includes dd:v1742198870092448c ;
+      foaf:page "http://scottfraser.co.uk/SHP03073/st-andrews-lane-headington" .
+
+dd:v1742198880779022c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Semi-detached home in excellent cul de sac location. Attractive bay fronted home offering flexible extended three/four bedroom accommodation with spacious reception areas, southerly facing garden and shared driveway. Offered for sale with no onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Burrows Close, Headington" ;
+      wgs84:lat "51.7604299"^^xsd:double ;
+      wgs84:long "-1.2054778"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX38AN" ;
+      vcard:street-address
+              "Burrows Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003409.pdf" .
+
+dd:v1742198891944443c
+      dd:hasPrice "309000.0"^^xsd:double ;
+      gr:includes dd:v1742198892014664c ;
+      foaf:page "http://scottfraser.co.uk/SWP03510/ralegh-crescent-witney" .
+
+dd:v1742198886776254c
+      dd:hasPrice "350000.0"^^xsd:double ;
+      gr:includes dd:v1742198886843796c ;
+      foaf:page "http://scottfraser.co.uk/SHP03220/ilbury-court-north-oxford" .
+
+dd:v1742198871695294c
+      dd:hasPrice "500000.0"^^xsd:double ;
+      gr:includes dd:v1742198871771053c ;
+      foaf:page "http://scottfraser.co.uk/SWP02252/bampton-road-clanfield" .
+
+dd:v1742198905597173c
+      dd:hasPrice "99950.0"^^xsd:double ;
+      gr:includes dd:v1742198905663523c ;
+      foaf:page "http://scottfraser.co.uk/SWP03005/manor-road-witney" .
+
+dd:v1742198879679097c
+      dd:hasPrice "399950.0"^^xsd:double ;
+      gr:includes dd:v1742198879751986c ;
+      foaf:page "http://scottfraser.co.uk/SWP02944/station-road-eynsham" .
+
+dd:v1742198864055347c
+      dd:hasPrice "675000.0"^^xsd:double ;
+      gr:includes dd:v1742198864131341c ;
+      foaf:page "http://scottfraser.co.uk/SHP03038/holton" .
+
+dd:v1742198899590263c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """New to the market - Two bedroom apartment with a garage in need of updating situated in central Headington. Viewings to commence 5 November - Please contact us to register your interest. Photographs and floor plans to follow shortly.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "St Leonards Road, Headington" ;
+      wgs84:lat "51.7589701"^^xsd:double ;
+      wgs84:long "-1.2076622"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX38AD" ;
+      vcard:street-address
+              "St Leonards Road" .
+
+dd:v1742198892014664c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Detached home on Deer Park development to be sold with no onward chain. Three bedrooms, sitting room, dining room, study, kitchen, conservatory, bathroom and ground floor wet room. Also has the benefit of a double garage and enclosed rear garden.        
+         
+            Bedrooms 3 |
+            Bathrooms 3 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Ralegh Crescent, Witney" ;
+      wgs84:lat "51.7839722"^^xsd:double ;
+      wgs84:long "-1.5109"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX285FY" ;
+      vcard:street-address
+              "Ralegh Crescent" .
+
+dd:v1742198894233412c
+      dd:hasPrice "290000.0"^^xsd:double ;
+      gr:includes dd:v1742198894299893c ;
+      foaf:page "http://scottfraser.co.uk/SHP03136/union-street-east-oxford" .
+
+dd:v1742198871771053c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Charming period semi detached cottage recently renovated by the current owners to provide a delightful sitting room, dining room, stunning kitchen and four bedrooms (two with en-suite). Good size rear garden with detached double garage accessed to the rear.\"It will be a real wrench to leave our newly completed house in the heart of Clanfield due to a job move. We would have loved to stay in this wonderful village community, where we were married and had our first child. Blessed with a good primary school, friendly church, post office and two great dining establishments on the doorstep\".        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Bampton Road, Clanfield" ;
+      wgs84:lat "51.7166766"^^xsd:double ;
+      wgs84:long "-1.5867078"^^xsd:double ;
+      vcard:locality "Clanfield" ;
+      vcard:postal-code "OX182RG" ;
+      vcard:street-address
+              "Bampton Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002252.pdf" .
+
+dd:v1742198902242177c
+      dd:hasPrice "185000.0"^^xsd:double ;
+      gr:includes dd:v1742198902307391c ;
+      foaf:page "http://scottfraser.co.uk/SHP03382/copse-lane-marston" .
+
+dd:v1742198900470975c
+      dd:hasPrice "205000.0"^^xsd:double ;
+      gr:includes dd:v1742198900537489c ;
+      foaf:page "http://scottfraser.co.uk/SHP02097/folly-bridge-oxford-city" .
+
+dd:v1742198871426513c
+      a       dd:House ;
+      dd:bathrooms "0"^^xsd:int ;
+      dd:bedrooms "0"^^xsd:int ;
+      dd:receptions "0"^^xsd:int ;
+      gr:description """Plot of land approaching third of an acre with potential for development. Our clients will consider \"subject to planning offers\". Contact David Blythman for further information.        
+         
+            Bedrooms 0 |
+            Bathrooms 0 |
+            Receptions 0"""^^xsd:string ;
+      gr:name "Quarry Road, Headington" ;
+      wgs84:lat "51.756411"^^xsd:double ;
+      wgs84:long "-1.200008"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX38NU" ;
+      vcard:street-address
+              "Quarry Road" .
+
+dd:v1742198896092775c
+      dd:hasPrice "269995.0"^^xsd:double ;
+      gr:includes dd:v1742198896162394c ;
+      foaf:page "http://scottfraser.co.uk/SWP03090/ashcombe-crescent-witney" .
+
+dd:v1742198882115401c
+      dd:hasPrice "390000.0"^^xsd:double ;
+      gr:includes dd:v1742198882187140c ;
+      foaf:page "http://scottfraser.co.uk/SHP03309/windmill-road-headington" .
+
+dd:v1742198875445639c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Superbly renovated family home in central Headington. Extended three bedroom property, with stylish interiors and impressive vaulted kitchen/breakfast room opening onto attractive westerly facing rear garden with side access.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Stapleton Road, Headington" ;
+      wgs84:lat "51.7548598"^^xsd:double ;
+      wgs84:long "-1.2141811"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37LU" ;
+      vcard:street-address
+              "Stapleton Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003353.pdf" .
+
+dd:v1742198900773192c
+      dd:hasPrice "204950.0"^^xsd:double ;
+      gr:includes dd:v1742198900840911c ;
+      foaf:page "http://scottfraser.co.uk/SWP02418/park-view-lane-witney" .
+
+dd:v1742198876591297c
+      dd:hasPrice "425000.0"^^xsd:double ;
+      gr:includes dd:v1742198876666347c ;
+      foaf:page "http://scottfraser.co.uk/SWP03045/park-road-north-leigh" .
+
+dd:v1742198887158936c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """An exciting new development of just seven, 2 & 3 bedroom houses in the heart of this thriving market town. Further details coming soon but contact us now to register your interest.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Weavers Place, Witney" ;
+      wgs84:lat "51.7874719"^^xsd:double ;
+      wgs84:long "-1.484056"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX286HS" ;
+      vcard:street-address
+              "Weavers Place" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002747.pdf" .
+
+dd:v1742198897037088c
+      dd:hasPrice "260000.0"^^xsd:double ;
+      gr:includes dd:v1742198897104875c ;
+      foaf:page "http://scottfraser.co.uk/SHP03481/highbank-close-headington" .
+
+dd:v1742198881036456c
+      dd:hasPrice "395000.0"^^xsd:double ;
+      gr:includes dd:v1742198881108705c ;
+      foaf:page "http://scottfraser.co.uk/SWP03209/burr-close-sutton" .
+
+dd:v1742198894832023c
+      dd:hasPrice "285000.0"^^xsd:double ;
+      gr:includes dd:v1742198894897777c ;
+      foaf:page "http://scottfraser.co.uk/SWP02855/schofield-avenue-witney" .
+
+dd:v1742198866217103c
+      dd:hasPrice "565000.0"^^xsd:double ;
+      gr:includes dd:v1742198866327755c ;
+      foaf:page "http://scottfraser.co.uk/SWP03022/cassington-road-eynsham" .
+
+dd:v1742198860326868c
+      dd:hasPrice "795000.0"^^xsd:double ;
+      gr:includes dd:v1742198860402380c ;
+      foaf:page "http://scottfraser.co.uk/SHP03118/rolfe-place-headington" .
+
+dd:v1742198884848561c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Beautifully presented three storey home in tucked away setting. Substantial detached property with impressive top floor master suite with walk-in wardrobes and en-suite, four further bedrooms, two bathrooms, three reception rooms, kitchen/breakfast room, utility and cloakroom. Extensive, gated driveway parking, double garage and enclosed rear garden.        
+         
+            Bedrooms 5 |
+            Bathrooms 3 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Elmhurst Way, Carterton" ;
+      wgs84:lat "51.7721508"^^xsd:double ;
+      wgs84:long "-1.5915204"^^xsd:double ;
+      vcard:locality "Carterton" ;
+      vcard:postal-code "OX181GR" ;
+      vcard:street-address
+              "Elmhurst Way" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003026.pdf" .
+
+dd:v1742198878387226c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """An exciting new home by David Wilson Homes at Kingsmere Village, Bicester, Oxford.Attractive four bedroom house offering impressive entrance hall leading to the kitchen with breakfast, family and utility areas and a glazed bay that opens onto the rear garden.  A bay fronted lounge, dining room and a study ly presented on round floor too.  Upstairs, the master bedroom with en suite, while three further double bedrooms and a family bathroom complete this home.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "de Lacy Fields, Bicester" ;
+      wgs84:lat "51.8938688"^^xsd:double ;
+      wgs84:long "-1.1755599"^^xsd:double ;
+      vcard:locality "Bicester" ;
+      vcard:postal-code "OX261RS" ;
+      vcard:street-address
+              "de Lacy Fields" .
+
+dd:v1742198902795485c
+      dd:hasPrice "179950.0"^^xsd:double ;
+      gr:includes dd:v1742198902861836c ;
+      foaf:page "http://scottfraser.co.uk/SWP03523/the-old-coachyard-witney" .
+
+dd:v1742198869368403c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Handsome detached house offering very spacious three bedroom accommodation with potential to extend subject to the usual consents. In the same family since built in 1952 and now requiring updating. Immediate vacant possession available. No onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Hill Top Road, East Oxford" ;
+      wgs84:lat "51.7485026"^^xsd:double ;
+      wgs84:long "-1.2222293"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX41PD" ;
+      vcard:street-address
+              "Hill Top Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003170.pdf" .
+
+dd:v1742198870455875c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Detached residence in sought after Headington side road.  Three bedroom accommodation arranged over two floors in need of modernisation and updating with potential to extend, subject to the necessary planning consents.  The property is conveniently situated within close proximity to the Headington Hospitals, London / Airport buses and local amenities.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Stapleton Road, Headington" ;
+      wgs84:lat "51.7548753"^^xsd:double ;
+      wgs84:long "-1.2138041"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37LX" ;
+      vcard:street-address
+              "Stapleton Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003396.pdf" .
+
+dd:v1742198898583303c
+      dd:hasPrice "230000.0"^^xsd:double ;
+      gr:includes dd:v1742198898650594c ;
+      foaf:page "http://scottfraser.co.uk/SWP02833/lowell-place-witney" .
+
+dd:v1742198857424743c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Excellent family residence on sought after private lane. Located in the Headington Hill Conservation Area, a spacious and well appointed detached home. Arranged round a central reception hall and galleried landing the accommodation features three fine reception rooms plus a stylish new fitted kitchen/breakfast room with four double bedrooms, including master and guest suites and a family bathroom on the first floor. The location is ideal for Oxford University, Oxford Brookes University, Headington hospitals, London buses and cycle paths through University Parks to the city. View Meena House's own website http://jack-straws-lane-headington-oxford.webeden.co.uk/        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Jack Straw's Lane, Headington" ;
+      wgs84:lat "51.762934"^^xsd:double ;
+      wgs84:long "-1.227705"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30DW" ;
+      vcard:street-address
+              "Jack Straw's Lane" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_001806.pdf" .
+
+dd:v1742198871350720c
+      dd:hasPrice "500000.0"^^xsd:double ;
+      gr:includes dd:v1742198871426513c ;
+      foaf:page "http://scottfraser.co.uk/SHP03343/quarry-road-headington" .
+
+dd:v1742198885771536c
+      dd:hasPrice "355000.0"^^xsd:double ;
+      gr:includes dd:v1742198885845171c ;
+      foaf:page "http://scottfraser.co.uk/SHP03282/davenant-road-north-oxford" .
+
+dd:v1742198864418993c
+      dd:hasPrice "649950.0"^^xsd:double ;
+      gr:includes dd:v1742198864495425c ;
+      foaf:page "http://scottfraser.co.uk/SHP03131/northfield-road-headington" .
+
+dd:v1742198897421038c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Pretty Victorian Gothic terraced house in sought after Headington side street. Traditional two bedroom accommodation with an attractive south facing garden available for sale with no onward chain.  Conveniently situated to the Headington hospitals, local amenities and London /Airport Buses.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Windsor Street, Headington" ;
+      wgs84:lat "51.7569901"^^xsd:double ;
+      wgs84:long "-1.2113914"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37AP" ;
+      vcard:street-address
+              "Windsor Street" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003286.pdf" .
+
+dd:v1742198887472774c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """New, convenient and ready to move into - Oxford's newest address is now launched.A select mews style development of just seven stylish detached and semi detached houses in a private setting. Convenient for city cycle paths, Summertown, Oxford/London buses, the JR and Oxford Brookes University. Prices range from £260,000 to £360,000. Please call for full specification and to arrange your private viewing.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Highbank Close, Headington" ;
+      wgs84:lat "51.7669383"^^xsd:double ;
+      wgs84:long "-1.2309842"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30LT" ;
+      vcard:street-address
+              "Highbank Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003480.pdf" .
+
+dd:v1742198857799028c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Substantial family home circa 2000 sqft (185.5 sqm). Four double bedrooms, contemporary fitted kitchen, three fine reception rooms and south west facing gardens.  Popular residential road in Cherwell Catchment & close to Headington Girls, Rye St Anthony & with easy access to the hospitals and London/Airport buses.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Sandfield Road, Headington" ;
+      wgs84:lat "51.7629217"^^xsd:double ;
+      wgs84:long "-1.2217933"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37RL" ;
+      vcard:street-address
+              "Sandfield Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003288.pdf" .
+
+dd:v1742198900840911c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """End-terrace home in peaceful position. Set towards the end of a walkway with pleasant views to the front, a two bedroom home presented in good order throughout. The property is conveniently positioned for pedestrian access to cycle paths and bus routes towards Witney town centre and Oxford.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Park View Lane, Witney" ;
+      wgs84:lat "51.7896169"^^xsd:double ;
+      wgs84:long "-1.4690402"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX281FZ" ;
+      vcard:street-address
+              "Park View Lane" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002418.pdf" .
+
+dd:v1742198868094999c
+      dd:hasPrice "550000.0"^^xsd:double ;
+      gr:includes dd:v1742198868169940c ;
+      foaf:page "http://scottfraser.co.uk/SHP03497/princes-street-oxford" .
+
+dd:v1742198887789828c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Attractive period family home. 1930s semi-detached house with extended three bedroom, two reception room accommodation, garage and driveway parking. Located on the southerly side of this central yet quiet close. For sale with no onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Langley Close, Headington" ;
+      wgs84:lat "51.757583"^^xsd:double ;
+      wgs84:long "-1.2072953"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37DA" ;
+      vcard:street-address
+              "Langley Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003390.pdf" .
+
+dd:v1742198870092448c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Stunning refurbishment of a period stone cottage. Set in the heart of the Old Headington conservation area this pretty character home has spacious and beautifully equipped contemporary interiors. The accommodation features a light and airy open plan reception area which could easily be sub-divided if an extra room is required, a fully fitted and equipped kitchen/breakfast room with Island and lantern roof, two double bedrooms and a luxury bath/shower room. Under croft parking and private south facing garden to the rear. No chain.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "St Andrews Lane, Headington" ;
+      wgs84:lat "51.765476"^^xsd:double ;
+      wgs84:long "-1.211186"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX39DP" ;
+      vcard:street-address
+              "St Andrews Lane" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003073.pdf" .
+
+dd:v1742198901135887c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Ready made investment in central Headington. Contemporary top floor apartment in purpose built development currently let on an Assured Shorthold Tenancy at £790 PCM until August 2013.        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Bateman Street, Headington" ;
+      wgs84:lat "51.7574016"^^xsd:double ;
+      wgs84:long "-1.2110799"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37BG" ;
+      vcard:street-address
+              "Bateman Street" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003456.pdf" .
+
+dd:v1742198862266103c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Stylish home in one of Headington's most sought after side roads. Well conceived and executed refurbishment creating light and spacious family accommodation. Features a superb open plan kitchen, dining and family area focused on the west facing garden and deck area accessed via a wall of bi-fold doors. There is also a formal sitting room and study on the ground floor and four bedrooms, family bathroom and ensuite shower room on the first floor.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Staunton Road, Headington" ;
+      wgs84:lat "51.7625431"^^xsd:double ;
+      wgs84:long "-1.2230169"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37TL" ;
+      vcard:street-address
+              "Staunton Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002046.pdf" .
+
+dd:v1742198883108525c
+      dd:hasPrice "375000.0"^^xsd:double ;
+      gr:includes dd:v1742198883182266c ;
+      foaf:page "http://scottfraser.co.uk/SHP03221/leander-way-oxford" .
+
+dd:v1742198888689119c
+      dd:hasPrice "340000.0"^^xsd:double ;
+      gr:includes dd:v1742198888770308c ;
+      foaf:page "http://scottfraser.co.uk/SHP03478/highbank-close-headington" .
+
+dd:v1742198894004848c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Extended detached bungalow on corner plot in popular north Oxfordshire village. Three bedrooms, two bathrooms, kitchen, sitting room and conservatory. Outside, the property has garden to three sides, driveway parking and a tandem double garage. Middle Barton is a thriving village with primary school, shop & post office, two public houses (including The Fox, winner of the Camra North Oxfordshire Pub of the Year 2012) and many sports clubs including football, tennis and bowls..        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Rectory Crescent, Middle barton" ;
+      wgs84:lat "51.9300163"^^xsd:double ;
+      wgs84:long "-1.371398"^^xsd:double ;
+      vcard:locality "Middle barton" ;
+      vcard:postal-code "OX77BP" ;
+      vcard:street-address
+              "Rectory Crescent" .
+
+dd:v1742198861502824c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "4"^^xsd:int ;
+      gr:description """Exceptional semi detached house situated in one of Headington's finest residential side roads. Extended and refurbished four double bedroom/two bathroom accommodation with a detached games room comprising two rooms and a shower room. External photographs to follow shortly.        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 4"""^^xsd:string ;
+      gr:name "Staunton Road, Headington" ;
+      wgs84:lat "51.7608139"^^xsd:double ;
+      wgs84:long "-1.221221"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37TJ" ;
+      vcard:street-address
+              "Staunton Road" .
+
+dd:v1742198899523332c
+      dd:hasPrice "220000.0"^^xsd:double ;
+      gr:includes dd:v1742198899590263c ;
+      foaf:page "http://scottfraser.co.uk/SHP03535/st-leonards-road-headington" .
+
+dd:v1742198874988263c
+      dd:hasPrice "440000.0"^^xsd:double ;
+      gr:includes dd:v1742198875064746c ;
+      foaf:page "http://scottfraser.co.uk/SHP01481/barns-hay-old-marston-village" .
+
+dd:v1742198888044601c
+      dd:hasPrice "345000.0"^^xsd:double ;
+      gr:includes dd:v1742198888112362c ;
+      foaf:page "http://scottfraser.co.uk/SHP03115/demesne-furze-headington" .
+
+dd:v1742198872144306c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Home in prime location. Three bedroom family accommodation in a semi-detached residence that has been occupied by the same family for over six decades. With many original features, the house has a lovely period charm and with enormous potential to extend, subject to consents.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Ramsay Road, Headington" ;
+      wgs84:lat "51.7607528"^^xsd:double ;
+      wgs84:long "-1.2040377"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX38AX" ;
+      vcard:street-address
+              "Ramsay Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003261.pdf" .
+
+dd:v1742198892358693c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Renovation/development opportunity. In a popular residential location, a three bedroom semi-detached property requiring modernisation, situated on a corner plot with drive and garage. Potential to develop subject to planning permission. Please note all bids must be submitted for this property by 10th September 12pm, contact the office for further information.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Marston Road, Marston" ;
+      wgs84:lat "51.7665269"^^xsd:double ;
+      wgs84:long "-1.2326866"^^xsd:double ;
+      vcard:locality "Marston" ;
+      vcard:postal-code "OX30JE" ;
+      vcard:street-address
+              "Marston Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003337.pdf" .
+
+dd:v1742198898278591c
+      dd:hasPrice "235000.0"^^xsd:double ;
+      gr:includes dd:v1742198898345737c ;
+      foaf:page "http://scottfraser.co.uk/SWP03389/lavender-view-witney" .
+
+dd:v1742198897725674c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Three bedroom link-detached home in a superb position. Located in the corner of a cul-de-sac, a light and airy home with generous garden situated with convenient access to the Marriotts Walk development, Windrush Health Centre and bus station.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Moorland Close, Witney" ;
+      wgs84:lat "51.7877832"^^xsd:double ;
+      wgs84:long "-1.4956942"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX286LN" ;
+      vcard:street-address
+              "Moorland Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003048.pdf" .
+
+dd:v1742198867702612c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Unique opportunity to purchase a contemporary family home with c.1.7 acres of agricultural/amenity land. A detached property offering extremely well presented and spacious four bedroom, three reception room accommodation over two floors. Situated in a private setting at the far end of this sought after village development, with a far reaching outlook across the surrounding countryside.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Kelham Hall Drive, Wheatley" ;
+      wgs84:lat "51.7443049"^^xsd:double ;
+      wgs84:long "-1.1373379"^^xsd:double ;
+      vcard:locality "Wheatley" ;
+      vcard:postal-code "OX331YB" ;
+      vcard:street-address
+              "Kelham Hall Drive" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003229.pdf" .
+
+dd:v1742198890658069c
+      dd:hasPrice "325000.0"^^xsd:double ;
+      gr:includes dd:v1742198890732566c ;
+      foaf:page "http://scottfraser.co.uk/SHP03035/st-marys-road-east-oxford" .
+
+dd:v1742198887092599c
+      dd:hasPrice "350000.0"^^xsd:double ;
+      gr:includes dd:v1742198887158936c ;
+      foaf:page "http://scottfraser.co.uk/SWP02747/weavers-place-witney" .
+
+dd:v1742198894897777c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Link detached home with extended and remodelled interior creating excellent family accommodation. Worthy of particular note is the open-plan kitchen/dining room and master bedroom with en-suite. The property is complemented by a part-walled rear garden which has been landscaped by the present owners and has the benefit of a south-easterly aspect.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Schofield Avenue, Witney" ;
+      wgs84:lat "51.7982057"^^xsd:double ;
+      wgs84:long "-1.4877909"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX281JW" ;
+      vcard:street-address
+              "Schofield Avenue" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002855.pdf" .
+
+dd:v1742198856685590c
+      a       dd:House ;
+      dd:bathrooms "4"^^xsd:int ;
+      dd:bedrooms "7"^^xsd:int ;
+      dd:receptions "4"^^xsd:int ;
+      gr:description """Family home, investment or development opportunity in city conservation area. Substantial property (3333 SQFT /309.6 SQM) set in half an acre in the Headington Hill conservation area. Currently arranged and let on assured short hold tenancies as four self contained apartments producing £37,500 per annum gross but with a Certificate of Lawful Proposed Use to convert into two dwellings a five bedroom family house with staff or granny apartment. The property can be sold let or with vacant possession. (Photographs were taken in the summer 2011 and main photograph is of the rear elevation).        
+         
+            Bedrooms 7 |
+            Bathrooms 4 |
+            Receptions 4"""^^xsd:string ;
+      gr:name "Jack Straws Lane, Headington" ;
+      wgs84:lat "51.762934"^^xsd:double ;
+      wgs84:long "-1.227705"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30DW" ;
+      vcard:street-address
+              "Jack Straws Lane" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_001889.pdf" .
+
+dd:v1742198879751986c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Three bedroom semi detached early Victorian cottage, well presented throughout located in a private no through road backing onto a local park area known as The Fishponds. Spacious sitting room, family room, dining room, kitchen, utility and cloakroom.  The master bedroom has an en-suite wet room whilst outside there is a private patio area to the rear and gardens to the side.  Gas fired central heating.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Station Road, Eynsham" ;
+      wgs84:lat "51.7774592"^^xsd:double ;
+      wgs84:long "-1.3770413"^^xsd:double ;
+      vcard:locality "Eynsham" ;
+      vcard:postal-code "OX294XH" ;
+      vcard:street-address
+              "Station Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002944.pdf" .
+
+dd:v1742198885198355c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """New, convenient and ready to move into - Oxford's newest address is now launched.A select mews style development of just seven stylish detached and semi detached houses in a private setting. Convenient for city cycle paths, Summertown, Oxford/London buses, the JR and Oxford Brookes University. Prices range from £260,000 to £360,000. Please call for full specification and to arrange your private viewing.        
+         
+            Bedrooms 2 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Highbank Close, Headington" ;
+      wgs84:lat "51.7669383"^^xsd:double ;
+      wgs84:long "-1.2309842"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30LT" ;
+      vcard:street-address
+              "Highbank Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003479.pdf" .
+
+dd:v1742198867206846c
+      dd:hasPrice "550000.0"^^xsd:double ;
+      gr:includes dd:v1742198867336026c ;
+      foaf:page "http://scottfraser.co.uk/SHP03358/james-street-east-oxford" .
+
+dd:v1742198856255064c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "6"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """A well kept secret. Period (1925) family house in a quiet yet central enclave. Close to the centre of Headington with easy access to London buses, Headington Hospitals, Brookes University and Oxford city schools. Detached family house offering well appointed light and spacious accommodation (3,215 square feet/298.6 square metres) with period features.  The property is set away from the road and approached by a private drive leading to parking and south west facing landscaped gardens. Visit our micro site for this property at http://woodlands-close-oxford.webeden.co.uk        
+         
+            Bedrooms 6 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Woodlands Close, Headington" ;
+      wgs84:lat "51.7592119"^^xsd:double ;
+      wgs84:long "-1.2196258"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37RY" ;
+      vcard:street-address
+              "Woodlands Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002979.pdf" .
+
+dd:v1742198867336026c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Handsome semi detached character townhouse with accommodation arranged over five levels including a lower ground floor with independent access. Recently refurbished interiors, elegant drawing room, four double bedrooms, refitted kitchen/breakfast room, bath and shower rooms.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "James Street, East Oxford" ;
+      wgs84:lat "51.7462125"^^xsd:double ;
+      wgs84:long "-1.2391288"^^xsd:double ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX41EX" ;
+      vcard:street-address
+              "James Street" .
+
+dd:v1742198880008703c
+      dd:hasPrice "399000.0"^^xsd:double ;
+      gr:includes dd:v1742198880081949c ;
+      foaf:page "http://scottfraser.co.uk/SHP03232/headley-way-headington" .
+
+dd:v1742198903753943c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Retirement apartment in central Headington.  Second floor one bedroom leasehold flat with lift access, fitted kitchen, spacious sitting room and south facing communal gardens.  This sought after age restricted development is located in close proximity to Headington local amenities and public transport links.        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "London Court, Headington" ;
+      wgs84:lat "51.7583388"^^xsd:double ;
+      wgs84:long "-1.2181195"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37SL" ;
+      vcard:street-address
+              "London Court" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003392.pdf" .
+
+dd:v1742198863685500c
+      dd:hasPrice "675000.0"^^xsd:double ;
+      gr:includes dd:v1742198863759859c ;
+      foaf:page "http://scottfraser.co.uk/SHP03065/islip-road-north-oxford" .
+
+dd:v1742198873971367c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Charming village home with superb gardens of just over a quarter of an acre. Believed to date to the late nineteenth century, the property offers generous accommodation of great character, featuring three bedrooms, three reception rooms and two bathrooms (one formerly bedroom four). Set away from the road and backing onto woodland, the house is conveniently located for easy access to both Oxford and Abingdon.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Tubney" ;
+      wgs84:lat "51.6911654"^^xsd:double ;
+      wgs84:long "-1.3693434"^^xsd:double ;
+      vcard:postal-code "OX135QJ" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002913.pdf" .
+
+dd:v1742198874691017c
+      a       dd:House ;
+      dd:bathrooms "4"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Three bedroom property with third bedroom and bathroom on the ground floor in a semi rural location near Burford. The well presented accommodation comprises two reception rooms, well fitted kitchen/dining room, utility/shower room, hydro-therapy pool with a jacuzzi element and two first floor bedrooms both with ensuite. Outside there is a garage (currently converted into a studio), off road parking for c.3 vehicle and rear gardens with a southerly aspect and a lovely open rural outlook.        
+         
+            Bedrooms 3 |
+            Bathrooms 4 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Meadow Lane, Fulbrook" ;
+      wgs84:lat "51.8132118"^^xsd:double ;
+      wgs84:long "-1.6263553"^^xsd:double ;
+      vcard:locality "Fulbrook" ;
+      vcard:postal-code "OX184BS" ;
+      vcard:street-address
+              "Meadow Lane" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003486.pdf" .
+
+dd:v1742198896162394c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Well presented town house with fantastic 400 square feet master bedroom suite, fitted kitchen, landscaped garden, garage and car parking space within a short walk of the Marriotts Walk retail development with restaurants, Marks & Spencer and multi screen cinema.  Cloakroom, three double bedrooms, two bathrooms. Central location.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Ashcombe Crescent, Witney" ;
+      wgs84:lat "51.7895647"^^xsd:double ;
+      wgs84:long "-1.4876712"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX286GL" ;
+      vcard:street-address
+              "Ashcombe Crescent" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003090.pdf" .
+
+dd:v1742198862190760c
+      dd:hasPrice "700000.0"^^xsd:double ;
+      gr:includes dd:v1742198862266103c ;
+      foaf:page "http://scottfraser.co.uk/SHP02046/staunton-road-headington" .
+
+dd:v1742198856153663c
+      dd:hasPrice "1300000.0"^^xsd:double ;
+      gr:includes dd:v1742198856255064c ;
+      foaf:page "http://scottfraser.co.uk/SHP02979/woodlands-close-headington" .
+
+dd:v1742198876666347c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Individual three/four bedroom, two bathroom detached house situated in large, mature grounds with potential for a little updating but making a good sized family home in a village location close to the extensive amenities of Witney and commutable to Oxford.  Off road parking and garage. bedroom. village has two pubs, a primary school, post office and library.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Park Road, North Leigh" ;
+      wgs84:lat "51.8132369"^^xsd:double ;
+      wgs84:long "-1.4362695"^^xsd:double ;
+      vcard:locality "North Leigh" ;
+      vcard:postal-code "OX296RX" ;
+      vcard:street-address
+              "Park Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003045.pdf" .
+
+dd:v1742198884776337c
+      dd:hasPrice "365000.0"^^xsd:double ;
+      gr:includes dd:v1742198884848561c ;
+      foaf:page "http://scottfraser.co.uk/SWP03026/elmhurst-way-carterton" .
+
+dd:v1742198875860668c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Detached city bungalow surrounded by garden adjacent to nature reserve. Well presented post war bungalow with flexible two or three bedroom accommodation and potential for a loft conversion and/or extensions subject to the necessary consents. Excellent location for Headington Hospitals, shops, schools and London buses. Immediate vacant possession. No onward chain.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "York Road, Headington" ;
+      wgs84:lat "51.7544027"^^xsd:double ;
+      wgs84:long "-1.2029527"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX38NW" ;
+      vcard:street-address
+              "York Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003394.pdf" .
+
+dd:v1742198897104875c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """New, convenient and ready to move into - Oxford's newest address is now launched.A select mews style development of just seven stylish detached and semi detached houses in a private setting. Convenient for city cycle paths, Summertown, Oxford/London buses, the JR and Oxford Brookes University. Prices range from £260,000 to £360,000. Please call for full specification and to arrange your private viewing.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Highbank Close, Headington" ;
+      wgs84:lat "51.7669383"^^xsd:double ;
+      wgs84:long "-1.2309842"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30LT" ;
+      vcard:street-address
+              "Highbank Close" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003481.pdf" .
+
+dd:v1742198865912852c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Stylish Edwardian family home in fashionable location. Attractive bay fronted terraced house with original features arranged over three floors on this sought after side road off St Clements. Four double bedrooms with family shower room and ensuite bathroom. Fine sitting room with open fire and contemporary fitted kitchen with dining area and bi-fold doors to a private west facing courtyard. Excellently located, situated just yards from the bustling St Clements, South Parks, London bus connections and a short stroll across Magdalen Bridge into the city.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Jeune Street, St Clements" ;
+      wgs84:lat "51.749526"^^xsd:double ;
+      wgs84:long "-1.239855"^^xsd:double ;
+      vcard:locality "St Clements" ;
+      vcard:postal-code "OX41BN" ;
+      vcard:street-address
+              "Jeune Street" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003517.pdf" .
+
+dd:v1742198870859264c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Handsome Victorian terrace in sought after city side road. Well appointed three storey period home comprising four bedroom character accommodation with two inter-connecting reception rooms. Excellently located, situated just yards from the bustling St Clements, South Parks, London bus connections and a short stroll across Magdalen Bridge into the city.        
+         
+            Bedrooms 4 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Jeune Street, St Clements" ;
+      wgs84:lat "51.749526"^^xsd:double ;
+      wgs84:long "-1.239855"^^xsd:double ;
+      vcard:locality "St Clements" ;
+      vcard:postal-code "OX41BN" ;
+      vcard:street-address
+              "Jeune Street" .
+
+dd:v1742198861127424c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Substantial detached Victorian residence. Tucked away in a quiet corner of the Headington Quarry Conservation Area this attractive double fronted property offers flexible four or five bedroom family accommodation, arranged across three levels with an additional self contained studio annexe and workshop. Conveniently located for access to Oxford Brookes University and London Bus stops and London airports.        
+         
+            Bedrooms 5 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Gladstone Road, Headington Quarry" ;
+      wgs84:lat "51.7604185"^^xsd:double ;
+      wgs84:long "-1.2011457"^^xsd:double ;
+      vcard:locality "Headington Quarry" ;
+      vcard:postal-code "OX38LL" ;
+      vcard:street-address
+              "Gladstone Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002498.pdf" .
+
+dd:v1742198893639477c
+      dd:hasPrice "299000.0"^^xsd:double ;
+      gr:includes dd:v1742198893706389c ;
+      foaf:page "http://scottfraser.co.uk/SHP03417/new-high-street-headington" .
+
+dd:v1742198889112625c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Refurbishment project close to the city. Bay fronted period terrace with west facing garden. Three bedroom accommodation now requiring updating and offered for sale with no onward chain. Situated within a mile of the city and close to Hinksey Park, river and countryside walks.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Marlborough Road, Oxford" ;
+      wgs84:lat "51.7425056"^^xsd:double ;
+      wgs84:long "-1.2584395"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX14LT" ;
+      vcard:street-address
+              "Marlborough Road" .
+
+dd:v1742198905075761c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """* Investment opportunity* Recently constructed, three purpose built apartments in central Carterton. Brand new two first floor one bedroom apartments and one top floor two bedroom apartment in the centre of the town offering a range of every day facilities with wider shopping at Cheltenham and Oxford. Currently tenanted for 12 months rental income  £525 pcm.        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Chase House, Carterton" ;
+      wgs84:lat "51.7603861"^^xsd:double ;
+      wgs84:long "-1.5954951"^^xsd:double ;
+      vcard:locality "Carterton" ;
+      vcard:postal-code "OX183AG" ;
+      vcard:street-address
+              "Chase House" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002223.pdf" .
+
+dd:v1742198889663348c
+      dd:hasPrice "325000.0"^^xsd:double ;
+      gr:includes dd:v1742198889730886c ;
+      foaf:page "http://scottfraser.co.uk/SHP03418/ablett-close-east-oxford" .
+
+dd:v1742198891331687c
+      dd:hasPrice "312000.0"^^xsd:double ;
+      gr:includes dd:v1742198891397960c ;
+      foaf:page "http://scottfraser.co.uk/SHP03558/de-lacy-fields-bicester" .
+
+dd:v1742198868597930c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """Spacious character home with delightful south facing gardens. Detached period house in a prime Headington side road ideally situated the Headington schools and hospitals. Extended kitchen/family room, two further reception rooms and four double bedrooms arranged over the first and second floors have created a well proportioned property a short walk from the open spaces of the Rock Edge Nature Reserve and the Quarry Recreation Ground.        
+         
+            Bedrooms 4 |
+            Bathrooms 2 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Margaret Road, Headington" ;
+      wgs84:lat "51.756385"^^xsd:double ;
+      wgs84:long "-1.206940"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX38NG" ;
+      vcard:street-address
+              "Margaret Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_000476.pdf" .
+
+dd:v1742198876285532c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "4"^^xsd:int ;
+      gr:description """Available with vacant possession or with tenants in situ. Deceptively spacious semi detached house situated in Central Headington and ideally suited as a family home or as an ongoing investment property. There is a draft HMO licence for 6 occupants and offers the potential to produce a gross yield in excess of 6.6%. Our lettings manager has inspected the property and suggests that if you follow her recommendations you could expect to achieve a rental income in the region of £2400 PCM.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 4"""^^xsd:string ;
+      gr:name "London Road, Headington" ;
+      wgs84:lat "51.7613654"^^xsd:double ;
+      wgs84:long "-1.2055339"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX39EE" ;
+      vcard:street-address
+              "London Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003340.pdf" .
+
+dd:v1742198904240280c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """* Investment opportunity* Recently constructed, three purpose built apartments in central Carterton. Brand new two first floor one bedroom apartments and one top floor two bedroom apartment in the centre of the town offering a range of every day facilities with wider shopping at Cheltenham and Oxford. Currently tenanted for 12 months rental income  £650 pcm.        
+         
+            Bedrooms 2 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Chase House, Carterton" ;
+      wgs84:lat "51.7603861"^^xsd:double ;
+      wgs84:long "-1.5954951"^^xsd:double ;
+      vcard:locality "Carterton" ;
+      vcard:postal-code "OX183AG" ;
+      vcard:street-address
+              "Chase House" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002224.pdf" .
+
+dd:v1742198898345737c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Three bedroom two bathroom semi detached house arranged over two floors in the ever popular Madley Park Estate.  The property has two separate reception rooms, gardens to the rear, a garage and driveway and gas central heating and double glazing.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Lavender View, Witney" ;
+      wgs84:lat "51.7949744"^^xsd:double ;
+      wgs84:long "-1.4648013"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX281EH" ;
+      vcard:street-address
+              "Lavender View" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003389.pdf" .
+
+dd:v1742198885124774c
+      dd:hasPrice "360000.0"^^xsd:double ;
+      gr:includes dd:v1742198885198355c ;
+      foaf:page "http://scottfraser.co.uk/SHP03479/highbank-close-headington" .
+
+dd:v1742198863332526c
+      dd:hasPrice "675000.0"^^xsd:double ;
+      gr:includes dd:v1742198863408146c ;
+      foaf:page "http://scottfraser.co.uk/SWP03472/hailey-road-witney" .
+
+dd:v1742198893335242c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Extended semi-detached home in elevated position. Well presented and appointed property with a single storey extension to the rear complementing the existing living space. Located in an accessible position close to Headington hospitals, Brookes University, local amenities and public transport. Features fitted kitchen with range of modern wall and base units. Gas hob, electric double oven, cooker hood and breakfast bar. Sitting room with double doors to dining room. Modern white sanitary ware with chrome fittings. Decorative fireplace with gas flame fire. Gas central heating and double glazed windows. Off street parking and rear garden with garage store.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Headley Way, Headington" ;
+      wgs84:lat "51.7669383"^^xsd:double ;
+      wgs84:long "-1.2309842"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX30LT" ;
+      vcard:street-address
+              "Headley Way" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002866.pdf" .
+
+dd:v1742198869661946c
+      dd:hasPrice "510000.0"^^xsd:double ;
+      gr:includes dd:v1742198869736333c ;
+      foaf:page "http://scottfraser.co.uk/SHP03553/de-lacey-fields-bicester" .
+
+dd:v1742198894534674c
+      dd:hasPrice "289000.0"^^xsd:double ;
+      gr:includes dd:v1742198894600710c ;
+      foaf:page "http://scottfraser.co.uk/SHP02875/trinity-road-headington-quarry" .
+
+dd:v1742198864782149c
+      dd:hasPrice "595000.0"^^xsd:double ;
+      gr:includes dd:v1742198864866895c ;
+      foaf:page "http://scottfraser.co.uk/SHP01543/the-slade-headington" .
+
+dd:v1742198887405597c
+      dd:hasPrice "345000.0"^^xsd:double ;
+      gr:includes dd:v1742198887472774c ;
+      foaf:page "http://scottfraser.co.uk/SHP03480/highbank-close-headington" .
+
+dd:v1742198877028689c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Well presented three bedroom, three storey Edwardian end terraced house, large living room with open fireplace, light and airy garden/family room, kitchen/breakfast room with utility and cloakroom, master bedroom with en-suite shower room.  Outside there is a large enclosed rear garden and off road parking.  The property has gas fired central heating.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Woodstock Road, Witney" ;
+      wgs84:lat "51.7939939"^^xsd:double ;
+      wgs84:long "-1.4726718"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX281EB" ;
+      vcard:street-address
+              "Woodstock Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002095.pdf" .
+
+dd:v1742198897966715c
+      dd:hasPrice "235000.0"^^xsd:double ;
+      gr:includes dd:v1742198898034676c ;
+      foaf:page "http://scottfraser.co.uk/SHP03432/cranston-court-rose-hill" .
+
+dd:v1742198880410677c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Beautifully presented barn conversion in an elevated location in this desirable village between Chipping Norton, Witney and Burford.  Three bedrooms, master with ensuite, cloakroom, spacious living room with bi fold doors opening into well tended gardens, shaker style fitted kitchen and separate dining room.  Off road parking in private courtyard to front. Gas fired central heating and double glazing.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "College Farm, Chadlington" ;
+      wgs84:lat "51.8961625"^^xsd:double ;
+      wgs84:long "-1.524158"^^xsd:double ;
+      vcard:locality "Chadlington" ;
+      vcard:postal-code "OX73LQ" ;
+      vcard:street-address
+              "College Farm" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003459.pdf" .
+
+dd:v1742198857347301c
+      dd:hasPrice "975000.0"^^xsd:double ;
+      gr:includes dd:v1742198857424743c ;
+      foaf:page "http://scottfraser.co.uk/SHP01806/jack-straws-lane-headington" .
+
+dd:v1742198895806457c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Stylish duplex in superb city location.  Contemporary apartment arranged over two floors featuring well-presented accommodation within walking distance of the city centre and railway station via road or Thames side tow paths.  Available for sale with no onward chain.  Please note that the photographs shown were taken prior to the current tenancy agreement.        
+         
+            Bedrooms 2 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Western Road, Oxford" ;
+      wgs84:lat "51.7451835"^^xsd:double ;
+      wgs84:long "-1.2567879"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX14FA" ;
+      vcard:street-address
+              "Western Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_000281.pdf" .
+
+dd:v1742198905318257c
+      dd:hasPrice "100000.0"^^xsd:double ;
+      gr:includes dd:v1742198905385246c ;
+      foaf:page "http://scottfraser.co.uk/SHP03512/temple-road-temple-cowley" .
+
+dd:v1742198861051411c
+      dd:hasPrice "785000.0"^^xsd:double ;
+      gr:includes dd:v1742198861127424c ;
+      foaf:page "http://scottfraser.co.uk/SHP02498/gladstone-road-headington-quarry" .
+
+dd:v1742198901069089c
+      dd:hasPrice "200000.0"^^xsd:double ;
+      gr:includes dd:v1742198901135887c ;
+      foaf:page "http://scottfraser.co.uk/SHP03456/bateman-street-headington" .
+
+dd:v1742198870379457c
+      dd:hasPrice "500000.0"^^xsd:double ;
+      gr:includes dd:v1742198870455875c ;
+      foaf:page "http://scottfraser.co.uk/SHP03396/stapleton-road-headington" .
+
+dd:v1742198874331782c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "2"^^xsd:int ;
+      gr:description """Stunning refurbishment of period home. Bay fronted extended character house with stylish contemporary interiors, offering three double bedroom accommodation arranged over the top two floors and spacious open plan ground floor living space. Located a short walk behind central Headington on a quiet no through road.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 2"""^^xsd:string ;
+      gr:name "Gardiner Street, Headington" ;
+      wgs84:lat "51.7564259"^^xsd:double ;
+      wgs84:long "-1.210387"^^xsd:double ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX37AW" ;
+      vcard:street-address
+              "Gardiner Street" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002846.pdf" .
+
+dd:v1742198881859512c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "4"^^xsd:int ;
+      gr:description """Extended family accommodation.  Three bedroom detached house arranged over two floors offering versatile ground floor living space and generous delightful gardens.  Provides the opportunity for modernisation and updating and offered for sale with no onward chain.        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 4"""^^xsd:string ;
+      gr:name "Temple Road, Temple Cowley" ;
+      wgs84:lat "51.7381294"^^xsd:double ;
+      wgs84:long "-1.215876"^^xsd:double ;
+      vcard:locality "Temple Cowley" ;
+      vcard:postal-code "OX42HD" ;
+      vcard:street-address
+              "Temple Road" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003420.pdf" .
+
+dd:v1742198903687053c
+      dd:hasPrice "145000.0"^^xsd:double ;
+      gr:includes dd:v1742198903753943c ;
+      foaf:page "http://scottfraser.co.uk/SHP03392/london-court-headington" .
+
+dd:v1742198892263511c
+      dd:hasPrice "300000.0"^^xsd:double ;
+      gr:includes dd:v1742198892358693c ;
+      foaf:page "http://scottfraser.co.uk/SHP03337/marston-road-marston" .
+
+dd:v1742198888428889c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Elegant period home. Fronting onto formal quadrant gardens this immaculate three bedroom property features beautiful interiors including high ceilings and tall sash windows, in an enviable setting within the extensive twelve acre communal grounds of St Georges Manor. Visit the property's own website at: http://4-st-georges-manor.webeden.co.uk        
+         
+            Bedrooms 3 |
+            Bathrooms 2 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "St Georges Manor, Oxford" ;
+      wgs84:lat "51.717464"^^xsd:double ;
+      wgs84:long "-1.226192"^^xsd:double ;
+      vcard:locality "Oxford" ;
+      vcard:postal-code "OX44TW" ;
+      vcard:street-address
+              "St Georges Manor" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_002420.pdf" .
+
+dd:v1742198865839238c
+      dd:hasPrice "565000.0"^^xsd:double ;
+      gr:includes dd:v1742198865912852c ;
+      foaf:page "http://scottfraser.co.uk/SHP03517/jeune-street-st-clements" .
+
+dd:v1742198905663523c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "1"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """Well presented first floor studio apartment ideally suited to first time buyers. Set within a cul-de-sac with local amenities nearby and the town centre accessible via a pleasant walk across Langdale Common. Open plan reception/sleeping area with concealed bed, kitchen with breakfast bar and re-fitted bathroom. Replacement double glazing, allocated parking.        
+         
+            Bedrooms 1 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Manor Road, Witney" ;
+      wgs84:lat "51.7802399"^^xsd:double ;
+      wgs84:long "-1.4711796"^^xsd:double ;
+      vcard:locality "Witney" ;
+      vcard:postal-code "OX283SR" ;
+      vcard:street-address
+              "Manor Road" .
+
+dd:v1742198864131341c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      dd:receptions "3"^^xsd:int ;
+      gr:description """The village of Holton is the perfect combination of peaceful yet accessible. You can be on the main road networks within minutes, yet it has the benefit of not being a cut through to anywhere, so traffic is minimal. There is a newly refurbished gym with excellent sports facilities in the village.  Shotover Country Park is easily accessed on bike or foot, plus there are some lovely walks around the village area and surrounding countryside. The village of Wheatley is only a five minute walk away and has a butchers, bakers, bank, post office, two convenience stores, numerous pubs and takeaways. Oxford is easily accessed via the regular buses that run from Wheatley day and night. The London and airport buses run 24 hours a day from the park and ride just a mile down the road. All in all Holton is a great place to live and provides the best of countryside living with everything you need on your doorstep.  We have created a mini website for this property at http://beech-house-holton.webeden.co.uk/        
+         
+            Bedrooms 4 |
+            Bathrooms 3 |
+            Receptions 3"""^^xsd:string ;
+      gr:name "Holton" ;
+      wgs84:lat "51.7554874"^^xsd:double ;
+      wgs84:long "-1.13698"^^xsd:double ;
+      vcard:postal-code "OX331QF" ;
+      foaf:depiction "http://scottfraser.co.uk/public/backend/uploads/properties/brochures-floorplans/det_003038.pdf" .
+
+dd:v1742198885527726c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      dd:receptions "1"^^xsd:int ;
+      gr:description """New to the market - Delightful period stone cottage in the heart of the village.Believed to date back to the 17th century this pretty stone cottage has been in the same family for over fifty years. It offers three double bedroom accommodation with a charming period ambience a courtyard garden and garage/store with off street parking. Although well loved the property does require some updating which has been reflected in our guide price. Photographs and floor plans to follow viewings can be booked now.        
+         
+            Bedrooms 3 |
+            Bathrooms 1 |
+            Receptions 1"""^^xsd:string ;
+      gr:name "Friday Lane, Wheatley" ;
+      wgs84:lat "51.746778"^^xsd:double ;
+      wgs84:long "-1.1349587"^^xsd:double ;
+      vcard:locality "Wheatley" ;
+      vcard:postal-code "OX331LT" ;
+      vcard:street-address
+              "Friday Lane" .
+
+dd:v1742198883436153c
+      dd:hasPrice "375000.0"^^xsd:double ;
+      gr:includes dd:v1742198883507331c ;
+      foaf:page "http://scottfraser.co.uk/SHP02007/reliance-way-east-oxford" .
+
+dd:v1742198875783011c
+      dd:hasPrice "430000.0"^^xsd:double ;
+      gr:includes dd:v1742198875860668c ;
+      foaf:page "http://scottfraser.co.uk/SHP03394/york-road-headington" .
+
+dd:v1742198858535136c
+      dd:hasPrice "850000.0"^^xsd:double ;
+      gr:includes dd:v1742198858611987c ;
+      foaf:page "http://scottfraser.co.uk/SWP03138/cumnor-road-farmoor" .
+
+dd:v1742198901655201c
+      dd:hasPrice "195000.0"^^xsd:double ;
+      gr:includes dd:v1742198901722579c ;
+      foaf:page "http://scottfraser.co.uk/SHP03361/magdalen-road-east-oxford" .
+
+dd:v1742198893267827c
+      dd:hasPrice "300000.0"^^xsd:double ;
+      gr:includes dd:v1742198893335242c ;
+      foaf:page "http://scottfraser.co.uk/SHP02866/headley-way-headington" .
+
+dd:v1742198895741805c
+      dd:hasPrice "275000.0"^^xsd:double ;
+      gr:includes dd:v1742198895806457c ;
+      foaf:page "http://scottfraser.co.uk/SHP00281/western-road-oxford" .
+
+dd:v1742198905385246c
+      a       dd:House ;
+      dd:bathrooms "0"^^xsd:int ;
+      dd:bedrooms "0"^^xsd:int ;
+      dd:receptions "0"^^xsd:int ;
+      gr:description """Commercial development opportunity in Temple Cowley - cleared site with planning permission for the erection of a 3 storey building with a B1 office suite on each floor.  Please apply to David Blythman for full details and relevant planning permissions.        
+         
+            Bedrooms 0 |
+            Bathrooms 0 |
+            Receptions 0"""^^xsd:string ;
+      gr:name "Temple Road, Temple Cowley" ;
+      wgs84:lat "51.7381294"^^xsd:double ;
+      wgs84:long "-1.215876"^^xsd:double ;
+      vcard:locality "Temple Cowley" ;
+      vcard:postal-code "OX42HD" ;
+      vcard:street-address
+              "Temple Road" .
+

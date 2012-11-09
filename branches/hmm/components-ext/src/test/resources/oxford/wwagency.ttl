@@ -1,0 +1,2393 @@
+@prefix dd:      <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix huhu:    <http://google.com/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix wgs84:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix lulu:    <http://loolge.com/> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+
+dd:v1738512988718036c
+      gr:includes dd:v1738512988679311c .
+
+dd:v1738892747566356c
+      dd:hasPrice "299950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Lye-Valley-Headington-OX3/517" .
+
+dd:v1738512997099549c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        A really smart two bedroom mid-terrace house in a quiet street in Rose Hill.  The property is just three years old and features a striking kitchen, off-street parking and a private garden.
+You enter the house via an entrance hall with a useful downstairs WC to your left, and the striking kitchen to your right.  At the rear of the property is the sitting/dining room with a door to the bright west facing garden.  Upstairs is a bedroom and modern bathroom to the front, and a large master bedroom to the rear with built-in double wardrobe.
+Rose Hill is a district of Oxford to the South East of the city centre beside the village of Iffley.  Development started here in 1936 and the area takes its name from an old farmer’s cottage on the A4158.
+Local transport links are available nearby and road users have fast access towards A40 (M40).
+                    """ ;
+      gr:name "Pattison Place Rose Hill OX4" ;
+      vcard:locality "Rose Hill" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Pattison Place Rose Hill OX4" .
+
+dd:v1738512996089362c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        This impressive two bedroomed mid-terraced house benefits having a well presented interior, family kitchen, private garden and separate garage.
+The property comprises bright reception room with sliding doors to garden, fully fitted family kitchen, generous master bedroom with en-suite shower and basin, second well proportioned bedroom, modern bathroom, off-street parking and private garage.
+The property is located within a quiet cul-de-sac close to the open space of Spindlebury Nature Park. Local transport links are available nearby for Oxford central, while road users have excellent access towards A40 (M40).
+                    """ ;
+      gr:name "Pochard Place Greater Ley's OX4" ;
+      vcard:locality "Greater Leys" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Pochard Place Greater Ley's OX4" .
+
+dd:v1738892752780314c
+      gr:includes dd:v1738892752749539c .
+
+dd:v1738892746686237c
+      dd:hasPrice "299950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Howard-Street-East-Oxford-OX4/412" .
+
+dd:v1738892729819178c
+      dd:hasPrice "949950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Silver-Trees-Bagley-Wood-Rd-OX1/269" .
+
+dd:v1738512990030583c
+      gr:includes dd:v1738512989996359c .
+
+dd:v1738892738416314c
+      dd:hasPrice "399950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Water-Eaton-Rd-Summertown-OX2/196" .
+
+dd:v1738892735262046c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        Extremely attractive, high Victorian, large terraced house just south of Oxford City Centre.  Offering abundant living space throughout, this impressive four /five bedroom house offers a convenient central location, excellent room proportions and South Westerly facing private garden.
+Arranged over three floors the property comprises two reception rooms, large family sized kitchen/diner, four well proportioned upstairs bedrooms, large shower room, second bathroom, private garden and is currently let at £1800 PCM until 15/9/12 after which it will be available with vacant possession.
+New Hinksey is an extremely popular suburb of Oxford lying just to the south of the city centre.  The area was developed in the 19th century and is very popular with families who are drawn to its parks, outdoor swimming pool and Cowmead allotment.  The New Hinksey primary school is also rated Good by Ofsted.
+Located along the Abingdon Road, public transport links are close by, Oxford (National Rail) train station is within walking distance and road users have fast access towards the A34 (M40).
+                    """ ;
+      gr:name "Abingdon Rd New Hinksey OX1" ;
+      vcard:locality "New Hinksey" ;
+      vcard:postal-code "OX1" ;
+      vcard:street_address
+              "Abingdon Rd New Hinksey OX1" .
+
+dd:v1738892750355152c
+      gr:includes dd:v1738892750325679c .
+
+dd:v1738892743728995c
+      gr:includes dd:v1738892743695774c .
+
+dd:v1738892746087959c
+      dd:hasPrice "309950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Crescent-Rd-Temple-Cowley-OX4/392" .
+
+dd:v1738892751399751c
+      dd:hasPrice "279900.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Earl-Street-New-Botley-OX2/284" .
+
+dd:v1738892748835669c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        This much loved family home offers exceptional value for money in an increasingly popular area of East Oxford.  This extremely spacious house features four good sized bedrooms, large secure garden and off street parking for two cars.
+The house has an entrance hall, spacious large sitting room to the front, family sized fully fitted kitchen to the rear with sliding doors onto the garden, modern family bathroom, four double bedrooms including a master bedroom overlooking the rear.  
+The house offers redecoration potential to make it your own and enough space to make it unlikely that you’ll ever need to move again.
+Shelley Road is ideally located just off the Cowley Road and close to Florence Park.  The Cowley Road is probably Oxford’s most celebrated street.  Famously popular with students, it is home to a culturally and economically diverse population.  Shops, bars, restaurants and entertainment centres abound, along with great local facilities.  Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence.  It features colourful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Transport links can be found nearby, while for those electing travel by road, the A40 (M40) provides easy access towards London and the Midlands.
+                    """ ;
+      gr:name "Shelley Road East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Shelley Road East Oxford OX4" .
+
+dd:v1738892740246612c
+      dd:hasPrice "379950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Mill-Street-Central-Oxford-OX2/316" .
+
+dd:v1738892754476035c
+      dd:hasPrice "249950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Earl-Street-Central-Oxford-OX2/251" .
+
+dd:v1738892746764676c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A wonderful three bedroomed semi-detached house offering a spacious rear garden, well proportioned rooms, off-street parking and modernisation possibility.
+The property comprises two reception rooms, kitchen with access to private garden, three well proportioned  bedrooms, family bathroom, ground floor WC and garage.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley.
+Public transport links are just moments away and for the motorist the A40 (M40) provides access towards London and the west country.
+                    """ ;
+      gr:name "Westbury Crescent Cowley OX4" ;
+      vcard:locality "Temple Cowley" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Cowley OX4" .
+
+dd:v1738512989455606c
+      gr:includes dd:v1738512989421443c .
+
+dd:v1738512995989194c
+      dd:hasPrice "185000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Pochard-Place-Greater-Leys-OX4/345" .
+
+dd:v1738892730964549c
+      gr:includes dd:v1738892730929719c .
+
+dd:v1738892730837284c
+      dd:hasPrice "675000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Wentworth-Rd-Sunnymead-OX2/500" .
+
+dd:v1738892730143016c
+      dd:hasPrice "895000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Carey-Close-North-Oxford-OX2/505" .
+
+dd:v1738892731165318c
+      dd:hasPrice "649950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Abingdon-Road-Grandpont-OX1/252" .
+
+dd:v1738892750069332c
+      gr:includes dd:v1738892750035227c .
+
+dd:v1738892739441169c
+      gr:includes dd:v1738892739400503c .
+
+dd:v1738892746218076c
+      gr:includes dd:v1738892746184601c .
+
+dd:v1738892751965673c
+      dd:hasPrice "275000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Charles-Street-East-Oxford-OX4/174" .
+
+dd:v1738512997005056c
+      dd:hasPrice "184950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Pattison-Place-Rose-Hill-OX4/302" .
+
+dd:v1738512992692533c
+      gr:includes dd:v1738512992653525c .
+
+dd:v1738892738197575c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential no-through road, this handsome three bedroomed family house offers well proportioned accommodation arranged over two floors including an attractive garden.
+Offering extension (subject to planning) and redecoration potential, the property further benefits having two reception rooms, kitchen providing access to mature private garden, three well proportioned bedrooms, family bathroom, ground floor WC and many period features.
+Fairacres Road is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Fairacres Road Iffley Fields OX4" ;
+      vcard:locality "Iffley Fields" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Fairacres Road Iffley Fields OX4" .
+
+dd:v1738892753079443c
+      gr:includes dd:v1738892753047888c .
+
+dd:v1738892747676686c
+      gr:includes dd:v1738892747643875c .
+
+dd:v1738892736485287c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      gr:description """
+                        This outstanding five bedroom detached family house offers beautifully decorated accommodation arranged over two floors, extended family kitchen and off-street parking for several vehicles.
+Immaculately presented throughout with a stylish interior, the property on the ground floor offers bright front reception, modern fully fitted kitchen with breakfast eating area and door opening onto private garden, study room providing access to garage and ground floor WC. Upstairs are five well proportioned bedrooms, master en-suite and second family bathroom with separate shower.
+Botley is a village in the civil parish of North Hinksey, just west of the Oxford city boundary. It was first settled in the Saxon era and is now a very popular area with families. Fogwell Road is a desirable address offering a quiet location within this area. 
+Public transport links are close by for Oxford central, while road users have fast access onto the A34 (M40).
+                    """ ;
+      gr:name "Fogwell Road Botley OX2" ;
+      vcard:locality "Botley" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Fogwell Road Botley OX2" .
+
+dd:v1738892739623389c
+      dd:hasPrice "389950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Temple-Road-East-Oxford-OX4/398" .
+
+dd:v1738892745556186c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        Substantial four bedroom detached family house arranged over two floors, offering a larger than average corner plot, extension possibility (subject to planning), off-street parking and garage.
+Well presented throughout, the property on the ground floor offers a bright double reception with separating doors, fully fitted kitchen overlooking garden, WC and sliding door to mature family garden offering useful side access. Upstairs are four bedrooms, master with walk-in wardrobe, family bathroom and access to loft storage.
+Botley is a village in the civil parish of North Hinksey, just west of the Oxford city boundary. It was first settled in the Saxon era and is now a very popular area with families. Fogwell Road is a desirable address offering a quiet location within this area.
+Public transport links are close by for Oxford central, while road users have fast access onto the A34 (M40).
+                    """ ;
+      gr:name "Ashcroft Close Botley OX2" ;
+      vcard:locality "Botley" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Ashcroft Close Botley OX2" .
+
+dd:v1738892736124067c
+      dd:hasPrice "449950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Westbury-Crescent-Florence-Pk-OX4/480" .
+
+dd:v1738892738492077c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        This fantastic two bedroomed terrace house is ideally located near the boutiques, bars and restaurants of Summertown, while the green open spaces of Sunnymead Park are moments away.
+The house comprises a generous reception room with square bay and new sliding sash windows, second family / dining room with attractive fireplace, spacious fully fitted kitchen overlooking private west facing 62' garden with pedestrian rear access, first floor master bedroom with new sash windows and fitted wardrobes, second double bedroom and large family bathroom.
+The property further offers extensive (granted) planning permission to extend both  ground and second floor loft space (drawings available on request).
+Public transport links are superb close by, Oxford (National Rail) train station is within short cycle ride, while motorists gain easy access to A34 (M40) towards London.
+                    """ ;
+      gr:name "Water Eaton Rd Summertown OX2" ;
+      vcard:locality "Summertown" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Water Eaton Rd Summertown OX2" .
+
+dd:v1738892751170113c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        This much loved family home offers exceptional value for money in an increasingly popular area of East Oxford.  This extremely spacious house features four good sized bedrooms, large secure garden and off street parking for two cars.
+The house has an entrance hall, spacious large sitting room to the front, family sized fully fitted kitchen to the rear with sliding doors onto the garden, modern family bathroom, four double bedrooms including a master bedroom overlooking the rear.  
+The house offers redecoration potential to make it your own and enough space to make it unlikely that you’ll ever need to move again.
+Shelley Road is ideally located just off the Cowley Road and close to Florence Park.  The Cowley Road is probably Oxford’s most celebrated street.  Famously popular with students, it is home to a culturally and economically diverse population.  Shops, bars, restaurants and entertainment centres abound, along with great local facilities.  Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence.  It features colourful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Transport links can be found nearby, while for those electing travel by road, the A40 (M40) provides easy access towards London and the Midlands.
+                    """ ;
+      gr:name "Shelley Road East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Shelley Road East Oxford OX4" .
+
+dd:v1738892740564225c
+      dd:hasPrice "379950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Lanham-Way-Littlemore-OX4/326" .
+
+dd:v1738892742173559c
+      dd:hasPrice "369950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Don-Bosco-Close-Temple-Cowley-OX4/431" .
+
+dd:v1738892738771203c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential no-through road, this handsome three bedroomed family house offers well proportioned accommodation arranged over two floors including an attractive garden.
+Offering extension (subject to planning) and redecoration potential, the property further benefits having two reception rooms, kitchen providing access to mature private garden, three well proportioned bedrooms, family bathroom, ground floor WC and many period features.
+Fairacres Road is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Fairacres Road Iffley Fields OX4" ;
+      vcard:locality "Iffley Fields" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Fairacres Road Iffley Fields OX4" .
+
+dd:v1738512989711293c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Ideally located near central Oxford, this generously proportioned two bedroomed end-of-terraced house offers modernisation potential, dining area off kitchen and mature private garden.
+The property further benefits from bright front reception with fireplace, kitchen leading to dining area with access to garden, two double bedrooms, family bathroom, re-decoration potential and on street parking.
+Earl Street is perfectly positioned for easy access into Oxford central for the National Rail train station, shops and amenities, whilst road users have fast access towards A34 (M40)
+                    """ ;
+      gr:name "Earl Street New Botley OX2" ;
+      vcard:locality "New Botley" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Earl Street New Botley OX2" .
+
+dd:v1738512995007036c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Impressive End-of-Terrace house situated quietly in Greater Leys, offered with modern family kitchen and off-street parking for two cars.
+Arranged over two floors the house comprises bright reception room, large family kitchen with eating area providing access to garden, two double bedrooms, family bathroom and excellent storage.
+The property is located within easy reach of Oxford Retail Park, while the wider variety of shops, bars and entertainments can be found within Headington and Cowley.
+Local transport links are nearby, while the motorist benefits from easy access to the A4 (M40).
+                    """ ;
+      gr:name "Spruce Gardens Greater Leys OX4" ;
+      vcard:locality "Greater Leys" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Spruce Gardens Greater Leys OX4" .
+
+dd:v1738892737816814c
+      dd:hasPrice "425000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Lanham-Way-Littlemore-OX4/433" .
+
+dd:v1738892736800034c
+      gr:includes dd:v1738892736767294c .
+
+dd:v1738892743318215c
+      dd:hasPrice "349950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/East-Avenue-Cowley-OX4/283" .
+
+dd:v1738512995790510c
+      gr:includes dd:v1738512995755073c .
+
+dd:v1738892753976527c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Arranged over two floors, this bright three double bedroomed house benefits from recently fitted double glazing, front patio area with gate and located ideally for public and road transport access.
+The property comprises two generous sized reception rooms with interlinking door, large kitchen with space for dining, three well proportioned bedrooms, family bathroom, good storage, redecoration potential and rear off-street parking.
+Botley is a village in the civil parish of North Hinksey, just west of the Oxford city boundary. It was first settled in the Saxon era and is now a very popular area with families. 
+Reception: 12'4 x 9'11 / Second Reception: 12'9 x 9'11 / Kitchen: 10'4 x 8'8
+Master Bedroom: 12'8 x 9'11/ Second Bedroom: 9'2 x 7'4 / Third Bedroom: 12'8 x 8'4
+                    """ ;
+      gr:name "West Way Botley OX2" ;
+      vcard:locality "Botley" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "West Way Botley OX2" .
+
+dd:v1738892754290960c
+      gr:includes dd:v1738892754260355c .
+
+dd:v1738892754260355c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Benefiting from several desirable features including a bright conservatory, this three bedroomed house is located in the popular area of New Marston.  
+Situated in a quiet position, this three bedroomed house further offers large front reception, modern kitchen leading to conservatory eating area, large well managed garden with side access, spacious master bedroom, two further good sized bedrooms, modern bathroom and stunning wood floors throughout.
+Stainer Place is conveniently positioned between the shops, bars and restaurants of Summertown and Headington while Headley Way offers essential shop amenities.
+Oxford (National Rail) train station is a cycle ride away while the motorists benefit from the close proximity of Marsh Lane for the A40 (M40).
+                    """ ;
+      gr:name "Stainer Place Marston OX3" ;
+      vcard:locality "Marston" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "Stainer Place Marston OX3" .
+
+dd:v1738512997328250c
+      dd:hasPrice "165000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Alden-Crescent-Barton-OX3/245" .
+
+dd:v1738892735542762c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential no-through road, this handsome four bedroomed family house offers substantial accommodation arranged over three floors including an attractive garden backing onto open green space. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with dining area and superb log burning stove, modern fully fitted kitchen with breakfast eating area including French doors opening onto private garden, four well proportioned bedrooms, top floor master with en-suite shower room and Juliet balcony overlooking the adjoining convent grounds, second modern family bathroom and useful cellar.
+Fairacres Road is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Fairacres Road Iffley Fields OX4" ;
+      vcard:locality "Iffley Fields" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Fairacres Road Iffley Fields OX4" .
+
+dd:v1738892744882652c
+      dd:hasPrice "325000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Cricket-Road-East-Oxford-OX4/191" .
+
+dd:v1738892747643875c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Located along a quiet residential road, this outstanding three bedroomed semi-detached house benefits from a tastefully decorated interior, many period features and off-street parking including garage.
+The property comprises bright front reception with fireplace, dining room with conservatory sun room overlooking rear garden, modern fully fitted kitchen providing garden access, three well proportioned bedrooms, family bathroom, off-street parking and garage. The house also benefits from a front of house double sized garden plot which leads down to a stream offering children a wonderful adventure area.
+The property is located within a cycle ride to Headington with its many shops, restaurants and amenities, while open green space can be found nearby.
+Local transport links are available close by providing access to Oxford (National Rail) train station, while road users have fast access towards A40 (M40).
+                    """ ;
+      gr:name "Lye Valley Headington OX3" ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "Lye Valley Headington OX3" .
+
+dd:v1738892747087702c
+      gr:includes dd:v1738892747054537c .
+
+dd:v1738512993744598c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Generously proportioned throughout, this impressive corner house is situated within a quiet close in Greater Leys, offered with off-street parking for two cars.
+Arranged over two floors the house comprises entrance hall, spacious reception room, large family kitchen with eating area providing access to garden, two double bedrooms, third study / nursery room, family bathroom and excellent storage.
+The property is located within easy reach of Oxford Retail Park, while the wider variety of shops, bars and entertainments can be found within Headington and Cowley.
+Local transport links are nearby, while the motorist benefits from easy access to the A4 (M40).
+                    """ ;
+      gr:name "Mole Place Greater Leys OX4" ;
+      vcard:locality "Greater Leys" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Mole Place Greater Leys OX4" .
+
+dd:v1738892742980406c
+      dd:hasPrice "349950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Howard-Street-East-Oxford-OX4/402" .
+
+dd:v1738512989915900c
+      dd:hasPrice "245000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Malford-Road-Barton-OX3/340" .
+
+dd:v1738892729588701c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "6"^^xsd:int ;
+      gr:description """
+                        Probably one of the most beautifully decorated and designed houses in Oxford.  This six bedroom Edwardian family house is the ultimate lifestyle property.  
+Arranged over three floors, the house offers six bedrooms, three bathrooms                 (2 en-suite), large dining room with open fire and doors to terrace, a formal sitting room with wood burning stove, enormous family kitchen/dining room, casual snug room and beautiful conservatory.  There is also a large utility room, downstairs cloakroom and lovely entrance hall.  Period features abound throughout the house.
+Outside is equally impressive.  A beautiful heated swimming pool, pool house, vegetable garden and large lawned area as well.  All completely private and enclosed.  There is also a double garage and outbuildings featuring a workshop and chicken coop.
+The village of Kennington lies on a long narrow strip of land between Bagley Wood to the west and the River Thames water meadows to the east. Just 2.5 miles from Oxford city centre it features a selection of local shops and St Swithun’s Primary School which has a Good rating from Ofsted.
+Public transport links can be found nearby, while the road user has fast access to the Oxford ring road / A40 (M40).
+                    """ ;
+      gr:name "Jackson Drive Kennington OX1" ;
+      vcard:locality "Kennington" ;
+      vcard:postal-code "OX1" ;
+      vcard:street_address
+              "Jackson Drive Kennington OX1" .
+
+dd:v1738892729205923c
+      gr:includes dd:v1738892729168664c .
+
+dd:v1738892737641026c
+      gr:includes dd:v1738892737609126c .
+
+dd:v1738892748537993c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A wonderful three bedroomed semi-detached house offering a spacious rear garden, well proportioned rooms, off-street parking and modernisation possibility.
+The property comprises two reception rooms, kitchen with access to private garden, three well proportioned  bedrooms, family bathroom, ground floor WC and garage.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley.
+Public transport links are just moments away and for the motorist the A40 (M40) provides access towards London and the west country.
+                    """ ;
+      gr:name "Westbury Crescent Cowley OX4" ;
+      vcard:locality "Temple Cowley" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Cowley OX4" .
+
+dd:v1738892751686042c
+      dd:hasPrice "275000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Earl-Street-Central-Oxford-OX2/250" .
+
+dd:v1738512989343153c
+      dd:hasPrice "249950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Barton-Road-Headington-OX3/443" .
+
+dd:v1738892748160114c
+      dd:hasPrice "299950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Barracks-Lane-East-Oxford-OX4/543" .
+
+dd:v1738512991365907c
+      dd:hasPrice "234950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/New-High-Street-Headington-OX3/452" .
+
+dd:v1738892739289318c
+      dd:hasPrice "399950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Westbury-Crescent-Florence-Pk-OX4/539" .
+
+dd:v1738892746184601c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A wonderful three bedroomed semi-detached house offering a spacious rear garden, well proportioned rooms, off-street parking and modernisation possibility.
+The property comprises two reception rooms, kitchen with access to private garden, three well proportioned  bedrooms, family bathroom, ground floor WC and garage.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley.
+Public transport links are just moments away and for the motorist the A40 (M40) provides access towards London and the west country.
+                    """ ;
+      gr:name "Westbury Crescent Cowley OX4" ;
+      vcard:locality "Temple Cowley" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Cowley OX4" .
+
+dd:v1738512996741595c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        An ideal first time buy, this two bedroom mid-terrace house benefits from a well presented interior, eat-in family kitchen, two bathrooms, private garden, attached garage and off street parking for two vehicles.
+Downstairs the property has the large eat-in kitchen to the front, and a bright reception room with sliding doors to the garden at the rear.  Upstairs there is the generous master bedroom with en-suite shower and basin to the front, and a second well proportioned bedroom and family bathroom to the rear.  Outside there is off-street parking for two cars and attached private garage.
+Greater Leys is an attractive modern estate to the South East of Oxford city centre.  The property is located conveniently for the open space of Spindlebury Nature Park. Local transport links are available nearby for Oxford central, while road users have excellent access towards A40 (M40).
+                    """ ;
+      gr:name "Elder Way Greater Leys OX4" ;
+      vcard:locality "Greater Leys" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Elder Way Greater Leys OX4" .
+
+dd:v1738892754552624c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Perfectly located in a convenient position in Oxford, this well proportioned two bedroomed terraced house offers a modern kitchen and private garden.
+The property further benefits from a through reception with dining area, two double bedrooms, bright family bathroom and useful garden shed at the end of the garden. Planning permission has also been granted for a ground floor extension and loft conversion.
+Earl Street is perfectly positioned for easy access into Oxford central for the National Rail train station, shops and amenities, whilst road users have fast access towards A34 (M40). 
+Reception: 10'7\" x 10'2\" / Dining Room: 10'9\" x 10'4\" / Kitchen: 9'6\" x 7'0\"
+Bathroom: 8'9\" x 6'10\" / Master Bedroom: 14'5\" x 10'3\" / Second Bedroom: 8'11\" x 7'10\"
+                    """ ;
+      gr:name "Earl Street Central Oxford OX2" ;
+      vcard:locality "Central Oxford" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Earl Street Central Oxford OX2" .
+
+dd:v1738892752372072c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Benefiting from several desirable features including a bright conservatory, this three bedroomed house is located in the popular area of New Marston.  
+Situated in a quiet position, this three bedroomed house further offers large front reception, modern kitchen leading to conservatory eating area, large well managed garden with side access, spacious master bedroom, two further good sized bedrooms, modern bathroom and stunning wood floors throughout.
+Stainer Place is conveniently positioned between the shops, bars and restaurants of Summertown and Headington while Headley Way offers essential shop amenities.
+Oxford (National Rail) train station is a cycle ride away while the motorists benefit from the close proximity of Marsh Lane for the A40 (M40).
+                    """ ;
+      gr:name "Stainer Place Marston OX3" ;
+      vcard:locality "Marston" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "Stainer Place Marston OX3" .
+
+dd:v1738512995371034c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        NO UPPER CHAIN.  Situated in a newly built development, this fantastic two bedroomed mid-terraced house offers private garden with off-street parking for two cars.
+The property also comprises spacious reception room, modern fully kitchen with eating area, master bedroom with en suite shower room, second double bedroom, modern family bathroom and large private garden.
+Ideally situated for the open spaces of Spindlebury Park, a wide range of amenities are nearby along the Oxford Road and The Cowley Road.
+Oxford (National Rail) train station is a bus journey away and motorists can gain rapid access onto A34 / A40 (M40).
+Reception: 14'10 x 10'5 / Dining Kitchen: 13'5 x 8'8
+Master Bedroom: 11'5 x 10'4 / Second Bedroom: 9'10 x 7'2
+                    """ ;
+      gr:name "Oxeye Court Greater Leys OX4" ;
+      vcard:locality "Littlemore" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Oxeye Court Greater Leys OX4" .
+
+dd:v1738892750325679c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Flat fronted, period, terraced property in New Hinksey with two double bedrooms, two reception rooms, kitchen/diner and garden.
+This renovated Victorian cottage is surprisingly spacious and provides great, flexible living accommodation.  The entrance is unusual and very convenient as you enter through a door on the street, to a private passage way between two cottages.  Your front door is here, along with direct access to your garden, a real benefit to a mid-terrace property.  Downstairs are two large reception rooms, and bright fully fitted kitchen with door to your private east facing garden.  Upstairs are two double bedrooms and a stylish modern bathroom with shower over bath.
+New Hinksey is an extremely popular suburb of Oxford lying just to the south of the city centre.  The area was developed in the 19th century and is very popular with families who are drawn to its parks, outdoor swimming pool and Cowmead allotment.  The New Hinksey primary school is also rated Good by Ofsted.
+Located along the Abingdon Road, public transport links are close by, Oxford (National Rail) train station is within walking distance and road users have fast access towards the A34 (M40).
+                    """ ;
+      gr:name "Gordon Street New Hinksey OX1" ;
+      vcard:locality "New Hinksey" ;
+      vcard:postal-code "OX1" ;
+      vcard:street_address
+              "Gordon Street New Hinksey OX1" .
+
+dd:v1738512995659598c
+      dd:hasPrice "190000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Carse-Close-Abingdon-OX14/378" .
+
+dd:v1738892742690750c
+      dd:hasPrice "359950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Percy-Street-East-Oxford-OX4/385" .
+
+dd:v1738892732764451c
+      gr:includes dd:v1738892732709250c .
+
+dd:v1738892743929109c
+      dd:hasPrice "339950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Egerton-Road-Iffley-OX4/437" .
+
+dd:v1738892745477269c
+      dd:hasPrice "319950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Ashcroft-Close-Botley-OX2/521" .
+
+dd:v1738512989632949c
+      dd:hasPrice "249950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Earl-Street-New-Botley-OX2/466" .
+
+dd:v1738892733988851c
+      dd:hasPrice "479950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Fairacres-Road-Iffley-Fields-OX4/491" .
+
+dd:v1738892747355952c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Tucked away down a private alley, this quaint two double bedroomed house is offered with redecoration potential and garden.
+Situated on a popular residential road in Grandpont, the house features front reception room with period fireplace, rear reception room with door to private garden, fitted kitchen, two well proportioned bedrooms, two bathrooms and useful loft storage.
+Grandpont is a mainly residential area south of Oxford city centre and to the west of the Abingdon Road.  It consists mainly of late Victorian and Edwardian houses, and also features Grandpont park – a riverside park of approximately 7.5 acres and open to the public. From Grandpont you can walk to Oxford (National Rail) station along the river, or take a bus over Folly Bridge.
+The road user has quick access towards A34 (M40).
+                    """ ;
+      gr:name "Abingdon Rd Grandpont OX1" ;
+      vcard:locality "Grandpont" ;
+      vcard:postal-code "OX1" ;
+      vcard:street_address
+              "Abingdon Rd Grandpont OX1" .
+
+dd:v1738892749342376c
+      dd:hasPrice "289950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/East-Avenue-East-Oxford-OX4/496" .
+
+dd:v1738892746977940c
+      dd:hasPrice "299950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/St-Christophers-Place-East-Oxford-OX4/421" .
+
+dd:v1738892746391764c
+      dd:hasPrice "305000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Percy-Street-East-Oxford-OX4/477" .
+
+dd:v1738892747961364c
+      gr:includes dd:v1738892747927454c .
+
+dd:v1738892751200728c
+      gr:includes dd:v1738892751170113c .
+
+dd:v1738892735784817c
+      dd:hasPrice "450000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Lanham-Way-Littlemore-OX4/535" .
+
+dd:v1738892729624361c
+      gr:includes dd:v1738892729588701c .
+
+dd:v1738892741889532c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Ideally located for the amenities of central Oxford, this stylish three bedroomed mid-terraced house offers immaculate decor and attractive garden.
+The house further comprises reception room with working fireplace, modern fully fitted kitchen with dining area, three equally sized double bedrooms, contemporary bathroom, excellent storage throughout and ground floor WC.
+Shops, bars and restaurants can be found within walking distance, while Oxford (National Rail) train station is also moments away.  
+The motorist has easy access towards the A40 (M40).
+                    """ ;
+      gr:name "Mill Street Central Oxford OX2" ;
+      vcard:locality "Central Oxford" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Mill Street Central Oxford OX2" .
+
+dd:v1738892734309168c
+      dd:hasPrice "475000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/William-Street-Marston-OX3/111" .
+
+dd:v1738512993993331c
+      dd:hasPrice "209950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Buscot-Drive-Abingdon-OX14/416" .
+
+dd:v1738892743695774c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A modern three to four bedroom town house situated within the popular Rivermead Park development, offering very spacious versatile accommodation space with quality interiors, a private rear garden, off-street parking for two vehicles and excellent communal gardens immediately to the front of the property.
+Built in 2004, the house is situated at the end of a quiet cul-de-sac with the accommodation arranged over three floors.  The ground floor comprises a bright reception room (currently used as an office but could equally be used as a 4th bedroom), downstairs WC, a large open plan family kitchen with space for dining, and a conservatory leading to an approximately 35ft private garden.  The first floor comprises a spacious reception room with Juliet balcony, and generous guest bedroom with en-suite / family bathroom.  The second floor comprises a master bedroom with en-suite shower room plus another well proportioned bedroom.
+Rivermead Park is less than 1.5 miles from Oxford City centre and 2 miles from Oxford Train Station, both of which can be reached easily and regularly via the nearby public bus service.  The River Thames towpath is nearby providing very pleasant walking and cycle routes in and around Oxford.  Road users are also well served with close access to the A34 (M40).
+                    """ ;
+      gr:name "Isis Close Rivermead Park OX1" ;
+      vcard:locality "Rivermead Park" ;
+      vcard:postal-code "OX1" ;
+      vcard:street_address
+              "Isis Close Rivermead Park OX1" .
+
+dd:v1738512990229258c
+      dd:hasPrice "240000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Latton-Close-Southmoor-OX13/394" .
+
+dd:v1738512994073329c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Impressive three double bedroomed family house offering excellent living accommodation, large private garden providing useful rear access for a secure car port.
+The property further benefits with front reception, large family kitchen providing dining area, conservatory, useful utility space, study, three good sized bedroom, smart shower room, outbuildings and double glazed windows.
+Situated within Abingdon, Buscot Drive is a quiet residential road convenient for both public transport links and road transportation towards Oxford.
+                    """ ;
+      gr:name "Buscot Drive Abingdon OX14" ;
+      vcard:locality "Abingdon" ;
+      vcard:postal-code "OX14" ;
+      vcard:street_address
+              "Buscot Drive Abingdon OX14" .
+
+dd:v1738512990768209c
+      gr:includes dd:v1738512990728952c .
+
+dd:v1738512990336760c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        This unique three double bedroom semi-detached family house is located in a quiet close in the very popular village of Southmoor.  Its features include large, south facing garden, beautiful dining conservatory and open fire.
+You enter this unusual timber property via the front door and into a spacious hallway.  Directly in front of you is the house’s main, south facing double reception room and open feature fireplace.  Off this room is a wonderful dining conservatory with double doors to the garden.  You can also step down from the main reception room to the eat-in kitchen which also has direct access to the huge garden.
+The three double bedrooms all have pleasant views and there is plenty of storage throughout the property including a small utility/larder.  The bathroom is modern and has a shower over the bath.  The rear garden is very large and faces full south.  There is side access to this along with off-street parking for three cars.
+Southmoor is a village about 6 miles west of Abingdon, Oxfordshire.  In 1971 the villages of Kingston Bagpuize and Southmoor merged into one civil parish forming Kingston Bagquize with Southmoor.
+Local transport links are available nearby for access towards Oxford, while road users have fast access towards the A34 (M40).
+                    """ ;
+      gr:name "Latton Close Southmoor OX13" ;
+      vcard:locality "Oxfordshire" ;
+      vcard:postal-code "OX13" ;
+      vcard:street_address
+              "Latton Close Southmoor OX13" .
+
+dd:v1738892749049331c
+      dd:hasPrice "289950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Swinbourne-Road-Oxford-OX4/108" .
+
+dd:v1738892737361501c
+      gr:includes dd:v1738892737329077c .
+
+dd:v1738892748241330c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A wonderful three bedroomed semi-detached house offering a spacious rear garden, well proportioned rooms, off-street parking and modernisation possibility.
+The property comprises two reception rooms, kitchen with access to private garden, three well proportioned  bedrooms, family bathroom, ground floor WC and garage.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley.
+Public transport links are just moments away and for the motorist the A40 (M40) provides access towards London and the west country.
+                    """ ;
+      gr:name "Westbury Crescent Cowley OX4" ;
+      vcard:locality "Temple Cowley" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Cowley OX4" .
+
+dd:v1738892751503547c
+      gr:includes dd:v1738892751473768c .
+
+dd:v1738892741506686c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        A generously proportioned family house in the increasingly popular Florence Park area of Oxford. The house is neutrally decorated throughout benefiting from a private rear garden and off-street parking.
+Arranged over two floors, the property offers two bright reception rooms, fitted kitchen, four well proportioned bedrooms, modern family bathroom, large private garden and off street parking.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley. Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence. It features colorful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Public transport links are just moments away for Oxford City centre, for motorist the A40 (M40) provides access towards London and the West Country.
+                    """ ;
+      gr:name "Westbury Crescent Florence Pk OX4" ;
+      vcard:locality "Florence Park" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Florence Pk OX4" .
+
+dd:v1738892728627659c
+      gr:includes dd:v1738892728582789c .
+
+dd:v1738892747054537c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A wonderful three bedroomed semi-detached house offering a spacious rear garden, well proportioned rooms, off-street parking and modernisation possibility.
+The property comprises two reception rooms, kitchen with access to private garden, three well proportioned  bedrooms, family bathroom, ground floor WC and garage.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley.
+Public transport links are just moments away and for the motorist the A40 (M40) provides access towards London and the west country.
+                    """ ;
+      gr:name "Westbury Crescent Cowley OX4" ;
+      vcard:locality "Temple Cowley" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Cowley OX4" .
+
+dd:v1738512993162581c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        A peacefully located two double bedroomed mid-terraced house offering contemporary accommodation with neutral décor throughout, private garden and off-street parking.
+The property is arranged over two floors and comprises smart reception room, modern kitchen, two equally sized double bedrooms, family bathroom and no upper chain.
+Kirby Place is ideally located close to the amenities, bars and restaurants in East Oxford.
+Public transport links can be found along Oxford Road, while road users have excellent access towards the A40 (M40).
+                    """ ;
+      gr:name "Kirby Place Temple Cowley OX4" ;
+      vcard:locality "Temple Cowley" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Kirby Place Temple Cowley OX4" .
+
+dd:v1738892753399205c
+      gr:includes dd:v1738892753369224c .
+
+dd:v1738892738803490c
+      gr:includes dd:v1738892738771203c .
+
+dd:v1738512989133879c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        This delightful three bedroomed house is located on a popular road offered with off-street parking including garage, private garden and close proximity to amenities. 
+The property is arranged over two floors and comprises two reception rooms, kitchen providing access to garden, three bedrooms, family bathroom and off-street parking.
+Crowell Road is a desirable street which is located within easy reach of Cowley, and local transport links for central Oxford.  Road users have access towards A40 (M40).
+                    """ ;
+      gr:name "Crowell Road Cowley OX4" ;
+      vcard:locality "Cowley" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Crowell Road Cowley OX4" .
+
+dd:v1738892733811649c
+      gr:includes dd:v1738892733778031c .
+
+dd:v1738892730235732c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      gr:description """
+                        A fantastic detached family house situated within a quiet close in always desirable North Oxford.  Immaculately presented throughout, the property is ideally laid out for modern family living.  
+Central to this is a stunning family kitchen with dining area and fully retractable doors leading to a raised decking area and mature garden.  There are a further two large reception rooms and third reception room/study.  There is also a magnificent two storey window to the rear of the property overlooking the garden.  Upstairs are five well proportioned bedrooms, three bathrooms (two ensuite) and the master bedroom also features a walk-in wardrobe.  The house also features substantial loft storage, useful pantry and downstairs cloakroom, as well as ample off street parking.
+Carey Close is located within a cycle ride to Summertown with its many boutique shops, restaurants and amenities, while the motorist can find straightforward access to the A40 (M40) towards London.
+                    """ ;
+      gr:name "Carey Close North Oxford OX2" ;
+      vcard:locality "North Oxford" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Carey Close North Oxford OX2" .
+
+dd:v1738512991717961c
+      dd:hasPrice "229950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Clays-Close-Marston-OX3/498" .
+
+dd:v1738892740012160c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        A generously proportioned family house in the increasingly popular Florence Park area of Oxford. The house is neutrally decorated throughout benefiting from a private rear garden and off-street parking.
+Arranged over two floors, the property offers two bright reception rooms, fitted kitchen, four well proportioned bedrooms, modern family bathroom, large private garden and off street parking.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley. Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence. It features colorful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Public transport links are just moments away for Oxford City centre, for motorist the A40 (M40) provides access towards London and the West Country.
+                    """ ;
+      gr:name "Westbury Crescent Florence Pk OX4" ;
+      vcard:locality "Florence Park" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Florence Pk OX4" .
+
+dd:v1738892748457690c
+      dd:hasPrice "295000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Horspath-Road-Cowley-OX4/444" .
+
+dd:v1738892731776139c
+      dd:hasPrice "625000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Princes-Street-St-Clements-OX4/532" .
+
+dd:v1738892734868132c
+      dd:hasPrice "469950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Greystone-Court-Kidlington-OX5/80" .
+
+dd:v1738892729912133c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      gr:description """
+                        Silver Trees is a lovely family home a stone’s throw from Oxford, but surrounded by woods that give the house its name.  Built originally for an Oxford Don in the early 1900’s, this Edwardian house still has many original features.
+The accommodation comprises eat-in kitchen with granite worktops and range cooker, dining room with feature fire place, large reception room with inglenook fireplace and doors to terrace overlooking the large south facing lawn and start of private woods.  A sympathetic extension offers a further reception room with wood burning stove and large conservatory and sauna.  Upstairs there are five double bedrooms including a large master bedroom with en-suite and potential walk-in wardrobe/dressing room, family bathroom and additional shower room.  From the upstairs landing you can access a balcony overlooking your grounds. In addition, there is ideal au pair accommodation attached to the house, as well as a triple garage and one bed apartment style accommodation above.  
+The nearby village of Kennington lies on a long narrow strip of land between Bagley Wood to the west and the River Thames water meadows to the east. Just 2.5 miles from Oxford city centre it features a selection of local shops, St Swithun’s Primary School which has a Good rating from Ofsted.
+Public transport links are close by offering a regular service into Oxford, while the motorist can find straightforward access to the A34 leading to the A40 (M40).
+                    """ ;
+      gr:name "Silver Trees Bagley Wood Rd OX1" ;
+      vcard:locality "Kennington" ;
+      vcard:postal-code "OX1" ;
+      vcard:street_address
+              "Silver Trees Bagley Wood Rd OX1" .
+
+dd:v1738892731556894c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        This large detached family house is situated within a quiet close in desirable North Oxford.  It currently has four bedrooms, but offers much scope for extension. The property is presented with redecoration potential, off-street parking and integral garage.
+The accommodation is arranged over two floors, comprising two generous reception rooms, family sized kitchen with breakfast eating area and side access leading to substantial private garden, integral garage and downstairs cloakroom with shower. Upstairs are three double bedrooms, fourth single, family bathroom with shower and boarded loft.  There is ample off-street parking to the front of the house.
+Carey Close is located within a cycle ride to Summertown with its many boutique shops, restaurants and amenities, while the motorist can find straightforward access to the A40 (M40) towards London.
+                    """ ;
+      gr:name "Carey Close North Oxford OX2" ;
+      vcard:locality "North Oxford" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Carey Close North Oxford OX2" .
+
+dd:v1738892737329077c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        This handsome three bedroom period family house offers beautifully decorated accommodation arranged over two floors, an attractive garden and close proximity to open green space. 
+Immaculately presented throughout with a stylish interior the property retains many period features. On the ground floor there is a front reception with wood burning stove and bay window, second reception/dining room, modern fully fitted kitchen with breakfast eating area and door opening onto private garden.  Upstairs are three well proportioned bedrooms and family bathroom.  The current owners have received planning permission to convert the loft and the architect's plans for this are included in the sale.
+Alexandra Road is located in the popular Osney area of Oxford.  It is a short walk to central Oxford and the colleges, bars, shops and restaurants located there.  The Oaklands recreation ground is at the bottom of the road. Nearby North Hinksey primary school has a Good Ofsted rating. 
+Oxford (National Rail) train station is a short walk away while road users will find easy access to the A34 (M40).
+Reception: 13'5 x 10'8 / Dining Room: 14' x 11'10 / Kitchen: 13'11 x 8'2
+Bedroom One: 14' x 11'3 / Bedroom Two: 11'9 x 8'8 / Bedroom Three: 8'2 x 7'
+                    """ ;
+      gr:name "Alexandra Rd West Oxford OX2" ;
+      vcard:locality "West Oxford" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Alexandra Rd West Oxford OX2" .
+
+dd:v1738892754583006c
+      gr:includes dd:v1738892754552624c .
+
+dd:v1738892747927454c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Extremely attractive, three bedroom, semi-detached family house in popular Kennington which is known for its good local schools.
+This new-build house is still under its NHBC guarantee and offers an ideal proposition for a family wanting all modern conveniences in popular Kennington.  Downstairs there is a large sitting room to the front of the property.  To the rear is a large L-shaped family kitchen featuring double doors to the secure private garden.  A gate at the bottom of the garden takes you through to the detached single garage.  There is also a downstairs WC.  Upstairs are two double bedrooms with en-suite shower to master bedroom, large single bedroom and family bathroom.
+The village of Kennington lies on a long narrow strip of land between Bagley Wood to the west and the River Thames water meadows to the east. Just 2.5 miles from Oxford city centre it features a selection of local shops, St Swithun’s Primary School which has a Good rating from Ofsted and the private Chandlings Manor School.
+Public transport links can be found nearby, while the road user has fast access to the Oxford ring road / A40 (M40).
+                    """ ;
+      gr:name "Cranbrook Drive Kennington OX1" ;
+      vcard:locality "Oxfordshire" ;
+      vcard:postal-code "OX1" ;
+      vcard:street_address
+              "Cranbrook Drive Kennington OX1" .
+
+dd:v1738892741939002c
+      gr:includes dd:v1738892741889532c .
+
+dd:v1738892731290514c
+      gr:includes dd:v1738892731255249c .
+
+dd:v1738892749950099c
+      dd:hasPrice "285000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Station-Cottage-Long-Hanboro-OX29/520" .
+
+dd:v1738892754007348c
+      gr:includes dd:v1738892753976527c .
+
+dd:v1738512997134953c
+      gr:includes dd:v1738512997099549c .
+
+dd:v1738892740323360c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Centrally located ideal for Oxford (National Rail) train station, this stylish three double bedroom mid-terraced Victorian house offers a large family kitchen and attractive mature garden.
+The house further comprises double reception room with period features, substantial modern kitchen with dining area, three equally sized double bedrooms, modern family bathroom, second loft en-suite bathroom and useful utility room.
+Shops, bars and restaurants can be found within walking distance, public transport links are nearby, while the motorist has easy access along the Botley Road towards the A40 (M40).
+                    """ ;
+      gr:name "Mill Street Central Oxford OX2" ;
+      vcard:locality "Osney Island" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Mill Street Central Oxford OX2" .
+
+dd:v1738512995755073c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Quietly situated two double bedroomed mid-terraced house presented with a modern interior, stylish fully fitted kitchen, reception room with doors opening to private garden, attractive front aspect towards park and off street parking for one vehicle.
+The property is located within a quiet close within Abingdon, open green space is close by, local transport links are available within walking distance for Oxford central, while road users have excellent access towards A34 (M40).
+                    """ ;
+      gr:name "Carse Close Abingdon OX14" ;
+      vcard:locality "Abingdon" ;
+      vcard:postal-code "OX14" ;
+      vcard:street_address
+              "Carse Close Abingdon OX14" .
+
+dd:v1738892731255249c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "6"^^xsd:int ;
+      gr:description """
+                        A substantial six bedroomed period semi-detached house, a stone’s throw from Oxford city centre.  The property benefits from a generously proportioned interior including a sizeable front reception, large family kitchen with dining area, bright west-facing garden, six well proportioned bedrooms, family bathroom, second shower room and separate WC.
+The property is situated moments from a comprehensive range of shops, restaurants and bars in central Oxford and has the potential to be turned into a Bed & Breakfast or guest house.
+Grandpont is a predominantly residential area south of Oxford city centre and to the west of the Abingdon Road.  It consists mainly of late Victorian and Edwardian houses, and also features Grandpont park – a riverside park of approximately 7.5 acres and open to the public.
+Local transport links are available nearby along the Abingdon Road while Oxford (National Rail) train station is within walking distance. Road users have fast access towards the A34 (M40).
+                    """ ;
+      gr:name "Abingdon Road Grandpont OX1" ;
+      vcard:locality "Grandpont" ;
+      vcard:postal-code "OX1" ;
+      vcard:street_address
+              "Abingdon Road Grandpont OX1" .
+
+dd:v1738892738696056c
+      dd:hasPrice "399950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Charles-Street-East-Oxford-OX4/409" .
+
+dd:v1738892750887341c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        This much loved family home offers exceptional value for money in an increasingly popular area of East Oxford.  This extremely spacious house features four good sized bedrooms, large secure garden and off street parking for two cars.
+The house has an entrance hall, spacious large sitting room to the front, family sized fully fitted kitchen to the rear with sliding doors onto the garden, modern family bathroom, four double bedrooms including a master bedroom overlooking the rear.  
+The house offers redecoration potential to make it your own and enough space to make it unlikely that you’ll ever need to move again.
+Shelley Road is ideally located just off the Cowley Road and close to Florence Park.  The Cowley Road is probably Oxford’s most celebrated street.  Famously popular with students, it is home to a culturally and economically diverse population.  Shops, bars, restaurants and entertainment centres abound, along with great local facilities.  Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence.  It features colourful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Transport links can be found nearby, while for those electing travel by road, the A40 (M40) provides easy access towards London and the Midlands.
+                    """ ;
+      gr:name "Shelley Road East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Shelley Road East Oxford OX4" .
+
+dd:v1738892730590934c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "5"^^xsd:int ;
+      gr:description """
+                        This outstanding four/five bedroom new build detached family house, offers beautifully decorated accommodation, family kitchen with retractable doors to garden, off-street parking for several vehicles and double garage.
+Immaculately presented throughout with a stylish interior, the property has full NHBC approval, comprising on the ground floor stunning entrance hall, three / four reception rooms, large kitchen with central island and family dining area, retractable doors opening onto patio area then large private garden, ground floor shower room with WC and useful utility room providing side access. Upstairs are four well proportioned bedrooms, master and second en-suite, family bathroom with separate shower, laundry cupboard and much under eaves storage.
+Appleford On Thames offers a quiet village setting and was in existence by the last quarter of the 9th century when King Alfred the Great of Wessex granted land there to one of his subjects. In 1968 the Appleford Hoard of 4th century Roman pewter ware and ironmongery was found. The hoard is now in the Ashmolean Museum in Oxford.
+Public transport links are close by, Appleford railway station is about 8 miles (13 km) south of Oxford on the Cherwell Valley Line. The station and all trains serving it are operated by First Great Western. Road users have fast access towards the A34 (M40).
+                    """ ;
+      gr:name "Meadow View Appleford OX14" ;
+      vcard:locality "Oxfordshire" ;
+      vcard:postal-code "OX14" ;
+      vcard:street_address
+              "Meadow View Appleford OX14" .
+
+dd:v1738892731475234c
+      dd:hasPrice "625000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Carey-Close-North-Oxford-OX2/516" .
+
+dd:v1738892733504729c
+      gr:includes dd:v1738892733453819c .
+
+dd:v1738892733329882c
+      dd:hasPrice "499950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Fairacres-Road-Iffley-Fields-OX4/265" .
+
+dd:v1738512994907898c
+      dd:hasPrice "190000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Spruce-Gardens-Greater-Leys-OX4/351" .
+
+dd:v1738892749423669c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        This much loved family home offers exceptional value for money in an increasingly popular area of East Oxford.  This extremely spacious house features four good sized bedrooms, large secure garden and off street parking for two cars.
+The house has an entrance hall, spacious large sitting room to the front, family sized fully fitted kitchen to the rear with sliding doors onto the garden, modern family bathroom, four double bedrooms including a master bedroom overlooking the rear.  
+The house offers redecoration potential to make it your own and enough space to make it unlikely that you’ll ever need to move again.
+Shelley Road is ideally located just off the Cowley Road and close to Florence Park.  The Cowley Road is probably Oxford’s most celebrated street.  Famously popular with students, it is home to a culturally and economically diverse population.  Shops, bars, restaurants and entertainment centres abound, along with great local facilities.  Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence.  It features colourful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Transport links can be found nearby, while for those electing travel by road, the A40 (M40) provides easy access towards London and the Midlands.
+                    """ ;
+      gr:name "Shelley Road East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Shelley Road East Oxford OX4" .
+
+dd:v1738512990980251c
+      dd:hasPrice "237500.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Lynn-Close-Marston-OX3/53" .
+
+dd:v1738512994359874c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A deceptively spacious three bedroom terraced house on the peaceful Lambourn Road in Rose Hill.  The property features two reception rooms, off-street parking and secure, private South facing garden.
+You enter this bright family home via an entrance lobby which also has access to a very large and useful storeroom.  Once in the house, there is a downstairs cloakroom to your left, and the front reception room to your right.  Double doors in the reception room lead through to the dining room where there are French doors onto the pretty garden.  The galley kitchen is also to the rear of the property and also has direct access to the garden. Upstairs there are two large double bedrooms featuring built-in wardrobes, a good sized single bedroom and family bathroom with white suite.  There is also loft access from the upstairs landing.
+Living Room: 15'2 x 10'9/ Kitchen: 12'2 x 7'5 / Dinning Room: 9'5 x 10'
+Utility Room: 8.7 x 6.7 / Bedroom 1: 12'11 x 9'10/ Bedroom 2: 12'2 x 9'5
+Bedroom 3: 8'6 x 8'5/ Bathroom: 7'4 x 5'11
+Rose Hill is a district of Oxford to the South East of the city centre beside the village of Iffley.  Development started here in 1936 and the area takes its name from an old farmer's cottage on the A4158.
+Local transport links are available nearby and road users have fast access towards A40 (M40).
+                    """ ;
+      gr:name "Lambourn Road Rose Hill OX4" ;
+      vcard:locality "Rose Hill" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Lambourn Road Rose Hill OX4" .
+
+dd:v1738892729948385c
+      gr:includes dd:v1738892729912133c .
+
+dd:v1738892750526652c
+      dd:hasPrice "284950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Fogwell-Road-Botley-OX2/506" .
+
+dd:v1738892753655295c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        A fantastic opportunity to purchase a pretty, flat-fronted cottage with two double bedrooms, two shower rooms and courtyard garden in this extremely popular area of East Oxford.
+Ideal for an investor, or first-time buyer looking to rent a room, the cottage’s layout is ideal for sharers.  Downstairs is a good sized reception room with modern feature fireplace and stairs to the first floor.  Towards the rear of the property is a study/dining room and a fully fitted galley kitchen with door to the private courtyard garden.  On the first floor is a large double bedroom to the front of the property, and a well-proportioned shower room to the rear.  On the second floor is another large double bedroom with built in wardrobe and en-suite shower room.  Please note the property is currently tenanted and achieving £1,050 pcm.
+Charles Street is located in a grid of pretty streets between the Cowley Road and Iffley Road.  The Iffley Road provides good local facilities and the well regarded Magdalen Arms gastropub.  Regular buses take around ten minutes to reach the city centre. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Charles Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Charles Street East Oxford OX4" .
+
+dd:v1738892735294224c
+      gr:includes dd:v1738892735262046c .
+
+dd:v1738512996429683c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Quietly located two double bedroomed mid-terraced house presented with a modern interior, family sized kitchen, part-decked private garden and off street parking for two vehicles.
+The property comprises bright reception room, fully fitted family kitchen, two well proportioned double bedrooms, modern bathroom and off-street parking for two vehicles.
+The property is located within a quiet square close to the open space of Spindlebury Nature Park. Local transport links are available nearby for Oxford central, while road users have excellent access towards A40 (M40).
+*No Onward Chain*
+                    """ ;
+      gr:name "Saxifrage Square Greater Leys OX4" ;
+      vcard:locality "Greater Leys" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Saxifrage Square Greater Leys OX4" .
+
+dd:v1738892740921349c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Offering a convenient central location, this wonderful mid-terraced family house boasts many period features along with added extension possibility.
+The property comprises two reception rooms, fitted kitchen offering access to private garden, three well proportioned bedrooms, family bathroom and large loft space.
+Henry Road is located conveniently for Central Oxford and is within walking distance to Oxford (National Rail) train station.
+Road users have fast access along the Botley road towards the A34 (M40).
+                    """ ;
+      gr:name "Henry Road Central Oxford OX2" ;
+      vcard:locality "Central Oxford" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Henry Road Central Oxford OX2" .
+
+dd:v1738512995043206c
+      gr:includes dd:v1738512995007036c .
+
+dd:v1738892737047677c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential no-through road, this handsome three bedroomed family house offers well proportioned accommodation arranged over two floors including an attractive garden.
+Offering extension (subject to planning) and redecoration potential, the property further benefits having two reception rooms, kitchen providing access to mature private garden, three well proportioned bedrooms, family bathroom, ground floor WC and many period features.
+Fairacres Road is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Fairacres Road Iffley Fields OX4" ;
+      vcard:locality "Iffley Fields" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Fairacres Road Iffley Fields OX4" .
+
+dd:v1738892732709250c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        A stunning, newly-refurbished family house providing substantial living and entertaining space. This four bedroom terraced house benefits top quality fixtures & fittings, extended family kitchen and private garden.
+Having very recently been fully refurbished, the property now comprises front double reception room, high specification family sized kitchen with doors to decked entertaining area and garden, four good sized bedrooms, master en-suite shower room, top floor en-suite bathroom, third family bathroom and guest cloakroom. 
+Princes Street is ideally located off the Cowley Road with its many shops, bar's and amenities, South Park Oxford’s largest park is nearby. The fair visits each year and the whole city celebrates Bonfire night here too. The city centre is an easy walk away over beautiful Magdalen Bridge.
+Local transport links are available nearby for access to Oxford (National Rail) train station, while road users have close access to A40 (M40).
+                    """ ;
+      gr:name "Princes Street St. Clement's OX4" ;
+      vcard:locality "St. Clement's" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Princes Street St. Clement's OX4" .
+
+dd:v1738512993451118c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        A superb two bedroomed house providing spacious living space, extension possibility (subject to planning), large south facing garden and off-street parking for three cars.
+This delightful house is located along a quiet street in Littlemore, arranged over two floors and comprises spacious reception room, second versatile reception space with ground floor shower room, fully fitted eat-in kitchen, two double bedrooms, shower room, conservatory leading to decked outside area, Ground floor WC and useful powered shed at the end of garden.
+Eastern Avenue is a desirable residential street located within easy reach of Cowley, while Oxford central is a cycle ride away.
+Public transport links can be found nearby, while the road user has fast access to A34 (M40).
+                    """ ;
+      gr:name "Eastern Avenue Littlemore OX4" ;
+      vcard:locality "Littlemore" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Eastern Avenue Littlemore OX4" .
+
+dd:v1738892736767294c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        Boasting stylish interior space to the highest standard, this stunning four bedroomed, three story mid-terraced house, boasts a large reception room leading to an outstanding family kitchen providing access into garden. 
+The property further comprises generous top floor master bedroom with en-suite shower room, three further well proportioned bedrooms, modern family bathroom, excellent storage and rear garden.
+Henry Road is located conveniently for Central Oxford and is within walking distance to Oxford (National Rail) train station.
+Road users have fast access along the Botley road towards the A34 (M40).
+                    """ ;
+      gr:name "Henry Road West Oxford OX2" ;
+      vcard:locality "West Oxford" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Henry Road West Oxford OX2" .
+
+dd:v1738892738524019c
+      gr:includes dd:v1738892738492077c .
+
+dd:v1738512994281847c
+      dd:hasPrice "204950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Lambourn-Road-Rose-Hill-OX4/469" .
+
+dd:v1738892747278520c
+      dd:hasPrice "299950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Abingdon-Rd-Grandpont-OX1/507" .
+
+dd:v1738892750916966c
+      gr:includes dd:v1738892750887341c .
+
+dd:v1738892736517577c
+      gr:includes dd:v1738892736485287c .
+
+dd:v1738892735182616c
+      dd:hasPrice "469950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Abingdon-Rd-New-Hinksey-OX1/436" .
+
+dd:v1738892751094303c
+      dd:hasPrice "279950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Swinburne-Rd-East-Oxford-OX4/534" .
+
+dd:v1738892745876030c
+      gr:includes dd:v1738892745843151c .
+
+dd:v1738512996776766c
+      gr:includes dd:v1738512996741595c .
+
+dd:v1738892743617285c
+      dd:hasPrice "349950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Isis-Close-Rivermead-Park-OX1/286" .
+
+dd:v1738512995408147c
+      gr:includes dd:v1738512995371034c .
+
+dd:v1738512954428260c
+      dd:hasPrice "249950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Glebelands-New-Headington-OX3/344" .
+
+dd:v1738892751473768c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Situated convenient near central Oxford, this smart two bedroomed terraced house offers a modern interior, period features, private garden and no upper chain.
+The property further benefits from two bright reception rooms, two double bedrooms, family bathroom and attractive rear garden.
+Earl Street is perfectly positioned for easy access into Oxford central for the National Rail train station, shops and amenities, whilst road users have fast access towards A34 (M40).
+                    """ ;
+      gr:name "Earl Street New Botley OX2" ;
+      vcard:locality "New Botley" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Earl Street New Botley OX2" .
+
+dd:v1738512993079079c
+      dd:hasPrice "220000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Kirby-Place-Temple-Cowley-OX4/319" .
+
+dd:v1738512994586849c
+      dd:hasPrice "196950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Field-Av-Blackbird-Leys-OX4/455" .
+
+dd:v1738892736690807c
+      dd:hasPrice "440000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Henry-Road-West-Oxford-OX2/298" .
+
+dd:v1738892744673090c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        An extremely spacious three double bedroom end terrace house in a popular location with views of Shotover Hill, detached garage and front and back gardens.
+The house is arranged over two floors, comprising large rear reception, kitchen with fitted cupboards and dining area, downstairs WC, three well proportioned bedrooms, bathroom with shower over bath and attractive gardens to the front and rear.
+Headington is a suburb of Oxford and has been occupied since Stone Age times. In the centre of Headington are a number of shops, pubs, cafés, restaurants, and other services. The area also includes the main campus of Oxford Brookes University, the Ruskin House campus of Ruskin College and the city's main hospitals, including the John Radcliffe, Nuffield and Churchill. Headington's most famous landmark is The Headington Shark, made by John Buckley for local broadcaster Bill Heine in 1986.
+The Larches is located conveniently for all transport links providing the road user with direct access to the A40 (M40).
+                    """ ;
+      gr:name "The Larches Headington OX3" ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "The Larches Headington OX3" .
+
+dd:v1738892753369224c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        A fantastic opportunity to purchase a pretty, flat-fronted cottage with two double bedrooms, two shower rooms and courtyard garden in this extremely popular area of East Oxford.
+Ideal for an investor, or first-time buyer looking to rent a room, the cottage’s layout is ideal for sharers.  Downstairs is a good sized reception room with modern feature fireplace and stairs to the first floor.  Towards the rear of the property is a study/dining room and a fully fitted galley kitchen with door to the private courtyard garden.  On the first floor is a large double bedroom to the front of the property, and a well-proportioned shower room to the rear.  On the second floor is another large double bedroom with built in wardrobe and en-suite shower room.  Please note the property is currently tenanted and achieving £1,050 pcm.
+Charles Street is located in a grid of pretty streets between the Cowley Road and Iffley Road.  The Iffley Road provides good local facilities and the well regarded Magdalen Arms gastropub.  Regular buses take around ten minutes to reach the city centre. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Charles Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Charles Street East Oxford OX4" .
+
+dd:v1738892753685149c
+      gr:includes dd:v1738892753655295c .
+
+dd:v1738892744959682c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential street within East Oxford, this outstanding two double bedroomed family house offers substantial accommodation arranged over three floors including an attractive West facing garden. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with period fireplaces, modern fully fitted kitchen with breakfast eating area including French doors opening onto attractive West facing garden, two double bedrooms, third floor part converted loft room, access via pull down ladder (potential to fully convert subject to planning), family bathroom, second ground floor shower room with WC and on-street parking.
+Percy Street is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Percy Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Percy Street East Oxford OX4" .
+
+dd:v1738892752968231c
+      dd:hasPrice "265000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Lytton-Road-Florence-Park-OX4/282" .
+
+dd:v1738512993790297c
+      gr:includes dd:v1738512993744598c .
+
+dd:v1738892752402843c
+      gr:includes dd:v1738892752372072c .
+
+dd:v1738512995276520c
+      dd:hasPrice "190000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Oxeye-Court-Greater-Leys-OX4/165" .
+
+dd:v1738892739913257c
+      dd:hasPrice "379950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Rose-Hill-Rose-Hill-OX4/440" .
+
+dd:v1738892734945175c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        A smart and well presented four double bedroom family house quietly situated in Kidlington, Oxfordshire.  
+The accommodation downstairs comprises two generous reception rooms, a large conservatory with under-floor heating, fully fitted country style kitchen, downstairs cloakroom and utility room.  Take the striking central staircase up to the master bedroom with en suite bathroom, further three bedrooms and family bathroom.  Outside are substantial private rear and front gardens, a double garage and additional off-street parking for two cars.
+Kidlington is the second largest village in England with a population of 17,000.  It lies just 5 miles to the north of Oxford and is close to major national routes including the M40.  
+The village has four primary schools and one secondary school, as well as numerous local shops, restaurants and sporting facilities.
+Oxford city centre and train station is a short drive/bus ride away.
+                    """ ;
+      gr:name "Greystone Court Kidlington OX5" ;
+      vcard:locality "Kidlington" ;
+      vcard:postal-code "OX5" ;
+      vcard:street_address
+              "Greystone Court Kidlington OX5" .
+
+dd:v1738892744706299c
+      gr:includes dd:v1738892744673090c .
+
+dd:v1738892734069095c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential no-through road, this handsome four bedroomed family house offers substantial accommodation arranged over three floors including an attractive garden backing onto open green space. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with dining area and superb log burning stove, modern fully fitted kitchen with breakfast eating area including French doors opening onto private garden, four well proportioned bedrooms, top floor master with en-suite shower room and Juliet balcony overlooking the adjoining convent grounds, second modern family bathroom and useful cellar.
+Fairacres Road is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Fairacres Road Iffley Fields OX4" ;
+      vcard:locality "Iffley Fields" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Fairacres Road Iffley Fields OX4" .
+
+dd:v1738512989045672c
+      dd:hasPrice "249950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Crowell-Road-Cowley-OX4/426" .
+
+dd:v1738892731589644c
+      gr:includes dd:v1738892731556894c .
+
+dd:v1738892734986487c
+      gr:includes dd:v1738892734945175c .
+
+dd:v1738892742799307c
+      gr:includes dd:v1738892742766915c .
+
+dd:v1738512990728952c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Situated in this popular village approx.4 miles from the City Centre, this charming two double bedroomed cottage has received considerable improvement works to include updating the wiring, re-pointing, damp proofing, new bathroom and cloakroom and replacement handmade wooden double glazed windows. 
+The property further benefits with reception room including working fire, central fully fitted kitchen, dining room opening to private garden including paved patio area and decking, two double bedrooms and family bathroom.
+Sandford-On-Thames offers the best of village life with walks along the river, with the benefit of Sainsbury’s at Heyford Hill. Oxford city centre is within a cycle ride.
+Public transport link are close by, while the road user has quick access towards the A40 (M40).
+                    """ ;
+      gr:name "Henley Rd Sandford-On-Thames OX4" ;
+      vcard:locality "Oxfordshire" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Henley Rd Sandford-On-Thames OX4" .
+
+dd:v1738892750634995c
+      gr:includes dd:v1738892750605073c .
+
+dd:v1738512996342234c
+      dd:hasPrice "185000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Saxifrage-Square-Greater-Leys-OX4/350" .
+
+dd:v1738892738229601c
+      gr:includes dd:v1738892738197575c .
+
+dd:v1738892749128218c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        This much loved family home offers exceptional value for money in an increasingly popular area of East Oxford.  This extremely spacious house features four good sized bedrooms, large secure garden and off street parking for two cars.
+The house has an entrance hall, spacious large sitting room to the front, family sized fully fitted kitchen to the rear with sliding doors onto the garden, modern family bathroom, four double bedrooms including a master bedroom overlooking the rear.  
+The house offers redecoration potential to make it your own and enough space to make it unlikely that you’ll ever need to move again.
+Shelley Road is ideally located just off the Cowley Road and close to Florence Park.  The Cowley Road is probably Oxford’s most celebrated street.  Famously popular with students, it is home to a culturally and economically diverse population.  Shops, bars, restaurants and entertainment centres abound, along with great local facilities.  Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence.  It features colourful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Transport links can be found nearby, while for those electing travel by road, the A40 (M40) provides easy access towards London and the Midlands.
+                    """ ;
+      gr:name "Shelley Road East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Shelley Road East Oxford OX4" .
+
+dd:v1738892741775129c
+      dd:hasPrice "369950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Mill-Street-Central-Oxford-OX2/261" .
+
+dd:v1738892747389150c
+      gr:includes dd:v1738892747355952c .
+
+dd:v1738512990630780c
+      dd:hasPrice "239950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Henley-Rd-SandfordOnThames-OX4/396" .
+
+dd:v1738512991111576c
+      gr:includes dd:v1738512991075839c .
+
+dd:v1738512990373776c
+      gr:includes dd:v1738512990336760c .
+
+dd:v1738892736234231c
+      gr:includes dd:v1738892736201543c .
+
+dd:v1738892753578721c
+      dd:hasPrice "265000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Sidney-Street-East-Oxford-OX4/296" .
+
+dd:v1738892739731134c
+      gr:includes dd:v1738892739699051c .
+
+dd:v1738892748756610c
+      dd:hasPrice "293950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Shelley-Road-East-Oxford-OX4/406" .
+
+dd:v1738892733453819c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential no-through road, this handsome four bedroomed family house offers substantial accommodation arranged over three floors including an attractive garden backing onto open green space. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with dining area and superb log burning stove, modern fully fitted kitchen with breakfast eating area including French doors opening onto private garden, four well proportioned bedrooms, top floor master with en-suite shower room and Juliet balcony overlooking the adjoining convent grounds, second modern family bathroom and useful cellar.
+Fairacres Road is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Fairacres Road Iffley Fields OX4" ;
+      vcard:locality "Iffley Fields" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Fairacres Road Iffley Fields OX4" .
+
+dd:v1738892737892875c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential no-through road, this handsome three bedroomed family house offers well proportioned accommodation arranged over two floors including an attractive garden.
+Offering extension (subject to planning) and redecoration potential, the property further benefits having two reception rooms, kitchen providing access to mature private garden, three well proportioned bedrooms, family bathroom, ground floor WC and many period features.
+Fairacres Road is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Fairacres Road Iffley Fields OX4" ;
+      vcard:locality "Iffley Fields" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Fairacres Road Iffley Fields OX4" .
+
+dd:v1738892739400503c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        A generously proportioned family house in the increasingly popular Florence Park area of Oxford. The house is neutrally decorated throughout benefiting from a private rear garden and off-street parking.
+Arranged over two floors, the property offers two bright reception rooms, fitted kitchen, four well proportioned bedrooms, modern family bathroom, large private garden and off street parking.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley. Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence. It features colorful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Public transport links are just moments away for Oxford City centre, for motorist the A40 (M40) provides access towards London and the West Country.
+                    """ ;
+      gr:name "Westbury Crescent Florence Pk OX4" ;
+      vcard:locality "Florence Park" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Florence Pk OX4" .
+
+dd:v1738512989744829c
+      gr:includes dd:v1738512989711293c .
+
+dd:v1738512991470322c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        This characterful two double bedroomed end of terrace house offers renovation potential, private garden and close proximity to local amenities; being located on a popular residential road. 
+The property is arranged over two floors and comprises two reception rooms, kitchen providing access to garden, two double bedrooms and spacious family bathroom.
+New High Street is a desirable street which is located in central Headington, with local transport links for central Oxford and road users have access towards A40 (M40).
+                    """ ;
+      gr:name "New High Street Headington OX3" ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "New High Street Headington OX3" .
+
+dd:v1738892730929719c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        A handsome, beautifully presented, four bedroom semi-detached house situated on a quiet residential road in North Oxford.  This property’s USP is an amazing corner plot and space to extend subject to planning.
+Downstairs the property features large front reception room with bay window and feature fireplace.  To the rear is a fantastic kitchen/dining room with floor to ceiling doors leading to the large garden.  There is also a downstairs WC.  On the first floor are two double bedrooms, one with en-suite shower room, a large single room and the family bathroom.  On the second floor is another lovely double bedroom with en-suite cloakroom and rear facing balcony.
+Outside is a great home office, with a separate utility room.  There is also a vegetable garden and large garage accessed via electrically operated security gates. Wentworth Road is located in North Oxford.   North Oxford is generally considered to be the most desirable residential district of Oxford.  It is well known for its schools, particularly private ones and over the years North Oxford has attracted famous residents, such as the authors and academics J. R. R. Tolkien (1892–1973) and Iris Murdoch (1919–1999). Murdoch lived with her husband and fellow academic John Bayley, and the area was featured in the biographical film, Iris. T. E. Lawrence (known as Lawrence of Arabia) grew up in Polstead Road, North Oxford.  There are good local transport links and the road user has fast access to the A40(M40).
+                    """ ;
+      gr:name "Wentworth Rd Sunnymead OX2" ;
+      vcard:locality "Sunnymead" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Wentworth Rd Sunnymead OX2" .
+
+dd:v1738892741238249c
+      gr:includes dd:v1738892741206204c .
+
+dd:v1738892729168664c
+      a       dd:House ;
+      dd:bathrooms "3"^^xsd:int ;
+      dd:bedrooms "6"^^xsd:int ;
+      gr:description """
+                        A substantial detached Edwardian family house with scope for updating and improvement, set within delightful gardens and wooded grounds extending to over five acres located on the edge of Bagley Wood.
+This fine Edwardian detached family house believed to date from about 1903, is set within its own delightful gardens and grounds including an extensive area of woodland extending to over five acres in total. The house has been in the same family ownership for many years and now offers great potential for updating, improvement and possible further extension (subject to any necessary consents). Comprising large entrance hall, formal reception with access to garden, dining room, large family kitchen with useful utility room and further room currently used as an office, six well proportioned bedrooms arranged over the first and second floors, two offering en-suite bathrooms, further family bathroom, two ground floor WC, summerhouse with power and gravel driveway offering space for several vehicles including car port.
+Situated beside Bagley Wood which extends to approximately 500 acres in total and still remaining in the ownership of St. John's College, local amenities can be found nearby in Kennington village, whilst the property is conveniently placed for Chandlings Manor School. 
+Oxford City centre is approximately 3miles away, while road users have close access towards the A34 (M40) towards London and West country.
+                    """ ;
+      gr:name "Bagley Wood Rd Kennington OX1" ;
+      vcard:locality "Kennington" ;
+      vcard:postal-code "OX1" ;
+      vcard:street_address
+              "Bagley Wood Rd Kennington OX1" .
+
+dd:v1738892729066172c
+      dd:hasPrice "1295000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Bagley-Wood-Rd-Kennington-OX1/280" .
+
+dd:v1738892736201543c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential no-through road, this handsome four bedroomed family house offers substantial accommodation arranged over three floors including an attractive garden backing onto open green space. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with dining area and superb log burning stove, modern fully fitted kitchen with breakfast eating area including French doors opening onto private garden, four well proportioned bedrooms, top floor master with en-suite shower room and Juliet balcony overlooking the adjoining convent grounds, second modern family bathroom and useful cellar.
+Fairacres Road is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Fairacres Road Iffley Fields OX4" ;
+      vcard:locality "Iffley Fields" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Fairacres Road Iffley Fields OX4" .
+
+dd:v1738892735465537c
+      dd:hasPrice "459950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Westbury-Crescent-Florence-Pk-OX4/371" .
+
+dd:v1738892730482010c
+      dd:hasPrice "880000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Meadow-View-Appleford-OX14/528" .
+
+dd:v1738892740845752c
+      dd:hasPrice "375000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Henry-Road-Central-Oxford-OX2/333" .
+
+dd:v1738892729479367c
+      dd:hasPrice "1100000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Jackson-Drive-Kennington-OX1/308" .
+
+dd:v1738512994393680c
+      gr:includes dd:v1738512994359874c .
+
+dd:v1738892745177909c
+      dd:hasPrice "320000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/East-Avenue-East-Oxford-OX4/357" .
+
+dd:v1738892748571654c
+      gr:includes dd:v1738892748537993c .
+
+dd:v1738892746502776c
+      gr:includes dd:v1738892746469749c .
+
+dd:v1738892744404539c
+      gr:includes dd:v1738892744371643c .
+
+dd:v1738512996124156c
+      gr:includes dd:v1738512996089362c .
+
+dd:v1738892750811858c
+      dd:hasPrice "279950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/The-Old-School-Hse-Temple-Rd-OX4/403" .
+
+dd:v1738892747849265c
+      dd:hasPrice "299950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Cranbrook-Drive-Kennington-OX1/527" .
+
+dd:v1738892749771935c
+      gr:includes dd:v1738892749737421c .
+
+dd:v1738892746797388c
+      gr:includes dd:v1738892746764676c .
+
+dd:v1738892745589712c
+      gr:includes dd:v1738892745556186c .
+
+dd:v1738892743395853c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential street within East Oxford, this outstanding two double bedroomed family house offers substantial accommodation arranged over three floors including an attractive West facing garden. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with period fireplaces, modern fully fitted kitchen with breakfast eating area including French doors opening onto attractive West facing garden, two double bedrooms, third floor part converted loft room, access via pull down ladder (potential to fully convert subject to planning), family bathroom, second ground floor shower room with WC and on-street parking.
+Percy Street is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Percy Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Percy Street East Oxford OX4" .
+
+dd:v1738892752295185c
+      dd:hasPrice "275000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Stainer-Place-Marston-OX3/256" .
+
+dd:v1738892734386146c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        Newly refurbished to a high standard, this stylish four bedroomed house offers abundant living space with large family kitchen including central island and direct access to private south facing garden.
+Arranged over three floors the property comprises spacious double reception room with period high ceilings, four good-sized bedrooms many with period fireplaces, third floor master bedroom with ensuite shower room and Juliette balcony, further family bathroom, ground floor WC, 70ft + private south facing garden and side access into kitchen.
+William Street offers an ideal location moments from the local amenities of both Headington and Marston, the green open space of South Park and excellent public transport links are moments away. 
+For road users the A34 (M40) is close by.
+Reception: 24'10 x 11'8 / Kitchen: 15'4 x 14'7 / Bedroom 1: 16'11 x 10'2
+Bedroom 2: 14'9 x 11'1 / Bedroom 3: 12'1 x 9'3 /Bedroom 4: 9'4 x 8'5
+                    """ ;
+      gr:name "William Street Marston OX3" ;
+      vcard:locality "Marston" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "William Street Marston OX3" .
+
+dd:v1738892741130482c
+      dd:hasPrice "375000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Church-Cowley-Rd-Florence-Pk-OX4/410" .
+
+dd:v1738892744594333c
+      dd:hasPrice "329950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/The-Larches-Headington-OX3/526" .
+
+dd:v1738892745291617c
+      gr:includes dd:v1738892745258266c .
+
+dd:v1738892750035227c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Situated conveniently near Long Hanborough train station, this delightful period cottage was formerly the Station Master's cottage and retains many period features.  Its desirable village setting is very accessible to central Oxford via train taking approx eight minuets.
+Station Cottage has been sympathetically decorated including open plan living area with fireplace, two double bedrooms, bathroom, superb storage and WC. The house  offers attractive elevated gardens that gives views over open countryside and Pinsley Wood.  A raised first floor sun terrace can be accessed by either a spiral staircase to the side of the property, or double doors from the main bedroom.  There are two allocated parking spaces for the cottage.
+The property further has been upgraded with double glazed windows and new gas central heating.
+The villages of Long Hanborough and Church Hanborough are situated at the gateway to the Cotswolds in West Oxfordshire near to Blenheim Palace. About 3 miles north of Eynsham and about 4 miles north-east of Witney along the A4095.  There is of course, a National Railway station, Hanborough and excellent connections for road users.
+                    """ ;
+      gr:name "Station Cottage Long Hanboro' OX29" ;
+      vcard:locality "Oxfordshire" ;
+      vcard:postal-code "OX29" ;
+      vcard:street_address
+              "Station Cottage Long Hanboro' OX29" .
+
+dd:v1738892753285459c
+      dd:hasPrice "265000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Howard-Street-East-Oxford-OX4/294" .
+
+dd:v1738892734587839c
+      dd:hasPrice "475000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Howard-Street-East-Oxford-OX4/514" .
+
+dd:v1738892742766915c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential street within East Oxford, this outstanding two double bedroomed family house offers substantial accommodation arranged over three floors including an attractive West facing garden. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with period fireplaces, modern fully fitted kitchen with breakfast eating area including French doors opening onto attractive West facing garden, two double bedrooms, third floor part converted loft room, access via pull down ladder (potential to fully convert subject to planning), family bathroom, second ground floor shower room with WC and on-street parking.
+Percy Street is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Percy Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Percy Street East Oxford OX4" .
+
+dd:v1738892743428874c
+      gr:includes dd:v1738892743395853c .
+
+dd:v1738892682979603c
+      dd:hasPrice "1499950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/White-Road-East-Hendred/145" .
+
+dd:v1738892737533175c
+      dd:hasPrice "425000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/William-Street-Marston-OX3/180" .
+
+dd:v1738892744371643c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential street within East Oxford, this outstanding two double bedroomed family house offers substantial accommodation arranged over three floors including an attractive West facing garden. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with period fireplaces, modern fully fitted kitchen with breakfast eating area including French doors opening onto attractive West facing garden, two double bedrooms, third floor part converted loft room, access via pull down ladder (potential to fully convert subject to planning), family bathroom, second ground floor shower room with WC and on-street parking.
+Percy Street is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Percy Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Percy Street East Oxford OX4" .
+
+dd:v1738512993484840c
+      gr:includes dd:v1738512993451118c .
+
+dd:v1738892728582789c
+      a       dd:House ;
+      dd:bathrooms "13"^^xsd:int ;
+      dd:bedrooms "15"^^xsd:int ;
+      gr:description """
+                        This impressive property offers an ideal opportunity to live the dream and run your own business from home.  A five bedroom family house for you, and a ten bedroom, AA 4* rated ten bedroom guest house/B&B wing.
+The family house benefits from generously proportioned living space with modern interiors, conservatory, dining room with feature bow window and stunning first floor views over substantial private gardens.
+With approximately 2 acres in total of grounds, there is further development potential subject to planning.
+The picturesque village of East Hendred nestles at the foot of a chain of hills known as The Downs in the historic Vale of White Horse in the heart of England.  The village boasts a pre-school, 2 primary schools, 3 pubs, a sports hall and village store including Post Office.  
+Local transport links are available nearby, providing access to Oxford and Wantage. Road users have easy access to the A34 (M40) towards London.
+Reception:           24' x 12'10 / Conservatory:      10'9 x 10'8
+Dining Room:      16'10 x 12'7 / Family Room:      15'11 x 9'7
+Kitchen:               13'11 x 12'7 / Master Bedroom: 16' x 9'9
+2nd Bedroom:      13'1 x 11'9 / 3rd Bedroom:       18'8 x 11'9
+4th Bedroom:       18'7 x 9'9 / 5th Bedroom:       12'2 x 10'7
+                    """ ;
+      gr:name "White Road East Hendred" ;
+      vcard:locality "East Hendred" ;
+      vcard:postal-code "OX12" ;
+      vcard:street_address
+              "White Road East Hendred" .
+
+dd:v1738892737609126c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Offering abundant living space, this stunning three bedroomed semi-detached house features stylish décor and attractive private landscaped garden. 
+Arranged over two floors the property comprises a light and spacious reception room with period fireplace, second living area with step down into a bespoke fully fitted kitchen, conservatory leading into an attractive 75'+ private garden, three good-sized bedrooms, family bathroom with separate shower and guest cloakroom.
+William Street offers an ideal location moments from the local amenities of Headington & Marston, close access to Oxford City centre and the green open spaces of Headington Hill.
+Public transport links are superb, with road users having convenient access towards A34 (M40).
+                    """ ;
+      gr:name "William Street Marston OX3" ;
+      vcard:locality "Marston" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "William Street Marston OX3" .
+
+dd:v1738892744293204c
+      dd:hasPrice "329950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Cricket-Road-East-Oxford-OX4/313" .
+
+dd:v1738892744060636c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential street within East Oxford, this outstanding two double bedroomed family house offers substantial accommodation arranged over three floors including an attractive West facing garden. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with period fireplaces, modern fully fitted kitchen with breakfast eating area including French doors opening onto attractive West facing garden, two double bedrooms, third floor part converted loft room, access via pull down ladder (potential to fully convert subject to planning), family bathroom, second ground floor shower room with WC and on-street parking.
+Percy Street is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Percy Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Percy Street East Oxford OX4" .
+
+dd:v1738892735861371c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential no-through road, this handsome four bedroomed family house offers substantial accommodation arranged over three floors including an attractive garden backing onto open green space. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with dining area and superb log burning stove, modern fully fitted kitchen with breakfast eating area including French doors opening onto private garden, four well proportioned bedrooms, top floor master with en-suite shower room and Juliet balcony overlooking the adjoining convent grounds, second modern family bathroom and useful cellar.
+Fairacres Road is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Fairacres Road Iffley Fields OX4" ;
+      vcard:locality "Iffley Fields" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Fairacres Road Iffley Fields OX4" .
+
+dd:v1738512996656893c
+      dd:hasPrice "185000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Elder-Way-Greater-Leys-OX4/481" .
+
+dd:v1738892742288361c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        A generously proportioned family house in the increasingly popular Florence Park area of Oxford. The house is neutrally decorated throughout benefiting from a private rear garden and off-street parking.
+Arranged over two floors, the property offers two bright reception rooms, fitted kitchen, four well proportioned bedrooms, modern family bathroom, large private garden and off street parking.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley. Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence. It features colorful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Public transport links are just moments away for Oxford City centre, for motorist the A40 (M40) provides access towards London and the West Country.
+                    """ ;
+      gr:name "Westbury Crescent Florence Pk OX4" ;
+      vcard:locality "Florence Park" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Florence Pk OX4" .
+
+dd:v1738892743142919c
+      gr:includes dd:v1738892743108830c .
+
+dd:v1738892745765177c
+      dd:hasPrice "309950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Westbury-Crescent-Cowley-OX4/287" .
+
+dd:v1738892734695471c
+      gr:includes dd:v1738892734663171c .
+
+dd:v1738892751789246c
+      gr:includes dd:v1738892751759566c .
+
+dd:v1738892734418296c
+      gr:includes dd:v1738892734386146c .
+
+dd:v1738512989168445c
+      gr:includes dd:v1738512989133879c .
+
+dd:v1738892739066786c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        This handsome three bedroom period family house offers beautifully decorated accommodation arranged over two floors, an attractive garden and close proximity to open green space. 
+Immaculately presented throughout with a stylish interior the property retains many period features. On the ground floor there is a front reception with wood burning stove and bay window, second reception/dining room, modern fully fitted kitchen with breakfast eating area and door opening onto private garden.  Upstairs are three well proportioned bedrooms and family bathroom.  The current owners have received planning permission to convert the loft and the architect's plans for this are included in the sale.
+Alexandra Road is located in the popular Osney area of Oxford.  It is a short walk to central Oxford and the colleges, bars, shops and restaurants located there.  The Oaklands recreation ground is at the bottom of the road. Nearby North Hinksey primary school has a Good Ofsted rating. 
+Oxford (National Rail) train station is a short walk away while road users will find easy access to the A34 (M40).
+Reception: 13'5 x 10'8 / Dining Room: 14' x 11'10 / Kitchen: 13'11 x 8'2
+Bedroom One: 14' x 11'3 / Bedroom Two: 11'9 x 8'8 / Bedroom Three: 8'2 x 7'
+                    """ ;
+      gr:name "Alexandra Rd West Oxford OX2" ;
+      vcard:locality "West Oxford" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Alexandra Rd West Oxford OX2" .
+
+dd:v1738892734102151c
+      gr:includes dd:v1738892734069095c .
+
+dd:v1738892730273108c
+      gr:includes dd:v1738892730235732c .
+
+dd:v1738892739699051c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        A generously proportioned family house in the increasingly popular Florence Park area of Oxford. The house is neutrally decorated throughout benefiting from a private rear garden and off-street parking.
+Arranged over two floors, the property offers two bright reception rooms, fitted kitchen, four well proportioned bedrooms, modern family bathroom, large private garden and off street parking.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley. Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence. It features colorful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Public transport links are just moments away for Oxford City centre, for motorist the A40 (M40) provides access towards London and the West Country.
+                    """ ;
+      gr:name "Westbury Crescent Florence Pk OX4" ;
+      vcard:locality "Florence Park" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Florence Pk OX4" .
+
+dd:v1738892754184744c
+      dd:hasPrice "249950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Hayes-Close-Marston-OX3/248" .
+
+dd:v1738892733778031c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Well located three bedroom house offered with smart decoration arranged over three floors, private garden and close proximity to open green space.
+On the ground floor there is a front fully fitted kitchen, rear reception with door opening onto patio garden providing access gate to communal area with off-street parking. Upstairs are three well proportioned bedrooms and family bathroom. 
+Bridge Street is located in the popular Osney area of Oxford. It is a short walk to central Oxford and the colleges, bars, shops and restaurants located there. The Oaklands recreation ground and North Hinksey primary school are close by.
+Oxford (National Rail) train station is a short walk away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Bridge St Central Oxford OX2" ;
+      vcard:locality "Central Oxford" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Bridge St Central Oxford OX2" .
+
+dd:v1738512997420778c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        This bright and spacious three bedroomed terraced house benefits from front off street parking, garage, open plan living space and redecoration potential. 
+Located on the peaceful Alden Crescent overlooking open green space, this bright and spacious three double bedroomed house further offers generous reception space, family kitchen, three spacious bedrooms, family bathroom, private garden and garage.
+The property is located moments from the shops and amenities of Barton, while local transport links are available nearby and road users have fast access towards A40 (M40).
+                    """ ;
+      gr:name "Alden Crescent Barton OX3" ;
+      vcard:locality "Barton" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "Alden Crescent Barton OX3" .
+
+dd:v1738892740356143c
+      gr:includes dd:v1738892740323360c .
+
+dd:v1738892746469749c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A wonderful three bedroomed semi-detached house offering a spacious rear garden, well proportioned rooms, off-street parking and modernisation possibility.
+The property comprises two reception rooms, kitchen with access to private garden, three well proportioned  bedrooms, family bathroom, ground floor WC and garage.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley.
+Public transport links are just moments away and for the motorist the A40 (M40) provides access towards London and the west country.
+                    """ ;
+      gr:name "Westbury Crescent Cowley OX4" ;
+      vcard:locality "Temple Cowley" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Cowley OX4" .
+
+dd:v1738892740640473c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        A generously proportioned family house in the increasingly popular Florence Park area of Oxford. The house is neutrally decorated throughout benefiting from a private rear garden and off-street parking.
+Arranged over two floors, the property offers two bright reception rooms, fitted kitchen, four well proportioned bedrooms, modern family bathroom, large private garden and off street parking.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley. Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence. It features colorful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Public transport links are just moments away for Oxford City centre, for motorist the A40 (M40) provides access towards London and the West Country.
+                    """ ;
+      gr:name "Westbury Crescent Florence Pk OX4" ;
+      vcard:locality "Florence Park" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Florence Pk OX4" .
+
+dd:v1738892752092414c
+      gr:includes dd:v1738892752061838c .
+
+dd:v1738512988679311c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Situated within the popular Lye Valley area of Headington, this three bedroomed semi-detached house benefits having well proportioned accommodation, family garden and off-street parking.
+Providing convenient access to the Nuffield Hospital, the property further benefits from an open-plan ground floor accommodation, fitted kitchen offering access to a private rear garden, three well proportioned bedrooms, modern bathroom, ground floor WC and off-street parking.
+The property is ideally located close to the many shops, restaurants and other facilities of Headington, whilst Oxford city centre is a cycle ride away.
+Motorists can gain fast access out towards the A40 (M40).
+Reception / Dining: 22' x 10'4 / Kitchen: 8'2 x 6'4
+Bedroom One: 10'11x 10'1 / Bedroom Two: 11'6 x 10'2 / Bedroom Three: 7'8 x 6'8
+                    """ ;
+      gr:name "Glebelands New Headington OX3" ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "Glebelands New Headington OX3" .
+
+dd:v1738892751759566c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Superbly located in a desirable area of Oxford, this generously proportioned two bedroomed terraced house boasts a modern interior, stylish kitchen and private garden.
+The property further benefits from a front reception with fireplace, second dining area leading to a modern fully fitted kitchen which overlooks the garden offering additional entertaining decked area, two double bedrooms, modern family bathroom and useful office space at the end of the garden.
+Earl Street is perfectly positioned for easy access into Oxford central for the National Rail train station, shops and amenities, whilst road users have fast access towards A34 (M40)
+                    """ ;
+      gr:name "Earl Street Central Oxford OX2" ;
+      vcard:locality "Central Oxford" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Earl Street Central Oxford OX2" .
+
+dd:v1738892739098972c
+      gr:includes dd:v1738892739066786c .
+
+dd:v1738892734663171c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential no-through road, this handsome four bedroomed family house offers substantial accommodation arranged over three floors including an attractive garden backing onto open green space. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with dining area and superb log burning stove, modern fully fitted kitchen with breakfast eating area including French doors opening onto private garden, four well proportioned bedrooms, top floor master with en-suite shower room and Juliet balcony overlooking the adjoining convent grounds, second modern family bathroom and useful cellar.
+Fairacres Road is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Fairacres Road Iffley Fields OX4" ;
+      vcard:locality "Iffley Fields" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Fairacres Road Iffley Fields OX4" .
+
+dd:v1738892752061838c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        A fantastic opportunity to purchase a pretty, flat-fronted cottage with two double bedrooms, two shower rooms and courtyard garden in this extremely popular area of East Oxford.
+Ideal for an investor, or first-time buyer looking to rent a room, the cottage’s layout is ideal for sharers.  Downstairs is a good sized reception room with modern feature fireplace and stairs to the first floor.  Towards the rear of the property is a study/dining room and a fully fitted galley kitchen with door to the private courtyard garden.  On the first floor is a large double bedroom to the front of the property, and a well-proportioned shower room to the rear.  On the second floor is another large double bedroom with built in wardrobe and en-suite shower room.  Please note the property is currently tenanted and achieving £1,050 pcm.
+Charles Street is located in a grid of pretty streets between the Cowley Road and Iffley Road.  The Iffley Road provides good local facilities and the well regarded Magdalen Arms gastropub.  Regular buses take around ten minutes to reach the city centre. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Charles Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Charles Street East Oxford OX4" .
+
+dd:v1738512997455773c
+      gr:includes dd:v1738512997420778c .
+
+dd:v1738892741429905c
+      dd:hasPrice "374950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Westbury-Crescent-Florence-Park-OX4/453" .
+
+dd:v1738892738991446c
+      dd:hasPrice "399950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Alexandra-Rd-West-Oxford-OX2/479" .
+
+dd:v1738892752670744c
+      dd:hasPrice "269950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Donnington-Bridge-Rd-East-Oxford-OX4/407" .
+
+dd:v1738512993196072c
+      gr:includes dd:v1738512993162581c .
+
+dd:v1738512992653525c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A great opportunity to purchase a three bedroom family home and tailor it to your own requirements.  The property benefits from front and rear gardens, upstairs bathroom and garage.
+This mid-terrace house is quietly located in a friendly close and has been in the same hands for many years.  It is now offered to market with redecoration potential and a chance to make it your own.  Downstairs is currently a useful entrance hall, front reception room, dining area and kitchen.  Upstairs are two double bedrooms, one good sized single bedroom and a family bathroom.  There is also access to a loft.
+Marston is a village in the civil parish of Old Marston about 2 miles northeast of the centre of Oxford.  It was absorbed within the city boundaries in 1991. It is commonly called Old Marston to distinguish it from the suburb of New Marston that developed between St. Clement's and the village in the 19th and 20th centuries.
+A cycle route links Marston with central Oxford via the meadows west of New Marston, over a bridge on the River Cherwell, past the southern boundary of The Parks to the junction of South Parks Road and St Cross Road near the Science Area of Oxford University. It is also possible to walk on footpaths across the meadows to the Parks, either via Mesopotamia Walk or Rainbow Bridge.
+There are good local transport links, and the motorist has easy access to the A40 (M40).
+                    """ ;
+      gr:name "Clays Close Marston OX3" ;
+      vcard:locality "Marston" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "Clays Close Marston OX3" .
+
+dd:v1738892730627487c
+      gr:includes dd:v1738892730590934c .
+
+dd:v1738892750251306c
+      dd:hasPrice "284950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Gordon-Street-New-Hinksey-OX1/393" .
+
+dd:v1738512989996359c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A large, bright and spacious family home with three good sized bedrooms, two bathrooms, huge kitchen diner and lovely garden with far reaching views.
+On the ground floor is a large reception room with feature fireplace and bay window, a huge eat-in kitchen with doors to the garden, separate utility/boot room again with direct access to the garden and a modern shower room.  Upstairs are two double bedrooms with built in wardrobes, good sized single bedroom and attractive bathroom.  
+Outside there is off-street parking to the front, and to the rear is a landscaped garden with two different seating areas and countryside views.
+Barton is a suburb of Oxford located on the city's Eastern periphery.  The course of a Roman road between Dorchester on Thames and Alchester passes though the middle of Barton.  Today Barton is home to Oxford's newest leisure centre featuring a  45 station gym and 25m swimming pool.
+Direct buses for Oxford depart from the bottom of the road, while for those electing to travel by car, the A40 (M40) provides easy access towards London and the West Country.
+                    """ ;
+      gr:name "Malford Road Barton OX3" ;
+      vcard:locality "Barton" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "Malford Road Barton OX3" .
+
+dd:v1738512993373268c
+      dd:hasPrice "215000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Eastern-Avenue-Littlemore-OX4/278" .
+
+dd:v1738892744993056c
+      gr:includes dd:v1738892744959682c .
+
+dd:v1738512996466082c
+      gr:includes dd:v1738512996429683c .
+
+dd:v1738892749737421c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        Located on a quiet residential road, this impressive three bedroomed house benefits from a complete interior refurbishment and generously proportioned rooms.
+The property comprises spacious double reception room, rear extended conservatory / dining area, modern fully fitted kitchen, three good sized bedrooms, family bathroom, excellent storage, large loft, 100' beautiful private garden with entertaining area and garage with off-street parking for two cars.
+The property is located close to a fantastic range of shops, restaurant and bars in Headington, while numerous open green spaces are moments away.
+Local transport links are available nearby for access to Oxford (National Rail) train station, while road users have close access to A40 (M40).
+                    """ ;
+      gr:name "Ringwood Road Risinghurst OX3" ;
+      vcard:locality "Risinghurst" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "Ringwood Road Risinghurst OX3" .
+
+dd:v1738892744105119c
+      gr:includes dd:v1738892744060636c .
+
+dd:v1738892740054739c
+      gr:includes dd:v1738892740012160c .
+
+dd:v1738892740672872c
+      gr:includes dd:v1738892740640473c .
+
+dd:v1738892736409166c
+      dd:hasPrice "449950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Fogwell-Road-Botley-OX2/511" .
+
+dd:v1738892735893442c
+      gr:includes dd:v1738892735861371c .
+
+dd:v1738892737079969c
+      gr:includes dd:v1738892737047677c .
+
+dd:v1738892748869802c
+      gr:includes dd:v1738892748835669c .
+
+dd:v1738892742320688c
+      gr:includes dd:v1738892742288361c .
+
+dd:v1738892749162317c
+      gr:includes dd:v1738892749128218c .
+
+dd:v1738892749657590c
+      dd:hasPrice "285000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Ringwood-Road-Risinghurst-OX3/214" .
+
+dd:v1738892736973030c
+      dd:hasPrice "440000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Fairacres-Road-Iffley-Fields-OX4/432" .
+
+dd:v1738892738122651c
+      dd:hasPrice "419950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Cowley-Road-East-Oxford-OX4/181" .
+
+dd:v1738892752749539c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        A fantastic opportunity to purchase a pretty, flat-fronted cottage with two double bedrooms, two shower rooms and courtyard garden in this extremely popular area of East Oxford.
+Ideal for an investor, or first-time buyer looking to rent a room, the cottage’s layout is ideal for sharers.  Downstairs is a good sized reception room with modern feature fireplace and stairs to the first floor.  Towards the rear of the property is a study/dining room and a fully fitted galley kitchen with door to the private courtyard garden.  On the first floor is a large double bedroom to the front of the property, and a well-proportioned shower room to the rear.  On the second floor is another large double bedroom with built in wardrobe and en-suite shower room.  Please note the property is currently tenanted and achieving £1,050 pcm.
+Charles Street is located in a grid of pretty streets between the Cowley Road and Iffley Road.  The Iffley Road provides good local facilities and the well regarded Magdalen Arms gastropub.  Regular buses take around ten minutes to reach the city centre. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Charles Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Charles Street East Oxford OX4" .
+
+dd:v1738512993663694c
+      dd:hasPrice "215000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Mole-Place-Greater-Leys-OX4/301" .
+
+dd:v1738892740954006c
+      gr:includes dd:v1738892740921349c .
+
+dd:v1738892743108830c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential street within East Oxford, this outstanding two double bedroomed family house offers substantial accommodation arranged over three floors including an attractive West facing garden. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with period fireplaces, modern fully fitted kitchen with breakfast eating area including French doors opening onto attractive West facing garden, two double bedrooms, third floor part converted loft room, access via pull down ladder (potential to fully convert subject to planning), family bathroom, second ground floor shower room with WC and on-street parking.
+Percy Street is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Percy Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Percy Street East Oxford OX4" .
+
+dd:v1738892737250730c
+      dd:hasPrice "434950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Cripley-Rd-Central-Oxford-OX2/424" .
+
+dd:v1738512989421443c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        This generously proportioned two double bedroomed semi-detached house benefits from a private garden, off-street parking for two vehicles and attractive outlook towards open green space.
+The property comprises entrance hall, bright front reception room, dining room, modern kitchen with access to private garden, two double bedrooms and family bathroom.
+The property is located nearby the shops, restaurants and bars in Headington, while local transport links are available close by for access towards Oxford city centre.
+Road users have fast access towards A40 (M40). No Upper Chain.
+                    """ ;
+      gr:name "Barton Road Headington OX3" ;
+      vcard:locality "Headington" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "Barton Road Headington OX3" .
+
+dd:v1738892753047888c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        A fantastic opportunity to purchase a pretty, flat-fronted cottage with two double bedrooms, two shower rooms and courtyard garden in this extremely popular area of East Oxford.
+Ideal for an investor, or first-time buyer looking to rent a room, the cottage’s layout is ideal for sharers.  Downstairs is a good sized reception room with modern feature fireplace and stairs to the first floor.  Towards the rear of the property is a study/dining room and a fully fitted galley kitchen with door to the private courtyard garden.  On the first floor is a large double bedroom to the front of the property, and a well-proportioned shower room to the rear.  On the second floor is another large double bedroom with built in wardrobe and en-suite shower room.  Please note the property is currently tenanted and achieving £1,050 pcm.
+Charles Street is located in a grid of pretty streets between the Cowley Road and Iffley Road.  The Iffley Road provides good local facilities and the well regarded Magdalen Arms gastropub.  Regular buses take around ten minutes to reach the city centre. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Charles Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Charles Street East Oxford OX4" .
+
+dd:v1738892745258266c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Quietly located along a popular residential street within East Oxford, this outstanding two double bedroomed family house offers substantial accommodation arranged over three floors including an attractive West facing garden. 
+Beautifully presented throughout with a stylish interior, the property further benefits from having a double reception with period fireplaces, modern fully fitted kitchen with breakfast eating area including French doors opening onto attractive West facing garden, two double bedrooms, third floor part converted loft room, access via pull down ladder (potential to fully convert subject to planning), family bathroom, second ground floor shower room with WC and on-street parking.
+Percy Street is situated close to the wide variety of shops, bars and restaurants in Cowley. Oxford (National Rail) train station is a short cycle ride away while road users will find easy access to the A34 (M40).
+                    """ ;
+      gr:name "Percy Street East Oxford OX4" ;
+      vcard:locality "East Oxford" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Percy Street East Oxford OX4" .
+
+dd:v1738892750605073c
+      a       dd:House ;
+      dd:bathrooms "2"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        This privately located four bedroomed detached house provides spacious living accommodation, two bathrooms and private off-street parking.
+The property is neatly arranged over two floors comprising front reception room with bay window, large fully fitted family kitchen with integrated appliances and patio doors to sheltered garden, utility room, ground floor WC, four good sized bedrooms, newly fitted family bathroom, master bedroom with en-suite, integral garage and off-street parking.  There is also scope for a ground floor extension, subject to planning.
+Botley is a village in the civil parish of North Hinksey, just west of the Oxford city boundary.  It was first settled in the Saxon era and is now a very popular area with families.  Fogwell Road is a desirable address offering a quiet location within this area. 
+Public transport links are close by for Oxford central, while road users have fast access onto the A34 (M40).
+                    """ ;
+      gr:name "Fogwell Road Botley OX2" ;
+      vcard:locality "Botley" ;
+      vcard:postal-code "OX2" ;
+      vcard:street_address
+              "Fogwell Road Botley OX2" .
+
+dd:v1738892748274993c
+      gr:includes dd:v1738892748241330c .
+
+dd:v1738892745843151c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A wonderful three bedroomed semi-detached house offering a spacious rear garden, well proportioned rooms, off-street parking and modernisation possibility.
+The property comprises two reception rooms, kitchen with access to private garden, three well proportioned  bedrooms, family bathroom, ground floor WC and garage.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley.
+Public transport links are just moments away and for the motorist the A40 (M40) provides access towards London and the west country.
+                    """ ;
+      gr:name "Westbury Crescent Cowley OX4" ;
+      vcard:locality "Temple Cowley" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Cowley OX4" .
+
+dd:v1738892737924891c
+      gr:includes dd:v1738892737892875c .
+
+dd:v1738892753899590c
+      dd:hasPrice "249950.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/West-Way-Botley-OX2/104" .
+
+dd:v1738892749457924c
+      gr:includes dd:v1738892749423669c .
+
+dd:v1738512991075839c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "2"^^xsd:int ;
+      gr:description """
+                        Quietly located two double bedroomed end-of-terrace house presented with a modern interior, kitchen diner, front / back garden and garage.
+The property further comprises bright reception room, two well proportioned double bedrooms with hanging space and modern bathroom.
+The property is located within a quiet cul-de-sac close close to open space, local transport links are available nearby, while road users have excellent access towards A40 (M40).
+                    """ ;
+      gr:name "Lynn Close Marston OX3" ;
+      vcard:locality "Marston" ;
+      vcard:postal-code "OX3" ;
+      vcard:street_address
+              "Lynn Close Marston OX3" .
+
+dd:v1738892741206204c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "4"^^xsd:int ;
+      gr:description """
+                        A generously proportioned family house in the increasingly popular Florence Park area of Oxford. The house is neutrally decorated throughout benefiting from a private rear garden and off-street parking.
+Arranged over two floors, the property offers two bright reception rooms, fitted kitchen, four well proportioned bedrooms, modern family bathroom, large private garden and off street parking.
+Located on a popular residential street, this property benefits from close proximity to a superb selection of shops, bars and restaurants in Cowley. Florence Park opened in 1934 after the land was presented to the City by Councilor F.E. Moss in memory of his sister Florence. It features colorful and well maintained flowerbeds, a bowls green, six tennis courts, miniature golf and a children’s play area.
+Public transport links are just moments away for Oxford City centre, for motorist the A40 (M40) provides access towards London and the West Country.
+                    """ ;
+      gr:name "Westbury Crescent Florence Pk OX4" ;
+      vcard:locality "Florence Park" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Westbury Crescent Florence Pk OX4" .
+
+dd:v1738892733698807c
+      dd:hasPrice "495000.0"^^xsd:double ;
+      foaf:page "http://www.wwagency.com/property-in-oxford/Bridge-St-Central-Oxford-OX2/529" .
+
+dd:v1738512991508332c
+      gr:includes dd:v1738512991470322c .
+
+dd:v1738892741538648c
+      gr:includes dd:v1738892741506686c .
+
+dd:v1738892735574731c
+      gr:includes dd:v1738892735542762c .
+
+dd:v1738512994669462c
+      a       dd:House ;
+      dd:bathrooms "1"^^xsd:int ;
+      dd:bedrooms "3"^^xsd:int ;
+      gr:description """
+                        A generously proportioned family home with three good sized bedrooms, eat-in kitchen and large private garden.
+Arranged over two floors the house comprises entrance hall, family kitchen with eating area and spacious reception room with French doors to the garden downstairs.  Upstairs there are three well proportioned bedrooms, the family bathroom and excellent storage.
+Blackbird Leys is a civil parish of Oxford and lies just 2.5 miles from the city centre to the South and East.  Field Avenue offers an ideal location moments from the local amenities within Blackbird Leys, while the green open space of Blackbird Leys Park is within walking distance.
+Excellent public transport links are available into Central Oxford and road transport via A34 towards M40.
+                    """ ;
+      gr:name "Field Av Blackbird Leys OX4" ;
+      vcard:locality "Blackbird Leys" ;
+      vcard:postal-code "OX4" ;
+      vcard:street_address
+              "Field Av Blackbird Leys OX4" .
+
+dd:v1738512994107107c
+      gr:includes dd:v1738512994073329c .
+
+dd:v1738512994704434c
+      gr:includes dd:v1738512994669462c .
+

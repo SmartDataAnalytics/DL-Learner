@@ -1,0 +1,381 @@
+@prefix : <http://diadem.cs.ox.ac.uk/ontologies/real-estate#> .
+@prefix gr: <http://purl.org/goodrelations/v1#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dbp: <http://dbpedia.org/property/> .
+@base <http://www.w3.org/2002/07/owl#> .
+
+
+
+#################################################################
+#
+#    Annotation properties
+#
+#################################################################
+
+
+
+
+#################################################################
+#
+#    Datatypes
+#
+#################################################################
+
+
+
+
+#################################################################
+#
+#    Object Properties
+#
+#################################################################
+###  http://dbpedia.org/property/near
+
+dbp:near rdfs:label "near"@en .
+
+###  http://dbpedia.org/property/veryNear
+
+dbp:veryNear rdfs:label "very near"@en . 
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#furnishingType
+
+:furnishingType rdf:type owl:ObjectProperty ;
+                
+                rdfs:label "furnished"@en ;
+                
+                rdfs:range :FurnishingType ;
+                
+                rdfs:domain :Property .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#parkingType
+
+:parkingType rdf:type owl:ObjectProperty ;
+             
+             rdfs:range :ParkingType ;
+             
+             rdfs:domain :Property .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#roomType
+
+:roomType rdf:type owl:ObjectProperty ;
+          
+          rdfs:label "room type"@en ;
+          
+          rdfs:domain :RoomSpecification ;
+          
+          rdfs:range :RoomType .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#rooms
+
+:rooms rdf:type owl:ObjectProperty ;
+       
+       rdfs:domain :Property ;
+       
+       rdfs:range :RoomSpecification .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#serviceType
+
+:serviceType rdf:type owl:ObjectProperty ;
+             
+             rdfs:domain :Property ;
+             
+             rdfs:range :ServiceType .
+
+
+
+
+
+#################################################################
+#
+#    Data properties
+#
+#################################################################
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#bathrooms
+
+:bathrooms rdf:type owl:DatatypeProperty ;
+           
+           rdfs:label "number of bathrooms"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#bedrooms
+
+:bedrooms rdf:type owl:DatatypeProperty ;
+          
+          rdfs:label "number of bedrooms"@en .
+
+:receptions rdf:type owl:DatatypeProperty ;
+
+          rdfs:label "number of receptions"@en .
+
+:hasPrice rdf:type owl:DatatypeProperty ;
+
+          rdfs:label "has price"@en ;
+	  rdfs:label "price"@en .
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#energyEfficiencyRating
+
+:energyEfficiencyRating rdf:type owl:DatatypeProperty ;
+                        
+                        rdfs:label "energy efficiency"@en ;
+                        
+                        rdfs:domain :Property ;
+                        
+                        rdfs:range xsd:integer .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#environmentalImpactRating
+
+:environmentalImpactRating rdf:type owl:DatatypeProperty ;
+                           
+                           rdfs:label "environmental impact"@en ;
+                           
+                           rdfs:domain :Property ;
+                           
+                           rdfs:range xsd:integer .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#nrOfRooms
+
+:nrOfRooms rdf:type owl:DatatypeProperty ;
+           
+           rdfs:label "number of rooms"@en ;
+           
+           rdfs:domain :RoomSpecification ;
+           
+           rdfs:range xsd:int .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#petsAllowed
+
+:petsAllowed rdf:type owl:DatatypeProperty ;
+             
+             rdfs:label "pets allowed"@en ;
+             
+             rdfs:domain :Property ;
+             
+             rdfs:range xsd:boolean .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#smokersAllowed
+
+:smokersAllowed rdf:type owl:DatatypeProperty ;
+                
+                rdfs:label "smokers"@en ;
+                
+                rdfs:domain :Property ;
+                
+                rdfs:range xsd:boolean .
+
+
+
+
+
+#################################################################
+#
+#    Classes
+#
+#################################################################
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#Flat
+
+:Flat rdf:type owl:Class ;
+      
+      rdfs:label "flat"@en ;
+      
+      rdfs:subClassOf :Property .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#FurnishingType
+
+:FurnishingType rdf:type owl:Class ;
+                
+                rdfs:label "furnishing"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#House
+
+:House rdf:type owl:Class ;
+       
+       rdfs:label "house"@en ;
+       
+       rdfs:subClassOf :Property .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#ParkingType
+
+:ParkingType rdf:type owl:Class ;
+             
+             rdfs:label "parking space"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#Property
+
+:Property rdf:type owl:Class ;
+          
+          rdfs:label "real-estate property"@en ;
+          
+          rdfs:subClassOf gr:Product .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#RoomSpecification
+
+:RoomSpecification rdf:type owl:Class ;
+                   
+                   rdfs:label "room specification"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#RoomType
+
+:RoomType rdf:type owl:Class ;
+          
+          rdfs:label "room type"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#ServiceType
+
+:ServiceType rdf:type owl:Class ;
+             
+             rdfs:label "service type"@en .
+
+
+
+###  http://purl.org/goodrelations/v1#Product
+
+gr:Product rdf:type owl:Class .
+
+
+
+
+
+#################################################################
+#
+#    Individuals
+#
+#################################################################
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#allocatedSpace
+
+:allocatedSpace rdf:type :ParkingType ,
+                         owl:NamedIndividual ;
+                
+                rdfs:label "allocated parking space"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#bathroom
+
+:bathroom rdf:type :RoomType ,
+                   owl:NamedIndividual ;
+          
+          rdfs:label "bath"@en ,
+                     "bathroom"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#bedroom
+
+:bedroom rdf:type :RoomType ,
+                  owl:NamedIndividual ;
+         
+         rdfs:label "bed chamber"@en ,
+                    "bedroom"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#furnished
+
+:furnished rdf:type :FurnishingType ,
+                    owl:NamedIndividual ;
+           
+           rdfs:label "furnished"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#garage
+
+:garage rdf:type :ParkingType ,
+                 owl:NamedIndividual ;
+        
+        rdfs:label "garage"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#managed
+
+:managed rdf:type :ServiceType ,
+                  owl:NamedIndividual ;
+         
+         rdfs:label "managed"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#optioanllyFurnished
+
+:optioanllyFurnished rdf:type :FurnishingType ,
+                              owl:NamedIndividual ;
+                     
+                     rdfs:label "optionally furnished"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#partiallyFurnished
+
+:partiallyFurnished rdf:type :FurnishingType ,
+                             owl:NamedIndividual ;
+                    
+                    rdfs:label "partially furnished"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#reception
+
+:reception rdf:type :RoomType ,
+                    owl:NamedIndividual ;
+           
+           rdfs:label "reception"@en .
+
+
+
+###  http://diadem.cs.ox.ac.uk/ontologies/real-estate#unfurnished
+
+:unfurnished rdf:type :FurnishingType ,
+                      owl:NamedIndividual ;
+             
+             rdfs:label "unfurnished"@en .
+
+
+
+
+###  Generated by the OWL API (version 3.2.5.1928) http://owlapi.sourceforge.net
+
