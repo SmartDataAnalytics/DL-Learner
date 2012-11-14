@@ -100,7 +100,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		/** The minimum score of items that are accepted from the Sindice search BOA index. **/
 	private static final Double	BOA_THRESHOLD	=  0.5;
 	enum Mode {BEST_QUERY, BEST_NON_EMPTY_QUERY}
-	private Mode mode = Mode.BEST_NON_EMPTY_QUERY;
+	public static final Mode mode = Mode.BEST_QUERY;
 	
 	/** used to create a label out of the URI when there is no label available in the SPARQL endpoint.*/
 	private static SimpleIRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
@@ -399,6 +399,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		learnSPARQLQueries(false);
 	}
 	
+	/** generates SPARQL queries out of the questions
+	 * @param useHMM use a hidden markov model resource disambiguation (experimental, slow)
+	 * @throws NoTemplateFoundException if non of the templates apply to the query
+	 */
 	public void learnSPARQLQueries(boolean useHMM) throws NoTemplateFoundException
 	{
 		reset();
@@ -414,10 +418,10 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		logger.debug("Done in " + templateMon.getLastValue() + "ms.");
 		relevantKeywords.addAll(templateGenerator.getUnknownWords());
 		if(templates.isEmpty()){throw new NoTemplateFoundException();}
-//		logger.debug("Templates:");
-//		for(Template t : templates){
-//			logger.debug(t);
-//		}
+		logger.debug("Templates:");
+		for(Template t : templates){
+			logger.debug(t);
+		}
 
 		//get the weighted query candidates
 		generatedQueries = getWeightedSPARQLQueries(templates,useHMM);
@@ -684,21 +688,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 		logger.debug("Generating SPARQL query candidates...");
 
 		SortedMap<Slot, Set<Allocation>> slot2Allocations = new TreeMap<Slot, Set<Allocation>>();
-//				new Comparator<Slot>() {
-//
-//			@Override
-//			public int compare(Slot o1, Slot o2) {
-//				if(o1.equals(o2)) return 0;
-//				return -1;
-////				if(o1.getSlotType() == o2.getSlotType()){
-////					return o1.getToken().compareTo(o2.getToken());
-////				} else {
-////					return -1;
-////				}
-//			}
-//		});	
 		slot2Allocations = Collections.synchronizedSortedMap(slot2Allocations);
-		
 
 		SortedSet<WeightedQuery> allQueries = new TreeSet<WeightedQuery>();
 
@@ -708,29 +698,30 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 //			Set<Allocation> allocations = new TreeSet<Allocation>();
 			boolean containsRegex = t.getQuery().toString().toLowerCase().contains("(regex(");
 
-			ExecutorService executor =  Executors.newSingleThreadExecutor();//Executors.newFixedThreadPool(t.getSlots().size());			
+//			ExecutorService executor =  Executors.newSingleThreadExecutor();			
+			ExecutorService executor =  Executors.newFixedThreadPool(t.getSlots().size());
 
 			long startTime = System.currentTimeMillis();
-			Map<Future,Slot> futureToSlot = new HashMap<Future,Slot>();
+			Map<Future<SortedSet<Allocation>>,Slot> futureToSlot = new HashMap<Future<SortedSet<Allocation>>,Slot>();
 			
+			// start calculating candidates for each slot  
 			for (Slot slot : t.getSlots()) {
 				if(!slot2Allocations.containsKey(slot)){
 					Callable<SortedSet<Allocation>> worker = new SlotProcessor(slot);
 					Future<SortedSet<Allocation>> submit = executor.submit(worker);
 					futureToSlot.put(submit, slot);
-				} 
+				}
 			}
-
+			// get the candidates
 			for (Future<SortedSet<Allocation>> future : futureToSlot.keySet())
 			{
 				try {
-					SortedSet<Allocation> result = future.get();						
+					SortedSet<Allocation> result = future.get();
 					slot2Allocations.put(futureToSlot.get(future), result);
 				} catch (InterruptedException e) {e.printStackTrace();} catch (ExecutionException e) {e.printStackTrace();throw new RuntimeException(e);}
 			}
 
 			executor.shutdown();
-
 
 			/*for(Slot slot : t.getSlots()){
 				allocations = slot2Allocations2.get(slot);
@@ -753,16 +744,23 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				}
 				allocations.addAll(tmp);
 			}*/
-			logger.debug("Time needed: " + (System.currentTimeMillis() - startTime) + "ms");
+			logger.debug("Time needed for generating allocation candidates for all slots of the template: " + (System.currentTimeMillis() - startTime) + "ms");
 
 			Set<WeightedQuery> queries = new HashSet<WeightedQuery>();
 			Query cleanQuery = t.getQuery();
 			queries.add(new WeightedQuery(cleanQuery));
 
-			Set<WeightedQuery> tmp = new TreeSet<WeightedQuery>();
+		
 			List<Slot> sortedSlots = new ArrayList<Slot>();
 			Set<Slot> classSlots = new HashSet<Slot>();
-			// TODO: can this be optimized to be in just one loop? (but I guess it won't give a noticable performance benefit anyways...)
+			
+			// property slots first because they determine if the objects in another slots are resources or literals  
+			for(Slot slot : t.getSlots()){
+				if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.OBJECTPROPERTY || slot.getSlotType() == SlotType.DATATYPEPROPERTY){
+					sortedSlots.add(slot);
+				}
+			}
+			
 			for(Slot slot : t.getSlots()){
 				if(slot.getSlotType() == SlotType.CLASS){
 					sortedSlots.add(slot);
@@ -770,35 +768,39 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				}
 			}
 			for(Slot slot : t.getSlots()){
-				if(slot.getSlotType() == SlotType.PROPERTY || slot.getSlotType() == SlotType.OBJECTPROPERTY || slot.getSlotType() == SlotType.DATATYPEPROPERTY){
-					sortedSlots.add(slot);
-				}
-			}
-			for(Slot slot : t.getSlots()){
 				if(!sortedSlots.contains(slot)){
 					sortedSlots.add(slot);
 				}
 			}
+			
 			//add for each SYMPROPERTY Slot the reversed query
+			{
+			Set<WeightedQuery> normalAndReversedQueries = new TreeSet<WeightedQuery>();
 			for(Slot slot : sortedSlots){
 				for(WeightedQuery wQ : queries){
 					if(slot.getSlotType() == SlotType.SYMPROPERTY || slot.getSlotType() == SlotType.OBJECTPROPERTY){
 						Query reversedQuery = new Query(wQ.getQuery());
-						reversedQuery.getTriplesWithVar(slot.getAnchor()).iterator().next().reverse();
-						tmp.add(new WeightedQuery(reversedQuery));
+
+						// why only the first? temporarily comment this out and do it with all
+//						reversedQuery.getTriplesWithVar(slot.getAnchor()).iterator().next().reverse();
+						for(SPARQL_Triple triple: reversedQuery.getTriplesWithVar(slot.getAnchor()))
+						{
+							triple.reverse();
+						}						
+						normalAndReversedQueries.add(new WeightedQuery(reversedQuery));
 					}
-					tmp.add(wQ);
+					normalAndReversedQueries.add(wQ);
 				}
 				queries.clear();
-				queries.addAll(tmp);
-				tmp.clear();
+				queries.addAll(normalAndReversedQueries);			
 			}
-
+			}
 			Set<Slot> unhandledSlots = new HashSet<Slot>(sortedSlots);
 			unhandledSlots.removeAll(slot2Allocations.keySet());
 			if(!unhandledSlots.isEmpty())
 			{
 				logger.error("the following slots are unhandled: "+unhandledSlots);
+				System.exit(1);
 			}
 			for(Slot slot : sortedSlots)
 			{				
@@ -809,6 +811,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 
 				}
 				if(!slot2Allocations.get(slot).isEmpty()){
+					Set<WeightedQuery> tmp = new TreeSet<WeightedQuery>();
 					for(Allocation a : slot2Allocations.get(slot)){
 						for(WeightedQuery query : queries){
 							Query q = new Query(query.getQuery());
@@ -892,25 +895,28 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 //								}
 //							}
 
+// je nach propertykandidaten und prädikatpositionen: zuerst prädikate füllen, weil man dann weiß, ob es objektproperty oder datatypeproperty ist und damit kann man dann sachen rausfiltern							
+							
+							// TODO: ist hier schon gefüllt
 							if(!drop){
 								if(slot.getSlotType() == SlotType.RESOURCE){//avoid queries where predicate is data property and object resource->add REGEX filter in this case
-									q.replaceVarWithURI(slot.getAnchor(), a.getUri());
+//									q.replaceVarWithURI(slot.getAnchor(), a.getUri());
 									for(SPARQL_Triple triple : q.getTriplesWithVar(slot.getAnchor())){
 										SPARQL_Value object = triple.getValue();
 										if(object.isVariable() && object.getName().equals(slot.getAnchor())){//only consider triple where SLOT is in object position
-//											SPARQL_Property predicate = triple.getProperty();
-//											if(!predicate.isVariable()){//only consider triple where predicate is URI
-//												String predicateURI = predicate.getName().replace("<", "").replace(">", "");
-//												if(isDatatypeProperty(predicateURI)){//if data property
-//													q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
-//															object, "'" + slot.getWords().get(0) + "'", SPARQL_PairType.REGEX)));
-//												} else {
-//													q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-//												}
-//											} else {
-//												q.replaceVarWithURI(slot.getAnchor(), a.getUri());
-//											}
-//										} else {
+											SPARQL_Property predicate = triple.getProperty();
+											if(!predicate.isVariable()){//only consider triple where predicate is URI
+												String predicateURI = predicate.getName().replace("<", "").replace(">", "");
+												if(isDatatypeProperty(predicateURI)){//if data property
+													q.addFilter(new SPARQL_Filter(new SPARQL_Pair(
+															object, "'" + slot.getWords().get(0) + "'", SPARQL_PairType.REGEX)));
+												} else {
+													q.replaceVarWithURI(slot.getAnchor(), a.getUri());
+												}
+											} else {
+												q.replaceVarWithURI(slot.getAnchor(), a.getUri());
+											}
+										} else {
 //										
 										}
 									}

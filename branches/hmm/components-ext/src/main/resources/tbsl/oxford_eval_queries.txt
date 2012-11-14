@@ -140,7 +140,7 @@ question: houses with ample parking
 
 question: house with electric central heating system
 
-question: houses with three en-suites near Oxford
+question: houses with three en suites near Oxford
 
 question: houses with countryside views
 
@@ -166,7 +166,7 @@ question: house with balcony and vaulted ceiling
 
 question: house that is a maisonette and on Gloucester Green
 
-question: house in a corner or end-of-terrace plot
+question: house in a corner or end of terrace plot
 
 question: house with 3 bedrooms, but cheaper than 150000 pounds
 
@@ -178,7 +178,7 @@ question: house with a fireplace and a garden that is not communal
 
 question: house with parking but not Victorian
 
-question: house with 3 bathrooms, but not en-suite
+question: house with 3 bathrooms, but not en suite
 
 question: house in a retirement complex
 

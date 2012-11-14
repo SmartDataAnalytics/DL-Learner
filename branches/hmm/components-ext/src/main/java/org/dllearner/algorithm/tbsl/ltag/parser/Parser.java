@@ -15,7 +15,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 public class Parser {
-	
+
 	private static final Logger logger = Logger.getLogger(Parser.class);
 
 	public boolean CONSTRUCT_SEMANTICS = false;
@@ -32,15 +32,15 @@ public class Parser {
 	private List<Dude> dudes = new ArrayList<Dude>();
 	private ParseGrammar parseGrammar = null;
 	private List<Integer> temporaryEntries = new ArrayList<Integer>();
-	
+
 	private GrammarFilter grammarFilter = new GrammarFilter();
 
 	@SuppressWarnings("unchecked")
 	private final Class[] operations = { Scanner.class, MoveDotDown.class,
-			MoveDotUp.class, LeftPredictor.class, LeftCompletor.class,
-			RightPredictor.class, RightCompletor.class, SubstPredictor.class,
-			SubstCompletor.class };
-	
+		MoveDotUp.class, LeftPredictor.class, LeftCompletor.class,
+		RightPredictor.class, RightCompletor.class, SubstPredictor.class,
+		SubstCompletor.class };
+
 	/**
 	 * parses given input string by using the given grammar. Behaviour of the
 	 * Parser is controlled by USE_DPS_AS_INITTREES, USE_LESS_MEMORY,
@@ -58,7 +58,7 @@ public class Parser {
 		derivedTrees.clear();
 		dudes.clear();
 		temporaryEntries.clear();
-		
+
 		if (!VERBOSE) GrammarFilter.VERBOSE = false;
 
 		/*
@@ -76,8 +76,8 @@ public class Parser {
 
 		this.input = ("# ".concat(inputNoTags.replaceAll("'","").trim())).split(" ");
 		int n = this.input.length;
-		
-		
+
+
 		if (SHOW_GRAMMAR) {
 			logger.debug(parseGrammar);
 		}
@@ -87,7 +87,7 @@ public class Parser {
 		}
 
 		List<Pair<TreeNode, Short>> initTrees = parseGrammar.getInitTrees();
-		
+
 		internalParse(initTrees, n);
 
 		if (USE_DPS_AS_INITTREES && derivationTrees.isEmpty()) {
@@ -98,18 +98,18 @@ public class Parser {
 		return derivationTrees;
 
 	}
-	
+
 	public List<String> getUnknownWords(){
 		return grammarFilter.getUnknownWords();
 	}
-	
+
 	public List<DerivationTree> parseMultiThreaded(String taggeduserinput, LTAGLexicon grammar) {
 
 		derivationTrees.clear();
 		derivedTrees.clear();
 		dudes.clear();
 		temporaryEntries.clear();
-		
+
 		if (!VERBOSE) GrammarFilter.VERBOSE = false;
 
 		/*
@@ -127,8 +127,8 @@ public class Parser {
 
 		this.input = ("# ".concat(inputNoTags.replaceAll("'","").trim())).split(" ");
 		int n = this.input.length;
-		
-		
+
+
 		if (SHOW_GRAMMAR) {
 			logger.debug(parseGrammar);
 		}
@@ -138,7 +138,7 @@ public class Parser {
 		}
 
 		List<Pair<TreeNode, Short>> initTrees = parseGrammar.getInitTrees();
-		
+
 		internalParseMultiThreaded(initTrees, n);
 
 		if (USE_DPS_AS_INITTREES && derivationTrees.isEmpty()) {
@@ -151,7 +151,7 @@ public class Parser {
 	}
 
 	private void internalParse(List<Pair<TreeNode, Short>> initTrees, int n) {
-		
+
 		TREELOOP: for (int k = 0; k < initTrees.size(); k++) {
 
 			TreeNode tree = initTrees.get(k).getFirst();
@@ -162,7 +162,7 @@ public class Parser {
 			ParseState start = new ParseState(tree, tid);
 			// the inittree is already used
 			start.getUsedTrees().add(tid);
-			
+
 			stateSets.get(0).add(start);
 
 			for (int i = 0; i < n; i++) {
@@ -253,13 +253,13 @@ public class Parser {
 
 			for (ParseState state : stateSets.get(n - 1)) {
 
-				
-//				if (state.isEndState() && state.t.equals(tree)) {
+
+				//				if (state.isEndState() && state.t.equals(tree)) {
 				if (state.isEndState()) {
 					if (state.t.equals(tree)) {
 
-					derivationTrees.add(createDerivationTree(state,
-							parseGrammar));
+						derivationTrees.add(createDerivationTree(state,
+								parseGrammar));
 
 					}
 				}
@@ -269,7 +269,7 @@ public class Parser {
 		}
 
 	}
-	
+
 	private void internalParseMultiThreaded(List<Pair<TreeNode, Short>> initTrees, int n) {
 		Monitor parseMon = MonitorFactory.getTimeMonitor("parse");
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -282,7 +282,7 @@ public class Parser {
 		}
 		threadPool.shutdown();
 		while(!threadPool.isTerminated()){
-			
+
 		}
 		parseMon.start();
 	}
@@ -306,7 +306,7 @@ public class Parser {
 
 		// first used tree is the inittree itself
 		for (int i=1;i<state.getUsedTrees().size();i++) {
-			
+
 			short tid = state.getUsedTrees().get(i);
 
 			Operation op = new Operation();
@@ -324,7 +324,7 @@ public class Parser {
 			}
 
 			out.getTreeMappings()
-					.put(tid, temporaryGrammar.getIndex().get(tid));
+			.put(tid, temporaryGrammar.getIndex().get(tid));
 
 			op.setTid1(ptr.getTid());
 
@@ -356,24 +356,24 @@ public class Parser {
 
 			List<Pair<TreeNode, Dude>> pairs = DerivedTree.build(d, parseGrammar, G,
 					CONSTRUCT_SEMANTICS);
-			
+
 			for (Pair<TreeNode,Dude> pair : pairs) {
 				TreeNode x = pair.getFirst();
 				Dude dude = pair.getSecond();
-	
+
 				if (!derivedTrees.contains(x) || !dudes.contains(dude)) {
 					derivedTrees.add(x);
 					dudes.add(dude);
 				}
-				
+
 			}
-			
+
 		}
 
 		return derivedTrees;
 
 	}
-	
+
 	public List<TreeNode> buildDerivedTreesMultiThreaded(LTAGLexicon G) throws ParseException {
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		for (DerivationTree dTree : derivationTrees) {
@@ -381,7 +381,7 @@ public class Parser {
 		}
 		threadPool.shutdown();
 		while(!threadPool.isTerminated()){
-			
+
 		}
 
 		return derivedTrees;
@@ -427,18 +427,18 @@ public class Parser {
 		derivedTrees = new ArrayList<TreeNode>();
 		new ArrayList<Dude>();
 		parseGrammar = null;
-		
+
 		grammar.clear(temps);
 
 	}
-	
+
 	class TreeProcessor implements Runnable{
 
-		
+
 		private TreeNode tree;
 		private short tid;
 		private int n;
-		
+
 		public TreeProcessor(TreeNode tree, short tid, int n) {
 			this.tree = tree;
 			this.tid = tid;
@@ -452,7 +452,7 @@ public class Parser {
 			ParseState start = new ParseState(tree, tid);
 			// the inittree is already used
 			start.getUsedTrees().add(tid);
-			
+
 			stateSets.get(0).add(start);
 			boolean skip = false;
 			for (int i = 0; i < n; i++) {
@@ -496,8 +496,10 @@ public class Parser {
 
 										if ((op instanceof Scanner)
 												|| (newState.isEndState() && newState.i == n - 1)) {
-											stateSets.get(newState.i).add(
-													newState);
+											if(newState.i<stateSets.size())
+											{
+												stateSets.get(newState.i).add(newState);
+											}
 										}
 									}
 
@@ -544,30 +546,30 @@ public class Parser {
 			if(!skip){
 				for (ParseState state : stateSets.get(n - 1)) {
 
-					
-//					if (state.isEndState() && state.t.equals(tree)) {
+
+					//					if (state.isEndState() && state.t.equals(tree)) {
 					if (state.isEndState()) {
 						if (state.t.equals(tree)) {
 
-						derivationTrees.add(createDerivationTree(state,
-								parseGrammar));
+							derivationTrees.add(createDerivationTree(state,
+									parseGrammar));
 
 						}
 					}
 
 				}
 			}
-			
-			
+
+
 		}
-		
+
 	}
-	
+
 	class DerivationTreeProcessor implements Runnable{
-		
+
 		private DerivationTree dTree;
 		private LTAGLexicon lexicon;
-		
+
 		public DerivationTreeProcessor(DerivationTree dTree, LTAGLexicon lexicon) {
 			this.dTree = dTree;
 			this.lexicon = lexicon;
@@ -577,7 +579,7 @@ public class Parser {
 		public void run() {
 			try {
 				List<Pair<TreeNode, Dude>> pairs = DerivedTree.build(dTree, parseGrammar, lexicon, CONSTRUCT_SEMANTICS);
-				
+
 				for (Pair<TreeNode,Dude> pair : pairs) {
 					TreeNode x = pair.getFirst();
 					Dude dude = pair.getSecond();
@@ -586,14 +588,14 @@ public class Parser {
 						derivedTrees.add(x);
 						dudes.add(dude);
 					}
-					
+
 				}
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
-		
+
 	}
 
 }

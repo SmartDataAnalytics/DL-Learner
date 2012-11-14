@@ -1,0 +1,1358 @@
+<dataset>
+<question answertype="resource" id="0">
+<string>houses/NNS in/IN Headington/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	FILTER(regex(?y,'Headington','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="1">
+<string>houses/NNS in/IN Abingdon/NNP with/IN more/JJR than/IN 2/CD bedrooms/NNS</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 (COUNT(?y0) AS ?c) WHERE {
+	?x0 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#bedrooms> ?y0.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	FILTER(regex(?y,'Abingdon','i')).
+	FILTER(?c > 2).
+}
+GROUP BY ?x0 
+]]></query>
+</question>
+<question answertype="resource" id="2">
+<string>houses/NNS with/IN garden/NN in/IN Wheatley/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y0.
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	FILTER(regex(?z,'garden','i')).
+	FILTER(regex(?y0,'Wheatley','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="3">
+<string>detached/JJ houses/NNS in/IN Oxford/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y0.
+	?x0 <http://purl.org/goodrelations/v1#description> ?y.
+	FILTER(regex(?y0,'Oxford','i')).
+	FILTER(regex(?y,'detached','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="4">
+<string>Victorian/JJ houses/NNS in/IN Oxfordshire/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y0.
+	?x0 <http://purl.org/goodrelations/v1#description> ?y.
+	FILTER(regex(?y0,'Oxfordshire','i')).
+	FILTER(regex(?y,'Victorian','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="5">
+<string>Edwardian/JJ house/NN in/IN Oxfordshire/NNP for/IN less/JJR than/IN 1000000/CD</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#hasPrice> ?y0.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y1.
+	?x0 <http://purl.org/goodrelations/v1#description> ?y.
+	FILTER(?y0 < 1000000).
+	FILTER(regex(?y,'Edwardian','i')).
+	FILTER(regex(?y1,'Oxfordshire','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="6">
+<string>houses/NNS with/IN double/JJ garage/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#garage> ?y.
+	?y <http://purl.org/goodrelations/v1#description> ?y0.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?y0,'double','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="7">
+<string>houses/NNS with/IN large/JJ garden/NN and/CC equipped/JJ kitchen/NN</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x ?y1 WHERE {
+	?y1 <http://purl.org/goodrelations/v1#description> ?y0.
+	?y1 rdf:type ?p2.
+	?x rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x <http://purl.org/goodrelations/v1#description> ?z.
+	FILTER(regex(?y0,'equipped','i')).
+	FILTER(regex(?z,'large garden','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="8">
+<string>houses/NNS with/IN more/JJR than/IN 1/CD reception/NN room/NN</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#receptions> ?y.
+	FILTER(?y > 1).
+}
+]]></query>
+</question>
+<question answertype="resource" id="9">
+<string>houses/NNS with/IN conservatory/NN room/NN and/CC less/JJR than/IN 900000/CD pounds/NNS</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<notes><note>templateproblem</note></note>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x ?y0 (COUNT(?y0) AS ?c) WHERE {
+	?x ?p1 ?y.
+	?y0 rdf:type <http://linkedgeodata.org/triplify/node260063131>.
+	?x rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(?c < 900000).
+}
+GROUP BY ?x ?y0 
+]]></query>
+</question>
+<question answertype="resource" id="10">
+<string>houses/NNS in/IN Old/NNP Marston/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	FILTER(regex(?y,'Old Marston','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="11">
+<string>family/NN houses/NNS with/IN more/JJR than/IN 2/CD bathrooms/NNS and/CC more/JJR than/IN 4/CD bedrooms/NNS</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x (COUNT(?y) AS ?c) (COUNT(?y0) AS ?c0) WHERE {
+	?y0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#bedroom>.
+	?x <http://diadem.cs.ox.ac.uk/ontologies/real-estate#bathrooms> ?y.
+	?x rdf:type ?p0.
+	FILTER(?c > 2).
+	FILTER(?c0 > 4).
+}
+GROUP BY ?x 
+]]></query>
+</question>
+<question answertype="resource" id="12">
+<string>houses/NNS close/RB to/TO Iffley/NNP Sport/NNP Centre/NNP</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://dbpedia.org/property/near> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+}
+]]></query>
+</question>
+<question answertype="resource" id="13">
+<string>houses/NNS in/IN Oxford/NNP close/RB to/TO the/DT train/NN station/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y0 ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	?x0 <http://dbpedia.org/property/near> ?y0.
+	?y0 rdf:type ?p0.
+	FILTER(regex(?y,'Oxford','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="14">
+<string>houses/NNS in/IN Summertown/NNP for/IN less/JJR than/IN 400000/CD pounds/NNS</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	?x0 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#hasPrice> ?y0.
+	FILTER(?y0 < 400000).
+	FILTER(regex(?y,'Summertown','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="15">
+<string>two/CD floors/NNS houses/NNS in/IN East/NNP Oxford/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK WHERE {
+	2 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	?2 rdf:type ?p0.
+	FILTER(regex(?y,'East Oxford','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="16">
+<string>brand/NN new/JJ houses/NNS in/IN Oxford/NNP for/IN less/JJR than/IN 500000/CD pounds/NNS</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y ?y0 WHERE {
+	?y <http://purl.org/goodrelations/v1#description> ?y2.
+	?y rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?y1 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#hasPrice> ?y0.
+	?y <http://www.w3.org/2006/vcard/ns#street-address> ?y1.
+	?y rdf:type <http://purl.org/goodrelations/v1#hasBrand>.
+	FILTER(?y0 < 500000).
+	FILTER(regex(?y1,'Oxford','i')).
+	FILTER(regex(?y2,'new','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="17">
+<string>houses/NNS close/RB to/TO Brookes/NNP University/NNP</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://dbpedia.org/property/near> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+}
+]]></query>
+</question>
+<question answertype="resource" id="18">
+<string>houses/NNS in/IN Jericho/NNP area/NN</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?y,'Jericho area','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="19">
+<string>house/NN close/RB to/TO Headington/NNP hospitals/NNS</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://dbpedia.org/property/near> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+}
+]]></query>
+</question>
+<question answertype="resource" id="20">
+<string>modern/JJ houses/NNS with/IN gas/NN central/JJ heating/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 ?p0 ?y0.
+	?x0 <http://purl.org/goodrelations/v1#description> ?y.
+	?x0 <http://linkedgeodata.org/ontology/Shop> ?y0.
+	FILTER(regex(?y,'modern','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="21">
+<string>houses/NNS with/IN electric/JJ heating/NN</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?z,'electric heating','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="22">
+<string>houses/NNS less/JJR than/IN 500000/CD within/IN area/NN OX16/CD</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>61</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="23">
+<string>houses/NNS close/RB to/TO an/DT Italian/JJ restaurant/NN</string>
+<queryStatus>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y ?x0 WHERE {
+	?y <http://purl.org/goodrelations/v1#description> ?y0.
+	?x0 <http://dbpedia.org/property/near> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?y rdf:type ?p1.
+	FILTER(regex(?y0,'Italian','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="24">
+<string>houses/NNS at/IN walking/VBG distance/NN from/IN a/DT pharmacy/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y ?x0 WHERE {
+	?x0 <http://dbpedia.org/property/near> ?y.
+	?y rdf:type ?p0.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+}
+]]></query>
+</question>
+<question answertype="resource" id="25">
+<string>houses/NNS at/IN walking/VBG distance/NN from/IN Tesco/NNP or/CC Sainsburys/NNP shops/NNS</string>
+<queryStatus>
+<type>OK</type>
+</queryStatus>
+<evaluation>incorrect</correct>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK WHERE {
+{ ?y ?p1 ?y0.?y rdf:type ?p0. } UNION {}
+}
+]]></query>
+</question>
+<question answertype="resource" id="26">
+<string>houses/NNS nearby/JJ Sheldonian/NNP Theatre/NNP</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://dbpedia.org/property/near> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+}
+]]></query>
+</question>
+<question answertype="resource" id="27">
+<string>houses/NNS with/IN underfloor/JJ heating/NN</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?z,'underfloor heating','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="28">
+<string>houses/NNS with/IN wood/NN floor/NN</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?z,'wood floor','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="29">
+<string>houses/NNS close/RB to/TO The/DT King/NN 's/POS Arms/NNS pub/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?x ?p1 ?y0.
+	?x <http://dbpedia.org/property/near> ?y.
+	?x rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?y rdf:type <http://linkedgeodata.org/ontology/Parking>.
+}
+]]></query>
+</question>
+<question answertype="resource" id="30">
+<string>houses/NNS with/IN a/DT garden/NN that/WDT is/VBZ at/IN least/JJS 2/CD acres/NNS big/JJ</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>184</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="31">
+<string>houses/NNS with/IN many/JJ reception/NN rooms/NNS</string>
+<queryStatus>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#receptions> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+}
+]]></query>
+</question>
+<question answertype="resource" id="32">
+<string>houses/NNS built/VBN around/IN 1950/CD</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>76</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="33">
+<string>houses/NNS with/IN balcony/NN</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?z,'balcony','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="34">
+<string>houses/NNS with/IN double/JJ glazed/JJ windows/NNS</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?z,'double glazed windows','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="35">
+<string>2/CD bedroom/NN houses/NNS near/IN Oxford/NNP train/NN station/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 (COUNT(?x0) AS ?v0) WHERE {
+	?x0 <http://dbpedia.org/property/near> ?y.
+	?x0 rdf:type ?p1.
+}
+GROUP BY ?x0 
+HAVING (?v0 = 2)
+]]></query>
+</question>
+<question answertype="resource" id="36">
+<string>4/CD bedroom/NN detached/VBD houses/NNS in/IN Oxford/NNP</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y (COUNT(?x) AS ?v2) WHERE {
+	?y <http://www.w3.org/2006/vcard/ns#street-address> ?y0.
+	?y <http://diadem.cs.ox.ac.uk/ontologies/real-estate#bedroom> ?x.
+	?y rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?y0,'Oxford','i')).
+}
+GROUP BY ?y 
+HAVING (?v2 = 4)
+]]></query>
+</question>
+<question answertype="resource" id="37">
+<string>studio/NN apartments/NNS in/IN Summertown/NNP ,/, Oxford/NNP</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>38</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="38">
+<string>freehold/NN houses/NNS with/IN 2/CD bedrooms/NNS and/CC a/DT living/NN room/NN in/IN Banbury/NNP</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x ?y1 (COUNT(?y) AS ?v2) WHERE {
+	?y1 rdf:type ?p1.
+	?y1 <http://www.w3.org/2006/vcard/ns#street-address> ?y0.
+	?x rdf:type ?p4.
+	?y <http://diadem.cs.ox.ac.uk/ontologies/real-estate#bedrooms> ?x.
+	FILTER(regex(?y0,'Banbury','i')).
+}
+GROUP BY ?x ?y1 
+HAVING (?v2 = 2)
+]]></query>
+</question>
+<question answertype="resource" id="39">
+<string>houses/NNS in/IN Oxford/NNP city/NN center/NN with/IN at/IN most/JJS 2/CD bedrooms/NNS</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x1 (COUNT(?y0) AS ?c) WHERE {
+	?x1 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#bedrooms> ?y0.
+	?x1 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x1 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	FILTER(regex(?y,'Oxford city center','i')).
+	FILTER(?c <= 2).
+}
+GROUP BY ?x1 
+]]></query>
+</question>
+<question answertype="resource" id="40">
+<string>victorian/JJ town/NN houses/NNS in/IN north/JJ Oxford/NNP</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y0.
+	?y0 ?p2 ?j.
+	?x0 <http://purl.org/goodrelations/v1#description> ?y.
+	FILTER(regex(?y0,'Oxford','i')).
+	FILTER(regex(?y,'victoriantown','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="41">
+<string>terrace/NN houses/NNS with/IN west/NN facing/VBG garden/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y1 ?x0 WHERE {
+	?x0 rdf:type ?p2.
+	?y1 <http://purl.org/goodrelations/v1#description> ?y0.
+	?x0 <http://linkedgeodata.org/triplify/node338797397> ?y1.
+	?x0 ?p1 ?y1.
+	FILTER(regex(?y0,'facing','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="42">
+<string>modernized/JJ end/NN terrace/NN houses/NNS with/IN private/JJ parking/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y1 ?x0 WHERE {
+	?y1 <http://purl.org/goodrelations/v1#description> ?y0.
+	?x0 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#ParkingType> ?y1.
+	?x0 <http://purl.org/goodrelations/v1#description> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?y0,'private','i')).
+	FILTER(regex(?y,'modernizedendterrace','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="43">
+<string>three/CD bedroom/NN houses/NNS with/IN open/JJ fireplace/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 (COUNT(?x0) AS ?v0) WHERE {
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	?x0 rdf:type ?p1.
+	FILTER(regex(?z,'fireplace open','i')).
+}
+GROUP BY ?x0 
+HAVING (?v0 = 3)
+]]></query>
+</question>
+<question answertype="resource" id="44">
+<string>houses/NNS available/JJ from/IN June/NNP 15th/CD ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>80</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="45">
+<string>houses/NNS on/IN Rawlinson/NNP Road/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?y,'Rawlinson Road','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="46">
+<string>flats/NNS near/IN supermarket/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://dbpedia.org/property/near> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?y rdf:type ?p1.
+}
+]]></query>
+</question>
+<question answertype="resource" id="47">
+<string>give/VB me/PRP flats/NNS in/IN central/JJ Oxford/NNP with/IN at/IN least/JJS one/CD bedroom/NN below/IN 1000/CD pounds/NNS a/DT month/NN ?/.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>1652</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="48">
+<string>find/VB 2/CD bedroom/NN flats/NNS in/IN walking/VBG distance/NN from/IN the/DT computer/NN science/NN departement/NN !/.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>52</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="49">
+<string>find/VB a/DT property/NN with/IN 2/CD bedrooms/NNS close/RB to/TO some/DT park/NN ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>51</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="50">
+<string>find/VB a/DT flat/NN in/IN the/DT area/NN around/IN Cowley/NNP Road/NNP with/IN 2/CD bedrooms/NNS ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>1489</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="51">
+<string>find/VB a/DT furnished/JJ place/NN with/IN one/CD bedroom/NN close/RB to/TO the/DT Radcliffe/NNP Camera/NNP ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>89</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="52">
+<string>find/VB an/DT unfurnished/JJ house/NN with/IN at/IN least/JJS 2/CD bedrooms/NNS in/IN Summertown/NNP ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>70</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="53">
+<string>find/VB a/DT furnished/VBN flat/JJ with/IN one/CD bedroom/NN for/IN smokers/NNS ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>1993</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="54">
+<string>find/VB a/DT flat/NN with/IN parking/NN in/IN central/JJ Oxford/NNP ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>86</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="55">
+<string>find/VB a/DT representative/JJ house/NN in/IN Summertown/NNP ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>69</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="56">
+<string>which/WDT places/NNS are/VBP offered/VBN close/RB to/TO the/DT train/NN station/NN ?/.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>245</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="57">
+<string>show/VB me/PRP the/DT retirement/NN houses/NNS for/IN sale/NN near/IN Oxford/NNP ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>70</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="58">
+<string>give/VB me/PRP a/DT flat/NN with/IN at/IN least/JJS two/CD bathrooms/NNS for/IN less/JJR than/IN 1000/CD pounds/NNS ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>2176</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="59">
+<string>show/VB me/PRP a/DT flat/NN which/WDT is/VBZ close/RB to/TO 3/CD bars/NNS ./.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>84</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="60">
+<string>what/WP is/VBZ the/DT average/JJ price/NN of/IN furnished/VBN 1/CD bedroom/NN apartments/NNS in/IN Heddington/NNP ?/.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>179</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="61">
+<string>how/WRB many/JJ flats/NNS are/VBP offered/VBN in/IN central/JJ Oxford/NNP below/IN 1000/CD pounds/NNS a/DT month/NN ?/.</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>113</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="62">
+<string>houses/NNS close/RB to/TO The/DT Ashmolean/NNP Museum/NNP ,/, with/IN more/JJR than/IN one/CD bedroom/NN</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>88</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="63">
+<string>houses/NNS in/IN Botley/NNP Road/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?y,'Botley Road','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="64">
+<string>houses/NNS in/IN Littlemore/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	FILTER(regex(?y,'Littlemore','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="65">
+<string>houses/NNS that/WDT cost/VBP between/IN 600000/CD and/CC 800000/CD pounds/NNS</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>147</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="66">
+<string>houses/NNS with/IN 3/CD bedrooms/NNS in/IN Florence/NNP Park/NNP Road/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 (COUNT(?y) AS ?v2) WHERE {
+	?x0 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#bedrooms> ?y.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y0.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?y0,'Florence Park Road','i')).
+}
+GROUP BY ?x0 
+HAVING (?v2 = 3)
+]]></query>
+</question>
+<question answertype="resource" id="67">
+<string>houses/NNS with/IN front/JJ garden/NN and/CC rear/NN garden/NN</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x ?y0 WHERE {
+	?x rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x <http://purl.org/goodrelations/v1#description> ?z.
+	?y0 rdf:type ?p0.
+	FILTER(regex(?z,'front garden','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="68">
+<string>houses/NNS in/IN Oxford/NNP ,/, close/RB to/TO Railway/NNP Station/NNP</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>40</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="69">
+<string>houses/NNS with/IN ample/JJ parking/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://diadem.cs.ox.ac.uk/ontologies/real-estate#ParkingType> ?y.
+	?y <http://purl.org/goodrelations/v1#description> ?y0.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?y0,'ample','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="70">
+<string>house/NN with/IN electric/JJ central/JJ heating/NN system/NN</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?z,'electric central heating system','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="71">
+<string>houses/NNS with/IN three/CD en/IN suites/NNS near/IN Oxford/NNP</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>37</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="72">
+<string>houses/NNS with/IN countryside/NN views/NNS</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 ?p1 ?y.
+}
+]]></query>
+</question>
+<question answertype="resource" id="73">
+<string>houses/NNS with/IN farmland/NN views/NNS</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?z,'farmland views','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="74">
+<string>houses/NNS nearby/JJ River/NNP Thames/NNPS</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://dbpedia.org/property/near> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+}
+]]></query>
+</question>
+<question answertype="resource" id="75">
+<string>houses/NNS having/VBG one/CD utility/NN room/NN or/CC cloakroom/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?y0 WHERE {
+	?1 rdf:type ?p3.
+	1 <http://purl.org/goodrelations/v1#description> ?y0.
+{ ?1 rdf:type ?p0. } UNION {?1 rdf:type ?p1.}
+	FILTER(regex(?y0,'having','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="76">
+<string>houses/NNS in/IN Oxfordshire/NNP with/IN fireplaces/NNS</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	FILTER(regex(?y,'Oxfordshire','i')).
+	FILTER(regex(?z,'fireplaces','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="77">
+<string>houses/NNS with/IN open/JJ plan/NN kitchen/NN near/IN Oxford/NNP</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://dbpedia.org/property/near> <http://linkedgeodata.org/triplify/node1257810975>.
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	FILTER(regex(?z,'kitchen open plan','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="78">
+<string>houses/NNS with/IN walled/JJ garden/NN near/IN Oxford/NNP</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://dbpedia.org/property/near> <http://linkedgeodata.org/triplify/node1257810975>.
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	FILTER(regex(?z,'garden walled','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="79">
+<string>houses/NNS with/IN river/NN views/NNS</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?z,'river views','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="80">
+<string>houses/NNS with/IN gated/JJ entrance/NN or/CC in/IN a/DT gated/JJ community/NN</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>67</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="81">
+<string>recently/RB refurbished/VBN houses/NNS with/IN lift/NN</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>84</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="82">
+<string>house/NN with/IN balcony/NN and/CC vaulted/VBD ceiling/NN</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x ?y1 WHERE {
+	?y1 <http://purl.org/goodrelations/v1#description> ?y0.
+	?y1 rdf:type ?p2.
+	?x rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x <http://purl.org/goodrelations/v1#description> ?z.
+	FILTER(regex(?z,'balcony','i')).
+	FILTER(regex(?y0,'vaulted','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="83">
+<string>house/NN that/WDT is/VBZ a/DT maisonette/NN and/CC on/IN Gloucester/NNP Green/NNP</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>366</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="84">
+<string>house/NN in/IN a/DT corner/NN or/CC end/NN of/IN terrace/NN plot/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y1.
+{ ?y1 rdf:type ?p1. } UNION {?y1 ?p4 ?y0.?y1 rdf:type ?p2.?y0 rdf:type ?p3.}
+}
+]]></query>
+</question>
+<question answertype="resource" id="85">
+<string>house/NN with/IN 3/CD bedrooms/NNS ,/, but/CC cheaper/JJR than/IN 150000/CD pounds/NNS</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>269</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="86">
+<string>house/NN with/IN at/IN least/JJS 2/CD reception/NN rooms/NNS and/CC a/DT garden/NN</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?x <http://diadem.cs.ox.ac.uk/ontologies/real-estate#receptions> ?y.
+	?y0 rdf:type ?p1.
+	?x rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(?y >= 2).
+}
+]]></query>
+</question>
+<question answertype="resource" id="87">
+<string>house/NN with/IN a/DT courtyard/NN</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://purl.org/goodrelations/v1#description> ?z.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	FILTER(regex(?z,'courtyard','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="88">
+<string>house/NN with/IN a/DT fireplace/NN and/CC a/DT garden/NN that/WDT is/VBZ not/RB communal/JJ</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>1676</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="89">
+<string>house/NN with/IN parking/NN but/CC not/RB Victorian/JJ</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>33</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="90">
+<string>house/NN with/IN 3/CD bathrooms/NNS ,/, but/CC not/RB en/IN suite/NN</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>163</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="91">
+<string>house/NN in/IN a/DT retirement/NN complex/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://nwalsh.com/rdf/vCard#postal-code> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?y rdf:type ?p1.
+}
+]]></query>
+</question>
+<question answertype="resource" id="92">
+<string>house/NN with/IN double/JJ glazing/NN and/CC central/JJ heating/NN</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x ?y0 WHERE {
+	?x rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x <http://purl.org/goodrelations/v1#description> ?z.
+	?y0 rdf:type ?p0.
+	FILTER(regex(?z,'double glazing','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="93">
+<string>house/NN with/IN immediately/RB available/JJ</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>40</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="94">
+<string>house/NN listed/VBD Grade/NNP I/NNP or/CC Grade/NNP II/NNP</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x WHERE {
+	?x <http://nwalsh.com/rdf/vCard#n> ?y0.
+	?x rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+{  } UNION {}
+}
+]]></query>
+</question>
+<question answertype="resource" id="95">
+<string>house/NN that/WDT has/VBZ been/VBN recently/RB replumbed/VBN</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>99</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="96">
+<string>house/NN in/IN Witney/NNP or/CC Wolvercote/NNP</string>
+<queryStatus>
+<evaluation>partlycorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y0.
+{  } UNION {}
+	FILTER(regex(?y0,'Wolvercote','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="97">
+<string>house/NN with/IN more/JJR than/IN 2/CD bedrooms/NNS ,/, but/CC not/RB in/IN Marston/NNP</string>
+<queryStatus>
+<type>NO_TEMPLATE_FOUND</type>
+<timeMs>292</timeMs>
+</queryStatus>
+</question>
+<question answertype="resource" id="98">
+<string>house/NN in/IN Banbury/NNP Road/NNP</string>
+<queryStatus>
+<evaluation>correct</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+	?x0 <http://www.w3.org/2006/vcard/ns#street-address> ?y.
+	FILTER(regex(?y,'Banbury Road','i')).
+}
+]]></query>
+</question>
+<question answertype="resource" id="99">
+<string>house/NN in/IN the/DT area/NN of/IN John/NNP Radcliffe/NNP hospital/NN</string>
+<queryStatus>
+<evaluation>incorrect</correct>
+<type>OK</type>
+</queryStatus>
+<query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x0 WHERE {
+	?x0 <http://dbpedia.org/property/near> ?y.
+	?x0 rdf:type <http://diadem.cs.ox.ac.uk/ontologies/real-estate#House>.
+}
+]]></query>
+</question>
+</dataset>

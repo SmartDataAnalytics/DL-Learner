@@ -1,0 +1,100 @@
+houses/NNS in/IN Headington/NNP
+houses/NNS in/IN Abingdon/NNP with/IN more/JJR than/IN 2/CD bedrooms/NNS
+houses/NNS with/IN garden/NN in/IN Wheatley/NNP
+detached/JJ houses/NNS in/IN Oxford/NNP
+Victorian/JJ houses/NNS in/IN Oxfordshire/NNP
+Edwardian/JJ house/NN in/IN Oxfordshire/NNP for/IN less/JJR than/IN 1000000/CD
+houses/NNS with/IN double/JJ garage/NN
+houses/NNS with/IN large/JJ garden/NN and/CC equipped/JJ kitchen/NN
+houses/NNS with/IN more/JJR than/IN 1/CD reception/NN room/NN
+houses/NNS with/IN conservatory/NN room/NN and/CC less/JJR than/IN 900000/CD pounds/NNS
+houses/NNS in/IN Old/NNP Marston/NNP
+family/NN houses/NNS with/IN more/JJR than/IN 2/CD bathrooms/NNS and/CC more/JJR than/IN 4/CD bedrooms/NNS
+houses/NNS close/RB to/TO Iffley/NNP Sport/NNP Centre/NNP
+houses/NNS in/IN Oxford/NNP close/RB to/TO the/DT train/NN station/NN
+houses/NNS in/IN Summertown/NNP for/IN less/JJR than/IN 400000/CD pounds/NNS
+two/CD floors/NNS houses/NNS in/IN East/NNP Oxford/NNP
+brand/NN new/JJ houses/NNS in/IN Oxford/NNP for/IN less/JJR than/IN 500000/CD pounds/NNS
+houses/NNS close/RB to/TO Brookes/NNP University/NNP
+houses/NNS in/IN Jericho/NNP area/NN
+house/NN close/RB to/TO Headington/NNP hospitals/NNS
+modern/JJ houses/NNS with/IN gas/NN central/JJ heating/NN
+houses/NNS with/IN electric/JJ heating/NN
+houses/NNS less/JJR than/IN 500000/CD within/IN area/NN OX16/CD
+houses/NNS close/RB to/TO an/DT Italian/JJ restaurant/NN
+houses/NNS at/IN walking/VBG distance/NN from/IN a/DT pharmacy/NN
+houses/NNS at/IN walking/VBG distance/NN from/IN Tesco/NNP or/CC Sainsburys/NNP shops/NNS
+houses/NNS nearby/JJ Sheldonian/NNP Theatre/NNP
+houses/NNS with/IN underfloor/JJ heating/NN
+houses/NNS with/IN wood/NN floor/NN
+houses/NNS close/RB to/TO The/DT King/NN 's/POS Arms/NNS pub/NN
+houses/NNS with/IN a/DT garden/NN that/WDT is/VBZ at/IN least/JJS 2/CD acres/NNS big/JJ
+houses/NNS with/IN many/JJ reception/NN rooms/NNS
+houses/NNS built/VBN around/IN 1950/CD
+houses/NNS with/IN balcony/NN
+houses/NNS with/IN double/JJ glazed/JJ windows/NNS
+2/CD bedroom/NN houses/NNS near/IN Oxford/NNP train/NN station/NN
+4/CD bedroom/NN detached/VBD houses/NNS in/IN Oxford/NNP
+studio/NN apartments/NNS in/IN Summertown/NNP ,/, Oxford/NNP
+freehold/NN houses/NNS with/IN 2/CD bedrooms/NNS and/CC a/DT living/NN room/NN in/IN Banbury/NNP
+houses/NNS in/IN Oxford/NNP city/NN center/NN with/IN at/IN most/JJS 2/CD bedrooms/NNS
+victorian/JJ town/NN houses/NNS in/IN north/JJ Oxford/NNP
+terrace/NN houses/NNS with/IN west/NN facing/VBG garden/NN
+modernized/JJ end/NN terrace/NN houses/NNS with/IN private/JJ parking/NN
+three/CD bedroom/NN houses/NNS with/IN open/JJ fireplace/NN
+houses/NNS available/JJ from/IN June/NNP 15th/CD ./.
+houses/NNS on/IN Rawlinson/NNP Road/NNP
+flats/NNS near/IN supermarket/NN
+give/VB me/PRP flats/NNS in/IN central/JJ Oxford/NNP with/IN at/IN least/JJS one/CD bedroom/NN below/IN 1000/CD pounds/NNS a/DT month/NN ?/.
+find/VB 2/CD bedroom/NN flats/NNS in/IN walking/VBG distance/NN from/IN the/DT computer/NN science/NN departement/NN !/.
+find/VB a/DT property/NN with/IN 2/CD bedrooms/NNS close/RB to/TO some/DT park/NN ./.
+find/VB a/DT flat/NN in/IN the/DT area/NN around/IN Cowley/NNP Road/NNP with/IN 2/CD bedrooms/NNS ./.
+find/VB a/DT furnished/JJ place/NN with/IN one/CD bedroom/NN close/RB to/TO the/DT Radcliffe/NNP Camera/NNP ./.
+find/VB an/DT unfurnished/JJ house/NN with/IN at/IN least/JJS 2/CD bedrooms/NNS in/IN Summertown/NNP ./.
+find/VB a/DT furnished/VBN flat/JJ with/IN one/CD bedroom/NN for/IN smokers/NNS ./.
+find/VB a/DT flat/NN with/IN parking/NN in/IN central/JJ Oxford/NNP ./.
+find/VB a/DT representative/JJ house/NN in/IN Summertown/NNP ./.
+which/WDT places/NNS are/VBP offered/VBN close/RB to/TO the/DT train/NN station/NN ?/.
+show/VB me/PRP the/DT retirement/NN houses/NNS for/IN sale/NN near/IN Oxford/NNP ./.
+give/VB me/PRP a/DT flat/NN with/IN at/IN least/JJS two/CD bathrooms/NNS for/IN less/JJR than/IN 1000/CD pounds/NNS ./.
+show/VB me/PRP a/DT flat/NN which/WDT is/VBZ close/RB to/TO 3/CD bars/NNS ./.
+what/WP is/VBZ the/DT average/JJ price/NN of/IN furnished/VBN 1/CD bedroom/NN apartments/NNS in/IN Heddington/NNP ?/.
+how/WRB many/JJ flats/NNS are/VBP offered/VBN in/IN central/JJ Oxford/NNP below/IN 1000/CD pounds/NNS a/DT month/NN ?/.
+houses/NNS close/RB to/TO The/DT Ashmolean/NNP Museum/NNP ,/, with/IN more/JJR than/IN one/CD bedroom/NN
+houses/NNS in/IN Botley/NNP Road/NNP
+houses/NNS in/IN Littlemore/NNP
+houses/NNS that/WDT cost/VBP between/IN 600000/CD and/CC 800000/CD pounds/NNS
+houses/NNS with/IN 3/CD bedrooms/NNS in/IN Florence/NNP Park/NNP Road/NNP
+houses/NNS with/IN front/JJ garden/NN and/CC rear/NN garden/NN
+houses/NNS in/IN Oxford/NNP ,/, close/RB to/TO Railway/NNP Station/NNP
+houses/NNS with/IN ample/JJ parking/NN
+house/NN with/IN electric/JJ central/JJ heating/NN system/NN
+houses/NNS with/IN three/CD en/IN suites/NNS near/IN Oxford/NNP
+houses/NNS with/IN countryside/NN views/NNS
+houses/NNS with/IN farmland/NN views/NNS
+houses/NNS nearby/JJ River/NNP Thames/NNPS
+houses/NNS having/VBG one/CD utility/NN room/NN or/CC cloakroom/NN
+houses/NNS in/IN Oxfordshire/NNP with/IN fireplaces/NNS
+houses/NNS with/IN open/JJ plan/NN kitchen/NN near/IN Oxford/NNP
+houses/NNS with/IN walled/JJ garden/NN near/IN Oxford/NNP
+houses/NNS with/IN river/NN views/NNS
+houses/NNS with/IN gated/JJ entrance/NN or/CC in/IN a/DT gated/JJ community/NN
+recently/RB refurbished/VBN houses/NNS with/IN lift/NN
+house/NN with/IN balcony/NN and/CC vaulted/VBD ceiling/NN
+house/NN that/WDT is/VBZ a/DT maisonette/NN and/CC on/IN Gloucester/NNP Green/NNP
+house/NN in/IN a/DT corner/NN or/CC end/NN of/IN terrace/NN plot/NN
+house/NN with/IN 3/CD bedrooms/NNS ,/, but/CC cheaper/JJR than/IN 150000/CD pounds/NNS
+house/NN with/IN at/IN least/JJS 2/CD reception/NN rooms/NNS and/CC a/DT garden/NN
+house/NN with/IN a/DT courtyard/NN
+house/NN with/IN a/DT fireplace/NN and/CC a/DT garden/NN that/WDT is/VBZ not/RB communal/JJ
+house/NN with/IN parking/NN but/CC not/RB Victorian/JJ
+house/NN with/IN 3/CD bathrooms/NNS ,/, but/CC not/RB en/IN suite/NN
+house/NN in/IN a/DT retirement/NN complex/NN
+house/NN with/IN double/JJ glazing/NN and/CC central/JJ heating/NN
+house/NN with/IN immediately/RB available/JJ
+house/NN listed/VBD Grade/NNP I/NNP or/CC Grade/NNP II/NNP
+house/NN that/WDT has/VBZ been/VBN recently/RB replumbed/VBN
+house/NN in/IN Witney/NNP or/CC Wolvercote/NNP
+house/NN with/IN more/JJR than/IN 2/CD bedrooms/NNS ,/, but/CC not/RB in/IN Marston/NNP
+house/NN in/IN Banbury/NNP Road/NNP
+house/NN in/IN the/DT area/NN of/IN John/NNP Radcliffe/NNP hospital/NN

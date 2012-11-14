@@ -1,0 +1,1917 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+<http://linkedgeodata.org/triplify/node320706647> rdfs:label "Saint Andrew".
+<http://linkedgeodata.org/triplify/node745747208> rdfs:label "Wolvercote Surgery".
+<http://linkedgeodata.org/triplify/node663641335> rdfs:label "Majestic".
+<http://linkedgeodata.org/triplify/node278983569> rdfs:label "Barford St John".
+<http://linkedgeodata.org/triplify/node24966839> rdfs:label "The Crazy Bear".
+<http://linkedgeodata.org/triplify/node715492544> rdfs:label "St Michael and All Angels".
+<http://linkedgeodata.org/triplify/node323182850> rdfs:label "The Mitre".
+<http://linkedgeodata.org/triplify/node14329664> rdfs:label "The Royal Oak".
+<http://linkedgeodata.org/triplify/node262898212> rdfs:label "The Coachmakers Arms".
+<http://linkedgeodata.org/triplify/node30963207> rdfs:label "Brighthampton".
+<http://linkedgeodata.org/triplify/node663641336> rdfs:label "Alcock's family butchers".
+<http://linkedgeodata.org/triplify/node400018545> rdfs:label "The Volunteer".
+<http://linkedgeodata.org/triplify/node18341099> rdfs:label "Milton-under-Wychwood".
+<http://linkedgeodata.org/triplify/node715492541> rdfs:label "Clifton Hampden Church of England Primary School".
+<http://linkedgeodata.org/triplify/node337943196> rdfs:label "West Oxford Health Centre".
+<http://linkedgeodata.org/triplify/node251606365> rdfs:label "Reg Taylor Cycles".
+<http://linkedgeodata.org/triplify/node769084323> rdfs:label "Costa Coffee".
+<http://linkedgeodata.org/triplify/node922432863> rdfs:label "Pedal Power".
+<http://linkedgeodata.org/triplify/node1108901792> rdfs:label "Thames Valley Police".
+<http://linkedgeodata.org/triplify/node1149688317> rdfs:label "Carterton Community College".
+<http://linkedgeodata.org/triplify/node206200079> rdfs:label "Ss. Peter and Paul".
+<http://linkedgeodata.org/triplify/node30970255> rdfs:label "Chimney".
+<http://linkedgeodata.org/triplify/node21564149> rdfs:label "Saint Mary The Virgin".
+<http://linkedgeodata.org/triplify/node769084322> rdfs:label "Waitrose".
+<http://linkedgeodata.org/triplify/node540221152> rdfs:label "Graham".
+<http://linkedgeodata.org/triplify/node30821956> rdfs:label "The Swan Inn".
+<http://linkedgeodata.org/triplify/node262898214> rdfs:label "The Partridge".
+<http://linkedgeodata.org/triplify/node9768084> rdfs:label "Appleford".
+<http://linkedgeodata.org/triplify/node369815039> rdfs:label "Marsh Baldon C E Primary School".
+<http://linkedgeodata.org/triplify/node5468439> rdfs:label "The Killingworth Castle Inn".
+<http://linkedgeodata.org/triplify/node30821951> rdfs:label "The Red Lion".
+<http://linkedgeodata.org/triplify/node5290200> rdfs:label "Dukes Lock".
+<http://linkedgeodata.org/triplify/node1150092163> rdfs:label "The Homestead".
+<http://linkedgeodata.org/triplify/node369847722> rdfs:label "Iffley Community Shop".
+<http://linkedgeodata.org/triplify/node774666971> rdfs:label "The Last Bookshop".
+<http://linkedgeodata.org/triplify/node175707022> rdfs:label "O₂ Academy".
+<http://linkedgeodata.org/triplify/node27422732> rdfs:label "Northbrook Lock".
+<http://linkedgeodata.org/triplify/node313813624> rdfs:label "Friend's".
+<http://linkedgeodata.org/triplify/node253265510> rdfs:label "M&S Simply Food".
+<http://linkedgeodata.org/triplify/node323182854> rdfs:label "NatWest".
+<http://linkedgeodata.org/triplify/node688700893> rdfs:label "St Mary's".
+<http://linkedgeodata.org/triplify/node249528084> rdfs:label "Parish Church of Ss Mary and John".
+<http://linkedgeodata.org/triplify/node619315091> rdfs:label "Supa Sava".
+<http://linkedgeodata.org/triplify/node34043311> rdfs:label "Oxfordshire Museum".
+<http://linkedgeodata.org/triplify/node566562827> rdfs:label "The Fox Hotel".
+<http://linkedgeodata.org/triplify/node321908970> rdfs:label "Oxford Animal Clinic".
+<http://linkedgeodata.org/triplify/node206200078> rdfs:label "Hand & Shears".
+<http://linkedgeodata.org/triplify/node1149965674> rdfs:label "The Kilkenny Rooms".
+<http://linkedgeodata.org/triplify/node257541313> rdfs:label "Great Milton Methodist Church".
+<http://linkedgeodata.org/triplify/node298272390> rdfs:label "Oxford Castle Mound".
+<http://linkedgeodata.org/triplify/node316947913> rdfs:label "Fleet Meadow".
+<http://linkedgeodata.org/triplify/node171538870> rdfs:label "Holy Trinity Church".
+<http://linkedgeodata.org/triplify/node747744672> rdfs:label "The Mission".
+<http://linkedgeodata.org/triplify/node505371324> rdfs:label "Sunny".
+<http://linkedgeodata.org/triplify/node27422734> rdfs:label "Northbrook Lock".
+<http://linkedgeodata.org/triplify/node1149688313> rdfs:label "The Beehive".
+<http://linkedgeodata.org/triplify/node588196355> rdfs:label "Tourist Office".
+<http://linkedgeodata.org/triplify/node265719064> rdfs:label "St Thomas of Canterbury".
+<http://linkedgeodata.org/triplify/node34788896> rdfs:label "Carterton".
+<http://linkedgeodata.org/triplify/node1161898365> rdfs:label "Budgens".
+<http://linkedgeodata.org/triplify/node14329665> rdfs:label "Ramsden".
+<http://linkedgeodata.org/triplify/node484881755> rdfs:label "Carpet RIght".
+<http://linkedgeodata.org/triplify/node613729586> rdfs:label "Manor House Hotel".
+<http://linkedgeodata.org/triplify/node17945834> rdfs:label "Elsfield".
+<http://linkedgeodata.org/triplify/node27320695> rdfs:label "Bicester Library".
+<http://linkedgeodata.org/triplify/node96094184> rdfs:label "Hanborough Manor C of E School".
+<http://linkedgeodata.org/triplify/node9768081> rdfs:label "Culham".
+<http://linkedgeodata.org/triplify/node258667633> rdfs:label "The Queens Arms".
+<http://linkedgeodata.org/triplify/node35832688> rdfs:label "The Punchbowl".
+<http://linkedgeodata.org/triplify/node14329666> rdfs:label "Crawley".
+<http://linkedgeodata.org/triplify/node366499271> rdfs:label "Strickland Arms".
+<http://linkedgeodata.org/triplify/node373526895> rdfs:label "The White House".
+<http://linkedgeodata.org/triplify/node250142449> rdfs:label "Cassington".
+<http://linkedgeodata.org/triplify/node279890184> rdfs:label "Banbury Road Medical Centre".
+<http://linkedgeodata.org/triplify/node771823460> rdfs:label "Acute Cut".
+<http://linkedgeodata.org/triplify/node252314108> rdfs:label "The Quarry Gate".
+<http://linkedgeodata.org/triplify/node206296403> rdfs:label "Barton Pool".
+<http://linkedgeodata.org/triplify/node771796637> rdfs:label "Y@S@I".
+<http://linkedgeodata.org/triplify/node366499270> rdfs:label "Bell Inn".
+<http://linkedgeodata.org/triplify/node278083299> rdfs:label "Forest Hill Village Hall".
+<http://linkedgeodata.org/triplify/node327164394> rdfs:label "Smith & Low".
+<http://linkedgeodata.org/triplify/node370393012> rdfs:label "Donnington Health Centre".
+<http://linkedgeodata.org/triplify/node338395037> rdfs:label "Faringdon House".
+<http://linkedgeodata.org/triplify/node259069568> rdfs:label "Didcot Baptist Church Centre".
+<http://linkedgeodata.org/triplify/node521576330> rdfs:label "Lakeside Guest House".
+<http://linkedgeodata.org/triplify/node243351120> rdfs:label "Didcot Fire Station".
+<http://linkedgeodata.org/triplify/node27280414> rdfs:label "The Hobgoblin".
+<http://linkedgeodata.org/triplify/node336087466> rdfs:label "Victoria Fountain".
+<http://linkedgeodata.org/triplify/node366499273> rdfs:label "Mason's Arms".
+<http://linkedgeodata.org/triplify/node253489415> rdfs:label "The Bell".
+<http://linkedgeodata.org/triplify/node5287295> rdfs:label "Begbroke".
+<http://linkedgeodata.org/triplify/node261847503> rdfs:label "Wantage Leisure Centre".
+<http://linkedgeodata.org/triplify/node656434871> rdfs:label "Church Of St Laurence".
+<http://linkedgeodata.org/triplify/node279404685> rdfs:label "Grandpont".
+<http://linkedgeodata.org/triplify/node413584924> rdfs:label "Column of Victory".
+<http://linkedgeodata.org/triplify/node840481811> rdfs:label "Ecco".
+<http://linkedgeodata.org/triplify/node27280413> rdfs:label "The Angel".
+<http://linkedgeodata.org/triplify/node324606232> rdfs:label "Shelley Memorial".
+<http://linkedgeodata.org/triplify/node504753150> rdfs:label "George & Delila".
+<http://linkedgeodata.org/triplify/node269579621> rdfs:label "St. John the Evangelist".
+<http://linkedgeodata.org/triplify/node366499272> rdfs:label "Lord Kitchener".
+<http://linkedgeodata.org/triplify/node5287297> rdfs:label "Woodstock".
+<http://linkedgeodata.org/triplify/node530773097> rdfs:label "On The Hoof".
+<http://linkedgeodata.org/triplify/node29512523> rdfs:label "Long Bridges Boat House".
+<http://linkedgeodata.org/triplify/node251606363> rdfs:label "Pegasus Theatre".
+<http://linkedgeodata.org/triplify/node243351122> rdfs:label "Sunkoshi Tandoori Restaurant".
+<http://linkedgeodata.org/triplify/node364053100> rdfs:label "Car Wash".
+<http://linkedgeodata.org/triplify/node339500222> rdfs:label "East Lockinge".
+<http://linkedgeodata.org/triplify/node243351123> rdfs:label "Didcot Tandoori".
+<http://linkedgeodata.org/triplify/node261847501> rdfs:label "Wantage C of E Primary School".
+<http://linkedgeodata.org/triplify/node278083296> rdfs:label "St Nicholas the Confessor".
+<http://linkedgeodata.org/triplify/node523854772> rdfs:label "Newton House Guest House B & B".
+<http://linkedgeodata.org/triplify/node415343274> rdfs:label "Grove Airfield".
+<http://linkedgeodata.org/triplify/node413323797> rdfs:label "Kingfisher Barn B&B".
+<http://linkedgeodata.org/triplify/node243351121> rdfs:label "Smarts".
+<http://linkedgeodata.org/triplify/node401857213> rdfs:label "Top Wok".
+<http://linkedgeodata.org/triplify/node21664414> rdfs:label "Tesco".
+<http://linkedgeodata.org/triplify/node889043301> rdfs:label "Prezzo".
+<http://linkedgeodata.org/triplify/node252824369> rdfs:label "Bike Zone".
+<http://linkedgeodata.org/triplify/node27320503> rdfs:label "Little Chesterton".
+<http://linkedgeodata.org/triplify/node283364681> rdfs:label "TCS".
+<http://linkedgeodata.org/triplify/node34518594> rdfs:label "Minster Lovell".
+<http://linkedgeodata.org/triplify/node26558018> rdfs:label "The Cooper School".
+<http://linkedgeodata.org/triplify/node251606361> rdfs:label "Magdalen Road Evangelical Free Church".
+<http://linkedgeodata.org/triplify/node21473013> rdfs:label "The Priory And...?".
+<http://linkedgeodata.org/triplify/node979455260> rdfs:label "Sainsbury's Local".
+<http://linkedgeodata.org/triplify/node243351125> rdfs:label "Cooks Café Bakery".
+<http://linkedgeodata.org/triplify/node702695095> rdfs:label "Comet".
+<http://linkedgeodata.org/triplify/node449742213> rdfs:label "The White House".
+<http://linkedgeodata.org/triplify/node34401565> rdfs:label "Black Bourton".
+<http://linkedgeodata.org/triplify/node27639133> rdfs:label "St James's Church".
+<http://linkedgeodata.org/triplify/node666482076> rdfs:label "Grave of J. R. R. Tolkien".
+<http://linkedgeodata.org/triplify/node21496655> rdfs:label "The Chequers Inn".
+<http://linkedgeodata.org/triplify/node243351124> rdfs:label "Lloyds Pharmacy".
+<http://linkedgeodata.org/triplify/node457917872> rdfs:label "Saddlers".
+<http://linkedgeodata.org/triplify/node676771918> rdfs:label "Whispers".
+<http://linkedgeodata.org/triplify/node639133501> rdfs:label "J. E. Pill & Son".
+<http://linkedgeodata.org/triplify/node244242923> rdfs:label "Al Gusto".
+<http://linkedgeodata.org/triplify/node571833509> rdfs:label "Ruchi Takeaway".
+<http://linkedgeodata.org/triplify/node814935995> rdfs:label "St. James".
+<http://linkedgeodata.org/triplify/node882168971> rdfs:label "Clifton Hampden post office and stores".
+<http://linkedgeodata.org/triplify/node14719560> rdfs:label "South Hinksey".
+<http://linkedgeodata.org/triplify/node300146900> rdfs:label "Grove Rugby Football Club".
+<http://linkedgeodata.org/triplify/node286660290> rdfs:label "Church of the Assumption of the Blessed Virgin Mary".
+<http://linkedgeodata.org/triplify/node28791043> rdfs:label "Kidlington Green Lock".
+<http://linkedgeodata.org/triplify/node338599285> rdfs:label "NOKEHILL1".
+<http://linkedgeodata.org/triplify/node185487275> rdfs:label "The Ampleforth".
+<http://linkedgeodata.org/triplify/node771823456> rdfs:label "Arzoo Express".
+<http://linkedgeodata.org/triplify/node395547590> rdfs:label "The White Hart".
+<http://linkedgeodata.org/triplify/node274404336> rdfs:label "Dean Court Social Club".
+<http://linkedgeodata.org/triplify/node317632948> rdfs:label "Evenlode".
+<http://linkedgeodata.org/triplify/node324606237> rdfs:label "Ruskin School of Drawing and Fine Art".
+<http://linkedgeodata.org/triplify/node870026008> rdfs:label "Coffee Republic".
+<http://linkedgeodata.org/triplify/node322821334> rdfs:label "Pizzeria Trattoria Mario".
+<http://linkedgeodata.org/triplify/node403781275> rdfs:label "The Horse and Jockey".
+<http://linkedgeodata.org/triplify/node320608439> rdfs:label "Longwall Garage".
+<http://linkedgeodata.org/triplify/node530775839> rdfs:label "Jee Saheb".
+<http://linkedgeodata.org/triplify/node471723338> rdfs:label "McDonald's".
+<http://linkedgeodata.org/triplify/node660658122> rdfs:label "Diamond House".
+<http://linkedgeodata.org/triplify/node469965544> rdfs:label "Finstock Heath".
+<http://linkedgeodata.org/triplify/node243351129> rdfs:label "Subway".
+<http://linkedgeodata.org/triplify/node17946952> rdfs:label "Holton".
+<http://linkedgeodata.org/triplify/node146405188> rdfs:label "Shillingford Bridge Hotel".
+<http://linkedgeodata.org/triplify/node560138856> rdfs:label "Woottton Primary School".
+<http://linkedgeodata.org/triplify/node764690399> rdfs:label "Elderbank Hall".
+<http://linkedgeodata.org/triplify/node185759868> rdfs:label "(Chimney)".
+<http://linkedgeodata.org/triplify/node240593473> rdfs:label "The Royal Oak".
+<http://linkedgeodata.org/triplify/node26532170> rdfs:label "Highfield Social Club".
+<http://linkedgeodata.org/triplify/node243343385> rdfs:label "Shell".
+<http://linkedgeodata.org/triplify/node771469088> rdfs:label "Eynsham".
+<http://linkedgeodata.org/triplify/node626797124> rdfs:label "Carpenters Arms".
+<http://linkedgeodata.org/triplify/node17946953> rdfs:label "Wheatley".
+<http://linkedgeodata.org/triplify/node771794705> rdfs:label "Tasty House".
+<http://linkedgeodata.org/triplify/node684804943> rdfs:label "Cutteslowe Park Miniature Railway".
+<http://linkedgeodata.org/triplify/node343541313> rdfs:label "Andersey Island".
+<http://linkedgeodata.org/triplify/node430190629> rdfs:label "Zoal Phone Clinic".
+<http://linkedgeodata.org/triplify/node31385363> rdfs:label "Yates's".
+<http://linkedgeodata.org/triplify/node472976754> rdfs:label "Littlemore Sewage Treatment Works".
+<http://linkedgeodata.org/triplify/node779372554> rdfs:label "Alan Aston Roofing Supplies Ltd".
+<http://linkedgeodata.org/triplify/node1139817365> rdfs:label "Bishop's Palace".
+<http://linkedgeodata.org/triplify/node769327747> rdfs:label "Nuffield Health Centre".
+<http://linkedgeodata.org/triplify/node28791044> rdfs:label "Kidlington Green Lock".
+<http://linkedgeodata.org/triplify/node771794708> rdfs:label "Tote Sport".
+<http://linkedgeodata.org/triplify/node297456782> rdfs:label "Widford".
+<http://linkedgeodata.org/triplify/node262649912> rdfs:label "Ardington".
+<http://linkedgeodata.org/triplify/node314413924> rdfs:label "Royal Blenheim".
+<http://linkedgeodata.org/triplify/node262649913> rdfs:label "West Hendred".
+<http://linkedgeodata.org/triplify/node313189969> rdfs:label "St Kenelm's".
+<http://linkedgeodata.org/triplify/node26351820> rdfs:label "Murcott".
+<http://linkedgeodata.org/triplify/node868917586> rdfs:label "Tesco Pharmacy".
+<http://linkedgeodata.org/triplify/node430190626> rdfs:label "Addicted 2 Ink".
+<http://linkedgeodata.org/triplify/node26449216> rdfs:label "Garden City".
+<http://linkedgeodata.org/triplify/node472420260> rdfs:label "Buckland FBM: ordnance survey gps passive station H1SU3397".
+<http://linkedgeodata.org/triplify/node312056469> rdfs:label "East End".
+<http://linkedgeodata.org/triplify/node728489674> rdfs:label "Southern Town Park Playground".
+<http://linkedgeodata.org/triplify/node250586550> rdfs:label "Cothill".
+<http://linkedgeodata.org/triplify/node509270217> rdfs:label "The Bull".
+<http://linkedgeodata.org/triplify/node530774885> rdfs:label "Leisure & Pleasure".
+<http://linkedgeodata.org/triplify/node868917581> rdfs:label "Boots".
+<http://linkedgeodata.org/triplify/node35832690> rdfs:label "Woodstock County Library".
+<http://linkedgeodata.org/triplify/node322869460> rdfs:label "Bodrum Kebab".
+<http://linkedgeodata.org/triplify/node508603328> rdfs:label "Neighbours' Hall".
+<http://linkedgeodata.org/triplify/node615883619> rdfs:label "Clems".
+<http://linkedgeodata.org/triplify/node1177317590> rdfs:label "Benson".
+<http://linkedgeodata.org/triplify/node320608434> rdfs:label "Edamamé".
+<http://linkedgeodata.org/triplify/node71098407> rdfs:label "The Swan".
+<http://linkedgeodata.org/triplify/node95842522> rdfs:label "Village Hall".
+<http://linkedgeodata.org/triplify/node32210985> rdfs:label "Hardwick".
+<http://linkedgeodata.org/triplify/node712682273> rdfs:label "Drayton Primary School".
+<http://linkedgeodata.org/triplify/node339499070> rdfs:label "Garford".
+<http://linkedgeodata.org/triplify/node479895061> rdfs:label "Town Arms".
+<http://linkedgeodata.org/triplify/node71100162> rdfs:label "Swinbrook".
+<http://linkedgeodata.org/triplify/node14733771> rdfs:label "Wendlebury".
+<http://linkedgeodata.org/triplify/node386150095> rdfs:label "Sturdy's Castle".
+<http://linkedgeodata.org/triplify/node274358143> rdfs:label "The Honey Pot".
+<http://linkedgeodata.org/triplify/node633029652> rdfs:label "Saint Margaret's Well".
+<http://linkedgeodata.org/triplify/node158700252> rdfs:label "Eynsham Lock".
+<http://linkedgeodata.org/triplify/node29836884> rdfs:label "North Stoke".
+<http://linkedgeodata.org/triplify/node597707582> rdfs:label "Burger King".
+<http://linkedgeodata.org/triplify/node373103837> rdfs:label "Woodman".
+<http://linkedgeodata.org/triplify/node370615840> rdfs:label "Cricket Road Centre".
+<http://linkedgeodata.org/triplify/node703742616> rdfs:label "East Hendred Down".
+<http://linkedgeodata.org/triplify/node712682275> rdfs:label "Marcham (Church Of England) Primary School".
+<http://linkedgeodata.org/triplify/node31503372> rdfs:label "The Morris Clown".
+<http://linkedgeodata.org/triplify/node252519903> rdfs:label "St James The Great".
+<http://linkedgeodata.org/triplify/node31374891> rdfs:label "Headington Shark".
+<http://linkedgeodata.org/triplify/node26517765> rdfs:label "Arncott".
+<http://linkedgeodata.org/triplify/node504747851> rdfs:label "Mermaid Fish Bar".
+<http://linkedgeodata.org/triplify/node29836883> rdfs:label "South Stoke".
+<http://linkedgeodata.org/triplify/node259729046> rdfs:label "Tesco Metro".
+<http://linkedgeodata.org/triplify/node840486605> rdfs:label "Blackwell's Art & Poster Shop".
+<http://linkedgeodata.org/triplify/node619315088> rdfs:label "Branos".
+<http://linkedgeodata.org/triplify/node21545982> rdfs:label "The George Inn".
+<http://linkedgeodata.org/triplify/node8090498> rdfs:label "Hanborough".
+<http://linkedgeodata.org/triplify/node723041652> rdfs:label "Boswell's".
+<http://linkedgeodata.org/triplify/node32544798> rdfs:label "Moat Farm".
+<http://linkedgeodata.org/triplify/node663641331> rdfs:label "Nosh 2go".
+<http://linkedgeodata.org/triplify/node244413505> rdfs:label "Lidstone".
+<http://linkedgeodata.org/triplify/node826186240> rdfs:label "Greggs".
+<http://linkedgeodata.org/triplify/node14724359> rdfs:label "Islip".
+<http://linkedgeodata.org/triplify/node251835410> rdfs:label "The Chequers".
+<http://linkedgeodata.org/triplify/node826186276> rdfs:label "Barclays".
+<http://linkedgeodata.org/triplify/node34043318> rdfs:label "The Bear Hotel".
+<http://linkedgeodata.org/triplify/node290289267> rdfs:label "Londis".
+<http://linkedgeodata.org/triplify/node413904035> rdfs:label "St Birinus".
+<http://linkedgeodata.org/triplify/node26241910> rdfs:label "Cote".
+<http://linkedgeodata.org/triplify/node524593278> rdfs:label "St Peter's".
+<http://linkedgeodata.org/triplify/node614714735> rdfs:label "Bicester Vets".
+<http://linkedgeodata.org/triplify/node663641330> rdfs:label "Greek Taverna".
+<http://linkedgeodata.org/triplify/node26482298> rdfs:label "Esso".
+<http://linkedgeodata.org/triplify/node534823769> rdfs:label "Littlemore Baptist Church".
+<http://linkedgeodata.org/triplify/node847828226> rdfs:label "The Union".
+<http://linkedgeodata.org/triplify/node288687564> rdfs:label "Wheatley Library".
+<http://linkedgeodata.org/triplify/node663641334> rdfs:label "Odd binns".
+<http://linkedgeodata.org/triplify/node21451381> rdfs:label "The Catherine Wheel".
+<http://linkedgeodata.org/triplify/node249435654> rdfs:label "Butter Cross".
+<http://linkedgeodata.org/triplify/node290289268> rdfs:label "The Merry Bells Village Hall".
+<http://linkedgeodata.org/triplify/node35832692> rdfs:label "St Hugh of Lincoln".
+<http://linkedgeodata.org/triplify/node560726086> rdfs:label "Sorbus".
+<http://linkedgeodata.org/triplify/node307557934> rdfs:label "Pizza Express".
+<http://linkedgeodata.org/triplify/node566819523> rdfs:label "Middle Aston".
+<http://linkedgeodata.org/triplify/node1187272014> rdfs:label "The Shaven Crown".
+<http://linkedgeodata.org/triplify/node252314111> rdfs:label "Corpus Christi".
+<http://linkedgeodata.org/triplify/node175707029> rdfs:label "The Marsh Harrier".
+<http://linkedgeodata.org/triplify/node273416456> rdfs:label "Ot Moor".
+<http://linkedgeodata.org/triplify/node14193089> rdfs:label "Islip".
+<http://linkedgeodata.org/triplify/node15697246> rdfs:label "Clanfield".
+<http://linkedgeodata.org/triplify/node323183107> rdfs:label "Jamie's Italian".
+<http://linkedgeodata.org/triplify/node35832691> rdfs:label "Woodstock Chiropractic Clinic".
+<http://linkedgeodata.org/triplify/node370615845> rdfs:label "Florence Park Children's Centre".
+<http://linkedgeodata.org/triplify/node26820112> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node244242920> rdfs:label "Cineworld".
+<http://linkedgeodata.org/triplify/node21496664> rdfs:label "Kingfisher Inn".
+<http://linkedgeodata.org/triplify/node537857631> rdfs:label "The Magdalen".
+<http://linkedgeodata.org/triplify/node583001381> rdfs:label "Royal Oak".
+<http://linkedgeodata.org/triplify/node290289281> rdfs:label "Our Lady of Lourdes".
+<http://linkedgeodata.org/triplify/node870026001> rdfs:label "Added Ingredients".
+<http://linkedgeodata.org/triplify/node252314110> rdfs:label "Headington Quarry Village Hall".
+<http://linkedgeodata.org/triplify/node582971291> rdfs:label "Cattle Market".
+<http://linkedgeodata.org/triplify/node14329719> rdfs:label "Eynsham".
+<http://linkedgeodata.org/triplify/node583249046> rdfs:label "The Blenheim Guest House".
+<http://linkedgeodata.org/triplify/node269268153> rdfs:label "Brasenose Woods".
+<http://linkedgeodata.org/triplify/node265489812> rdfs:label "The Leys Pharmacy Rose Hill".
+<http://linkedgeodata.org/triplify/node603128869> rdfs:label "Mongewell".
+<http://linkedgeodata.org/triplify/node704415277> rdfs:label "Magdalen Bridge Boat House".
+<http://linkedgeodata.org/triplify/node171278327> rdfs:label "Broadribbs".
+<http://linkedgeodata.org/triplify/node771279927> rdfs:label "Kilkenny Lane Country Park".
+<http://linkedgeodata.org/triplify/node96069218> rdfs:label "Three Horseshoes".
+<http://linkedgeodata.org/triplify/node34042203> rdfs:label "The Black Prince".
+<http://linkedgeodata.org/triplify/node582971290> rdfs:label "Corn Exchange".
+<http://linkedgeodata.org/triplify/node663641326> rdfs:label "Martin's".
+<http://linkedgeodata.org/triplify/node558886914> rdfs:label "Cholsey Primary School".
+<http://linkedgeodata.org/triplify/node324321284> rdfs:label "Yo! Sushi".
+<http://linkedgeodata.org/triplify/node14329718> rdfs:label "Hailey".
+<http://linkedgeodata.org/triplify/node512592945> rdfs:label "Fox".
+<http://linkedgeodata.org/triplify/node504745335> rdfs:label "Chopsticks Chinese Restaurant".
+<http://linkedgeodata.org/triplify/node16384069> rdfs:label "Taston".
+<http://linkedgeodata.org/triplify/node472934063> rdfs:label "Le Manoir Aux Quat'Saisons".
+<http://linkedgeodata.org/triplify/node96069219> rdfs:label "Eynsham Medical Group Long Hanborough Surgery".
+<http://linkedgeodata.org/triplify/node448210124> rdfs:label "Forest Farm Montessori Primary School & Nursery".
+<http://linkedgeodata.org/triplify/node262842025> rdfs:label "St Katherine's Church".
+<http://linkedgeodata.org/triplify/node248927761> rdfs:label "Grove Library".
+<http://linkedgeodata.org/triplify/node324321281> rdfs:label "OFS Theatre".
+<http://linkedgeodata.org/triplify/node26630833> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node16384326> rdfs:label "Fulwell".
+<http://linkedgeodata.org/triplify/node290289348> rdfs:label "Red Lion".
+<http://linkedgeodata.org/triplify/node583001368> rdfs:label "Plough".
+<http://linkedgeodata.org/triplify/node248927762> rdfs:label "Old Mill Hall".
+<http://linkedgeodata.org/triplify/node250142453> rdfs:label "Red Lion".
+<http://linkedgeodata.org/triplify/node324321282> rdfs:label "Zizzi".
+<http://linkedgeodata.org/triplify/node290289347> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node530774879> rdfs:label "Colin Burton".
+<http://linkedgeodata.org/triplify/node16659366> rdfs:label "Hinksey Park".
+<http://linkedgeodata.org/triplify/node251606357> rdfs:label "Cycle King".
+<http://linkedgeodata.org/triplify/node31271438> rdfs:label "The Penny Black".
+<http://linkedgeodata.org/triplify/node1046319746> rdfs:label "Halfords".
+<http://linkedgeodata.org/triplify/node663641329> rdfs:label "Joe's".
+<http://linkedgeodata.org/triplify/node253400467> rdfs:label "Clanfield Tavern".
+<http://linkedgeodata.org/triplify/node251606356> rdfs:label "Beeline Bicycles".
+<http://linkedgeodata.org/triplify/node283116128> rdfs:label "Kennington Methodist Church".
+<http://linkedgeodata.org/triplify/node171285446> rdfs:label "Warlands".
+<http://linkedgeodata.org/triplify/node290289346> rdfs:label "Bat and Ball".
+<http://linkedgeodata.org/triplify/node26610632> rdfs:label "Kirtlington".
+<http://linkedgeodata.org/triplify/node530773081> rdfs:label "Luna Caprese".
+<http://linkedgeodata.org/triplify/node324321280> rdfs:label "Brasserie Gérard".
+<http://linkedgeodata.org/triplify/node676771922> rdfs:label "Oxford Electrical".
+<http://linkedgeodata.org/triplify/node457916983> rdfs:label "Portwell Angel".
+<http://linkedgeodata.org/triplify/node251606359> rdfs:label "Cycloanalysts".
+<http://linkedgeodata.org/triplify/node261787976> rdfs:label "Tally Ho".
+<http://linkedgeodata.org/triplify/node530773082> rdfs:label "Fabulous Flowers".
+<http://linkedgeodata.org/triplify/node943837963> rdfs:label "Delikatesy u Marcina".
+<http://linkedgeodata.org/triplify/node462641833> rdfs:label "Telecommunications".
+<http://linkedgeodata.org/triplify/node342807991> rdfs:label "Sutton Pools".
+<http://linkedgeodata.org/triplify/node331189798> rdfs:label "Tesco Express".
+<http://linkedgeodata.org/triplify/node504745629> rdfs:label "Bar Aroma".
+<http://linkedgeodata.org/triplify/node849352283> rdfs:label "Worcester Street Car Park".
+<http://linkedgeodata.org/triplify/node21562988> rdfs:label "The Lamb".
+<http://linkedgeodata.org/triplify/node1137652035> rdfs:label "Carterton Town Hall".
+<http://linkedgeodata.org/triplify/node868657607> rdfs:label "Bottle bank".
+<http://linkedgeodata.org/triplify/node14329663> rdfs:label "Leafield".
+<http://linkedgeodata.org/triplify/node859812359> rdfs:label "Oakley wood".
+<http://linkedgeodata.org/triplify/node262650065> rdfs:label "East Hendred".
+<http://linkedgeodata.org/triplify/node504742731> rdfs:label "babysimple".
+<http://linkedgeodata.org/triplify/node588585362> rdfs:label "Halifax".
+<http://linkedgeodata.org/triplify/node322720549> rdfs:label "The Half Moon".
+<http://linkedgeodata.org/triplify/node261787978> rdfs:label "Fish Bone".
+<http://linkedgeodata.org/triplify/node571444530> rdfs:label "The Railway Inn".
+<http://linkedgeodata.org/triplify/node323182901> rdfs:label "Eurobar Café & Hotel".
+<http://linkedgeodata.org/triplify/node269247337> rdfs:label "Gozzard's Ford".
+<http://linkedgeodata.org/triplify/node746814159> rdfs:label "Trimmers".
+<http://linkedgeodata.org/triplify/node539474393> rdfs:label "Karma".
+<http://linkedgeodata.org/triplify/node158859591> rdfs:label "West Oxfordshire District Council -  Woodgreen".
+<http://linkedgeodata.org/triplify/node1142307013> rdfs:label "Alcock's Fishmongers".
+<http://linkedgeodata.org/triplify/node614141529> rdfs:label "Curie Avenue".
+<http://linkedgeodata.org/triplify/node748244149> rdfs:label "Farmoor Stores".
+<http://linkedgeodata.org/triplify/node530773085> rdfs:label "Broughtons".
+<http://linkedgeodata.org/triplify/node253272530> rdfs:label "35 Oxford Scout Group HQ".
+<http://linkedgeodata.org/triplify/node290289340> rdfs:label "Ripon College Cuddesdon".
+<http://linkedgeodata.org/triplify/node26351819> rdfs:label "The Nut Tree Inn".
+<http://linkedgeodata.org/triplify/node588584057> rdfs:label "Cineworld".
+<http://linkedgeodata.org/triplify/node269268900> rdfs:label "Magdalen Wood East".
+<http://linkedgeodata.org/triplify/node259069555> rdfs:label "Didcot Hospital".
+<http://linkedgeodata.org/triplify/node269255247> rdfs:label "Co-Op Village Store".
+<http://linkedgeodata.org/triplify/node537980314> rdfs:label "Victoria Hotel".
+<http://linkedgeodata.org/triplify/node745747211> rdfs:label "The Post Box".
+<http://linkedgeodata.org/triplify/node617039203> rdfs:label "One-stop shop".
+<http://linkedgeodata.org/triplify/node259069556> rdfs:label "Co-op Swift Shop".
+<http://linkedgeodata.org/triplify/node310882339> rdfs:label "Godstow Abbey".
+<http://linkedgeodata.org/triplify/node26163979> rdfs:label "Dry Sandford".
+<http://linkedgeodata.org/triplify/node322721066> rdfs:label "Red Star Noodle Bar".
+<http://linkedgeodata.org/triplify/node281571537> rdfs:label "The Eight Bells".
+<http://linkedgeodata.org/triplify/node7991864> rdfs:label "The White Horse".
+<http://linkedgeodata.org/triplify/node354667336> rdfs:label "Chipping Norton Post Office".
+<http://linkedgeodata.org/triplify/node367830060> rdfs:label "The Dog House".
+<http://linkedgeodata.org/triplify/node393144667> rdfs:label "Deddington Arms Hotel".
+<http://linkedgeodata.org/triplify/node1145066381> rdfs:label "Bossoms Marina".
+<http://linkedgeodata.org/triplify/node265130157> rdfs:label "The George and Dragon".
+<http://linkedgeodata.org/triplify/node10606043> rdfs:label "Charlbury".
+<http://linkedgeodata.org/triplify/node814072> rdfs:label "Cart Gap".
+<http://linkedgeodata.org/triplify/node384031752> rdfs:label "Boar's Hill".
+<http://linkedgeodata.org/triplify/node436152102> rdfs:label "Burgrey Stores".
+<http://linkedgeodata.org/triplify/node274404490> rdfs:label "Co-op Botley".
+<http://linkedgeodata.org/triplify/node18335245> rdfs:label "The Bird In Hand".
+<http://linkedgeodata.org/triplify/node324321285> rdfs:label "Giraffe".
+<http://linkedgeodata.org/triplify/node306285546> rdfs:label "Museum of Oxford".
+<http://linkedgeodata.org/triplify/node26351897> rdfs:label "Charlton-on-Otmoor".
+<http://linkedgeodata.org/triplify/node882161725> rdfs:label "riverside".
+<http://linkedgeodata.org/triplify/node877245177> rdfs:label "Chalgrove post office".
+<http://linkedgeodata.org/triplify/node829520748> rdfs:label "Wallingford Museum".
+<http://linkedgeodata.org/triplify/node26351896> rdfs:label "Oddington".
+<http://linkedgeodata.org/triplify/node340420716> rdfs:label "Halfords".
+<http://linkedgeodata.org/triplify/node597336796> rdfs:label "Stockham County Primary School".
+<http://linkedgeodata.org/triplify/node243351116> rdfs:label "Wallingford Arms".
+<http://linkedgeodata.org/triplify/node26271601> rdfs:label "Edward Feild School".
+<http://linkedgeodata.org/triplify/node364769193> rdfs:label "Barton Chippy".
+<http://linkedgeodata.org/triplify/node539474396> rdfs:label "Toolmaster".
+<http://linkedgeodata.org/triplify/node340020241> rdfs:label "Wallingford Castle".
+<http://linkedgeodata.org/triplify/node10913764> rdfs:label "Finstock".
+<http://linkedgeodata.org/triplify/node262842136> rdfs:label "The Coach & Horses".
+<http://linkedgeodata.org/triplify/node243351117> rdfs:label "Didcot Library".
+<http://linkedgeodata.org/triplify/node539516306> rdfs:label "Nobeel Fashion and Fabrics".
+<http://linkedgeodata.org/triplify/node254009519> rdfs:label "Giles Cycles, Sports & Toys".
+<http://linkedgeodata.org/triplify/node354691769> rdfs:label "Castle Hill".
+<http://linkedgeodata.org/triplify/node21287672> rdfs:label "Toot Baldon".
+<http://linkedgeodata.org/triplify/node261079738> rdfs:label "Russian and Greek Orthodox Church".
+<http://linkedgeodata.org/triplify/node7211095> rdfs:label "Rose Hill".
+<http://linkedgeodata.org/triplify/node868917528> rdfs:label "Smiths Chemist".
+<http://linkedgeodata.org/triplify/node471723341> rdfs:label "Starbucks Coffee".
+<http://linkedgeodata.org/triplify/node504751932> rdfs:label "Mirch Masala".
+<http://linkedgeodata.org/triplify/node355000426> rdfs:label "P1".
+<http://linkedgeodata.org/triplify/node534004881> rdfs:label "St. Mary's".
+<http://linkedgeodata.org/triplify/node1112293229> rdfs:label "Madley Park Community Centre".
+<http://linkedgeodata.org/triplify/node26351812> rdfs:label "Ambrosden".
+<http://linkedgeodata.org/triplify/node21311991> rdfs:label "Clifton Hampden".
+<http://linkedgeodata.org/triplify/node539474399> rdfs:label "SR Childs Funeral Services".
+<http://linkedgeodata.org/triplify/node7211096> rdfs:label "Iffley".
+<http://linkedgeodata.org/triplify/node21311993> rdfs:label "Abingdon".
+<http://linkedgeodata.org/triplify/node295953656> rdfs:label "The Wheatsheaf".
+<http://linkedgeodata.org/triplify/node868657337> rdfs:label "Chalgrove Fields Car Park (7:00am - 9:00pm)".
+<http://linkedgeodata.org/triplify/node370393115> rdfs:label "Florence Park Community Centre & Social Club".
+<http://linkedgeodata.org/triplify/node289708182> rdfs:label "Alvescot".
+<http://linkedgeodata.org/triplify/node259069558> rdfs:label "Spar".
+<http://linkedgeodata.org/triplify/node274770789> rdfs:label "The Jolly Farmers".
+<http://linkedgeodata.org/triplify/node21287671> rdfs:label "Nuneham Courtenay".
+<http://linkedgeodata.org/triplify/node295953657> rdfs:label "The House".
+<http://linkedgeodata.org/triplify/node30206875> rdfs:label "Aston Primary".
+<http://linkedgeodata.org/triplify/node146399538> rdfs:label "Cuddesdon".
+<http://linkedgeodata.org/triplify/node274770782> rdfs:label "Castle Tavern".
+<http://linkedgeodata.org/triplify/node324606248> rdfs:label "Waterfield's Booksellers".
+<http://linkedgeodata.org/triplify/node354679345> rdfs:label "Enstone Post Office".
+<http://linkedgeodata.org/triplify/node26614229> rdfs:label "Woodperry".
+<http://linkedgeodata.org/triplify/node278847436> rdfs:label "Kings Arms".
+<http://linkedgeodata.org/triplify/node540252506> rdfs:label "Bell House Guest House".
+<http://linkedgeodata.org/triplify/node71120250> rdfs:label "Asthall Leigh".
+<http://linkedgeodata.org/triplify/node259069557> rdfs:label "BP Georgetown".
+<http://linkedgeodata.org/triplify/node52709329> rdfs:label "Launton Post Office Stores".
+<http://linkedgeodata.org/triplify/node265644992> rdfs:label "Golden Ball".
+<http://linkedgeodata.org/triplify/node281602682> rdfs:label "Filchampstead".
+<http://linkedgeodata.org/triplify/node702686656> rdfs:label "Maplin".
+<http://linkedgeodata.org/triplify/node14948690> rdfs:label "Cherwell Boat House".
+<http://linkedgeodata.org/triplify/node278847439> rdfs:label "Littleworth".
+<http://linkedgeodata.org/triplify/node244510650> rdfs:label "Headington County Library".
+<http://linkedgeodata.org/triplify/node253400616> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node308768763> rdfs:label "NatWest".
+<http://linkedgeodata.org/triplify/node459492357> rdfs:label "Denton's".
+<http://linkedgeodata.org/triplify/node96069220> rdfs:label "Christ Church".
+<http://linkedgeodata.org/triplify/node251232416> rdfs:label "The Old School".
+<http://linkedgeodata.org/triplify/node259069559> rdfs:label "The Wheatsheaf".
+<http://linkedgeodata.org/triplify/node1187272070> rdfs:label "Wychwood Deli".
+<http://linkedgeodata.org/triplify/node14329771> rdfs:label "Wootton".
+<http://linkedgeodata.org/triplify/node14493767> rdfs:label "All Saints Spelsbury".
+<http://linkedgeodata.org/triplify/node539516307> rdfs:label "Tattoo Club of Great Britain / Lionel's Tattoo Studio".
+<http://linkedgeodata.org/triplify/node475115823> rdfs:label "Coach and Horses".
+<http://linkedgeodata.org/triplify/node582921661> rdfs:label "camera".
+<http://linkedgeodata.org/triplify/node582921662> rdfs:label "Thirst Lodge".
+<http://linkedgeodata.org/triplify/node579900025> rdfs:label "Swinford".
+<http://linkedgeodata.org/triplify/node278736951> rdfs:label "Bledington".
+<http://linkedgeodata.org/triplify/node262655778> rdfs:label "Sutton Courtenay".
+<http://linkedgeodata.org/triplify/node355000424> rdfs:label "P1".
+<http://linkedgeodata.org/triplify/node96069222> rdfs:label "Recreation Hall".
+<http://linkedgeodata.org/triplify/node868656247> rdfs:label "The Lamb".
+<http://linkedgeodata.org/triplify/node10863338> rdfs:label "Bicester".
+<http://linkedgeodata.org/triplify/node96053797> rdfs:label "Long Hanborough Methodist Church".
+<http://linkedgeodata.org/triplify/node712682287> rdfs:label "Kingdom Hall".
+<http://linkedgeodata.org/triplify/node269229941> rdfs:label "St Helen's Church".
+<http://linkedgeodata.org/triplify/node250584883> rdfs:label "Merry Miller".
+<http://linkedgeodata.org/triplify/node258810909> rdfs:label "Sandhills".
+<http://linkedgeodata.org/triplify/node588583195> rdfs:label "Natwest".
+<http://linkedgeodata.org/triplify/node504749436> rdfs:label "Oxford Thai".
+<http://linkedgeodata.org/triplify/node712682284> rdfs:label "Milton C of E Primary School".
+<http://linkedgeodata.org/triplify/node950340206> rdfs:label "The Leys Pharmacy".
+<http://linkedgeodata.org/triplify/node34043303> rdfs:label "Barclays".
+<http://linkedgeodata.org/triplify/node320608421> rdfs:label "Oxford Castle - Unlocked".
+<http://linkedgeodata.org/triplify/node270320194> rdfs:label "The Chequers Inn".
+<http://linkedgeodata.org/triplify/node14733279> rdfs:label "The Red Lion".
+<http://linkedgeodata.org/triplify/node402328521> rdfs:label "St. Denys".
+<http://linkedgeodata.org/triplify/node244245446> rdfs:label "The Crown".
+<http://linkedgeodata.org/triplify/node26655724> rdfs:label "The Star".
+<http://linkedgeodata.org/triplify/node311928368> rdfs:label "Broadwell".
+<http://linkedgeodata.org/triplify/node265493124> rdfs:label "Rowlands".
+<http://linkedgeodata.org/triplify/node175707015> rdfs:label "The Brickworks".
+<http://linkedgeodata.org/triplify/node339427476> rdfs:label "Lyford".
+<http://linkedgeodata.org/triplify/node146403030> rdfs:label "Chiselhampton".
+<http://linkedgeodata.org/triplify/node984414897> rdfs:label "Climbing Tree".
+<http://linkedgeodata.org/triplify/node583001404> rdfs:label "Eagle Vaults".
+<http://linkedgeodata.org/triplify/node25180648> rdfs:label "Six Bells".
+<http://linkedgeodata.org/triplify/node290289275> rdfs:label "Wheatley United Reformed Church".
+<http://linkedgeodata.org/triplify/node320608422> rdfs:label "Café 1071".
+<http://linkedgeodata.org/triplify/node512027115> rdfs:label "Grove Village Hall".
+<http://linkedgeodata.org/triplify/node382030265> rdfs:label "Lake Street Playgroup".
+<http://linkedgeodata.org/triplify/node144547626> rdfs:label "Merton".
+<http://linkedgeodata.org/triplify/node775051018> rdfs:label "Caldecott".
+<http://linkedgeodata.org/triplify/node11663410> rdfs:label "Finstock".
+<http://linkedgeodata.org/triplify/node1156706242> rdfs:label "Oxford Cycle Workshop Training Centre".
+<http://linkedgeodata.org/triplify/node244242933> rdfs:label "Didcot Magistrates Court".
+<http://linkedgeodata.org/triplify/node512027116> rdfs:label "Grove Church of England Primary School".
+<http://linkedgeodata.org/triplify/node244245443> rdfs:label "Didcot Leisure Centre".
+<http://linkedgeodata.org/triplify/node960281463> rdfs:label "Helen House".
+<http://linkedgeodata.org/triplify/node248927763> rdfs:label "The Bay Tree".
+<http://linkedgeodata.org/triplify/node25618495> rdfs:label "Kidlington Green Social Club".
+<http://linkedgeodata.org/triplify/node244242932> rdfs:label "Didcot Police Station".
+<http://linkedgeodata.org/triplify/node278065763> rdfs:label "St John the Baptist".
+<http://linkedgeodata.org/triplify/node278065838> rdfs:label "The Holford Centre".
+<http://linkedgeodata.org/triplify/node278588132> rdfs:label "The Queen's Head".
+<http://linkedgeodata.org/triplify/node244245442> rdfs:label "St Birinus School".
+<http://linkedgeodata.org/triplify/node12612264> rdfs:label "East End".
+<http://linkedgeodata.org/triplify/node338229744> rdfs:label "Littleworth".
+<http://linkedgeodata.org/triplify/node320608425> rdfs:label "Mortons".
+<http://linkedgeodata.org/triplify/node34043307> rdfs:label "Parish Church of St Mary Magdalene".
+<http://linkedgeodata.org/triplify/node339312527> rdfs:label "Madge Bros".
+<http://linkedgeodata.org/triplify/node322721238> rdfs:label "Nando's".
+<http://linkedgeodata.org/triplify/node266672299> rdfs:label "Brightwell-cum-Sotwell".
+<http://linkedgeodata.org/triplify/node430608771> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node14785745> rdfs:label "St Barnabas Church".
+<http://linkedgeodata.org/triplify/node246882960> rdfs:label "Appleford Church".
+<http://linkedgeodata.org/triplify/node504744708> rdfs:label "Classic Wines & Beers".
+<http://linkedgeodata.org/triplify/node278588133> rdfs:label "Horspath Stores".
+<http://linkedgeodata.org/triplify/node495599392> rdfs:label "Queens Head".
+<http://linkedgeodata.org/triplify/node252141995> rdfs:label "Grave of C. S. Lewis".
+<http://linkedgeodata.org/triplify/node457902351> rdfs:label "Horse & Jockey glass / paper / can recycling".
+<http://linkedgeodata.org/triplify/node320608426> rdfs:label "Coffee Republic".
+<http://linkedgeodata.org/triplify/node27342065> rdfs:label "Bardwell School".
+<http://linkedgeodata.org/triplify/node310882415> rdfs:label "All Saints Church".
+<http://linkedgeodata.org/triplify/node244245441> rdfs:label "Willowcroft Community School".
+<http://linkedgeodata.org/triplify/node270438696> rdfs:label "St James".
+<http://linkedgeodata.org/triplify/node370777548> rdfs:label "Woodfarm Health Centre".
+<http://linkedgeodata.org/triplify/node775051015> rdfs:label "Northcourt".
+<http://linkedgeodata.org/triplify/node415492555> rdfs:label "Grove Top Lock".
+<http://linkedgeodata.org/triplify/node447541454> rdfs:label "Duns Tew".
+<http://linkedgeodata.org/triplify/node515231316> rdfs:label "The Balkan Lodge Hotel".
+<http://linkedgeodata.org/triplify/node339436035> rdfs:label "Harwell".
+<http://linkedgeodata.org/triplify/node573837446> rdfs:label "Bould".
+<http://linkedgeodata.org/triplify/node267156700> rdfs:label "The Crispin".
+<http://linkedgeodata.org/triplify/node28238454> rdfs:label "St John the Baptist Hall Church".
+<http://linkedgeodata.org/triplify/node15693273> rdfs:label "Bampton".
+<http://linkedgeodata.org/triplify/node1229698929> rdfs:label "St Michael's Church".
+<http://linkedgeodata.org/triplify/node437033617> rdfs:label "The Blue Boar".
+<http://linkedgeodata.org/triplify/node833479945> rdfs:label "Brightwell Free Church".
+<http://linkedgeodata.org/triplify/node435107810> rdfs:label "Snell's Hall".
+<http://linkedgeodata.org/triplify/node830145856> rdfs:label "St Helen's Church".
+<http://linkedgeodata.org/triplify/node583313173> rdfs:label "Larkmead".
+<http://linkedgeodata.org/triplify/node14731037> rdfs:label "Bicester Town".
+<http://linkedgeodata.org/triplify/node1139817443> rdfs:label "Mount House (Oxfordshire County Council)".
+<http://linkedgeodata.org/triplify/node26494831> rdfs:label "Bicester Police Station".
+<http://linkedgeodata.org/triplify/node652544800> rdfs:label "Odbins".
+<http://linkedgeodata.org/triplify/node564819755> rdfs:label "Palmira".
+<http://linkedgeodata.org/triplify/node564819758> rdfs:label "Piece of Cake".
+<http://linkedgeodata.org/triplify/node306471962> rdfs:label "St Peter's Wilcote".
+<http://linkedgeodata.org/triplify/node656434921> rdfs:label "South Hinksey Village Hall".
+<http://linkedgeodata.org/triplify/node621520704> rdfs:label "Oxford Spires".
+<http://linkedgeodata.org/triplify/node354667341> rdfs:label "Sainsburys".
+<http://linkedgeodata.org/triplify/node281571541> rdfs:label "Cumnor United Reformed Church".
+<http://linkedgeodata.org/triplify/node11081023> rdfs:label "Bletchingdon".
+<http://linkedgeodata.org/triplify/node281571540> rdfs:label "Cumnor Village Hall".
+<http://linkedgeodata.org/triplify/node14336562> rdfs:label "Burford".
+<http://linkedgeodata.org/triplify/node34043330> rdfs:label "The Feathers".
+<http://linkedgeodata.org/triplify/node322850767> rdfs:label "O3 Gallery".
+<http://linkedgeodata.org/triplify/node851230125> rdfs:label "Daudhar News Ltd".
+<http://linkedgeodata.org/triplify/node401793185> rdfs:label "Giuseppe's".
+<http://linkedgeodata.org/triplify/node668035199> rdfs:label "The Headington Care Home".
+<http://linkedgeodata.org/triplify/node21268303> rdfs:label "Stadhampton".
+<http://linkedgeodata.org/triplify/node308246994> rdfs:label "Faringdon Community College".
+<http://linkedgeodata.org/triplify/node1197217172> rdfs:label "Marigold Square".
+<http://linkedgeodata.org/triplify/node411053912> rdfs:label "Yarn Mound".
+<http://linkedgeodata.org/triplify/node260972349> rdfs:label "Fiveways Store".
+<http://linkedgeodata.org/triplify/node18236569> rdfs:label "The Flowing Well".
+<http://linkedgeodata.org/triplify/node1149688614> rdfs:label "The Co-operative Food".
+<http://linkedgeodata.org/triplify/node21268304> rdfs:label "Drayton Saint Leonard".
+<http://linkedgeodata.org/triplify/node311187846> rdfs:label "Fiveways Takeaway".
+<http://linkedgeodata.org/triplify/node26494832> rdfs:label "Bicester Fire Station".
+<http://linkedgeodata.org/triplify/node324321295> rdfs:label "Chutneys Indian Brasserie".
+<http://linkedgeodata.org/triplify/node583001456> rdfs:label "Three Horseshoes".
+<http://linkedgeodata.org/triplify/node577212757> rdfs:label "Unicorn Theatre".
+<http://linkedgeodata.org/triplify/node344732679> rdfs:label "Coscote".
+<http://linkedgeodata.org/triplify/node278736083> rdfs:label "Idbury".
+<http://linkedgeodata.org/triplify/node26494833> rdfs:label "Bicester Magistrates Court".
+<http://linkedgeodata.org/triplify/node212955601> rdfs:label "Three Goats Heads".
+<http://linkedgeodata.org/triplify/node306285552> rdfs:label "St Aldate's Tavern".
+<http://linkedgeodata.org/triplify/node550712305> rdfs:label "Green Gables Bed & Breakfast".
+<http://linkedgeodata.org/triplify/node771823480> rdfs:label "Co-operative Food".
+<http://linkedgeodata.org/triplify/node28794629> rdfs:label "Dukes Lock".
+<http://linkedgeodata.org/triplify/node582985041> rdfs:label "Wallingford Library".
+<http://linkedgeodata.org/triplify/node339500291> rdfs:label "East Ginge".
+<http://linkedgeodata.org/triplify/node767961683> rdfs:label "Jessops".
+<http://linkedgeodata.org/triplify/node262898178> rdfs:label "The Dolphin".
+<http://linkedgeodata.org/triplify/node906716831> rdfs:label "Astrop Farm".
+<http://linkedgeodata.org/triplify/node539474400> rdfs:label "STC Letting".
+<http://linkedgeodata.org/triplify/node550702762> rdfs:label "Homelea Guest House".
+<http://linkedgeodata.org/triplify/node350467871> rdfs:label "Londis".
+<http://linkedgeodata.org/triplify/node882055423> rdfs:label "Neptune Wood parking".
+<http://linkedgeodata.org/triplify/node35832241> rdfs:label "The Marlborough Arms".
+<http://linkedgeodata.org/triplify/node539474401> rdfs:label "7 to 9 Shop".
+<http://linkedgeodata.org/triplify/node507437632> rdfs:label "Thai Orchid".
+<http://linkedgeodata.org/triplify/node370393047> rdfs:label "Isis Care & Retirement Centre".
+<http://linkedgeodata.org/triplify/node306285555> rdfs:label "The Old Tom".
+<http://linkedgeodata.org/triplify/node146398344> rdfs:label "Horspath".
+<http://linkedgeodata.org/triplify/node261867846> rdfs:label "Church of St. Peter and St. Paul".
+<http://linkedgeodata.org/triplify/node537978444> rdfs:label "Bliep Chemists".
+<http://linkedgeodata.org/triplify/node146398342> rdfs:label "Garsington".
+<http://linkedgeodata.org/triplify/node1229698786> rdfs:label "Park House".
+<http://linkedgeodata.org/triplify/node10458233> rdfs:label "Long Hanborough".
+<http://linkedgeodata.org/triplify/node243351142> rdfs:label "Lotus House".
+<http://linkedgeodata.org/triplify/node339121667> rdfs:label "Tubney".
+<http://linkedgeodata.org/triplify/node26519552> rdfs:label "Shell".
+<http://linkedgeodata.org/triplify/node495592543> rdfs:label "Swan Hotel".
+<http://linkedgeodata.org/triplify/node1205629953> rdfs:label "Chalcroft Play Area".
+<http://linkedgeodata.org/triplify/node316951007> rdfs:label "All Saints' Church".
+<http://linkedgeodata.org/triplify/node10455863> rdfs:label "Combe".
+<http://linkedgeodata.org/triplify/node619297440> rdfs:label "Rose Hill Neighbourhood Police Office".
+<http://linkedgeodata.org/triplify/node25273828> rdfs:label "Berrick Salome".
+<http://linkedgeodata.org/triplify/node308995603> rdfs:label "Speed Camera".
+<http://linkedgeodata.org/triplify/node231412328> rdfs:label "Gourmet Burger Kitchen".
+<http://linkedgeodata.org/triplify/node702690710> rdfs:label "Multiyork".
+<http://linkedgeodata.org/triplify/node71120680> rdfs:label "Fordwells".
+<http://linkedgeodata.org/triplify/node1205629955> rdfs:label "Glebelands Play Area".
+<http://linkedgeodata.org/triplify/node269012655> rdfs:label "Deddington Castle".
+<http://linkedgeodata.org/triplify/node761648093> rdfs:label "Boar's Hill".
+<http://linkedgeodata.org/triplify/node105857901> rdfs:label "The Talkhouse".
+<http://linkedgeodata.org/triplify/node262655799> rdfs:label "Culham".
+<http://linkedgeodata.org/triplify/node26542734> rdfs:label "Tesco Express".
+<http://linkedgeodata.org/triplify/node26542736> rdfs:label "The Final Whistle".
+<http://linkedgeodata.org/triplify/node920199579> rdfs:label "Science Oxford".
+<http://linkedgeodata.org/triplify/node964895717> rdfs:label "Recycled Cycles Headington".
+<http://linkedgeodata.org/triplify/node814911818> rdfs:label "Wallingford Christian Assembly".
+<http://linkedgeodata.org/triplify/node337829199> rdfs:label "Long Wittenham".
+<http://linkedgeodata.org/triplify/node259311703> rdfs:label "Marston Royal British Legion".
+<http://linkedgeodata.org/triplify/node35832236> rdfs:label "The Chef Imperial".
+<http://linkedgeodata.org/triplify/node158774875> rdfs:label "West Oxfordshire District Council - Elmfield".
+<http://linkedgeodata.org/triplify/node312467611> rdfs:label "The Plough Inn".
+<http://linkedgeodata.org/triplify/node364769167> rdfs:label "Arkwrights".
+<http://linkedgeodata.org/triplify/node313813538> rdfs:label "Smart's Fish and Chips".
+<http://linkedgeodata.org/triplify/node35832238> rdfs:label "La Cucina".
+<http://linkedgeodata.org/triplify/node702699581> rdfs:label "Currys".
+<http://linkedgeodata.org/triplify/node539484699> rdfs:label "WG Powell Ltd".
+<http://linkedgeodata.org/triplify/node35832237> rdfs:label "Woodstock Pharmacy".
+<http://linkedgeodata.org/triplify/node533869745> rdfs:label "Co-op Supermarket".
+<http://linkedgeodata.org/triplify/node26351848> rdfs:label "Fencott".
+<http://linkedgeodata.org/triplify/node362776019> rdfs:label "Headington Royal British Legion Club".
+<http://linkedgeodata.org/triplify/node928654360> rdfs:label "Hagbournehill Farm".
+<http://linkedgeodata.org/triplify/node337678025> rdfs:label "Cholsey".
+<http://linkedgeodata.org/triplify/node761863082> rdfs:label "War Memorial Gardens".
+<http://linkedgeodata.org/triplify/node527172264> rdfs:label "Nanford Guest House".
+<http://linkedgeodata.org/triplify/node283311093> rdfs:label "King's School".
+<http://linkedgeodata.org/triplify/node256628775> rdfs:label "Best One".
+<http://linkedgeodata.org/triplify/node540256490> rdfs:label "Manor Veterinary Practice".
+<http://linkedgeodata.org/triplify/node15837691> rdfs:label "The Punter".
+<http://linkedgeodata.org/triplify/node979585716> rdfs:label "Springfield Nurseries".
+<http://linkedgeodata.org/triplify/node206343106> rdfs:label "Faringdon".
+<http://linkedgeodata.org/triplify/node270579994> rdfs:label "Crawley Mill".
+<http://linkedgeodata.org/triplify/node728481314> rdfs:label "Hadland Road Playground".
+<http://linkedgeodata.org/triplify/node298272191> rdfs:label "Rewley Abbey".
+<http://linkedgeodata.org/triplify/node370393101> rdfs:label "Oxford Christian Spiritualist Church".
+<http://linkedgeodata.org/triplify/node338406169> rdfs:label "The Swan".
+<http://linkedgeodata.org/triplify/node262344592> rdfs:label "The Grapes".
+<http://linkedgeodata.org/triplify/node319252067> rdfs:label "Newslite".
+<http://linkedgeodata.org/triplify/node35832239> rdfs:label "Co-op".
+<http://linkedgeodata.org/triplify/node662951441> rdfs:label "Sugar Brown".
+<http://linkedgeodata.org/triplify/node868917515> rdfs:label "Consult Pharmacy".
+<http://linkedgeodata.org/triplify/node348055353> rdfs:label "Bury Knowle Health Centre".
+<http://linkedgeodata.org/triplify/node370393104> rdfs:label "The Jolly Postboys".
+<http://linkedgeodata.org/triplify/node512593288> rdfs:label "Sutton Methodist Church".
+<http://linkedgeodata.org/triplify/node324606216> rdfs:label "St Michael's Guest House".
+<http://linkedgeodata.org/triplify/node11663408> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node571830808> rdfs:label "Dominoes Pizza".
+<http://linkedgeodata.org/triplify/node290289249> rdfs:label "The Sun Inn".
+<http://linkedgeodata.org/triplify/node254873706> rdfs:label "Bunkers Hill".
+<http://linkedgeodata.org/triplify/node28799714> rdfs:label "Noke".
+<http://linkedgeodata.org/triplify/node26493468> rdfs:label "Bicester & Ploughley".
+<http://linkedgeodata.org/triplify/node11663409> rdfs:label "The Crown".
+<http://linkedgeodata.org/triplify/node311344519> rdfs:label "Wilcote".
+<http://linkedgeodata.org/triplify/node619335918> rdfs:label "Reign Wear".
+<http://linkedgeodata.org/triplify/node17945929> rdfs:label "Forest Hill".
+<http://linkedgeodata.org/triplify/node257782485> rdfs:label "Prince of Wales".
+<http://linkedgeodata.org/triplify/node746814209> rdfs:label "Nash's Bakery".
+<http://linkedgeodata.org/triplify/node242547808> rdfs:label "Windrush Leisure Centre".
+<http://linkedgeodata.org/triplify/node26812743> rdfs:label "Glory Farm Primary and Nursery School".
+<http://linkedgeodata.org/triplify/node25180949> rdfs:label "The Kings Arms".
+<http://linkedgeodata.org/triplify/node448859129> rdfs:label "West Hendred Village Hall".
+<http://linkedgeodata.org/triplify/node267769544> rdfs:label "Didcot".
+<http://linkedgeodata.org/triplify/node571448673> rdfs:label "Culham Parochial CofE School".
+<http://linkedgeodata.org/triplify/node21150200> rdfs:label "Sandford-on-Thames".
+<http://linkedgeodata.org/triplify/node840485343> rdfs:label "Heroes".
+<http://linkedgeodata.org/triplify/node267149170> rdfs:label "Witney Rugby Football Club".
+<http://linkedgeodata.org/triplify/node387219093> rdfs:label "Le Manoir aux Quat'Saisons".
+<http://linkedgeodata.org/triplify/node82600307> rdfs:label "Bookbinders Arms".
+<http://linkedgeodata.org/triplify/node652846264> rdfs:label "Spread Eagle".
+<http://linkedgeodata.org/triplify/node338601577> rdfs:label "BICESTER1".
+<http://linkedgeodata.org/triplify/node18236979> rdfs:label "Sunningwell".
+<http://linkedgeodata.org/triplify/node692982995> rdfs:label "Country Collections".
+<http://linkedgeodata.org/triplify/node882167374> rdfs:label "Clifton Hampden".
+<http://linkedgeodata.org/triplify/node367943780> rdfs:label "St Nicholas".
+<http://linkedgeodata.org/triplify/node738839726> rdfs:label "Freeland Village Hall".
+<http://linkedgeodata.org/triplify/node14896157> rdfs:label "St Mary's Church".
+<http://linkedgeodata.org/triplify/node619315066> rdfs:label "Oxford Beds".
+<http://linkedgeodata.org/triplify/node471062603> rdfs:label "Apple Cart".
+<http://linkedgeodata.org/triplify/node15724225> rdfs:label "Ascott-under-Wychwood".
+<http://linkedgeodata.org/triplify/node870026025> rdfs:label "Costa".
+<http://linkedgeodata.org/triplify/node515223072> rdfs:label "Athena Guest House".
+<http://linkedgeodata.org/triplify/node265644989> rdfs:label "The Catholic Church of Blessed Dominic Barberi".
+<http://linkedgeodata.org/triplify/node242243944> rdfs:label "Ozone Leisure Park".
+<http://linkedgeodata.org/triplify/node259070924> rdfs:label "The Catholic Church of the English Martyrs".
+<http://linkedgeodata.org/triplify/node417319509> rdfs:label "Denis Restaurant".
+<http://linkedgeodata.org/triplify/node34036983> rdfs:label "Manor Lake".
+<http://linkedgeodata.org/triplify/node21622862> rdfs:label "China Court".
+<http://linkedgeodata.org/triplify/node60031997> rdfs:label "Kirtlington Church of England Primary School".
+<http://linkedgeodata.org/triplify/node342813033> rdfs:label "The Swan".
+<http://linkedgeodata.org/triplify/node767961689> rdfs:label "Yard Cafe".
+<http://linkedgeodata.org/triplify/node339426704> rdfs:label "Mackney".
+<http://linkedgeodata.org/triplify/node589082419> rdfs:label "ASDA".
+<http://linkedgeodata.org/triplify/node566837583> rdfs:label "The Ridings Guest House".
+<http://linkedgeodata.org/triplify/node265493113> rdfs:label "Iffley Seven to Eleven".
+<http://linkedgeodata.org/triplify/node322720792> rdfs:label "Subway".
+<http://linkedgeodata.org/triplify/node338352248> rdfs:label "Lew".
+<http://linkedgeodata.org/triplify/node263881141> rdfs:label "Hackett's".
+<http://linkedgeodata.org/triplify/node286054251> rdfs:label "South Leigh Village Hall".
+<http://linkedgeodata.org/triplify/node278065824> rdfs:label "The Star Inn".
+<http://linkedgeodata.org/triplify/node16483447> rdfs:label "The Fishes".
+<http://linkedgeodata.org/triplify/node18461613> rdfs:label "The Lamb Inn".
+<http://linkedgeodata.org/triplify/node175707048> rdfs:label "The Original Swan".
+<http://linkedgeodata.org/triplify/node30149823> rdfs:label "The Royal Sun".
+<http://linkedgeodata.org/triplify/node447541456> rdfs:label "The White Horse".
+<http://linkedgeodata.org/triplify/node339169969> rdfs:label "M&S Simply Food".
+<http://linkedgeodata.org/triplify/node540285074> rdfs:label "All Seasons' Guest House".
+<http://linkedgeodata.org/triplify/node445076198> rdfs:label "St. Mary's, Cogges".
+<http://linkedgeodata.org/triplify/node34043324> rdfs:label "NatWest".
+<http://linkedgeodata.org/triplify/node35887922> rdfs:label "Oxford".
+<http://linkedgeodata.org/triplify/node309162176> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node15697676> rdfs:label "Rushey lock".
+<http://linkedgeodata.org/triplify/node261867838> rdfs:label "Vale and Downland Museum".
+<http://linkedgeodata.org/triplify/node479331520> rdfs:label "Appleton CofE Primary School".
+<http://linkedgeodata.org/triplify/node21275608> rdfs:label "Dorchester On Thames".
+<http://linkedgeodata.org/triplify/node15705287> rdfs:label "Wantage".
+<http://linkedgeodata.org/triplify/node262898184> rdfs:label "St Mary-le-More".
+<http://linkedgeodata.org/triplify/node302010577> rdfs:label "Bullingdon Arms".
+<http://linkedgeodata.org/triplify/node539500452> rdfs:label "Addictions".
+<http://linkedgeodata.org/triplify/node504744172> rdfs:label "Spice Village".
+<http://linkedgeodata.org/triplify/node973635369> rdfs:label "Boots".
+<http://linkedgeodata.org/triplify/node14417329> rdfs:label "Freeland".
+<http://linkedgeodata.org/triplify/node20966242> rdfs:label "St Gregory's and St Augustine's Church".
+<http://linkedgeodata.org/triplify/node418012522> rdfs:label "Qumins".
+<http://linkedgeodata.org/triplify/node1226539127> rdfs:label "Holywell Bed & Breakfast".
+<http://linkedgeodata.org/triplify/node27511039> rdfs:label "BP".
+<http://linkedgeodata.org/triplify/node522975905> rdfs:label "Caffè Nero".
+<http://linkedgeodata.org/triplify/node7168893> rdfs:label "Iffley Lock".
+<http://linkedgeodata.org/triplify/node611304481> rdfs:label "budgens".
+<http://linkedgeodata.org/triplify/node465460531> rdfs:label "George and Davis'".
+<http://linkedgeodata.org/triplify/node522782306> rdfs:label "Sportsview Guest House".
+<http://linkedgeodata.org/triplify/node7168892> rdfs:label "Iffley Lock".
+<http://linkedgeodata.org/triplify/node34043322> rdfs:label "The Star Inn".
+<http://linkedgeodata.org/triplify/node469086409> rdfs:label "The Theatre".
+<http://linkedgeodata.org/triplify/node499424669> rdfs:label "Fratelli's Pizzeria".
+<http://linkedgeodata.org/triplify/node146379277> rdfs:label "The Vine Inn".
+<http://linkedgeodata.org/triplify/node465460535> rdfs:label "Angels".
+<http://linkedgeodata.org/triplify/node21275456> rdfs:label "Overy".
+<http://linkedgeodata.org/triplify/node570208943> rdfs:label "Becket House B&B".
+<http://linkedgeodata.org/triplify/node499424664> rdfs:label "Dil Dunia".
+<http://linkedgeodata.org/triplify/node840488830> rdfs:label "Antiques on High".
+<http://linkedgeodata.org/triplify/node253793040> rdfs:label "Charlton".
+<http://linkedgeodata.org/triplify/node517357775> rdfs:label "Rogers Auto Factors LTD".
+<http://linkedgeodata.org/triplify/node264157029> rdfs:label "Travelodge Oxford Wheatley".
+<http://linkedgeodata.org/triplify/node141606424> rdfs:label "The Barley Mow".
+<http://linkedgeodata.org/triplify/node26311177> rdfs:label "North Oxford Sports Club".
+<http://linkedgeodata.org/triplify/node495592428> rdfs:label "Red Lion".
+<http://linkedgeodata.org/triplify/node269268829> rdfs:label "Open Brasenose".
+<http://linkedgeodata.org/triplify/node430207099> rdfs:label "Hollow Way Stores".
+<http://linkedgeodata.org/triplify/node430207098> rdfs:label "Whispers Hair".
+<http://linkedgeodata.org/triplify/node656148496> rdfs:label "Ducklington CofE(C) Primary School".
+<http://linkedgeodata.org/triplify/node435110011> rdfs:label "St Amand's Catholic Primary School".
+<http://linkedgeodata.org/triplify/node499424666> rdfs:label "Star of Asia".
+<http://linkedgeodata.org/triplify/node340143747> rdfs:label "The Fish".
+<http://linkedgeodata.org/triplify/node522786562> rdfs:label "The Falcon B&B".
+<http://linkedgeodata.org/triplify/node15697677> rdfs:label "Rushey lock".
+<http://linkedgeodata.org/triplify/node775681280> rdfs:label "Bainton Bikes".
+<http://linkedgeodata.org/triplify/node5660446> rdfs:label "Crawley Inn".
+<http://linkedgeodata.org/triplify/node5660444> rdfs:label "The Lamb Inn".
+<http://linkedgeodata.org/triplify/node370774400> rdfs:label "Ozone Health and Fitness Club".
+<http://linkedgeodata.org/triplify/node29352014> rdfs:label "Stoke Lyne".
+<http://linkedgeodata.org/triplify/node540221143> rdfs:label "Key ?? Security".
+<http://linkedgeodata.org/triplify/node25199733> rdfs:label "Witney Community Hospital".
+<http://linkedgeodata.org/triplify/node256423536> rdfs:label "King Alfred Statue".
+<http://linkedgeodata.org/triplify/node297199342> rdfs:label "The Lamb".
+<http://linkedgeodata.org/triplify/node257076632> rdfs:label "Hampton Gay".
+<http://linkedgeodata.org/triplify/node316951018> rdfs:label "St Blaise Church".
+<http://linkedgeodata.org/triplify/node257164647> rdfs:label "Waterstock".
+<http://linkedgeodata.org/triplify/node250211241> rdfs:label "Ducklington Baptist Church".
+<http://linkedgeodata.org/triplify/node278588074> rdfs:label "St Giles".
+<http://linkedgeodata.org/triplify/node315872981> rdfs:label "Eggs Etcetera".
+<http://linkedgeodata.org/triplify/node16390164> rdfs:label "Cumnor".
+<http://linkedgeodata.org/triplify/node266156859> rdfs:label "Tackley Methodist Church".
+<http://linkedgeodata.org/triplify/node1229698665> rdfs:label "Bladon Methodist Church".
+<http://linkedgeodata.org/triplify/node243351136> rdfs:label "Didcot Methodist Church".
+<http://linkedgeodata.org/triplify/node278736137> rdfs:label "Foscot".
+<http://linkedgeodata.org/triplify/node288687628> rdfs:label "Morland House Surgery".
+<http://linkedgeodata.org/triplify/node430608749> rdfs:label "Eyston Arms".
+<http://linkedgeodata.org/triplify/node370393056> rdfs:label "Christian Life Centre".
+<http://linkedgeodata.org/triplify/node307434119> rdfs:label "Ardington Football Club".
+<http://linkedgeodata.org/triplify/node322721514> rdfs:label "Cafe CoCo".
+<http://linkedgeodata.org/triplify/node26346123> rdfs:label "The Nightingdale".
+<http://linkedgeodata.org/triplify/node16817591> rdfs:label "Hinksey Ponds".
+<http://linkedgeodata.org/triplify/node243351134> rdfs:label "Natwest".
+<http://linkedgeodata.org/triplify/node256152807> rdfs:label "Park View Service Station".
+<http://linkedgeodata.org/triplify/node410938877> rdfs:label "Pinkhill Meadow Nature Reserve".
+<http://linkedgeodata.org/triplify/node460018493> rdfs:label "The Boot".
+<http://linkedgeodata.org/triplify/node460018495> rdfs:label "Eynsham Emporium".
+<http://linkedgeodata.org/triplify/node1135423272> rdfs:label "Westgate Stores".
+<http://linkedgeodata.org/triplify/node444577824> rdfs:label "Admiral Benbow".
+<http://linkedgeodata.org/triplify/node243351133> rdfs:label "Boots Pharmacy".
+<http://linkedgeodata.org/triplify/node469086403> rdfs:label "The Chequers".
+<http://linkedgeodata.org/triplify/node619325341> rdfs:label "SS20".
+<http://linkedgeodata.org/triplify/node522777084> rdfs:label "Londis".
+<http://linkedgeodata.org/triplify/node461614657> rdfs:label "War Memorial".
+<http://linkedgeodata.org/triplify/node278847339> rdfs:label "Wheatley Park School".
+<http://linkedgeodata.org/triplify/node504751593> rdfs:label "KFC".
+<http://linkedgeodata.org/triplify/node540285132> rdfs:label "Headington Auto Parts".
+<http://linkedgeodata.org/triplify/node243351132> rdfs:label "Broadways".
+<http://linkedgeodata.org/triplify/node690894028> rdfs:label "The Coach House Veterinary Clinic".
+<http://linkedgeodata.org/triplify/node814900537> rdfs:label "Wallingford Baptist Church".
+<http://linkedgeodata.org/triplify/node595354408> rdfs:label "Kendall Crescent Medical Centre".
+<http://linkedgeodata.org/triplify/node1209713267> rdfs:label "Marigold Square".
+<http://linkedgeodata.org/triplify/node446825585> rdfs:label "Scutchamer Knob (Earthwork)".
+<http://linkedgeodata.org/triplify/node281212711> rdfs:label "A K Timms".
+<http://linkedgeodata.org/triplify/node262898188> rdfs:label "Waitrose".
+<http://linkedgeodata.org/triplify/node195816792> rdfs:label "Rushy Lock".
+<http://linkedgeodata.org/triplify/node472976750> rdfs:label "SAE Institute".
+<http://linkedgeodata.org/triplify/node540403896> rdfs:label "Sir Winston Churchill".
+<http://linkedgeodata.org/triplify/node26610065> rdfs:label "Tesco Express".
+<http://linkedgeodata.org/triplify/node243351130> rdfs:label "Salinasz Cafe Bar".
+<http://linkedgeodata.org/triplify/node311928381> rdfs:label "Kencott".
+<http://linkedgeodata.org/triplify/node26163631> rdfs:label "Bayworth".
+<http://linkedgeodata.org/triplify/node1142307034> rdfs:label "Santander".
+<http://linkedgeodata.org/triplify/node312915803> rdfs:label "Odeon Magdalen Street".
+<http://linkedgeodata.org/triplify/node312915805> rdfs:label "Sainsbury's Local".
+<http://linkedgeodata.org/triplify/node312915804> rdfs:label "Tesco".
+<http://linkedgeodata.org/triplify/node461960735> rdfs:label "United Reformed Church".
+<http://linkedgeodata.org/triplify/node561309392> rdfs:label "Town Furze".
+<http://linkedgeodata.org/triplify/node21564237> rdfs:label "Great Milton".
+<http://linkedgeodata.org/triplify/node14733891> rdfs:label "The Chequers".
+<http://linkedgeodata.org/triplify/node31271938> rdfs:label "Archdiocese of Birmingham Catholic Church of Immaculate Conception".
+<http://linkedgeodata.org/triplify/node354926745> rdfs:label "Sainsbury's Homebase".
+<http://linkedgeodata.org/triplify/node236089037> rdfs:label "Southfield Golf Club".
+<http://linkedgeodata.org/triplify/node18236981> rdfs:label "St Leonard's Church".
+<http://linkedgeodata.org/triplify/node348055342> rdfs:label "Bury Knowle Dental Practice".
+<http://linkedgeodata.org/triplify/node537978894> rdfs:label "Sanaa".
+<http://linkedgeodata.org/triplify/node264380237> rdfs:label "The White Hart".
+<http://linkedgeodata.org/triplify/node1014244825> rdfs:label "Mini".
+<http://linkedgeodata.org/triplify/node440616752> rdfs:label "Currys".
+<http://linkedgeodata.org/triplify/node771823177> rdfs:label "Wood Farm Bakery".
+<http://linkedgeodata.org/triplify/node472605010> rdfs:label "Co-op Car Park".
+<http://linkedgeodata.org/triplify/node571765431> rdfs:label "The Kings Arms Hotel".
+<http://linkedgeodata.org/triplify/node324606222> rdfs:label "Queen's Lane Coffee House".
+<http://linkedgeodata.org/triplify/node746814212> rdfs:label "Bzanas".
+<http://linkedgeodata.org/triplify/node7863066> rdfs:label "Northleigh Roman Villa".
+<http://linkedgeodata.org/triplify/node662951456> rdfs:label "Bleroni Cafe".
+<http://linkedgeodata.org/triplify/node662951458> rdfs:label "The Big Bang".
+<http://linkedgeodata.org/triplify/node278983655> rdfs:label "Nether Worton".
+<http://linkedgeodata.org/triplify/node467652897> rdfs:label "The Four Candles".
+<http://linkedgeodata.org/triplify/node343550428> rdfs:label "Carfax Conduit".
+<http://linkedgeodata.org/triplify/node344732587> rdfs:label "East Hagbourne".
+<http://linkedgeodata.org/triplify/node659858777> rdfs:label "Bella Italia".
+<http://linkedgeodata.org/triplify/node659858771> rdfs:label "Peninsula".
+<http://linkedgeodata.org/triplify/node30566049> rdfs:label "Horse and Groom".
+<http://linkedgeodata.org/triplify/node26481729> rdfs:label "Tesco".
+<http://linkedgeodata.org/triplify/node353047069> rdfs:label "Field Assarts".
+<http://linkedgeodata.org/triplify/node206343186> rdfs:label "West Hanney".
+<http://linkedgeodata.org/triplify/node344098678> rdfs:label "Down Hill".
+<http://linkedgeodata.org/triplify/node29198335> rdfs:label "Binsey".
+<http://linkedgeodata.org/triplify/node10606783> rdfs:label "Shipton".
+<http://linkedgeodata.org/triplify/node26505915> rdfs:label "Horton-cum-Studley".
+<http://linkedgeodata.org/triplify/node26505913> rdfs:label "St Barnabas".
+<http://linkedgeodata.org/triplify/node26505907> rdfs:label "Tesco".
+<http://linkedgeodata.org/triplify/node475115911> rdfs:label "Crosskeys".
+<http://linkedgeodata.org/triplify/node313587706> rdfs:label "Wallingford".
+<http://linkedgeodata.org/triplify/node71138242> rdfs:label "Shorthampton".
+<http://linkedgeodata.org/triplify/node262653295> rdfs:label "Drayton".
+<http://linkedgeodata.org/triplify/node558887278> rdfs:label "Cholsey Church".
+<http://linkedgeodata.org/triplify/node71132542> rdfs:label "Walcot".
+<http://linkedgeodata.org/triplify/node690894034> rdfs:label "Freeland House".
+<http://linkedgeodata.org/triplify/node11658439> rdfs:label "The Bell".
+<http://linkedgeodata.org/triplify/node533612264> rdfs:label "New College School".
+<http://linkedgeodata.org/triplify/node16463012> rdfs:label "West Oxford Community Centre".
+<http://linkedgeodata.org/triplify/node33143307> rdfs:label "Carmel College".
+<http://linkedgeodata.org/triplify/node578570866> rdfs:label "Griffin Inn".
+<http://linkedgeodata.org/triplify/node270437926> rdfs:label "Little Milton C of E Aided School".
+<http://linkedgeodata.org/triplify/node659858773> rdfs:label "Copa of Oxford".
+<http://linkedgeodata.org/triplify/node29442564> rdfs:label "applegreen".
+<http://linkedgeodata.org/triplify/node954772230> rdfs:label "Velo Specialist Bicycles".
+<http://linkedgeodata.org/triplify/node276292823> rdfs:label "St. Giles' Church".
+<http://linkedgeodata.org/triplify/node243351139> rdfs:label "Chopsticks".
+<http://linkedgeodata.org/triplify/node659858775> rdfs:label "ASK Italian".
+<http://linkedgeodata.org/triplify/node662951454> rdfs:label "Raoul's".
+<http://linkedgeodata.org/triplify/node324606225> rdfs:label "The Grand Cafe".
+<http://linkedgeodata.org/triplify/node440616751> rdfs:label "Halfords".
+<http://linkedgeodata.org/triplify/node281603020> rdfs:label "Farmoor".
+<http://linkedgeodata.org/triplify/node314413956> rdfs:label "Book Lover".
+<http://linkedgeodata.org/triplify/node704417858> rdfs:label "Salters Steamers".
+<http://linkedgeodata.org/triplify/node1139536897> rdfs:label "Fifield".
+<http://linkedgeodata.org/triplify/node392134599> rdfs:label "Rides On Air".
+<http://linkedgeodata.org/triplify/node27595069> rdfs:label "Tesco".
+<http://linkedgeodata.org/triplify/node267149163> rdfs:label "Witney  Rugby Football Club".
+<http://linkedgeodata.org/triplify/node279234596> rdfs:label "Taynton".
+<http://linkedgeodata.org/triplify/node259729500> rdfs:label "Co-Op Food".
+<http://linkedgeodata.org/triplify/node323183119> rdfs:label "Oxford Backpackers".
+<http://linkedgeodata.org/triplify/node26885200> rdfs:label "The White Horse".
+<http://linkedgeodata.org/triplify/node960292083> rdfs:label "Jahazi".
+<http://linkedgeodata.org/triplify/node265644975> rdfs:label "Royal British Legion, Littlemore & District".
+<http://linkedgeodata.org/triplify/node1020496015> rdfs:label "Almond Tree Hotel".
+<http://linkedgeodata.org/triplify/node246181571> rdfs:label "Cogges Manor Farm Museum".
+<http://linkedgeodata.org/triplify/node7150407> rdfs:label "Museum of Modern Art (Oxford)".
+<http://linkedgeodata.org/triplify/node18461924> rdfs:label "The Navy Oak".
+<http://linkedgeodata.org/triplify/node265493105> rdfs:label "Ss. Edmund and Frideswide".
+<http://linkedgeodata.org/triplify/node34043286> rdfs:label "Woodstock Swimming Pool".
+<http://linkedgeodata.org/triplify/node34034942> rdfs:label "Barnard Gate".
+<http://linkedgeodata.org/triplify/node20918876> rdfs:label "Hatford".
+<http://linkedgeodata.org/triplify/node430203052> rdfs:label "Kings".
+<http://linkedgeodata.org/triplify/node280331214> rdfs:label "Northleigh Post Office".
+<http://linkedgeodata.org/triplify/node290289252> rdfs:label "The King & Queen".
+<http://linkedgeodata.org/triplify/node257957828> rdfs:label "McDonald's".
+<http://linkedgeodata.org/triplify/node619315074> rdfs:label "Allen & Harris".
+<http://linkedgeodata.org/triplify/node257957827> rdfs:label "Carphone Warehouse".
+<http://linkedgeodata.org/triplify/node643775481> rdfs:label "Café Crème".
+<http://linkedgeodata.org/triplify/node539500449> rdfs:label "Buckell & Ballard".
+<http://linkedgeodata.org/triplify/node249151792> rdfs:label "Lidl".
+<http://linkedgeodata.org/triplify/node290289250> rdfs:label "The Granary Church".
+<http://linkedgeodata.org/triplify/node270781082> rdfs:label "Long Furlong Medical Centre".
+<http://linkedgeodata.org/triplify/node34043327> rdfs:label "Woodstock Arms".
+<http://linkedgeodata.org/triplify/node583001395> rdfs:label "Cross Keys".
+<http://linkedgeodata.org/triplify/node619315070> rdfs:label "House of Tim".
+<http://linkedgeodata.org/triplify/node258667640> rdfs:label "All Saint's Church".
+<http://linkedgeodata.org/triplify/node28788236> rdfs:label "The Rock of Gibraltar".
+<http://linkedgeodata.org/triplify/node24906700> rdfs:label "Holiday Inn Express: Kassam Stadium".
+<http://linkedgeodata.org/triplify/node249928448> rdfs:label "Six Bells".
+<http://linkedgeodata.org/triplify/node457918653> rdfs:label "Faringdon Coffee House".
+<http://linkedgeodata.org/triplify/node504744408> rdfs:label "Rice and Peas".
+<http://linkedgeodata.org/triplify/node619315050> rdfs:label "RL Bromley & Son".
+<http://linkedgeodata.org/triplify/node319094628> rdfs:label "Grovelands Pharmacy".
+<http://linkedgeodata.org/triplify/node504747576> rdfs:label "Jing Jing Oriental Food Store".
+<http://linkedgeodata.org/triplify/node15701251> rdfs:label "Shifford lock".
+<http://linkedgeodata.org/triplify/node15701250> rdfs:label "Shifford lock".
+<http://linkedgeodata.org/triplify/node619297425> rdfs:label "Premier Turna Supermarket".
+<http://linkedgeodata.org/triplify/node269226888> rdfs:label "The Seacourt Bridge".
+<http://linkedgeodata.org/triplify/node746254571> rdfs:label "Wolvercote Baptist Church".
+<http://linkedgeodata.org/triplify/node27422624> rdfs:label "Caulcott".
+<http://linkedgeodata.org/triplify/node512593159> rdfs:label "Stanton Harcourt STW".
+<http://linkedgeodata.org/triplify/node583001439> rdfs:label "New Inn".
+<http://linkedgeodata.org/triplify/node490216142> rdfs:label "Leafield Trig Point S6756".
+<http://linkedgeodata.org/triplify/node129972809> rdfs:label "Dean".
+<http://linkedgeodata.org/triplify/node1022896649> rdfs:label "Steeple Barton".
+<http://linkedgeodata.org/triplify/node278573681> rdfs:label "Bletchingdon Village Hall".
+<http://linkedgeodata.org/triplify/node690405785> rdfs:label "Charlton Primary School".
+<http://linkedgeodata.org/triplify/node530773112> rdfs:label "Le Petit Parisienne".
+<http://linkedgeodata.org/triplify/node1073436350> rdfs:label "Co-Op".
+<http://linkedgeodata.org/triplify/node312081420> rdfs:label "The Lord Nuffield Club".
+<http://linkedgeodata.org/triplify/node530768285> rdfs:label "Gee's".
+<http://linkedgeodata.org/triplify/node530768286> rdfs:label "Chez Gaston".
+<http://linkedgeodata.org/triplify/node16386307> rdfs:label "Kiddington".
+<http://linkedgeodata.org/triplify/node429998584> rdfs:label "Bunny's".
+<http://linkedgeodata.org/triplify/node429998583> rdfs:label "Smith & Osman Services".
+<http://linkedgeodata.org/triplify/node506999785> rdfs:label "Tesco Carpark recycling centre".
+<http://linkedgeodata.org/triplify/node265644807> rdfs:label "John Bunyan Baptist Church".
+<http://linkedgeodata.org/triplify/node263860143> rdfs:label "Temple Cowley Health Centre".
+<http://linkedgeodata.org/triplify/node263860141> rdfs:label "Temple Cowley United Reformed Church".
+<http://linkedgeodata.org/triplify/node868917572> rdfs:label "Lloyds".
+<http://linkedgeodata.org/triplify/node599714489> rdfs:label "Smarrts".
+<http://linkedgeodata.org/triplify/node247103402> rdfs:label "Oxford TV mast".
+<http://linkedgeodata.org/triplify/node33236728> rdfs:label "The Rose Revived".
+<http://linkedgeodata.org/triplify/node33236729> rdfs:label "The Maybush".
+<http://linkedgeodata.org/triplify/node307652217> rdfs:label "Fitzharry Common Room".
+<http://linkedgeodata.org/triplify/node350467784> rdfs:label "Girdlestone Stores".
+<http://linkedgeodata.org/triplify/node728342881> rdfs:label "Bangladesh Islamic Education Centre".
+<http://linkedgeodata.org/triplify/node26744295> rdfs:label "Swifts House Farm".
+<http://linkedgeodata.org/triplify/node34042682> rdfs:label "Old Woodstock Playground".
+<http://linkedgeodata.org/triplify/node617693821> rdfs:label "Jaipur".
+<http://linkedgeodata.org/triplify/node746814187> rdfs:label "Deltey".
+<http://linkedgeodata.org/triplify/node278983633> rdfs:label "Barford St Michael".
+<http://linkedgeodata.org/triplify/node459467119> rdfs:label "Chequers".
+<http://linkedgeodata.org/triplify/node429998580> rdfs:label "Polish Specialities".
+<http://linkedgeodata.org/triplify/node1207449531> rdfs:label "Sainsbury's Local".
+<http://linkedgeodata.org/triplify/node278847409> rdfs:label "Holton Village Hall".
+<http://linkedgeodata.org/triplify/node34043297> rdfs:label "The Kings Head".
+<http://linkedgeodata.org/triplify/node18340123> rdfs:label "Blenheim Palace".
+<http://linkedgeodata.org/triplify/node728342880> rdfs:label "Cafe Tarifa".
+<http://linkedgeodata.org/triplify/node269255290> rdfs:label "The Parish Church of St Peter".
+<http://linkedgeodata.org/triplify/node321978608> rdfs:label "The Red Lion".
+<http://linkedgeodata.org/triplify/node332324045> rdfs:label "KFC".
+<http://linkedgeodata.org/triplify/node20916455> rdfs:label "Shellingford".
+<http://linkedgeodata.org/triplify/node340420889> rdfs:label "Bike Hut".
+<http://linkedgeodata.org/triplify/node253793009> rdfs:label "The Lord Nelson".
+<http://linkedgeodata.org/triplify/node339500577> rdfs:label "West Ginge".
+<http://linkedgeodata.org/triplify/node251972312> rdfs:label "OX3 Convenience Store".
+<http://linkedgeodata.org/triplify/node840484738> rdfs:label "News Café".
+<http://linkedgeodata.org/triplify/node307642900> rdfs:label "Fitzharry's Castle Mound".
+<http://linkedgeodata.org/triplify/node286056162> rdfs:label "St James the Great".
+<http://linkedgeodata.org/triplify/node517327824> rdfs:label "The Hare Inn".
+<http://linkedgeodata.org/triplify/node571782839> rdfs:label "Yarnton Nurseries Garden Centre".
+<http://linkedgeodata.org/triplify/node560724813> rdfs:label "Landscape Axle".
+<http://linkedgeodata.org/triplify/node822252580> rdfs:label "Co-operative".
+<http://linkedgeodata.org/triplify/node585119> rdfs:label "The Kings Arms".
+<http://linkedgeodata.org/triplify/node17577157> rdfs:label "Bicester North".
+<http://linkedgeodata.org/triplify/node249143950> rdfs:label "St.Mary's C E Infants School".
+<http://linkedgeodata.org/triplify/node27014162> rdfs:label "Jet".
+<http://linkedgeodata.org/triplify/node338598904> rdfs:label "STEEPLEASTON2".
+<http://linkedgeodata.org/triplify/node24961938> rdfs:label "Mole Inn".
+<http://linkedgeodata.org/triplify/node374492831> rdfs:label "The Electric Transport Shop".
+<http://linkedgeodata.org/triplify/node281251444> rdfs:label "The Ferryman Inn".
+<http://linkedgeodata.org/triplify/node376384388> rdfs:label "Grafton Lock".
+<http://linkedgeodata.org/triplify/node340420888> rdfs:label "Halfords".
+<http://linkedgeodata.org/triplify/node337831177> rdfs:label "Steventon".
+<http://linkedgeodata.org/triplify/node281602647> rdfs:label "Lower Whitley Farm Cottages".
+<http://linkedgeodata.org/triplify/node24950367> rdfs:label "The Black Bull".
+<http://linkedgeodata.org/triplify/node14191389> rdfs:label "Florence Park".
+<http://linkedgeodata.org/triplify/node14733979> rdfs:label "Weston On The Green".
+<http://linkedgeodata.org/triplify/node395343072> rdfs:label "Fryday's Cafe".
+<http://linkedgeodata.org/triplify/node269226916> rdfs:label "St. Michael's Church Cumnor".
+<http://linkedgeodata.org/triplify/node465460523> rdfs:label "Al-Andallis".
+<http://linkedgeodata.org/triplify/node256611698> rdfs:label "Burger King".
+<http://linkedgeodata.org/triplify/node340405288> rdfs:label "Little Clanfield".
+<http://linkedgeodata.org/triplify/node18234117> rdfs:label "The Tandem".
+<http://linkedgeodata.org/triplify/node662186303> rdfs:label "Hurst Hill".
+<http://linkedgeodata.org/triplify/node34042197> rdfs:label "Smarts".
+<http://linkedgeodata.org/triplify/node337842282> rdfs:label "St Kenelm's Primary".
+<http://linkedgeodata.org/triplify/node420472408> rdfs:label "Waterperry".
+<http://linkedgeodata.org/triplify/node534758264> rdfs:label "Foxholes".
+<http://linkedgeodata.org/triplify/node280226131> rdfs:label "North Leigh Methodist Church".
+<http://linkedgeodata.org/triplify/node307054971> rdfs:label "Boxhill Park Playground".
+<http://linkedgeodata.org/triplify/node591802295> rdfs:label "Heather House".
+<http://linkedgeodata.org/triplify/node295641265> rdfs:label "Betjeman Park".
+<http://linkedgeodata.org/triplify/node626790046> rdfs:label "Fox Inn".
+<http://linkedgeodata.org/triplify/node271369990> rdfs:label "Hawkwell House".
+<http://linkedgeodata.org/triplify/node206343224> rdfs:label "East Hanney".
+<http://linkedgeodata.org/triplify/node34042196> rdfs:label "Woodstock Methodist Church".
+<http://linkedgeodata.org/triplify/node383997870> rdfs:label "Bayworth Chapel".
+<http://linkedgeodata.org/triplify/node530763556> rdfs:label "Woodstock Road Chemist".
+<http://linkedgeodata.org/triplify/node24950366> rdfs:label "The Black Horse".
+<http://linkedgeodata.org/triplify/node663653789> rdfs:label "Boots".
+<http://linkedgeodata.org/triplify/node663653788> rdfs:label "Rowlands".
+<http://linkedgeodata.org/triplify/node539484722> rdfs:label "Beehive Letting".
+<http://linkedgeodata.org/triplify/node1205632506> rdfs:label "War Memorial".
+<http://linkedgeodata.org/triplify/node619315057> rdfs:label "McCord's Hair and Beauty".
+<http://linkedgeodata.org/triplify/node267430681> rdfs:label "St Ebbe's Headington".
+<http://linkedgeodata.org/triplify/node268655466> rdfs:label "Turl Bar".
+<http://linkedgeodata.org/triplify/node373103340> rdfs:label "St Laurence's".
+<http://linkedgeodata.org/triplify/node530773117> rdfs:label "Bon Apetit".
+<http://linkedgeodata.org/triplify/node914319686> rdfs:label "Ardington Marsh Lock".
+<http://linkedgeodata.org/triplify/node527166741> rdfs:label "Isis Guest House".
+<http://linkedgeodata.org/triplify/node435107866> rdfs:label "The Wheatsheaf".
+<http://linkedgeodata.org/triplify/node250143956> rdfs:label "The Newlands Inn".
+<http://linkedgeodata.org/triplify/node15708932> rdfs:label "Hempton".
+<http://linkedgeodata.org/triplify/node262898088> rdfs:label "Ridgeway Community Church".
+<http://linkedgeodata.org/triplify/node247914910> rdfs:label "Windrush Valley".
+<http://linkedgeodata.org/triplify/node364769145> rdfs:label "Barton Surgery".
+<http://linkedgeodata.org/triplify/node267430682> rdfs:label "Lime Walk Methodist Church".
+<http://linkedgeodata.org/triplify/node144534923> rdfs:label "Woodeaton Manor School".
+<http://linkedgeodata.org/triplify/node830160790> rdfs:label "Shillingford Hill".
+<http://linkedgeodata.org/triplify/node508923481> rdfs:label "Evagreen".
+<http://linkedgeodata.org/triplify/node14191303> rdfs:label "Cowley".
+<http://linkedgeodata.org/triplify/node259095513> rdfs:label "Royal Orchid".
+<http://linkedgeodata.org/triplify/node373515774> rdfs:label "The Blue Boar".
+<http://linkedgeodata.org/triplify/node14417331> rdfs:label "The Oxford Yeoman".
+<http://linkedgeodata.org/triplify/node508923487> rdfs:label "Cinnamons".
+<http://linkedgeodata.org/triplify/node253277174> rdfs:label "Jubilee Hall".
+<http://linkedgeodata.org/triplify/node458103810> rdfs:label "G R Cycles".
+<http://linkedgeodata.org/triplify/node278588148> rdfs:label "Horspath Methodist Chapel and Meeting Place".
+<http://linkedgeodata.org/triplify/node267794242> rdfs:label "Holy Trinity Church".
+<http://linkedgeodata.org/triplify/node21545933> rdfs:label "Saint Andrew's Parish Church".
+<http://linkedgeodata.org/triplify/node495580023> rdfs:label "Talbot Inn".
+<http://linkedgeodata.org/triplify/node553028844> rdfs:label "George and Danver".
+<http://linkedgeodata.org/triplify/node14191305> rdfs:label "Littlemore".
+<http://linkedgeodata.org/triplify/node31959477> rdfs:label "St. Peter's Church".
+<http://linkedgeodata.org/triplify/node262887700> rdfs:label "Warborough".
+<http://linkedgeodata.org/triplify/node282282743> rdfs:label "The Church of St Mary the Virgin Ambrosden".
+<http://linkedgeodata.org/triplify/node264151693> rdfs:label "North Aston".
+<http://linkedgeodata.org/triplify/node14191304> rdfs:label "Blackbird Leys".
+<http://linkedgeodata.org/triplify/node322721532> rdfs:label "RJ@21".
+<http://linkedgeodata.org/triplify/node571451725> rdfs:label "Appletree Cottage".
+<http://linkedgeodata.org/triplify/node1209713307> rdfs:label "The Broadshires Health Centre".
+<http://linkedgeodata.org/triplify/node259095515> rdfs:label "Tesco Express".
+<http://linkedgeodata.org/triplify/node413289321> rdfs:label "Wood Farm Community Centre".
+<http://linkedgeodata.org/triplify/node28238572> rdfs:label "St. Thomas More Catholic Church".
+<http://linkedgeodata.org/triplify/node71137457> rdfs:label "All Saints".
+<http://linkedgeodata.org/triplify/node457919274> rdfs:label "Rainbow Fish and Chips".
+<http://linkedgeodata.org/triplify/node258716124> rdfs:label "Old Marston Library".
+<http://linkedgeodata.org/triplify/node263056441> rdfs:label "The Nuffield Needle".
+<http://linkedgeodata.org/triplify/node303287220> rdfs:label "St Lawrence Church".
+<http://linkedgeodata.org/triplify/node14191306> rdfs:label "New Hinksey".
+<http://linkedgeodata.org/triplify/node21545932> rdfs:label "St. Mary & St Nicholas".
+<http://linkedgeodata.org/triplify/node465460528> rdfs:label "Cafe Rouge".
+<http://linkedgeodata.org/triplify/node31959476> rdfs:label "Peyton Arms".
+<http://linkedgeodata.org/triplify/node906718367> rdfs:label "Peashell Farm".
+<http://linkedgeodata.org/triplify/node6520406> rdfs:label "Tackley Village Hall".
+<http://linkedgeodata.org/triplify/node446347067> rdfs:label "The George Inn".
+<http://linkedgeodata.org/triplify/node258716125> rdfs:label "Mortimer Hall".
+<http://linkedgeodata.org/triplify/node246884551> rdfs:label "Culham Lock".
+<http://linkedgeodata.org/triplify/node26632769> rdfs:label "Midcounties Co-op".
+<http://linkedgeodata.org/triplify/node12610728> rdfs:label "The Cock Inn".
+<http://linkedgeodata.org/triplify/node14418580> rdfs:label "New Yatt".
+<http://linkedgeodata.org/triplify/node660745084> rdfs:label "The Aviator".
+<http://linkedgeodata.org/triplify/node317480727> rdfs:label "The Cotswold Arms".
+<http://linkedgeodata.org/triplify/node14493238> rdfs:label "Enstone".
+<http://linkedgeodata.org/triplify/node315901685> rdfs:label "Bengal Spice".
+<http://linkedgeodata.org/triplify/node539500444> rdfs:label "Spires Sandwich Deli".
+<http://linkedgeodata.org/triplify/node337792877> rdfs:label "Spar".
+<http://linkedgeodata.org/triplify/node435197043> rdfs:label "Holy Cross Church".
+<http://linkedgeodata.org/triplify/node666484466> rdfs:label "Kids Unlimited Day Nursery".
+<http://linkedgeodata.org/triplify/node1132638463> rdfs:label "Costa Coffee".
+<http://linkedgeodata.org/triplify/node1231468767> rdfs:label "AMT Coffee".
+<http://linkedgeodata.org/triplify/node282282746> rdfs:label "The Turner Arms".
+<http://linkedgeodata.org/triplify/node245428150> rdfs:label "Wickes".
+<http://linkedgeodata.org/triplify/node426907507> rdfs:label "Stanford in the Vale".
+<http://linkedgeodata.org/triplify/node539530990> rdfs:label "Click & Print".
+<http://linkedgeodata.org/triplify/node663606338> rdfs:label "Saffron".
+<http://linkedgeodata.org/triplify/node663606339> rdfs:label "Felson's".
+<http://linkedgeodata.org/triplify/node244245498> rdfs:label "Parish Church of Saint Peter".
+<http://linkedgeodata.org/triplify/node29629103> rdfs:label "St Marys RC Primary School".
+<http://linkedgeodata.org/triplify/node255605788> rdfs:label "Rose and Crown".
+<http://linkedgeodata.org/triplify/node875779432> rdfs:label "Loose Cannon Brewery Shop".
+<http://linkedgeodata.org/triplify/node767334974> rdfs:label "Countrywide".
+<http://linkedgeodata.org/triplify/node281251449> rdfs:label "Bablock Hythe".
+<http://linkedgeodata.org/triplify/node10455849> rdfs:label "Combe".
+<http://linkedgeodata.org/triplify/node319253511> rdfs:label "Carluccio's".
+<http://linkedgeodata.org/triplify/node29132816> rdfs:label "Begbroke Village Hall".
+<http://linkedgeodata.org/triplify/node253406409> rdfs:label "The Church of the Holy Family".
+<http://linkedgeodata.org/triplify/node253406408> rdfs:label "Blackbird Leys Swimming Pool".
+<http://linkedgeodata.org/triplify/node430203044> rdfs:label "Dragon Bowl".
+<http://linkedgeodata.org/triplify/node14418581> rdfs:label "North Leigh".
+<http://linkedgeodata.org/triplify/node257895659> rdfs:label "The Red Lion".
+<http://linkedgeodata.org/triplify/node747408894> rdfs:label "Majliss".
+<http://linkedgeodata.org/triplify/node354938034> rdfs:label "The American Garden".
+<http://linkedgeodata.org/triplify/node252624609> rdfs:label "Corner House".
+<http://linkedgeodata.org/triplify/node585120> rdfs:label "The White Horse".
+<http://linkedgeodata.org/triplify/node387808794> rdfs:label "The Barley Mow".
+<http://linkedgeodata.org/triplify/node29393529> rdfs:label "Heyford Common Lock".
+<http://linkedgeodata.org/triplify/node1149688980> rdfs:label "Carterton Health Centre".
+<http://linkedgeodata.org/triplify/node5418911> rdfs:label "Fawler".
+<http://linkedgeodata.org/triplify/node5418912> rdfs:label "Stonesfield".
+<http://linkedgeodata.org/triplify/node282311059> rdfs:label "Amigo".
+<http://linkedgeodata.org/triplify/node26493443> rdfs:label "Centurion".
+<http://linkedgeodata.org/triplify/node430203047> rdfs:label "Dragon Bowl".
+<http://linkedgeodata.org/triplify/node319253514> rdfs:label "Prezzo".
+<http://linkedgeodata.org/triplify/node26777157> rdfs:label "Caversfield".
+<http://linkedgeodata.org/triplify/node261925217> rdfs:label "Wantage Civic Hall".
+<http://linkedgeodata.org/triplify/node322850672> rdfs:label "Royal Oxford Hotel".
+<http://linkedgeodata.org/triplify/node604333580> rdfs:label "Fish and chip shop".
+<http://linkedgeodata.org/triplify/node611920764> rdfs:label "West Cornwall Pasty Co".
+<http://linkedgeodata.org/triplify/node429998587> rdfs:label "Bill Archer".
+<http://linkedgeodata.org/triplify/node333690898> rdfs:label "Folly Hill".
+<http://linkedgeodata.org/triplify/node740749946> rdfs:label "River Hotel".
+<http://linkedgeodata.org/triplify/node265119447> rdfs:label "The Horse and Harrow".
+<http://linkedgeodata.org/triplify/node393460188> rdfs:label "Asda Fast Fuel".
+<http://linkedgeodata.org/triplify/node188576943> rdfs:label "Old Shifford".
+<http://linkedgeodata.org/triplify/node429998586> rdfs:label "Hair by Mark".
+<http://linkedgeodata.org/triplify/node28087228> rdfs:label "The Acorn".
+<http://linkedgeodata.org/triplify/node253406404> rdfs:label "The Blackbird".
+<http://linkedgeodata.org/triplify/node663606335> rdfs:label "Galaxie Hotel".
+<http://linkedgeodata.org/triplify/node15735879> rdfs:label "Fiddler's Island".
+<http://linkedgeodata.org/triplify/node297888434> rdfs:label "Blackwells".
+<http://linkedgeodata.org/triplify/node544979099> rdfs:label "Remont".
+<http://linkedgeodata.org/triplify/node1229846785> rdfs:label "Freeland Nurseries".
+<http://linkedgeodata.org/triplify/node275913786> rdfs:label "Wantage Community Hospital".
+<http://linkedgeodata.org/triplify/node373515772> rdfs:label "Chipping Norton Guildhall".
+<http://linkedgeodata.org/triplify/node663606336> rdfs:label "M.K.'s Foods & Convenience".
+<http://linkedgeodata.org/triplify/node253406405> rdfs:label "Blackbird Leys Community Centre".
+<http://linkedgeodata.org/triplify/node267794241> rdfs:label "The Boars Head".
+<http://linkedgeodata.org/triplify/node540285123> rdfs:label "Classic Cleaners".
+<http://linkedgeodata.org/triplify/node309162210> rdfs:label "Abbey Chapel".
+<http://linkedgeodata.org/triplify/node429998588> rdfs:label "Xpress".
+<http://linkedgeodata.org/triplify/node265605158> rdfs:label "St. Nicholas Church".
+<http://linkedgeodata.org/triplify/node663606337> rdfs:label "Cafe Ziggy".
+<http://linkedgeodata.org/triplify/node256117017> rdfs:label "Grove Farm Caravan Club".
+<http://linkedgeodata.org/triplify/node31289568> rdfs:label "Ducklington".
+<http://linkedgeodata.org/triplify/node261925221> rdfs:label "Mellors of Challow".
+<http://linkedgeodata.org/triplify/node472624215> rdfs:label "The Cherry Tree".
+<http://linkedgeodata.org/triplify/node311178428> rdfs:label "Chilson".
+<http://linkedgeodata.org/triplify/node268632504> rdfs:label "Harrowdown Hill".
+<http://linkedgeodata.org/triplify/node11658440> rdfs:label "Rose And Crown".
+<http://linkedgeodata.org/triplify/node298272351> rdfs:label "Macdonald Randolph Hotel".
+<http://linkedgeodata.org/triplify/node315956076> rdfs:label "Aziz".
+<http://linkedgeodata.org/triplify/node312659596> rdfs:label "Waggon and Horses".
+<http://linkedgeodata.org/triplify/node290851422> rdfs:label "Denton".
+<http://linkedgeodata.org/triplify/node472624213> rdfs:label "The Fox Inn".
+<http://linkedgeodata.org/triplify/node1112293265> rdfs:label "French Square".
+<http://linkedgeodata.org/triplify/node414259278> rdfs:label "Limekiln Lock".
+<http://linkedgeodata.org/triplify/node29138371> rdfs:label "St. Mary's Church".
+<http://linkedgeodata.org/triplify/node560827144> rdfs:label "Marriotts Walk".
+<http://linkedgeodata.org/triplify/node175707113> rdfs:label "William Morris".
+<http://linkedgeodata.org/triplify/node11658441> rdfs:label "The Bull".
+<http://linkedgeodata.org/triplify/node282541265> rdfs:label "OFS".
+<http://linkedgeodata.org/triplify/node470227402> rdfs:label "St Michael and All Angels".
+<http://linkedgeodata.org/triplify/node619315113> rdfs:label "Cafe Spice".
+<http://linkedgeodata.org/triplify/node28791003> rdfs:label "Roundham Lock".
+<http://linkedgeodata.org/triplify/node508772119> rdfs:label "Great Milton C of E Primary School".
+<http://linkedgeodata.org/triplify/node1229698571> rdfs:label "Park House Tearoom".
+<http://linkedgeodata.org/triplify/node11658442> rdfs:label "Charlbury".
+<http://linkedgeodata.org/triplify/node571514387> rdfs:label "The Broad Face".
+<http://linkedgeodata.org/triplify/node256522986> rdfs:label "Blackbird Leys Library & Learning Centre".
+<http://linkedgeodata.org/triplify/node590499640> rdfs:label "Joe Austin Florist".
+<http://linkedgeodata.org/triplify/node302323704> rdfs:label "Oxfordshire".
+<http://linkedgeodata.org/triplify/node322850667> rdfs:label "Las Iguanas".
+<http://linkedgeodata.org/triplify/node6512315> rdfs:label "Tackley".
+<http://linkedgeodata.org/triplify/node583001448> rdfs:label "Butchers Arms".
+<http://linkedgeodata.org/triplify/node840486955> rdfs:label "Tuck Shop".
+<http://linkedgeodata.org/triplify/node14191818> rdfs:label "Norham Manor".
+<http://linkedgeodata.org/triplify/node71104894> rdfs:label "Asthall".
+<http://linkedgeodata.org/triplify/node1176105440> rdfs:label "Yarnton Farm Shop".
+<http://linkedgeodata.org/triplify/node26610006> rdfs:label "The White Hart".
+<http://linkedgeodata.org/triplify/node27236170> rdfs:label "Hundred Acres".
+<http://linkedgeodata.org/triplify/node245428969> rdfs:label "Bike Hut".
+<http://linkedgeodata.org/triplify/node240357478> rdfs:label "William Fletcher Primary School".
+<http://linkedgeodata.org/triplify/node252519886> rdfs:label "Radley Village Shop".
+<http://linkedgeodata.org/triplify/node26365435> rdfs:label "Chesterton".
+<http://linkedgeodata.org/triplify/node322850669> rdfs:label "Lava+Ignite".
+<http://linkedgeodata.org/triplify/node14191819> rdfs:label "Walton Manor".
+<http://linkedgeodata.org/triplify/node472624217> rdfs:label "The Co-op".
+<http://linkedgeodata.org/triplify/node505371665> rdfs:label "Top 1 Pizza".
+<http://linkedgeodata.org/triplify/node28120960> rdfs:label "Westcott Barton".
+<http://linkedgeodata.org/triplify/node522986710> rdfs:label "Patisserie Valerie".
+<http://linkedgeodata.org/triplify/node337831324> rdfs:label "Milton Heights".
+<http://linkedgeodata.org/triplify/node809902764> rdfs:label "Argos Extra".
+<http://linkedgeodata.org/triplify/node504745226> rdfs:label "Pizza Roma".
+<http://linkedgeodata.org/triplify/node413234214> rdfs:label "Beaumont Veterinary Centre".
+<http://linkedgeodata.org/triplify/node508923490> rdfs:label "Wok One".
+<http://linkedgeodata.org/triplify/node627783555> rdfs:label "The Old Crown Coaching Inn".
+<http://linkedgeodata.org/triplify/node627783554> rdfs:label "Market Restaurant".
+<http://linkedgeodata.org/triplify/node530773108> rdfs:label "9 to 9".
+<http://linkedgeodata.org/triplify/node278588051> rdfs:label "Horspath Service Centre".
+<http://linkedgeodata.org/triplify/node316926373> rdfs:label "Ladygrove".
+<http://linkedgeodata.org/triplify/node465460512> rdfs:label "Strada".
+<http://linkedgeodata.org/triplify/node348100002> rdfs:label "Simon Fish & Chips".
+<http://linkedgeodata.org/triplify/node647188030> rdfs:label "TK Maxx".
+<http://linkedgeodata.org/triplify/node26777202> rdfs:label "Kelly Farm".
+<http://linkedgeodata.org/triplify/node702685496> rdfs:label "Johnsons of Oxford".
+<http://linkedgeodata.org/triplify/node338797397> rdfs:label "West End".
+<http://linkedgeodata.org/triplify/node798821112> rdfs:label "Abingdon Preparatory School".
+<http://linkedgeodata.org/triplify/node317614160> rdfs:label "Thornhill Park and Ride".
+<http://linkedgeodata.org/triplify/node16342053> rdfs:label "Kennington".
+<http://linkedgeodata.org/triplify/node539474407> rdfs:label "Lloyds Pharmacy".
+<http://linkedgeodata.org/triplify/node316924442> rdfs:label "Didcot Town FC".
+<http://linkedgeodata.org/triplify/node512592680> rdfs:label "Harcourt Arms".
+<http://linkedgeodata.org/triplify/node340024657> rdfs:label "Rokemarsh".
+<http://linkedgeodata.org/triplify/node340024656> rdfs:label "Berrick Prior".
+<http://linkedgeodata.org/triplify/node611917363> rdfs:label "The Crown".
+<http://linkedgeodata.org/triplify/node286319197> rdfs:label "High Cogges".
+<http://linkedgeodata.org/triplify/node848252264> rdfs:label "Tesco Express".
+<http://linkedgeodata.org/triplify/node12612377> rdfs:label "The Bell".
+<http://linkedgeodata.org/triplify/node522978113> rdfs:label "Pizza Hut".
+<http://linkedgeodata.org/triplify/node26314987> rdfs:label "The Trigger Pond".
+<http://linkedgeodata.org/triplify/node26314988> rdfs:label "Bucknell".
+<http://linkedgeodata.org/triplify/node17062593> rdfs:label "St Swithun's Church".
+<http://linkedgeodata.org/triplify/node448858111> rdfs:label "Holy Trinity".
+<http://linkedgeodata.org/triplify/node880382761> rdfs:label "Wootton Village".
+<http://linkedgeodata.org/triplify/node1018723496> rdfs:label "Burger King".
+<http://linkedgeodata.org/triplify/node504748231> rdfs:label "Cafe Nour".
+<http://linkedgeodata.org/triplify/node746814170> rdfs:label "Martin's".
+<http://linkedgeodata.org/triplify/node12612378> rdfs:label "George & Dragon".
+<http://linkedgeodata.org/triplify/node804503537> rdfs:label "Cumbers of Thiele".
+<http://linkedgeodata.org/triplify/node14191309> rdfs:label "Summertown".
+<http://linkedgeodata.org/triplify/node833483898> rdfs:label "Plymouth Brethren Meeting".
+<http://linkedgeodata.org/triplify/node380044401> rdfs:label "Rowlands".
+<http://linkedgeodata.org/triplify/node175707119> rdfs:label "Nuffield Arms".
+<http://linkedgeodata.org/triplify/node560521152> rdfs:label "Charlbury Museum".
+<http://linkedgeodata.org/triplify/node262884131> rdfs:label "Newington".
+<http://linkedgeodata.org/triplify/node14190969> rdfs:label "Temple Cowley".
+<http://linkedgeodata.org/triplify/node12699308> rdfs:label "The Swan Inn".
+<http://linkedgeodata.org/triplify/node364554116> rdfs:label "Little Milton".
+<http://linkedgeodata.org/triplify/node274810034> rdfs:label "Eaton".
+<http://linkedgeodata.org/triplify/node282539666> rdfs:label "Oxford Playhouse".
+<http://linkedgeodata.org/triplify/node665368785> rdfs:label "Stepping Stones Nursery".
+<http://linkedgeodata.org/triplify/node12805909> rdfs:label "Rhydychen@cy".
+<http://linkedgeodata.org/triplify/node338466522> rdfs:label "Burcot".
+<http://linkedgeodata.org/triplify/node307805532> rdfs:label "Northcourt Post Office".
+<http://linkedgeodata.org/triplify/node588582925> rdfs:label "Marks And Spencer".
+<http://linkedgeodata.org/triplify/node663823471> rdfs:label "Cornerstone".
+<http://linkedgeodata.org/triplify/node593947511> rdfs:label "La Croissanterie".
+<http://linkedgeodata.org/triplify/node26777200> rdfs:label "Glebe Farm".
+<http://linkedgeodata.org/triplify/node676363602> rdfs:label "Woodperry Road SPS".
+<http://linkedgeodata.org/triplify/node663653798> rdfs:label "Gatineau".
+<http://linkedgeodata.org/triplify/node262887720> rdfs:label "St Lawrence Warborough".
+<http://linkedgeodata.org/triplify/node281602745> rdfs:label "Farmoor Service Station".
+<http://linkedgeodata.org/triplify/node539474408> rdfs:label "The Insurance Factory".
+<http://linkedgeodata.org/triplify/node26494730> rdfs:label "St Edburg's".
+<http://linkedgeodata.org/triplify/node337789695> rdfs:label "Faringdon Folly".
+<http://linkedgeodata.org/triplify/node504753804> rdfs:label "Hi-Lo".
+<http://linkedgeodata.org/triplify/node1149688234> rdfs:label "Catholic Church St. Joseph".
+<http://linkedgeodata.org/triplify/node1209713462> rdfs:label "Carterton Leisure Centre".
+<http://linkedgeodata.org/triplify/node539474409> rdfs:label "Computer Assistance".
+<http://linkedgeodata.org/triplify/node465460519> rdfs:label "Pierre Victoire".
+<http://linkedgeodata.org/triplify/node269226932> rdfs:label "The Bear and Ragged Staff".
+<http://linkedgeodata.org/triplify/node35832232> rdfs:label "Vicker's".
+<http://linkedgeodata.org/triplify/node663653793> rdfs:label "Spice Lounge".
+<http://linkedgeodata.org/triplify/node144534936> rdfs:label "Holy Rood Church".
+<http://linkedgeodata.org/triplify/node539474411> rdfs:label "Co-Op Funeral Care".
+<http://linkedgeodata.org/triplify/node14191391> rdfs:label "Dean Court".
+<http://linkedgeodata.org/triplify/node34042194> rdfs:label "The Kings Arms Hotel".
+<http://linkedgeodata.org/triplify/node1085523817> rdfs:label "Debenhams".
+<http://linkedgeodata.org/triplify/node290289174> rdfs:label "Shotover Hill".
+<http://linkedgeodata.org/triplify/node663653794> rdfs:label "Costa".
+<http://linkedgeodata.org/triplify/node15709095> rdfs:label "Deddington".
+<http://linkedgeodata.org/triplify/node320656820> rdfs:label "Moulsford".
+<http://linkedgeodata.org/triplify/node432547621> rdfs:label "Ardington Wick".
+<http://linkedgeodata.org/triplify/node34042195> rdfs:label "Jaan".
+<http://linkedgeodata.org/triplify/node14778096> rdfs:label "Prince Of Wales".
+<http://linkedgeodata.org/triplify/node370356339> rdfs:label "Grovelands Medical Centre".
+<http://linkedgeodata.org/triplify/node820811802> rdfs:label "Abby Tyre".
+<http://linkedgeodata.org/triplify/node560833683> rdfs:label "Marriotts Walk".
+<http://linkedgeodata.org/triplify/node436146518> rdfs:label "War Memorial".
+<http://linkedgeodata.org/triplify/node800607622> rdfs:label "KJ's Motor Car Engineers Ltd".
+<http://linkedgeodata.org/triplify/node60737063> rdfs:label "St. Columba's Church".
+<http://linkedgeodata.org/triplify/node15651632> rdfs:label "Grafton lock".
+<http://linkedgeodata.org/triplify/node175028262> rdfs:label "Cape of Good Hope".
+<http://linkedgeodata.org/triplify/node29781226> rdfs:label "St Mary The Virgin".
+<http://linkedgeodata.org/triplify/node688700908> rdfs:label "Wychwood School".
+<http://linkedgeodata.org/triplify/node580928084> rdfs:label "Brenal Guest House".
+<http://linkedgeodata.org/triplify/node948987494> rdfs:label "Over Worton".
+<http://linkedgeodata.org/triplify/node436146519> rdfs:label "Champs Chapel".
+<http://linkedgeodata.org/triplify/node436146517> rdfs:label "St Mary's".
+<http://linkedgeodata.org/triplify/node35832233> rdfs:label "Brothertons Brasserie".
+<http://linkedgeodata.org/triplify/node21625936> rdfs:label "King's Arms".
+<http://linkedgeodata.org/triplify/node35832234> rdfs:label "Woodstock Baptist Church".
+<http://linkedgeodata.org/triplify/node245428971> rdfs:label "Homebase".
+<http://linkedgeodata.org/triplify/node29393530> rdfs:label "Heyford Common Lock".
+<http://linkedgeodata.org/triplify/node370144533> rdfs:label "The Co-Operative Food".
+<http://linkedgeodata.org/triplify/node16259574> rdfs:label "Gloucester Street Car Park".
+<http://linkedgeodata.org/triplify/node558888422> rdfs:label "Rowlands".
+<http://linkedgeodata.org/triplify/node663606340> rdfs:label "Starbucks Coffee".
+<http://linkedgeodata.org/triplify/node26777309> rdfs:label "Bainton".
+<http://linkedgeodata.org/triplify/node374492853> rdfs:label "Heavenly Body Tattoo & Piercing Parour".
+<http://linkedgeodata.org/triplify/node663653790> rdfs:label "La Dolce Vita".
+<http://linkedgeodata.org/triplify/node666482145> rdfs:label "The North Wall Arts Centre".
+<http://linkedgeodata.org/triplify/node389873797> rdfs:label "All Saints".
+<http://linkedgeodata.org/triplify/node322720971> rdfs:label "Kazbar".
+<http://linkedgeodata.org/triplify/node583287442> rdfs:label "The Ladygrove".
+<http://linkedgeodata.org/triplify/node666482144> rdfs:label "Woodstock Road Baptist Church".
+<http://linkedgeodata.org/triplify/node457919713> rdfs:label "Best Food 2000".
+<http://linkedgeodata.org/triplify/node261927181> rdfs:label "King Alfred's Community and Sports College (Centre Site)".
+<http://linkedgeodata.org/triplify/node35832230> rdfs:label "Woodstock's Own".
+<http://linkedgeodata.org/triplify/node465460517> rdfs:label "The Duke of Cambridge".
+<http://linkedgeodata.org/triplify/node322720972> rdfs:label "Tick Tock Cafe".
+<http://linkedgeodata.org/triplify/node262543549> rdfs:label "The Cricketers Arms".
+<http://linkedgeodata.org/triplify/node906722838> rdfs:label "Middlefield Farm".
+<http://linkedgeodata.org/triplify/node279377403> rdfs:label "War Memorial".
+<http://linkedgeodata.org/triplify/node534758262> rdfs:label "Upper Milton".
+<http://linkedgeodata.org/triplify/node1149963508> rdfs:label "Carterton FC".
+<http://linkedgeodata.org/triplify/node663653792> rdfs:label "XI'AN".
+<http://linkedgeodata.org/triplify/node479107025> rdfs:label "Iqra School Oxford".
+<http://linkedgeodata.org/triplify/node374643275> rdfs:label "Iffley Meadows".
+<http://linkedgeodata.org/triplify/node262543547> rdfs:label "Cowley Library".
+<http://linkedgeodata.org/triplify/node16261707> rdfs:label "St John the Evangelist".
+<http://linkedgeodata.org/triplify/node387521176> rdfs:label "St Luke's Hospital".
+<http://linkedgeodata.org/triplify/node269268884> rdfs:label "Slade Woods".
+<http://linkedgeodata.org/triplify/node15696465> rdfs:label "Kingston Bagpuize".
+<http://linkedgeodata.org/triplify/node387521209> rdfs:label "Rice Box".
+<http://linkedgeodata.org/triplify/node262898125> rdfs:label "St Leonard's".
+<http://linkedgeodata.org/triplify/node527972074> rdfs:label "palace station".
+<http://linkedgeodata.org/triplify/node666482140> rdfs:label "Woodstock Road Public Convenience (Gents)".
+<http://linkedgeodata.org/triplify/node579794426> rdfs:label "Acorn Guest House".
+<http://linkedgeodata.org/triplify/node274811854> rdfs:label "Northmoor".
+<http://linkedgeodata.org/triplify/node364769151> rdfs:label "Barton Neighbourhood Centre".
+<http://linkedgeodata.org/triplify/node583276289> rdfs:label "R G Park".
+<http://linkedgeodata.org/triplify/node255605779> rdfs:label "The Old Mill".
+<http://linkedgeodata.org/triplify/node290851417> rdfs:label "Chippinghurst".
+<http://linkedgeodata.org/triplify/node282540241> rdfs:label "New Theatre".
+<http://linkedgeodata.org/triplify/node387808784> rdfs:label "The Red Lion".
+<http://linkedgeodata.org/triplify/node322850666> rdfs:label "Kukui".
+<http://linkedgeodata.org/triplify/node490133397> rdfs:label "Weston Manor Hotel".
+<http://linkedgeodata.org/triplify/node278836691> rdfs:label "Cricketers Arms".
+<http://linkedgeodata.org/triplify/node246690843> rdfs:label "West Oxfordshire District Council -  Moorland Centre".
+<http://linkedgeodata.org/triplify/node15696464> rdfs:label "Fyfield".
+<http://linkedgeodata.org/triplify/node243355195> rdfs:label "The Sprat".
+<http://linkedgeodata.org/triplify/node14896449> rdfs:label "Sainsbury's".
+<http://linkedgeodata.org/triplify/node413626566> rdfs:label "Lyra & Will's bench".
+<http://linkedgeodata.org/triplify/node415963725> rdfs:label "Marcham".
+<http://linkedgeodata.org/triplify/node14191310> rdfs:label "Cutteslowe".
+<http://linkedgeodata.org/triplify/node243355222> rdfs:label "Hagbourne Church of England Primary School".
+<http://linkedgeodata.org/triplify/node504744982> rdfs:label "The Excelsior".
+<http://linkedgeodata.org/triplify/node246181469> rdfs:label "Tesco Express".
+<http://linkedgeodata.org/triplify/node247059194> rdfs:label "Grove".
+<http://linkedgeodata.org/triplify/node565073741> rdfs:label "Red Lion".
+<http://linkedgeodata.org/triplify/node267790767> rdfs:label "Fairview Inn".
+<http://linkedgeodata.org/triplify/node313026966> rdfs:label "Najar's Place".
+<http://linkedgeodata.org/triplify/node243355223> rdfs:label "Fleur De Lys".
+<http://linkedgeodata.org/triplify/node246848665> rdfs:label "Methodist Church".
+<http://linkedgeodata.org/triplify/node15843474> rdfs:label "Wytham".
+<http://linkedgeodata.org/triplify/node868728851> rdfs:label "BT payphone".
+<http://linkedgeodata.org/triplify/node853753427> rdfs:label "All Saint's School".
+<http://linkedgeodata.org/triplify/node619315110> rdfs:label "Highfield House".
+<http://linkedgeodata.org/triplify/node468411094> rdfs:label "Copthorne Hotel Reaidng".
+<http://linkedgeodata.org/triplify/node253406368> rdfs:label "Sacred Heart Church".
+<http://linkedgeodata.org/triplify/node267790766> rdfs:label "Lye Valley".
+<http://linkedgeodata.org/triplify/node565073742> rdfs:label "Crown".
+<http://linkedgeodata.org/triplify/node246887528> rdfs:label "Smallmarsh Lock".
+<http://linkedgeodata.org/triplify/node432801536> rdfs:label "East Hendred Village Stores".
+<http://linkedgeodata.org/triplify/node617039468> rdfs:label "Wootton Dental Surgery".
+<http://linkedgeodata.org/triplify/node495592447> rdfs:label "Jolly Sportsman".
+<http://linkedgeodata.org/triplify/node14191390> rdfs:label "Botley".
+<http://linkedgeodata.org/triplify/node246887529> rdfs:label "Grovecommon Lock".
+<http://linkedgeodata.org/triplify/node14190970> rdfs:label "Wood Farm".
+<http://linkedgeodata.org/triplify/node571514395> rdfs:label "Crown and Thistle".
+<http://linkedgeodata.org/triplify/node414569646> rdfs:label "The George Hotel".
+<http://linkedgeodata.org/triplify/node262304519> rdfs:label "Charney Basset".
+<http://linkedgeodata.org/triplify/node546289191> rdfs:label "Cotswold House B&B".
+<http://linkedgeodata.org/triplify/node28788167> rdfs:label "Pidgeons Lock".
+<http://linkedgeodata.org/triplify/node33621399> rdfs:label "Stanton Harcourt".
+<http://linkedgeodata.org/triplify/node20693945> rdfs:label "Beckley".
+<http://linkedgeodata.org/triplify/node279886745> rdfs:label "Cricketers Arms".
+<http://linkedgeodata.org/triplify/node259190443> rdfs:label "Nando's".
+<http://linkedgeodata.org/triplify/node349221210> rdfs:label "Market Square".
+<http://linkedgeodata.org/triplify/node14190971> rdfs:label "Headington".
+<http://linkedgeodata.org/triplify/node257085887> rdfs:label "Curbridge".
+<http://linkedgeodata.org/triplify/node390958394> rdfs:label "New Road Baptist Church".
+<http://linkedgeodata.org/triplify/node500874724> rdfs:label "Wychwood Park Field Town Football Club".
+<http://linkedgeodata.org/triplify/node28788166> rdfs:label "Pidgeons Lock".
+<http://linkedgeodata.org/triplify/node316950933> rdfs:label "St. Paul's".
+<http://linkedgeodata.org/triplify/node374493997> rdfs:label "T.S. Euryalus".
+<http://linkedgeodata.org/triplify/node307557968> rdfs:label "Really Good".
+<http://linkedgeodata.org/triplify/node1111888976> rdfs:label "Three Pigeons".
+<http://linkedgeodata.org/triplify/node558885827> rdfs:label "Tesco Express".
+<http://linkedgeodata.org/triplify/node27422539> rdfs:label "Northbrook".
+<http://linkedgeodata.org/triplify/node269278231> rdfs:label "The Open University in the South".
+<http://linkedgeodata.org/triplify/node583001410> rdfs:label "Red Lion".
+<http://linkedgeodata.org/triplify/node520632618> rdfs:label "Mason Arms".
+<http://linkedgeodata.org/triplify/node269255239> rdfs:label "The Bystander".
+<http://linkedgeodata.org/triplify/node401885719> rdfs:label "Iffley Dental".
+<http://linkedgeodata.org/triplify/node553058854> rdfs:label "Cornerways Guest House".
+<http://linkedgeodata.org/triplify/node822252649> rdfs:label "Carterton Community Centre".
+<http://linkedgeodata.org/triplify/node175694121> rdfs:label "The Star".
+<http://linkedgeodata.org/triplify/node14190973> rdfs:label "Barton".
+<http://linkedgeodata.org/triplify/node29392805> rdfs:label "Allens Lock".
+<http://linkedgeodata.org/triplify/node363827847> rdfs:label "The Butchers Arms".
+<http://linkedgeodata.org/triplify/node414569645> rdfs:label "The White Hart Hotel".
+<http://linkedgeodata.org/triplify/node874058078> rdfs:label "Oxford Town Hall".
+<http://linkedgeodata.org/triplify/node829523492> rdfs:label "Wallingford Hospital".
+<http://linkedgeodata.org/triplify/node410788448> rdfs:label "The Coach House".
+<http://linkedgeodata.org/triplify/node269278230> rdfs:label "Jarn Wild Garden".
+<http://linkedgeodata.org/triplify/node313066974> rdfs:label "Far From the Madding Crowd".
+<http://linkedgeodata.org/triplify/node414569647> rdfs:label "The George Hotel".
+<http://linkedgeodata.org/triplify/node253226259> rdfs:label "The Queen's Dyke County Primary School".
+<http://linkedgeodata.org/triplify/node175707084> rdfs:label "Nelson".
+<http://linkedgeodata.org/triplify/node972054829> rdfs:label "The Vaults & Garden Café".
+<http://linkedgeodata.org/triplify/node1111888979> rdfs:label "Elm Tree".
+<http://linkedgeodata.org/triplify/node338592748> rdfs:label "FARINGDON1".
+<http://linkedgeodata.org/triplify/node905523995> rdfs:label "Caswell Farm".
+<http://linkedgeodata.org/triplify/node441073049> rdfs:label "Milton Church Car Park".
+<http://linkedgeodata.org/triplify/node560405597> rdfs:label "The Pack Horse".
+<http://linkedgeodata.org/triplify/node250172356> rdfs:label "The White Hart".
+<http://linkedgeodata.org/triplify/node247067119> rdfs:label "East Challow".
+<http://linkedgeodata.org/triplify/node684804926> rdfs:label "Children's Garden of Remembrance".
+<http://linkedgeodata.org/triplify/node283140408> rdfs:label "Village Hall".
+<http://linkedgeodata.org/triplify/node663988163> rdfs:label "Chilswell Farm".
+<http://linkedgeodata.org/triplify/node380939589> rdfs:label "Cycle Shop".
+<http://linkedgeodata.org/triplify/node312636131> rdfs:label "Round Hill".
+<http://linkedgeodata.org/triplify/node472624225> rdfs:label "Munchies Sandwiches".
+<http://linkedgeodata.org/triplify/node14190975> rdfs:label "Northway".
+<http://linkedgeodata.org/triplify/node256522876> rdfs:label "St. John Fisher Catholic Primary School".
+<http://linkedgeodata.org/triplify/node251837593> rdfs:label "Cornerstone Christian Centre".
+<http://linkedgeodata.org/triplify/node243355221> rdfs:label "Hagbourne Village Hall".
+<http://linkedgeodata.org/triplify/node28795003> rdfs:label "Dukes Cut Lock".
+<http://linkedgeodata.org/triplify/node28795002> rdfs:label "Dukes Cut Lock".
+<http://linkedgeodata.org/triplify/node567172539> rdfs:label "Chipping Norton Museum".
+<http://linkedgeodata.org/triplify/node16797132> rdfs:label "The Holly Bush".
+<http://linkedgeodata.org/triplify/node370798200> rdfs:label "Suntans Tanning Studio".
+<http://linkedgeodata.org/triplify/node14190974> rdfs:label "Risinghurst".
+<http://linkedgeodata.org/triplify/node302010633> rdfs:label "The Corridor".
+<http://linkedgeodata.org/triplify/node666482232> rdfs:label "North Oxford Golf Club".
+<http://linkedgeodata.org/triplify/node288687688> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node414569644> rdfs:label "Co-op".
+<http://linkedgeodata.org/triplify/node14190977> rdfs:label "New Marston".
+<http://linkedgeodata.org/triplify/node307557969> rdfs:label "Blue Boar".
+<http://linkedgeodata.org/triplify/node14494030> rdfs:label "Spelsbury".
+<http://linkedgeodata.org/triplify/node353725616> rdfs:label "Kennington Health Centre".
+<http://linkedgeodata.org/triplify/node558886859> rdfs:label "Memories of Bengal".
+<http://linkedgeodata.org/triplify/node306285614> rdfs:label "Carfax Tower".
+<http://linkedgeodata.org/triplify/node540233092> rdfs:label "Holdens News".
+<http://linkedgeodata.org/triplify/node14190976> rdfs:label "Old Marston".
+<http://linkedgeodata.org/triplify/node583001416> rdfs:label "Angel".
+<http://linkedgeodata.org/triplify/node750598992> rdfs:label "The Alternative Tuck Shop".
+<http://linkedgeodata.org/triplify/node750598991> rdfs:label "The Nosebag".
+<http://linkedgeodata.org/triplify/node501936125> rdfs:label "Fleur de Lys".
+<http://linkedgeodata.org/triplify/node14774236> rdfs:label "Faringdon Leisure Centre".
+<http://linkedgeodata.org/triplify/node597708745> rdfs:label "Starbucks Coffee".
+<http://linkedgeodata.org/triplify/node26163980> rdfs:label "Abingdon Airfield".
+<http://linkedgeodata.org/triplify/node418675604> rdfs:label "The Bell".
+<http://linkedgeodata.org/triplify/node282279235> rdfs:label "Five Acres Primary School & Foundation Stage".
+<http://linkedgeodata.org/triplify/node268664190> rdfs:label "Gardeners Arms".
+<http://linkedgeodata.org/triplify/node614141538> rdfs:label "Curie Avenue".
+<http://linkedgeodata.org/triplify/node14190978> rdfs:label "Headington Quarry".
+<http://linkedgeodata.org/triplify/node320648765> rdfs:label "The Living Room".
+<http://linkedgeodata.org/triplify/node392134602> rdfs:label "Wittenham Clumps".
+<http://linkedgeodata.org/triplify/node251436019> rdfs:label "The Lido".
+<http://linkedgeodata.org/triplify/node619315032> rdfs:label "Old Man's Premier".
+<http://linkedgeodata.org/triplify/node444572961> rdfs:label "Methodist Church".
+<http://linkedgeodata.org/triplify/node26744319> rdfs:label "St. Peter's".
+<http://linkedgeodata.org/triplify/node1144051064> rdfs:label "Eynsham Hall".
+<http://linkedgeodata.org/triplify/node29013023> rdfs:label "Black Bull".
+<http://linkedgeodata.org/triplify/node27339549> rdfs:label "Hopcrofts Holt".
+<http://linkedgeodata.org/triplify/node14191821> rdfs:label "Upper Wolvercote".
+<http://linkedgeodata.org/triplify/node565476816> rdfs:label "Alder's Butchers".
+<http://linkedgeodata.org/triplify/node364769225> rdfs:label "Barton Neighbourhood Police Office".
+<http://linkedgeodata.org/triplify/node688502556> rdfs:label "Baulking".
+<http://linkedgeodata.org/triplify/node472603593> rdfs:label "Steventon Sports and Social Club Park".
+<http://linkedgeodata.org/triplify/node10458171> rdfs:label "Bladon".
+<http://linkedgeodata.org/triplify/node313361081> rdfs:label "Upper Reaches Hotel".
+<http://linkedgeodata.org/triplify/node17946103> rdfs:label "Stanton St John".
+<http://linkedgeodata.org/triplify/node621509461> rdfs:label "Private Shops UK".
+<http://linkedgeodata.org/triplify/node263881170> rdfs:label "Lal Newsagent".
+<http://linkedgeodata.org/triplify/node14191822> rdfs:label "Lower Wolvercote".
+<http://linkedgeodata.org/triplify/node274305188> rdfs:label "The Boathouse".
+<http://linkedgeodata.org/triplify/node472624222> rdfs:label "Blue Ginger Takeaway".
+<http://linkedgeodata.org/triplify/node28120959> rdfs:label "Steeple Barton".
+<http://linkedgeodata.org/triplify/node16252895> rdfs:label "Martyrs' Memorial".
+<http://linkedgeodata.org/triplify/node16659378> rdfs:label "South Oxford Baptist Church".
+<http://linkedgeodata.org/triplify/node441009607> rdfs:label "Chalford Green".
+<http://linkedgeodata.org/triplify/node441000918> rdfs:label "Asthall Barrow".
+<http://linkedgeodata.org/triplify/node659858759> rdfs:label "Cafe Opium".
+<http://linkedgeodata.org/triplify/node26127809> rdfs:label "Aston".
+<http://linkedgeodata.org/triplify/node319249955> rdfs:label "Mansion House".
+<http://linkedgeodata.org/triplify/node572184933> rdfs:label "The Oriental Condoor".
+<http://linkedgeodata.org/triplify/node268939713> rdfs:label "Chilton".
+<http://linkedgeodata.org/triplify/node639133498> rdfs:label "Co-Op Funeral Care".
+<http://linkedgeodata.org/triplify/node504750938> rdfs:label "Boots".
+<http://linkedgeodata.org/triplify/node14191820> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node745391002> rdfs:label "East Oxford Primary School".
+<http://linkedgeodata.org/triplify/node29392806> rdfs:label "Allens Lock".
+<http://linkedgeodata.org/triplify/node250872188> rdfs:label "Rowlands Pharmacy".
+<http://linkedgeodata.org/triplify/node255629370> rdfs:label "Spar".
+<http://linkedgeodata.org/triplify/node231412834> rdfs:label "Fire and Stone Pizza".
+<http://linkedgeodata.org/triplify/node309206277> rdfs:label "The Saxton Arms".
+<http://linkedgeodata.org/triplify/node639133497> rdfs:label "Martin's".
+<http://linkedgeodata.org/triplify/node269226939> rdfs:label "The Greyhound".
+<http://linkedgeodata.org/triplify/node8091207> rdfs:label "Cholsey".
+<http://linkedgeodata.org/triplify/node269193680> rdfs:label "Blewbury".
+<http://linkedgeodata.org/triplify/node274804321> rdfs:label "Appleton".
+<http://linkedgeodata.org/triplify/node231415642> rdfs:label "The Red Lion".
+<http://linkedgeodata.org/triplify/node534797038> rdfs:label "A K City".
+<http://linkedgeodata.org/triplify/node259190168> rdfs:label "Krispy Kreme Donut".
+<http://linkedgeodata.org/triplify/node528195965> rdfs:label "Pleasure Gardens".
+<http://linkedgeodata.org/triplify/node29394498> rdfs:label "Somerton".
+<http://linkedgeodata.org/triplify/node26487645> rdfs:label "North Bicester Surgery".
+<http://linkedgeodata.org/triplify/node583243622> rdfs:label "Regis Guesthouse B&B".
+<http://linkedgeodata.org/triplify/node231411732> rdfs:label "Bangkok House".
+<http://linkedgeodata.org/triplify/node279404656> rdfs:label "South Oxford Bowls Club".
+<http://linkedgeodata.org/triplify/node27339550> rdfs:label "Hopcrofts Holt Garage".
+<http://linkedgeodata.org/triplify/node268664188> rdfs:label "The Rose And Crown".
+<http://linkedgeodata.org/triplify/node847828202> rdfs:label "Union Street Young People's Centre".
+<http://linkedgeodata.org/triplify/node430190644> rdfs:label "Panda House".
+<http://linkedgeodata.org/triplify/node31271454> rdfs:label "The Swan Inn".
+<http://linkedgeodata.org/triplify/node265969344> rdfs:label "The Bear Hotel".
+<http://linkedgeodata.org/triplify/node266404883> rdfs:label "Hailey Village Hall".
+<http://linkedgeodata.org/triplify/node633025130> rdfs:label "Saint Andrew's".
+<http://linkedgeodata.org/triplify/node337674643> rdfs:label "Crowmarsh Gifford".
+<http://linkedgeodata.org/triplify/node259190167> rdfs:label "Liaison".
+<http://linkedgeodata.org/triplify/node431583959> rdfs:label "Drayton Lock".
+<http://linkedgeodata.org/triplify/node28788268> rdfs:label "Bakers Lock".
+<http://linkedgeodata.org/triplify/node801427421> rdfs:label "Marcham Baptist Church".
+<http://linkedgeodata.org/triplify/node259728775> rdfs:label "Jenners Pharmacy".
+<http://linkedgeodata.org/triplify/node370672360> rdfs:label "Wilkinson's".
+<http://linkedgeodata.org/triplify/node253485360> rdfs:label "Denchworth".
+<http://linkedgeodata.org/triplify/node1193411894> rdfs:label "Community Police Station".
+<http://linkedgeodata.org/triplify/node539484708> rdfs:label "Groom & Hornsby".
+<http://linkedgeodata.org/triplify/node323182870> rdfs:label "The Chequers".
+<http://linkedgeodata.org/triplify/node5287952> rdfs:label "Yarnton".
+<http://linkedgeodata.org/triplify/node243355219> rdfs:label "The Oak".
+<http://linkedgeodata.org/triplify/node28788269> rdfs:label "Bakers Lock".
+<http://linkedgeodata.org/triplify/node868659161> rdfs:label "Chalgrove Pharmacy 60 High Street Chalgrove Oxfordshire OX44 7SS 01865-890587".
+<http://linkedgeodata.org/triplify/node279404713> rdfs:label "Folly Bridge Inn".
+<http://linkedgeodata.org/triplify/node265164807> rdfs:label "Upton".
+<http://linkedgeodata.org/triplify/node279404663> rdfs:label "The Duke of Monmouth".
+<http://linkedgeodata.org/triplify/node318562245> rdfs:label "Norcot Post Office".
+<http://linkedgeodata.org/triplify/node746618181> rdfs:label "Stratfield Brake".
+<http://linkedgeodata.org/triplify/node1149689028> rdfs:label "Tremain Veterinary Group".
+<http://linkedgeodata.org/triplify/node539531014> rdfs:label "BMA Varsity Locksmiths".
+<http://linkedgeodata.org/triplify/node276296935> rdfs:label "Shipton (on Cherwell) Village Hall".
+<http://linkedgeodata.org/triplify/node355000454> rdfs:label "P1".
+<http://linkedgeodata.org/triplify/node323183147> rdfs:label "The First Floor".
+<http://linkedgeodata.org/triplify/node914321512> rdfs:label "Spirit Lock".
+<http://linkedgeodata.org/triplify/node28790107> rdfs:label "The Jolly Boatman".
+<http://linkedgeodata.org/triplify/node868917499> rdfs:label "Lloyds".
+<http://linkedgeodata.org/triplify/node457918451> rdfs:label "Boots".
+<http://linkedgeodata.org/triplify/node798801218> rdfs:label "St Helens & St Katharines Independent Girls School".
+<http://linkedgeodata.org/triplify/node14329840> rdfs:label "Chadlington".
+<http://linkedgeodata.org/triplify/node374839391> rdfs:label "Medley Manor Farm".
+<http://linkedgeodata.org/triplify/node16706683> rdfs:label "Hinksey Pool".
+<http://linkedgeodata.org/triplify/node31289514> rdfs:label "Standlake".
+<http://linkedgeodata.org/triplify/node413289371> rdfs:label "Turna".
+<http://linkedgeodata.org/triplify/node1086055684> rdfs:label "Physic Well".
+<http://linkedgeodata.org/triplify/node534800243> rdfs:label "Lan Kwai Fong".
+<http://linkedgeodata.org/triplify/node522955483> rdfs:label "West Cornwall Pasty Co.".
+<http://linkedgeodata.org/triplify/node20965957> rdfs:label "Barceló Oxford Hotel".
+<http://linkedgeodata.org/triplify/node338797455> rdfs:label "Sutton".
+<http://linkedgeodata.org/triplify/node244510652> rdfs:label "Summertown County Library".
+<http://linkedgeodata.org/triplify/node175683866> rdfs:label "White Horse".
+<http://linkedgeodata.org/triplify/node268632638> rdfs:label "Longworth".
+<http://linkedgeodata.org/triplify/node26311365> rdfs:label "Mayflower".
+<http://linkedgeodata.org/triplify/node686439046> rdfs:label "Finstock Cattery".
+<http://linkedgeodata.org/triplify/node281602743> rdfs:label "Farmoor Village Hall".
+<http://linkedgeodata.org/triplify/node274382233> rdfs:label "Hartwell Ford BP Seacourt Tower".
+<http://linkedgeodata.org/triplify/node151014552> rdfs:label "The Mill".
+<http://linkedgeodata.org/triplify/node268632637> rdfs:label "Hinton Waldrist".
+<http://linkedgeodata.org/triplify/node646676310> rdfs:label "All Saints".
+<http://linkedgeodata.org/triplify/node392134601> rdfs:label "Castle Hill".
+<http://linkedgeodata.org/triplify/node274382232> rdfs:label "McDonald's".
+<http://linkedgeodata.org/triplify/node33237235> rdfs:label "The Trout".
+<http://linkedgeodata.org/triplify/node257076789> rdfs:label "St Mary The Virgin".
+<http://linkedgeodata.org/triplify/node244510653> rdfs:label "Central County Library".
+<http://linkedgeodata.org/triplify/node504750243> rdfs:label "Golden Wok".
+<http://linkedgeodata.org/triplify/node269255246> rdfs:label "Wootton Pharmacy".
+<http://linkedgeodata.org/triplify/node337681248> rdfs:label "Preston Crowmarsh".
+<http://linkedgeodata.org/triplify/node306285620> rdfs:label "The High Table".
+<http://linkedgeodata.org/triplify/node392134600> rdfs:label "Brightwell Barrow".
+<http://linkedgeodata.org/triplify/node307557971> rdfs:label "The Grapes".
+<http://linkedgeodata.org/triplify/node14719014> rdfs:label "General Elliot".
+<http://linkedgeodata.org/triplify/node269255245> rdfs:label "Wootton Surgery".
+<http://linkedgeodata.org/triplify/node151014551> rdfs:label "The Old Swan".
+<http://linkedgeodata.org/triplify/node306285621> rdfs:label "Mercure Eastgate Hotel".
+<http://linkedgeodata.org/triplify/node903613662> rdfs:label "Crescent Road News & Convenience Store".
+<http://linkedgeodata.org/triplify/node960248278> rdfs:label "Silvesters Stores".
+<http://linkedgeodata.org/triplify/node96053800> rdfs:label "Long Hanborough Post Office".
+<http://linkedgeodata.org/triplify/node313066980> rdfs:label "The Gloucester Arms".
+<http://linkedgeodata.org/triplify/node440307321> rdfs:label "Oxford City Boundary Stone".
+<http://linkedgeodata.org/triplify/node60955808> rdfs:label "Rigoletto".
+<http://linkedgeodata.org/triplify/node278083313> rdfs:label "The White Horse".
+<http://linkedgeodata.org/triplify/node469989595> rdfs:label "Bride Well?".
+<http://linkedgeodata.org/triplify/node469989596> rdfs:label "Bridewell?".
+<http://linkedgeodata.org/triplify/node243355210> rdfs:label "Didcot Cricket Club".
+<http://linkedgeodata.org/triplify/node290289294> rdfs:label "The Railway".
+<http://linkedgeodata.org/triplify/node339315085> rdfs:label "Richard Mathews".
+<http://linkedgeodata.org/triplify/node553028524> rdfs:label "Mediterranean Fish Bar‎".
+<http://linkedgeodata.org/triplify/node71104464> rdfs:label "Maytime Inn".
+<http://linkedgeodata.org/triplify/node96053801> rdfs:label "The Co-operative Local Store".
+<http://linkedgeodata.org/triplify/node337675882> rdfs:label "Winterbrook".
+<http://linkedgeodata.org/triplify/node1184683616> rdfs:label "Sirene".
+<http://linkedgeodata.org/triplify/node1184683540> rdfs:label "East West Provisions".
+<http://linkedgeodata.org/triplify/node27421865> rdfs:label "Bicester Golf and Country Club".
+<http://linkedgeodata.org/triplify/node1116652407> rdfs:label "Samaritans".
+<http://linkedgeodata.org/triplify/node507443819> rdfs:label "Pink Giraffe".
+<http://linkedgeodata.org/triplify/node250166734> rdfs:label "Hilltop Garden Centre".
+<http://linkedgeodata.org/triplify/node385928316> rdfs:label "Rofford".
+<http://linkedgeodata.org/triplify/node54128183> rdfs:label "Launton Parish Hall".
+<http://linkedgeodata.org/triplify/node560504> rdfs:label "The Tree".
+<http://linkedgeodata.org/triplify/node571514390> rdfs:label "Kings Head and Bell".
+<http://linkedgeodata.org/triplify/node14417584> rdfs:label "Church Hanborough".
+<http://linkedgeodata.org/triplify/node475555430> rdfs:label "Village Inn".
+<http://linkedgeodata.org/triplify/node26163607> rdfs:label "Shippon".
+<http://linkedgeodata.org/triplify/node258667503> rdfs:label "Didcot Civic Hall".
+<http://linkedgeodata.org/triplify/node20913909> rdfs:label "Shell".
+<http://linkedgeodata.org/triplify/node266708472> rdfs:label "M&S Simply Food".
+<http://linkedgeodata.org/triplify/node540221202> rdfs:label "Salford Stores".
+<http://linkedgeodata.org/triplify/node269255240> rdfs:label "Sandleigh Post Office".
+<http://linkedgeodata.org/triplify/node31416804> rdfs:label "Somerton Deep Lock".
+<http://linkedgeodata.org/triplify/node266719972> rdfs:label "Temple Lounge".
+<http://linkedgeodata.org/triplify/node337828044> rdfs:label "Milton".
+<http://linkedgeodata.org/triplify/node268894658> rdfs:label "Didcot Community Church".
+<http://linkedgeodata.org/triplify/node504746203> rdfs:label "Verde".
+<http://linkedgeodata.org/triplify/node31416805> rdfs:label "Somerton Deep Lock".
+<http://linkedgeodata.org/triplify/node504745505> rdfs:label "Cafe Baba".
+<http://linkedgeodata.org/triplify/node373517752> rdfs:label "The Crown & Cushion Hotel".
+<http://linkedgeodata.org/triplify/node540285104> rdfs:label "Nawabi".
+<http://linkedgeodata.org/triplify/node318562248> rdfs:label "The Pond House".
+<http://linkedgeodata.org/triplify/node307557973> rdfs:label "The Punchbowl".
+<http://linkedgeodata.org/triplify/node274404313> rdfs:label "St Andrew's".
+<http://linkedgeodata.org/triplify/node266708475> rdfs:label "The co-operative food".
+<http://linkedgeodata.org/triplify/node250142470> rdfs:label "Chequers Inn".
+<http://linkedgeodata.org/triplify/node571514393> rdfs:label "Stocks Bar".
+<http://linkedgeodata.org/triplify/node583001341> rdfs:label "Carpenters Arms".
+<http://linkedgeodata.org/triplify/node30205944> rdfs:label "Cote Baptist Chapel".
+<http://linkedgeodata.org/triplify/node30205945> rdfs:label "St James".
+<http://linkedgeodata.org/triplify/node659858765> rdfs:label "Kebab Kid".
+<http://linkedgeodata.org/triplify/node21311978> rdfs:label "Berinsfield".
+<http://linkedgeodata.org/triplify/node663653801> rdfs:label "Taylor's".
+<http://linkedgeodata.org/triplify/node27423013> rdfs:label "Red Lion".
+<http://linkedgeodata.org/triplify/node15697120> rdfs:label "Brize Norton".
+<http://linkedgeodata.org/triplify/node249286905> rdfs:label "Steeple Aston".
+<http://linkedgeodata.org/triplify/node21311979> rdfs:label "Shillingford".
+<http://linkedgeodata.org/triplify/node316947965> rdfs:label "Brasenose".
+<http://linkedgeodata.org/triplify/node504744802> rdfs:label "Kabish Original".
+<http://linkedgeodata.org/triplify/node276290128> rdfs:label "Hampton Poyle".
+<http://linkedgeodata.org/triplify/node663653802> rdfs:label "LB's".
+<http://linkedgeodata.org/triplify/node340381030> rdfs:label "Rowstock".
+<http://linkedgeodata.org/triplify/node272061837> rdfs:label "The Cross Keys".
+<http://linkedgeodata.org/triplify/node26271626> rdfs:label "Gosford Hill School".
+<http://linkedgeodata.org/triplify/node307557954> rdfs:label "The Black Swan".
+<http://linkedgeodata.org/triplify/node659858763> rdfs:label "Cafe 42".
+<http://linkedgeodata.org/triplify/node659858767> rdfs:label "Angrid Thai".
+<http://linkedgeodata.org/triplify/node443393965> rdfs:label "Grays Road Store".
+<http://linkedgeodata.org/triplify/node1018723549> rdfs:label "Little Chef".
+<http://linkedgeodata.org/triplify/node26629935> rdfs:label "Langford Village School".
+<http://linkedgeodata.org/triplify/node503681788> rdfs:label "Crown and Thistle".
+<http://linkedgeodata.org/triplify/node567172547> rdfs:label "Wild Thyme".
+<http://linkedgeodata.org/triplify/node26271627> rdfs:label "Kidlington and Gosford Sports Centre".
+<http://linkedgeodata.org/triplify/node16388178> rdfs:label "Glympton".
+<http://linkedgeodata.org/triplify/node290843904> rdfs:label "Three Horseshoes".
+<http://linkedgeodata.org/triplify/node5494559> rdfs:label "Kidlington".
+<http://linkedgeodata.org/triplify/node263860152> rdfs:label "Hollow Way Medical Centre".
+<http://linkedgeodata.org/triplify/node1184683559> rdfs:label "Court Candy Shop".
+<http://linkedgeodata.org/triplify/node313149994> rdfs:label "The Jam Factory".
+<http://linkedgeodata.org/triplify/node663987571> rdfs:label "Cibo!".
+<http://linkedgeodata.org/triplify/node370144497> rdfs:label "Donnington Doorstep".
+<http://linkedgeodata.org/triplify/node1149689671> rdfs:label "St Joseph's Catholic Primary School".
+<http://linkedgeodata.org/triplify/node504751795> rdfs:label "La Croissanterie".
+<http://linkedgeodata.org/triplify/node263860154> rdfs:label "Rowlands Pharmacy".
+<http://linkedgeodata.org/triplify/node1149724577> rdfs:label "Brownes Hall".
+<http://linkedgeodata.org/triplify/node1149688216> rdfs:label "Carterton Primary School".
+<http://linkedgeodata.org/triplify/node705370395> rdfs:label "North Leigh Memerial Hall".
+<http://linkedgeodata.org/triplify/node764690368> rdfs:label "Tesco Express".
+<http://linkedgeodata.org/triplify/node21275665> rdfs:label "Saint Helen's".
+<http://linkedgeodata.org/triplify/node18946234> rdfs:label "The Court Inn".
+<http://linkedgeodata.org/triplify/node663987573> rdfs:label "Mama Mia".
+<http://linkedgeodata.org/triplify/node28795014> rdfs:label "Wolvercote Lock".
+<http://linkedgeodata.org/triplify/node260179058> rdfs:label "Poffley End".
+<http://linkedgeodata.org/triplify/node256522887> rdfs:label "Oxford & District Indoor Bowls Association Ltd.".
+<http://linkedgeodata.org/triplify/node504652111> rdfs:label "Mortons".
+<http://linkedgeodata.org/triplify/node60763897> rdfs:label "Woodstock Surgery".
+<http://linkedgeodata.org/triplify/node659858762> rdfs:label "Pizza Hut".
+<http://linkedgeodata.org/triplify/node254009533> rdfs:label "Buckland".
+<http://linkedgeodata.org/triplify/node281587816> rdfs:label "Windmill Gospel Hall".
+<http://linkedgeodata.org/triplify/node313686568> rdfs:label "Blue Boar".
+<http://linkedgeodata.org/triplify/node14778022> rdfs:label "St. Marys".
+<http://linkedgeodata.org/triplify/node663987572> rdfs:label "Portabello".
+<http://linkedgeodata.org/triplify/node28795015> rdfs:label "Wolvercote Lock".
+<http://linkedgeodata.org/triplify/node663205293> rdfs:label "Al Shami".
+<http://linkedgeodata.org/triplify/node393460603> rdfs:label "Harvester".
+<http://linkedgeodata.org/triplify/node158700264> rdfs:label "Pinkhill Lock".
+<http://linkedgeodata.org/triplify/node882058614> rdfs:label "Clumps Car Park".
+<http://linkedgeodata.org/triplify/node28790016> rdfs:label "Shipton Weir Lock".
+<http://linkedgeodata.org/triplify/node479331478> rdfs:label "St Laurence Church".
+<http://linkedgeodata.org/triplify/node262842124> rdfs:label "The Catherine Wheel".
+<http://linkedgeodata.org/triplify/node712682290> rdfs:label "Red Lion".
+<http://linkedgeodata.org/triplify/node345312740> rdfs:label "Pendon Museum".
+<http://linkedgeodata.org/triplify/node663987575> rdfs:label "South Parade Public Convenience (Ladies, Disabled)".
+<http://linkedgeodata.org/triplify/node269011048> rdfs:label "Clifton".
+<http://linkedgeodata.org/triplify/node29403838> rdfs:label "The Lodge".
+<http://linkedgeodata.org/triplify/node269226948> rdfs:label "Bessels Leigh".
+<http://linkedgeodata.org/triplify/node290843848> rdfs:label "Garsington Stores".
+<http://linkedgeodata.org/triplify/node1111888982> rdfs:label "Robin Hood".
+<http://linkedgeodata.org/triplify/node504752032> rdfs:label "The Salad Bar".
+<http://linkedgeodata.org/triplify/node156542830> rdfs:label "King's Arms".
+<http://linkedgeodata.org/triplify/node590474446> rdfs:label "Crown House Club".
+<http://linkedgeodata.org/triplify/node663987574> rdfs:label "Summertown Wine Cafe".
+<http://linkedgeodata.org/triplify/node550703958> rdfs:label "Nisa Local".
+<http://linkedgeodata.org/triplify/node342812830> rdfs:label "George & Dragon".
+<http://linkedgeodata.org/triplify/node27532643> rdfs:label "Wallingford".
+<http://linkedgeodata.org/triplify/node270781513> rdfs:label "White Oak Green".
+<http://linkedgeodata.org/triplify/node21495166> rdfs:label "Minchery Farm".
+<http://linkedgeodata.org/triplify/node663987577> rdfs:label "Dancing Dragon".
+<http://linkedgeodata.org/triplify/node266672311> rdfs:label "The Red Lion".
+<http://linkedgeodata.org/triplify/node342813526> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node370360118> rdfs:label "The Crown".
+<http://linkedgeodata.org/triplify/node192702474> rdfs:label "Waitrose".
+<http://linkedgeodata.org/triplify/node663987576> rdfs:label "Hong Kong House".
+<http://linkedgeodata.org/triplify/node385581722> rdfs:label "Sandfield Day Nursery".
+<http://linkedgeodata.org/triplify/node339314964> rdfs:label "Changes".
+<http://linkedgeodata.org/triplify/node830144679> rdfs:label "Waterfront Café".
+<http://linkedgeodata.org/triplify/node243332480> rdfs:label "Prince Of Wales".
+<http://linkedgeodata.org/triplify/node32544803> rdfs:label "Glebe Lakes".
+<http://linkedgeodata.org/triplify/node28790015> rdfs:label "Shipton Weir Lock".
+<http://linkedgeodata.org/triplify/node279404668> rdfs:label "South Oxford Health Centre".
+<http://linkedgeodata.org/triplify/node279404667> rdfs:label "South Oxford Social Club".
+<http://linkedgeodata.org/triplify/node281336912> rdfs:label "Cumnor Church of England Primary School".
+<http://linkedgeodata.org/triplify/node659858769> rdfs:label "La Croissanterie".
+<http://linkedgeodata.org/triplify/node504749614> rdfs:label "Subway".
+<http://linkedgeodata.org/triplify/node266158266> rdfs:label "Saint Nicholas Church".
+<http://linkedgeodata.org/triplify/node31271452> rdfs:label "The Six Bells".
+<http://linkedgeodata.org/triplify/node25618509> rdfs:label "County Library".
+<http://linkedgeodata.org/triplify/node264108440> rdfs:label "Cherwell Boat House".
+<http://linkedgeodata.org/triplify/node319252133> rdfs:label "Cranbury College Maples Centre".
+<http://linkedgeodata.org/triplify/node558886780> rdfs:label "Red Lion".
+<http://linkedgeodata.org/triplify/node14332269> rdfs:label "Witney".
+<http://linkedgeodata.org/triplify/node659858768> rdfs:label "O'Neill's".
+<http://linkedgeodata.org/triplify/node539530989> rdfs:label "China Kitchen".
+<http://linkedgeodata.org/triplify/node495599378> rdfs:label "White Hart".
+<http://linkedgeodata.org/triplify/node338409668> rdfs:label "Pusey".
+<http://linkedgeodata.org/triplify/node764690360> rdfs:label "Witney Lakes Resort".
+<http://linkedgeodata.org/triplify/node479888152> rdfs:label "The Bell".
+<http://linkedgeodata.org/triplify/node281602725> rdfs:label "St Mary's Church".
+<http://linkedgeodata.org/triplify/node364838376> rdfs:label "Barton Pharmacy".
+<http://linkedgeodata.org/triplify/node621508608> rdfs:label "Videosyncratic".
+<http://linkedgeodata.org/triplify/node1149688851> rdfs:label "Haldanes".
+<http://linkedgeodata.org/triplify/node732471809> rdfs:label "Regal Community Centre".
+<http://linkedgeodata.org/triplify/node798801208> rdfs:label "Larkmead School".
+<http://linkedgeodata.org/triplify/node315895852> rdfs:label "Osney Arms".
+<http://linkedgeodata.org/triplify/node26286833> rdfs:label "Yelford".
+<http://linkedgeodata.org/triplify/node938554607> rdfs:label "Ridgeway Cycles".
+<http://linkedgeodata.org/triplify/node255629364> rdfs:label "The Leys Health Centre".
+<http://linkedgeodata.org/triplify/node257573234> rdfs:label "Cannon Pool".
+<http://linkedgeodata.org/triplify/node390038122> rdfs:label "Finstock CE Primary School".
+<http://linkedgeodata.org/triplify/node16549146> rdfs:label "Head Of The River".
+<http://linkedgeodata.org/triplify/node279404701> rdfs:label "St Matthew's".
+<http://linkedgeodata.org/triplify/node255629365> rdfs:label "Lloyds Pharmacy".
+<http://linkedgeodata.org/triplify/node270197987> rdfs:label "Emmanuel Christian School".
+<http://linkedgeodata.org/triplify/node308833448> rdfs:label "Chester Arms".
+<http://linkedgeodata.org/triplify/node243332476> rdfs:label "Spar".
+<http://linkedgeodata.org/triplify/node250148584> rdfs:label "Saint Bartholomew's Church".
+<http://linkedgeodata.org/triplify/node14191615> rdfs:label "Jericho".
+<http://linkedgeodata.org/triplify/node279377191> rdfs:label "Church of St James".
+<http://linkedgeodata.org/triplify/node588196406> rdfs:label "WHS".
+<http://linkedgeodata.org/triplify/node20965964> rdfs:label "The Red Lion".
+<http://linkedgeodata.org/triplify/node269226951> rdfs:label "Wootton".
+<http://linkedgeodata.org/triplify/node604331638> rdfs:label "Budgens".
+<http://linkedgeodata.org/triplify/node263928442> rdfs:label "Chipping Norton Golf Club".
+<http://linkedgeodata.org/triplify/node435107834> rdfs:label "St Augustine's".
+<http://linkedgeodata.org/triplify/node295567358> rdfs:label "Minster Lovell Hall and Dovecot".
+<http://linkedgeodata.org/triplify/node440819606> rdfs:label "St Bartholomew's Medical Centre".
+<http://linkedgeodata.org/triplify/node430190633> rdfs:label "Hollow Way Auto Parts".
+<http://linkedgeodata.org/triplify/node322870528> rdfs:label "Chicken Cottage".
+<http://linkedgeodata.org/triplify/node319253509> rdfs:label "Tootsies".
+<http://linkedgeodata.org/triplify/node21545922> rdfs:label "Littlemore Mental Health Centre".
+<http://linkedgeodata.org/triplify/node344732650> rdfs:label "West Hagbourne".
+<http://linkedgeodata.org/triplify/node337829280> rdfs:label "Appleford".
+<http://linkedgeodata.org/triplify/node255629368> rdfs:label "Chillies Indian Takeaway".
+<http://linkedgeodata.org/triplify/node320236087> rdfs:label "Cotswold Gateway Hotel".
+<http://linkedgeodata.org/triplify/node322850714> rdfs:label "The Oxford Retreat".
+<http://linkedgeodata.org/triplify/node14191612> rdfs:label "New Botley".
+<http://linkedgeodata.org/triplify/node471551758> rdfs:label "Trig point".
+<http://linkedgeodata.org/triplify/node635883399> rdfs:label "Charlbury Library".
+<http://linkedgeodata.org/triplify/node27423240> rdfs:label "Kirtlington Park Polo Club".
+<http://linkedgeodata.org/triplify/node540348911> rdfs:label "Pizza Hut".
+<http://linkedgeodata.org/triplify/node1046337488> rdfs:label "Tesco".
+<http://linkedgeodata.org/triplify/node255629369> rdfs:label "The Leys Pharmacy".
+<http://linkedgeodata.org/triplify/node251606371> rdfs:label "Donnington Arms".
+<http://linkedgeodata.org/triplify/node31271447> rdfs:label "The Kings Arms Hotel".
+<http://linkedgeodata.org/triplify/node21623338> rdfs:label "Radley".
+<http://linkedgeodata.org/triplify/node256125638> rdfs:label "Hill Grove Farm".
+<http://linkedgeodata.org/triplify/node837371968> rdfs:label "C J Clarke Timber Yard".
+<http://linkedgeodata.org/triplify/node702667338> rdfs:label "North Oxford BMW".
+<http://linkedgeodata.org/triplify/node54128175> rdfs:label "Launton C of E Primary School".
+<http://linkedgeodata.org/triplify/node31271446> rdfs:label "The White Hart".
+<http://linkedgeodata.org/triplify/node262898075> rdfs:label "St Peter's".
+<http://linkedgeodata.org/triplify/node271872766> rdfs:label "RAF Brize Norton".
+<http://linkedgeodata.org/triplify/node319253505> rdfs:label "Swan and Castle".
+<http://linkedgeodata.org/triplify/node279404673> rdfs:label "The Crooked Pot".
+<http://linkedgeodata.org/triplify/node262554566> rdfs:label "B&Q".
+<http://linkedgeodata.org/triplify/node262842122> rdfs:label "St Leonard and St Catherine".
+<http://linkedgeodata.org/triplify/node27255356> rdfs:label "St Bartholemew's".
+<http://linkedgeodata.org/triplify/node558888012> rdfs:label "Morning Star".
+<http://linkedgeodata.org/triplify/node231413379> rdfs:label "Noodle Nation".
+<http://linkedgeodata.org/triplify/node271365762> rdfs:label "Seven Stars".
+<http://linkedgeodata.org/triplify/node278736257> rdfs:label "Merry Mouth".
+<http://linkedgeodata.org/triplify/node14191613> rdfs:label "Osney".
+<http://linkedgeodata.org/triplify/node1161898357> rdfs:label "Subway".
+<http://linkedgeodata.org/triplify/node337669959> rdfs:label "The Queen's Head".
+<http://linkedgeodata.org/triplify/node278847412> rdfs:label "St Bartholemew's".
+<http://linkedgeodata.org/triplify/node914319945> rdfs:label "Ardington Top  Lock".
+<http://linkedgeodata.org/triplify/node1042032733> rdfs:label "Bicester Airfield".
+<http://linkedgeodata.org/triplify/node429998577> rdfs:label "Amy Surman".
+<http://linkedgeodata.org/triplify/node1231453095> rdfs:label "AMT Coffee".
+<http://linkedgeodata.org/triplify/node290289216> rdfs:label "New Club".
+<http://linkedgeodata.org/triplify/node319253503> rdfs:label "La Tasca".
+<http://linkedgeodata.org/triplify/node335762931> rdfs:label "Minster Lovell Methodist Church".
+<http://linkedgeodata.org/triplify/node271365767> rdfs:label "St Peter's".
+<http://linkedgeodata.org/triplify/node776234080> rdfs:label "A. Walker UPVC Ltd.".
+<http://linkedgeodata.org/triplify/node534793904> rdfs:label "Atomic Burger".
+<http://linkedgeodata.org/triplify/node32544802> rdfs:label "Glebe Lakes".
+<http://linkedgeodata.org/triplify/node14329839> rdfs:label "The Tite Inn".
+<http://linkedgeodata.org/triplify/node998432018> rdfs:label "Peach Croft Farm".
+<http://linkedgeodata.org/triplify/node26508390> rdfs:label "Boarstall".
+<http://linkedgeodata.org/triplify/node1227951611> rdfs:label "Alice's Shop".
+<http://linkedgeodata.org/triplify/node312056471> rdfs:label "Common".
+<http://linkedgeodata.org/triplify/node523002574> rdfs:label "Puccino's".
+<http://linkedgeodata.org/triplify/node29396180> rdfs:label "Upper Heyford".
+<http://linkedgeodata.org/triplify/node29396181> rdfs:label "Lower Heyford".
+<http://linkedgeodata.org/triplify/node271365764> rdfs:label "Marsh Baldon".
+<http://linkedgeodata.org/triplify/node274807464> rdfs:label "Newbridge".
+<http://linkedgeodata.org/triplify/node761648073> rdfs:label "Old Boar's Hill".
+<http://linkedgeodata.org/triplify/node269278238> rdfs:label "The Fox".
+<http://linkedgeodata.org/triplify/node259060604> rdfs:label "Bowyer Arms".
+<http://linkedgeodata.org/triplify/node31271449> rdfs:label "Ye Olde Pioneer".
+<http://linkedgeodata.org/triplify/node175694117> rdfs:label "The Duke".
+<http://linkedgeodata.org/triplify/node26654918> rdfs:label "Brookside Primary School".
+<http://linkedgeodata.org/triplify/node281471175> rdfs:label "Rousham Park House and Gardens".
+<http://linkedgeodata.org/triplify/node322562203> rdfs:label "Imperial".
+<http://linkedgeodata.org/triplify/node248059284> rdfs:label "West Witney Primary School".
+<http://linkedgeodata.org/triplify/node266708481> rdfs:label "The Dew Drop Inn".
+<http://linkedgeodata.org/triplify/node840481009> rdfs:label "The Coventry".
+<http://linkedgeodata.org/triplify/node365367870> rdfs:label "The Roundway Pharmacy".
+<http://linkedgeodata.org/triplify/node266708486> rdfs:label "Summertown Cycles".
+<http://linkedgeodata.org/triplify/node306512403> rdfs:label "Country Griddle".
+<http://linkedgeodata.org/triplify/node421835116> rdfs:label "St John's Church".
+<http://linkedgeodata.org/triplify/node567172542> rdfs:label "The Co-op".
+<http://linkedgeodata.org/triplify/node672749438> rdfs:label "Trinity College Chapel".
+<http://linkedgeodata.org/triplify/node1223708195> rdfs:label "Oxford Prayer Room".
+<http://linkedgeodata.org/triplify/node583001429> rdfs:label "Hollybush".
+<http://linkedgeodata.org/triplify/node260063131> rdfs:label "Fulbrook".
+<http://linkedgeodata.org/triplify/node281471176> rdfs:label "Bignell Park".
+<http://linkedgeodata.org/triplify/node322850687> rdfs:label "Café CoCo".
+<http://linkedgeodata.org/triplify/node534789332> rdfs:label "Door 74".
+<http://linkedgeodata.org/triplify/node494769129> rdfs:label "Eagle Tavern".
+<http://linkedgeodata.org/triplify/node1170972309> rdfs:label "The Plough".
+<http://linkedgeodata.org/triplify/node262898148> rdfs:label "Wallingford Methodist Church".
+<http://linkedgeodata.org/triplify/node365367873> rdfs:label "Headington Superstore".
+<http://linkedgeodata.org/triplify/node504751487> rdfs:label "Kebab Kid".
+<http://linkedgeodata.org/triplify/node914321357> rdfs:label "Grove Bottom Lock".
+<http://linkedgeodata.org/triplify/node364053099> rdfs:label "Car Park".
+<http://linkedgeodata.org/triplify/node175023572> rdfs:label "The Bear".
+<http://linkedgeodata.org/triplify/node313686574> rdfs:label "Bell".
+<http://linkedgeodata.org/triplify/node712682288> rdfs:label "St. Michael's School".
+<http://linkedgeodata.org/triplify/node359084468> rdfs:label "Minster Lovell Hall Dovecot".
+<http://linkedgeodata.org/triplify/node11664573> rdfs:label "Didcot Parkway".
+<http://linkedgeodata.org/triplify/node429998578> rdfs:label "C Warmington & Son".
+<http://linkedgeodata.org/triplify/node30151077> rdfs:label "Thrupp".
+<http://linkedgeodata.org/triplify/node266708484> rdfs:label "Tesco express".
+<http://linkedgeodata.org/triplify/node384057074> rdfs:label "Raleigh Park".
+<http://linkedgeodata.org/triplify/node266156972> rdfs:label "Gardiner Arms".
+<http://linkedgeodata.org/triplify/node712682289> rdfs:label "St. Peter's".
+<http://linkedgeodata.org/triplify/node307771603> rdfs:label "Tesco Garden Centre".
+<http://linkedgeodata.org/triplify/node583271183> rdfs:label "LIDL".
+<http://linkedgeodata.org/triplify/node258681655> rdfs:label "Manor School".
+<http://linkedgeodata.org/triplify/node262898146> rdfs:label "The Green Tree".
+<http://linkedgeodata.org/triplify/node914317208> rdfs:label "Steventon Lock".
+<http://linkedgeodata.org/triplify/node429998579> rdfs:label "Sun Me".
+<http://linkedgeodata.org/triplify/node461603807> rdfs:label "Betterton".
+<http://linkedgeodata.org/triplify/node771111655> rdfs:label "Chalgrove".
+<http://linkedgeodata.org/triplify/node262342247> rdfs:label "The Goodlake Arms".
+<http://linkedgeodata.org/triplify/node382148378> rdfs:label "Julia Durbin Day Nursery".
+<http://linkedgeodata.org/triplify/node5491642> rdfs:label "Tackley".
+<http://linkedgeodata.org/triplify/node611382286> rdfs:label "Exeter Hall".
+<http://linkedgeodata.org/triplify/node840612514> rdfs:label "Prospect Park".
+<http://linkedgeodata.org/triplify/node266167247> rdfs:label "The Magic Cafe".
+
