@@ -30,13 +30,13 @@ public class SPARQLIndex implements Index{
 	protected String queryTemplate = "SELECT DISTINCT ?uri WHERE {\n" +
 			"?uri a ?type.\n" + 
 			"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label\n" +
-			"FILTER(REGEX(STR(?label), '%s'))}\n" +
+			"FILTER(REGEX(STR(?label), '%s', 'i'))}\n" +
 			"LIMIT %d OFFSET %d";
 	
 	protected String queryWithLabelTemplate = "SELECT DISTINCT * WHERE {\n" +
 			"?uri a ?type.\n" + 
 			"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label\n" +
-			"FILTER(REGEX(STR(?label), '%s'))}\n" +
+			"FILTER(REGEX(STR(?label), '%s', 'i'))}\n" +
 			"LIMIT %d OFFSET %d";
 	
 	
@@ -108,8 +108,7 @@ public class SPARQLIndex implements Index{
 	public IndexResultSet getResourcesWithScores(String searchTerm, int limit, int offset) {
 		IndexResultSet irs = new IndexResultSet();
 		
-		String query = String.format(queryWithLabelTemplate, searchTerm, limit, offset);
-		
+		String query = String.format(queryWithLabelTemplate, searchTerm, limit, offset);	
 		ResultSet rs = executeSelect(query);
 		
 		QuerySolution qs;

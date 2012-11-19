@@ -6,14 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -55,6 +53,7 @@ import org.dllearner.common.index.Index;
 import org.dllearner.common.index.IndexResultItem;
 import org.dllearner.common.index.IndexResultSet;
 import org.dllearner.common.index.MappingBasedIndex;
+import org.dllearner.common.index.SPARQLClassesIndex;
 import org.dllearner.common.index.SPARQLDatatypePropertiesIndex;
 import org.dllearner.common.index.SPARQLIndex;
 import org.dllearner.common.index.SPARQLObjectPropertiesIndex;
@@ -65,10 +64,6 @@ import org.dllearner.common.index.VirtuosoPropertiesIndex;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
@@ -76,7 +71,6 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.ini4j.Options;
-import org.openjena.atlas.logging.Log;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -255,7 +249,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 
 	public SPARQLTemplateBasedLearner2(Model model, MappingBasedIndex mappingBasedIndex, PartOfSpeechTagger posTagger)
 	{
-		this(model, new SPARQLIndex(model),new SPARQLIndex(model),new SPARQLIndex(model),posTagger);
+		this(model, new SPARQLIndex(model),new SPARQLClassesIndex(model),new SPARQLIndex(model),posTagger);
 		setMappingIndex(mappingBasedIndex);
 	}
 
@@ -674,7 +668,9 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 				// get candidates for slot
 				if(!slot2Allocations.containsKey(slot))
 				{
-				slot2Allocations.put(slot,new SlotProcessor(slot).computeAllocations(slot));
+					SortedSet<Allocation> allocations = new SlotProcessor(slot).computeAllocations(slot);
+					logger.info("allocations for slot "+slot+": "+allocations);
+					slot2Allocations.put(slot,allocations);
 				}
 			}
 		}
@@ -717,6 +713,7 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 			{
 				try {
 					SortedSet<Allocation> result = future.get();
+					logger.debug("allocations: "+result);
 					slot2Allocations.put(futureToSlot.get(future), result);
 				} catch (InterruptedException e) {e.printStackTrace();} catch (ExecutionException e) {e.printStackTrace();throw new RuntimeException(e);}
 			}

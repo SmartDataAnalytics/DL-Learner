@@ -132,8 +132,8 @@ public class SPARQLTemplateBasedLearner3Test
 	protected static final int QUESTION_OFFSET = 0;
 	protected static final int QUESTION_LIMIT = Integer.MAX_VALUE;
 
-	protected static final boolean WHITELIST_ONLY = false;
-	protected static final Set<Integer> WHITELIST = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(new Integer[] {4})));
+	protected static final boolean WHITELIST_ONLY = true;
+	protected static final Set<Integer> WHITELIST = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(new Integer[] {24})));
 	protected static final boolean	GENERATE_HTML_ONLY	= false;
 	protected static final int	MAX_THREADS	= 4;
 
@@ -364,13 +364,15 @@ public class SPARQLTemplateBasedLearner3Test
 		/**more will be left out of the xml file */		
 		List<String> questions = new LinkedList<String>();
 		BufferedReader in = new BufferedReader((new InputStreamReader(getClass().getClassLoader().getResourceAsStream("tbsl/oxford_eval_queries_parsed.txt"))));
-		int count=0;
+		int count=-1;
 		for(String line;count<(QUESTION_LIMIT+QUESTION_OFFSET)&&(line=in.readLine())!=null;)
 		{
+			count++;
+			if(WHITELIST_ONLY&&!WHITELIST.contains(Integer.valueOf(count))) {continue;}
 			logger.info(count+": "+line);
-			if(count<QUESTION_OFFSET) {count++;continue;}
+			if(count<QUESTION_OFFSET) {continue;}
 			String question = line.replace("question: ", "").trim();		
-			if(!line.trim().isEmpty()) {questions.add(question);count++;}
+			if(!line.trim().isEmpty()) {questions.add(question);}
 		}
 		in.close();
 		Model model = loadOxfordModel();
