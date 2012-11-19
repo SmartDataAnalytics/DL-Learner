@@ -392,6 +392,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="23">
 <string>houses/NNS close/RB to/TO an/DT Italian/JJ restaurant/NN</string>
 <queryStatus>
+<evaluation>incorrect</correct>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -425,9 +426,9 @@ SELECT ?y ?x0 WHERE {
 <question answertype="resource" id="25">
 <string>houses/NNS at/IN walking/VBG distance/NN from/IN Tesco/NNP or/CC Sainsburys/NNP shops/NNS</string>
 <queryStatus>
+<evaluation>incorrect</correct>
 <type>OK</type>
 </queryStatus>
-<evaluation>incorrect</correct>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
@@ -511,6 +512,7 @@ SELECT ?x WHERE {
 <string>houses/NNS with/IN many/JJ reception/NN rooms/NNS</string>
 <queryStatus>
 <type>OK</type>
+<evaluation>partlycorrect</correct>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>

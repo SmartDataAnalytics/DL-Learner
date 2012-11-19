@@ -1,2 +1,3 @@
 #!/bin/bash
-grep "<evaluation>" | sort | uniq -c
+grep -E "(<evaluation>)|(<type>)" | sort | uniq -c
+
