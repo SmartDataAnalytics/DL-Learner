@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007-2012, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -19,7 +19,6 @@
 
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -34,12 +33,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.DoubleConfigOption;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.options.URLConfigOption;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
@@ -64,22 +58,26 @@ public class ClassLearningProblem extends AbstractLearningProblem {
     private long nanoStartTime;
 	private int maxExecutionTimeInSeconds = 10;
 	
-	// TODO: config option
+	@ConfigOption(name = "classToDescribe", description="class of which a description should be learned", required=true)
 	private NamedClass classToDescribe;
 	
 	private List<Individual> classInstances;
 	private TreeSet<Individual> classInstancesSet;
 	private boolean equivalence = true;
-//	private ClassLearningProblemConfigurator configurator;
-	// approximation of accuracy
+
+	@ConfigOption(name = "approxDelta", description = "The Approximate Delta", defaultValue = "0.05", required = false)	
 	private double approxDelta = 0.05;
 	
+	@ConfigOption(name = "useApproximations", description = "Use Approximations", defaultValue = "false", required = false)
 	private boolean useApproximations;
 	
 	// factor for higher weight on recall (needed for subclass learning)
 	private double coverageFactor;
 	
+	@ConfigOption(name = "betaSC", description="beta index for F-measure in super class learning", required=false, defaultValue="3.0")
 	private double betaSC = 3.0;
+	
+	@ConfigOption(name = "betaEq", description="beta index for F-measure in definition learning", required=false, defaultValue="1.0")	
 	private double betaEq = 1.0;
 	
 	// instances of super classes excluding instances of the class itself
@@ -89,8 +87,12 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	// specific variables for generalised F-measure
 	private TreeSet<Individual> negatedClassInstances;
 	
+    @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "pred_acc")
+    private String accuracyMethod = "pred_acc";
+    
 	private HeuristicType heuristic = HeuristicType.AMEASURE;
 	
+	@ConfigOption(name = "checkConsistency", description = "whether to check for consistency of suggestions (when added to ontology)", required=false, defaultValue="true")
 	private boolean checkConsistency = true;
 	
 	public ClassLearningProblem() {
@@ -106,6 +108,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 //		configurator = new ClassLearningProblemConfigurator(this);
 	}
 	
+	/*
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		URLConfigOption classToDescribeOption = new URLConfigOption("classToDescribe", "class of which a description should be learned", null, true, false);
@@ -130,6 +133,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		options.add(betaEq);
 		return options;
 	}
+	*/
 
 	public static String getName() {
 		return "class learning problem";
@@ -140,18 +144,18 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 //		classToDescribe = new NamedClass(configurator.getClassToDescribe().toString());
 //		useApproximations = configurator.getUseApproximations();
 		
-//		String accM = configurator.getAccuracyMethod();
-//		if(accM.equals("standard")) {
-//			heuristic = HeuristicType.AMEASURE;
-//		} else if(accM.equals("fmeasure")) {
-//			heuristic = HeuristicType.FMEASURE;
-//		} else if(accM.equals("generalised_fmeasure")) {
-//			heuristic = HeuristicType.GEN_FMEASURE;
-//		} else if(accM.equals("jaccard")) {
-//			heuristic = HeuristicType.JACCARD;
-//		} else if(accM.equals("pred_acc")) {
-//			heuristic = HeuristicType.PRED_ACC;
-//		}
+		String accM = accuracyMethod;
+		if(accM.equals("standard")) {
+			heuristic = HeuristicType.AMEASURE;
+		} else if(accM.equals("fmeasure")) {
+			heuristic = HeuristicType.FMEASURE;
+		} else if(accM.equals("generalised_fmeasure")) {
+			heuristic = HeuristicType.GEN_FMEASURE;
+		} else if(accM.equals("jaccard")) {
+			heuristic = HeuristicType.JACCARD;
+		} else if(accM.equals("pred_acc")) {
+			heuristic = HeuristicType.PRED_ACC;
+		}
 		
 		if(useApproximations && heuristic.equals(HeuristicType.PRED_ACC)) {
 			System.err.println("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first to verify that it works.");
