@@ -25,11 +25,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.Description;
@@ -40,17 +41,27 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 /**
+ * 
+ * A strict learning problem means that for negative examples, it is required that a negative example
+ * should be instance of (NOT C) for a hypothesis C. 
+ * 
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "PosNegLPStrict", shortName = "posNegStrict", version = 0.8)
 public class PosNegLPStrict extends PosNegLP {
 
 	private Set<Individual> neutralExamples;
 	private boolean penaliseNeutralExamples = false;
 	
 	private static final double defaultAccuracyPenalty = 1;
+	
+	@ConfigOption(name = "accuracyPenalty", description = "penalty for incorrectness (example belongs neither to concept nor its negation)", defaultValue = "1", required = false)
 	private double accuracyPenalty = defaultAccuracyPenalty;
+	
 	private static final double defaultErrorPenalty = 3;
+	
+	@ConfigOption(name = "errorPenalty", description = "penalty for errors (example can be inferred to belong to the negated concept class)", defaultValue = "3", required = false)
 	private double errorPenalty = defaultErrorPenalty;
 	
 	
@@ -65,13 +76,14 @@ public class PosNegLPStrict extends PosNegLP {
 		return "three valued definition learning problem";
 	}
 
+	/*
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = PosNegLP.createConfigOptions();
 		options.add(new BooleanConfigOption("penaliseNeutralExamples", "if set to true neutral examples are penalised"));
 		options.add(new DoubleConfigOption("accuracyPenalty", "penalty for pos/neg examples which are classified as neutral", defaultAccuracyPenalty));
 		options.add(new DoubleConfigOption("errorPenalty", "penalty for pos. examples classified as negative or vice versa", defaultErrorPenalty));
 		return options;
-	}
+	} */
 	
 	/*
 	 * (non-Javadoc)
