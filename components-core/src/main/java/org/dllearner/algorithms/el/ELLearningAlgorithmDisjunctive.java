@@ -174,6 +174,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	
 	@Override
 	public void start() {
+//		System.out.println("starting disjunctive ELTL algorithm");
 		stop = false;
 		isRunning = true;
 		reset();
@@ -196,7 +197,9 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 //				System.out.println("best: " + best);
 				
 				// apply operator
+				System.out.print("applying operator ...");
 				List<ELDescriptionTree> refinements = operator.refine(best.getDescriptionTree());
+				System.out.println("done " + refinements.size() + " refinements");
 				// add all refinements to search tree, candidates, best descriptions
 				for(ELDescriptionTree refinement : refinements) {
 					addDescriptionTree(refinement, best);
