@@ -66,9 +66,9 @@ public class PosNegLPStandard extends PosNegLP {
     @ConfigOption(name = "useApproximations", description = "Use Approximations", defaultValue = "false", required = false)
 	private boolean useApproximations;
     
-    @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy.",defaultValue = "predacc", propertyEditorClass = StringTrimmerEditor.class)
-    private String accuracyMethod = "predacc";
-
+    @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "predacc", propertyEditorClass = StringTrimmerEditor.class)
+    private String accuracyMethod = "pred_acc";
+    
 //	private boolean useFMeasure;	
 	private boolean useOldDIGOptions = false;
 	
