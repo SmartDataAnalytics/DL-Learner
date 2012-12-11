@@ -111,6 +111,8 @@ public class GlobalEnrichment {
 	public static void main(String[] args) throws MalformedURLException, IllegalArgumentException, SecurityException, ComponentInitException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, FileNotFoundException {
 		new File(baseDir).mkdirs();
 		
+		new File(baseDir).mkdirs();
+		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		Logger.getRootLogger().setLevel(Level.WARN);
