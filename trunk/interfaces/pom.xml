@@ -383,6 +383,12 @@
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>jena</artifactId>
+					<groupId>com.hp.hpl.jena</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!--dependency> <groupId>org.dllearner</groupId> <artifactId>components-ext</artifactId> 
 			</dependency -->

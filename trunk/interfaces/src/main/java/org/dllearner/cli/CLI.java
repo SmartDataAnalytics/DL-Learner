@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
 import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
 import org.dllearner.configuration.IConfiguration;
@@ -70,6 +71,8 @@ public class CLI {
 	private boolean performCrossValidation = false;
 	private int nrOfFolds = 10;
 	private int noOfRuns = 1;
+	
+	private String logLevel = "INFO";
 
 
 	public CLI() {
@@ -97,6 +100,11 @@ public class CLI {
 	}
 	
     public void run() throws IOException {
+    	try {
+			org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.toLevel(logLevel.toUpperCase()));
+		} catch (Exception e) {
+			logger.warn("Error setting log level to " + logLevel);
+		}
     	
 		if (writeSpringConfiguration) {
         	SpringConfigurationXMLBeanConverter converter = new SpringConfigurationXMLBeanConverter();
@@ -270,6 +278,14 @@ public class CLI {
 
 	public void setNrOfFolds(int nrOfFolds) {
 		this.nrOfFolds = nrOfFolds;
+	}
+	
+	public void setLogLevel(String logLevel) {
+		this.logLevel = logLevel;
+	}
+	
+	public String getLogLevel() {
+		return logLevel;
 	}
 	
 	public LearningAlgorithm getLearningAlgorithm() {
