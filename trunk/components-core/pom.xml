@@ -169,6 +169,11 @@
 			<groupId>org.semanticweb.hermit</groupId>
 			<artifactId>hermit</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>eu.trowl</groupId>
+			<artifactId>trowl-core</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.jamonapi</groupId>

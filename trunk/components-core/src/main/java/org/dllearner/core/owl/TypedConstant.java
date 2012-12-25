@@ -120,6 +120,35 @@ public class TypedConstant extends Constant {
 		String str = literal + datatype;
 		String str2 = o.literal + ((TypedConstant)o).datatype;
 		return str.compareTo(str2);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((datatype == null) ? 0 : datatype.hashCode());
+		result = prime * result + ((getLiteral() == null) ? 0 : getLiteral().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TypedConstant other = (TypedConstant) obj;
+		if (datatype == null) {
+			if (other.datatype != null)
+				return false;
+		} else if (!datatype.equals(other.datatype))
+			return false;
+		if(!getLiteral().equals(other.getLiteral())){
+			return false;
+		}
+		return true;
 	}	
 
 }
