@@ -2,28 +2,22 @@ package org.dllearner.kb.sparql;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDescriptionGenerator{
 	
 	private static final Logger logger = Logger.getLogger(ConciseBoundedDescriptionGeneratorImpl.class);
 	
-	private static final int CHUNK_SIZE = 1000;
+	private int chunkSize = 0;
 	
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
@@ -35,6 +29,12 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
 		this.cache = cache;
+	}
+	
+	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache, int maxRecursionDepth) {
+		this.endpoint = endpoint;
+		this.cache = cache;
+		this.maxRecursionDepth = maxRecursionDepth;
 	}
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint) {
@@ -53,8 +53,12 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		return getModelChunked(resourceURI, depth);
 	}
 	
+	public void setChunkSize(int chunkSize) {
+		this.chunkSize = chunkSize;
+	}
+	
 	private Model getModelChunked(String resource, int depth){
-		String query = makeConstructQueryOptional(resource, CHUNK_SIZE, 0, depth);
+		String query = makeConstructQueryOptional(resource, chunkSize, 0, depth);
 		Model all = ModelFactory.createDefaultModel();
 		try {
 			Model model;
@@ -65,9 +69,9 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 			}
 			all.add(model);
 			int i = 1;
-			while(model.size() != 0){
+			do{
 //			while(model.size() == CHUNK_SIZE){
-				query = makeConstructQueryOptional(resource, CHUNK_SIZE, i * CHUNK_SIZE, depth);
+				query = makeConstructQueryOptional(resource, chunkSize, i * chunkSize, depth);
 				if(cache == null){
 					model = getModel(query);
 				} else {
@@ -75,7 +79,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 				}
 				all.add(model);
 				i++;
-			}
+			} while(chunkSize > 0 && model.size() != 0);
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e);
 		} catch (SQLException e) {
@@ -124,8 +128,10 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 			sb.append("}");
 		}
 		sb.append("}\n");
-		sb.append("LIMIT ").append(limit).append("\n");
-		sb.append("OFFSET ").append(offset);
+		if(chunkSize > 0){
+			sb.append("LIMIT ").append(limit).append("\n");
+			sb.append("OFFSET ").append(offset);
+		}
 		return sb.toString();
 	}
 	
@@ -179,8 +185,8 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		Logger.getRootLogger().setLevel(Level.DEBUG);
 		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia());
 		cbdGen = new CachingConciseBoundedDescriptionGenerator(cbdGen);
-		cbdGen.setRestrictToNamespaces(Arrays.asList(new String[]{"http://dbpedia.org/ontology/", RDF.getURI(), RDFS.getURI()}));
-		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 2);
+//		cbdGen.setRestrictToNamespaces(Arrays.asList(new String[]{"http://dbpedia.org/ontology/", RDF.getURI(), RDFS.getURI()}));
+		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 3);
 		System.out.println(cbd.size());
 	}
 

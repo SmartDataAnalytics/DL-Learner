@@ -124,4 +124,36 @@ public class UntypedConstant extends Constant {
 		return str.compareTo(str2);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (hasLang ? 1231 : 1237);
+		result = prime * result + ((lang == null) ? 0 : lang.hashCode());
+		result = prime * result + ((getLiteral() == null) ? 0 : getLiteral().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UntypedConstant other = (UntypedConstant) obj;
+		if (hasLang != other.hasLang)
+			return false;
+		if (lang == null) {
+			if (other.lang != null)
+				return false;
+		} else if (!lang.equals(other.lang))
+			return false;
+		if(!getLiteral().equals(other.getLiteral())){
+			return false;
+		}
+		return true;
+	}
+
 }

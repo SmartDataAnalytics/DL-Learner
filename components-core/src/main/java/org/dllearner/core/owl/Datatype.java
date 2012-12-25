@@ -22,6 +22,9 @@ package org.dllearner.core.owl;
 import java.net.URI;
 import java.util.Map;
 
+import org.semanticweb.owlapi.model.IRI;
+
+
 /**
  * @author Jens Lehmann
  *
