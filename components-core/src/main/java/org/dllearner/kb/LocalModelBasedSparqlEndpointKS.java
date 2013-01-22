@@ -1,5 +1,6 @@
 package org.dllearner.kb;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,6 +19,7 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 	
 	private OntModel model;
 	private String fileName;
+	 private String baseDir;
 	
 	public LocalModelBasedSparqlEndpointKS() {
 	}
@@ -34,6 +36,14 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 		return fileName;
 	}
 	
+	public String getBaseDir() {
+        return baseDir;
+    }
+
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
+    }
+	
 	public LocalModelBasedSparqlEndpointKS(URL ontologyURL) {
 		this.fileName = ontologyURL.toString();
 	}
@@ -44,9 +54,9 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 	
 	@Override
 	public void init() throws ComponentInitException {
-		Model baseModel = ModelFactory.createDefaultModel();
+		Model baseModel = ModelFactory.createDefaultModel();System.out.println("Base: " + baseDir);
 		 // use the FileManager to find the input file
-		 InputStream in = FileManager.get().open(fileName);
+		 InputStream in = FileManager.get().open(baseDir + File.separator + fileName);
 		if (in == null) {
 		    throw new IllegalArgumentException(
 		                                 "File: " + fileName + " not found");
