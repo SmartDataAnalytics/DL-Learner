@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
@@ -712,6 +713,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     @Override
     public String toSPARQLQueryString(boolean filtered) {
+    	return toSPARQLQueryString(filtered, Collections.<String, String>emptyMap());
+    }
+    
+    @Override
+    public String toSPARQLQueryString(boolean filtered, Map<String, String> prefixMap) {
     	if(children.isEmpty()){
     		return "SELECT ?x0 WHERE {?x0 ?y ?z.}";
     	}
@@ -724,7 +730,16 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		sb.append(filter).append("\n");
     	}
     	sb.append("}");
-    	return sb.toString();
+    	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxARQ);
+    	query.setPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+    	query.setPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+    	
+		for (Entry<String, String> entry : prefixMap.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			query.setPrefix(key, value);
+		}
+    	return query.toString();
     }
     
     private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb, boolean filtered, List<String> filters){
@@ -785,7 +800,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		l = iter.next();
     		if(l.getDatatype() == XSDDatatype.XSDinteger || l.getDatatype() == XSDDatatype.XSDint){
     			min = (l.getInt() < min.getInt()) ? l : min;
-    		} else if(l.getDatatype() == XSDDatatype.XSDdouble){
+    		} else if(l.getDatatype() == XSDDatatype.XSDdouble || l.getDatatype() == XSDDatatype.XSDdecimal){
     			min = (l.getDouble() < min.getDouble()) ? l : min;
     		} else if(l.getDatatype() == XSDDatatype.XSDdate){
     			min = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(min.getLexicalForm())) == -1) ? l : min;
@@ -802,7 +817,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		l = iter.next();
     		if(l.getDatatype() == XSDDatatype.XSDinteger || l.getDatatype() == XSDDatatype.XSDint){
     			max = (l.getInt() > max.getInt()) ? l : max;
-    		} else if(l.getDatatype() == XSDDatatype.XSDdouble){
+    		} else if(l.getDatatype() == XSDDatatype.XSDdouble || l.getDatatype() == XSDDatatype.XSDdecimal){
     			max = (l.getDouble() > max.getDouble()) ? l : max;
     		} else if(l.getDatatype() == XSDDatatype.XSDdate){
     			max = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(max.getLexicalForm())) == 1) ? l : max;

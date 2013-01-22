@@ -247,7 +247,8 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 						if(lit.getDatatype() == XSDDatatype.XSDinteger 
 								|| lit.getDatatype() == XSDDatatype.XSDdouble 
 								|| lit.getDatatype() == XSDDatatype.XSDdate
-								|| lit.getDatatype() == XSDDatatype.XSDint){
+								|| lit.getDatatype() == XSDDatatype.XSDint
+								|| lit.getDatatype() == XSDDatatype.XSDdecimal){
 							subTree.addLiteral(lit);
 						}
 						tree.addChild(subTree, st.getPredicate().toString());
