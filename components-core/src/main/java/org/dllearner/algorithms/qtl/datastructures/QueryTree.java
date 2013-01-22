@@ -22,6 +22,7 @@ package org.dllearner.algorithms.qtl.datastructures;
 import java.io.PrintWriter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
@@ -130,6 +131,8 @@ public interface QueryTree<N> {
     String toSPARQLQueryString();
     
     String toSPARQLQueryString(boolean filtered);
+    
+    String toSPARQLQueryString(boolean filtered, Map<String, String> prefixMap);
     
     Query toSPARQLQuery();
     

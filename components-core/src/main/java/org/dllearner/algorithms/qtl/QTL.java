@@ -22,9 +22,11 @@ package org.dllearner.algorithms.qtl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -116,6 +118,8 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	private SortedSet<String> lggInstances;
 	
 	private Set<String> objectNamespacesToIgnore = new HashSet<String>();
+	private Map<String, String> prefixes = new HashMap<String, String>();
+	private boolean enableNumericLiteralFilters = false;
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
@@ -125,7 +129,6 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	}
 	
 	public QTL() {
-		
 	}
 	
 	public QTL(AbstractLearningProblem learningProblem, SparqlEndpointKS endpointKS) throws LearningProblemUnsupportedException{
@@ -219,6 +222,14 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		return maxQueryTreeDepth;
 	}
 	
+	public void setPrefixes(Map<String, String> prefixes) {
+		this.prefixes = prefixes;
+	}
+	
+	public Map<String, String> getPrefixes() {
+		return prefixes;
+	}
+	
 	public String getSPARQLQuery(){
 		if(lgg == null){
 			lgg = lggGenerator.getLGG(getQueryTrees(posExamples));
@@ -256,6 +267,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 			if(logger.isDebugEnabled()){
 				logger.debug("Tree for resource " + resource);
 				logger.debug(tree.getStringRepresentation());
+				
 			}
 			trees.add(tree);
 		}
@@ -330,9 +342,17 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		if(logger.isDebugEnabled()){
 			logger.debug("LGG: \n" + lgg.getStringRepresentation());
 		}
-		logger.info(lgg.toSPARQLQuery());
+		logger.info(lgg.toSPARQLQueryString(enableNumericLiteralFilters, prefixes));
 	}
-
+	
+	public void setEnableNumericLiteralFilters(boolean enableNumericLiteralFilters) {
+		this.enableNumericLiteralFilters = enableNumericLiteralFilters;
+	}
+	
+	public boolean isEnableNumericLiteralFilters() {
+		return enableNumericLiteralFilters;
+	}
+	
 	@Override
 	public List<String> getCurrentlyBestSPARQLQueries(int nrOfSPARQLQueries) {
 		return Collections.singletonList(getBestSPARQLQuery());
