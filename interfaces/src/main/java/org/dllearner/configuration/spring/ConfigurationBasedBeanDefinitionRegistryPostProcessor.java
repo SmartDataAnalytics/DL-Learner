@@ -3,6 +3,7 @@ package org.dllearner.configuration.spring;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.IConfigurationProperty;
 import org.dllearner.kb.KBFile;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLFile;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -95,7 +96,7 @@ public class ConfigurationBasedBeanDefinitionRegistryPostProcessor implements Be
     /**
      * Add Base Directory Value to Beans which need it.
      *
-     * @param beanDefinition The curren Bean Definition
+     * @param beanDefinition The current Bean Definition
      */
     private void addBaseDirectoryIfNeeded(BeanDefinition beanDefinition) {
         Class beanClass = null;
@@ -105,7 +106,7 @@ public class ConfigurationBasedBeanDefinitionRegistryPostProcessor implements Be
             throw new RuntimeException("Can't find class " + beanDefinition.getBeanClassName());
         }
         /** Add Base Directory */
-        if (beanClass.isAssignableFrom(KBFile.class) || beanClass.isAssignableFrom(OWLFile.class)) {
+        if (beanClass.isAssignableFrom(KBFile.class) || beanClass.isAssignableFrom(OWLFile.class) || beanClass.isAssignableFrom(LocalModelBasedSparqlEndpointKS.class)) {
             beanDefinition.getPropertyValues().add("baseDir", configuration.getBaseDir());
         }
     }
