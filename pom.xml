@@ -120,10 +120,20 @@
 			in Maven. -->
 		<dependencies>
 			<dependency>
-				<groupId>net.sourceforge.owlapi</groupId>
-				<artifactId>owlapi</artifactId>
-				<version>3.2.4</version>
-			</dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-distribution</artifactId>
+			<version>3.4</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-reasoner</artifactId>
+			<version>3.3</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-util</artifactId>
+			<version>3.3</version>
+		</dependency>
 
 			<dependency>
 				<groupId>com.owldl</groupId>
@@ -137,6 +147,12 @@
                     </exclusion>
                 </exclusions>
 			</dependency>
+			
+			<dependency>
+			<groupId>eu.trowl</groupId>
+			<artifactId>trowl-core</artifactId>
+			<version>1.0</version>
+		</dependency>
 
 			<dependency>
 				<groupId>org.semanticweb.hermit</groupId>
