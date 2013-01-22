@@ -200,7 +200,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 
 	@Override
 	public List<Axiom> getCurrentlyBestAxioms() {
-		return null;
+		return getCurrentlyBestAxioms(Integer.MAX_VALUE);
 	}
 	
 	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
@@ -226,6 +226,10 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
 		return getCurrentlyBestEvaluatedAxioms(nrOfAxioms, 0.0);
+	}
+	
+	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(double accuracyThreshold) {
+		return getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, accuracyThreshold);
 	}
 
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms,
@@ -265,7 +269,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		
 	}
 	
-	protected Model executeConstructQuery(String query) {System.out.println(query);
+	protected Model executeConstructQuery(String query) {
 		logger.debug("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
@@ -281,7 +285,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 				if(model.size() == 0){
 					fullDataLoaded = true;
 				}
-				logger.info("Got " + model.size() + " triples.");
+				logger.debug("Got " + model.size() + " triples.");
 				return model;
 			} catch (QueryExceptionHTTP e) {
 				if(e.getCause() instanceof SocketTimeoutException){
@@ -302,7 +306,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		}
 	}
 	
-	protected ResultSet executeSelectQuery(String query) {System.out.println(query);
+	protected ResultSet executeSelectQuery(String query) {
 		logger.debug("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
@@ -319,6 +323,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 				if(e.getCause() instanceof SocketTimeoutException){
 					if(timeout){
 						logger.warn("Got timeout");
+						throw e;
 					} else {
 						logger.trace("Got local timeout");
 					}
@@ -342,7 +347,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected boolean executeAskQuery(String query){
-		logger.info("Sending query\n{} ...", query);
+		logger.debug("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
 			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);

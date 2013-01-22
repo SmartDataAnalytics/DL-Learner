@@ -164,7 +164,7 @@ public class FunctionalObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	
 	public static void main(String[] args) throws Exception{
 		FunctionalObjectPropertyAxiomLearner l = new FunctionalObjectPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/league"));
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/currency"));
 		l.setMaxExecutionTimeInSeconds(20);
 		l.setForceSPARQL_1_0_Mode(true);
 		l.init();

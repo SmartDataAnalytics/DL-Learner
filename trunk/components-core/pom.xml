@@ -113,10 +113,17 @@
 			</exclusions>
 		</dependency>
 
-		<!-- THIS IS FROM THE UNIBAS REPO -->
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi</artifactId>
+			<artifactId>owlapi-distribution</artifactId>
+		</dependency>
+		<dependency>
+	<groupId>net.sourceforge.owlapi</groupId>
+	<artifactId>owlapi-reasoner</artifactId>
+</dependency>
+<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-util</artifactId>
 		</dependency>
 
 		<!-- THIS IS FROM THE UNIBAS REPO -->
@@ -253,6 +260,12 @@
          	<artifactId>xercesImpl</artifactId>
          	<version>2.8.0</version>
          </dependency>
+         
+           <dependency>
+            <groupId>uk.ac.shef.wit</groupId>
+            <artifactId>simmetrics</artifactId>
+            <version>1.6.2</version>
+        </dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

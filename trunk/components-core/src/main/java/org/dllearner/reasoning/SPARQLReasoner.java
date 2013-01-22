@@ -207,7 +207,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		if(classPopularityMap != null && classPopularityMap.containsKey(nc)){
 			return classPopularityMap.get(nc);
 		} else {
-			System.out.println("Cache miss: " + nc);
 			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s a <%s>}";
 			
 			ResultSet rs = executeSelectQuery(String.format(queryTemplate, nc.getName()));
@@ -222,7 +221,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		if(objectPropertyPopularityMap != null && objectPropertyPopularityMap.containsKey(op)){
 			return objectPropertyPopularityMap.get(op);
 		} else {
-			System.out.println("Cache miss: " + op);
 			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
 			
 			ResultSet rs = executeSelectQuery(String.format(queryTemplate, op.getName()));
@@ -237,7 +235,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		if(dataPropertyPopularityMap.containsKey(dp)){
 			return dataPropertyPopularityMap.get(dp);
 		} else {
-			System.out.println("Cache miss: " + dp);
 			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
 			
 			ResultSet rs = executeSelectQuery(String.format(queryTemplate, dp.getName()));

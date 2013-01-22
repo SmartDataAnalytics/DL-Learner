@@ -178,12 +178,12 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			class2Overlap.put(cls, cnt);
 		}
 		//for each property in knowledge base
-		for(NamedClass cls : allClasses){
+		for(NamedClass cls : allClasses){if(!cls.toString().equals("http://dbpedia.org/ontology/MotorcycleRider"))continue;
 			//get the popularity
 			int otherPopularity = reasoner.getPopularity(cls);
 			if(otherPopularity == 0){//skip empty properties
 				continue;
-			}
+			}System.out.println(cls);
 			//get the overlap
 			int overlap = class2Overlap.containsKey(cls) ? class2Overlap.get(cls) : 0;
 			//compute the estimated precision
@@ -455,7 +455,8 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		ks = new LocalModelBasedSparqlEndpointKS(new URL("http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/examples/swore/swore.rdf?revision=2217"));
 		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		DisjointClassesLearner l = new DisjointClassesLearner(ks);
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Book"));
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Agent"));
+		l.setMaxExecutionTimeInSeconds(60);
 		l.init();
 		l.getReasoner().prepareSubsumptionHierarchy();
 		l.getReasoner().precomputeClassPopularity();
