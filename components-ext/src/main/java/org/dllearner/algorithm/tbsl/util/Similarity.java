@@ -1,6 +1,6 @@
 package org.dllearner.algorithm.tbsl.util;
 
-import org.dllearner.algorithm.qtl.filters.I_Sub;
+import org.dllearner.algorithms.qtl.filters.I_Sub;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
