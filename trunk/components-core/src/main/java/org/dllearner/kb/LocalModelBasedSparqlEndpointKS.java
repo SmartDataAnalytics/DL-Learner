@@ -19,13 +19,37 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 	
 	private OntModel model;
 	private String fileName;
-	 private String baseDir;
+	private String baseDir;
+	private boolean enableReasoning = false;
 	
 	public LocalModelBasedSparqlEndpointKS() {
 	}
 	
 	public LocalModelBasedSparqlEndpointKS(String ontologyURL) throws MalformedURLException {
 		this(new URL(ontologyURL));
+	}
+	
+	public LocalModelBasedSparqlEndpointKS(URL ontologyURL) {
+		this.fileName = ontologyURL.toString();
+	}
+	
+	public LocalModelBasedSparqlEndpointKS(OntModel model) {
+		this.model = model;
+	}
+	
+	@Override
+	public void init() throws ComponentInitException {
+		Model baseModel = ModelFactory.createDefaultModel();
+		 // use the FileManager to find the input file
+		 InputStream in = FileManager.get().open(baseDir + File.separator + fileName);
+		if (in == null) {
+		    throw new IllegalArgumentException(
+		                                 "File: " + fileName + " not found");
+		}
+		// read the RDF/XML file
+		baseModel.read(in, null);
+		
+		model = ModelFactory.createOntologyModel(enableReasoning ? OntModelSpec.OWL_MEM : OntModelSpec.OWL_MEM_RDFS_INF, baseModel);
 	}
 	
 	public void setFileName(String fileName) {
@@ -43,28 +67,13 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
     public void setBaseDir(String baseDir) {
         this.baseDir = baseDir;
     }
-	
-	public LocalModelBasedSparqlEndpointKS(URL ontologyURL) {
-		this.fileName = ontologyURL.toString();
+    
+    public void setEnableReasoning(boolean enableReasoning) {
+		this.enableReasoning = enableReasoning;
 	}
-	
-	public LocalModelBasedSparqlEndpointKS(OntModel model) {
-		this.model = model;
-	}
-	
-	@Override
-	public void init() throws ComponentInitException {
-		Model baseModel = ModelFactory.createDefaultModel();System.out.println("Base: " + baseDir);
-		 // use the FileManager to find the input file
-		 InputStream in = FileManager.get().open(baseDir + File.separator + fileName);
-		if (in == null) {
-		    throw new IllegalArgumentException(
-		                                 "File: " + fileName + " not found");
-		}
-		// read the RDF/XML file
-		baseModel.read(in, null);
-		
-		model = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM_RDFS_INF, baseModel);
+    
+    public boolean isEnableReasoning() {
+		return enableReasoning;
 	}
 	
 	public OntModel getModel() {
