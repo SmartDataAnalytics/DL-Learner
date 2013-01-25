@@ -24,7 +24,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.dllearner.algorithm.qtl.QTL;
+import org.dllearner.algorithms.qtl.QTL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.SparqlEndpointKS;
