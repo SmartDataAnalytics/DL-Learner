@@ -64,6 +64,11 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	public PosOnlyLP(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
 	}
+	
+	public PosOnlyLP(AbstractReasonerComponent reasoningService, SortedSet<Individual> positiveExamples) {
+		super(reasoningService);
+		this.positiveExamples = positiveExamples;
+	}
 
 	/*
 	 * (non-Javadoc)
