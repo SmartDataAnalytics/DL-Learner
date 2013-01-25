@@ -1,19 +1,30 @@
 package org.dllearner.scripts;
 
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -26,6 +37,11 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
+import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.semanticweb.owlapi.io.ToStringRenderer;
+
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -63,11 +79,51 @@ public class OntologyMatching {
 	}
 	
 	public void start(){
-		computeMatching(kb1, kb2);
-		computeMatching(kb2, kb1);
+		Map<Description, List<? extends EvaluatedDescription>> mapping1 = computeMapping(kb1, kb2);
+		printMappingPretty(mapping1);
+		Map<Description, List<? extends EvaluatedDescription>> mapping2 = computeMapping(kb2, kb1);
+		printMappingPretty(mapping2);
 	}
 	
-	private void computeMatching(KnowledgeBase source, KnowledgeBase target) {
+	private void printMapping(Map<Description, List<? extends EvaluatedDescription>> mapping){
+		logger.info("Source Class -> Target Class Expression");
+		for (Entry<Description, List<? extends org.dllearner.core.EvaluatedDescription>> entry : mapping.entrySet()) {
+			Description key = entry.getKey();
+			int length = key.toString().length();
+			String indention = "";
+			for(int i = 0; i < length; i++){
+				indention += " ";
+			}
+			List<? extends org.dllearner.core.EvaluatedDescription> value = entry.getValue();
+			logger.info(key.toString());
+			for (EvaluatedDescription evaluatedDescription : value) {
+				logger.info(indention + "\t->\t" + evaluatedDescription);
+			}
+		}
+	}
+	
+	private void printMappingPretty(Map<Description, List<? extends EvaluatedDescription>> mapping){
+		DecimalFormat dfPercent = new DecimalFormat("0.00%");
+		logger.info("Source Class -> Target Class Expression");
+		for (Entry<Description, List<? extends org.dllearner.core.EvaluatedDescription>> entry : mapping.entrySet()) {
+			Description key = entry.getKey();
+			int length = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(key).toString().length();
+			String indention = "";
+			for(int i = 0; i < length; i++){
+				indention += " ";
+			}
+			List<? extends org.dllearner.core.EvaluatedDescription> value = entry.getValue();
+			logger.info(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(key));
+			for (EvaluatedDescription evaluatedDescription : value) {
+				logger.info(indention + "\t->\t" + 
+			OWLAPIDescriptionConvertVisitor.getOWLClassExpression(evaluatedDescription.getDescription()) + 
+			"(" + dfPercent.format(evaluatedDescription.getAccuracy()) + ")");
+			}
+		}
+	}
+	
+	private Map<Description, List<? extends EvaluatedDescription>> computeMapping(KnowledgeBase source, KnowledgeBase target) {
+		Map<Description, List<? extends EvaluatedDescription>> mapping = new HashMap<Description, List<? extends EvaluatedDescription>>();
 		// get all classes in SOURCE
 		Set<NamedClass> sourceClasses = getClasses(source);
 
@@ -79,16 +135,18 @@ public class OntologyMatching {
 			logger.info(individuals);
 			//learn concept in KB2 based on the examples
 			if(individuals.size() >= 3){
-				learnClassExpression(target, individuals);
+				List<? extends EvaluatedDescription> learnedClassExpressions = learnClassExpression(target, individuals);
+				mapping.put(nc, learnedClassExpressions);
 			}
 		}
+		return mapping;
 	}
 	
-	private void learnClassExpression(KnowledgeBase kb, SortedSet<Individual> posExamples){
-		learnClassExpression(kb, posExamples, false);
+	private List<? extends EvaluatedDescription> learnClassExpression(KnowledgeBase kb, SortedSet<Individual> posExamples){
+		return learnClassExpression(kb, posExamples, false);
 	}
 	
-	private void learnClassExpression(KnowledgeBase kb, SortedSet<Individual> positiveExamples, boolean posNeg){
+	private List<? extends EvaluatedDescription> learnClassExpression(KnowledgeBase kb, SortedSet<Individual> positiveExamples, boolean posNeg){
 		try {
 			SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
 			if(posNeg){
@@ -132,11 +190,14 @@ public class OntologyMatching {
 	        la.setNoisePercentage(25);
 	        la.init();
 	        la.start();
-	        
+	       
 	        logger.info(la.getCurrentlyBestEvaluatedDescription());
+	        
+	        return la.getCurrentlyBestEvaluatedDescriptions(10);
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	private Set<NamedClass> getClasses(KnowledgeBase kb){
@@ -195,7 +256,11 @@ public class OntologyMatching {
 			qs = rs.next();
 			RDFNode object = qs.get("o");
 			if(object.isURIResource()){
-				relatedIndividuals.add(new Individual(object.asResource().getURI()));
+				
+				String uri = object.asResource().getURI();
+				//workaround for World Factbook - should be removed later
+				uri = uri.replace("http://www4.wiwiss.fu-berlin.de/factbook/resource/", "http://wifo5-03.informatik.uni-mannheim.de/factbook/resource/");
+				relatedIndividuals.add(new Individual(uri));
 			}
 		}
 		return relatedIndividuals;
@@ -272,6 +337,14 @@ public class OntologyMatching {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception{
+		//render output
+		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
+		//set logging properties
+		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
+		Logger.getLogger(ExtractionAlgorithm.class).setLevel(Level.WARN);
+		Logger.getLogger(org.dllearner.kb.extraction.Manager.class).setLevel(Level.WARN);
+		Logger.getRootLogger().removeAllAppenders();
+		Logger.getRootLogger().addAppender(new ConsoleAppender(new PatternLayout("%m%n")));
 		// KB2
 		SparqlEndpoint endpoint1 = SparqlEndpoint.getEndpointDBpedia();
 		ExtractionDBCache cache1 = new ExtractionDBCache("cache");
@@ -280,6 +353,10 @@ public class OntologyMatching {
 		// KB2
 		SparqlEndpoint endpoint2 = new SparqlEndpoint(new URL("http://wifo5-03.informatik.uni-mannheim.de/factbook/sparql"));
 		ExtractionDBCache cache2 = new ExtractionDBCache("cache");
+		//TODO problem with World Factbook is that old FU Berlin server is useless because of bugs and current version
+		//is provide by University Of Mannheim now with another namespace http://wifo5-03.informatik.uni-mannheim.de/factbook/resource/
+		//but the DBpedia links are still to the old D2R server instance
+		//workaround: replace namespace before learning
 		String namespace2 = "http://www4.wiwiss.fu-berlin.de/factbook/resource/";
 		KnowledgeBase kb2 = new KnowledgeBase(endpoint2, cache2, namespace2);
 
