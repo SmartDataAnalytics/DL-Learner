@@ -1,6 +1,5 @@
 package org.dllearner.scripts;
 
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +9,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -24,7 +20,6 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -35,13 +30,10 @@ import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
-import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.semanticweb.owlapi.io.ToStringRenderer;
-
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -132,9 +124,10 @@ public class OntologyMatching {
 			logger.info(nc);
 			// get all via owl:sameAs related individuals
 			SortedSet<Individual> individuals = getRelatedIndividualsNamespaceAware(source, nc, target.getNamespace());
-			logger.info(individuals);
+			logger.info(individuals.size());
 			//learn concept in KB2 based on the examples
 			if(individuals.size() >= 3){
+				individuals = SetManipulation.fuzzyShrinkInd(individuals, 10);
 				List<? extends EvaluatedDescription> learnedClassExpressions = learnClassExpression(target, individuals);
 				mapping.put(nc, learnedClassExpressions);
 			}
@@ -260,6 +253,9 @@ public class OntologyMatching {
 				String uri = object.asResource().getURI();
 				//workaround for World Factbook - should be removed later
 				uri = uri.replace("http://www4.wiwiss.fu-berlin.de/factbook/resource/", "http://wifo5-03.informatik.uni-mannheim.de/factbook/resource/");
+				//workaround for OpenCyc - should be removed later
+				uri = uri.replace("http://sw.cyc.com", "http://sw.opencyc.org");
+				
 				relatedIndividuals.add(new Individual(uri));
 			}
 		}
@@ -329,40 +325,5 @@ public class OntologyMatching {
 			return cache;
 		}
 		
-		
-		
 	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) throws Exception{
-		//render output
-		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
-		//set logging properties
-		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
-		Logger.getLogger(ExtractionAlgorithm.class).setLevel(Level.WARN);
-		Logger.getLogger(org.dllearner.kb.extraction.Manager.class).setLevel(Level.WARN);
-		Logger.getRootLogger().removeAllAppenders();
-		Logger.getRootLogger().addAppender(new ConsoleAppender(new PatternLayout("%m%n")));
-		// KB2
-		SparqlEndpoint endpoint1 = SparqlEndpoint.getEndpointDBpedia();
-		ExtractionDBCache cache1 = new ExtractionDBCache("cache");
-		String namespace1 = "http://dbpedia.org/resource/";
-		KnowledgeBase kb1 = new KnowledgeBase(endpoint1, cache1, namespace1);
-		// KB2
-		SparqlEndpoint endpoint2 = new SparqlEndpoint(new URL("http://wifo5-03.informatik.uni-mannheim.de/factbook/sparql"));
-		ExtractionDBCache cache2 = new ExtractionDBCache("cache");
-		//TODO problem with World Factbook is that old FU Berlin server is useless because of bugs and current version
-		//is provide by University Of Mannheim now with another namespace http://wifo5-03.informatik.uni-mannheim.de/factbook/resource/
-		//but the DBpedia links are still to the old D2R server instance
-		//workaround: replace namespace before learning
-		String namespace2 = "http://www4.wiwiss.fu-berlin.de/factbook/resource/";
-		KnowledgeBase kb2 = new KnowledgeBase(endpoint2, cache2, namespace2);
-
-		OntologyMatching matcher = new OntologyMatching(kb1, kb2);
-		matcher.start();
-
-	}
-
 }
