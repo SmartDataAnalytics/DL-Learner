@@ -1107,7 +1107,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		logger.debug("Sending query \n {}", query);
 		ResultSet rs = null;
 		if(ks.isRemote()){
-			if(useCache){
+			if(useCache && cache != null){
 				rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(ks.getEndpoint(), query));
 			} else {
 				QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);

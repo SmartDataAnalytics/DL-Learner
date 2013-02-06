@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+//import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDescriptionGenerator{
 	
@@ -166,7 +166,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 				}
 				for (String ngu : endpoint.getNamedGraphURIs()) {
 					queryExecution.addNamedGraph(ngu);
-				}			
+				}
 				model = queryExecution.execConstruct();
 			} else {
 				model = cache.executeConstructQuery(endpoint, query);
