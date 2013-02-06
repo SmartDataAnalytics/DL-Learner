@@ -1,4 +1,4 @@
-package org.dllearner.scripts;
+package org.dllearner.junit;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -19,6 +19,7 @@ import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.scripts.OntologyMatching;
 import org.dllearner.scripts.OntologyMatching.KnowledgeBase;
 import org.junit.Before;
 import org.junit.Test;
