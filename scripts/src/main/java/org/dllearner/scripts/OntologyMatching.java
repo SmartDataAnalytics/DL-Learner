@@ -1,7 +1,15 @@
 package org.dllearner.scripts;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,11 +23,15 @@ import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -29,18 +41,33 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.LabelShortFormProvider;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.UnparsableOntologyException;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.jamonapi.Monitor;
@@ -59,6 +86,22 @@ public class OntologyMatching {
 	//KB2
 	private KnowledgeBase kb2;
 	
+	private Map<Description, List<? extends EvaluatedDescription>> mappingKB1KB2;
+	private Map<Description, List<? extends EvaluatedDescription>> mappingKB2KB1;
+	
+	private boolean posNegLearning = true;
+	
+	/**
+	 * The maximum number of positive examples, used for the SPARQL extraction and learning algorithm
+	 */
+	private int maxNrOfPositiveExamples = 20;
+	/**
+	 * The maximum number of negative examples, used for the SPARQL extraction and learning algorithm
+	 */
+	private int maxNrOfNegativeExamples = 20;
+	
+	private NamedClass currentClass;
+	
 	public OntologyMatching(KnowledgeBase kb1, KnowledgeBase kb2) {
 		this.kb1 = kb1;
 		this.kb2 = kb2;
@@ -71,10 +114,26 @@ public class OntologyMatching {
 	}
 	
 	public void start(){
-		Map<Description, List<? extends EvaluatedDescription>> mapping1 = computeMapping(kb1, kb2);
-		printMappingPretty(mapping1);
-		Map<Description, List<? extends EvaluatedDescription>> mapping2 = computeMapping(kb2, kb1);
-		printMappingPretty(mapping2);
+		mappingKB1KB2 = computeAlignment(kb1, kb2);
+		printMappingPretty(mappingKB1KB2);
+		mappingKB2KB1 = computeAlignment(kb2, kb1);
+		printMappingPretty(mappingKB2KB1);
+	}
+	
+	public Map<Description, List<? extends EvaluatedDescription>> getMappingKB1KB2() {
+		return mappingKB1KB2;
+	}
+	
+	public Map<Description, List<? extends EvaluatedDescription>> getMappingKB2KB1() {
+		return mappingKB2KB1;
+	}
+	
+	public void setMaxNrOfPositiveExamples(int maxNrOfPositiveExamples) {
+		this.maxNrOfPositiveExamples = maxNrOfPositiveExamples;
+	}
+	
+	public void setMaxNrOfNegativeExamples(int maxNrOfNegativeExamples) {
+		this.maxNrOfNegativeExamples = maxNrOfNegativeExamples;
 	}
 	
 	private void printMapping(Map<Description, List<? extends EvaluatedDescription>> mapping){
@@ -106,78 +165,139 @@ public class OntologyMatching {
 			}
 			List<? extends org.dllearner.core.EvaluatedDescription> value = entry.getValue();
 			logger.info(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(key));
-			for (EvaluatedDescription evaluatedDescription : value) {
-				logger.info(indention + "\t->\t" + 
-			OWLAPIDescriptionConvertVisitor.getOWLClassExpression(evaluatedDescription.getDescription()) + 
-			"(" + dfPercent.format(evaluatedDescription.getAccuracy()) + ")");
+			if(value == null){
+				logger.info(indention + "\t->\t ERROR"); 
+			} else {
+				for (EvaluatedDescription evaluatedDescription : value) {
+					logger.info(indention + "\t->\t" + 
+				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(evaluatedDescription.getDescription()) + 
+				"(" + dfPercent.format(evaluatedDescription.getAccuracy()) + ")");
+				}
 			}
+			
 		}
 	}
 	
-	private Map<Description, List<? extends EvaluatedDescription>> computeMapping(KnowledgeBase source, KnowledgeBase target) {
+	private Map<Description, List<? extends EvaluatedDescription>> computeAlignment(KnowledgeBase source, KnowledgeBase target) {
 		Map<Description, List<? extends EvaluatedDescription>> mapping = new HashMap<Description, List<? extends EvaluatedDescription>>();
 		// get all classes in SOURCE
 		Set<NamedClass> sourceClasses = getClasses(source);
 
 		// for each class of KB1
 		for (NamedClass nc : sourceClasses) {
-			logger.info(nc);
-			// get all via owl:sameAs related individuals
-			SortedSet<Individual> individuals = getRelatedIndividualsNamespaceAware(source, nc, target.getNamespace());
-			logger.info(individuals.size());
-			//learn concept in KB2 based on the examples
-			if(individuals.size() >= 3){
-				individuals = SetManipulation.fuzzyShrinkInd(individuals, 10);
-				List<? extends EvaluatedDescription> learnedClassExpressions = learnClassExpression(target, individuals);
-				mapping.put(nc, learnedClassExpressions);
+			try {
+				logger.info(nc);
+				List<? extends EvaluatedDescription> learnedClassExpressions = computeMapping(nc, source, target);
+				if(learnedClassExpressions != null){
+					mapping.put(nc, learnedClassExpressions);
+					//break;
+				}
+			} catch (Exception e) {
+				logger.error("Failed for " + nc.getName(), e);
 			}
 		}
 		return mapping;
 	}
 	
-	private List<? extends EvaluatedDescription> learnClassExpression(KnowledgeBase kb, SortedSet<Individual> posExamples){
-		return learnClassExpression(kb, posExamples, false);
+	public List<? extends EvaluatedDescription> computeMapping(NamedClass sourceClass, KnowledgeBase source, KnowledgeBase target){
+		currentClass = sourceClass;
+		List<? extends EvaluatedDescription> learnedClassExpressions = null;
+		// get all via owl:sameAs related individuals
+		SortedSet<Individual> relatedIndividuals = getRelatedIndividualsNamespaceAware(source, sourceClass, target.getNamespace());
+		logger.info("#Resources in target KB: " + relatedIndividuals.size());
+		//learn concept in KB2 based on the examples
+		if(relatedIndividuals.size() >= 3){
+			learnedClassExpressions = learnClassExpressions(target, relatedIndividuals, posNegLearning);
+		}
+		return learnedClassExpressions;
 	}
 	
-	private List<? extends EvaluatedDescription> learnClassExpression(KnowledgeBase kb, SortedSet<Individual> positiveExamples, boolean posNeg){
+	private List<? extends EvaluatedDescription> learnClassExpressions(KnowledgeBase kb, SortedSet<Individual> posExamples){
+		return learnClassExpressions(kb, posExamples, false);
+	}
+	
+	private List<? extends EvaluatedDescription> learnClassExpressions(KnowledgeBase kb, SortedSet<Individual> positiveExamples, boolean posNeg){
+		Model fullFragment = null;
 		try {
+			
+			//get a sample of the positive examples
+			SortedSet<Individual> positiveExamplesSample = SetManipulation.stableShrinkInd(positiveExamples, maxNrOfPositiveExamples);
+			
+			//starting from the positive examples, we first extract the fragment for them
+			logger.info("Extracting fragment for positive examples...");
+			Model positiveFragment = getFragment(positiveExamplesSample, kb);
+			logger.info("...done.");
+			
+			//based on the fragment we try to find some good negative examples
 			SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
 			if(posNeg){
-				//find negative examples
 				mon.start();
+				//find the classes the positive examples are asserted to
+				Set<NamedClass> classes = new HashSet<NamedClass>();
+				ParameterizedSparqlString template = new ParameterizedSparqlString("SELECT ?type WHERE {?s a ?type.}");
+				for(Individual pos : positiveExamples){
+					template.clearParams();
+					template.setIri("s", pos.getName());
+					ResultSet rs = QueryExecutionFactory.create(template.asQuery(), positiveFragment).execSelect();
+					QuerySolution qs;
+					while(rs.hasNext()){
+						qs = rs.next();
+						if(qs.get("type").isURIResource()){
+							classes.add(new NamedClass(qs.getResource("type").getURI()));
+						}
+					}
+				}
+				System.out.println(classes);
+				
+				//get the negative examples
+				for(NamedClass nc : classes){
+					Set<String> parallelClasses = kb.getSparqlHelper().getParallelClasses(nc.getName(), 5);
+					for(String parallelClass : parallelClasses){
+						negativeExamples.addAll(kb.getReasoner().getIndividuals(new NamedClass(parallelClass), 5));
+						negativeExamples.removeAll(positiveExamples);
+					}
+				}
+				
 				AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(kb.getEndpoint());
 				//TODO find negative examples
 				mon.stop();
 				logger.info("Found " + negativeExamples.size() + " negative examples in " + mon.getLastValue() + "ms.");
 			}
 			
-			SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(positiveExamples, negativeExamples);
+			//get a sample of the positive examples
+			SortedSet<Individual> negativeExamplesSample = SetManipulation.stableShrinkInd(negativeExamples, maxNrOfNegativeExamples);
 			
-			SparqlKnowledgeSource ks = new SparqlKnowledgeSource(); 
-			ks.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
-			ks.setUrl(kb.getEndpoint().getURL());
-			ks.setDefaultGraphURIs(new TreeSet<String>(kb.getEndpoint().getDefaultGraphURIs()));
-			ks.setUseLits(false);
-			ks.setUseCacheDatabase(true);
-			ks.setCacheDir("cache");
-			ks.setRecursionDepth(2);
-			ks.setCloseAfterRecursion(true);
-			ks.setDissolveBlankNodes(false);
-			ks.setSaveExtractedFragment(false);
-			ks.init();
+			logger.info("#Positive examples: " + positiveExamplesSample.size());
+			logger.info("#Negative examples: " + negativeExamplesSample.size());
 			
+			//create fragment for negative examples
+			logger.info("Extracting fragment for negative examples...");
+			Model negativeFragment = getFragment(negativeExamplesSample, kb);
+			logger.info("...done.");
+			
+			//create fragment consisting of both
+			fullFragment = ModelFactory.createDefaultModel();
+			fullFragment.add(positiveFragment);
+			fullFragment.add(negativeFragment);
+			
+			//here is the most difficult task, i.e. find a 'good' fragment of the KB on which we can learn
+			KnowledgeSource ks = convert(fullFragment);
+			
+			//initialize the reasoner
 			AbstractReasonerComponent rc = new FastInstanceChecker(ks);
 			rc.init();
       
+			//initialize the learning problem
 			AbstractLearningProblem lp;
 			if(posNeg){
-				lp = new PosNegLPStandard(rc, positiveExamples, negativeExamples);
+				lp = new PosNegLPStandard(rc, positiveExamplesSample, negativeExamplesSample);
 			} else {
-				lp = new PosOnlyLP(rc, positiveExamples);
-				
+				lp = new PosOnlyLP(rc, positiveExamplesSample);
 			}
 			lp.init();
 			
+			//apply the learning algorithm
+			logger.info("Running learning algorithm...");
 			CELOE la = new CELOE(lp, rc);
 	        la.setMaxExecutionTimeInSeconds(10);
 	        la.setNoisePercentage(25);
@@ -189,8 +309,102 @@ public class OntologyMatching {
 	        return la.getCurrentlyBestEvaluatedDescriptions(10);
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
+			try {
+				new File("errors").mkdir();
+				fullFragment.write(new FileOutputStream("errors/" + prettyPrint(currentClass) + ".ttl"), "TURTLE", null);
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
 		}
 		return null;
+	}
+	
+	private KnowledgeSource convert(Model model){
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			model.write(baos, "TURTLE", null);
+			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			OWLOntology ontology = man.loadOntologyFromOntologyDocument(new ByteArrayInputStream(baos.toByteArray()));
+			return new OWLAPIOntology(ontology);
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+			try {
+				model.write(new FileOutputStream(prettyPrint(currentClass) + "_conversion_error.ttl"), "TURTLE", null);
+			} catch (FileNotFoundException e1) {
+				e.printStackTrace();
+			}
+		} 
+		return null;
+	}
+	
+	/**
+	 * Computes a fragment containing hopefully useful information about the resources.
+	 * @param ind
+	 */
+	private KnowledgeSource getFragmentLegacy(SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples, SparqlEndpoint endpoint){
+		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(positiveExamples, negativeExamples);
+		SparqlKnowledgeSource ks = new SparqlKnowledgeSource(); 
+		ks.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
+		ks.setUrl(endpoint.getURL());
+		ks.setDefaultGraphURIs(new TreeSet<String>(endpoint.getDefaultGraphURIs()));
+		ks.setUseLits(false);
+		ks.setUseCacheDatabase(true);
+		ks.setCacheDir("cache");
+		ks.setRecursionDepth(2);
+		ks.setCloseAfterRecursion(true);
+		ks.setDissolveBlankNodes(false);
+		ks.setSaveExtractedFragment(false);
+		ks.init();
+		return ks;
+	}
+	
+	/**
+	 * Computes a fragment containing hopefully useful information about the resources.
+	 * @param ind
+	 */
+	private Model getFragment(SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples, KnowledgeBase kb){
+		OntModel fullFragment = ModelFactory.createOntologyModel();
+		int i = 1;
+		int size = Sets.union(positiveExamples, negativeExamples).size();
+		for(Individual ind : Sets.union(positiveExamples, negativeExamples)){
+			logger.info(i++  + "/" + size);
+			fullFragment.add(getFragment(ind, kb));
+		}
+		//filter out triples with String literals, as there often occur are some syntax errors and they are not relevant for learning
+		List<Statement> statementsToRemove = new ArrayList<Statement>();
+		for(Iterator<Statement> iter = fullFragment.listStatements().toList().iterator(); iter.hasNext();){
+			Statement st = iter.next();
+			RDFNode object = st.getObject();
+			if(object.isLiteral()){
+				statementsToRemove.add(st);
+//				Literal lit = object.asLiteral();
+//				if(lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)){
+//					iter.remove();
+//				} 
+			}
+		}
+		fullFragment.remove(statementsToRemove);
+		return fullFragment;
+	}
+	
+	/**
+	 * Computes a fragment containing hopefully useful information about the resources.
+	 * @param ind
+	 */
+	private Model getFragment(SortedSet<Individual> examples, KnowledgeBase kb){
+		return getFragment(examples, new TreeSet<Individual>(), kb);
+	}
+	
+	/**
+	 * Computes a fragment containing hopefully useful information about the resource.
+	 * @param ind
+	 */
+	private Model getFragment(Individual ind, KnowledgeBase kb){
+		logger.debug("Loading fragment for " + ind.getName());
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(kb.getEndpoint(), kb.getCache());
+		Model cbd = cbdGen.getConciseBoundedDescription(ind.getName(), 2);
+		logger.debug("Got " + cbd.size() + " triples.");
+		return cbd;
 	}
 	
 	private Set<NamedClass> getClasses(KnowledgeBase kb){
@@ -282,6 +496,84 @@ public class OntologyMatching {
 		return rs;
 	}
 	
+	private String prettyPrint(Description desc){
+		return OWLAPIDescriptionConvertVisitor.getOWLClassExpression(desc).toString();
+	}
+	
+	public static String toHTML(Map<Description, List<? extends EvaluatedDescription>> mapping){
+		StringBuilder sb = new StringBuilder();
+		DecimalFormat dfPercent = new DecimalFormat("0.00%");
+		sb.append("<html>\n");
+		sb.append("<table>\n");
+		sb.append("<thead><tr><th>Source Class</th><th>Target Class Expressions</th></tr></thead>\n");
+		sb.append("<tbody>\n");
+		
+		
+		for (Entry<Description, List<? extends org.dllearner.core.EvaluatedDescription>> entry : mapping.entrySet()) {
+			Description key = entry.getKey();
+			List<? extends org.dllearner.core.EvaluatedDescription> value = entry.getValue();
+			if(value == null){
+				sb.append("<tr><th>" + OWLAPIDescriptionConvertVisitor.getOWLClassExpression(key) + "</th>\n");
+				sb.append("<tr><td>ERROR</td></tr>\n");
+			} else {
+				sb.append("<tr><th rowspan=\"" + value.size()+1 + "\">" + OWLAPIDescriptionConvertVisitor.getOWLClassExpression(key) + "</th>\n");
+			    for (EvaluatedDescription evaluatedDescription : value) {
+			    	sb.append("<tr><td>" + 
+			    OWLAPIDescriptionConvertVisitor.getOWLClassExpression(evaluatedDescription.getDescription()) + 	"(" + dfPercent.format(evaluatedDescription.getAccuracy()) + ")" 
+			    			+ "</td></tr>\n");
+				}
+			}
+		}
+		
+		sb.append("</tbody>\n");
+		sb.append("</table>\n");
+		sb.append("</html>\n");
+		
+		return sb.toString();
+	}
+	
+	public static String toHTMLWithLabels(Map<Description, List<? extends EvaluatedDescription>> mapping, KnowledgeBase source, KnowledgeBase target){
+		ManchesterOWLSyntaxOWLObjectRendererImpl sourceRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+		sourceRenderer.setShortFormProvider(new LabelShortFormProvider(source.getEndpoint(), source.getCache()));
+		ManchesterOWLSyntaxOWLObjectRendererImpl targetRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+		targetRenderer.setShortFormProvider(new LabelShortFormProvider(target.getEndpoint(), target.getCache()));
+		
+		StringBuilder sb = new StringBuilder();
+		DecimalFormat dfPercent = new DecimalFormat("0.00%");
+		sb.append("<html>\n");
+		sb.append("<table>\n");
+		sb.append("<thead><tr><th>Source Class</th><th>Target Class Expressions</th><th>Accuracy</th></tr></thead>\n");
+		sb.append("<tbody>\n");
+		
+		
+		for (Entry<Description, List<? extends org.dllearner.core.EvaluatedDescription>> entry : mapping.entrySet()) {
+			Description key = entry.getKey();
+			String renderedKey = sourceRenderer.render(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(key));
+			List<? extends org.dllearner.core.EvaluatedDescription> value = entry.getValue();
+			if(value == null){
+				sb.append("<tr><th>" + renderedKey + "</th>\n");
+				sb.append("<tr><td>ERROR</td><td></td></tr>\n");
+			} else {
+				sb.append("<tr><th rowspan=\"" + (value.size()+1) + "\">" + renderedKey + "</th>\n");
+			    for (EvaluatedDescription evaluatedDescription : value) {
+			    	sb.append("<tr>"); 
+			    	String renderedDesc = targetRenderer.render(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(evaluatedDescription.getDescription()));
+			     	sb.append("<td>" + renderedDesc + "</td>");
+			     	sb.append("<td>" + dfPercent.format(evaluatedDescription.getAccuracy()) + "</td>");
+			     	sb.append("</tr>\n");
+				}
+			}
+		}
+		
+		sb.append("</tbody>\n");
+		sb.append("</table>\n");
+		sb.append("</html>\n");
+		
+		return sb.toString();
+	}
+	
+	
+	
 	public static class KnowledgeBase{
 		private SparqlEndpoint endpoint;
 		private SPARQLReasoner reasoner;
@@ -294,7 +586,7 @@ public class OntologyMatching {
 			this.namespace = namespace;
 			this.cache = cache;
 			
-			this.reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
+			this.reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cache);
 			this.sparqlHelper = new SPARQLTasks(endpoint);
 		}
 		

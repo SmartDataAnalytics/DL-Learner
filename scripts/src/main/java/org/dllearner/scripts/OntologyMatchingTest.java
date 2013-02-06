@@ -1,11 +1,20 @@
 package org.dllearner.scripts;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -34,12 +43,13 @@ public class OntologyMatchingTest {
 		Logger.getLogger(org.dllearner.kb.extraction.Manager.class).setLevel(Level.WARN);
 		Logger.getRootLogger().removeAllAppenders();
 		Logger.getRootLogger().addAppender(new ConsoleAppender(new PatternLayout("%m%n")));
+//		Logger.getRootLogger().setLevel(Level.DEBUG);
 		
 		//DBpedia
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		ExtractionDBCache cache = new ExtractionDBCache("cache");
 		String namespace = "http://dbpedia.org/resource/";
-		dbpedia = new KnowledgeBase(endpoint, cache, namespace);
+		dbpedia = new KnowledgeBase(endpoint, null, namespace);
 		
 		//World Factbook
 		//TODO problem with World Factbook is that old FU Berlin server is useless because of bugs and current version
@@ -55,31 +65,83 @@ public class OntologyMatchingTest {
 		endpoint = new SparqlEndpoint(new URL("http://localhost:8890/sparql"));
 		cache = new ExtractionDBCache("cache");
 		namespace = "http://sw.cyc.com";
-		openCyc = new KnowledgeBase(endpoint, cache, namespace);
+		openCyc = new KnowledgeBase(endpoint, null, namespace);
 		
 		//LinkedGeoData
 		endpoint = new SparqlEndpoint(new URL("http://linkedgeodata.org/sparql"));
 		cache = new ExtractionDBCache("cache");
 		namespace = "http://linkedgeodata.org/triplify/";
-		linkedGeoData = new KnowledgeBase(endpoint, cache, namespace);
+		linkedGeoData = new KnowledgeBase(endpoint, null, namespace);
 	}
 
 	@Test
 	public void testDBpediaWorldFactbook() {
 		OntologyMatching matcher = new OntologyMatching(dbpedia, worldFactBook);
 		matcher.start();
+		save(matcher.getMappingKB1KB2(), "dbpedia_wfb.html");
+		save(matcher.getMappingKB2KB1(), "wfb_dbpedia.html");
 	}
 	
 	@Test
 	public void testDBpediaOpenCyc() {
 		OntologyMatching matcher = new OntologyMatching(dbpedia, openCyc);
 		matcher.start();
+		save("dbpedia_opencyc.html", matcher.getMappingKB1KB2(), dbpedia, openCyc);
+		save("opencyc_dbpedia.html", matcher.getMappingKB2KB1(), openCyc, dbpedia);
 	}
 	
 	@Test
 	public void testDBpediaLinkedGeoData() {
 		OntologyMatching matcher = new OntologyMatching(dbpedia, linkedGeoData);
 		matcher.start();
+		save("dbpedia_lgd.html", matcher.getMappingKB1KB2(), dbpedia, linkedGeoData );
+		save("lgd_dbpedia.html", matcher.getMappingKB2KB1(), linkedGeoData, dbpedia);
+	}
+	
+	@Test
+	public void testSingleClass() {
+		OntologyMatching matcher = new OntologyMatching(openCyc, dbpedia);
+		NamedClass nc = new NamedClass("http://sw.opencyc.org/concept/Mx4r4fYeXvbPQdiKtoNafhmOew");
+		List<? extends EvaluatedDescription> mapping = matcher.computeMapping(nc, openCyc, dbpedia);
+		Map<Description, List<? extends EvaluatedDescription>> alignment = new HashMap<Description, List<? extends EvaluatedDescription>>();
+		alignment.put(nc, mapping);
+		System.out.println(OntologyMatching.toHTMLWithLabels(alignment, openCyc, dbpedia));
+	}
+	
+	private void save(String filename, Map<Description, List<? extends EvaluatedDescription>> mapping, KnowledgeBase source, KnowledgeBase target){
+		BufferedWriter out = null;
+		try {
+			out = new BufferedWriter(new FileWriter(filename));
+			out.write(OntologyMatching.toHTMLWithLabels(mapping, source, target));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	private void save(Map<Description, List<? extends EvaluatedDescription>> mapping, String filename){
+		BufferedWriter out = null;
+		try {
+			out = new BufferedWriter(new FileWriter(filename));
+			out.write(OntologyMatching.toHTML(mapping));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }
