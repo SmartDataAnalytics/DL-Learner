@@ -19,15 +19,18 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.qtl.QTL;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
@@ -48,15 +51,16 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.UnparsableOntologyException;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
+import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -64,6 +68,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -190,7 +195,7 @@ public class OntologyMatching {
 				List<? extends EvaluatedDescription> learnedClassExpressions = computeMapping(nc, source, target);
 				if(learnedClassExpressions != null){
 					mapping.put(nc, learnedClassExpressions);
-					//break;
+//					break;
 				}
 			} catch (Exception e) {
 				logger.error("Failed for " + nc.getName(), e);
@@ -217,7 +222,7 @@ public class OntologyMatching {
 	}
 	
 	private List<? extends EvaluatedDescription> learnClassExpressions(KnowledgeBase kb, SortedSet<Individual> positiveExamples, boolean posNeg){
-		Model fullFragment = null;
+		OntModel fullFragment = null;
 		try {
 			
 			//get a sample of the positive examples
@@ -258,8 +263,6 @@ public class OntologyMatching {
 					}
 				}
 				
-				AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(kb.getEndpoint());
-				//TODO find negative examples
 				mon.stop();
 				logger.info("Found " + negativeExamples.size() + " negative examples in " + mon.getLastValue() + "ms.");
 			}
@@ -276,7 +279,7 @@ public class OntologyMatching {
 			logger.info("...done.");
 			
 			//create fragment consisting of both
-			fullFragment = ModelFactory.createDefaultModel();
+			fullFragment = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM);
 			fullFragment.add(positiveFragment);
 			fullFragment.add(negativeFragment);
 			
@@ -303,6 +306,15 @@ public class OntologyMatching {
 	        la.setNoisePercentage(25);
 	        la.init();
 	        la.start();
+	        
+	        try {
+				QTL qtl = new QTL(lp, new LocalModelBasedSparqlEndpointKS(fullFragment));
+				qtl.init();
+				qtl.start();
+				System.out.println(qtl.getSPARQLQuery());
+			} catch (LearningProblemUnsupportedException e) {
+				e.printStackTrace();
+			}
 	       
 	        logger.info(la.getCurrentlyBestEvaluatedDescription());
 	        
@@ -311,7 +323,7 @@ public class OntologyMatching {
 			e.printStackTrace();
 			try {
 				new File("errors").mkdir();
-				fullFragment.write(new FileOutputStream("errors/" + prettyPrint(currentClass) + ".ttl"), "TURTLE", null);
+				fullFragment.write(new FileOutputStream("errors/" + prettyPrint(currentClass) + "_inconsistent.ttl"), "TURTLE", null);
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			}
@@ -329,7 +341,7 @@ public class OntologyMatching {
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 			try {
-				model.write(new FileOutputStream(prettyPrint(currentClass) + "_conversion_error.ttl"), "TURTLE", null);
+				model.write(new FileOutputStream("errors/" + prettyPrint(currentClass) + "_conversion_error.ttl"), "TURTLE", null);
 			} catch (FileNotFoundException e1) {
 				e.printStackTrace();
 			}
@@ -376,11 +388,11 @@ public class OntologyMatching {
 			Statement st = iter.next();
 			RDFNode object = st.getObject();
 			if(object.isLiteral()){
-				statementsToRemove.add(st);
-//				Literal lit = object.asLiteral();
-//				if(lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)){
-//					iter.remove();
-//				} 
+//				statementsToRemove.add(st);
+				Literal lit = object.asLiteral();
+				if(lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)){
+					st.changeObject("shortened", "en");
+				} 
 			}
 		}
 		fullFragment.remove(statementsToRemove);
