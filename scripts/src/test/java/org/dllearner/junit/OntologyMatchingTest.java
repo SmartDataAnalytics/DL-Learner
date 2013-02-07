@@ -100,13 +100,33 @@ public class OntologyMatchingTest {
 	}
 	
 	@Test
-	public void testSingleClass() {
+	public void testSingleClassOpenCycToDBpedia() {
 		OntologyMatching matcher = new OntologyMatching(openCyc, dbpedia);
 		NamedClass nc = new NamedClass("http://sw.opencyc.org/concept/Mx4r4fYeXvbPQdiKtoNafhmOew");
 		List<? extends EvaluatedDescription> mapping = matcher.computeMapping(nc, openCyc, dbpedia);
 		Map<Description, List<? extends EvaluatedDescription>> alignment = new HashMap<Description, List<? extends EvaluatedDescription>>();
 		alignment.put(nc, mapping);
 		System.out.println(OntologyMatching.toHTMLWithLabels(alignment, openCyc, dbpedia));
+	}
+	
+	@Test
+	public void testSingleClassLinkedGeoDataToDBpedia() {
+		OntologyMatching matcher = new OntologyMatching(linkedGeoData, dbpedia);
+		NamedClass nc = new NamedClass("http://linkedgeodata.org/ontology/Aerodrome");
+		List<? extends EvaluatedDescription> mapping = matcher.computeMapping(nc, linkedGeoData, dbpedia);
+		Map<Description, List<? extends EvaluatedDescription>> alignment = new HashMap<Description, List<? extends EvaluatedDescription>>();
+		alignment.put(nc, mapping);
+		System.out.println(OntologyMatching.toHTMLWithLabels(alignment, linkedGeoData, dbpedia));
+	}
+	
+	@Test
+	public void testSingleClassDBpediaToLinkedGeoData() {
+		OntologyMatching matcher = new OntologyMatching(dbpedia, linkedGeoData);
+		NamedClass nc = new NamedClass("http://dbpedia.org/ontology/AdministrativeRegion");
+		List<? extends EvaluatedDescription> mapping = matcher.computeMapping(nc, dbpedia, linkedGeoData);
+		Map<Description, List<? extends EvaluatedDescription>> alignment = new HashMap<Description, List<? extends EvaluatedDescription>>();
+		alignment.put(nc, mapping);
+		System.out.println(OntologyMatching.toHTMLWithLabels(alignment, dbpedia, linkedGeoData));
 	}
 	
 	private void save(String filename, Map<Description, List<? extends EvaluatedDescription>> mapping, KnowledgeBase source, KnowledgeBase target){
