@@ -21,7 +21,6 @@ package org.dllearner.reasoning.fuzzydll;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -115,8 +114,6 @@ import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
-
-import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
@@ -385,14 +382,14 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 			if(it.hasNext()) {
 				OWLDataRange range = it.next();
 				if(range.isDatatype()) {
-					URI uri = ((OWLDatatype)range).getIRI().toURI();
-					if(uri.equals(OWL2Datatype.BOOLEAN.getURI()))
+					IRI iri = ((OWLDatatype)range).getIRI();
+					if(iri.equals(OWL2Datatype.BOOLEAN.getIRI()))
 						booleanDatatypeProperties.add(dtp);
-					else if(uri.equals(OWL2Datatype.DOUBLE.getURI()))
+					else if(iri.equals(OWL2Datatype.DOUBLE.getIRI()))
 						doubleDatatypeProperties.add(dtp);
-					else if(uri.equals(OWL2Datatype.INT.getURI()))
+					else if(iri.equals(OWL2Datatype.INT.getIRI()))
 						intDatatypeProperties.add(dtp);		
-					else if(uri.equals(OWL2Datatype.STRING.getURI()))
+					else if(iri.equals(OWL2Datatype.STRING.getIRI()))
 						stringDatatypeProperties.add(dtp);	
 				}
 			} else {

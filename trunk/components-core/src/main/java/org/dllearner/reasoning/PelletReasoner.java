@@ -20,7 +20,6 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
@@ -255,14 +254,14 @@ public class PelletReasoner extends AbstractReasonerComponent {
 						if(it.hasNext()) {
 							OWLDataRange range = it.next();
 							if(range.isDatatype()) {
-								URI uri = ((OWLDatatype)range).getIRI().toURI();
-								if(uri.equals(OWL2Datatype.BOOLEAN.getURI()))
+								IRI iri = ((OWLDatatype)range).getIRI();
+								if(iri.equals(OWL2Datatype.BOOLEAN.getIRI()))
 									booleanDatatypeProperties.add(dtp);
-								else if(uri.equals(OWL2Datatype.DOUBLE.getURI()))
+								else if(iri.equals(OWL2Datatype.DOUBLE.getIRI()))
 									doubleDatatypeProperties.add(dtp);
-								else if(uri.equals(OWL2Datatype.INT.getURI()))
+								else if(iri.equals(OWL2Datatype.INT.getIRI()))
 									intDatatypeProperties.add(dtp);
-								else if(uri.equals(OWL2Datatype.STRING.getURI()))
+								else if(iri.equals(OWL2Datatype.STRING.getIRI()))
 									stringDatatypeProperties.add(dtp);
 							}
 						}

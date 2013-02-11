@@ -19,7 +19,6 @@
 
 package org.dllearner.core.owl;
 
-import java.net.URI;
 import java.util.Map;
 
 import org.semanticweb.owlapi.model.IRI;
@@ -31,19 +30,19 @@ import org.semanticweb.owlapi.model.IRI;
  */
 public class Datatype implements DataRange, Comparable<Datatype> {
 	
-    private URI uri;
+    private IRI iri;
 
-    public Datatype(String uriString) {
-    	uri = URI.create(uriString);
+    public Datatype(String iriString) {
+    	iri = IRI.create(iriString);
     }
 
-	public URI getURI() {
-		return uri;
+	public IRI getIRI() {
+		return iri;
 	}
 
 	@Override
 	public String toString() {
-		return uri.toString();
+		return iri.toString();
 	}
 
 	public int getLength() {
@@ -55,11 +54,11 @@ public class Datatype implements DataRange, Comparable<Datatype> {
 	}	
 	
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return uri.toString();
+		return iri.toString();
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return uri.toString();
+		return iri.toString();
 	}
 	
 	/* (non-Javadoc)
@@ -67,14 +66,14 @@ public class Datatype implements DataRange, Comparable<Datatype> {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return uri.toString();
+		return iri.toString();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+		result = prime * result + ((iri == null) ? 0 : iri.hashCode());
 		return result;
 	}
 
@@ -87,16 +86,16 @@ public class Datatype implements DataRange, Comparable<Datatype> {
 		if (getClass() != obj.getClass())
 			return false;
 		Datatype other = (Datatype) obj;
-		if (uri == null) {
-			if (other.uri != null)
+		if (iri == null) {
+			if (other.iri != null)
 				return false;
-		} else if (!uri.equals(other.uri))
+		} else if (!iri.equals(other.iri))
 			return false;
 		return true;
 	}
 
 	@Override
 	public int compareTo(Datatype o) {
-		return this.getURI().compareTo(o.getURI());
+		return this.getIRI().compareTo(o.getIRI());
 	}	
 }

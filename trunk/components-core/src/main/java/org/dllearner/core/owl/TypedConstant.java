@@ -99,7 +99,7 @@ public class TypedConstant extends Constant {
 	 */
 	public int compareTo(TypedConstant o) {
 		// the first criteria is the datatype
-		int datatypeComparision = datatype.getURI().compareTo(datatype.getURI());
+		int datatypeComparision = datatype.getIRI().compareTo(datatype.getIRI());
 		if(datatypeComparision == 0) {
 			// the second criterion is the literal value
 			return literal.compareTo(o.literal);

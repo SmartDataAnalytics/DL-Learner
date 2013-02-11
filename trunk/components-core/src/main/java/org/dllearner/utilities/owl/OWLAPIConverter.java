@@ -19,7 +19,6 @@
 
 package org.dllearner.utilities.owl;
 
-import java.net.URI;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -177,20 +176,20 @@ public final class OWLAPIConverter {
 	}		
 	
 	public static Datatype convertDatatype(OWLDatatype dataType) {
-		URI uri = dataType.getIRI().toURI();
-		if(uri.equals(OWL2Datatype.BOOLEAN.getURI()))
+		IRI iri = dataType.getIRI();
+		if(iri.equals(OWL2Datatype.BOOLEAN.getIRI()))
 			return OWL2Datatype.BOOLEAN.getDatatype();
-		else if(uri.equals(OWL2Datatype.DOUBLE.getURI()))
+		else if(iri.equals(OWL2Datatype.DOUBLE.getIRI()))
 			return OWL2Datatype.DOUBLE.getDatatype();
-		else if(uri.equals(OWL2Datatype.INT.getURI()))
+		else if(iri.equals(OWL2Datatype.INT.getIRI()))
 			return OWL2Datatype.INT.getDatatype();			
-		else if(uri.equals(OWL2Datatype.INTEGER.getURI()))
+		else if(iri.equals(OWL2Datatype.INTEGER.getIRI()))
 			return OWL2Datatype.INTEGER.getDatatype();			
-		else if(uri.equals(OWL2Datatype.STRING.getURI()))
+		else if(iri.equals(OWL2Datatype.STRING.getIRI()))
 			return OWL2Datatype.STRING.getDatatype();			
-		else if(uri.equals(OWL2Datatype.DATE.getURI()))
+		else if(iri.equals(OWL2Datatype.DATE.getIRI()))
 			return OWL2Datatype.DATE.getDatatype();
-		else if(uri.equals(OWL2Datatype.DATETIME.getURI()))
+		else if(iri.equals(OWL2Datatype.DATETIME.getIRI()))
 			return OWL2Datatype.DATETIME.getDatatype();
 		throw new Error("Unsupported datatype " + dataType + ". Please inform a DL-Learner developer to add it.");
 	}
