@@ -19,7 +19,7 @@
 
 package org.dllearner.core.owl;
 
-import java.net.URI;
+import org.semanticweb.owlapi.model.IRI;
 
 public enum OWL2Datatype {
 
@@ -41,8 +41,8 @@ public enum OWL2Datatype {
 		return datatype;
 	}
 
-	public URI getURI() {
-		return datatype.getURI();
+	public IRI getIRI() {
+		return datatype.getIRI();
 	}
 
 }

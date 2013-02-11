@@ -20,7 +20,6 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -379,19 +378,23 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         for (OWLDataProperty owlProperty : owlDatatypeProperties) {
             DatatypeProperty dtp = new DatatypeProperty(owlProperty.toStringID());
             Set<OWLDataRange> ranges = owlProperty.getRanges(allImports);
-            Iterator<OWLDataRange> it = ranges.iterator();
-            if (it.hasNext()) {
-                OWLDataRange range = it.next();
-                if (range.isDatatype()) {
-                    URI uri = ((OWLDatatype) range).getIRI().toURI();
-                    if (uri.equals(OWL2Datatype.BOOLEAN.getURI())) booleanDatatypeProperties.add(dtp);
-                    else if (uri.equals(OWL2Datatype.DOUBLE.getURI())) doubleDatatypeProperties.add(dtp);
-                    else if (uri.equals(OWL2Datatype.INT.getURI())) intDatatypeProperties.add(dtp);
-                    else if (uri.equals(OWL2Datatype.STRING.getURI())) stringDatatypeProperties.add(dtp);
-                }
-            } else {
-                stringDatatypeProperties.add(dtp);
-            }
+			Iterator<OWLDataRange> it = ranges.iterator();
+			if (it.hasNext()) {
+				OWLDataRange range = it.next();
+				if (range.isDatatype()) {
+					IRI iri = ((OWLDatatype) range).getIRI();
+					if (iri.equals(OWL2Datatype.BOOLEAN.getIRI()))
+						booleanDatatypeProperties.add(dtp);
+					else if (iri.equals(OWL2Datatype.DOUBLE.getIRI()))
+						doubleDatatypeProperties.add(dtp);
+					else if (iri.equals(OWL2Datatype.INT.getIRI()))
+						intDatatypeProperties.add(dtp);
+					else if (iri.equals(OWL2Datatype.STRING.getIRI()))
+						stringDatatypeProperties.add(dtp);
+				}
+			} else {
+				stringDatatypeProperties.add(dtp);
+			}
             datatypeProperties.add(dtp);
         }
         for (OWLNamedIndividual owlIndividual : owlIndividuals) {

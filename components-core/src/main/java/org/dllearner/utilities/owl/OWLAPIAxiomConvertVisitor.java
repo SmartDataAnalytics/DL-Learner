@@ -346,7 +346,7 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	public void visit(DatatypePropertyRangeAxiom axiom) {
 		DataRange dr = axiom.getRange();
 		Datatype dt = (Datatype) dr;
-		OWLDatatype odt = factory.getOWLDatatype(IRI.create(dt.getURI()));
+		OWLDatatype odt = factory.getOWLDatatype(dt.getIRI());
 		OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(axiom.getProperty().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyRangeAxiom(dp, odt);
 		addAxiom(axiomOWLAPI);		
