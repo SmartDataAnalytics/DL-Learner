@@ -2,12 +2,10 @@ package org.dllearner.algorithm.tbsl.util;
 
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.MappingBasedIndex;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 
-public class Knowledgebase {
+public abstract class Knowledgebase {
 
 	private String label;
-	private SparqlEndpoint endpoint;
 	private String description;
 
 	private Index resourceIndex;
@@ -16,28 +14,23 @@ public class Knowledgebase {
 	
 	private MappingBasedIndex mappingIndex;
 
-	public Knowledgebase(SparqlEndpoint endpoint, String label, String description,
+	public Knowledgebase(String label, String description,
 			Index resourceIndex, Index propertyIndex, Index classIndex) {
-		this(endpoint, label, description, resourceIndex, propertyIndex, classIndex, null);
+		this(label, description, resourceIndex, propertyIndex, classIndex, null);
 	}
 	
-	public Knowledgebase(SparqlEndpoint endpoint, String label, String description,
+	public Knowledgebase(String label, String description,
 			Index resourceIndex, Index propertyIndex, Index classIndex, MappingBasedIndex mappingIndex) {
 		this.label = label;
-		this.endpoint = endpoint;
 		this.description = description;
 		this.resourceIndex = resourceIndex;
 		this.propertyIndex = propertyIndex;
 		this.classIndex = classIndex;
 		this.mappingIndex = mappingIndex;
 	}
-
+	
 	public String getLabel() {
 		return label;
-	}
-
-	public SparqlEndpoint getEndpoint() {
-		return endpoint;
 	}
 
 	public String getDescription() {

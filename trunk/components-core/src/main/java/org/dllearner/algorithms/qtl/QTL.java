@@ -68,7 +68,9 @@ import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -94,6 +96,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 //	private QTLConfigurator configurator;
 	
 	private SparqlEndpoint endpoint;
+	private Model model;
 	private ExtractionDBCache cache;
 	
 	private QueryTreeCache treeCache;
@@ -151,6 +154,21 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		
 		lggGenerator = new LGGGeneratorImpl<String>();
 		nbr = new NBR<String>(endpoint, cache);
+		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+		
+		posExampleTrees = new ArrayList<QueryTree<String>>();
+		negExampleTrees = new ArrayList<QueryTree<String>>();
+	}
+	
+	public QTL(Model model) {
+		this.model = model;
+		
+		treeCache = new QueryTreeCache();
+		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(model));
+		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
+		
+		lggGenerator = new LGGGeneratorImpl<String>();
+		nbr = new NBR<String>(model);
 		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		
 		posExampleTrees = new ArrayList<QueryTree<String>>();
@@ -312,8 +330,13 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	private SortedSet<String> getResources(QueryTree<String> tree){
 		SortedSet<String> resources = new TreeSet<String>();
 		String query = getDistinctSPARQLQuery(tree);
-		String result = cache.executeSelectQuery(endpoint, query);
-		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
+		ResultSet rs;
+		if(endpoint != null){
+			rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		} else {
+			rs = QueryExecutionFactory.create(query, model).execSelect();
+		}
+		
 		String uri;
 		QuerySolution qs;
 		while(rs.hasNext()){

@@ -44,7 +44,9 @@ import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.sparql.WeightedQuery;
 import org.dllearner.algorithm.tbsl.templator.Templator;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
+import org.dllearner.algorithm.tbsl.util.LocalKnowledgebase;
 import org.dllearner.algorithm.tbsl.util.PopularityMap;
+import org.dllearner.algorithm.tbsl.util.RemoteKnowledgebase;
 import org.dllearner.algorithm.tbsl.util.PopularityMap.EntityType;
 import org.dllearner.algorithm.tbsl.util.Similarity;
 import org.dllearner.algorithm.tbsl.util.UnknownPropertyHelper.SymPropertyDirection;
@@ -163,11 +165,43 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 
 	public SPARQLTemplateBasedLearner2(Knowledgebase knowledgebase, PartOfSpeechTagger posTagger, WordNet wordNet, Options options){
-		this(knowledgebase.getEndpoint(), knowledgebase.getResourceIndex(), knowledgebase.getClassIndex(),knowledgebase.getPropertyIndex(), posTagger, wordNet, options);
+		this(knowledgebase, posTagger, wordNet, options, null);
 	}
 
 	public SPARQLTemplateBasedLearner2(Knowledgebase knowledgebase){
-		this(knowledgebase.getEndpoint(), knowledgebase.getResourceIndex(), knowledgebase.getClassIndex(),knowledgebase.getPropertyIndex(), new StanfordPartOfSpeechTagger(), new WordNet(), new Options());
+		this(knowledgebase, new StanfordPartOfSpeechTagger(), new WordNet(), new Options());
+	}
+	
+	public SPARQLTemplateBasedLearner2(Knowledgebase knowledgebase, PartOfSpeechTagger posTagger, WordNet wordNet, Options options, ExtractionDBCache cache){
+		if(knowledgebase instanceof LocalKnowledgebase){
+			this.model = ((LocalKnowledgebase) knowledgebase).getModel();
+		} else {
+			this.endpoint = ((RemoteKnowledgebase) knowledgebase).getEndpoint();
+		}
+		this.resourcesIndex = knowledgebase.getResourceIndex();
+		this.classesIndex = knowledgebase.getClassIndex();
+		this.propertiesIndex = knowledgebase.getPropertyIndex();
+		this.mappingIndex = knowledgebase.getMappingIndex();
+		if(propertiesIndex instanceof SPARQLPropertiesIndex){
+			if(propertiesIndex instanceof VirtuosoPropertiesIndex){
+				datatypePropertiesIndex = new VirtuosoDatatypePropertiesIndex((SPARQLPropertiesIndex)propertiesIndex);
+				objectPropertiesIndex = new VirtuosoObjectPropertiesIndex((SPARQLPropertiesIndex)propertiesIndex);
+			} else {
+				datatypePropertiesIndex = new SPARQLDatatypePropertiesIndex((SPARQLPropertiesIndex)propertiesIndex);
+				objectPropertiesIndex = new SPARQLObjectPropertiesIndex((SPARQLPropertiesIndex)propertiesIndex);
+			}
+		} else {
+			datatypePropertiesIndex = propertiesIndex;
+			objectPropertiesIndex = propertiesIndex;
+		}
+		this.posTagger = posTagger;
+		this.wordNet = wordNet;
+		this.cache = cache;
+		
+		reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
+		setOptions(options);
+		
+		setMappingIndex(knowledgebase.getMappingIndex());
 	}
 
 	public SPARQLTemplateBasedLearner2(SparqlEndpoint endpoint, Index index){
@@ -301,7 +335,11 @@ public class SPARQLTemplateBasedLearner2 implements SparqlQueryLearningAlgorithm
 	}
 
 	public void setKnowledgebase(Knowledgebase knowledgebase){
-		this.endpoint = knowledgebase.getEndpoint();
+		if(knowledgebase instanceof LocalKnowledgebase){
+			this.model = ((LocalKnowledgebase) knowledgebase).getModel();
+		} else {
+			this.endpoint = ((RemoteKnowledgebase) knowledgebase).getEndpoint();
+		}
 		this.resourcesIndex = knowledgebase.getResourceIndex();
 		this.classesIndex = knowledgebase.getClassIndex();
 		this.propertiesIndex = knowledgebase.getPropertyIndex();

@@ -20,8 +20,10 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
 
 public class PopularityMap {
 	
@@ -30,6 +32,7 @@ public class PopularityMap {
 	}
 	
 	private SparqlEndpoint endpoint;
+	private Model model;
 	private ExtractionDBCache cache;
 	private String file;
 	
@@ -41,7 +44,11 @@ public class PopularityMap {
 		this.file = file;
 		this.endpoint = endpoint;
 		this.cache = cache;
-		
+	}
+	
+	public PopularityMap(String file, Model model) {
+		this.file = file;
+		this.model = model;
 	}
 	
 	public void init() {
@@ -137,7 +144,12 @@ public class PopularityMap {
 			query = String.format("SELECT COUNT(*) WHERE {?s ?p <%s>}", uri);
 		}
 		int pop = 0;
-		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		ResultSet rs;
+		if(endpoint != null){
+			rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		} else {
+			rs = QueryExecutionFactory.create(query, model).execSelect();
+		}
 		QuerySolution qs;
 		String projectionVar;
 		while(rs.hasNext()){
