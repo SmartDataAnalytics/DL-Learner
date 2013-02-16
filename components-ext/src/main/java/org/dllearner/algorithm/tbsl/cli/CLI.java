@@ -10,6 +10,7 @@ import java.util.Collections;
 import org.dllearner.algorithm.tbsl.learning.NoTemplateFoundException;
 import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner2;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
+import org.dllearner.algorithm.tbsl.util.RemoteKnowledgebase;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.SOLRIndex;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -30,7 +31,7 @@ public class CLI {
 			Index propertiesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_properties");
 			
 			
-			Knowledgebase kb = new Knowledgebase(endpoint, "DBpedia Live", "TODO", resourcesIndex, propertiesIndex, classesIndex, null);
+			Knowledgebase kb = new RemoteKnowledgebase(endpoint, "DBpedia Live", "TODO", resourcesIndex, propertiesIndex, classesIndex, null);
 			SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(kb);
 	    	
 	        System.out.println("======= TBSL v0.1 =============");       

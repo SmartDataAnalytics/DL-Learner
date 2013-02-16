@@ -42,6 +42,7 @@ import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.sparql.WeightedQuery;
 import org.dllearner.algorithm.tbsl.util.Knowledgebase;
 import org.dllearner.algorithm.tbsl.util.LatexWriter;
+import org.dllearner.algorithm.tbsl.util.RemoteKnowledgebase;
 import org.dllearner.common.index.Index;
 import org.dllearner.common.index.SOLRIndex;
 import org.dllearner.kb.sparql.ExtractionDBCache;
@@ -99,7 +100,7 @@ public class Evaluation{
 		Index propertiesIndex = new SOLRIndex("http://dbpedia.aksw.org:8080/solr/dbpedia_properties");
 		
 		
-		Knowledgebase kb = new Knowledgebase(endpoint, "DBpedia Live", "TODO", resourcesIndex, propertiesIndex, classesIndex, null);
+		Knowledgebase kb = new RemoteKnowledgebase(endpoint, "DBpedia Live", "TODO", resourcesIndex, propertiesIndex, classesIndex, null);
 		stbl = new SPARQLTemplateBasedLearner2(kb);
 		stbl.setUseIdealTagger(USE_IDEAL_TAGGER);
 		
