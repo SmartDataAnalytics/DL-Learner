@@ -32,7 +32,7 @@ public class SPARQLIndex implements Index{
 			"FILTER(REGEX(STR(?label), '%s'))}\n" +
 			"LIMIT %d OFFSET %d";
 	
-	protected String queryWithLabelTemplate = "SELECT DISTINCT * WHERE {\n" +
+	protected String queryWithLabelTemplate = "SELECT DISTINCT ?uri ?label WHERE {\n" +
 			"?uri a ?type.\n" + 
 			"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label\n" +
 			"FILTER(REGEX(STR(?label), '%s'))}\n" +
@@ -139,7 +139,7 @@ public class SPARQLIndex implements Index{
 			}
 		} else {
 			rs = QueryExecutionFactory.create(QueryFactory.create(query, Syntax.syntaxARQ), model).execSelect();
-		}
+		}System.out.println("Done");
 		return rs;
 	}
 	

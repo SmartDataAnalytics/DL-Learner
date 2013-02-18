@@ -32,7 +32,7 @@ public class VirtuosoResourcesIndex extends SPARQLIndex{
 				"?label bif:contains '\"%s\"'}\n" +
 				"LIMIT %d OFFSET %d";
 		
-		super.queryWithLabelTemplate = "SELECT DISTINCT * WHERE {\n" +
+		super.queryWithLabelTemplate = "SELECT DISTINCT ?uri ?label WHERE {\n" +
 				"?uri a ?type.\n" + 
 				"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label.\n" +
 				"?label bif:contains '\"%s\"'}\n" +

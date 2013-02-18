@@ -23,14 +23,14 @@ public class VirtuosoDatatypePropertiesIndex extends SPARQLPropertiesIndex{
 	
 	private void init(){
 		super.queryTemplate = "SELECT ?uri WHERE {\n" +
-				"?s ?uri ?o.\n" + 
+//				"?s ?uri ?o.\n" + 
 				"?uri a owl:DatatypeProperty.\n" + 
 				"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label.\n" +
 				"?label bif:contains '\"%s\"'}\n" +
 				"LIMIT %d OFFSET %d";
 		
-		super.queryWithLabelTemplate = "PREFIX owl:<http://www.w3.org/2002/07/owl#>  SELECT DISTINCT * WHERE {\n" +
-				"?s ?uri ?o.\n" + 
+		super.queryWithLabelTemplate = "PREFIX owl:<http://www.w3.org/2002/07/owl#>  SELECT DISTINCT ?uri ?label WHERE {\n" +
+//				"?s ?uri ?o.\n" + 
 				"?uri a owl:DatatypeProperty.\n" + 
 				"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label.\n" +
 				"?label bif:contains '\"%s\"'}\n" +
