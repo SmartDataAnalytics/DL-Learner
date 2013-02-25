@@ -3,6 +3,7 @@ package org.dllearner.algorithm.tbsl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.Collections;
 
@@ -38,9 +39,9 @@ public class TBSLTest extends TestCase{
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		endpoint = new SparqlEndpoint(new URL("http://lgd.aksw.org:8900/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
-//		model = ModelFactory.createOntologyModel();
-//		File dir = new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/data");
+		endpoint = new SparqlEndpoint(new URL("http://[2001:638:902:2010:0:168:35:138]/sparql"), Collections.singletonList("http://diadem.cs.ox.ac.uk"), Collections.<String>emptyList());
+		model = ModelFactory.createOntologyModel();
+//		File dir = new File("/home/me/work/papers/question-answering-iswc-2012/data_v2");
 //		try {
 //			for(File f : dir.listFiles()){
 //				if(f.isFile()){
@@ -53,6 +54,7 @@ public class TBSLTest extends TestCase{
 //					}
 //				}
 //			}
+//			model.write(new FileOutputStream(dir.getAbsolutePath() + "/oxford-data.ttl"), "TURTLE", null);
 //			model.read(new FileInputStream(new File("/home/lorenz/arbeit/papers/question-answering-iswc-2012/examples/ontology.ttl")), null, "TURTLE");
 //		} catch (FileNotFoundException e) {
 //			e.printStackTrace();
@@ -88,6 +90,7 @@ public class TBSLTest extends TestCase{
 		
 		SPARQLTemplateBasedLearner2 learner = new SPARQLTemplateBasedLearner2(model, resourcesIndex, classesIndex, propertiesIndex);
 		learner.init();
+		learner.setGrammarFiles(new String[]{"tbsl/lexicon/english.lex","tbsl/lexicon/english_oxford.lex"});
 		
 		String question = "Give me all houses with more than 3 bathrooms and more than 2 bedrooms.";
 		
@@ -117,9 +120,10 @@ public class TBSLTest extends TestCase{
 		learner.setGrammarFiles(new String[]{"tbsl/lexicon/english.lex","tbsl/lexicon/english_oxford.lex"});
 		
 		String question = "Give me all houses near a school.";
-		question = "Give me all houses with more than 3 bathrooms and more than 2 bedrooms.";
-		question = "Give me all Victorian houses in Oxfordshire";
-		question = "Edwardian houses close to supermarket for less than 1,000,000 in Oxfordshire";
+		question = "Give me all houses with more than 3 bathrooms.";
+		question = "houses at walking distance from a pharmacy";
+//		question = "Give me all Victorian houses in Oxfordshire";
+//		question = "Edwardian houses close to supermarket for less than 1,000,000 in Oxfordshire";
 //		question = "Give me all family houses with more than 2 bathrooms and more than 4 bedrooms";
 		
 		learner.setQuestion(question);

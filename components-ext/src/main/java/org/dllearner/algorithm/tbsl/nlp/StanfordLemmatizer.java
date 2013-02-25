@@ -26,7 +26,7 @@ public class StanfordLemmatizer implements Lemmatizer{
 
 	@Override
 	public String stem(String word, String tag) {
-		return stemmer.stem(word, tag).word();
+		return stemmer.lemma(word, tag);
 	}
 
 	@Override
