@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -34,8 +35,8 @@ public class SPARQLEndpointMetrics {
 	public SPARQLEndpointMetrics(SparqlEndpoint endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
 		this.cache = cache;
-		cache.setFreshnessInMilliseconds(31536000000l);
-		cache.setMaxExecutionTimeInSeconds(30);
+		cache.setFreshnessInMilliseconds(Long.MAX_VALUE);//31536000000l);
+		cache.setMaxExecutionTimeInSeconds(300);
 		
 		this.reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cache);
 	}
@@ -208,6 +209,32 @@ public class SPARQLEndpointMetrics {
 	public int getOccurencesInObjectPosition(NamedClass cls){
 		log.trace(String.format("Computing number of occurences in object position for %s", cls.getName()));
 		String query  = String.format("SELECT (COUNT(?s) AS ?cnt) WHERE {?o a <%s>. ?s ?p ?o.}", cls.getName());
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		int classOccurenceCnt = rs.next().getLiteral("cnt").getInt();
+		return classOccurenceCnt;
+	}
+	
+	/**
+	 * Returns the number of triples where the given individual is in subject position(out-going links).
+	 * @param cls
+	 * @return
+	 */
+	public int getOccurencesInSubjectPosition(Individual ind){
+		log.trace(String.format("Computing number of occurences in subject position for %s", ind.getName()));
+		String query  = String.format("SELECT (COUNT(*) AS ?cnt) WHERE {<%s> ?p ?o.}", ind.getName());
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		int classOccurenceCnt = rs.next().getLiteral("cnt").getInt();
+		return classOccurenceCnt;
+	}
+	
+	/**
+	 * Returns the number of triples where the given individual is in object position(in-going links).
+	 * @param cls
+	 * @return
+	 */
+	public int getOccurencesInObjectPosition(Individual ind){
+		log.trace(String.format("Computing number of occurences in object position for %s", ind.getName()));
+		String query  = String.format("SELECT (COUNT(*) AS ?cnt) WHERE {?s ?p <%s>.}", ind.getName());
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		int classOccurenceCnt = rs.next().getLiteral("cnt").getInt();
 		return classOccurenceCnt;
@@ -394,8 +421,9 @@ public class SPARQLEndpointMetrics {
 	}
 	
 	public static void main(String[] args) {
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		ExtractionDBCache cache = new ExtractionDBCache("/opt/tbsl/dbpedia_pmi_cache");
+		Logger.getLogger(SPARQLEndpointMetrics.class).setLevel(Level.DEBUG);
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveOpenLink();
+		ExtractionDBCache cache = new ExtractionDBCache("/opt/tbsl/dbpedia_pmi_cache_v2");
 		String NS = "http://dbpedia.org/ontology/";
 		String NS_Res = "http://dbpedia.org/resource/";
 		
