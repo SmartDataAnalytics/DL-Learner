@@ -44,6 +44,7 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.CrossValidation;
 import org.dllearner.utilities.LabelShortFormProvider;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SetManipulation;
@@ -75,6 +76,8 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -95,6 +98,8 @@ public class OntologyMatching {
 	private Map<Description, List<? extends EvaluatedDescription>> mappingKB2KB1;
 	
 	private boolean posNegLearning = true;
+	private final boolean performCrossValidation = true;
+	private int fragmentDepth = 2;
 	
 	/**
 	 * The maximum number of positive examples, used for the SPARQL extraction and learning algorithm
@@ -116,6 +121,10 @@ public class OntologyMatching {
 	
 	public OntologyMatching(SparqlEndpoint endpoint1, SparqlEndpoint endpoint2) {
 		this(new KnowledgeBase(endpoint1), new KnowledgeBase(endpoint2));
+	}
+	
+	public void setFragmentDepth(int fragmentDepth) {
+		this.fragmentDepth = fragmentDepth;
 	}
 	
 	public void start(){
@@ -283,14 +292,16 @@ public class OntologyMatching {
 			fullFragment.add(positiveFragment);
 			fullFragment.add(negativeFragment);
 			
-			//here is the most difficult task, i.e. find a 'good' fragment of the KB on which we can learn
 			KnowledgeSource ks = convert(fullFragment);
 			
 			//initialize the reasoner
+			logger.info("Initializing reasoner...");
 			AbstractReasonerComponent rc = new FastInstanceChecker(ks);
 			rc.init();
+			logger.info("Done.");
       
 			//initialize the learning problem
+			logger.info("Initializing learning problem...");
 			AbstractLearningProblem lp;
 			if(posNeg){
 				lp = new PosNegLPStandard(rc, positiveExamplesSample, negativeExamplesSample);
@@ -298,25 +309,33 @@ public class OntologyMatching {
 				lp = new PosOnlyLP(rc, positiveExamplesSample);
 			}
 			lp.init();
+			logger.info("Done.");
 			
-			//apply the learning algorithm
-			logger.info("Running learning algorithm...");
+			//initialize the learning algorithm
+			logger.info("Initializing learning algorithm...");
 			CELOE la = new CELOE(lp, rc);
 	        la.setMaxExecutionTimeInSeconds(10);
 	        la.setNoisePercentage(25);
 	        la.init();
-	        la.start();
+	        logger.info("Done.");
 	        
-	        try {
-				QTL qtl = new QTL(lp, new LocalModelBasedSparqlEndpointKS(fullFragment));
-				qtl.init();
-				qtl.start();
-				System.out.println(qtl.getSPARQLQuery());
-			} catch (LearningProblemUnsupportedException e) {
-				e.printStackTrace();
+	        if(performCrossValidation){
+				CrossValidation cv = new CrossValidation(la, lp, rc, 5, false);
+			} else {
+				//apply the learning algorithm
+		        logger.info("Running learning algorithm...");
+		        la.start();
+		        logger.info(la.getCurrentlyBestEvaluatedDescription());
 			}
-	       
-	        logger.info(la.getCurrentlyBestEvaluatedDescription());
+	        
+//	        try {
+//				QTL qtl = new QTL(lp, new LocalModelBasedSparqlEndpointKS(fullFragment));
+//				qtl.init();
+//				qtl.start();
+//				System.out.println(qtl.getSPARQLQuery());
+//			} catch (LearningProblemUnsupportedException e) {
+//				e.printStackTrace();
+//			}
 	        
 	        return la.getCurrentlyBestEvaluatedDescriptions(10);
 		} catch (ComponentInitException e) {
@@ -382,21 +401,32 @@ public class OntologyMatching {
 			logger.info(i++  + "/" + size);
 			fullFragment.add(getFragment(ind, kb));
 		}
-		//filter out triples with String literals, as there often occur are some syntax errors and they are not relevant for learning
+		filter(fullFragment);
+		return fullFragment;
+	}
+	
+	private void filter(Model model) {
+		// filter out triples with String literals, as there often occur are
+		// some syntax errors and they are not relevant for learning
 		List<Statement> statementsToRemove = new ArrayList<Statement>();
-		for(Iterator<Statement> iter = fullFragment.listStatements().toList().iterator(); iter.hasNext();){
+		for (Iterator<Statement> iter = model.listStatements().toList().iterator(); iter.hasNext();) {
 			Statement st = iter.next();
 			RDFNode object = st.getObject();
-			if(object.isLiteral()){
-//				statementsToRemove.add(st);
+			if (object.isLiteral()) {
+				// statementsToRemove.add(st);
 				Literal lit = object.asLiteral();
-				if(lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)){
+				if (lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)) {
 					st.changeObject("shortened", "en");
-				} 
+				}
+			}
+			//remove statements like <x a owl:Class>
+			if(st.getPredicate().equals(RDF.type)){
+				if(object.equals(RDFS.Class.asNode()) || object.equals(OWL.Class.asNode()) || object.equals(RDFS.Literal.asNode())){
+					statementsToRemove.add(st);
+				}
 			}
 		}
-		fullFragment.remove(statementsToRemove);
-		return fullFragment;
+		model.remove(statementsToRemove);
 	}
 	
 	/**
@@ -414,7 +444,7 @@ public class OntologyMatching {
 	private Model getFragment(Individual ind, KnowledgeBase kb){
 		logger.debug("Loading fragment for " + ind.getName());
 		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(kb.getEndpoint(), kb.getCache());
-		Model cbd = cbdGen.getConciseBoundedDescription(ind.getName(), 2);
+		Model cbd = cbdGen.getConciseBoundedDescription(ind.getName(), fragmentDepth);
 		logger.debug("Got " + cbd.size() + " triples.");
 		return cbd;
 	}
