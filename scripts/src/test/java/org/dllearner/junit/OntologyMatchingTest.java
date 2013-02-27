@@ -33,6 +33,8 @@ public class OntologyMatchingTest {
 	private KnowledgeBase worldFactBook;
 	private KnowledgeBase openCyc;
 	private KnowledgeBase linkedGeoData;
+	
+	private final int fragmentDepth = 3;
 
 	@Before
 	public void setUp() throws Exception {
@@ -112,6 +114,7 @@ public class OntologyMatchingTest {
 	@Test
 	public void testSingleClassLinkedGeoDataToDBpedia() {
 		OntologyMatching matcher = new OntologyMatching(linkedGeoData, dbpedia);
+		matcher.setFragmentDepth(fragmentDepth);
 		NamedClass nc = new NamedClass("http://linkedgeodata.org/ontology/Aerodrome");
 		List<? extends EvaluatedDescription> mapping = matcher.computeMapping(nc, linkedGeoData, dbpedia);
 		Map<Description, List<? extends EvaluatedDescription>> alignment = new HashMap<Description, List<? extends EvaluatedDescription>>();

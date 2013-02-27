@@ -27,7 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -35,6 +37,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.statistics.Stat;
@@ -70,7 +73,7 @@ public class CrossValidation {
 		
 	}
 	
-	public CrossValidation(AbstractCELA la, PosNegLP lp, AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {		
+	public CrossValidation(AbstractCELA la, AbstractLearningProblem lp, AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {		
 		
 		DecimalFormat df = new DecimalFormat();	
 
@@ -81,11 +84,20 @@ public class CrossValidation {
 		List<Set<Individual>> testSetsNeg = new LinkedList<Set<Individual>>();
 		
 			// get examples and shuffle them too
-			Set<Individual> posExamples = ((PosNegLP)lp).getPositiveExamples();
+		Set<Individual> posExamples;
+		Set<Individual> negExamples;
+			if(lp instanceof PosNegLP){
+				posExamples = ((PosNegLP)lp).getPositiveExamples();
+				negExamples = ((PosNegLP)lp).getNegativeExamples();
+			} else if(lp instanceof PosOnlyLP){
+				posExamples = ((PosNegLP)lp).getPositiveExamples();
+				negExamples = new HashSet<Individual>();
+			} else {
+				throw new IllegalArgumentException("Only PosNeg and PosOnly learning problems are supported");
+			}
 			List<Individual> posExamplesList = new LinkedList<Individual>(posExamples);
-			Collections.shuffle(posExamplesList, new Random(1));			
-			Set<Individual> negExamples = ((PosNegLP)lp).getNegativeExamples();
 			List<Individual> negExamplesList = new LinkedList<Individual>(negExamples);
+			Collections.shuffle(posExamplesList, new Random(1));			
 			Collections.shuffle(negExamplesList, new Random(2));
 			
 			// sanity check whether nr. of folds makes sense for this benchmark
@@ -137,8 +149,13 @@ public class CrossValidation {
 
 			Set<String> pos = Datastructures.individualSetToStringSet(trainingSetsPos.get(currFold));
 			Set<String> neg = Datastructures.individualSetToStringSet(trainingSetsNeg.get(currFold));
-			lp.setPositiveExamples(trainingSetsPos.get(currFold));
-			lp.setNegativeExamples(trainingSetsNeg.get(currFold));
+			if(lp instanceof PosNegLP){
+				((PosNegLP)lp).setPositiveExamples(trainingSetsPos.get(currFold));
+				((PosNegLP)lp).setNegativeExamples(trainingSetsNeg.get(currFold));
+			} else if(lp instanceof PosOnlyLP){
+				((PosOnlyLP)lp).setPositiveExamples(new TreeSet<Individual>(trainingSetsPos.get(currFold)));
+			}
+			
 
 			try {			
 				lp.init();
