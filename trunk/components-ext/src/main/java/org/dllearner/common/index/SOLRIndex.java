@@ -1,6 +1,5 @@
 package org.dllearner.common.index;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +7,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -16,7 +15,7 @@ import org.apache.solr.common.params.ModifiableSolrParams;
 
 public class SOLRIndex implements Index{
 	
-private CommonsHttpSolrServer server;
+private HttpSolrServer server;
 	
 	private static final int DEFAULT_LIMIT = 10;
 	private static final int DEFAULT_OFFSET = 0;
@@ -29,12 +28,8 @@ private CommonsHttpSolrServer server;
 	private boolean restrictiveSearch = true;
 	
 	public SOLRIndex(String solrServerURL){
-		try {
-			server = new CommonsHttpSolrServer(solrServerURL);
-			server.setRequestWriter(new BinaryRequestWriter());
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+		server = new HttpSolrServer(solrServerURL);
+		server.setRequestWriter(new BinaryRequestWriter());
 	}
 	
 	public void setSearchFields(String primarySearchField, String secondarySearchField){

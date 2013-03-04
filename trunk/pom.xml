@@ -20,6 +20,7 @@
 
         <slf4j.version>1.6.4</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
+        <solr.version>4.1.0</solr.version>
 	</properties>
 
 	<modules>
@@ -164,7 +165,7 @@
             <dependency>
                 <groupId>org.apache.solr</groupId>
                 <artifactId>solr-core</artifactId>
-                <version>3.5.0</version>
+                <version>${solr.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
