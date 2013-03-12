@@ -90,6 +90,8 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 
 	private static org.apache.log4j.Logger logger = org.apache.log4j.Logger
 			.getLogger(NewSparqlCompDBpediaClassLearnerCELOE.class);
+    private static String output;
+    private static String input;
 
 	SparqlEndpoint sparqlEndpoint = null;
 
@@ -107,6 +109,19 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 
 	public static void main(String args[])
 			throws LearningProblemUnsupportedException, IOException, Exception {
+	    if (args.length < 3) {
+            usage();
+            return;
+        }
+        int iter;
+        try {
+            output = args[1];
+            input = args[0];
+            iter = Integer.parseInt(args[2]);
+        } catch (Exception e) {
+            usage();
+            return;
+        }
 		for (int i = 0; i < 4; i++) {
 			NewSparqlCompDBpediaClassLearnerCELOE dcl = new NewSparqlCompDBpediaClassLearnerCELOE();
 			Set<String> classesToLearn = dcl.getClasses();
@@ -114,7 +129,7 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 			Monitor mon = MonitorFactory.start("Learn DBpedia");
 			KB kb = dcl.learnAllClasses(classesToLearn);
 			mon.stop();
-			kb.export(new File("/home/dcherix/dllearner/simple/result" + i
+			kb.export(new File(output+"/result" + i
 					+ ".owl"), OntologyFormat.RDF_XML);
 			// Set<String> pos =
 			// dcl.getPosEx("http://dbpedia.org/ontology/Person");
@@ -125,6 +140,17 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 					.getStringForAllSortedByLabel());
 		}
 	}
+	
+	/**
+     * Show the required parameters for usage
+     */
+    private static void usage() {
+        System.out.println("***************************************************************");
+        System.out.println("* Usage: java DBpediaClassLearnerCELOE input output iteration *");
+        System.out.println("* As input is the dbpedia schema as owl necessary             *");
+        System.out.println("* As output is a directory for the owl results file expected  *");
+        System.out.println("***************************************************************");
+    }
 
 	public KB learnAllClasses(Set<String> classesToLearn) {
 		KB kb = new KB();
@@ -141,7 +167,7 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 				kb.addAxiom(new EquivalentClassesAxiom(new NamedClass(
 						classToLearn), d));
 				kb.export(new File(
-						"/home/dcherix/dllearner/simple/result_partial.owl"),
+						output+"/result_partial.owl"),
 						OntologyFormat.RDF_XML);
 
 			} catch (Exception e) {
@@ -184,7 +210,7 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 		// ks.setUseCacheDatabase(true);
 		ks.setRecursionDepth(1);
 		ArrayList<String> ontologyUrls = new ArrayList<String>();
-		ontologyUrls.add("http://downloads.dbpedia.org/3.6/dbpedia_3.6.owl");
+		ontologyUrls.add(new File(input).toURI().toURL().toString());
 		ks.setOntologySchemaUrls(ontologyUrls);
 		ks.setAboxfilter("FILTER (!regex(str(?p), '^http://dbpedia.org/property/wikiPageUsesTemplate') && "
 				+ "!regex(str(?p), '^http://dbpedia.org/ontology/wikiPageExternalLink') && "
@@ -247,7 +273,7 @@ public class NewSparqlCompDBpediaClassLearnerCELOE {
 	public Set<String> getClasses() throws Exception {
 		OntModel model = ModelFactory.createOntologyModel();
 		model.read(new FileInputStream(
-				"/home/dcherix/Downloads/dbpedia_3.6.owl"), null);
+				input), null);
 		Set<OntClass> classes = model.listClasses().toSet();
 		Set<String> results = new HashSet<String>();
 		int i = 0;
