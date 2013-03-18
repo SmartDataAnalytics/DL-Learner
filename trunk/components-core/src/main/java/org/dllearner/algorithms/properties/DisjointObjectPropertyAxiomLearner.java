@@ -116,7 +116,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		//compute the overlap if exist
 		Map<ObjectProperty, Integer> property2Overlap = new HashMap<ObjectProperty, Integer>(); 
 		String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p", propertyToDescribe.getName());
-		ResultSet rs = executeSelectQuery(query);
+		System.out.println(query);ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -336,13 +336,13 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 //		endpoint = new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
 		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(endpoint));//.getEndpointDBpediaLiveAKSW()));
 		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/league"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
-		l.getReasoner().precomputeObjectPropertyPopularity();
+//		l.getReasoner().precomputeObjectPropertyPopularity();
 		l.start();
 		for(EvaluatedAxiom ax : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE)){
 			System.out.println(ax);

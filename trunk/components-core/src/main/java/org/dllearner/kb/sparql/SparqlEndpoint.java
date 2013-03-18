@@ -20,6 +20,7 @@
 package org.dllearner.kb.sparql;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,6 +48,10 @@ public class SparqlEndpoint {
 		this.url = u;
 		this.defaultGraphURIs=defaultGraphURIs;
 		this.namedGraphURIs=namedGraphURIs;
+	}
+	
+	public SparqlEndpoint(URL url, String defaultGraphURI) {
+		this(url, Collections.singletonList(defaultGraphURI), Collections.<String>emptyList());
 	}
 	
 	public URL getURL() {

@@ -783,10 +783,32 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		return isObjectProperty;
 	}
 	
-	public boolean isDataProperty(String propertyURI){
-		String query = String.format("ASK {<%s> a <%s>}", propertyURI, OWL.DatatypeProperty.getURI());
+	public boolean isObjectProperty(String propertyURI, boolean analyzeData){
+		String query = String.format("ASK {<%s> a <%s>}", propertyURI, OWL.ObjectProperty.getURI());
 		boolean isObjectProperty = executeAskQuery(query);
+		if(!isObjectProperty && analyzeData){
+			query = String.format("ASK {?s <%s> ?o.FILTER(isURI(?o))}", propertyURI);
+			isObjectProperty = executeAskQuery(query);
+		}
 		return isObjectProperty;
+	}
+	
+	public boolean isDataProperty(String propertyURI){
+		if(propertyURI.equals("http://www.w3.org/2000/01/rdf-schema#label")) return true;
+		String query = String.format("ASK {<%s> a <%s>}", propertyURI, OWL.DatatypeProperty.getURI());
+		boolean isDataProperty = executeAskQuery(query);
+		return isDataProperty;
+	}
+	
+	public boolean isDataProperty(String propertyURI, boolean analyzeData){
+		if(propertyURI.equals("http://www.w3.org/2000/01/rdf-schema#label")) return true;
+		String query = String.format("ASK {<%s> a <%s>}", propertyURI, OWL.DatatypeProperty.getURI());
+		boolean isDataProperty = executeAskQuery(query);
+		if(!isDataProperty && analyzeData){
+			query = String.format("ASK {?s <%s> ?o.FILTER(isLITERAL(?o))}", propertyURI);
+			isDataProperty = executeAskQuery(query);
+		}
+		return isDataProperty;
 	}
 	
 	public int getIndividualsCount(NamedClass nc){
