@@ -13,4 +13,5 @@ public interface ConciseBoundedDescriptionGenerator {
 	public void setRestrictToNamespaces(List<String> namespaces);
 	
 	public void setRecursionDepth(int maxRecursionDepth);
+	
 }
