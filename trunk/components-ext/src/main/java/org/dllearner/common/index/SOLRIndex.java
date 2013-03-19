@@ -115,6 +115,7 @@ private HttpSolrServer server;
 			SolrQuery query = new SolrQuery(solrString);
 		    query.setRows(limit);
 		    query.setStart(offset);
+		    query.addField("uri");
 		    if(sortField != null){
 		    	query.addSortField(sortField, ORDER.desc);
 		    }
