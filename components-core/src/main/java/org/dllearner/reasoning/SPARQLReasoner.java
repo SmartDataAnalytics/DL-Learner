@@ -439,7 +439,19 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	@Override
 	public Set<NamedClass> getTypes(Individual individual) {
 		Set<NamedClass> types = new HashSet<NamedClass>();
-		String query = String.format("SELECT ?class WHERE {<%s> a ?class.}", individual.getName());
+		String query = String.format("SELECT DISTINCT ?class WHERE {<%s> a ?class.}", individual.getName());
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			types.add(new NamedClass(qs.getResource("class").getURI()));
+		}
+		return types;
+	}
+	
+	public Set<NamedClass> getTypes() {
+		Set<NamedClass> types = new HashSet<NamedClass>();
+		String query = String.format("SELECT ?class WHERE {[] a ?class.}");
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){

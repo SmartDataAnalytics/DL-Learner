@@ -15,6 +15,14 @@ public class HierarchicalIndex implements Index{
 		this.primaryIndex = primaryIndex;
 		this.secondaryIndex = secondaryIndex;
 	}
+	
+	public Index getPrimaryIndex() {
+		return primaryIndex;
+	}
+	
+	public Index getSecondaryIndex() {
+		return secondaryIndex;
+	}
 
 	@Override
 	public List<String> getResources(String queryString) {
