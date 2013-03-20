@@ -152,6 +152,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -386,7 +387,7 @@ public class Enrichment {
 	private <T extends Entity> void filterByNamespaces(Collection<T> entities){
 		if(allowedNamespaces != null && !allowedNamespaces.isEmpty()){
 			for (Iterator<T> iterator = entities.iterator(); iterator.hasNext();) {
-				T entity = iterator.next();System.out.println(entity.getName());
+				T entity = iterator.next();
 				boolean startsWithAllowedNamespace = false;
 				for (String ns : allowedNamespaces) {
 					if(entity.getName().startsWith(ns)){
@@ -775,27 +776,52 @@ public class Enrichment {
 	}
 	
 	private void filter(Model model) {
-		// filter out triples with String literals, as there often occur are
+		// filter out triples with String literals, as there often occur
 		// some syntax errors and they are not relevant for learning
 		List<Statement> statementsToRemove = new ArrayList<Statement>();
+		List<Statement> statementsToAdd = new ArrayList<Statement>();
 		for (Iterator<Statement> iter = model.listStatements().toList().iterator(); iter.hasNext();) {
 			Statement st = iter.next();
+			RDFNode subject = st.getSubject();
 			RDFNode object = st.getObject();
-			if (object.isLiteral()) {
-				// statementsToRemove.add(st);
-				Literal lit = object.asLiteral();
-				if (lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)) {
-					st.changeObject("shortened", "en");
-				}
-			}
-			//remove statements like <x a owl:Class>
-			if(st.getPredicate().equals(RDF.type)){
-				if(object.equals(RDFS.Class.asNode()) || object.equals(OWL.Class.asNode()) || object.equals(RDFS.Literal.asNode())){
+			
+			if(object.isAnon()){
+				if(!model.listStatements(object.asResource(), null, (RDFNode)null).hasNext()){
 					statementsToRemove.add(st);
 				}
+			} else if(st.getPredicate().equals(RDF.type) && 
+					(object.equals(RDFS.Class.asNode()) || object.equals(OWL.Class.asNode()) || object.equals(RDFS.Literal.asNode()))){
+				//remove statements like <x a owl:Class>
+					statementsToRemove.add(st);
+			} else {
+				// fix URIs with spaces
+				Resource newSubject = (Resource) subject;
+				RDFNode newObject = object;
+				if (subject.isURIResource()) {
+					String uri = subject.asResource().getURI();
+					if (uri.contains(" ")) {
+						newSubject = model.createResource(uri.replace(" ", ""));
+					}
+				}
+				if (object.isURIResource()) {
+					String uri = object.asResource().getURI();
+					if (uri.contains(" ")) {
+						newObject = model.createResource(uri.replace(" ", ""));
+					}
+				}
+				if (object.isLiteral()) {
+					Literal lit = object.asLiteral();
+					if (lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)) {
+						newObject = model.createLiteral("shortened", "en");
+					}
+				}
+				statementsToAdd.add(model.createStatement(newSubject, st.getPredicate(), newObject));
+				statementsToRemove.add(st);
 			}
+
 		}
 		model.remove(statementsToRemove);
+		model.add(statementsToAdd);
 	}
 	
 	Model getModel(List<OWLAxiom> axioms) {
