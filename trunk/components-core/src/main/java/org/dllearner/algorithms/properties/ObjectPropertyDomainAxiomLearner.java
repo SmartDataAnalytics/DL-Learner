@@ -198,7 +198,8 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
 		org.apache.log4j.Logger.getLogger(DataPropertyDomainAxiomLearner.class).setLevel(Level.INFO);		
 		
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
+		
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
 		reasoner.prepareSubsumptionHierarchy();
@@ -206,14 +207,15 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		
 		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/anthem"));
-		l.setMaxExecutionTimeInSeconds(40);
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/birthPlace"));
+		l.setMaxExecutionTimeInSeconds(10);
 //		l.addFilterNamespace("http://dbpedia.org/ontology/");
 //		l.setReturnOnlyNewAxioms(true);
+		l.setForceSPARQL_1_0_Mode(true);
 		l.init();
 		l.start();
 		
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms());
+		System.out.println(l.getCurrentlyBestEvaluatedAxioms(0.7));
 	}
 	
 }

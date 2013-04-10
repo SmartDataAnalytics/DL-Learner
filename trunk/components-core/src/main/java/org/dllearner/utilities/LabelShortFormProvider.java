@@ -9,7 +9,9 @@ import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -23,6 +25,11 @@ public class LabelShortFormProvider implements ShortFormProvider{
 	
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
+	private Model model;
+	
+	public LabelShortFormProvider(Model model) {
+		this.model = model;
+	}
 	
 	public LabelShortFormProvider(SparqlEndpoint endpoint) {
 		this.endpoint = endpoint;
@@ -59,15 +66,20 @@ public class LabelShortFormProvider implements ShortFormProvider{
 	
 	protected ResultSet executeSelect(Query query){
 		ResultSet rs = null;
-		if(cache != null){
-			rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query.toString()));
-		} else {
-			QueryEngineHTTP qe = new QueryEngineHTTP(endpoint.getURL().toString(), query);
-			for(String uri : endpoint.getDefaultGraphURIs()){
-				qe.addDefaultGraph(uri);
+		if(endpoint != null){
+			if(cache != null){
+				rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query.toString()));
+			} else {
+				QueryEngineHTTP qe = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+				for(String uri : endpoint.getDefaultGraphURIs()){
+					qe.addDefaultGraph(uri);
+				}
+				rs = qe.execSelect();
 			}
-			rs = qe.execSelect();
+		} else {
+			rs = QueryExecutionFactory.create(query, model).execSelect();
 		}
+		
 		return rs;
 	}
 

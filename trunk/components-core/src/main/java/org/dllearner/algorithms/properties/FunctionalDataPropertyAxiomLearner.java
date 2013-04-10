@@ -20,6 +20,7 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -29,6 +30,8 @@ import org.dllearner.core.config.DataPropertyEditor;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.FunctionalDatatypePropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.learningproblems.AxiomScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +112,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 				all = qs.getLiteral("all").getInt();
 			}
 			// get number of instances of s with <s p o> <s p o1> where o != o1
-			query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o1)} }";
+			query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o2)} }";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			rs = executeSelectQuery(query, workingModel);
 			int functional = 1;
@@ -140,7 +143,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		
 		if (numberOfSubjects > 0) {
 			int functional = 0;
-			String query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o1)} }";
+			String query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o2)} }";
 			query = query.replace("%s", propertyToDescribe.getURI().toString());
 			ResultSet rs = executeSelectQuery(query);
 			if (rs.hasNext()) {
@@ -151,6 +154,25 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 					new FunctionalDatatypePropertyAxiom(propertyToDescribe),
 					computeScore(numberOfSubjects, functional),
 					declaredAsFunctional));
+		}
+	}
+	
+	public static void main(String[] args) throws Exception {
+		FunctionalDataPropertyAxiomLearner l = new FunctionalDataPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
+		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/birthDate"));
+		l.setMaxExecutionTimeInSeconds(10);
+		l.setForceSPARQL_1_0_Mode(true);
+		l.init();
+		l.start();
+		List<EvaluatedAxiom> axioms = l.getCurrentlyBestEvaluatedAxioms(5);
+		System.out.println(axioms);
+		
+		for(EvaluatedAxiom axiom : axioms){
+			printSubset(l.getPositiveExamples(axiom), 10);
+			printSubset(l.getNegativeExamples(axiom), 10);
+			l.explainScore(axiom);
+			System.out.println(((AxiomScore)axiom.getScore()).getTotalNrOfExamples());
+			System.out.println(((AxiomScore)axiom.getScore()).getNrOfPositiveExamples());
 		}
 	}
 }
