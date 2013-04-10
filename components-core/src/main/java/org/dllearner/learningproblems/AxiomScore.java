@@ -61,7 +61,7 @@ public class AxiomScore extends Score{
 		return totalNrOfExamples;
 	}
 	
-	public int getNrOfpositiveExamples() {
+	public int getNrOfPositiveExamples() {
 		return nrOfpositiveExamples;
 	}
 	

@@ -307,7 +307,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected ResultSet executeSelectQuery(String query) {
-		logger.debug("Sending query\n{} ...", query);
+		logger.info("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
 			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),

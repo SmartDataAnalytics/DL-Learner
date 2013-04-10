@@ -451,7 +451,7 @@ public class PelletReasoner extends AbstractReasonerComponent {
 		//
 		Comparator<OWLNamedObject> namedObjectComparator = new Comparator<OWLNamedObject>() {
 			public int compare(OWLNamedObject o1, OWLNamedObject o2) {
-				return o1.getIRI().compareTo(o2.getIRI());
+				return o1.compareTo(o2);
 			}
 		};
 		Set<OWLClass> classes = new TreeSet<OWLClass>(namedObjectComparator);

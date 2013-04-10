@@ -460,6 +460,39 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		}
 		return types;
 	}
+	
+	public Set<NamedClass> getOWLClasses() {
+		Set<NamedClass> types = new HashSet<NamedClass>();
+		String query = String.format("SELECT DISTINCT ?class WHERE {?class a <%s>.}",OWL.Class.getURI());
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			types.add(new NamedClass(qs.getResource("class").getURI()));
+		}
+		return types;
+	}
+	
+	/**
+	 * Returns a set of classes which are siblings, i.e. on the same level
+	 * in the class hierarchy.
+	 * @param cls
+	 * @param limit
+	 * @return
+	 */
+	public Set<NamedClass> getSiblingClasses(NamedClass cls) {
+		Set<NamedClass> siblings = new HashSet<NamedClass>();
+		String query = "SELECT ?sub WHERE { <" + cls.getName() + "> <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
+		query += "?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
+		query += "FILTER( !SAMETERM(?sub, <" + cls.getName() + ">)) . }";
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			siblings.add(new NamedClass(qs.getResource("sub").getURI()));
+		}
+		return siblings;
+	}
 
 	@Override
 	public boolean hasType(Description description, Individual individual) {
@@ -490,12 +523,14 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
-		
+		System.out.println(query);
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			individuals.add(new Individual(qs.getResource("ind").getURI()));
+			if(qs.get("ind").isURIResource()){
+				individuals.add(new Individual(qs.getResource("ind").getURI()));
+			}
 		}
 		return individuals;
 	}	

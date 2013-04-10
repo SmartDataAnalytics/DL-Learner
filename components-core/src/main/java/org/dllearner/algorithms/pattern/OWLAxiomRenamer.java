@@ -58,7 +58,7 @@ import org.semanticweb.owlapi.model.SWRLRule;
 public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	private OWLDataFactory df;
-	private OWLClassExpressionRenamer renamer;
+	private OWLClassExpressionRenamer expressionRenamer;
 	private OWLAxiom renamedAxiom;
 	
 	public OWLAxiomRenamer(OWLDataFactory df) {
@@ -67,7 +67,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	
 	public OWLAxiom rename(OWLAxiom axiom){
 		Map<OWLEntity, OWLEntity> renaming = new HashMap<OWLEntity, OWLEntity>();
-		renamer = new OWLClassExpressionRenamer(df, renaming);
+		expressionRenamer = new OWLClassExpressionRenamer(df, renaming);
 		axiom.accept(this);
 		return renamedAxiom;
 	}
@@ -75,9 +75,9 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLSubClassOfAxiom axiom) {
 		OWLClassExpression subClass = axiom.getSubClass();
-		subClass = renamer.rename(subClass);
+		subClass = expressionRenamer.rename(subClass);
 		OWLClassExpression superClass = axiom.getSuperClass();
-		superClass = renamer.rename(superClass);
+		superClass = expressionRenamer.rename(superClass);
 		renamedAxiom = df.getOWLSubClassOfAxiom(subClass, superClass);
 	}
 
@@ -120,18 +120,18 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLDataPropertyDomainAxiom axiom) {
 		OWLDataPropertyExpression property = axiom.getProperty();
-		property = renamer.rename(property);
+		property = expressionRenamer.rename(property);
 		OWLClassExpression domain = axiom.getDomain();
-		domain = renamer.rename(domain);
+		domain = expressionRenamer.rename(domain);
 		renamedAxiom = df.getOWLDataPropertyDomainAxiom(property, domain);
 	}
 
 	@Override
 	public void visit(OWLObjectPropertyDomainAxiom axiom) {
 		OWLObjectPropertyExpression property = axiom.getProperty();
-		property = renamer.rename(property);
+		property = expressionRenamer.rename(property);
 		OWLClassExpression domain = axiom.getDomain();
-		domain = renamer.rename(domain);
+		domain = expressionRenamer.rename(domain);
 		renamedAxiom = df.getOWLObjectPropertyDomainAxiom(property, domain);
 	}
 
@@ -158,9 +158,9 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLObjectPropertyRangeAxiom axiom) {
 		OWLObjectPropertyExpression property = axiom.getProperty();
-		property = renamer.rename(property);
+		property = expressionRenamer.rename(property);
 		OWLClassExpression range = axiom.getRange();
-		range = renamer.rename(range);
+		range = expressionRenamer.rename(range);
 		renamedAxiom = df.getOWLObjectPropertyDomainAxiom(property, range);
 	}
 
@@ -171,7 +171,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLFunctionalObjectPropertyAxiom axiom) {
 		OWLObjectPropertyExpression property = axiom.getProperty();
-		property = renamer.rename(property);
+		property = expressionRenamer.rename(property);
 		renamedAxiom = df.getOWLFunctionalObjectPropertyAxiom(property);
 	}
 
@@ -186,23 +186,23 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLSymmetricObjectPropertyAxiom axiom) {
 		OWLObjectPropertyExpression property = axiom.getProperty();
-		property = renamer.rename(property);
+		property = expressionRenamer.rename(property);
 		renamedAxiom = df.getOWLSymmetricObjectPropertyAxiom(property);
 	}
 
 	@Override
 	public void visit(OWLDataPropertyRangeAxiom axiom) {
 		OWLDataPropertyExpression property = axiom.getProperty();
-		property = renamer.rename(property);
+		property = expressionRenamer.rename(property);
 		OWLDataRange range = axiom.getRange();
-		range = renamer.rename(range);
+		range = expressionRenamer.rename(range);
 		renamedAxiom = df.getOWLDataPropertyRangeAxiom(property, range);
 	}
 
 	@Override
 	public void visit(OWLFunctionalDataPropertyAxiom axiom) {
 		OWLDataPropertyExpression property = axiom.getProperty();
-		property = renamer.rename(property);
+		property = expressionRenamer.rename(property);
 		renamedAxiom = df.getOWLFunctionalDataPropertyAxiom(property);
 	}
 
@@ -213,9 +213,9 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLClassAssertionAxiom axiom) {
 		OWLClassExpression classExpression = axiom.getClassExpression();
-		classExpression = renamer.rename(classExpression);
+		classExpression = expressionRenamer.rename(classExpression);
 		OWLIndividual individual = axiom.getIndividual();
-		individual = renamer.rename(individual);
+		individual = expressionRenamer.rename(individual);
 		renamedAxiom = df.getOWLClassAssertionAxiom(classExpression, individual);
 	}
 
@@ -224,7 +224,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 		List<OWLClassExpression> classExpressions = axiom.getClassExpressionsAsList();
 		List<OWLClassExpression> renamedClassExpressions = new ArrayList<OWLClassExpression>();
 		for (OWLClassExpression expr : classExpressions) {
-			renamedClassExpressions.add(renamer.rename(expr));
+			renamedClassExpressions.add(expressionRenamer.rename(expr));
 		}
 		renamedAxiom = df.getOWLEquivalentClassesAxiom(new TreeSet<OWLClassExpression>(renamedClassExpressions));
 	}
@@ -236,14 +236,14 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLTransitiveObjectPropertyAxiom axiom) {
 		OWLObjectPropertyExpression property = axiom.getProperty();
-		property = renamer.rename(property);
+		property = expressionRenamer.rename(property);
 		renamedAxiom = df.getOWLTransitiveObjectPropertyAxiom(property);
 	}
 
 	@Override
 	public void visit(OWLIrreflexiveObjectPropertyAxiom axiom) {
 		OWLObjectPropertyExpression property = axiom.getProperty();
-		property = renamer.rename(property);
+		property = expressionRenamer.rename(property);
 		renamedAxiom = df.getOWLIrreflexiveObjectPropertyAxiom(property);
 	}
 
