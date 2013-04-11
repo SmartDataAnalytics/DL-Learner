@@ -166,7 +166,7 @@
 	there || (DP (NP EX:'there')) || <x,l1,<<e,t>,t>,[l1:[|]],[],[],[]>
 
 
-// NUMBERS (1-10)
+// NUMBERS (1-20)
 // ---------------------
 	
 	one   || (NP NUM:'one' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,1)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,1)]],[],[],[ SLOT_arg/LITERAL/x ]>
@@ -179,8 +179,8 @@
 	eight || (NP NUM:'eight' NP*) || <x,l1,<e,t>,[l1:[x|count(x,8)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,8)]],[],[],[ SLOT_arg/LITERAL/x ]>
 	nine  || (NP NUM:'nine' NP*)  || <x,l1,<e,t>,[l1:[x|count(x,9)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,9)]],[],[],[ SLOT_arg/LITERAL/x ]>
 	ten   || (NP NUM:'ten' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,10)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,10)]],[],[],[ SLOT_arg/LITERAL/x ]>
-	eleven || (NP NUM:'one' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,11)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,11)]],[],[],[ SLOT_arg/LITERAL/x ]>
-	twelve || (NP NUM:'two' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,12)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,12)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	eleven || (NP NUM:'eleven' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,11)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,11)]],[],[],[ SLOT_arg/LITERAL/x ]>
+	twelve || (NP NUM:'twelve' NP*)   || <x,l1,<e,t>,[l1:[x|count(x,12)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,12)]],[],[],[ SLOT_arg/LITERAL/x ]>
 	thirteen || (NP NUM:'thirteen' NP*) || <x,l1,<e,t>,[l1:[x|count(x,13)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,13)]],[],[],[ SLOT_arg/LITERAL/x ]>
 	fourteen  || (NP NUM:'fourteen' NP*)  || <x,l1,<e,t>,[l1:[x|count(x,14)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,14)]],[],[],[ SLOT_arg/LITERAL/x ]>
 	fifteen  || (NP NUM:'fifteen' NP*)  || <x,l1,<e,t>,[l1:[x|count(x,15)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,<e,t>,[l1:[x|equal(x,15)]],[],[],[ SLOT_arg/LITERAL/x ]>
@@ -210,3 +210,4 @@
 	eighteen || (NUM NUM:'eighteen') || <x,l1,e,[l1:[x|count(x,18)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,e,[l1:[x|equal(x,18)]],[],[],[ SLOT_arg/LITERAL/x ]>
 	nineteen  || (NUM NUM:'nineteen')  || <x,l1,e,[l1:[x|count(x,19)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,e,[l1:[x|equal(x,19)]],[],[],[ SLOT_arg/LITERAL/x ]>
 	twenty   || (NUM NUM:'twenty')   || <x,l1,e,[l1:[x|count(x,20)]],[],[],[ SLOT_arg/RESOURCE/x ]> ;; <x,l1,e,[l1:[x|equal(x,20)]],[],[],[ SLOT_arg/LITERAL/x ]>
+
