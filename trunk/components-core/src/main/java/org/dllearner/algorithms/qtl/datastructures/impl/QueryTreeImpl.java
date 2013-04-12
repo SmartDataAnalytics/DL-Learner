@@ -703,7 +703,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT DISTINCT ?x0 WHERE {\n");
     	List<String> filters = new ArrayList<String>();
-    	buildSPARQLQueryString(this, sb, false, filters);
+    	buildSPARQLQueryString(this, sb, true, false, filters);
     	for(String filter : filters){
     		sb.append(filter).append("\n");
     	}
@@ -711,13 +711,12 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return sb.toString();
     }
     
-    @Override
-    public String toSPARQLQueryString(boolean filtered) {
-    	return toSPARQLQueryString(filtered, Collections.<String, String>emptyMap());
+    public String toSPARQLQueryString(boolean filterMeaninglessProperties, boolean useNumericalFilters) {
+    	return toSPARQLQueryString(filterMeaninglessProperties, useNumericalFilters, Collections.<String, String>emptyMap());
     }
     
     @Override
-    public String toSPARQLQueryString(boolean filtered, Map<String, String> prefixMap) {
+    public String toSPARQLQueryString(boolean filterMeaninglessProperties, boolean useNumericalFilters, Map<String, String> prefixMap) {
     	if(children.isEmpty()){
     		return "SELECT ?x0 WHERE {?x0 ?y ?z.}";
     	}
@@ -725,11 +724,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	StringBuilder sb = new StringBuilder();
     	List<String> filters = new ArrayList<String>();
     	sb.append("SELECT DISTINCT ?x0 WHERE {\n");
-    	buildSPARQLQueryString(this, sb, filtered, filters);
+    	buildSPARQLQueryString(this, sb, filterMeaninglessProperties, useNumericalFilters, filters);
     	for(String filter : filters){
     		sb.append(filter).append("\n");
     	}
-    	sb.append("}");
+    	sb.append("}");System.out.println(sb.toString());
     	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxARQ);
     	query.setPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
     	query.setPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
@@ -742,12 +741,14 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return query.toString();
     }
     
-    private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb, boolean filtered, List<String> filters){
+    private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb, boolean filterMeaninglessProperties, boolean useNumericalFilters, List<String> filters){
     	Object subject = null;
     	if(tree.getUserObject().equals("?")){
     		subject = "?x" + cnt++;
-    		if(tree.isLiteralNode() && !tree.getLiterals().isEmpty()){
-    			filters.add(getFilter(subject.toString(), tree.getLiterals()));
+    		if(useNumericalFilters){
+    			if(tree.isLiteralNode() && !tree.getLiterals().isEmpty()){
+        			filters.add(getFilter(subject.toString(), tree.getLiterals()));
+        		}
     		}
     	} else {
     		subject = "<" + tree.getUserObject() + ">";
@@ -757,7 +758,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	if(!tree.isLeaf()){
     		for(QueryTree<N> child : tree.getChildren()){
         		predicate = tree.getEdge(child);
-        		if(filtered){
+        		if(filterMeaninglessProperties){
         			if(Filters.getAllFilterProperties().contains(predicate.toString())){
         				continue;
         			}
@@ -771,7 +772,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         		}
         		sb.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
         		if(!objectIsResource){
-        			buildSPARQLQueryString(child, sb, filtered, filters);
+        			buildSPARQLQueryString(child, sb, filterMeaninglessProperties, useNumericalFilters, filters);
         		}
         	}
     	} 

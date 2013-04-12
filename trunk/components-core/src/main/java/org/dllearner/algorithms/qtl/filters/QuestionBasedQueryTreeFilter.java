@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.qtl.filters;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +16,7 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
 public class QuestionBasedQueryTreeFilter implements QueryTreeFilter{
 	
-private Set<String> questionWords;
+	private Collection<String> questionWords;
 	
 	private AbstractStringMetric qGramMetric;
 	private AbstractStringMetric levensteinMetric;
@@ -25,7 +26,7 @@ private Set<String> questionWords;
 	private int topK = 3;
 	private double topKSumThreshold = 0.8;
 	
-	public QuestionBasedQueryTreeFilter(Set<String> questionWords){
+	public QuestionBasedQueryTreeFilter(Collection<String> questionWords){
 		this.questionWords = questionWords;
 		qGramMetric = new QGramsDistance();
 		levensteinMetric = new Levenshtein();
@@ -39,7 +40,7 @@ private Set<String> questionWords;
 		return copy;
 	}
 	
-	public Set<String> getQuestionWords(){
+	public Collection<String> getQuestionWords(){
 		return questionWords;
 	}
 	

@@ -20,6 +20,7 @@
 package org.dllearner.algorithms.qtl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import org.dllearner.algorithms.qtl.exception.EmptyLGGException;
 import org.dllearner.algorithms.qtl.exception.NegativeTreeCoverageExecption;
 import org.dllearner.algorithms.qtl.exception.TimeOutException;
 import org.dllearner.algorithms.qtl.filters.QueryTreeFilter;
+import org.dllearner.algorithms.qtl.filters.QuestionBasedQueryTreeFilter;
 import org.dllearner.algorithms.qtl.operations.NBR;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
@@ -365,7 +367,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		if(logger.isDebugEnabled()){
 			logger.debug("LGG: \n" + lgg.getStringRepresentation());
 		}
-		logger.info(lgg.toSPARQLQueryString(enableNumericLiteralFilters, prefixes));
+		logger.info(lgg.toSPARQLQueryString(true, enableNumericLiteralFilters, prefixes));
 	}
 	
 	public void setEnableNumericLiteralFilters(boolean enableNumericLiteralFilters) {
@@ -429,6 +431,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		PosOnlyLP lp = new PosOnlyLP();	
 		lp.setPositiveExamples(Helper.getIndividualSet(positiveExamples));
 		QTL qtl = new QTL(lp, ks);
+		qtl.addQueryTreeFilter(new QuestionBasedQueryTreeFilter(Arrays.asList("soccer club", "Premier League")));
 		qtl.init();
 		qtl.start();
 		String query = qtl.getBestSPARQLQuery();
