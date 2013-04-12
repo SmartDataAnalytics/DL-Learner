@@ -130,9 +130,9 @@ public interface QueryTree<N> {
     
     String toSPARQLQueryString();
     
-    String toSPARQLQueryString(boolean filtered);
+    String toSPARQLQueryString(boolean filterMeaninglessProperties, boolean useNumericalFilters);
     
-    String toSPARQLQueryString(boolean filtered, Map<String, String> prefixMap);
+    String toSPARQLQueryString(boolean filterMeaninglessProperties, boolean useNumericalFilters, Map<String, String> prefixMap);
     
     Query toSPARQLQuery();
     

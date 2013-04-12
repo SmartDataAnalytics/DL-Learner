@@ -57,6 +57,7 @@ public class Filters {
 		filters.add(FOAF.name.toString());
 		filters.add(FOAF.firstName.toString());
 //		filters.add(FOAF.givenname.toString());
+		filters.add(FOAF.primaryTopic.toString());
 		
 		return filters;
 	}
