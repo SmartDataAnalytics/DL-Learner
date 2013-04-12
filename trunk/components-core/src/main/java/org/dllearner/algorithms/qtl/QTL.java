@@ -424,11 +424,9 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		positiveExamples.add("http://dbpedia.org/resource/Liverpool_F.C.");
 		positiveExamples.add("http://dbpedia.org/resource/Chelsea_F.C.");
 		
-		ComponentManager cm = ComponentManager.getInstance();
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		ks.init();
 		PosOnlyLP lp = new PosOnlyLP();	
-		cm.getPool().registerComponent(lp);
 		lp.setPositiveExamples(Helper.getIndividualSet(positiveExamples));
 		QTL qtl = new QTL(lp, ks);
 		qtl.init();
