@@ -28,6 +28,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ListStringEditor;
+import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.springframework.beans.propertyeditors.URLEditor;
@@ -44,6 +45,7 @@ import org.springframework.beans.propertyeditors.URLEditor;
 public class SparqlEndpointKS implements KnowledgeSource {
 
 	private SparqlEndpoint endpoint;
+	private ExtractionDBCache cache;
 	private boolean supportsSPARQL_1_1 = false;
 	private boolean isRemote = true;
 	private boolean initialized = false;
@@ -64,7 +66,16 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	}
 	
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
+		this(endpoint, null);
+	}
+	
+	public SparqlEndpointKS(SparqlEndpoint endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
+		this.cache = cache;
+	}
+	
+	public ExtractionDBCache getCache() {
+		return cache;
 	}
 	
 	@Override

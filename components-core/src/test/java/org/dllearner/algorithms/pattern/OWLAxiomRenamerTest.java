@@ -4,14 +4,22 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
@@ -90,6 +98,24 @@ public class OWLAxiomRenamerTest {
 		assertEquals(ax1, ax2);
 		
 		
+	}
+	
+	public void testRenameOntology() throws OWLOntologyCreationException{
+		String ontologyURL = "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl";
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLDataFactory dataFactory = man.getOWLDataFactory();
+		OWLOntology ontology = man.loadOntology(IRI.create(ontologyURL));
+		
+		OWLAxiomRenamer renamer = new OWLAxiomRenamer(dataFactory);
+		Multiset<OWLAxiom> multiset = HashMultiset.create();
+		for (OWLAxiom axiom : ontology.getLogicalAxioms()) {
+			OWLAxiom renamedAxiom = renamer.rename(axiom);
+			multiset.add(renamedAxiom);
+//			System.out.println(axiom + "-->" + renamedAxiom);
+		}
+		for (OWLAxiom owlAxiom : multiset.elementSet()) {
+			System.out.println(owlAxiom + ": " + multiset.count(owlAxiom));
+		}
 	}
 
 }
