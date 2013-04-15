@@ -64,9 +64,9 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	
 	private static final String NS = "http://dl-learner.org/pattern/";
 	
-	private Queue<String> classVarQueue = new LinkedList<String>(Arrays.asList("A", "B", "C" , "D"));
-	private Queue<String> propertyVarQueue = new LinkedList<String>(Arrays.asList("p", "q", "r" , "s"));
-	private Queue<String> individualVarQueue = new LinkedList<String>(Arrays.asList("a", "b", "c" , "d"));
+	private Queue<String> classVarQueue = new LinkedList<String>(Arrays.asList("A", "B", "C" , "D", "E", "F", "G"));
+	private Queue<String> propertyVarQueue = new LinkedList<String>(Arrays.asList("p", "q", "r" , "s", "t"));
+	private Queue<String> individualVarQueue = new LinkedList<String>(Arrays.asList("a", "b", "c" , "d", "e", "f", "g"));
 	private OWLDataFactory df;
 	private Map<OWLEntity, OWLEntity> renaming;
 	private OWLObject renamedOWLObject;
@@ -99,6 +99,12 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		renamedOWLObject = null;
 		range.accept(this);
 		return (OWLDataRange) renamedOWLObject;
+	}
+	
+	public OWLLiteral rename(OWLLiteral lit){
+		renamedOWLObject = null;
+		renamedOWLObject = lit;
+		return (OWLLiteral) renamedOWLObject;
 	}
 	
 	@Override
@@ -325,6 +331,12 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 
 	@Override
 	public void visit(OWLAnonymousIndividual ind) {
+		OWLEntity newEntity = renaming.get(ind);
+		if(newEntity == null){
+			newEntity = df.getOWLNamedIndividual(getIRI(individualVarQueue.poll()));
+//			renaming.put(ind, newEntity);
+		}
+		renamedOWLObject = (OWLNamedIndividual)newEntity;
 	}
 
 	@Override
@@ -333,7 +345,13 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	}
 
 	@Override
-	public void visit(OWLDataOneOf arg0) {
+	public void visit(OWLDataOneOf desc) {
+		Set<OWLLiteral> literals = desc.getValues();
+		Set<OWLLiteral> renamedLiterals = new TreeSet<OWLLiteral>();
+		for (OWLLiteral lit : literals) {
+			renamedLiterals.add(rename(lit));
+		}
+		renamedOWLObject = df.getOWLDataOneOf(renamedLiterals);
 	}
 
 	@Override

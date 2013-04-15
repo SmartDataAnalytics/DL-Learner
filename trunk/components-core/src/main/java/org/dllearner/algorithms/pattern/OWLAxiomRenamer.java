@@ -38,6 +38,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
@@ -166,6 +167,13 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLObjectPropertyAssertionAxiom axiom) {
+		OWLObjectPropertyExpression property = axiom.getProperty();
+		property = expressionRenamer.rename(property);
+		OWLIndividual subject = axiom.getSubject();
+		subject = expressionRenamer.rename(subject);
+		OWLIndividual object = axiom.getObject();
+		object = expressionRenamer.rename(object);
+		renamedAxiom = df.getOWLObjectPropertyAssertionAxiom(property, subject, object);
 	}
 
 	@Override
@@ -177,6 +185,11 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLSubObjectPropertyOfAxiom axiom) {
+		OWLObjectPropertyExpression subProperty = axiom.getSubProperty();
+		subProperty = expressionRenamer.rename(subProperty);
+		OWLObjectPropertyExpression superProperty = axiom.getSuperProperty();
+		superProperty = expressionRenamer.rename(superProperty);
+		renamedAxiom = df.getOWLSubObjectPropertyOfAxiom(subProperty, superProperty);
 	}
 
 	@Override
@@ -231,6 +244,13 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLDataPropertyAssertionAxiom axiom) {
+		OWLDataPropertyExpression property = axiom.getProperty();
+		property = expressionRenamer.rename(property);
+		OWLIndividual subject = axiom.getSubject();
+		subject = expressionRenamer.rename(subject);
+		OWLLiteral object = axiom.getObject();
+		object = expressionRenamer.rename(object);
+		renamedAxiom = df.getOWLDataPropertyAssertionAxiom(property, subject, object);
 	}
 
 	@Override
@@ -249,6 +269,11 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLSubDataPropertyOfAxiom axiom) {
+		OWLDataPropertyExpression subProperty = axiom.getSubProperty();
+		subProperty = expressionRenamer.rename(subProperty);
+		OWLDataPropertyExpression superProperty = axiom.getSuperProperty();
+		superProperty = expressionRenamer.rename(superProperty);
+		renamedAxiom = df.getOWLSubDataPropertyOfAxiom(subProperty, superProperty);
 	}
 
 	@Override
