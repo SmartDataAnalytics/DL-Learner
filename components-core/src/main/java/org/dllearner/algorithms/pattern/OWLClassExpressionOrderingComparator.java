@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.util.OWLObjectTypeIndexProvider;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassExpressionImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -32,6 +33,8 @@ public class OWLClassExpressionOrderingComparator implements Comparator<OWLClass
 			OWLObjectMaxCardinalityImpl.class,
 			OWLObjectExactCardinalityImpl.class
 			);
+	
+	private final OWLObjectTypeIndexProvider indexProvider = new OWLObjectTypeIndexProvider();
 
 	@Override
 	public int compare(OWLClassExpression o1, OWLClassExpression o2) {

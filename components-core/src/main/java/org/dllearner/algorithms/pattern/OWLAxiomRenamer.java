@@ -2,8 +2,10 @@ package org.dllearner.algorithms.pattern;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
@@ -12,6 +14,7 @@ import org.semanticweb.owlapi.model.OWLAnnotationPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLAxiomVisitor;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -108,14 +111,26 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLAsymmetricObjectPropertyAxiom axiom) {
+		OWLObjectPropertyExpression property = axiom.getProperty();
+		property = expressionRenamer.rename(property);
+		renamedAxiom = df.getOWLAsymmetricObjectPropertyAxiom(property);
 	}
 
 	@Override
 	public void visit(OWLReflexiveObjectPropertyAxiom axiom) {
+		OWLObjectPropertyExpression property = axiom.getProperty();
+		property = expressionRenamer.rename(property);
+		renamedAxiom = df.getOWLReflexiveObjectPropertyAxiom(property);
 	}
 
 	@Override
 	public void visit(OWLDisjointClassesAxiom axiom) {
+		Set<OWLClassExpression> classExpressions = axiom.getClassExpressions();
+		Set<OWLClassExpression> renamedClassExpressions = new HashSet<OWLClassExpression>();
+		for (OWLClassExpression classExpression : classExpressions) {
+			renamedClassExpressions.add(expressionRenamer.rename(classExpression));
+		}
+		renamedAxiom = df.getOWLDisjointClassesAxiom(renamedClassExpressions);
 	}
 
 	@Override
@@ -138,22 +153,46 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLEquivalentObjectPropertiesAxiom axiom) {
+		Set<OWLObjectPropertyExpression> properties = axiom.getProperties();
+		Set<OWLObjectPropertyExpression> renamedProperties = new HashSet<OWLObjectPropertyExpression>();
+		for (OWLObjectPropertyExpression property : properties) {
+			renamedProperties.add(expressionRenamer.rename(property));
+		}
+		renamedAxiom = df.getOWLEquivalentObjectPropertiesAxiom(renamedProperties);
 	}
 
 	@Override
 	public void visit(OWLNegativeDataPropertyAssertionAxiom axiom) {
+//		axiom.
 	}
 
 	@Override
 	public void visit(OWLDifferentIndividualsAxiom axiom) {
+		Set<OWLIndividual> renamedIndividuals = new HashSet<OWLIndividual>();
+		for(OWLIndividual ind : axiom.getIndividuals()){
+			renamedIndividuals.add(expressionRenamer.rename(ind));
+		}
+		renamedAxiom = df.getOWLDifferentIndividualsAxiom(renamedIndividuals);
 	}
 
 	@Override
 	public void visit(OWLDisjointDataPropertiesAxiom axiom) {
+		Set<OWLDataPropertyExpression> properties = axiom.getProperties();
+		Set<OWLDataPropertyExpression> renamedProperties = new HashSet<OWLDataPropertyExpression>();
+		for (OWLDataPropertyExpression property : properties) {
+			renamedProperties.add(expressionRenamer.rename(property));
+		}
+		renamedAxiom = df.getOWLDisjointDataPropertiesAxiom(renamedProperties);
 	}
 
 	@Override
 	public void visit(OWLDisjointObjectPropertiesAxiom axiom) {
+		Set<OWLObjectPropertyExpression> properties = axiom.getProperties();
+		Set<OWLObjectPropertyExpression> renamedProperties = new HashSet<OWLObjectPropertyExpression>();
+		for (OWLObjectPropertyExpression property : properties) {
+			renamedProperties.add(expressionRenamer.rename(property));
+		}
+		renamedAxiom = df.getOWLDisjointObjectPropertiesAxiom(renamedProperties);
 	}
 
 	@Override
@@ -194,6 +233,14 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLDisjointUnionAxiom axiom) {
+		OWLClass cls = axiom.getOWLClass();
+		cls = expressionRenamer.rename(cls).asOWLClass();
+		Set<OWLClassExpression> classExpressions = axiom.getClassExpressions();
+		Set<OWLClassExpression> renamedClassExpressions = new HashSet<OWLClassExpression>();
+		for (OWLClassExpression classExpression : classExpressions) {
+			renamedClassExpressions.add(expressionRenamer.rename(classExpression));
+		}
+		renamedAxiom = df.getOWLDisjointUnionAxiom(cls, renamedClassExpressions);
 	}
 
 	@Override
@@ -221,6 +268,12 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLEquivalentDataPropertiesAxiom axiom) {
+		Set<OWLDataPropertyExpression> properties = axiom.getProperties();
+		Set<OWLDataPropertyExpression> renamedProperties = new HashSet<OWLDataPropertyExpression>();
+		for (OWLDataPropertyExpression property : properties) {
+			renamedProperties.add(expressionRenamer.rename(property));
+		}
+		renamedAxiom = df.getOWLEquivalentDataPropertiesAxiom(renamedProperties);
 	}
 
 	@Override
@@ -278,10 +331,18 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLInverseFunctionalObjectPropertyAxiom axiom) {
+		OWLObjectPropertyExpression property = axiom.getProperty();
+		property = expressionRenamer.rename(property);
+		renamedAxiom = df.getOWLInverseFunctionalObjectPropertyAxiom(property);
 	}
 
 	@Override
 	public void visit(OWLSameIndividualAxiom axiom) {
+		Set<OWLIndividual> renamedIndividuals = new HashSet<OWLIndividual>();
+		for(OWLIndividual ind : axiom.getIndividuals()){
+			renamedIndividuals.add(expressionRenamer.rename(ind));
+		}
+		renamedAxiom = df.getOWLSameIndividualAxiom(renamedIndividuals);
 	}
 
 	@Override
@@ -290,6 +351,11 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLInverseObjectPropertiesAxiom axiom) {
+		OWLObjectPropertyExpression firstProperty = axiom.getFirstProperty();
+		firstProperty = expressionRenamer.rename(firstProperty);
+		OWLObjectPropertyExpression secondProperty = axiom.getSecondProperty();
+		secondProperty = expressionRenamer.rename(secondProperty);
+		renamedAxiom = df.getOWLInverseObjectPropertiesAxiom(firstProperty, secondProperty);
 	}
 
 	@Override

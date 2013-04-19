@@ -112,12 +112,31 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.ini4j</groupId>
+			<artifactId>ini4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
-			<version>3.4.4</version>
+			<version>3.4</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-dlsyntax</artifactId>
+			<version>3.3</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-functional</artifactId>
+			<version>3.3</version>
+		</dependency>
+		
 		<dependency>
 	<groupId>net.sourceforge.owlapi</groupId>
 	<artifactId>owlapi-reasoner</artifactId>
