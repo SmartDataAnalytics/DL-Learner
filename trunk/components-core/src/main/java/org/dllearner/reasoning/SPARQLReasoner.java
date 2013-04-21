@@ -523,7 +523,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
-		System.out.println(query);
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){

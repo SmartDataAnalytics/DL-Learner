@@ -1,5 +1,6 @@
 package org.dllearner.utilities.owl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -69,6 +70,8 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
+	private Map<Integer, Boolean> intersection;
+	
 	public OWLClassExpressionToSPARQLConverter() {
 	}
 
@@ -89,7 +92,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	public Query asQuery(String rootVariable, OWLClassExpression expr){
 		String queryString = "SELECT " + rootVariable + " WHERE {";
 		queryString += convert(rootVariable, expr);
-		queryString += "}";System.out.println(queryString);
+		queryString += "}";
 		return QueryFactory.create(queryString, Syntax.syntaxARQ);
 	}
 	
@@ -99,6 +102,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		propCnt = 0;
 		indCnt = 0;
 		sparql = "";
+		intersection = new HashMap<Integer, Boolean>();
 	}
 	
 	private String getVariable(OWLEntity entity){
@@ -122,6 +126,18 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	
 	private int modalDepth(){
 		return variables.size();
+	}
+	
+	private boolean inIntersection(){
+		return intersection.containsKey(modalDepth()) ? intersection.get(modalDepth()) : false;
+	}
+	
+	private void enterIntersection(){
+		intersection.put(modalDepth(), true);
+	}
+	
+	private void leaveIntersection(){
+		intersection.remove(modalDepth());
 	}
 	
 	private String triple(String subject, String predicate, String object){
@@ -161,10 +177,12 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLObjectIntersectionOf ce) {
+		enterIntersection();
 		List<OWLClassExpression> operands = ce.getOperandsAsList();
 		for (OWLClassExpression operand : operands) {
 			operand.accept(this);
 		}
+		leaveIntersection();
 	}
 
 	@Override
@@ -183,6 +201,13 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLObjectComplementOf ce) {
+		String subject = variables.peek();
+		if(!inIntersection() && modalDepth() == 1){
+			sparql += triple(subject, "?p", "?o");
+		} 
+		sparql += "FILTER NOT EXISTS {";
+		ce.getOperand().accept(this);
+		sparql += "}";
 	}
 
 	@Override
@@ -197,17 +222,9 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		}
 		OWLClassExpression filler = ce.getFiller();
 		if(filler.isAnonymous()){
-			if(filler instanceof OWLObjectOneOf){
-				variables.push(objectVariable);
-				filler.accept(this);
-				variables.pop();
-			} else {
-				String var = buildIndividualVariable();
-				variables.push(var);
-				sparql += triple(objectVariable, "a", var);
-				filler.accept(this);
-				variables.pop();
-			}
+			variables.push(objectVariable);
+			filler.accept(this);
+			variables.pop();
 		} else {
 			sparql += triple(objectVariable, "a", filler.asOWLClass().toStringID());
 		}
@@ -378,6 +395,27 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLDataAllValuesFrom ce) {
+		String subject = variables.peek();
+		String objectVariable = buildIndividualVariable();
+		OWLDataPropertyExpression propertyExpression = ce.getProperty();
+		String predicate = propertyExpression.asOWLDataProperty().toStringID();
+		OWLDataRange filler = ce.getFiller();
+		sparql += triple(variables.peek(), predicate, objectVariable);
+		
+		String var = buildIndividualVariable();
+		sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt1) WHERE {";
+		sparql += triple(subject, predicate, var);
+		variables.push(var);
+		filler.accept(this);
+		variables.pop();
+		sparql += "} GROUP BY " + subject + "}";
+		
+		var = buildIndividualVariable();
+		sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt2) WHERE {";
+		sparql += triple(subject, predicate, var);
+		sparql += "} GROUP BY " + subject + "}";
+		
+		sparql += "FILTER(?cnt1=?cnt2)";
 	}
 
 	@Override
@@ -558,6 +596,27 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		expr = df.getOWLObjectIntersectionOf(
 				clsA, 
 				df.getOWLDataMinCardinality(2, dpT, booleanRange));
+		query = converter.asQuery(rootVar, expr).toString();
+		System.out.println(expr + "\n" + query);
+		
+		expr = df.getOWLObjectComplementOf(clsB);
+		query = converter.asQuery(rootVar, expr).toString();
+		System.out.println(expr + "\n" + query);
+		
+		expr = df.getOWLObjectIntersectionOf(
+				clsA, 
+				df.getOWLObjectComplementOf(clsB));
+		query = converter.asQuery(rootVar, expr).toString();
+		System.out.println(expr + "\n" + query);
+		
+		expr = df.getOWLObjectSomeValuesFrom(propR, 
+				df.getOWLObjectIntersectionOf(
+						clsA, 
+						df.getOWLObjectComplementOf(clsB)));
+		query = converter.asQuery(rootVar, expr).toString();
+		System.out.println(expr + "\n" + query);
+		
+		expr = df.getOWLDataAllValuesFrom(dpT, booleanRange);
 		query = converter.asQuery(rootVar, expr).toString();
 		System.out.println(expr + "\n" + query);
 		
