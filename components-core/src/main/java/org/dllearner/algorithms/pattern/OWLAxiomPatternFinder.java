@@ -11,19 +11,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.prefs.Preferences;
 
-import org.coode.owlapi.functionalrenderer.OWLFunctionalSyntaxRenderer;
 import org.dllearner.kb.dataset.OWLOntologyDataset;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.AbstractOWLRenderer;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -31,16 +32,12 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyAlreadyExistsException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
@@ -78,6 +75,8 @@ public class OWLAxiomPatternFinder {
 	private PreparedStatement insertOntologyPatternPs;
 	
 	private OWLObjectRenderer axiomRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+	
+	private boolean randomOrder = true;
 
 	public OWLAxiomPatternFinder(OWLOntologyDataset dataset) {
 		
@@ -147,8 +146,8 @@ public class OWLAxiomPatternFinder {
 			
 			statement.execute("CREATE TABLE IF NOT EXISTS Pattern (" 
 			        + "id MEDIUMINT NOT NULL AUTO_INCREMENT,"
-					+ "pattern VARCHAR(2000) NOT NULL,"
-					+ "pattern_pretty VARCHAR(2000) NOT NULL,"
+					+ "pattern VARCHAR(20000) NOT NULL,"
+					+ "pattern_pretty VARCHAR(20000) NOT NULL,"
 					+ "PRIMARY KEY(id),"
 					+ "INDEX(pattern)) DEFAULT CHARSET=utf8");
 			
@@ -164,8 +163,8 @@ public class OWLAxiomPatternFinder {
 			        + "ontology_id MEDIUMINT NOT NULL,"
 					+ "pattern_id MEDIUMINT NOT NULL,"
 					+ "occurrences INTEGER(8) NOT NULL,"
-					+ "FOREIGN KEY (ontology_id) REFERENCES Ontology(id),"
-					+ "FOREIGN KEY (pattern_id) REFERENCES Pattern(id),"
+					+ "FOREIGN KEY (ontology_id) REFERENCES Ontology(id) ON DELETE CASCADE,"
+					+ "FOREIGN KEY (pattern_id) REFERENCES Pattern(id) ON DELETE CASCADE,"
 					+ "PRIMARY KEY(ontology_id, pattern_id)) DEFAULT CHARSET=utf8");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -191,6 +190,7 @@ public class OWLAxiomPatternFinder {
 			insertPatternIdPs.setString(2, axiomRenderer.render(axiom));
 			insertPatternIdPs.execute();
 		} catch (SQLException e) {
+			System.out.println(axiomString.length());
 			e.printStackTrace();
 		}
 		//get the auto generated ID
@@ -216,6 +216,19 @@ public class OWLAxiomPatternFinder {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	private void addOntologyError(URI physicalURI, Exception ex){
+		String url = physicalURI.toString();
+		//add ontology loading/parsing/... error entry
+		try {
+			insertOntologyPs.setString(1, url);
+			insertOntologyPs.setString(2, "ERROR:" + ex.getClass().getSimpleName() + "->" + ex.getMessage());
+			insertOntologyPs.setString(3, repository.getName());
+			insertOntologyPs.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private int addOntology(URI physicalURI, OWLOntology ontology){
@@ -264,7 +277,7 @@ public class OWLAxiomPatternFinder {
 				insertOntologyPatternPs.setInt(3, occurrences);
 				insertOntologyPatternPs.execute();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				System.err.println("Adding pattern\n" + pattern + "\nfailed." + e.getMessage());
 			}
 		}
 	}
@@ -272,6 +285,11 @@ public class OWLAxiomPatternFinder {
 	public void start() {
 		OWLAxiomRenamer renamer = new OWLAxiomRenamer(dataFactory);
 		Collection<OntologyRepositoryEntry> entries = repository.getEntries();
+		if(randomOrder){
+			List<OntologyRepositoryEntry> entryList = new ArrayList<OntologyRepositoryEntry>(repository.getEntries());
+			Collections.shuffle(entryList);
+			entries = entryList;
+		}
 		Multiset<OWLAxiom> allAxiomPatterns = HashMultiset.create();
 		for (OntologyRepositoryEntry entry : entries) {
 			URI uri = entry.getPhysicalURI();
@@ -290,8 +308,10 @@ public class OWLAxiomPatternFinder {
 //						System.out.println(owlAxiom + ": " + allAxiomPatterns.count(owlAxiom));
 					}
 					manager.removeOntology(ontology);
-				} catch (OWLOntologyCreationException e) {
+				} catch (OWLOntologyAlreadyExistsException e) {
 					e.printStackTrace();
+				} catch (Exception e){
+					addOntologyError(uri, e);
 				}
 			}
 
