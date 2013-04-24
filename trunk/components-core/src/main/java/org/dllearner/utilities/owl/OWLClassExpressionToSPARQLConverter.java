@@ -90,7 +90,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	}
 	
 	public Query asQuery(String rootVariable, OWLClassExpression expr){
-		String queryString = "SELECT " + rootVariable + " WHERE {";
+		String queryString = "SELECT DISTINCT " + rootVariable + " WHERE {";
 		queryString += convert(rootVariable, expr);
 		queryString += "}";
 		return QueryFactory.create(queryString, Syntax.syntaxARQ);
@@ -149,13 +149,17 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private String triple(String subject, String predicate, OWLLiteral object){
 		return (subject.startsWith("?") ? subject : "<" + subject + ">") + " " + 
 				(predicate.startsWith("?") || predicate.equals("a") ? predicate : "<" + predicate + ">") + " " +
-				"\"" + object + "\"^^<" + object.getDatatype().toStringID() + ">.\n";
+				render(object) + ".\n";
 	}
 	
 	private String triple(String subject, String predicate, OWLIndividual object){
 		return (subject.startsWith("?") ? subject : "<" + subject + ">") + " " + 
 				(predicate.startsWith("?") || predicate.equals("a") ? predicate : "<" + predicate + ">") + " " +
 				"<" + object.toStringID() + ">.\n";
+	}
+	
+	private String render(OWLLiteral literal){
+		return "\"" + literal + "\"^^<" + literal.getDatatype().toStringID() + ">";
 	}
 
 	@Override
@@ -480,6 +484,20 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLDataOneOf node) {
+		String subject = variables.peek();
+		if(modalDepth() == 1){
+			sparql += triple(subject, "?p", "?o");
+		} 
+		sparql += "FILTER(" + subject + " IN (";
+		String values = "";
+		for (OWLLiteral value : node.getValues()) {
+			if(!values.isEmpty()){
+				values += ",";
+			}
+			values += render(value);
+		}
+		sparql += values;
+		sparql +=  "))"; 
 	}
 
 	@Override
@@ -617,6 +635,10 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		System.out.println(expr + "\n" + query);
 		
 		expr = df.getOWLDataAllValuesFrom(dpT, booleanRange);
+		query = converter.asQuery(rootVar, expr).toString();
+		System.out.println(expr + "\n" + query);
+		
+		expr = df.getOWLDataAllValuesFrom(dpT,df.getOWLDataOneOf(lit));
 		query = converter.asQuery(rootVar, expr).toString();
 		System.out.println(expr + "\n" + query);
 		
