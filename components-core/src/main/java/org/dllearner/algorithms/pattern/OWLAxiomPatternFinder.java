@@ -146,10 +146,10 @@ public class OWLAxiomPatternFinder {
 			
 			statement.execute("CREATE TABLE IF NOT EXISTS Pattern (" 
 			        + "id MEDIUMINT NOT NULL AUTO_INCREMENT,"
-					+ "pattern VARCHAR(20000) NOT NULL,"
-					+ "pattern_pretty VARCHAR(20000) NOT NULL,"
+					+ "pattern TEXT NOT NULL,"
+					+ "pattern_pretty TEXT NOT NULL,"
 					+ "PRIMARY KEY(id),"
-					+ "INDEX(pattern)) DEFAULT CHARSET=utf8");
+					+ "INDEX(pattern(8000))) DEFAULT CHARSET=utf8");
 			
 			statement.execute("CREATE TABLE IF NOT EXISTS Ontology (" 
 			        + "id MEDIUMINT NOT NULL AUTO_INCREMENT,"
@@ -294,7 +294,7 @@ public class OWLAxiomPatternFinder {
 		for (OntologyRepositoryEntry entry : entries) {
 			URI uri = entry.getPhysicalURI();
 			if (!ontologyProcessed(uri)) {
-				System.out.println("Loading " + uri);
+				System.out.println("Loading \"" + entry.getOntologyShortName() + "\" from "+ uri);
 				try {
 					OWLOntology ontology = manager.loadOntology(IRI.create(uri));
 					Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
@@ -311,6 +311,7 @@ public class OWLAxiomPatternFinder {
 				} catch (OWLOntologyAlreadyExistsException e) {
 					e.printStackTrace();
 				} catch (Exception e){
+					e.printStackTrace();
 					addOntologyError(uri, e);
 				}
 			}
