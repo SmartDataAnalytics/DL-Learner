@@ -720,8 +720,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
             // convert data back to DL-Learner structures
             SortedSet<Individual> is = new TreeSet<Individual>();
-            for (OWLNamedIndividual oi : inds)
-                is.add(new Individual(oi.toStringID()));
+            for (OWLNamedIndividual oi : inds){
+            	if(oi != null){
+            		is.add(new Individual(oi.toStringID()));
+            	}
+            }
             map.put(i, is);
         }
         return map;

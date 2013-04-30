@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.query.Query;
@@ -135,6 +136,8 @@ public interface QueryTree<N> {
     String toSPARQLQueryString(boolean filterMeaninglessProperties, boolean useNumericalFilters, Map<String, String> prefixMap);
     
     Query toSPARQLQuery();
+    
+    OWLClassExpression asOWLClassExpression();
     
     int getTriplePatternCount();
     

@@ -21,7 +21,6 @@ package org.dllearner.algorithms.qtl.datastructures.impl;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,6 +40,15 @@ import javax.xml.bind.DatatypeConverter;
 import org.dllearner.algorithms.qtl.datastructures.NodeRenderer;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.filters.Filters;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -53,6 +61,7 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * 
@@ -80,6 +89,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     private boolean isLiteralNode = false;
     private boolean isResourceNode = false;
+    private boolean isBlankNode = false;
     
     private List<Literal> literals = new ArrayList<Literal>();
     
@@ -162,6 +172,14 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     public void setLiteralNode(boolean isLiteralNode) {
     	this.isLiteralNode = isLiteralNode;
     }
+    
+    public void setBlankNode(boolean isBlankNode) {
+		this.isBlankNode = isBlankNode;
+	}
+    
+    public boolean isBlankNode() {
+		return isBlankNode;
+	}
     
     @Override
     public boolean isResourceNode() {
@@ -728,7 +746,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	for(String filter : filters){
     		sb.append(filter).append("\n");
     	}
-    	sb.append("}");System.out.println(sb.toString());
+    	sb.append("}");
     	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxARQ);
     	query.setPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
     	query.setPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
@@ -869,9 +887,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		} else if(objectLabel.startsWith("http:")){
     			object = Node.createURI(objectLabel);
     		} else {
-    			System.out.println(objectLabel);
+//    			System.out.println(objectLabel);
     			String[] split = objectLabel.split("@");
-    			System.out.println(Arrays.toString(split));
+//    			System.out.println(Arrays.toString(split));
     			if(split.length == 2){
     				object = Node.createLiteral(split[0], split[1], null);
     			} else {
@@ -915,6 +933,74 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	} else {
     		throw new UnsupportedOperationException("Node ist not a literal");
     	}
+    }
+    
+    public OWLClassExpression asOWLClassExpression(){
+    	OWLDataFactory df = new OWLDataFactoryImpl();
+    	QueryTree<N> root = getRoot();
+    	Set<OWLClassExpression> classExpressions = buildOWLClassExpressions(df, root);
+    	if(classExpressions.size() == 1){
+    		return classExpressions.iterator().next();
+    	} else {
+    		return df.getOWLObjectIntersectionOf(classExpressions);
+    	}
+    }
+    
+    private Set<OWLClassExpression> buildOWLClassExpressions(OWLDataFactory df, QueryTree<N> tree){
+    	Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
+    	
+    	List<QueryTree<N>> children = tree.getChildren();
+    	for(QueryTree<N> child : children){
+    		String childLabel = (String) child.getUserObject();
+    		String predicateString = (String) tree.getEdge(child);
+    		if(predicateString.equals(RDF.type.getURI())){
+    			classExpressions.add(df.getOWLClass(IRI.create(childLabel)));
+    		} else {
+    			if(child.isLiteralNode()){
+    				OWLDataProperty p = df.getOWLDataProperty(IRI.create((String) tree.getEdge(child)));
+    				if(childLabel.equals("?")){
+    					List<Literal> literals = child.getLiterals();
+            			Literal lit = literals.iterator().next();
+            			RDFDatatype datatype = lit.getDatatype();
+            			String datatypeURI;
+            			if(datatype == null){
+            				datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getURI().toString();
+            			} else {
+            				datatypeURI = datatype.getURI();
+            			}
+            			classExpressions.add(df.getOWLDataSomeValuesFrom(p, df.getOWLDatatype(IRI.create(datatypeURI))));
+    				} else {
+    					List<Literal> literals = child.getLiterals();
+            			Literal lit = literals.iterator().next();
+            			RDFDatatype datatype = lit.getDatatype();
+            			OWLLiteral owlLiteral;
+            			if(datatype == null){
+            				owlLiteral = df.getOWLLiteral(lit.getLexicalForm(), lit.getLanguage());
+            			} else {
+            				owlLiteral = df.getOWLLiteral(lit.getLexicalForm(), df.getOWLDatatype(IRI.create(datatype.getURI())));
+            			}
+            			classExpressions.add(df.getOWLDataHasValue(p, owlLiteral));
+    				}
+        		} else {
+        			OWLObjectProperty p = df.getOWLObjectProperty(IRI.create((String) tree.getEdge(child)));
+        			OWLClassExpression filler;
+        			if(child.isVarNode()){
+            			Set<OWLClassExpression> fillerClassExpressions = buildOWLClassExpressions(df, child);
+            			if(fillerClassExpressions.isEmpty()){
+            				filler = df.getOWLThing();
+            			} else if(fillerClassExpressions.size() == 1){
+            				filler = fillerClassExpressions.iterator().next();
+            			} else {
+            				filler = df.getOWLObjectIntersectionOf(fillerClassExpressions);
+            			}
+            			classExpressions.add(df.getOWLObjectSomeValuesFrom(p, filler));
+            		} else {
+            			classExpressions.add(df.getOWLObjectHasValue(p, df.getOWLNamedIndividual(IRI.create(childLabel))));
+            		}
+        		}
+    		}
+    	}
+    	return classExpressions;
     }
     
 

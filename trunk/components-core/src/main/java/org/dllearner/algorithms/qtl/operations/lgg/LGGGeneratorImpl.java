@@ -121,7 +121,10 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		}
 		
 		QueryTree<N> lgg = new QueryTreeImpl<N>(tree1.getUserObject());
-		lgg.setLiteralNode(tree1.isLiteralNode());
+		if(tree1.isResourceNode() && tree2.isResourceNode()){
+			lgg.setResourceNode(true);
+			
+		}
 		
 //		if(!lgg.getUserObject().equals(tree2.getUserObject())){
 //			lgg.setUserObject((N)"?");
@@ -144,15 +147,19 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 //		}
 		if(!lgg.getUserObject().equals(tree2.getUserObject())){
 			lgg.setUserObject((N)"?");
+			lgg.setLiteralNode(false);
+			lgg.setResourceNode(false);
 		}
 		
 		if(tree1.isLiteralNode() && tree2.isLiteralNode()){
 			RDFDatatype d1 = tree1.getDatatype();
 			RDFDatatype d2 = tree2.getDatatype();
-			if(d1 != null && d2 != null && d1 == d2){
+//			if(d1 != null && d2 != null && d1 == d2){
+			if(d1 == d2){
 				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree1).getLiterals());
 				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree2).getLiterals());
 			}
+			lgg.setLiteralNode(true);
 		}
 		
 		Set<QueryTreeImpl<N>> addedChildren;

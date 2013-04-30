@@ -21,8 +21,8 @@ package org.dllearner.core;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +30,8 @@ import java.util.Map;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.utilities.EnrichmentVocabulary;
+import org.dllearner.utilities.PrefixCCMap;
 import org.dllearner.utilities.owl.OWLAPIConverter;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -45,6 +45,8 @@ import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjec
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
 
 public class EvaluatedAxiom {
+	
+	private static DecimalFormat df = new DecimalFormat("##0.0");
 	
 	private Axiom axiom;
 	private Score score;
@@ -111,6 +113,27 @@ public class EvaluatedAxiom {
 		ind2Axioms.put(ind, axioms);
 		
 		return ind2Axioms;
+	}
+	
+	public static String prettyPrint(List<EvaluatedAxiom> learnedAxioms) {
+		String str = "suggested axioms and their score in percent:\n";
+		if(learnedAxioms.isEmpty()) {
+			return "  no axiom suggested\n";
+		} else {
+			for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+				str += " " + prettyPrint(learnedAxiom) + "\n";
+			}		
+		}
+		return str;
+	}
+	
+	public static String prettyPrint(EvaluatedAxiom axiom) {
+		double acc = axiom.getScore().getAccuracy() * 100;
+		String accs = df.format(acc);
+		if(accs.length()==3) { accs = "  " + accs; }
+		if(accs.length()==4) { accs = " " + accs; }
+		String str =  accs + "%\t" + axiom.getAxiom().toManchesterSyntaxString(null, PrefixCCMap.getInstance());
+		return str;
 	}
 	
 

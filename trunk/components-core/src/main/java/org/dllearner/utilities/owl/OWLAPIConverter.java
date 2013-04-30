@@ -51,6 +51,8 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
+import eu.trowl.vocab.RDF;
+
 /**
  * A collection of methods for exchanging objects between OWL API and
  * DL-Learner.
@@ -191,7 +193,9 @@ public final class OWLAPIConverter {
 			return OWL2Datatype.DATE.getDatatype();
 		else if(iri.equals(OWL2Datatype.DATETIME.getIRI()))
 			return OWL2Datatype.DATETIME.getDatatype();
-		throw new Error("Unsupported datatype " + dataType + ". Please inform a DL-Learner developer to add it.");
+		else 
+			return new Datatype(dataType.getIRI().toString());
+//		throw new Error("Unsupported datatype " + dataType + ". Please inform a DL-Learner developer to add it.");
 	}
 
 }

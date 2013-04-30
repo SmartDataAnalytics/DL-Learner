@@ -250,18 +250,21 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 								|| lit.getDatatype() == XSDDatatype.XSDint
 								|| lit.getDatatype() == XSDDatatype.XSDdecimal){
 							subTree.addLiteral(lit);
+						} else {
+							subTree.addLiteral(lit);
 						}
+						
 						tree.addChild(subTree, st.getPredicate().toString());
 					} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
-						if(object.asResource().isAnon()){
-							System.out.println(object);
-						}
 						if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 							subTree = new QueryTreeImpl<String>(st.getObject().toString());
 							subTree.setResourceNode(true);
 							tree.addChild(subTree, st.getPredicate().toString());
 							if(depth < maxDepth){
 								fillTree(subTree, resource2Statements, depth);
+							}
+							if(object.isAnon()){
+								subTree.setBlankNode(true);
 							}
 							
 						}
