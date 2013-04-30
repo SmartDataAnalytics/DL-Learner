@@ -146,8 +146,35 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 //		this.configurator = new QTLConfigurator(this);
 	}
 	
+	public QTL(AbstractLearningProblem learningProblem, SparqlEndpointKS endpointKS, ExtractionDBCache cache) throws LearningProblemUnsupportedException{
+		if(!(learningProblem instanceof PosOnlyLP || learningProblem instanceof PosNegLP)){
+			throw new LearningProblemUnsupportedException(learningProblem.getClass(), getClass());
+		}
+		this.learningProblem = learningProblem;
+		this.endpointKS = endpointKS;
+		this.cache = cache;
+		
+//		this.configurator = new QTLConfigurator(this);
+	}
+	
 	public QTL(SPARQLEndpointEx endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
+		this.cache = cache;
+		
+		treeCache = new QueryTreeCache();
+		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, cache));
+		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
+		
+		lggGenerator = new LGGGeneratorImpl<String>();
+		nbr = new NBR<String>(endpoint, cache);
+		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+		
+		posExampleTrees = new ArrayList<QueryTree<String>>();
+		negExampleTrees = new ArrayList<QueryTree<String>>();
+	}
+	
+	public QTL(SparqlEndpointKS endpointKS, ExtractionDBCache cache) {
+		this.endpointKS = endpointKS;
 		this.cache = cache;
 		
 		treeCache = new QueryTreeCache();
@@ -280,16 +307,20 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		Model model;
 		QueryTree<String> tree;
 		for(String resource : resources){
-			logger.info("Generating tree for " + resource);
-			model = cbdGenerator.getConciseBoundedDescription(resource);
-			applyFilters(model);
-			tree = treeCache.getQueryTree(resource, model);
-			if(logger.isDebugEnabled()){
-				logger.debug("Tree for resource " + resource);
-				logger.debug(tree.getStringRepresentation());
-				
+			try {
+				logger.debug("Generating tree for " + resource);
+				model = cbdGenerator.getConciseBoundedDescription(resource);
+				applyFilters(model);
+				tree = treeCache.getQueryTree(resource, model);
+				if(logger.isDebugEnabled()){
+					logger.debug("Tree for resource " + resource);
+					logger.debug(tree.getStringRepresentation());
+					
+				}
+				trees.add(tree);
+			} catch (Exception e) {
+				logger.error("Failed to create tree for resource " + resource + ".", e);
 			}
-			trees.add(tree);
 		}
 		return trees;
 	}
@@ -367,7 +398,9 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		if(logger.isDebugEnabled()){
 			logger.debug("LGG: \n" + lgg.getStringRepresentation());
 		}
-		logger.info(lgg.toSPARQLQueryString(true, enableNumericLiteralFilters, prefixes));
+		if(logger.isInfoEnabled()){
+			logger.info(lgg.toSPARQLQueryString(true, enableNumericLiteralFilters, prefixes));
+		}
 	}
 	
 	public void setEnableNumericLiteralFilters(boolean enableNumericLiteralFilters) {
@@ -419,6 +452,10 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 			list.add(ind.toString());
 		}
 		return list;
+	}
+	
+	public QueryTree<String> getLgg() {
+		return lgg;
 	}
 	
 	public static void main(String[] args) throws Exception {

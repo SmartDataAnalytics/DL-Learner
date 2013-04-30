@@ -84,7 +84,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 @ComponentAnn(name = "SPARQL Reasoner", shortName = "spr", version = 0.1)
-public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
+public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
 	
@@ -450,7 +450,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 	}
 	
 	public Set<NamedClass> getTypes() {
-		Set<NamedClass> types = new HashSet<NamedClass>();
+		Set<NamedClass> types = new TreeSet<NamedClass>();
 		String query = String.format("SELECT DISTINCT ?class WHERE {[] a ?class.}");
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -519,7 +519,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner{
 			throw new UnsupportedOperationException("Only named classes are supported.");
 		}
 		SortedSet<Individual> individuals = new TreeSet<Individual>();
-		String query = String.format("SELECT ?ind WHERE {?ind a <%s>}", ((NamedClass)description).getName());
+		String query = String.format("SELECT DISTINCT ?ind WHERE {?ind a <%s>}", ((NamedClass)description).getName());
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
