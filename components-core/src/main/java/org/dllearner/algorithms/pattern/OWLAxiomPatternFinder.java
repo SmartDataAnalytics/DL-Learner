@@ -242,7 +242,9 @@ public class OWLAxiomPatternFinder {
 			if(!(ex instanceof UnparsableOntologyException)){
 				errorMessage += (ex.getMessage() != null ? ("->" + ex.getMessage()) : "");
 			}
-			errorMessage = errorMessage.substring(0, 1900);
+			if(errorMessage.length() > 1900){
+				errorMessage = errorMessage.substring(0, 1900);
+			}
 			insertOntologyErrorPs.setString(2, errorMessage);
 			insertOntologyErrorPs.setString(3, repository.getName());
 			insertOntologyErrorPs.execute();
