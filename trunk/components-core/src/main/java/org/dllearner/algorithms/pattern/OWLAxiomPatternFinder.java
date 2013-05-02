@@ -14,9 +14,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import org.dllearner.kb.dataset.OWLOntologyDataset;
@@ -26,6 +28,7 @@ import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -70,6 +73,7 @@ public class OWLAxiomPatternFinder {
 	private Connection conn;
 	private PreparedStatement selectOntologyIdPs;
 	private PreparedStatement insertOntologyPs;
+	private PreparedStatement insertOntologyErrorPs;
 	private PreparedStatement selectPatternIdPs;
 	private PreparedStatement insertPatternIdPs;
 	private PreparedStatement insertOntologyPatternPs;
@@ -91,7 +95,9 @@ public class OWLAxiomPatternFinder {
 		createTables();
 		try {
 			selectOntologyIdPs = conn.prepareStatement("SELECT id FROM Ontology WHERE url=?");
-			insertOntologyPs = conn.prepareStatement("INSERT INTO Ontology (url, iri, repository) VALUES(?,?,?)");
+			insertOntologyPs = conn.prepareStatement("INSERT INTO Ontology (url, iri, repository, logical_axioms, tbox_axioms, rbox_axioms" +
+					", abox_axioms, classes, object_properties, data_properties, individuals) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+			insertOntologyErrorPs = conn.prepareStatement("INSERT INTO Ontology (url, iri, repository) VALUES(?,?,?)");
 			selectPatternIdPs = conn.prepareStatement("SELECT id FROM Pattern WHERE pattern=?");
 			insertPatternIdPs = conn.prepareStatement("INSERT INTO Pattern (pattern,pattern_pretty) VALUES(?,?)");
 			insertOntologyPatternPs = conn.prepareStatement("INSERT INTO Ontology_Pattern (ontology_id, pattern_id, occurrences) VALUES(?,?,?)");
@@ -156,6 +162,14 @@ public class OWLAxiomPatternFinder {
 					+ "url VARCHAR(2000) NOT NULL,"
 					+ "iri VARCHAR(2000) NOT NULL,"
 					+ "repository VARCHAR(200) NOT NULL,"
+					+ "logical_axioms MEDIUMINT DEFAULT 0,"
+					+ "tbox_axioms MEDIUMINT DEFAULT 0,"
+					+ "rbox_axioms MEDIUMINT DEFAULT 0,"
+					+ "abox_axioms MEDIUMINT DEFAULT 0,"
+					+ "classes MEDIUMINT DEFAULT 0,"
+					+ "object_properties MEDIUMINT DEFAULT 0,"
+					+ "data_properties MEDIUMINT DEFAULT 0,"
+					+ "individuals MEDIUMINT DEFAULT 0,"
 					+ "PRIMARY KEY(id),"
 					+ "INDEX(url)) DEFAULT CHARSET=utf8");
 			
@@ -222,10 +236,10 @@ public class OWLAxiomPatternFinder {
 		String url = physicalURI.toString();
 		//add ontology loading/parsing/... error entry
 		try {
-			insertOntologyPs.setString(1, url);
-			insertOntologyPs.setString(2, "ERROR:" + ex.getClass().getSimpleName() + "->" + ex.getMessage());
-			insertOntologyPs.setString(3, repository.getName());
-			insertOntologyPs.execute();
+			insertOntologyErrorPs.setString(1, url);
+			insertOntologyErrorPs.setString(2, "ERROR:" + ex.getClass().getSimpleName() + (ex.getMessage() != null ? ("->" + ex.getMessage()) : ""));
+			insertOntologyErrorPs.setString(3, repository.getName());
+			insertOntologyErrorPs.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -233,7 +247,10 @@ public class OWLAxiomPatternFinder {
 	
 	private int addOntology(URI physicalURI, OWLOntology ontology){
 		String url = physicalURI.toString();
-		String ontologyIRI = ontology.getOntologyID().getOntologyIRI().toString();
+		String ontologyIRI = "Anonymous";
+		if(!ontology.getOntologyID().isAnonymous()){
+			ontologyIRI = ontology.getOntologyID().getOntologyIRI().toString();
+		}
 		//check for existing entry
 		try {
 			selectOntologyIdPs.setString(1, url);
@@ -249,6 +266,20 @@ public class OWLAxiomPatternFinder {
 			insertOntologyPs.setString(1, url);
 			insertOntologyPs.setString(2, ontologyIRI);
 			insertOntologyPs.setString(3, repository.getName());
+			Set<OWLAxiom> logicalAxioms = new HashSet<OWLAxiom>();
+			logicalAxioms.addAll(ontology.getLogicalAxioms());
+			Set<OWLAxiom> tbox = AxiomType.getAxiomsOfTypes(logicalAxioms, new ArrayList<AxiomType>(AxiomType.TBoxAxiomTypes).toArray(new AxiomType[AxiomType.TBoxAxiomTypes.size()]));
+			Set<OWLAxiom> rbox = AxiomType.getAxiomsOfTypes(logicalAxioms, new ArrayList<AxiomType>(AxiomType.RBoxAxiomTypes).toArray(new AxiomType[AxiomType.RBoxAxiomTypes.size()]));
+			Set<OWLAxiom> abox = AxiomType.getAxiomsOfTypes(logicalAxioms, new ArrayList<AxiomType>(AxiomType.ABoxAxiomTypes).toArray(new AxiomType[AxiomType.ABoxAxiomTypes.size()]));
+			
+			insertOntologyPs.setInt(4, ontology.getLogicalAxiomCount());
+			insertOntologyPs.setInt(5, tbox.size());
+			insertOntologyPs.setInt(6, rbox.size());
+			insertOntologyPs.setInt(7, abox.size());
+			insertOntologyPs.setInt(8, ontology.getClassesInSignature(true).size());
+			insertOntologyPs.setInt(9, ontology.getObjectPropertiesInSignature(true).size());
+			insertOntologyPs.setInt(10, ontology.getDataPropertiesInSignature(true).size());
+			insertOntologyPs.setInt(11, ontology.getIndividualsInSignature(true).size());
 			insertOntologyPs.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -293,9 +324,11 @@ public class OWLAxiomPatternFinder {
 		Multiset<OWLAxiom> allAxiomPatterns = HashMultiset.create();
 		for (OntologyRepositoryEntry entry : entries) {
 			URI uri = entry.getPhysicalURI();
+//			if(uri.toString().startsWith("http://rest.bioontology.org/bioportal/ontologies/download/42764")){
 			if (!ontologyProcessed(uri)) {
 				System.out.println("Loading \"" + entry.getOntologyShortName() + "\" from "+ uri);
 				try {
+					manager = OWLManager.createOWLOntologyManager();
 					OWLOntology ontology = manager.loadOntology(IRI.create(uri));
 					Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
 					for (OWLLogicalAxiom axiom : ontology.getLogicalAxioms()) {

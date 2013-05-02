@@ -1,8 +1,10 @@
 package org.dllearner.utilities.owl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.aksw.commons.collections.diff.ModelDiff;
@@ -31,6 +33,7 @@ import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
@@ -62,7 +65,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	
 	private String sparql = "";
 	private Stack<String> variables = new Stack<String>();
-	private Map<OWLEntity, String> variablesMapping;
+	private Map<OWLEntity, String> variablesMapping = new HashMap<OWLEntity, String>();
 	
 	private int classCnt = 0;
 	private int propCnt = 0;
@@ -71,6 +74,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	private Map<Integer, Boolean> intersection;
+	private Set<? extends OWLEntity> variableEntities;
 	
 	public OWLClassExpressionToSPARQLConverter() {
 	}
@@ -90,13 +94,37 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	}
 	
 	public Query asQuery(String rootVariable, OWLClassExpression expr){
-		String queryString = "SELECT DISTINCT " + rootVariable + " WHERE {";
-		queryString += convert(rootVariable, expr);
+		return asQuery(rootVariable, expr, Collections.<OWLEntity>emptySet());
+	}
+	
+	public Query asQuery(String rootVariable, OWLClassExpression expr, Set<? extends OWLEntity> variableEntities){
+		this.variableEntities = variableEntities;
+		String queryString = "SELECT DISTINCT ";
+		String triplePattern = convert(rootVariable, expr);
+		if(variableEntities.isEmpty()){
+			queryString += rootVariable + " WHERE {";
+		} else {
+			for (OWLEntity owlEntity : variableEntities) {
+				String var = variablesMapping.get(owlEntity);
+				queryString += var + " ";
+			}
+			queryString += "COUNT(" + rootVariable + ") WHERE {";
+		}
+		
+		queryString += triplePattern;
 		queryString += "}";
+		if(!variableEntities.isEmpty()){
+			queryString += "GROUP BY ";
+			for (OWLEntity owlEntity : variableEntities) {
+				String var = variablesMapping.get(owlEntity);
+				queryString += var;
+			}
+		}System.out.println(queryString);
 		return QueryFactory.create(queryString, Syntax.syntaxARQ);
 	}
 	
 	private void reset(){
+		variablesMapping.clear();
 		variables.clear();
 		classCnt = 0;
 		propCnt = 0;
@@ -143,7 +171,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private String triple(String subject, String predicate, String object){
 		return (subject.startsWith("?") ? subject : "<" + subject + ">") + " " + 
 				(predicate.startsWith("?") || predicate.equals("a") ? predicate : "<" + predicate + ">") + " " +
-				(object.startsWith("?") ? object : "<" + object + ">") + ".\n";
+				(object.startsWith("?") ? object : object) + ".\n";
 	}
 	
 	private String triple(String subject, String predicate, OWLLiteral object){
@@ -152,10 +180,44 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 				render(object) + ".\n";
 	}
 	
+	private String triple(String subject, String predicate, OWLEntity object){
+		return (subject.startsWith("?") ? subject : "<" + subject + ">") + " " + 
+				(predicate.startsWith("?") || predicate.equals("a") ? predicate : "<" + predicate + ">") + " " +
+				render(object) + ".\n";
+	}
+	
+	private String triple(String subject, OWLEntity predicate, OWLEntity object){
+		return (subject.startsWith("?") ? subject : "<" + subject + ">") + " " + 
+				render(predicate) + " " +
+				render(object) + ".\n";
+	}
+	
+	private String triple(String subject, OWLEntity predicate, String object){
+		return (subject.startsWith("?") ? subject : "<" + subject + ">") + " " + 
+				render(predicate) + " " +
+				object + ".\n";
+	}
+	
+	private String triple(String subject, OWLEntity predicate, OWLLiteral object){
+		return (subject.startsWith("?") ? subject : "<" + subject + ">") + " " + 
+				render(predicate) + " " +
+				render(object) + ".\n";
+	}
+	
 	private String triple(String subject, String predicate, OWLIndividual object){
 		return (subject.startsWith("?") ? subject : "<" + subject + ">") + " " + 
 				(predicate.startsWith("?") || predicate.equals("a") ? predicate : "<" + predicate + ">") + " " +
 				"<" + object.toStringID() + ">.\n";
+	}
+	
+	private String render(OWLEntity entity){
+		String s;
+		if(variableEntities.contains(entity)){
+			s = getVariable(entity);
+		} else {
+			s = "<" + entity.toStringID() + ">";
+		}
+		return s;
 	}
 	
 	private String render(OWLLiteral literal){
@@ -176,7 +238,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLClass ce) {
-		sparql += triple(variables.peek(), "a", ce.toStringID());
+		sparql += triple(variables.peek(), "a", render(ce));
 	}
 
 	@Override
@@ -220,9 +282,9 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
 		if(propertyExpression.isAnonymous()){
 			//property expression is inverse of a property
-			sparql += triple(objectVariable, propertyExpression.getNamedProperty().toStringID(), variables.peek());
+			sparql += triple(objectVariable, propertyExpression.getNamedProperty(), variables.peek());
 		} else {
-			sparql += triple(variables.peek(), propertyExpression.getNamedProperty().toStringID(), objectVariable);
+			sparql += triple(variables.peek(), propertyExpression.getNamedProperty(), objectVariable);
 		}
 		OWLClassExpression filler = ce.getFiller();
 		if(filler.isAnonymous()){
@@ -230,7 +292,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			filler.accept(this);
 			variables.pop();
 		} else {
-			sparql += triple(objectVariable, "a", filler.asOWLClass().toStringID());
+			sparql += triple(objectVariable, "a", filler.asOWLClass());
 		}
 		
 	}
@@ -240,7 +302,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		String subject = variables.peek();
 		String objectVariable = buildIndividualVariable();
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
-		String predicate = propertyExpression.getNamedProperty().toStringID();
+		OWLObjectProperty predicate = propertyExpression.getNamedProperty();
 		OWLClassExpression filler = ce.getFiller();
 		if(propertyExpression.isAnonymous()){
 			//property expression is inverse of a property
@@ -269,12 +331,12 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLObjectHasValue ce) {
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
-		OWLIndividual value = ce.getValue();
+		OWLNamedIndividual value = ce.getValue().asOWLNamedIndividual();
 		if(propertyExpression.isAnonymous()){
 			//property expression is inverse of a property
-			sparql += triple(value.toStringID(), propertyExpression.getNamedProperty().toStringID(), variables.peek());
+			sparql += triple(value.toStringID(), propertyExpression.getNamedProperty(), variables.peek());
 		} else {
-			sparql += triple(variables.peek(), propertyExpression.getNamedProperty().toStringID(), value.toStringID());
+			sparql += triple(variables.peek(), propertyExpression.getNamedProperty(), value);
 		}
 	}
 
@@ -287,9 +349,9 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
 		if(propertyExpression.isAnonymous()){
 			//property expression is inverse of a property
-			sparql += triple(objectVariable, propertyExpression.getNamedProperty().toStringID(), subjectVariable);
+			sparql += triple(objectVariable, propertyExpression.getNamedProperty(), subjectVariable);
 		} else {
-			sparql += triple(subjectVariable, propertyExpression.getNamedProperty().toStringID(), objectVariable);
+			sparql += triple(subjectVariable, propertyExpression.getNamedProperty(), objectVariable);
 		}
 		OWLClassExpression filler = ce.getFiller();
 		if(filler.isAnonymous()){
@@ -299,7 +361,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			filler.accept(this);
 			variables.pop();
 		} else {
-			sparql += triple(objectVariable, "a", filler.asOWLClass().toStringID());
+			sparql += triple(objectVariable, "a", filler.asOWLClass());
 		}
 		
 		sparql += "} GROUP BY " + subjectVariable + " HAVING(COUNT(" + objectVariable + ")>=" + cardinality + ")}";
@@ -315,9 +377,9 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
 		if(propertyExpression.isAnonymous()){
 			//property expression is inverse of a property
-			sparql += triple(objectVariable, propertyExpression.getNamedProperty().toStringID(), subjectVariable);
+			sparql += triple(objectVariable, propertyExpression.getNamedProperty(), subjectVariable);
 		} else {
-			sparql += triple(subjectVariable, propertyExpression.getNamedProperty().toStringID(), objectVariable);
+			sparql += triple(subjectVariable, propertyExpression.getNamedProperty(), objectVariable);
 		}
 		OWLClassExpression filler = ce.getFiller();
 		if(filler.isAnonymous()){
@@ -327,7 +389,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			filler.accept(this);
 			variables.pop();
 		} else {
-			sparql += triple(objectVariable, "a", filler.asOWLClass().toStringID());
+			sparql += triple(objectVariable, "a", filler.asOWLClass());
 		}
 		
 		sparql += "} GROUP BY " + subjectVariable + " HAVING(COUNT(" + objectVariable + ")=" + cardinality + ")}";
@@ -342,9 +404,9 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
 		if(propertyExpression.isAnonymous()){
 			//property expression is inverse of a property
-			sparql += triple(objectVariable, propertyExpression.getNamedProperty().toStringID(), subjectVariable);
+			sparql += triple(objectVariable, propertyExpression.getNamedProperty(), subjectVariable);
 		} else {
-			sparql += triple(subjectVariable, propertyExpression.getNamedProperty().toStringID(), objectVariable);
+			sparql += triple(subjectVariable, propertyExpression.getNamedProperty(), objectVariable);
 		}
 		OWLClassExpression filler = ce.getFiller();
 		if(filler.isAnonymous()){
@@ -354,7 +416,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			filler.accept(this);
 			variables.pop();
 		} else {
-			sparql += triple(objectVariable, "a", filler.asOWLClass().toStringID());
+			sparql += triple(objectVariable, "a", filler.asOWLClass());
 		}
 		
 		sparql += "} GROUP BY " + subjectVariable + " HAVING(COUNT(" + objectVariable + ")<=" + cardinality + ")}";
@@ -364,7 +426,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	public void visit(OWLObjectHasSelf ce) {
 		String subject = variables.peek();
 		OWLObjectPropertyExpression property = ce.getProperty();
-		sparql += triple(subject, property.getNamedProperty().toStringID(), subject);
+		sparql += triple(subject, property.getNamedProperty(), subject);
 	}
 
 	@Override
@@ -390,7 +452,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	public void visit(OWLDataSomeValuesFrom ce) {
 		String objectVariable = buildIndividualVariable();
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
-		sparql += triple(variables.peek(), propertyExpression.asOWLDataProperty().toStringID(), objectVariable);
+		sparql += triple(variables.peek(), propertyExpression.asOWLDataProperty(), objectVariable);
 		OWLDataRange filler = ce.getFiller();
 		variables.push(objectVariable);
 		filler.accept(this);
@@ -426,7 +488,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	public void visit(OWLDataHasValue ce) {
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
 		OWLLiteral value = ce.getValue();
-		sparql += triple(variables.peek(), propertyExpression.asOWLDataProperty().toStringID(), value);
+		sparql += triple(variables.peek(), propertyExpression.asOWLDataProperty(), value);
 	}
 
 	@Override
@@ -436,7 +498,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
 		int cardinality = ce.getCardinality();
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
-		sparql += triple(subjectVariable, propertyExpression.asOWLDataProperty().toStringID(), objectVariable);
+		sparql += triple(subjectVariable, propertyExpression.asOWLDataProperty(), objectVariable);
 		OWLDataRange filler = ce.getFiller();
 		variables.push(objectVariable);
 		filler.accept(this);
@@ -452,7 +514,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
 		int cardinality = ce.getCardinality();
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
-		sparql += triple(subjectVariable, propertyExpression.asOWLDataProperty().toStringID(), objectVariable);
+		sparql += triple(subjectVariable, propertyExpression.asOWLDataProperty(), objectVariable);
 		OWLDataRange filler = ce.getFiller();
 		variables.push(objectVariable);
 		filler.accept(this);
@@ -468,7 +530,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
 		int cardinality = ce.getCardinality();
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
-		sparql += triple(subjectVariable, propertyExpression.asOWLDataProperty().toStringID(), objectVariable);
+		sparql += triple(subjectVariable, propertyExpression.asOWLDataProperty(), objectVariable);
 		OWLDataRange filler = ce.getFiller();
 		variables.push(objectVariable);
 		filler.accept(this);
@@ -640,6 +702,13 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		
 		expr = df.getOWLDataAllValuesFrom(dpT,df.getOWLDataOneOf(lit));
 		query = converter.asQuery(rootVar, expr).toString();
+		System.out.println(expr + "\n" + query);
+		
+		//variable entity
+		expr = df.getOWLObjectIntersectionOf(
+				df.getOWLObjectSomeValuesFrom(propR, clsB),
+				clsB);
+		query = converter.asQuery(rootVar, expr, Collections.singleton(propR)).toString();
 		System.out.println(expr + "\n" + query);
 		
 	}
