@@ -4,7 +4,7 @@
 
 
 	<artifactId>interfaces</artifactId>
-	<packaging>jar</packaging>
+	<packaging>${packaging.type}</packaging>
 	<name>Interfaces: GUI, CLI, Web Service</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
 
@@ -19,11 +19,81 @@
 		<release.name>1.0-beta-2</release.name>
 		<dist-dir>dl-learner-dist</dist-dir>
 		<install-dir>share/dl-learner</install-dir>
+		<packaging.type>jar</packaging.type>
 	</properties>
 
 	<profiles>
 		<profile>
+			<id>jetty</id>
+			<properties>
+				<packaging.type>war</packaging.type>
+			</properties>
+			<build>
+				<plugins>
+					<!-- <plugin> <groupId>org.simplericity.jettyconsole</groupId> <artifactId>jetty-console-maven-plugin</artifactId> 
+						<version>1.50</version> <executions> <execution> <goals> <goal>createconsole</goal> 
+						</goals> <configuration> <backgroundImage>${basedir}/src/main/resources/dl.gif</backgroundImage> 
+						<additionalDependencies> <additionalDependency> <artifactId>jetty-console-log4j-plugin</artifactId> 
+						</additionalDependency> </additionalDependencies> </configuration> </execution> 
+						</executions> </plugin> -->
+					<plugin>
+						<groupId>org.apache.tomcat.maven</groupId>
+						<artifactId>tomcat7-maven-plugin</artifactId>
+						<version>2.1</version>
+						<executions>
+							<execution>
+								<id>tomcat-run</id>
+								<goals>
+									<goal>exec-war-only</goal>
+								</goals>
+								<phase>package</phase>
+								<configuration>
+									<path>/interfaces</path>
+									<enableNaming>false</enableNaming>
+									<finalName>dl-learner-standalone.jar</finalName>
+									<charset>utf-8</charset>
+									<extraDependencies>
+										<dependency>
+											<groupId>org.slf4j</groupId>
+											<artifactId>slf4j-api</artifactId>
+											<version>${slf4j.version}</version>
+										</dependency>
+										<dependency>
+											<groupId>org.slf4j</groupId>
+											<artifactId>jul-to-slf4j</artifactId>
+											<version>${slf4j.version}</version>
+										</dependency>
+										<dependency>
+											<groupId>org.slf4j</groupId>
+											<artifactId>slf4j-log4j12</artifactId>
+											<version>${slf4j.version}</version>
+										</dependency>
+										<dependency>
+											<groupId>log4j</groupId>
+											<artifactId>log4j</artifactId>
+											<version>${log4j.version}</version>
+										</dependency>
+									</extraDependencies>
+									<extraResources>
+										<extraRexource>
+											<directory>${basedir}/src/main/resources/</directory>
+											<includes>
+												<include>log4j.properties</include>
+											</includes>
+										</extraRexource>
+									</extraResources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>release</id>
+			<properties>
+				<packaging.type>jar</packaging.type>
+			</properties>
 			<build>
 				<finalName>interfaces</finalName>
 				<plugins>
@@ -128,6 +198,9 @@
 		</profile>
 		<profile>
 			<id>debpackage</id>
+			<properties>
+				<packaging.type>jar</packaging.type>
+			</properties>
 			<build>
 				<finalName>dl-learner</finalName>
 				<plugins>
@@ -345,12 +418,12 @@
 						<logTimeZone>GMT</logTimeZone>
 					</requestLog>
 					<connectors>
-            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-              <port>9099</port>
-              <maxIdleTime>60000</maxIdleTime>
-            </connector>
-          </connectors>
-         
+						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+							<port>9099</port>
+							<maxIdleTime>60000</maxIdleTime>
+						</connector>
+					</connectors>
+
 				</configuration>
 				<!--execution is used for testing -->
 				<!--executions> <execution> <id>start-jetty</id> <phase>pre-integration-test</phase> 
