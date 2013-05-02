@@ -28,6 +28,7 @@ import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.io.UnparsableOntologyException;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -237,7 +238,12 @@ public class OWLAxiomPatternFinder {
 		//add ontology loading/parsing/... error entry
 		try {
 			insertOntologyErrorPs.setString(1, url);
-			insertOntologyErrorPs.setString(2, "ERROR:" + ex.getClass().getSimpleName() + (ex.getMessage() != null ? ("->" + ex.getMessage()) : ""));
+			String errorMessage = "ERROR:" + ex.getClass().getSimpleName();
+			if(!(ex instanceof UnparsableOntologyException)){
+				errorMessage += (ex.getMessage() != null ? ("->" + ex.getMessage()) : "");
+			}
+			errorMessage = errorMessage.substring(0, 1900);
+			insertOntologyErrorPs.setString(2, errorMessage);
 			insertOntologyErrorPs.setString(3, repository.getName());
 			insertOntologyErrorPs.execute();
 		} catch (SQLException e) {
