@@ -119,7 +119,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 				String var = variablesMapping.get(owlEntity);
 				queryString += var;
 			}
-		}System.out.println(queryString);
+		}
 		return QueryFactory.create(queryString, Syntax.syntaxARQ);
 	}
 	
