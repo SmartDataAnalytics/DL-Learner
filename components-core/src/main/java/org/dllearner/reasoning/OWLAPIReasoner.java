@@ -45,6 +45,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -59,6 +60,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.UntypedConstant;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
@@ -938,7 +940,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         try {
             OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI.create(iri));
-            ontology = manager.loadOntologyFromOntologyDocument(new File("../test/phaenotype/mp-equivalence-axioms-subq.owl"));
+            KnowledgeSource ks = new OWLAPIOntology(ontology);
+            OWLAPIReasoner reasoner = new OWLAPIReasoner(ks);
+            reasoner.init();
+            ClassHierarchy classHierarchy = reasoner.getClassHierarchy();
+            System.out.println(classHierarchy.toString(false));
 //            new PelletReasonerFactory().createReasoner(ontology);
             System.out.println("Reasoner loaded succesfully.");
             CelReasoner r = new CelReasoner(ontology);

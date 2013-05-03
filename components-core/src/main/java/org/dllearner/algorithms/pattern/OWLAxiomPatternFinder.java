@@ -93,6 +93,19 @@ public class OWLAxiomPatternFinder {
 		dataFactory = manager.getOWLDataFactory();
 		
 		initDBConnection();
+		prepare();
+	}
+	
+	public OWLAxiomPatternFinder(OntologyRepository repository, Connection conn) {
+		this.repository = repository;
+		this.conn = conn;
+		manager = OWLManager.createOWLOntologyManager();
+		dataFactory = manager.getOWLDataFactory();
+		
+		prepare();
+	}
+	
+	private void prepare(){
 		createTables();
 		try {
 			selectOntologyIdPs = conn.prepareStatement("SELECT id FROM Ontology WHERE url=?");

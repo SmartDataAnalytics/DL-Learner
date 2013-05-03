@@ -19,6 +19,7 @@
 
 package org.dllearner.utilities.datastructures;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
@@ -155,6 +156,14 @@ public class SetManipulation {
 	public static SortedSet<Individual> stringToInd(SortedSet<String> set) {
 		SortedSet<Individual> ret = new TreeSet<Individual>();
 		for (String ind : set) {
+			ret.add(new Individual(ind));
+		}
+		return ret;
+	}
+	
+	public static SortedSet<Individual> stringToInd(Collection<String> individualsAsString) {
+		SortedSet<Individual> ret = new TreeSet<Individual>();
+		for (String ind : individualsAsString) {
 			ret.add(new Individual(ind));
 		}
 		return ret;
