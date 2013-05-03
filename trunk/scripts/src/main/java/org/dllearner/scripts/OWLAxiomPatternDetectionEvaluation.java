@@ -38,7 +38,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 			String dbPass = prefs.node("database").get("pass", null);
 
 			Class.forName("com.mysql.jdbc.Driver");
-			String url = "jdbc:mysql://" + dbServer + "/" + dbName;System.out.println(url);
+			String url = "jdbc:mysql://" + dbServer + "/" + dbName;
 			conn = DriverManager.getConnection(url, dbUser, dbPass);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -101,73 +101,59 @@ public class OWLAxiomPatternDetectionEvaluation {
 				//get number of ontologies
 				ps = conn.prepareStatement("SELECT COUNT(*) FROM Ontology WHERE repository=?");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				numberOfOntologies = rs.getInt(1);
+				numberOfOntologies = count(ps);
 				//get number of error causing ontologies
 				ps = conn.prepareStatement("SELECT COUNT(*) FROM Ontology WHERE repository=? AND iri LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				numberOfErrorOntologies = rs.getInt(1);
+				numberOfErrorOntologies = count(ps);
 				//get min number of logical axioms
 				ps = conn.prepareStatement("SELECT MIN(logical_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				minNumberOfLogicalAxioms = rs.getInt(1);
+				minNumberOfLogicalAxioms  = count(ps);
 				//get max number of logical axioms
 				ps = conn.prepareStatement("SELECT MAX(logical_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				maxNumberOfLogicalAxioms = rs.getInt(1);
+				maxNumberOfLogicalAxioms  = count(ps);
 				//get avg number of logical axioms
 				ps = conn.prepareStatement("SELECT AVG(logical_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				avgNumberOfLogicalAxioms = rs.getInt(1);
+				avgNumberOfLogicalAxioms = count(ps);
 				//get min number of tbox axioms
 				ps = conn.prepareStatement("SELECT MIN(tbox_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				minNumberOfTboxAxioms = rs.getInt(1);
+				minNumberOfTboxAxioms = count(ps);
 				//get max number of tbox axioms
 				ps = conn.prepareStatement("SELECT MAX(tbox_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				maxNumberOfTboxAxioms = rs.getInt(1);
+				maxNumberOfTboxAxioms = count(ps);
 				//get avg number of tbox axioms
 				ps = conn.prepareStatement("SELECT AVG(tbox_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				avgNumberOfTboxAxioms = rs.getInt(1);
+				avgNumberOfTboxAxioms = count(ps);
 				//get min number of rbox axioms
 				ps = conn.prepareStatement("SELECT MIN(rbox_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				minNumberOfRboxAxioms = rs.getInt(1);
+				minNumberOfRboxAxioms = count(ps);
 				//get max number of rbox axioms
 				ps = conn.prepareStatement("SELECT MAX(rbox_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				maxNumberOfRboxAxioms = rs.getInt(1);
+				maxNumberOfRboxAxioms = count(ps);
 				//get avg number of rbox axioms
 				ps = conn.prepareStatement("SELECT AVG(rbox_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				avgNumberOfRboxAxioms = rs.getInt(1);
+				avgNumberOfRboxAxioms = count(ps);
 				//get min number of abox axioms
 				ps = conn.prepareStatement("SELECT MIN(abox_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				minNumberOfAboxAxioms = rs.getInt(1);
+				minNumberOfAboxAxioms = count(ps);
 				//get max number of abox axioms
 				ps = conn.prepareStatement("SELECT MAX(tbox_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				maxNumberOfAboxAxioms = rs.getInt(1);
+				maxNumberOfAboxAxioms = count(ps);
 				//get avg number of abox axioms
 				ps = conn.prepareStatement("SELECT AVG(abox_axioms) FROM Ontology WHERE repository=? AND iri NOT LIKE 'ERROR%'");
 				ps.setString(1, repository.getName());
-				rs = ps.executeQuery();
-				avgNumberOfAboxAxioms = rs.getInt(1);
+				avgNumberOfAboxAxioms = count(ps);
 				
 				latexTable += 
 						repository.getName() + "&" + 
@@ -198,6 +184,12 @@ public class OWLAxiomPatternDetectionEvaluation {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private int count(PreparedStatement ps) throws SQLException{
+		ResultSet rs = ps.executeQuery();
+		rs.next();
+		return rs.getInt(1);
 	}
 	
 	public static void main(String[] args) throws Exception {
