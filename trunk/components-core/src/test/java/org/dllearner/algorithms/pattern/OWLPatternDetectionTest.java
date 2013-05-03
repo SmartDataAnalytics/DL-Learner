@@ -17,7 +17,7 @@ public class OWLPatternDetectionTest {
 		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 	}
 
-	@Test
+//	@Test
 	public void testTONESRepository(){
 		OntologyRepository repository = new TONESRepository();
 		repository.initialize();
@@ -25,7 +25,7 @@ public class OWLPatternDetectionTest {
 		patternFinder.start();
 	}
 	
-	@Test
+//	@Test
 	public void testBioPortalRepository(){
 		OntologyRepository repository = new BioPortalRepository();
 		repository.initialize();
