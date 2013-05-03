@@ -81,7 +81,7 @@ public class OWLAxiomPatternFinder {
 	
 	private OWLObjectRenderer axiomRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 	
-	private boolean randomOrder = true;
+	private boolean randomOrder = false;
 
 	public OWLAxiomPatternFinder(OWLOntologyDataset dataset) {
 		
@@ -113,7 +113,7 @@ public class OWLAxiomPatternFinder {
 					", abox_axioms, classes, object_properties, data_properties, individuals) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
 			insertOntologyErrorPs = conn.prepareStatement("INSERT INTO Ontology (url, iri, repository) VALUES(?,?,?)");
 			selectPatternIdPs = conn.prepareStatement("SELECT id FROM Pattern WHERE pattern=?");
-			insertPatternIdPs = conn.prepareStatement("INSERT INTO Pattern (pattern,pattern_pretty) VALUES(?,?)");
+			insertPatternIdPs = conn.prepareStatement("INSERT INTO Pattern (pattern,pattern_pretty,axiom_type) VALUES(?,?,?)");
 			insertOntologyPatternPs = conn.prepareStatement("INSERT INTO Ontology_Pattern (ontology_id, pattern_id, occurrences) VALUES(?,?,?)");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -168,6 +168,7 @@ public class OWLAxiomPatternFinder {
 			        + "id MEDIUMINT NOT NULL AUTO_INCREMENT,"
 					+ "pattern TEXT NOT NULL,"
 					+ "pattern_pretty TEXT NOT NULL,"
+					+ "axiom_type VARCHAR(15) NOT NULL,"
 					+ "PRIMARY KEY(id),"
 					+ "INDEX(pattern(8000))) DEFAULT CHARSET=utf8");
 			
@@ -216,9 +217,10 @@ public class OWLAxiomPatternFinder {
 		try {
 			insertPatternIdPs.setString(1, axiomString);
 			insertPatternIdPs.setString(2, axiomRenderer.render(axiom));
+			insertPatternIdPs.setString(3, getAxiomType(axiom));
 			insertPatternIdPs.execute();
 		} catch (SQLException e) {
-			System.out.println(axiomString.length());
+			System.err.println("Pattern too long for database?" + axiomString.length());
 			e.printStackTrace();
 		}
 		//get the auto generated ID
@@ -232,6 +234,22 @@ public class OWLAxiomPatternFinder {
 			e.printStackTrace();
 		}
 		return -1;
+	}
+	
+	private String getAxiomType(OWLAxiom axiom){
+		AxiomType<?> type = axiom.getAxiomType();
+		String s;
+		if(AxiomType.TBoxAxiomTypes.contains(type)){
+			s = "TBox";
+		} else if(AxiomType.RBoxAxiomTypes.contains(type)){
+			s = "RBox";
+		} else if(AxiomType.ABoxAxiomTypes.contains(type)){
+			s = "ABox";
+		} else {System.out.println(axiom + "-" + type);
+			//should not happen
+			s="Non-Logical";
+		}
+		return s;
 	}
 	
 	private boolean ontologyProcessed(URI uri){
@@ -287,13 +305,11 @@ public class OWLAxiomPatternFinder {
 			insertOntologyPs.setString(1, url);
 			insertOntologyPs.setString(2, ontologyIRI);
 			insertOntologyPs.setString(3, repository.getName());
-			Set<OWLAxiom> logicalAxioms = new HashSet<OWLAxiom>();
-			logicalAxioms.addAll(ontology.getLogicalAxioms());
-			Set<OWLAxiom> tbox = AxiomType.getAxiomsOfTypes(logicalAxioms, new ArrayList<AxiomType>(AxiomType.TBoxAxiomTypes).toArray(new AxiomType[AxiomType.TBoxAxiomTypes.size()]));
-			Set<OWLAxiom> rbox = AxiomType.getAxiomsOfTypes(logicalAxioms, new ArrayList<AxiomType>(AxiomType.RBoxAxiomTypes).toArray(new AxiomType[AxiomType.RBoxAxiomTypes.size()]));
-			Set<OWLAxiom> abox = AxiomType.getAxiomsOfTypes(logicalAxioms, new ArrayList<AxiomType>(AxiomType.ABoxAxiomTypes).toArray(new AxiomType[AxiomType.ABoxAxiomTypes.size()]));
+			Set<OWLAxiom> tbox = ontology.getTBoxAxioms(true);
+			Set<OWLAxiom> rbox = ontology.getRBoxAxioms(true);
+			Set<OWLAxiom> abox = ontology.getABoxAxioms(true);
 			
-			insertOntologyPs.setInt(4, ontology.getLogicalAxiomCount());
+			insertOntologyPs.setInt(4, tbox.size() + rbox.size() + abox.size());
 			insertOntologyPs.setInt(5, tbox.size());
 			insertOntologyPs.setInt(6, rbox.size());
 			insertOntologyPs.setInt(7, abox.size());
