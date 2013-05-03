@@ -71,10 +71,10 @@ public class OWLAxiomPatternDetectionEvaluation {
 	
 	private void makeRepositoryStatistics(Collection<OntologyRepository> repositories){
 		String latexTable = "\\begin{tabular}{lrr|rrr|rrr|rrr|rrr}";
-		latexTable += "\\toprule";
-		latexTable += "Repository & \\multicolumn{2}{c}{\\#Ontologies} & \\multicolumn{12}{c}{\\#Axioms} \\\\";
-		latexTable += "& Total & Error & \\multicolumn{3}{c}{Total} & \\multicolumn{3}{c}{Tbox} & \\multicolumn{3}{c}{RBox} & \\multicolumn{3}{c}{Abox} \\\\\\midrule";
-		latexTable += "&   &                              & Min & Avg & Max & Min & Avg & Max & Min & Avg & Max & Min & Avg & Max \\\\\\midrule";
+		latexTable += "\\toprule\n";
+		latexTable += "Repository & \\multicolumn{2}{c}{\\#Ontologies} & \\multicolumn{12}{c}{\\#Axioms} \\\\\n";
+		latexTable += "& Total & Error & \\multicolumn{3}{c}{Total} & \\multicolumn{3}{c}{Tbox} & \\multicolumn{3}{c}{RBox} & \\multicolumn{3}{c}{Abox} \\\\\\midrule\n";
+		latexTable += "&   &                              & Min & Avg & Max & Min & Avg & Max & Min & Avg & Max & Min & Avg & Max \\\\\\midrule\n";
         
  
 		PreparedStatement ps;
@@ -170,7 +170,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 						maxNumberOfRboxAxioms + "&" +
 						minNumberOfAboxAxioms + "&" +
 						avgNumberOfAboxAxioms + "&" +
-						maxNumberOfAboxAxioms + "\\\\";
+						maxNumberOfAboxAxioms + "\\\\\n";
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
