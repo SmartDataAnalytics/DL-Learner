@@ -21,6 +21,7 @@ import org.coode.owlapi.functionalparser.OWLFunctionalSyntaxOWLParser;
 import org.dllearner.algorithms.pattern.OWLAxiomPatternFinder;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.bioportal.BioPortalRepository;
+import org.dllearner.kb.repository.oxford.OxfordRepository;
 import org.dllearner.kb.repository.tones.TONESRepository;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
@@ -375,7 +376,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 			analyzeRepositories = Boolean.parseBoolean(args[0]);
 		}
 		new OWLAxiomPatternDetectionEvaluation().run(analyzeRepositories, Arrays.asList(
-				new TONESRepository(), new BioPortalRepository()));
+				new TONESRepository(), new BioPortalRepository(), new OxfordRepository()));
 	}
 	
 
