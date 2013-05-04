@@ -77,7 +77,9 @@ public class OWLAxiomPatternDetectionEvaluation {
 	
 	public void run(boolean analyzeRepositories, Collection<OntologyRepository> repositories){
 		//analyze repositories
-		analyze(repositories);
+		if(analyzeRepositories){
+			analyze(repositories);
+		}
 		
 		//create statistics for the repositories
 		makeRepositoryStatistics(repositories);
