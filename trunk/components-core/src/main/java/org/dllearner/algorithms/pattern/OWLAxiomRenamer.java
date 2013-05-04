@@ -68,6 +68,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	private OWLAxiom renamedAxiom;
 	
 	private boolean normalizeABoxAxioms = true;
+	private boolean ignoreTrivialAxioms = true;//ignore Thing(a),SubClassOf(A,Thing),SubPropertyOf(A,TopProperty)
 	
 	public OWLAxiomRenamer(OWLDataFactory df) {
 		this.df = df;
