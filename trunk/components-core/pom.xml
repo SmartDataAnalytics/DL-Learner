@@ -124,7 +124,7 @@
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
-			<version>3.4</version>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>

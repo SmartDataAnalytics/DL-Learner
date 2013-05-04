@@ -315,7 +315,7 @@ public class OntologyMatching {
 	        logger.info("Done.");
 	        
 	        if(performCrossValidation){
-	        	org.dllearner.cli.CrossValidation cv = new org.dllearner.cli.CrossValidation(la, lp, rc, 5, false);
+//	        	org.dllearner.cli.CrossValidation cv = new org.dllearner.cli.CrossValidation(la, lp, rc, 5, false);
 			} else {
 				//apply the learning algorithm
 		        logger.info("Running learning algorithm...");
