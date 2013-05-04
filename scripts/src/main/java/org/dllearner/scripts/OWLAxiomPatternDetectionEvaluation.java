@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.prefs.Preferences;
 
+import org.aksw.commons.util.Pair;
 import org.coode.owlapi.functionalparser.OWLFunctionalSyntaxOWLParser;
 import org.dllearner.algorithms.pattern.OWLAxiomPatternFinder;
 import org.dllearner.kb.repository.OntologyRepository;
@@ -42,6 +43,8 @@ public class OWLAxiomPatternDetectionEvaluation {
 	
 	private OWLObjectRenderer axiomRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 	private Connection conn;
+	
+	private boolean fancyLatex = false;
 
 	public OWLAxiomPatternDetectionEvaluation() {
 		initDBConnection();
@@ -98,14 +101,14 @@ public class OWLAxiomPatternDetectionEvaluation {
 		
 		//total pattern statistics
 		for (AxiomTypeCategory axiomTypeCategory : AxiomTypeCategory.values()) {
-			Map<OWLAxiom, Integer> topNAxiomPatterns = getTopNAxiomPatterns(axiomTypeCategory, n);
+			Map<OWLAxiom, Pair<Integer, Integer>> topNAxiomPatterns = getTopNAxiomPatterns(axiomTypeCategory, n);
 			latex += asLatex("Top " + n + " " + axiomTypeCategory.name() + " axiom patterns.", topNAxiomPatterns) + "\n\n";
 		}
 		
 		//get top n TBox, RBox and ABox patterns by repository
 		for (OntologyRepository repository : repositories) {
 			for (AxiomTypeCategory axiomTypeCategory : AxiomTypeCategory.values()) {
-				Map<OWLAxiom, Integer> topNAxiomPatterns = getTopNAxiomPatterns(repository, axiomTypeCategory, n);
+				Map<OWLAxiom, Pair<Integer, Integer>> topNAxiomPatterns = getTopNAxiomPatterns(repository, axiomTypeCategory, n);
 				latex += asLatex("Top " + n + " " + axiomTypeCategory.name() + " axiom patterns for " + repository.getName() + " repository.", topNAxiomPatterns) + "\n\n";
 			}
 		}
@@ -235,32 +238,37 @@ public class OWLAxiomPatternDetectionEvaluation {
 		}
 	}
 	
-	private String asLatex(String title, Map<OWLAxiom, Integer> topN){
+	private String asLatex(String title, Map<OWLAxiom, Pair<Integer, Integer>> topN){
 		String latexTable = "\\begin{table}\n";
-		latexTable += "\\begin{tabular}{lr}\n";
+		latexTable += "\\begin{tabular}{lrr}\n";
 		latexTable += "\\toprule\n";
-		latexTable += "Pattern & Frequency\\\\\\midrule\n";
+		latexTable += "Pattern & Frequency & \\#Ontologies\\\\\\midrule\n";
 		
-		for (Entry<OWLAxiom, Integer> entry : topN.entrySet()) {
+		for (Entry<OWLAxiom, Pair<Integer, Integer>> entry : topN.entrySet()) {
 			OWLAxiom axiom = entry.getKey();
-			Integer frequency = entry.getValue();
+			Integer frequency = entry.getValue().getKey();
+			Integer idf = entry.getValue().getValue();
 			
 			if(axiom != null){
-				latexTable += axiomRenderer.render(axiom) + " & " + frequency + "\\\\\n";
+				String axiomColumn = axiomRenderer.render(axiom);
+				if(fancyLatex){
+					axiomColumn = "\\begin{lstlisting}[language=manchester]" + axiomColumn + "\\end{lstlisting}";
+				}
+				latexTable += axiomColumn + " & " + frequency + " & " + idf + "\\\\\n";
 			}
 		}
-		latexTable += "\\bottomrule\\end{tabular}\n";
+		latexTable += "\\bottomrule\n\\end{tabular}\n";
 		latexTable += "\\caption{" + title + "}\n";
 		latexTable += "\\end{table}\n";
 		return latexTable;
 	}
 	
-	private Map<OWLAxiom, Integer> getTopNAxiomPatterns(AxiomTypeCategory axiomType, int n){
-		Map<OWLAxiom, Integer> topN = new LinkedHashMap<OWLAxiom, Integer>();
+	private Map<OWLAxiom, Pair<Integer, Integer>> getTopNAxiomPatterns(AxiomTypeCategory axiomType, int n){
+		Map<OWLAxiom, Pair<Integer, Integer>> topN = new LinkedHashMap<OWLAxiom, Pair<Integer, Integer>>();
 		PreparedStatement ps;
 		ResultSet rs;
 		try {
-			ps = conn.prepareStatement("SELECT pattern,SUM(occurrences) FROM " +
+			ps = conn.prepareStatement("SELECT pattern,SUM(occurrences),COUNT(ontology_id) FROM " +
 					"Ontology_Pattern OP, Pattern P, Ontology O WHERE " +
 					"(P.id=OP.pattern_id AND O.id=OP.ontology_id AND P.axiom_type=?) " +
 					"GROUP BY P.id ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
@@ -268,7 +276,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 			ps.setInt(2, n);
 			rs = ps.executeQuery();
 			while(rs.next()){
-				topN.put(asOWLAxiom(rs.getString(1)), rs.getInt(2));
+				topN.put(asOWLAxiom(rs.getString(1)), new Pair<Integer, Integer>(rs.getInt(2), rs.getInt(3)));
 			}
 		} catch(SQLException e){
 			e.printStackTrace();
@@ -276,13 +284,13 @@ public class OWLAxiomPatternDetectionEvaluation {
 		return topN;
 	}
 	
-	private Map<OWLAxiom, Integer> getTopNAxiomPatterns(OntologyRepository repository, AxiomTypeCategory axiomType, int n){
+	private Map<OWLAxiom, Pair<Integer, Integer>> getTopNAxiomPatterns(OntologyRepository repository, AxiomTypeCategory axiomType, int n){
+		Map<OWLAxiom, Pair<Integer, Integer>> topN = new LinkedHashMap<OWLAxiom, Pair<Integer, Integer>>();
 		PreparedStatement ps;
 		ResultSet rs;
-		Map<OWLAxiom, Integer> topN = new LinkedHashMap<OWLAxiom, Integer>();
 		try {
 			//get number of ontologies
-			ps = conn.prepareStatement("SELECT pattern,SUM(occurrences) FROM " +
+			ps = conn.prepareStatement("SELECT pattern,SUM(occurrences),COUNT(ontology_id) FROM " +
 					"Ontology_Pattern OP, Pattern P, Ontology O WHERE " +
 					"(P.id=OP.pattern_id AND O.id=OP.ontology_id AND O.repository=? AND P.axiom_type=?) " +
 					"GROUP BY P.id ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
@@ -291,7 +299,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 			ps.setInt(3, n);
 			rs = ps.executeQuery();
 			while(rs.next()){
-				topN.put(asOWLAxiom(rs.getString(1)), rs.getInt(2));
+				topN.put(asOWLAxiom(rs.getString(1)), new Pair<Integer, Integer>(rs.getInt(2), rs.getInt(3)));
 			}
 		} catch(SQLException e){
 			e.printStackTrace();
