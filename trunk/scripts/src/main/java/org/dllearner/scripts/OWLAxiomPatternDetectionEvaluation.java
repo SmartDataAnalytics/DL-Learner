@@ -27,16 +27,18 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.OWLParserException;
 import org.semanticweb.owlapi.io.StringDocumentSource;
-import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.UnloadableImportException;
 
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 public class OWLAxiomPatternDetectionEvaluation {
+	
+	enum AxiomTypeCategory{
+		TBox, RBox, ABox
+	}
 	
 	private OWLObjectRenderer axiomRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 	private Connection conn;
@@ -91,23 +93,21 @@ public class OWLAxiomPatternDetectionEvaluation {
 	
 	private void makePatternStatistics(Collection<OntologyRepository> repositories){
 		int n = 10;
+		
 		String latex = "";
-		Map<OWLAxiom, Integer> topNTBoxAxiomPatterns = getTopNTBoxAxiomPatterns(n);
-		latex += asLatex("Total TBox", topNTBoxAxiomPatterns) + "\n\n";
-		Map<OWLAxiom, Integer> topNRBoxAxiomPatterns = getTopNRBoxAxiomPatterns(n);
-		latex += asLatex("Total RBox", topNRBoxAxiomPatterns) + "\n\n";
-		Map<OWLAxiom, Integer> topNABoxAxiomPatterns = getTopNABoxAxiomPatterns(n);
-		latex += asLatex("Total ABox", topNABoxAxiomPatterns) + "\n\n";
+		
+		//total pattern statistics
+		for (AxiomTypeCategory axiomTypeCategory : AxiomTypeCategory.values()) {
+			Map<OWLAxiom, Integer> topNAxiomPatterns = getTopNAxiomPatterns(axiomTypeCategory, n);
+			latex += asLatex("Top " + n + " " + axiomTypeCategory.name() + " axiom patterns.", topNAxiomPatterns) + "\n\n";
+		}
 		
 		//get top n TBox, RBox and ABox patterns by repository
-		
-		Map<OntologyRepository, Map<OWLAxiom, Integer>> topNTBoxAxiomPatternsByRepository = getTopNTBoxAxiomPatterns(repositories, n);
-		Map<OntologyRepository, Map<OWLAxiom, Integer>> topNRBoxAxiomPatternsByRepository = getTopNRBoxAxiomPatterns(repositories, n);
-		Map<OntologyRepository, Map<OWLAxiom, Integer>> topNABoxAxiomPatternsByRepository = getTopNABoxAxiomPatterns(repositories, n);
 		for (OntologyRepository repository : repositories) {
-			latex += asLatex(repository.getName() + " TBox", topNTBoxAxiomPatternsByRepository.get(repository)) + "\n\n";
-			latex += asLatex(repository.getName() + " RBox", topNRBoxAxiomPatternsByRepository.get(repository)) + "\n\n";
-			latex += asLatex(repository.getName() + " ABox", topNABoxAxiomPatternsByRepository.get(repository)) + "\n\n";
+			for (AxiomTypeCategory axiomTypeCategory : AxiomTypeCategory.values()) {
+				Map<OWLAxiom, Integer> topNAxiomPatterns = getTopNAxiomPatterns(repository, axiomTypeCategory, n);
+				latex += asLatex("Top " + n + " " + axiomTypeCategory.name() + " axiom patterns for " + repository.getName() + " repository.", topNAxiomPatterns) + "\n\n";
+			}
 		}
 		try {
 			new FileOutputStream("pattern-statistics.tex").write(latex.getBytes());
@@ -255,7 +255,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 		return latexTable;
 	}
 	
-	private Map<OWLAxiom, Integer> getTopNTBoxAxiomPatterns(int n){
+	private Map<OWLAxiom, Integer> getTopNAxiomPatterns(AxiomTypeCategory axiomType, int n){
 		Map<OWLAxiom, Integer> topN = new LinkedHashMap<OWLAxiom, Integer>();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -264,7 +264,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 					"Ontology_Pattern OP, Pattern P, Ontology O WHERE " +
 					"(P.id=OP.pattern_id AND O.id=OP.ontology_id AND P.axiom_type=?) " +
 					"GROUP BY P.id ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
-			ps.setString(1, "TBox");
+			ps.setString(1, axiomType.name());
 			ps.setInt(2, n);
 			rs = ps.executeQuery();
 			while(rs.next()){
@@ -276,45 +276,19 @@ public class OWLAxiomPatternDetectionEvaluation {
 		return topN;
 	}
 	
-	private Map<OntologyRepository, Map<OWLAxiom, Integer>> getTopNTBoxAxiomPatterns(Collection<OntologyRepository> repositories, int n){
-		Map<OntologyRepository, Map<OWLAxiom, Integer>> topNByRepository = new LinkedHashMap<OntologyRepository, Map<OWLAxiom,Integer>>();
+	private Map<OWLAxiom, Integer> getTopNAxiomPatterns(OntologyRepository repository, AxiomTypeCategory axiomType, int n){
 		PreparedStatement ps;
 		ResultSet rs;
-		//for each repository
-		for (OntologyRepository repository : repositories) {
-			Map<OWLAxiom, Integer> topN = new LinkedHashMap<OWLAxiom, Integer>();
-			try {
-				//get number of ontologies
-				ps = conn.prepareStatement("SELECT pattern,SUM(occurrences) FROM " +
-						"Ontology_Pattern OP, Pattern P, Ontology O WHERE " +
-						"(P.id=OP.pattern_id AND O.id=OP.ontology_id AND O.repository=? AND P.axiom_type=?) " +
-						"GROUP BY P.id ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
-				ps.setString(1, repository.getName());
-				ps.setString(2, "TBox");
-				ps.setInt(3, n);
-				rs = ps.executeQuery();
-				while(rs.next()){
-					topN.put(asOWLAxiom(rs.getString(1)), rs.getInt(2));
-				}
-			} catch(SQLException e){
-				e.printStackTrace();
-			}
-			topNByRepository.put(repository, topN);
-		}
-		return topNByRepository;
-	}
-	
-	private Map<OWLAxiom, Integer> getTopNRBoxAxiomPatterns(int n){
 		Map<OWLAxiom, Integer> topN = new LinkedHashMap<OWLAxiom, Integer>();
-		PreparedStatement ps;
-		ResultSet rs;
 		try {
+			//get number of ontologies
 			ps = conn.prepareStatement("SELECT pattern,SUM(occurrences) FROM " +
 					"Ontology_Pattern OP, Pattern P, Ontology O WHERE " +
-					"(P.id=OP.pattern_id AND O.id=OP.ontology_id AND P.axiom_type=?) " +
+					"(P.id=OP.pattern_id AND O.id=OP.ontology_id AND O.repository=? AND P.axiom_type=?) " +
 					"GROUP BY P.id ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
-			ps.setString(1, "RBox");
-			ps.setInt(2, n);
+			ps.setString(1, repository.getName());
+			ps.setString(2, "RBox");
+			ps.setInt(3, n);
 			rs = ps.executeQuery();
 			while(rs.next()){
 				topN.put(asOWLAxiom(rs.getString(1)), rs.getInt(2));
@@ -325,7 +299,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 		return topN;
 	}
 	
-	private Map<OntologyRepository, Map<OWLAxiom, Integer>> getTopNRBoxAxiomPatterns(Collection<OntologyRepository> repositories, int n){
+	private Map<OntologyRepository, Map<OWLAxiom, Integer>> getTopNAxiomPatterns(Collection<OntologyRepository> repositories, AxiomTypeCategory axiomType, int n){
 		Map<OntologyRepository, Map<OWLAxiom, Integer>> topNByRepository = new LinkedHashMap<OntologyRepository, Map<OWLAxiom,Integer>>();
 		PreparedStatement ps;
 		ResultSet rs;
@@ -340,55 +314,6 @@ public class OWLAxiomPatternDetectionEvaluation {
 						"GROUP BY P.id ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
 				ps.setString(1, repository.getName());
 				ps.setString(2, "RBox");
-				ps.setInt(3, n);
-				rs = ps.executeQuery();
-				while(rs.next()){
-					topN.put(asOWLAxiom(rs.getString(1)), rs.getInt(2));
-				}
-			} catch(SQLException e){
-				e.printStackTrace();
-			}
-			topNByRepository.put(repository, topN);
-		}
-		return topNByRepository;
-	}
-
-	private Map<OWLAxiom, Integer> getTopNABoxAxiomPatterns(int n){
-		Map<OWLAxiom, Integer> topN = new LinkedHashMap<OWLAxiom, Integer>();
-		PreparedStatement ps;
-		ResultSet rs;
-		try {
-			ps = conn.prepareStatement("SELECT pattern,SUM(occurrences) FROM " +
-					"Ontology_Pattern OP, Pattern P, Ontology O WHERE " +
-					"(P.id=OP.pattern_id AND O.id=OP.ontology_id AND P.axiom_type=?) " +
-					"GROUP BY P.id ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
-			ps.setString(1, "ABox");
-			ps.setInt(2, n);
-			rs = ps.executeQuery();
-			while(rs.next()){
-				topN.put(asOWLAxiom(rs.getString(1)), rs.getInt(2));
-			}
-		} catch(SQLException e){
-			e.printStackTrace();
-		}
-		return topN;
-	}
-	
-	private Map<OntologyRepository, Map<OWLAxiom, Integer>> getTopNABoxAxiomPatterns(Collection<OntologyRepository> repositories, int n){
-		Map<OntologyRepository, Map<OWLAxiom, Integer>> topNByRepository = new LinkedHashMap<OntologyRepository, Map<OWLAxiom,Integer>>();
-		PreparedStatement ps;
-		ResultSet rs;
-		//for each repository
-		for (OntologyRepository repository : repositories) {
-			Map<OWLAxiom, Integer> topN = new LinkedHashMap<OWLAxiom, Integer>();
-			try {
-				//get number of ontologies
-				ps = conn.prepareStatement("SELECT pattern,SUM(occurrences) FROM " +
-						"Ontology_Pattern OP, Pattern P, Ontology O WHERE " +
-						"(P.id=OP.pattern_id AND O.id=OP.ontology_id AND O.repository=? AND P.axiom_type=?) " +
-						"GROUP BY P.id ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
-				ps.setString(1, repository.getName());
-				ps.setString(2, "ABox");
 				ps.setInt(3, n);
 				rs = ps.executeQuery();
 				while(rs.next()){
