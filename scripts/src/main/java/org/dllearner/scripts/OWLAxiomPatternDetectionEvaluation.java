@@ -75,7 +75,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 		}
 	}
 	
-	public void run(Collection<OntologyRepository> repositories){
+	public void run(boolean analyzeRepositories, Collection<OntologyRepository> repositories){
 		//analyze repositories
 		analyze(repositories);
 		
@@ -84,6 +84,10 @@ public class OWLAxiomPatternDetectionEvaluation {
 		
 		//get top n TBox, RBox and ABox patterns
 		makePatternStatistics(repositories);
+	}
+	
+	public void run(Collection<OntologyRepository> repositories){
+		run(true, repositories);
 	}
 	
 	private void analyze(Collection<OntologyRepository> repositories){
@@ -364,7 +368,11 @@ public class OWLAxiomPatternDetectionEvaluation {
 	
 	public static void main(String[] args) throws Exception {
 //		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
-		new OWLAxiomPatternDetectionEvaluation().run(Arrays.asList(
+		boolean analyzeRepositories = true;
+		if(args.length == 1){
+			analyzeRepositories = Boolean.parseBoolean(args[0]);
+		}
+		new OWLAxiomPatternDetectionEvaluation().run(analyzeRepositories, Arrays.asList(
 				new TONESRepository(), new BioPortalRepository()));
 	}
 	
