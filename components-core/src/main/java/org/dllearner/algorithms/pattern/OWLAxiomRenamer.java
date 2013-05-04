@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyRangeAxiom;
@@ -65,6 +66,8 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	private OWLDataFactory df;
 	private OWLClassExpressionRenamer expressionRenamer;
 	private OWLAxiom renamedAxiom;
+	
+	private boolean normalizeABoxAxioms = true;
 	
 	public OWLAxiomRenamer(OWLDataFactory df) {
 		this.df = df;
@@ -163,8 +166,13 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLDifferentIndividualsAxiom axiom) {
 		Set<OWLIndividual> renamedIndividuals = new HashSet<OWLIndividual>();
-		for(OWLIndividual ind : axiom.getIndividuals()){
-			renamedIndividuals.add(expressionRenamer.rename(ind));
+		if(normalizeABoxAxioms){
+			renamedIndividuals.add(df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/pattern/a")));
+			renamedIndividuals.add(df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/pattern/b")));
+		} else {
+			for(OWLIndividual ind : axiom.getIndividuals()){
+				renamedIndividuals.add(expressionRenamer.rename(ind));
+			}
 		}
 		renamedAxiom = df.getOWLDifferentIndividualsAxiom(renamedIndividuals);
 	}
@@ -333,8 +341,13 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLSameIndividualAxiom axiom) {
 		Set<OWLIndividual> renamedIndividuals = new HashSet<OWLIndividual>();
-		for(OWLIndividual ind : axiom.getIndividuals()){
-			renamedIndividuals.add(expressionRenamer.rename(ind));
+		if(normalizeABoxAxioms){
+			renamedIndividuals.add(df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/pattern/a")));
+			renamedIndividuals.add(df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/pattern/b")));
+		} else {
+			for(OWLIndividual ind : axiom.getIndividuals()){
+				renamedIndividuals.add(expressionRenamer.rename(ind));
+			}
 		}
 		renamedAxiom = df.getOWLSameIndividualAxiom(renamedIndividuals);
 	}

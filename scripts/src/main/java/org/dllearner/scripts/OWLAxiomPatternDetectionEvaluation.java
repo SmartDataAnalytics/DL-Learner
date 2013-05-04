@@ -72,7 +72,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 	
 	public void run(Collection<OntologyRepository> repositories){
 		//analyze repositories
-		analyze(repositories);
+//		analyze(repositories);
 		
 		//create statistics for the repositories
 		makeRepositoryStatistics(repositories);
@@ -245,8 +245,9 @@ public class OWLAxiomPatternDetectionEvaluation {
 			OWLAxiom axiom = entry.getKey();
 			Integer frequency = entry.getValue();
 			
-			latexTable += axiomRenderer.render(axiom) + " & " + frequency + "\\\\\n";
-			
+			if(axiom != null){
+				latexTable += axiomRenderer.render(axiom) + " & " + frequency + "\\\\\n";
+			}
 		}
 		latexTable += "\\bottomrule\\end{tabular}\n";
 		latexTable += "\\caption{" + title + "}\n";
@@ -403,7 +404,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 	
 	private OWLAxiom asOWLAxiom(String functionalSyntaxAxiomString){
 		try {
-			StringDocumentSource s = new StringDocumentSource("Ontology(<http://www.pattern.org>" + functionalSyntaxAxiomString + ")");
+			StringDocumentSource s = new StringDocumentSource("Ontology(<http://www.pattern.org> " + functionalSyntaxAxiomString + ")");
 			OWLFunctionalSyntaxOWLParser p = new OWLFunctionalSyntaxOWLParser();
 			OWLOntology newOntology = OWLManager.createOWLOntologyManager().createOntology();
 			p.parse(s, newOntology);
@@ -415,7 +416,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (OWLParserException e) {
-			e.printStackTrace();
+			System.err.println("Parsing failed for axiom " + functionalSyntaxAxiomString);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
