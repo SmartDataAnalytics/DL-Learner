@@ -21,6 +21,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import org.coode.owlapi.functionalparser.OWLFunctionalSyntaxOWLParser;
 import org.dllearner.kb.dataset.OWLOntologyDataset;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
@@ -28,6 +29,7 @@ import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.io.StringDocumentSource;
 import org.semanticweb.owlapi.io.UnparsableOntologyException;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
@@ -359,7 +361,9 @@ public class OWLAxiomPatternFinder {
 			entries = entryList;
 		}
 		Multiset<OWLAxiom> allAxiomPatterns = HashMultiset.create();
+		int i = 1;
 		for (OntologyRepositoryEntry entry : entries) {
+			System.out.print(i + ": ");
 			URI uri = entry.getPhysicalURI();
 //			if(uri.toString().startsWith("http://rest.bioontology.org/bioportal/ontologies/download/42764")){
 			if (!ontologyProcessed(uri)) {
@@ -368,15 +372,19 @@ public class OWLAxiomPatternFinder {
 					manager = OWLManager.createOWLOntologyManager();
 					OWLOntology ontology = manager.loadOntology(IRI.create(uri));
 					Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
-					for (OWLLogicalAxiom axiom : ontology.getLogicalAxioms()) {
+					Set<OWLAxiom> logicalAxioms = new HashSet<OWLAxiom>();
+					for (AxiomType<?> type : AxiomType.AXIOM_TYPES) {
+						logicalAxioms.addAll(ontology.getAxioms(type, true));
+					}
+					for (OWLAxiom axiom : logicalAxioms) {
 						OWLAxiom renamedAxiom = renamer.rename(axiom);
 						axiomPatterns.add(renamedAxiom);
 					}
 					allAxiomPatterns.addAll(axiomPatterns);
 					addOntologyPatterns(uri, ontology, axiomPatterns);
-					for (OWLAxiom owlAxiom : Multisets.copyHighestCountFirst(allAxiomPatterns).elementSet()) {
+//					for (OWLAxiom owlAxiom : Multisets.copyHighestCountFirst(allAxiomPatterns).elementSet()) {
 //						System.out.println(owlAxiom + ": " + allAxiomPatterns.count(owlAxiom));
-					}
+//					}
 					manager.removeOntology(ontology);
 				} catch (OWLOntologyAlreadyExistsException e) {
 					e.printStackTrace();
@@ -384,6 +392,8 @@ public class OWLAxiomPatternFinder {
 					e.printStackTrace();
 					addOntologyError(uri, e);
 				}
+			} else {
+				System.out.println("Already processed.");
 			}
 
 		}
@@ -401,5 +411,11 @@ public class OWLAxiomPatternFinder {
 		org.coode.owlapi.functionalrenderer.OWLObjectRenderer r = new org.coode.owlapi.functionalrenderer.OWLObjectRenderer(man, ontology, sw);
 		axiom.accept(r);
 		System.out.println(sw.toString());
+		StringDocumentSource s = new StringDocumentSource("Ontology(<http://www.pattern.org>" + sw.toString() + ")");
+		OWLFunctionalSyntaxOWLParser p = new OWLFunctionalSyntaxOWLParser();
+		OWLOntology newOntology = man.createOntology();
+		p.parse(s, newOntology);
+		System.out.println(newOntology.getLogicalAxioms());
+		
 	}
 }

@@ -123,7 +123,8 @@
 			<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
-			<version>3.4.4</version>
+			<version>3.4.3</version>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
@@ -379,7 +380,7 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.13</version>
+				<version>5.1.24</version>
 			</dependency>
 
 			<!--GWT Dependencies -->

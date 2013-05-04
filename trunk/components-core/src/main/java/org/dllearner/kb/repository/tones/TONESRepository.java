@@ -10,13 +10,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
+import org.dllearner.kb.repository.bioportal.BioPortalRepository;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.util.OntologyIRIShortFormProvider;
 
 public class TONESRepository implements OntologyRepository{
+	
+	private static final Logger log = Logger.getLogger(TONESRepository.class);
 	
 	private final String repositoryName = "TONES";
 
@@ -91,6 +95,7 @@ public class TONESRepository implements OntologyRepository{
         catch (IOException e) {
             e.printStackTrace();
         }
+        log.info("Loaded " + entries.size() + " ontology entries from TONES.");
     }
 
     private class RepositoryEntry implements OntologyRepositoryEntry {

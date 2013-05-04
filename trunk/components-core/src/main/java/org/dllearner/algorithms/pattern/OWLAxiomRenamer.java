@@ -341,14 +341,13 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLSubPropertyChainOfAxiom axiom) {
-		OWLObjectPropertyExpression superProperty = axiom.getSuperProperty();
-		superProperty = expressionRenamer.rename(superProperty);
-		List<OWLObjectPropertyExpression> subPropertyChain = axiom.getPropertyChain();
-		List<OWLObjectPropertyExpression> renamedSubPropertyChain = axiom.getPropertyChain();
-		for (OWLObjectPropertyExpression owlObjectPropertyExpression : subPropertyChain) {
+		List<OWLObjectPropertyExpression> renamedSubPropertyChain = new ArrayList<OWLObjectPropertyExpression>();
+		for (OWLObjectPropertyExpression owlObjectPropertyExpression : axiom.getPropertyChain()) {
 			renamedSubPropertyChain.add(expressionRenamer.rename(owlObjectPropertyExpression));
 		}
-		renamedAxiom = df.getOWLSubPropertyChainOfAxiom(subPropertyChain, superProperty);
+		OWLObjectPropertyExpression superProperty = axiom.getSuperProperty();
+		superProperty = expressionRenamer.rename(superProperty);
+		renamedAxiom = df.getOWLSubPropertyChainOfAxiom(renamedSubPropertyChain, superProperty);
 	}
 
 	@Override
