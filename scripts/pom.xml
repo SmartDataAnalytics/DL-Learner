@@ -116,6 +116,7 @@
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>

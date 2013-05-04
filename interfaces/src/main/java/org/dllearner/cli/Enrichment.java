@@ -61,11 +61,14 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.aksw.commons.jena_owlapi.Conversion;
+import org.apache.jena.riot.checker.CheckerLiterals;
+import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
+import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
@@ -127,6 +130,7 @@ import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
+import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.io.SystemOutDocumentTarget;
@@ -212,7 +216,7 @@ public class Enrichment {
 
 	// restrict tested number of entities per type (only for testing purposes);
 	// should be set to -1 in production mode
-	int maxEntitiesPerType = -1;
+	int maxEntitiesPerType = 5;
 	
 	// number of axioms which will be learned/considered (only applies to
 	// some learners)
@@ -462,7 +466,7 @@ public class Enrichment {
 			ksFragment = ksCached;
 			rc = rcCached;
 		} else {
-			System.out.print("extracting fragment ... ");
+			System.out.print("extracting fragment ... ");//com.hp.hpl.jena.shared.impl.JenaParameters.enableEagerLiteralValidation = true;
 			startTime = System.currentTimeMillis();
 			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), cache, 2);
 			Model model = ModelFactory.createDefaultModel();
@@ -471,6 +475,7 @@ public class Enrichment {
 				model.add(cbd);
 			}
 			filter(model);
+			OWLEntityTypeAdder.addEntityTypes(model);
 			runTime = System.currentTimeMillis() - startTime;
 			System.out.println("done (" + model.size()+ " triples found in " + runTime + " ms)");
 			OWLOntology ontology = asOWLOntology(model);
@@ -768,6 +773,13 @@ public class Enrichment {
 			model.write(fos, "TURTLE", null);
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = man.loadOntologyFromOntologyDocument(new ByteArrayInputStream(baos.toByteArray()));
+			try {
+				man.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream("error.owl"));
+			} catch (OWLOntologyStorageException e) {
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 			return ontology;
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
@@ -797,6 +809,7 @@ public class Enrichment {
 				// fix URIs with spaces
 				Resource newSubject = (Resource) subject;
 				RDFNode newObject = object;
+				boolean validTriple = true;
 				if (subject.isURIResource()) {
 					String uri = subject.asResource().getURI();
 					if (uri.contains(" ")) {
@@ -814,8 +827,11 @@ public class Enrichment {
 					if (lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)) {
 						newObject = model.createLiteral("shortened", "en");
 					}
+					validTriple = CheckerLiterals.checkLiteral(object.asNode(), ErrorHandlerFactory.errorHandlerNoLogging, 1l, 1l);
 				}
-				statementsToAdd.add(model.createStatement(newSubject, st.getPredicate(), newObject));
+				if(validTriple){
+					statementsToAdd.add(model.createStatement(newSubject, st.getPredicate(), newObject));
+				}
 				statementsToRemove.add(st);
 			}
 
