@@ -77,7 +77,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 	
 	public void run(Collection<OntologyRepository> repositories){
 		//analyze repositories
-//		analyze(repositories);
+		analyze(repositories);
 		
 		//create statistics for the repositories
 		makeRepositoryStatistics(repositories);
@@ -295,7 +295,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 					"(P.id=OP.pattern_id AND O.id=OP.ontology_id AND O.repository=? AND P.axiom_type=?) " +
 					"GROUP BY P.id ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
 			ps.setString(1, repository.getName());
-			ps.setString(2, "RBox");
+			ps.setString(2, axiomType.name());
 			ps.setInt(3, n);
 			rs = ps.executeQuery();
 			while(rs.next()){
