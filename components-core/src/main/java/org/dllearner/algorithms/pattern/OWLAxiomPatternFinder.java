@@ -36,7 +36,6 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyAlreadyExistsException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -46,7 +45,6 @@ import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLOb
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import com.google.common.collect.Multisets;
 
 
 public class OWLAxiomPatternFinder {
@@ -363,19 +361,22 @@ public class OWLAxiomPatternFinder {
 		Multiset<OWLAxiom> allAxiomPatterns = HashMultiset.create();
 		int i = 1;
 		for (OntologyRepositoryEntry entry : entries) {
-			System.out.print(i + ": ");
+			System.out.print(i++ + ": ");
 			URI uri = entry.getPhysicalURI();
 //			if(uri.toString().startsWith("http://rest.bioontology.org/bioportal/ontologies/download/42764")){
 			if (!ontologyProcessed(uri)) {
-				System.out.println("Loading \"" + entry.getOntologyShortName() + "\" from "+ uri);
+				System.out.print("Loading \"" + entry.getOntologyShortName() + "\" from "+ uri);
 				try {
 					manager = OWLManager.createOWLOntologyManager();
 					OWLOntology ontology = manager.loadOntology(IRI.create(uri));
 					Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
 					Set<OWLAxiom> logicalAxioms = new HashSet<OWLAxiom>();
 					for (AxiomType<?> type : AxiomType.AXIOM_TYPES) {
-						logicalAxioms.addAll(ontology.getAxioms(type, true));
+						if(type.isLogical()){
+							logicalAxioms.addAll(ontology.getAxioms(type, true));
+						}
 					}
+					System.out.println(" (" + logicalAxioms.size() + " axioms)");
 					for (OWLAxiom axiom : logicalAxioms) {
 						OWLAxiom renamedAxiom = renamer.rename(axiom);
 						axiomPatterns.add(renamedAxiom);
