@@ -26,11 +26,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.utilities.EnrichmentVocabulary;
 import org.dllearner.utilities.PrefixCCMap;
+import org.dllearner.utilities.owl.AxiomComparator;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -44,9 +47,10 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
 
-public class EvaluatedAxiom {
+public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 	
 	private static DecimalFormat df = new DecimalFormat("##0.0");
+	private AxiomComparator axiomComparator = new AxiomComparator();
 	
 	private Axiom axiom;
 	private Score score;
@@ -134,6 +138,39 @@ public class EvaluatedAxiom {
 		if(accs.length()==4) { accs = " " + accs; }
 		String str =  accs + "%\t" + axiom.getAxiom().toManchesterSyntaxString(null, PrefixCCMap.getInstance());
 		return str;
+	}
+	
+	public static List<EvaluatedAxiom> getBestEvaluatedAxioms(Set<EvaluatedAxiom> evaluatedAxioms, int nrOfAxioms) {
+		return getBestEvaluatedAxioms(evaluatedAxioms, nrOfAxioms, 0.0);
+	}
+	
+	public static List<EvaluatedAxiom> getBestEvaluatedAxioms(Set<EvaluatedAxiom> evaluatedAxioms, double accuracyThreshold) {
+		return getBestEvaluatedAxioms(evaluatedAxioms, Integer.MAX_VALUE, accuracyThreshold);
+	}
+
+	public static List<EvaluatedAxiom> getBestEvaluatedAxioms(Set<EvaluatedAxiom> evaluatedAxioms, int nrOfAxioms,
+			double accuracyThreshold) {
+		List<EvaluatedAxiom> returnList = new ArrayList<EvaluatedAxiom>();
+		
+		//get the currently best evaluated axioms
+		Set<EvaluatedAxiom> orderedEvaluatedAxioms = new TreeSet<EvaluatedAxiom>(evaluatedAxioms);
+		
+		for(EvaluatedAxiom evAx : orderedEvaluatedAxioms){
+			if(evAx.getScore().getAccuracy() >= accuracyThreshold && returnList.size() < nrOfAxioms){
+				returnList.add(evAx);
+			}
+		}
+		
+		return returnList;
+	}
+	
+	@Override
+	public int compareTo(EvaluatedAxiom other) {
+		int ret = Double.compare(score.getAccuracy(), other.getScore().getAccuracy());
+		if(ret == 0){
+			ret = axiomComparator.compare(axiom, other.getAxiom());
+		}
+		return ret;
 	}
 	
 

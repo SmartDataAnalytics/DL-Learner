@@ -2,6 +2,7 @@ package org.dllearner.utilities.owl;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +75,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	private Map<Integer, Boolean> intersection;
-	private Set<? extends OWLEntity> variableEntities;
+	private Set<? extends OWLEntity> variableEntities = new HashSet<OWLEntity>();
 	
 	public OWLClassExpressionToSPARQLConverter() {
 	}
@@ -97,6 +98,10 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		return asQuery(rootVariable, expr, Collections.<OWLEntity>emptySet());
 	}
 	
+	public Query asQuery(String rootVariable, OWLClassExpression expr, boolean countQuery){
+		return asQuery(rootVariable, expr, Collections.<OWLEntity>emptySet());
+	}
+	
 	public Query asQuery(String rootVariable, OWLClassExpression expr, Set<? extends OWLEntity> variableEntities){
 		this.variableEntities = variableEntities;
 		String queryString = "SELECT DISTINCT ";
@@ -108,7 +113,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 				String var = variablesMapping.get(owlEntity);
 				queryString += var + " ";
 			}
-			queryString += "COUNT(" + rootVariable + ") WHERE {";
+			queryString += "(COUNT(DISTINCT " + rootVariable + ") AS ?cnt) WHERE {";
 		}
 		
 		queryString += triplePattern;
@@ -119,8 +124,13 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 				String var = variablesMapping.get(owlEntity);
 				queryString += var;
 			}
+			queryString += " ORDER BY DESC(?cnt)";
 		}
 		return QueryFactory.create(queryString, Syntax.syntaxARQ);
+	}
+	
+	public Map<OWLEntity, String> getVariablesMapping() {
+		return variablesMapping;
 	}
 	
 	private void reset(){
