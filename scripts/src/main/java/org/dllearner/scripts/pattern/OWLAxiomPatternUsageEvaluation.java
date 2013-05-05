@@ -1,10 +1,15 @@
 package org.dllearner.scripts.pattern;
 
+import static java.util.Arrays.asList;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,12 +21,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
+
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 import org.aksw.commons.util.Pair;
 import org.apache.log4j.Logger;
@@ -38,7 +48,6 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.owl.DLLearnerAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
@@ -67,6 +76,10 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -130,7 +143,8 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 	}
 	
-	public void run(){
+	public void run(SparqlEndpoint endpoint, OWLOntology ontology, File outputFile){
+		ks = new SparqlEndpointKS(endpoint);
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks, cache);
 		
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
@@ -214,12 +228,12 @@ public class OWLAxiomPatternUsageEvaluation {
 					}
 //					if(i++ == 3) break;
 				}
-				save(axioms2Score);
+				save(pattern, axioms2Score);
 			}
 		}
 	}
 	
-	private void save(Map<OWLAxiom, Score> axioms2Score){
+	private void save(OWLAxiom pattern, Map<OWLAxiom, Score> axioms2Score){
 		try {
 			Set<OWLAxiom> annotatedAxioms = new HashSet<OWLAxiom>();
 			for (Entry<OWLAxiom, Score> entry : axioms2Score.entrySet()) {
@@ -232,7 +246,11 @@ public class OWLAxiomPatternUsageEvaluation {
 			}
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = man.createOntology(annotatedAxioms);
-			man.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream("pattern.ttl"));
+			HashFunction hf = Hashing.md5();
+			HashCode hc = hf.newHasher()
+			       .putString(pattern.toString(), Charsets.UTF_8)
+			       .hash();
+			man.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream(hc.toString() + "-pattern-instantiations.ttl"));
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (OWLOntologyStorageException e) {
@@ -265,6 +283,14 @@ public class OWLAxiomPatternUsageEvaluation {
 		
 		Map<OWLAxiom, Pair<Integer, Integer>> topNAxiomPatterns = getTopNAxiomPatterns(AxiomTypeCategory.TBox, 10);
 		axiomPatterns.addAll(topNAxiomPatterns.keySet());
+		
+		return axiomPatterns;
+	}
+	
+	public List<OWLAxiom> getPatternsToEvaluate(OWLOntology ontology){
+		List<OWLAxiom> axiomPatterns = new ArrayList<OWLAxiom>();
+		
+		axiomPatterns.addAll(ontology.getLogicalAxioms());
 		
 		return axiomPatterns;
 	}
@@ -411,8 +437,82 @@ public class OWLAxiomPatternUsageEvaluation {
 	
 	public static void main(String[] args) throws Exception {
 		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
-		new OWLAxiomPatternUsageEvaluation().run();
+		
+		OptionParser parser = new OptionParser();
+		parser.acceptsAll(asList("h", "?", "help"), "Show help.");
+//		parser.acceptsAll(asList("v", "verbose"), "Verbosity level.").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
+		parser.acceptsAll(asList("e", "endpoint"), "SPARQL endpoint URL to be used.")
+				.withRequiredArg().ofType(URL.class);
+		parser.acceptsAll(asList("g", "graph"),
+				"URI of default graph for queries on SPARQL endpoint.").withOptionalArg()
+				.ofType(URI.class);
+		parser.acceptsAll(asList("p", "patterns"),
+				"The ontology file which contains the patterns.").withOptionalArg().ofType(File.class);
+		parser.acceptsAll(asList("o", "output"), "Specify a file where the output can be written.")
+				.withOptionalArg().ofType(File.class);
+		
+		// parse options and display a message for the user in case of problems
+		OptionSet options = null;
+		try {
+			options = parser.parse(args);
+		} catch (Exception e) {
+			System.out.println("Error: " + e.getMessage() + ". Use -? to get help.");
+			System.exit(0);
+		}
+		if (options.has("?")) {
+			parser.printHelpOn(System.out);
+			String addHelp = "Additional explanations: The resource specified should " +
+			"be a class, object \nproperty or data property. DL-Learner will try to " +
+			"automatically detect its \ntype. If no resource is specified, DL-Learner will " +
+			"generate enrichment \nsuggestions for all detected classes and properties in " + 
+			"the given endpoint \nand graph. This can take several hours.";
+			System.out.println();
+			System.out.println(addHelp);
+			// main script
+		} else {	
+			// check that endpoint was specified
+			if(!options.hasArgument("endpoint")) {
+				System.out.println("Please specify a SPARQL endpoint (using the -e option).");
+				System.exit(0);
+			}			
+					
+			// create SPARQL endpoint object (check that indeed a URL was given)
+			URL endpointURL = null;
+			try {
+				endpointURL = (URL) options.valueOf("endpoint");
+			} catch(OptionException e) {
+				System.out.println("The specified endpoint appears not be a proper URL.");
+				System.exit(0);
+			}
+			URI graph = null;
+			try {
+				graph = (URI) options.valueOf("graph");
+			} catch(OptionException e) {
+				System.out.println("The specified graph appears not be a proper URL.");
+				System.exit(0);
+			}
+			LinkedList<String> defaultGraphURIs = new LinkedList<String>();
+			if(graph != null) {
+				defaultGraphURIs.add(graph.toString());
+			}
+			SparqlEndpoint endpoint = new SparqlEndpoint(endpointURL, defaultGraphURIs, new LinkedList<String>());
+			File patternsFile = null;
+			try {
+				patternsFile = (File) options.valueOf("patterns");
+			} catch(OptionException e) {
+				System.out.println("The specified ontology patterns file can not be found.");
+				System.exit(0);
+			}
+			OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(patternsFile);
+			File outputFile = null;
+			try {
+				outputFile = (File) options.valueOf("output");
+			} catch(OptionException e) {
+				System.out.println("The specified output file can not be found.");
+				System.exit(0);
+			}
+			new OWLAxiomPatternUsageEvaluation().run(endpoint, ontology, outputFile);
+		}
+		
 	}
-	
-
 }
