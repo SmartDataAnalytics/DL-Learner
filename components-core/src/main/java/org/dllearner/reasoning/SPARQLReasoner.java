@@ -450,8 +450,12 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	}
 	
 	public Set<NamedClass> getTypes() {
+		return getTypes((String)null);
+	}
+	
+	public Set<NamedClass> getTypes(String namespace) {
 		Set<NamedClass> types = new TreeSet<NamedClass>();
-		String query = String.format("SELECT DISTINCT ?class WHERE {[] a ?class.}");
+		String query = String.format("SELECT DISTINCT ?class WHERE {[] a ?class." + (namespace != null ? ("FILTER(REGEX(?class,'^" + namespace + "'))") : "") + "}");
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){

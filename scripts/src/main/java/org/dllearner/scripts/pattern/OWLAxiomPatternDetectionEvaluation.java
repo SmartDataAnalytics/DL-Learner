@@ -1,4 +1,4 @@
-package org.dllearner.scripts;
+package org.dllearner.scripts.pattern;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,31 +9,46 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import org.aksw.commons.util.Pair;
 import org.coode.owlapi.functionalparser.OWLFunctionalSyntaxOWLParser;
 import org.dllearner.algorithms.pattern.OWLAxiomPatternFinder;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.bioportal.BioPortalRepository;
 import org.dllearner.kb.repository.oxford.OxfordRepository;
 import org.dllearner.kb.repository.tones.TONESRepository;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.OWLParserException;
 import org.semanticweb.owlapi.io.StringDocumentSource;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.UnloadableImportException;
 
+import com.hp.hpl.jena.query.Query;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 public class OWLAxiomPatternDetectionEvaluation {
@@ -43,6 +58,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 	}
 	
 	private OWLObjectRenderer axiomRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+	private OWLDataFactory df = new OWLDataFactoryImpl();
 	private Connection conn;
 	
 	private boolean fancyLatex = false;
@@ -91,6 +107,15 @@ public class OWLAxiomPatternDetectionEvaluation {
 	
 	public void run(Collection<OntologyRepository> repositories){
 		run(true, repositories);
+	}
+	
+	public List<OWLAxiom> getPatternsToEvaluate(){
+		List<OWLAxiom> axiomPatterns = new ArrayList<OWLAxiom>();
+		
+		Map<OWLAxiom, Pair<Integer, Integer>> topNAxiomPatterns = getTopNAxiomPatterns(AxiomTypeCategory.TBox, 10);
+		axiomPatterns.addAll(topNAxiomPatterns.keySet());
+		
+		return axiomPatterns;
 	}
 	
 	private void analyze(Collection<OntologyRepository> repositories){
