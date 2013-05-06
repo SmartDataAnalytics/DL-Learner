@@ -24,7 +24,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	private Model baseModel;
 	
 	private List<String> namespaces;
-	private int maxRecursionDepth = 2;
+	private int maxRecursionDepth = 3;
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
