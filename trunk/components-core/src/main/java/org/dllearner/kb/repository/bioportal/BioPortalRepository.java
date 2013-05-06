@@ -26,6 +26,8 @@ public class BioPortalRepository implements OntologyRepository {
 	private String apiKey = "8fadfa2c-47de-4487-a1f5-b7af7378d693";
 	private String serviceURL = "http://rest.bioontology.org/bioportal/ontologies";
 	
+	private boolean initialized = false;
+	
 	private List<OntologyRepositoryEntry> entries = new ArrayList<OntologyRepositoryEntry>();
 
 	@Override
@@ -41,6 +43,7 @@ public class BioPortalRepository implements OntologyRepository {
 	@Override
 	public void initialize() {
 		refresh();
+		initialized = true;
 	}
 
 	@Override
@@ -90,6 +93,9 @@ public class BioPortalRepository implements OntologyRepository {
 
 	@Override
 	public Collection<OntologyRepositoryEntry> getEntries() {
+		if(!initialized){
+			initialize();
+		}
 		return entries;
 	}
 
@@ -121,8 +127,6 @@ public class BioPortalRepository implements OntologyRepository {
 		for(OntologyRepositoryEntry entry : entries){
 			System.out.println("Loading " + entry.getOntologyShortName());
 			System.out.println("From " + entry.getPhysicalURI());
-			OWLOntology ont = OWLManager.createOWLOntologyManager().loadOntology(IRI.create(entry.getPhysicalURI()));
-			System.out.println(ont.getAxiomCount());
 		}
 		
 	}
