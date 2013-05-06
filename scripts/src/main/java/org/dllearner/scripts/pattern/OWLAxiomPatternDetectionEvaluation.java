@@ -246,7 +246,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 				
 				if(formatNumbers){
 					latexTable += 
-							repository.getName() + "} & " + 
+							repository.getName() + " & " + 
 							"\\num{" + numberOfOntologies + "} & " +
 							"\\num{" + numberOfErrorOntologies + "} & " +
 							"\\num{" + minNumberOfLogicalAxioms + "} & " +
@@ -301,7 +301,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 		String latexTable = "\\begin{table}\n";
 		latexTable += "\\begin{tabular}{lrrr}\n";
 		latexTable += "\\toprule\n";
-		latexTable += "Pattern & Frequency & \\#Ontologies & tf-idf \\\\\\midrule\n";
+		latexTable += "Pattern & Frequency & \\#Ontologies\\\\\\midrule\n";
 		
 		for (Entry<OWLAxiom, Pair<Integer, Integer>> entry : topN.entrySet()) {
 			OWLAxiom axiom = entry.getKey();
