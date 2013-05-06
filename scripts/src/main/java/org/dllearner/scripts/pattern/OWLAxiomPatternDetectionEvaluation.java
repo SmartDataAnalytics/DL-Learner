@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -21,6 +22,8 @@ import java.util.prefs.Preferences;
 
 import org.aksw.commons.util.Pair;
 import org.coode.owlapi.functionalparser.OWLFunctionalSyntaxOWLParser;
+import org.coode.owlapi.latex.LatexObjectVisitor;
+import org.coode.owlapi.latex.LatexWriter;
 import org.dllearner.algorithms.pattern.OWLAxiomPatternFinder;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -62,6 +65,8 @@ public class OWLAxiomPatternDetectionEvaluation {
 	private Connection conn;
 	
 	private boolean fancyLatex = false;
+	private boolean dlSyntax = false;
+	private boolean formatNumbers = true;
 
 	public OWLAxiomPatternDetectionEvaluation() {
 		initDBConnection();
@@ -239,22 +244,41 @@ public class OWLAxiomPatternDetectionEvaluation {
 				ps.setString(1, repository.getName());
 				avgNumberOfAboxAxioms = count(ps);
 				
-				latexTable += 
-						repository.getName() + "&" + 
-						numberOfOntologies + "&" +
-						numberOfErrorOntologies + "&" +
-						minNumberOfLogicalAxioms + "&" +
-						avgNumberOfLogicalAxioms + "&" +
-						maxNumberOfLogicalAxioms + "&" +
-						minNumberOfTboxAxioms + "&" +
-						avgNumberOfTboxAxioms + "&" +
-						maxNumberOfTboxAxioms + "&" +
-						minNumberOfRboxAxioms + "&" +
-						avgNumberOfRboxAxioms + "&" +
-						maxNumberOfRboxAxioms + "&" +
-						minNumberOfAboxAxioms + "&" +
-						avgNumberOfAboxAxioms + "&" +
-						maxNumberOfAboxAxioms + "\\\\\n";
+				if(formatNumbers){
+					latexTable += 
+							repository.getName() + "} & " + 
+							"\\num{" + numberOfOntologies + "} & " +
+							"\\num{" + numberOfErrorOntologies + "} & " +
+							"\\num{" + minNumberOfLogicalAxioms + "} & " +
+							"\\num{" + avgNumberOfLogicalAxioms + "} & " +
+							"\\num{" + maxNumberOfLogicalAxioms + "} & " +
+							"\\num{" + minNumberOfTboxAxioms + "} & " +
+							"\\num{" + avgNumberOfTboxAxioms + "} & " +
+							"\\num{" + maxNumberOfTboxAxioms + "} & " +
+							"\\num{" + minNumberOfRboxAxioms + "} & " +
+							"\\num{" + avgNumberOfRboxAxioms + "} & " +
+							"\\num{" + maxNumberOfRboxAxioms + "} & " +
+							"\\num{" + minNumberOfAboxAxioms + "} & " +
+							"\\num{" + avgNumberOfAboxAxioms + "} & " +
+							"\\num{" + maxNumberOfAboxAxioms + "}\\\\\n";
+				} else {
+					latexTable += 
+							repository.getName() + " & " + 
+							numberOfOntologies + " & " +
+							numberOfErrorOntologies + " & " +
+							minNumberOfLogicalAxioms + " & " +
+							avgNumberOfLogicalAxioms + " & " +
+							maxNumberOfLogicalAxioms + " & " +
+							minNumberOfTboxAxioms + " & " +
+							avgNumberOfTboxAxioms + " & " +
+							maxNumberOfTboxAxioms + " & " +
+							minNumberOfRboxAxioms + " & " +
+							avgNumberOfRboxAxioms + " & " +
+							maxNumberOfRboxAxioms + " & " +
+							minNumberOfAboxAxioms + " & " +
+							avgNumberOfAboxAxioms + " & " +
+							maxNumberOfAboxAxioms + "\\\\\n";
+				}
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -271,22 +295,34 @@ public class OWLAxiomPatternDetectionEvaluation {
 	}
 	
 	private String asLatex(String title, Map<OWLAxiom, Pair<Integer, Integer>> topN){
+		StringWriter sw = new StringWriter();
+		LatexWriter w = new LatexWriter(sw);
+		LatexObjectVisitor renderer = new LatexObjectVisitor(w, df);
 		String latexTable = "\\begin{table}\n";
-		latexTable += "\\begin{tabular}{lrr}\n";
+		latexTable += "\\begin{tabular}{lrrr}\n";
 		latexTable += "\\toprule\n";
-		latexTable += "Pattern & Frequency & \\#Ontologies\\\\\\midrule\n";
+		latexTable += "Pattern & Frequency & \\#Ontologies & tf-idf \\\\\\midrule\n";
 		
 		for (Entry<OWLAxiom, Pair<Integer, Integer>> entry : topN.entrySet()) {
 			OWLAxiom axiom = entry.getKey();
 			Integer frequency = entry.getValue().getKey();
-			Integer idf = entry.getValue().getValue();
+			Integer df = entry.getValue().getValue();
 			
 			if(axiom != null){
 				String axiomColumn = axiomRenderer.render(axiom);
 				if(fancyLatex){
 					axiomColumn = "\\begin{lstlisting}[language=manchester]" + axiomColumn + "\\end{lstlisting}";
 				}
-				latexTable += axiomColumn + " & " + frequency + " & " + idf + "\\\\\n";
+				if(dlSyntax){
+					axiom.accept(renderer);
+					axiomColumn = sw.toString();sw.getBuffer().setLength(0);
+					
+				}
+				if(formatNumbers){
+					latexTable += axiomColumn + " & " + "\\num{" + frequency + "} & " + df + "\\\\\n";
+				} else {
+					latexTable += axiomColumn + " & " + frequency + " & " + df + "\\\\\n";
+				}
 			}
 		}
 		latexTable += "\\bottomrule\n\\end{tabular}\n";
@@ -392,6 +428,16 @@ public class OWLAxiomPatternDetectionEvaluation {
 		ResultSet rs = ps.executeQuery();
 		rs.next();
 		return rs.getInt(1);
+	}
+	
+	private double tf_idf(int nrOfOccurrences, int nrOfOntologies, int nrOfOntologiesWithAxiom){
+		double tf = nrOfOccurrences;
+		double idf = Math.log10(nrOfOntologies / nrOfOntologiesWithAxiom);
+		return tf * idf;
+	}
+	
+	private double popularity(int totalNrOfOntologies, int patternFrequency, int nrOfOntologiesWithPattern){
+		return (double)Math.log10(patternFrequency) * (nrOfOntologiesWithPattern / (double)totalNrOfOntologies);
 	}
 	
 	public static void main(String[] args) throws Exception {
