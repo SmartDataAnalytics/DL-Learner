@@ -103,6 +103,10 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	}
 	
 	public Query asQuery(String rootVariable, OWLClassExpression expr, Set<? extends OWLEntity> variableEntities){
+		return asQuery(rootVariable, expr, variableEntities, false);
+	}
+	
+	public Query asQuery(String rootVariable, OWLClassExpression expr, Set<? extends OWLEntity> variableEntities, boolean count){
 		this.variableEntities = variableEntities;
 		String queryString = "SELECT DISTINCT ";
 		String triplePattern = convert(rootVariable, expr);
@@ -113,18 +117,25 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 				String var = variablesMapping.get(owlEntity);
 				queryString += var + " ";
 			}
-			queryString += "(COUNT(DISTINCT " + rootVariable + ") AS ?cnt) WHERE {";
+			if(count){
+				queryString += "(COUNT(DISTINCT " + rootVariable + ") AS ?cnt)"; 
+			} else {
+				queryString += rootVariable;
+			}
+			queryString += " WHERE {";
 		}
 		
 		queryString += triplePattern;
 		queryString += "}";
 		if(!variableEntities.isEmpty()){
-			queryString += "GROUP BY ";
-			for (OWLEntity owlEntity : variableEntities) {
-				String var = variablesMapping.get(owlEntity);
-				queryString += var;
+			if(count){
+				queryString += "GROUP BY ";
+				for (OWLEntity owlEntity : variableEntities) {
+					String var = variablesMapping.get(owlEntity);
+					queryString += var;
+				}
+				queryString += " ORDER BY DESC(?cnt)";
 			}
-			queryString += " ORDER BY DESC(?cnt)";
 		}
 		return QueryFactory.create(queryString, Syntax.syntaxARQ);
 	}

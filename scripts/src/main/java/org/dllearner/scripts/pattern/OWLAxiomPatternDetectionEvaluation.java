@@ -378,7 +378,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 					
 				}
 				if(formatNumbers){
-					latexTable += i + " & " + axiomColumn + " & " + "\\num{" + frequency + "} & " + df;
+					latexTable += i + ". & " + axiomColumn + " & " + "\\num{" + frequency + "} & " + df;
 					for (OntologyRepository repository : repositories) {
 						int rank = 0;
 						boolean contained = false;

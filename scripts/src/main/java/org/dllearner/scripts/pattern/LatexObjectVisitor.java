@@ -248,7 +248,8 @@ public class LatexObjectVisitor implements OWLObjectVisitor {
 		write(SOME);
 		writeSpace();
 		node.getProperty().accept(this);
-		writeSpace();
+//		writeSpace();
+		writeDot();
 		writeOpenBrace();
 		node.getValue().accept(this);
 		writeCloseBrace();
