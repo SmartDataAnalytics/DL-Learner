@@ -204,44 +204,27 @@ public class OWLAxiomPatternUsageEvaluation {
 		//for each pattern
 		for (OWLAxiom pattern : patterns) {
 			logger.info("Applying pattern " + pattern + "...");
-			//if pattern is equivalent classes axiom, we need to get the subclass axiom where the named class is the subclass
-			if(pattern.isOfType(AxiomType.EQUIVALENT_CLASSES)){
-				Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom)pattern).asOWLSubClassOfAxioms();
-				for (OWLSubClassOfAxiom axiom : subClassOfAxioms) {
-					if(!axiom.getSubClass().isAnonymous()){
-						pattern = axiom;
-						break;
+			// if pattern is equivalent classes axiom, we need to get the
+			// subclass axiom where the named class is the subclass
+			Map<OWLAxiom, Score> axioms2Score = new LinkedHashMap<OWLAxiom, Score>();
+			// for each class
+			for (NamedClass cls : classes) {
+				logger.info("...on class " + cls + "...");
+				Model fragment = class2Fragment.get(cls);
+				Map<OWLAxiom, Score> result = applyPattern(pattern,
+						df.getOWLClass(IRI.create(cls.getName())), fragment);
+				axioms2Score.putAll(result);
+
+				for (Entry<OWLAxiom, Score> entry : result.entrySet()) {
+					OWLAxiom axiom = entry.getKey();
+					Score score = entry.getValue();
+					if (score.getAccuracy() >= threshold) {
+						logger.info(axiom + "(" + format.format(score.getAccuracy()) + ")");
 					}
 				}
 			}
-			if(pattern.isOfType(AxiomType.SUBCLASS_OF)){
-				Map<OWLAxiom, Score> axioms2Score = new LinkedHashMap<OWLAxiom, Score>();
-				//for each class
-				int i = 1;
-				for (NamedClass cls : classes) {
-					logger.info("...on class " + cls + "...");
-					Model fragment = class2Fragment.get(cls);
-					Map<OWLAxiom, Score> result = applyPattern((OWLSubClassOfAxiom) pattern, df.getOWLClass(IRI.create(cls.getName())), fragment);
-					axioms2Score.putAll(result);
-					
-					for (Entry<OWLAxiom, Score> entry : result.entrySet()) {
-						OWLAxiom axiom = entry.getKey();
-						Score score = entry.getValue();
-						if(score.getAccuracy() >= threshold){
-							logger.info(axiom + "(" + format.format(score.getAccuracy()) + ")");
-						}
-					}
-					
-					//wait some time to avoid flooding of endpoint
-					try {
-						Thread.sleep(waitingTime);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-//					if(i++ == 3) break;
-				}
-				save(pattern, axioms2Score);
-			}
+			save(pattern, axioms2Score);
+
 		}
 	}
 	
@@ -541,19 +524,32 @@ public class OWLAxiomPatternUsageEvaluation {
 		return axioms2Score;
 	}
 	
-	private Map<OWLAxiom, Score> applyPattern(OWLSubClassOfAxiom pattern, OWLClass cls, Model fragment) {
+	private Map<OWLAxiom, Score> applyPattern(OWLAxiom pattern, OWLClass cls, Model fragment) {
 		Map<OWLAxiom, Score> axioms2Score = new HashMap<OWLAxiom, Score>();
 		
-		OWLClassExpression patternSubClass = pattern.getSubClass();
-		OWLClassExpression patternSuperClass = pattern.getSuperClass();
+		OWLClassExpression patternSubClass = null;
+		OWLClassExpression patternSuperClass = null;
 		
-		patternSubClass = cls;
+		if(pattern.isOfType(AxiomType.EQUIVALENT_CLASSES)){
+			Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom)pattern).asOWLSubClassOfAxioms();
+			for (OWLSubClassOfAxiom axiom : subClassOfAxioms) {
+				if(!axiom.getSubClass().isAnonymous()){
+					patternSubClass = axiom.getSubClass();
+					patternSuperClass = axiom.getSuperClass();
+					break;
+				}
+			}
+		} else if(pattern.isOfType(AxiomType.SUBCLASS_OF)){
+			patternSubClass = ((OWLSubClassOfAxiom) pattern).getSubClass();
+			patternSuperClass = ((OWLSubClassOfAxiom) pattern).getSuperClass();
+		} else {
+			logger.warn("Pattern " + pattern + " not supported yet.");
+			return axioms2Score;
+		}
 		
-		
-
 		Set<OWLEntity> signature = patternSuperClass.getSignature();
-		signature.remove(patternSubClass);
-		Query query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(patternSubClass, patternSuperClass), signature);
+		signature.remove(patternSubClass.asOWLClass());
+		Query query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(cls, patternSuperClass), signature);
 		logger.info("Running query\n" + query);
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
 		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
@@ -565,7 +561,7 @@ public class OWLAxiomPatternUsageEvaluation {
 			resources.add(qs.getResource("x").getURI());
 			// get the IRIs for each variable
 			Map<OWLEntity, IRI> entity2IRIMap = new HashMap<OWLEntity, IRI>();
-			entity2IRIMap.put(pattern.getSubClass().asOWLClass(), cls.getIRI());
+			entity2IRIMap.put(patternSubClass.asOWLClass(), cls.getIRI());
 			boolean skip = false;
 			for (OWLEntity entity : signature) {
 				String var = variablesMapping.get(entity);
