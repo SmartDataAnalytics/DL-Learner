@@ -551,12 +551,11 @@ public class OWLAxiomPatternUsageEvaluation {
 				"SELECT (COUNT(DISTINCT ?x) AS ?cnt) WHERE {" + converter.convert("?x", patternSubClass) + "}",
 				Syntax.syntaxARQ);
 		int subClassCnt = QueryExecutionFactory.create(query, fragment).execSelect().next().getLiteral("cnt").getInt();
-		System.out.println(subClassCnt);
 
 		Set<OWLEntity> signature = patternSuperClass.getSignature();
 		signature.remove(patternSubClass);
 		query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(patternSubClass, patternSuperClass), signature, true);
-		System.out.println(query);
+		logger.info("Running query\n" + query);
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
 		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
 		QuerySolution qs;
@@ -568,6 +567,11 @@ public class OWLAxiomPatternUsageEvaluation {
 			boolean skip = false;
 			for (OWLEntity entity : signature) {
 				String var = variablesMapping.get(entity);
+				if(qs.get(var) == null){
+					logger.warn("Variable " + var + " is not bound.");
+					skip = true;
+					break;
+				}
 				if(qs.get(var).isLiteral()){
 					skip = true;
 					break;
