@@ -3,6 +3,7 @@ package org.dllearner.scripts.pattern;
 import static java.util.Arrays.asList;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 
@@ -34,7 +36,6 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-import org.aksw.commons.collections.diff.ModelDiff;
 import org.apache.log4j.Logger;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.core.EvaluatedAxiom;
@@ -79,6 +80,9 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -96,24 +100,18 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class OWLAxiomPatternUsageEvaluation {
 	
 	
-	private static final Logger logger = Logger.getLogger(OWLAxiomPatternUsageEvaluation.AxiomTypeCategory.class
-			.getName());
+	private static final Logger logger = Logger.getLogger(OWLAxiomPatternUsageEvaluation.class.getName());
 	
-	enum AxiomTypeCategory{
-		TBox, RBox, ABox
-	}
 	
 	private OWLObjectRenderer axiomRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 	private OWLDataFactory df = new OWLDataFactoryImpl();
-	private Connection conn;
 	
-	private ExtractionDBCache cache = new ExtractionDBCache("pattern-cache");
+	private ExtractionDBCache cache = new ExtractionDBCache("pattern-cache/db");
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 	
 	private SparqlEndpointKS ks = new SparqlEndpointKS(endpoint, cache);//new LocalModelBasedSparqlEndpointKS(model);
 	private String ns = "http://dbpedia.org/ontology/";
 	
-	private boolean fancyLatex = false;
 	private DecimalFormat format = new DecimalFormat("00.0%");
 	private long waitingTime = TimeUnit.SECONDS.toMillis(3);
 	private double threshold = 0.6;
@@ -125,33 +123,8 @@ public class OWLAxiomPatternUsageEvaluation {
 	private int queryLimit = 10000;
 
 	public OWLAxiomPatternUsageEvaluation() {
-		initDBConnection();
 	}
 	
-	private void initDBConnection() {
-		try {
-			InputStream is = this.getClass().getClassLoader().getResourceAsStream("db_settings.ini");
-			Preferences prefs = new IniPreferences(is);
-			String dbServer = prefs.node("database").get("server", null);
-			String dbName = prefs.node("database").get("name", null);
-			String dbUser = prefs.node("database").get("user", null);
-			String dbPass = prefs.node("database").get("pass", null);
-
-			Class.forName("com.mysql.jdbc.Driver");
-			String url = "jdbc:mysql://" + dbServer + "/" + dbName;
-			conn = DriverManager.getConnection(url, dbUser, dbPass);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (InvalidFileFormatException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	public void run(SparqlEndpoint endpoint, OWLOntology ontology, File outputFile, int maxNrOfTestedClasses){
 		ks = new SparqlEndpointKS(endpoint, cache);
@@ -315,6 +288,21 @@ public class OWLAxiomPatternUsageEvaluation {
 		for (NamedClass cls : classes) {
 			logger.info("Extracting fragment for " + cls + "...");
 			Model fragment = ModelFactory.createDefaultModel();
+			//try to load from cache
+			HashFunction hf = Hashing.md5();
+			HashCode hc = hf.newHasher().putString(cls.getName()).hash();
+			File file = new File("pattern-cache/" + hc.toString() + ".ttl");
+			if(file.exists()){
+				try {
+					fragment.read(new FileInputStream(file), null, "TURTLE");
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+				class2Fragment.put(cls, fragment);
+				logger.info("...got " + fragment.size() + " triples.");
+				continue;
+			}
+			
 			//build the CONSTRUCT query
 			Query query = buildConstructQuery(cls, depth);
 			query.setLimit(queryLimit);
@@ -323,7 +311,8 @@ public class OWLAxiomPatternUsageEvaluation {
 			int offset = 0;
 			boolean hasMoreResults = true;
 			while(hasMoreResults && (System.currentTimeMillis() - startTime)<= maxFragmentExtractionTime){
-				query.setOffset(offset);System.out.println(query);
+				query.setOffset(offset);
+				logger.info(query);
 				Model m = executeConstructQuery(query);
 				fragment.add(m);
 				if(m.size() == 0){
@@ -338,6 +327,11 @@ public class OWLAxiomPatternUsageEvaluation {
 			}
 			logger.info("...got " + fragment.size() + " triples.");
 			class2Fragment.put(cls, fragment);
+			try {
+				fragment.write(new FileOutputStream(file), "TURTLE");
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 		return class2Fragment;
 	}
@@ -554,6 +548,72 @@ public class OWLAxiomPatternUsageEvaluation {
 
 		Set<OWLEntity> signature = patternSuperClass.getSignature();
 		signature.remove(patternSubClass);
+		query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(patternSubClass, patternSuperClass), signature);
+		logger.info("Running query\n" + query);
+		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
+		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
+		QuerySolution qs;
+		Set<String> resources = new HashSet<String>();
+		Multiset<OWLAxiom> instantiations = HashMultiset.create();
+		while (rs.hasNext()) {
+			qs = rs.next();
+			resources.add(qs.getResource("x").getURI());
+			// get the IRIs for each variable
+			Map<OWLEntity, IRI> entity2IRIMap = new HashMap<OWLEntity, IRI>();
+			entity2IRIMap.put(pattern.getSubClass().asOWLClass(), cls.getIRI());
+			boolean skip = false;
+			for (OWLEntity entity : signature) {
+				String var = variablesMapping.get(entity);
+				if(qs.get(var) == null){
+					logger.warn("Variable " + var + " is not bound.");
+					skip = true;
+					break;
+				}
+				if(qs.get(var).isLiteral()){
+					skip = true;
+					break;
+				}
+				Resource resource = qs.getResource(var);
+				if(entity.isOWLObjectProperty() && resource.hasURI(RDF.type.getURI())){
+					skip = true;
+					break;
+				}
+				entity2IRIMap.put(entity, IRI.create(resource.getURI()));
+			}
+			if(!skip){
+				// instantiate the pattern
+				OWLObjectDuplicator duplicator = new OWLObjectDuplicator(entity2IRIMap, df);
+				OWLAxiom patternInstantiation = duplicator.duplicateObject(pattern);
+				instantiations.add(patternInstantiation);
+			}
+		}
+		// compute the score
+		int total = resources.size();
+		for (OWLAxiom axiom : instantiations.elementSet()) {
+			int frequency = instantiations.count(axiom);
+			Score score = computeScore(total, Math.min(total, frequency));
+			axioms2Score.put(axiom, score);
+		}
+
+		return axioms2Score;
+	}
+	
+	private Map<OWLAxiom, Score> applyPattern2(OWLSubClassOfAxiom pattern, OWLClass cls, Model fragment) {
+		Map<OWLAxiom, Score> axioms2Score = new HashMap<OWLAxiom, Score>();
+		
+		OWLClassExpression patternSubClass = pattern.getSubClass();
+		OWLClassExpression patternSuperClass = pattern.getSuperClass();
+		
+		patternSubClass = cls;
+		
+		// 2. execute SPARQL query on local model
+		Query query = QueryFactory.create(
+				"SELECT (COUNT(DISTINCT ?x) AS ?cnt) WHERE {" + converter.convert("?x", patternSubClass) + "}",
+				Syntax.syntaxARQ);
+		int subClassCnt = QueryExecutionFactory.create(query, fragment).execSelect().next().getLiteral("cnt").getInt();
+
+		Set<OWLEntity> signature = patternSuperClass.getSignature();
+		signature.remove(patternSubClass);
 		query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(patternSubClass, patternSuperClass), signature, true);
 		logger.info("Running query\n" + query);
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
@@ -679,7 +739,7 @@ public class OWLAxiomPatternUsageEvaluation {
 	public List<OWLAxiom> getPatternsToEvaluate(OWLOntology ontology){
 		List<OWLAxiom> axiomPatterns = new ArrayList<OWLAxiom>();
 		
-		axiomPatterns.addAll(ontology.getLogicalAxioms());
+		axiomPatterns.addAll(new TreeSet<OWLAxiom>(ontology.getLogicalAxioms()));
 		
 		return axiomPatterns;
 	}
