@@ -1,5 +1,7 @@
 package org.dllearner.utilities.owl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import org.aksw.commons.collections.diff.ModelDiff;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -58,6 +61,10 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.Syntax;
@@ -73,6 +80,8 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private int indCnt = 0;
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();
+	
+	private Multimap<Integer, OWLEntity> properties = HashMultimap.create();
 	
 	private Map<Integer, Boolean> intersection;
 	private Set<? extends OWLEntity> variableEntities = new HashSet<OWLEntity>();
@@ -147,6 +156,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private void reset(){
 		variablesMapping.clear();
 		variables.clear();
+		properties.clear();
 		classCnt = 0;
 		propCnt = 0;
 		indCnt = 0;
@@ -238,6 +248,9 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		} else {
 			s = "<" + entity.toStringID() + ">";
 		}
+		if(entity.isOWLObjectProperty()){
+			properties.put(modalDepth(), entity);
+		}
 		return s;
 	}
 	
@@ -268,6 +281,19 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		List<OWLClassExpression> operands = ce.getOperandsAsList();
 		for (OWLClassExpression operand : operands) {
 			operand.accept(this);
+		}
+		Collection<OWLEntity> props = properties.get(modalDepth());
+		if(props.size() > 1){
+			Collection<String> vars = new TreeSet<String>();
+			for (OWLEntity p : props) {
+				if(variablesMapping.containsKey(p)){
+					vars.add(variablesMapping.get(p));
+				}
+			}
+			if(vars.size() == 2){
+				List<String> varList = new ArrayList<String>(vars);
+				sparql += "FILTER(" + varList.get(0) + "!=" + varList.get(1) + ")";
+			}
 		}
 		leaveIntersection();
 	}
@@ -728,8 +754,14 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		//variable entity
 		expr = df.getOWLObjectIntersectionOf(
 				df.getOWLObjectSomeValuesFrom(propR, clsB),
+				clsB, df.getOWLObjectSomeValuesFrom(propS, clsA));
+		query = converter.asQuery(rootVar, expr, Sets.newHashSet(propR, propS)).toString();
+		System.out.println(expr + "\n" + query);
+		
+		expr = df.getOWLObjectIntersectionOf(
+				df.getOWLObjectSomeValuesFrom(propR, df.getOWLObjectIntersectionOf(df.getOWLObjectSomeValuesFrom(propS, clsA), clsC)),
 				clsB);
-		query = converter.asQuery(rootVar, expr, Collections.singleton(propR)).toString();
+		query = converter.asQuery(rootVar, expr, Sets.newHashSet(propR, propS)).toString();
 		System.out.println(expr + "\n" + query);
 		
 	}
