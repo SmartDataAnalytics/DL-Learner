@@ -107,7 +107,9 @@ public class OWLAxiomPatternUsageEvaluation {
 	private Connection conn;
 	
 	private ExtractionDBCache cache = new ExtractionDBCache("pattern-cache");
-	private SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia(), cache);//new LocalModelBasedSparqlEndpointKS(model);
+	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	
+	private SparqlEndpointKS ks = new SparqlEndpointKS(endpoint, cache);//new LocalModelBasedSparqlEndpointKS(model);
 	private String ns = "http://dbpedia.org/ontology/";
 	
 	private boolean fancyLatex = false;
@@ -298,10 +300,12 @@ public class OWLAxiomPatternUsageEvaluation {
 				if (negation) {
 					modalDepth--;
 				}
+				System.out.println(modalDepth + ": " + pattern);
 				maxModalDepth = Math.max(modalDepth, maxModalDepth);
 			}
 		}
-		return maxModalDepth;
+		return 3;
+//		return maxModalDepth;
 	}
 	
 	private Map<NamedClass, Model> extractFragments(Collection<NamedClass> classes, int depth){
@@ -455,15 +459,15 @@ public class OWLAxiomPatternUsageEvaluation {
 		Map<OWLAxiom, Score> axioms2Score = new HashMap<OWLAxiom, Score>();
 		
 		OWLClassExpression patternSubClass = ((OWLSubClassOfAxiom)pattern).getSubClass();
-		OWLClassExpression superClass = ((OWLSubClassOfAxiom)pattern).getSuperClass();
+		OWLClassExpression patternSuperClass = ((OWLSubClassOfAxiom)pattern).getSuperClass();
 		
 		//set the subclass as a class from the KB
-		OWLClass subClass = df.getOWLClass(IRI.create(cls.getName()));
+		patternSubClass = df.getOWLClass(IRI.create(cls.getName()));
 		
 		//check if pattern is negation of something
-		boolean negation = superClass instanceof OWLObjectComplementOf;
+		boolean negation = patternSuperClass instanceof OWLObjectComplementOf;
 		//build the query
-		Description d = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(superClass);
+		Description d = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(patternSuperClass);
 		int modalDepth = d.getDepth();
 		if(negation){
 			modalDepth--;
@@ -495,13 +499,13 @@ public class OWLAxiomPatternUsageEvaluation {
 		logger.info("...got " + fragment.size() + " triples.");
 		
 		//2. execute SPARQL query on local model 
-		query = QueryFactory.create("SELECT (COUNT(DISTINCT ?x) AS ?cnt) WHERE {" + converter.convert("?x", subClass) + "}",Syntax.syntaxARQ);
+		query = QueryFactory.create("SELECT (COUNT(DISTINCT ?x) AS ?cnt) WHERE {" + converter.convert("?x", patternSubClass) + "}",Syntax.syntaxARQ);
 		int subClassCnt = QueryExecutionFactory.create(query, fragment).execSelect().next().getLiteral("cnt").getInt();
 		System.out.println(subClassCnt);
 		
-		Set<OWLEntity> signature = superClass.getSignature();
-		signature.remove(subClass);
-		query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(subClass, superClass), signature, true);
+		Set<OWLEntity> signature = patternSuperClass.getSignature();
+		signature.remove(patternSubClass);
+		query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(patternSubClass, patternSuperClass), signature, true);
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
 		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
 		QuerySolution qs;
@@ -509,7 +513,7 @@ public class OWLAxiomPatternUsageEvaluation {
 			qs = rs.next();
 			//get the IRIs for each variable
 			Map<OWLEntity, IRI> entity2IRIMap = new HashMap<OWLEntity, IRI>();
-			entity2IRIMap.put(patternSubClass.asOWLClass(), subClass.getIRI());
+			entity2IRIMap.put(patternSubClass.asOWLClass(), patternSubClass.asOWLClass().getIRI());
 			for (OWLEntity entity : signature) {
 				String var = variablesMapping.get(entity);
 				Resource resource = qs.getResource(var);
@@ -539,6 +543,8 @@ public class OWLAxiomPatternUsageEvaluation {
 		OWLClassExpression patternSubClass = pattern.getSubClass();
 		OWLClassExpression patternSuperClass = pattern.getSuperClass();
 		
+		patternSubClass = cls;
+		
 		// 2. execute SPARQL query on local model
 		Query query = QueryFactory.create(
 				"SELECT (COUNT(DISTINCT ?x) AS ?cnt) WHERE {" + converter.convert("?x", patternSubClass) + "}",
@@ -549,6 +555,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		Set<OWLEntity> signature = patternSuperClass.getSignature();
 		signature.remove(patternSubClass);
 		query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(patternSubClass, patternSuperClass), signature, true);
+		System.out.println(query);
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
 		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
 		QuerySolution qs;
