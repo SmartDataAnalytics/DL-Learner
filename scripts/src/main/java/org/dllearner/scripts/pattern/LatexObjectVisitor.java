@@ -579,7 +579,6 @@ public class LatexObjectVisitor implements OWLObjectVisitor {
 		writeSpace();
 		write(EQUIV);
 		writeSpace();
-		write(axiom.getSecondProperty());
 		axiom.getSecondProperty().accept(this);
 		write("\\ensuremath{^-}");
 	}
