@@ -91,6 +91,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class OWLAxiomPatternUsageEvaluation {
 	
@@ -118,7 +119,7 @@ public class OWLAxiomPatternUsageEvaluation {
 	private double threshold = 0.6;
 	private OWLAnnotationProperty confidenceProperty = df.getOWLAnnotationProperty(IRI.create("http://dl-learner.org/pattern/confidence"));
 	
-	private long maxFragmentExtractionTime = TimeUnit.SECONDS.toMillis(60);
+	private long maxFragmentExtractionTime = TimeUnit.SECONDS.toMillis(10);
 	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 	private long maxExecutionTime = TimeUnit.SECONDS.toMillis(20);
 	private int queryLimit = 10000;
@@ -321,7 +322,7 @@ public class OWLAxiomPatternUsageEvaluation {
 			long startTime = System.currentTimeMillis();
 			int offset = 0;
 			boolean hasMoreResults = true;
-			while(hasMoreResults && (System.currentTimeMillis() - startTime)<= maxExecutionTime){
+			while(hasMoreResults && (System.currentTimeMillis() - startTime)<= maxFragmentExtractionTime){
 				query.setOffset(offset);System.out.println(query);
 				Model m = executeConstructQuery(query);
 				fragment.add(m);
@@ -563,26 +564,38 @@ public class OWLAxiomPatternUsageEvaluation {
 			qs = rs.next();
 			// get the IRIs for each variable
 			Map<OWLEntity, IRI> entity2IRIMap = new HashMap<OWLEntity, IRI>();
-			entity2IRIMap.put(patternSubClass.asOWLClass(), cls.getIRI());
+			entity2IRIMap.put(pattern.getSubClass().asOWLClass(), cls.getIRI());
+			boolean skip = false;
 			for (OWLEntity entity : signature) {
 				String var = variablesMapping.get(entity);
+				if(qs.get(var).isLiteral()){
+					skip = true;
+					break;
+				}
 				Resource resource = qs.getResource(var);
+				if(entity.isOWLObjectProperty() && resource.hasURI(RDF.type.getURI())){
+					skip = true;
+					break;
+				}
 				entity2IRIMap.put(entity, IRI.create(resource.getURI()));
 			}
-			// instantiate the pattern
-			OWLObjectDuplicator duplicator = new OWLObjectDuplicator(entity2IRIMap, df);
-			OWLAxiom patternInstantiation = duplicator.duplicateObject(pattern);
-			int patternInstantiationCnt = qs.getLiteral("cnt").getInt();
-			// compute score
-			Score score;
-			try {
-				score = computeScore(subClassCnt, patternInstantiationCnt);
-				axioms2Score.put(patternInstantiation, score);
-			} catch (IllegalArgumentException e) {
-				// sometimes Virtuosos returns 'wrong' cnt values such that the
-				// success number as bigger than the total number of instances
-				e.printStackTrace();
+			if(!skip){
+				// instantiate the pattern
+				OWLObjectDuplicator duplicator = new OWLObjectDuplicator(entity2IRIMap, df);
+				OWLAxiom patternInstantiation = duplicator.duplicateObject(pattern);
+				int patternInstantiationCnt = qs.getLiteral("cnt").getInt();
+				// compute score
+				Score score;
+				try {
+					score = computeScore(subClassCnt, patternInstantiationCnt);
+					axioms2Score.put(patternInstantiation, score);
+				} catch (IllegalArgumentException e) {
+					// sometimes Virtuosos returns 'wrong' cnt values such that the
+					// success number as bigger than the total number of instances
+					e.printStackTrace();
+				}
 			}
+			
 		}
 
 		return axioms2Score;
