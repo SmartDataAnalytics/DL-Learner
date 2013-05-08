@@ -6,14 +6,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -30,7 +26,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import java.util.prefs.Preferences;
 
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
@@ -52,8 +47,6 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
-import org.ini4j.IniPreferences;
-import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
@@ -92,7 +85,9 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -298,6 +293,7 @@ public class OWLAxiomPatternUsageEvaluation {
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
+				filterModel(fragment);
 				class2Fragment.put(cls, fragment);
 				logger.info("...got " + fragment.size() + " triples.");
 				continue;
@@ -334,6 +330,19 @@ public class OWLAxiomPatternUsageEvaluation {
 			}
 		}
 		return class2Fragment;
+	}
+	
+	private void filterModel(Model model){
+		List<Statement> statements2Remove = new ArrayList<Statement>();
+		for (Statement st : model.listStatements().toSet()) {
+			if(st.getObject().isLiteral()){
+				statements2Remove.add(st);
+			}
+			if(st.getPredicate().equals(RDF.type) && !st.getObject().asResource().getURI().startsWith("http://dbpedia.org/ontology/")){
+				statements2Remove.add(st);
+			}
+		}
+		model.remove(statements2Remove);
 	}
 	
 	private Map<OWLAxiom, Score> evaluate1(OWLAxiom pattern, NamedClass cls){
@@ -540,15 +549,11 @@ public class OWLAxiomPatternUsageEvaluation {
 		
 		patternSubClass = cls;
 		
-		// 2. execute SPARQL query on local model
-		Query query = QueryFactory.create(
-				"SELECT (COUNT(DISTINCT ?x) AS ?cnt) WHERE {" + converter.convert("?x", patternSubClass) + "}",
-				Syntax.syntaxARQ);
-		int subClassCnt = QueryExecutionFactory.create(query, fragment).execSelect().next().getLiteral("cnt").getInt();
+		
 
 		Set<OWLEntity> signature = patternSuperClass.getSignature();
 		signature.remove(patternSubClass);
-		query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(patternSubClass, patternSuperClass), signature);
+		Query query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(patternSubClass, patternSuperClass), signature);
 		logger.info("Running query\n" + query);
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
 		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
