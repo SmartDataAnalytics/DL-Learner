@@ -212,8 +212,22 @@ public class OWLAxiomPatternUsageEvaluation {
 		//get the maximum modal depth in the pattern axioms
 		int maxModalDepth = maxModalDepth(patterns);
 		
+		//check if we need the fragments
+		boolean fragmentsNeeded = false;
+		for (OWLAxiom pattern : patterns) {
+			//run if not already exists a result on disk
+			File file = new File(axiomRenderer.render(pattern).replace(" ", "_") + "-instantiations.ttl");
+			if(!file.exists()){
+				fragmentsNeeded = true;
+				break;
+			}
+		}
+		
 		//extract fragment for each class only once
-		Map<NamedClass, Model> class2Fragment = extractFragments(classes, maxModalDepth);
+		Map<NamedClass, Model> class2Fragment = null;
+		if(fragmentsNeeded){
+			class2Fragment = extractFragments(classes, maxModalDepth);
+		}
 		
 		//for each pattern
 		for (OWLAxiom pattern : patterns) {
@@ -273,25 +287,26 @@ public class OWLAxiomPatternUsageEvaluation {
 			double accuracy = getAccuracy(axiom);
 			if(accuracy < sampleThreshold){
 				iter.remove();
-			}
-			//check for some trivial axioms
-			if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
-				OWLClassExpression subClass = ((OWLSubClassOfAxiom)axiom).getSubClass();
-				OWLClassExpression superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
-				if(superClass.isOWLThing()){
-					iter.remove();
-				} else if(subClass.equals(superClass)){
-					iter.remove();
-				} else if(superClass instanceof OWLObjectIntersectionOf){
-					Set<OWLClassExpression> operands = ((OWLObjectIntersectionOf) superClass).getOperands();
-					for (OWLClassExpression op : operands) {
-						if(op.isOWLThing()){
-							iter.remove();
-							break;
+			} else {
+				//check for some trivial axioms
+				if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
+					OWLClassExpression subClass = ((OWLSubClassOfAxiom)axiom).getSubClass();
+					OWLClassExpression superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
+					if(superClass.isOWLThing()){
+						iter.remove();
+					} else if(subClass.equals(superClass)){
+						iter.remove();
+					} else if(superClass instanceof OWLObjectIntersectionOf){
+						Set<OWLClassExpression> operands = ((OWLObjectIntersectionOf) superClass).getOperands();
+						for (OWLClassExpression op : operands) {
+							if(op.isOWLThing()){
+								iter.remove();
+								break;
+							}
 						}
+					} else if(superClass.toString().contains("Concept") || superClass.toString().contains("subject")){
+						iter.remove();
 					}
-				} else if(superClass.toString().contains("Concept") || superClass.toString().contains("subject")){
-					iter.remove();
 				}
 			}
 		}
