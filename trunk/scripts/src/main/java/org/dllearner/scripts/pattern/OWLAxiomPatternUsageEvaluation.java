@@ -85,7 +85,6 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
@@ -137,44 +136,47 @@ public class OWLAxiomPatternUsageEvaluation {
 		
 		//for each pattern
 		for (OWLAxiom pattern : patterns) {
-			//if pattern is equivalent classes axiom, we need to get the subclass axiom where the named class is the subclass
-			if(pattern.isOfType(AxiomType.EQUIVALENT_CLASSES)){
-				Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom)pattern).asOWLSubClassOfAxioms();
-				for (OWLSubClassOfAxiom axiom : subClassOfAxioms) {
-					if(!axiom.getSubClass().isAnonymous()){
-						pattern = axiom;
-						break;
-					}
-				}
-			}
-			if(pattern.isOfType(AxiomType.SUBCLASS_OF)){
-				logger.info("Processing " + pattern + "...");
-				Map<OWLAxiom, Score> axioms2Score = new LinkedHashMap<OWLAxiom, Score>();
-				//for each class
-				int i = 1;
-				for (NamedClass cls : classes) {
-					logger.info("Processing " + cls + "...");
-					
-					Map<OWLAxiom, Score> result = evaluateUsingFragmentExtraction(pattern, cls);
-					axioms2Score.putAll(result);
-					
-					for (Entry<OWLAxiom, Score> entry : result.entrySet()) {
-						OWLAxiom axiom = entry.getKey();
-						Score score = entry.getValue();
-						if(score.getAccuracy() >= threshold){
-							logger.info(axiom + "(" + format.format(score.getAccuracy()) + ")");
+			File file = new File(axiomRenderer.render(pattern).replace(" ", "_") + "-instantiations.ttl");
+			if(!file.exists()){
+				//if pattern is equivalent classes axiom, we need to get the subclass axiom where the named class is the subclass
+				if(pattern.isOfType(AxiomType.EQUIVALENT_CLASSES)){
+					Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom)pattern).asOWLSubClassOfAxioms();
+					for (OWLSubClassOfAxiom axiom : subClassOfAxioms) {
+						if(!axiom.getSubClass().isAnonymous()){
+							pattern = axiom;
+							break;
 						}
 					}
-					
-					//wait some time to avoid flooding of endpoint
-					try {
-						Thread.sleep(waitingTime);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-//					if(i++ == 3) break;
 				}
-				save(pattern, axioms2Score);
+				if(pattern.isOfType(AxiomType.SUBCLASS_OF)){
+					logger.info("Processing " + pattern + "...");
+					Map<OWLAxiom, Score> axioms2Score = new LinkedHashMap<OWLAxiom, Score>();
+					//for each class
+					int i = 1;
+					for (NamedClass cls : classes) {
+						logger.info("Processing " + cls + "...");
+						
+						Map<OWLAxiom, Score> result = evaluateUsingFragmentExtraction(pattern, cls);
+						axioms2Score.putAll(result);
+						
+						for (Entry<OWLAxiom, Score> entry : result.entrySet()) {
+							OWLAxiom axiom = entry.getKey();
+							Score score = entry.getValue();
+							if(score.getAccuracy() >= threshold){
+								logger.info(axiom + "(" + format.format(score.getAccuracy()) + ")");
+							}
+						}
+						
+						//wait some time to avoid flooding of endpoint
+						try {
+							Thread.sleep(waitingTime);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+//						if(i++ == 3) break;
+					}
+					save(pattern, axioms2Score, file);
+				}
 			}
 		}
 	}
@@ -203,28 +205,31 @@ public class OWLAxiomPatternUsageEvaluation {
 		
 		//for each pattern
 		for (OWLAxiom pattern : patterns) {
-			logger.info("Applying pattern " + pattern + "...");
-			// if pattern is equivalent classes axiom, we need to get the
-			// subclass axiom where the named class is the subclass
-			Map<OWLAxiom, Score> axioms2Score = new LinkedHashMap<OWLAxiom, Score>();
-			// for each class
-			for (NamedClass cls : classes) {
-				logger.info("...on class " + cls + "...");
-				Model fragment = class2Fragment.get(cls);
-				Map<OWLAxiom, Score> result = applyPattern(pattern,
-						df.getOWLClass(IRI.create(cls.getName())), fragment);
-				axioms2Score.putAll(result);
+			//run if not already exists a result on disk
+			File file = new File(axiomRenderer.render(pattern).replace(" ", "_") + "-instantiations.ttl");
+			if(!file.exists()){
+				logger.info("Applying pattern " + pattern + "...");
+				// if pattern is equivalent classes axiom, we need to get the
+				// subclass axiom where the named class is the subclass
+				Map<OWLAxiom, Score> axioms2Score = new LinkedHashMap<OWLAxiom, Score>();
+				// for each class
+				for (NamedClass cls : classes) {
+					logger.info("...on class " + cls + "...");
+					Model fragment = class2Fragment.get(cls);
+					Map<OWLAxiom, Score> result = applyPattern(pattern,
+							df.getOWLClass(IRI.create(cls.getName())), fragment);
+					axioms2Score.putAll(result);
 
-				for (Entry<OWLAxiom, Score> entry : result.entrySet()) {
-					OWLAxiom axiom = entry.getKey();
-					Score score = entry.getValue();
-					if (score.getAccuracy() >= threshold) {
-						logger.info(axiom + "(" + format.format(score.getAccuracy()) + ")");
+					for (Entry<OWLAxiom, Score> entry : result.entrySet()) {
+						OWLAxiom axiom = entry.getKey();
+						Score score = entry.getValue();
+						if (score.getAccuracy() >= threshold) {
+							logger.info(axiom + "(" + format.format(score.getAccuracy()) + ")");
+						}
 					}
 				}
+				save(pattern, axioms2Score, file);
 			}
-			save(pattern, axioms2Score);
-
 		}
 	}
 	
@@ -695,7 +700,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		return template.asQuery();
 	}
 	
-	private void save(OWLAxiom pattern, Map<OWLAxiom, Score> axioms2Score){
+	private void save(OWLAxiom pattern, Map<OWLAxiom, Score> axioms2Score, File file){
 		try {
 			Set<OWLAxiom> annotatedAxioms = new HashSet<OWLAxiom>();
 			for (Entry<OWLAxiom, Score> entry : axioms2Score.entrySet()) {
@@ -708,8 +713,7 @@ public class OWLAxiomPatternUsageEvaluation {
 			}
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = man.createOntology(annotatedAxioms);
-			String filename = axiomRenderer.render(pattern).replace(" ", "_");
-			man.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream(filename + "-instantiations.ttl"));
+			man.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream(file));
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (OWLOntologyStorageException e) {
