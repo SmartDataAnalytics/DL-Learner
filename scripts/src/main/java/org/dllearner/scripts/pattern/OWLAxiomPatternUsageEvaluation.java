@@ -81,6 +81,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -127,6 +128,7 @@ public class OWLAxiomPatternUsageEvaluation {
 	private boolean sampling = true;
 	private double sampleThreshold = 0.8;
 	private int sampleSize = 100;
+	private Set<String> entites2Ignore = Sets.newHashSet("subject", "Concept", "wikiPage");
 
 	public OWLAxiomPatternUsageEvaluation() {
 	}
@@ -321,8 +323,13 @@ public class OWLAxiomPatternUsageEvaluation {
 								}
 							}
 						}
-					} else if(superClass.toString().contains("Concept") || superClass.toString().contains("subject")){
-						iter.remove();
+					} else {
+						String classString = superClass.toString();
+						for (String s : entites2Ignore) {
+							if(classString.contains(s)){
+								iter.remove();
+							}
+						}
 					}
 				}
 			}
