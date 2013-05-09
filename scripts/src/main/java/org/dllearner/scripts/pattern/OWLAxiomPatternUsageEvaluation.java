@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
@@ -17,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,11 +49,13 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
+import org.semanticweb.elk.reasoner.saturation.classes.SuperClassExpression;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -59,7 +63,9 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -71,11 +77,14 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
+import com.google.common.io.Files;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -115,6 +124,9 @@ public class OWLAxiomPatternUsageEvaluation {
 	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 	private long maxExecutionTime = TimeUnit.SECONDS.toMillis(20);
 	private int queryLimit = 10000;
+	private boolean sampling = true;
+	private double sampleThreshold = 0.8;
+	private int sampleSize = 100;
 
 	public OWLAxiomPatternUsageEvaluation() {
 	}
@@ -181,12 +193,12 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 	}
 	
-	public void runUsingFragmentExtraction(SparqlEndpoint endpoint, OWLOntology ontology, File outputFile, int maxNrOfTestedClasses){
+	public void runUsingFragmentExtraction(SparqlEndpoint endpoint, OWLOntology patternOntology, File outputFile, int maxNrOfTestedClasses){
 		ks = new SparqlEndpointKS(endpoint, cache);
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks, cache);
 		
 		//get the axiom patterns to evaluate
-		List<OWLAxiom> patterns = getPatternsToEvaluate(ontology);
+		List<OWLAxiom> patterns = getPatternsToEvaluate(patternOntology);
 		
 		//get all classes in KB
 		Collection<NamedClass> classes = reasoner.getTypes(ns);
@@ -207,6 +219,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		for (OWLAxiom pattern : patterns) {
 			//run if not already exists a result on disk
 			File file = new File(axiomRenderer.render(pattern).replace(" ", "_") + "-instantiations.ttl");
+			OWLOntology ontology = null;
 			if(!file.exists()){
 				logger.info("Applying pattern " + pattern + "...");
 				// if pattern is equivalent classes axiom, we need to get the
@@ -228,9 +241,73 @@ public class OWLAxiomPatternUsageEvaluation {
 						}
 					}
 				}
-				save(pattern, axioms2Score, file);
+				ontology = save(pattern, axioms2Score, file);
+			} else {
+				OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+				try {
+					ontology = man.loadOntologyFromOntologyDocument(file);
+				} catch (OWLOntologyCreationException e) {
+					e.printStackTrace();
+				}
+			}
+			if(sampling){
+				List<OWLAxiom> sample = createSample(ontology);
+				List<String> lines = new ArrayList<String>();
+				for (OWLAxiom axiom : sample) {
+					double accuracy = getAccuracy(axiom);
+					lines.add(axiomRenderer.render(axiom) + "," + format.format(accuracy));
+				}
+				try {
+					Files.write(Joiner.on("\n").join(lines), new File(axiomRenderer.render(pattern).replace(" ", "_") + "-instantiations-sample.csv"), Charsets.UTF_8);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
+	}
+	
+	private List<OWLAxiom> createSample(OWLOntology ontology){
+		Set<OWLAxiom> axioms = ontology.getAxioms();
+		for (Iterator<OWLAxiom> iter =  axioms.iterator(); iter.hasNext();) {
+			OWLAxiom axiom = iter.next();
+			double accuracy = getAccuracy(axiom);
+			if(accuracy < sampleThreshold){
+				iter.remove();
+			}
+			//check for some trivial axioms
+			if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
+				OWLClassExpression subClass = ((OWLSubClassOfAxiom)axiom).getSubClass();
+				OWLClassExpression superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
+				if(superClass.isOWLThing()){
+					iter.remove();
+				} else if(subClass.equals(superClass)){
+					iter.remove();
+				} else if(superClass instanceof OWLObjectIntersectionOf){
+					Set<OWLClassExpression> operands = ((OWLObjectIntersectionOf) superClass).getOperands();
+					for (OWLClassExpression op : operands) {
+						if(op.isOWLThing()){
+							iter.remove();
+							break;
+						}
+					}
+				} else if(superClass.toString().contains("Concept") || superClass.toString().contains("subject")){
+					iter.remove();
+				}
+			}
+		}
+		List<OWLAxiom> axiomList = new ArrayList<OWLAxiom>(axioms);
+		Collections.shuffle(axiomList, new Random(123));
+		return axiomList.subList(0, Math.min(sampleSize, axiomList.size()));
+	}
+	
+	private double getAccuracy(OWLAxiom axiom){
+		Set<OWLAnnotation> annotations = axiom.getAnnotations(confidenceProperty);
+		if(!annotations.isEmpty()){
+			OWLAnnotation annotation = annotations.iterator().next();
+			double accuracy = ((OWLLiteral)annotation.getValue()).parseDouble();
+			return accuracy;
+		}
+		return -1;
 	}
 	
 	private int maxModalDepth(List<OWLAxiom> patterns) {
@@ -327,6 +404,9 @@ public class OWLAxiomPatternUsageEvaluation {
 				statements2Remove.add(st);
 			}
 			if(st.getPredicate().equals(RDF.type) && !st.getObject().asResource().getURI().startsWith("http://dbpedia.org/ontology/")){
+				statements2Remove.add(st);
+			}
+			if(st.getPredicate().hasURI("http://xmlns.com/foaf/0.1/depiction") || st.getPredicate().hasURI("http://dbpedia.org/ontology/thumbnail")){
 				statements2Remove.add(st);
 			}
 		}
@@ -700,7 +780,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		return template.asQuery();
 	}
 	
-	private void save(OWLAxiom pattern, Map<OWLAxiom, Score> axioms2Score, File file){
+	private OWLOntology save(OWLAxiom pattern, Map<OWLAxiom, Score> axioms2Score, File file){
 		try {
 			Set<OWLAxiom> annotatedAxioms = new HashSet<OWLAxiom>();
 			for (Entry<OWLAxiom, Score> entry : axioms2Score.entrySet()) {
@@ -714,6 +794,7 @@ public class OWLAxiomPatternUsageEvaluation {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = man.createOntology(annotatedAxioms);
 			man.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream(file));
+			return ontology;
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (OWLOntologyStorageException e) {
@@ -721,6 +802,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	private void save(Set<EvaluatedAxiom> evaluatedAxioms){
