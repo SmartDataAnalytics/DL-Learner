@@ -317,7 +317,7 @@ public class OWLAxiomPatternUsageEvaluation {
 							iter.remove();
 						} else {
 							for (OWLClassExpression op : operands) {
-								if(op.isOWLThing()){
+								if(op.isOWLThing() || op.equals(subClass)){
 									iter.remove();
 									break;
 								}
