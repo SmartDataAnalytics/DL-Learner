@@ -290,48 +290,54 @@ public class OWLAxiomPatternUsageEvaluation {
 			if(accuracy < sampleThreshold){
 				iter.remove();
 			} else {
-				if(axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)){
-					Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom)axiom).asOWLSubClassOfAxioms();
-					for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
-						if(!subClassOfAxiom.getSubClass().isAnonymous()){
-							axiom = subClassOfAxiom; 
-							break;
-						}
+				String axiomString = axiomRenderer.render(axiom);
+				boolean remove = false;
+				for (String s : entites2Ignore) {
+					if(axiomString.contains(s)){
+						remove = true;
+						break;
 					}
 				}
-				//check for some trivial axioms
-				if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
-					OWLClassExpression subClass = ((OWLSubClassOfAxiom)axiom).getSubClass();
-					OWLClassExpression superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
-					if(superClass.isOWLThing()){
-						iter.remove();
-					} else if(subClass.equals(superClass)){
-						iter.remove();
-					} else if(superClass instanceof OWLObjectIntersectionOf){
-						List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) superClass).getOperandsAsList();
-						
-						
-						if(operands.size() == 1){//how can this happen?
+				if(remove){
+					iter.remove();
+				} else {
+					if(axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)){
+						Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom)axiom).asOWLSubClassOfAxioms();
+						for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
+							if(!subClassOfAxiom.getSubClass().isAnonymous()){
+								axiom = subClassOfAxiom; 
+								break;
+							}
+						}
+					}
+					//check for some trivial axioms
+					if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
+						OWLClassExpression subClass = ((OWLSubClassOfAxiom)axiom).getSubClass();
+						OWLClassExpression superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
+						if(superClass.isOWLThing()){
 							iter.remove();
-						} else if(operands.size() > ((OWLObjectIntersectionOf) superClass).getOperands().size()){//duplicates
+						} else if(subClass.equals(superClass)){
 							iter.remove();
-						} else {
-							for (OWLClassExpression op : operands) {
-								if(op.isOWLThing() || op.equals(subClass)){
-									iter.remove();
-									break;
+						} else if(superClass instanceof OWLObjectIntersectionOf){
+							List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) superClass).getOperandsAsList();
+							
+							
+							if(operands.size() == 1){//how can this happen?
+								iter.remove();
+							} else if(operands.size() > ((OWLObjectIntersectionOf) superClass).getOperands().size()){//duplicates
+								iter.remove();
+							} else {
+								for (OWLClassExpression op : operands) {
+									if(op.isOWLThing() || op.equals(subClass)){
+										iter.remove();
+										break;
+									}
 								}
 							}
-						}
-					} else {
-						String classString = superClass.toString();
-						for (String s : entites2Ignore) {
-							if(classString.contains(s)){
-								iter.remove();
-							}
-						}
+						} 
 					}
 				}
+				
 			}
 		}
 		List<OWLAxiom> axiomList = new ArrayList<OWLAxiom>(axioms);
