@@ -288,6 +288,15 @@ public class OWLAxiomPatternUsageEvaluation {
 			if(accuracy < sampleThreshold){
 				iter.remove();
 			} else {
+				if(axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)){
+					Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom)axiom).asOWLSubClassOfAxioms();
+					for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
+						if(!subClassOfAxiom.getSubClass().isAnonymous()){
+							axiom = subClassOfAxiom; 
+							break;
+						}
+					}
+				}
 				//check for some trivial axioms
 				if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
 					OWLClassExpression subClass = ((OWLSubClassOfAxiom)axiom).getSubClass();
@@ -297,11 +306,19 @@ public class OWLAxiomPatternUsageEvaluation {
 					} else if(subClass.equals(superClass)){
 						iter.remove();
 					} else if(superClass instanceof OWLObjectIntersectionOf){
-						Set<OWLClassExpression> operands = ((OWLObjectIntersectionOf) superClass).getOperands();
-						for (OWLClassExpression op : operands) {
-							if(op.isOWLThing()){
-								iter.remove();
-								break;
+						List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) superClass).getOperandsAsList();
+						
+						
+						if(operands.size() == 1){//how can this happen?
+							iter.remove();
+						} else if(operands.size() > ((OWLObjectIntersectionOf) superClass).getOperands().size()){//duplicates
+							iter.remove();
+						} else {
+							for (OWLClassExpression op : operands) {
+								if(op.isOWLThing()){
+									iter.remove();
+									break;
+								}
 							}
 						}
 					} else if(superClass.toString().contains("Concept") || superClass.toString().contains("subject")){
