@@ -108,7 +108,16 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	}
 	
 	public Query asQuery(String rootVariable, OWLClassExpression expr, boolean countQuery){
-		return asQuery(rootVariable, expr, Collections.<OWLEntity>emptySet());
+		String queryString = "SELECT ";
+		String triplePattern = convert(rootVariable, expr);
+		if(countQuery){
+			queryString += "(COUNT(DISTINCT " + rootVariable + ") AS ?cnt) WHERE {";
+		} else {
+			queryString += "DISTINCT " + rootVariable + " WHERE {";
+		}
+		queryString += triplePattern;
+		queryString += "}";
+		return QueryFactory.create(queryString, Syntax.syntaxARQ);
 	}
 	
 	public Query asQuery(String rootVariable, OWLClassExpression expr, Set<? extends OWLEntity> variableEntities){
