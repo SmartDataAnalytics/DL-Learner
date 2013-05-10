@@ -97,6 +97,7 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -131,7 +132,7 @@ public class OWLAxiomPatternUsageEvaluation {
 	private long maxExecutionTime = TimeUnit.SECONDS.toMillis(20);
 	private int queryLimit = 10000;
 	private boolean sampling = true;
-	private double sampleThreshold = 0.8;
+	private double sampleThreshold = 0.6;
 	private int sampleSize = 100;
 	private Set<String> entites2Ignore = Sets.newHashSet("subject", "Concept", "wikiPage");
 	//DBpedia schema
@@ -169,7 +170,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		Collections.shuffle(classesList, new Random(123));
 		classesList = classesList.subList(0, maxNrOfTestedClasses);
 		classes = classesList;
-		//classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/ChristianBishop"));
+//		classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/ChristianBishop"));
 		
 		//get the maximum modal depth in the pattern axioms
 		int maxModalDepth = maxModalDepth(patterns);
@@ -202,11 +203,13 @@ public class OWLAxiomPatternUsageEvaluation {
 				// for each class
 				for (NamedClass cls : classes) {
 					logger.info("...on class " + cls + "...");
+					OWLClass owlClass = df.getOWLClass(IRI.create(cls.getName()));
 					Model fragment = class2Fragment.get(cls);
-					Map<OWLAxiom, Score> result = applyPattern(pattern,
-							df.getOWLClass(IRI.create(cls.getName())), fragment);
+					Map<OWLAxiom, Score> result = applyPattern(pattern,	owlClass, fragment);
 					Set<OWLAxiom> annotatedAxioms = asAnnotatedAxioms(result);
 					filterOutTrivialAxioms(annotatedAxioms);
+					filterOutAxiomsBelowThreshold(annotatedAxioms, threshold);
+					annotatedAxioms = computeScoreGlobal(annotatedAxioms, owlClass);
 					learnedAxioms.addAll(annotatedAxioms);
 					printAxioms(annotatedAxioms, threshold);
 				}
@@ -248,7 +251,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		return annotatedAxioms;
 	}
 	
-	private void printAxioms(Set<OWLAxiom> axioms, double threshold){
+	private void printAxioms(Set<OWLAxiom> axioms, double threshold){OWLClassExpressionToSPARQLConverter c = new OWLClassExpressionToSPARQLConverter();
 		for (Iterator<OWLAxiom> iter =  axioms.iterator(); iter.hasNext();) {
 			OWLAxiom axiom = iter.next();
 			double accuracy = getAccuracy(axiom);
@@ -339,6 +342,15 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 		Collections.shuffle(axiomList, new Random(123));
 		return axiomList.subList(0, Math.min(sampleSize, axiomList.size()));
+	}
+	
+	private void filterOutAxiomsBelowThreshold(Set<OWLAxiom> axioms, double threshold) {
+		for (Iterator<OWLAxiom> iter = axioms.iterator(); iter.hasNext();) {
+			OWLAxiom axiom = iter.next();
+			if(getAccuracy(axiom) < threshold){
+				iter.remove();
+			}
+		}
 	}
 	
 	private void filterOutTrivialAxioms(Set<OWLAxiom> axioms) {
@@ -1013,6 +1025,94 @@ public class OWLAxiomPatternUsageEvaluation {
 			Model model = queryExecution.execConstruct();
 			return model;
 		}
+	}
+	
+	private Set<OWLAxiom> computeScoreGlobal(Set<OWLAxiom> axioms, OWLClass cls){
+		Set<OWLAxiom> newAxioms = new HashSet<OWLAxiom>();
+		for (Iterator<OWLAxiom> iter =  axioms.iterator(); iter.hasNext();) {
+			OWLAxiom axiom = iter.next();
+			OWLClassExpression subClass;
+			OWLClassExpression superClass = null;
+			OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+			if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+				Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom) axiom).asOWLSubClassOfAxioms();
+				for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
+					if (subClassOfAxiom.getSubClass().equals(cls)) {
+						superClass = subClassOfAxiom.getSuperClass();
+						break;
+					}
+				}
+			} else if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
+				superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
+			}
+			//count subclass
+			Query query = converter.asQuery("?x", cls, true);System.out.println(query);
+			ResultSet rs = executeSelectQuery(query);
+			int subClassCnt = rs.next().getLiteral("cnt").getInt();
+			//count subclass+superClass
+			query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(cls, superClass), true);System.out.println(query);
+			rs = executeSelectQuery(query);
+			int overlap = rs.next().getLiteral("cnt").getInt();
+			//count superClass
+			query = converter.asQuery("?x", superClass, true);System.out.println(query);
+			rs = executeSelectQuery(query);
+			int superClassCnt = rs.next().getLiteral("cnt").getInt();
+			
+			double precision = wald(superClassCnt, overlap);
+			double recall = wald(subClassCnt, overlap);
+			
+			double fScore = 0;
+			if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
+				fScore = Heuristics.getFScore(recall, precision, 3);
+			} else if(axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)){
+				fScore = Heuristics.getFScore(recall, precision, 1);
+			}
+			
+			System.out.println(axiom);
+			System.out.println(subClassCnt + "|" + superClassCnt + "|" + overlap);
+			System.out.println("P=" + precision + "|R=" + recall  +"|F=" + fScore);
+			
+			newAxioms.add(axiom.getAxiomWithoutAnnotations().getAnnotatedAxiom(
+					Collections.singleton(df.getOWLAnnotation(confidenceProperty, df.getOWLLiteral(fScore)))));
+				
+		}
+		return newAxioms;
+	}
+	
+	private Score computeScoreGlobal(OWLAxiom axiom, OWLClass cls){
+		OWLClassExpression subClass;
+		OWLClassExpression superClass = null;
+		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+		if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+			Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom) axiom).asOWLSubClassOfAxioms();
+			for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
+				if (subClassOfAxiom.getSubClass().equals(cls)) {
+					superClass = subClassOfAxiom.getSuperClass();
+					break;
+				}
+			}
+		} else if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
+			superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
+		}
+		//count subclass+superClass
+		Query query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(cls, superClass), true);System.out.println(query);
+		ResultSet rs = executeSelectQuery(query);
+		int subClassCnt = rs.next().getLiteral("cnt").getInt();
+		//count superClass
+		query = converter.asQuery("?x", superClass, true);System.out.println(query);
+		rs = executeSelectQuery(query);
+		int superClassCnt = rs.next().getLiteral("cnt").getInt();
+		
+		Score score = computeScore(superClassCnt, subClassCnt);
+		return score;
+	}
+	
+	private double wald(int total, int success){
+		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
+		
+		double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
+	
+		return accuracy;
 	}
 	
 	private Score computeScore(int total, int success){
