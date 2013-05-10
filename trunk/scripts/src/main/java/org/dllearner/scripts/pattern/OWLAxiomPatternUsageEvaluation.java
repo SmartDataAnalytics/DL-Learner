@@ -7,11 +7,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -29,6 +34,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
@@ -51,6 +57,8 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
+import org.ini4j.IniPreferences;
+import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
@@ -106,6 +114,8 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 public class OWLAxiomPatternUsageEvaluation {
 	
@@ -139,6 +149,10 @@ public class OWLAxiomPatternUsageEvaluation {
 	private OWLOntology dbpediaOntology;
 	private String ontologyURL = "http://downloads.dbpedia.org/3.8/dbpedia_3.8.owl.bz2";
 	private OWLReasoner reasoner;
+	
+	private Connection conn;
+	
+	private PreparedStatement ps;
 
 	public OWLAxiomPatternUsageEvaluation() {
 		try {
@@ -149,6 +163,47 @@ public class OWLAxiomPatternUsageEvaluation {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		initDBConnection();
+	}
+	
+	private void initDBConnection() {
+		try {
+			InputStream is = this.getClass().getClassLoader().getResourceAsStream("db_settings.ini");
+			Preferences prefs = new IniPreferences(is);
+			String dbServer = prefs.node("database").get("server", null);
+			String dbName = prefs.node("database").get("name", null);
+			String dbUser = prefs.node("database").get("user", null);
+			String dbPass = prefs.node("database").get("pass", null);
+
+			Class.forName("com.mysql.jdbc.Driver");
+			String url = "jdbc:mysql://" + dbServer + "/" + dbName;
+			conn = DriverManager.getConnection(url, dbUser, dbPass);
+			
+			java.sql.Statement st = conn.createStatement();
+			st.execute("CREATE TABLE IF NOT EXISTS Eval_Statistics (" 
+			        + "id MEDIUMINT NOT NULL AUTO_INCREMENT,"
+					+ "pattern TEXT NOT NULL,"
+					+ "pattern_pretty TEXT NOT NULL,"
+					+ "class TEXT NOT NULL,"
+					+ "runtime MEDIUMINT DEFAULT 0,"
+					+ "nrOfAxiomsLocal MEDIUMINT DEFAULT 0,"
+					+ "nrOfAxiomsGlobal MEDIUMINT DEFAULT 0,"
+					+ "PRIMARY KEY(id),"
+					+ "INDEX(pattern(8000))) DEFAULT CHARSET=utf8");
+			
+			ps = conn.prepareStatement("INSERT INTO Eval_Statistics (pattern, pattern_pretty, class, runtime, nrOfAxiomsLocal, nrOfAxiomsGlobal) VALUES(?,?,?,?,?,?)");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (InvalidFileFormatException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -170,7 +225,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		Collections.shuffle(classesList, new Random(123));
 		classesList = classesList.subList(0, maxNrOfTestedClasses);
 		classes = classesList;
-//		classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/ChristianBishop"));
+		//classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/ChristianBishop"));
 		
 		//get the maximum modal depth in the pattern axioms
 		int maxModalDepth = maxModalDepth(patterns);
@@ -193,7 +248,10 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 		
 		//for each pattern
+		Monitor patternTimeMon = MonitorFactory.getTimeMonitor("pattern-runtime");
 		for (OWLAxiom pattern : patterns) {
+			Monitor patternClassTimeMon = MonitorFactory.getTimeMonitor("class-pattern-runtime");
+			patternTimeMon.start();
 			//run if not already exists a result on disk
 			File file = new File(axiomRenderer.render(pattern).replace(" ", "_") + "-instantiations.ttl");
 			OWLOntology ontology = null;
@@ -202,6 +260,7 @@ public class OWLAxiomPatternUsageEvaluation {
 				Set<OWLAxiom> learnedAxioms = new HashSet<OWLAxiom>();
 				// for each class
 				for (NamedClass cls : classes) {
+					patternClassTimeMon.start();
 					logger.info("...on class " + cls + "...");
 					OWLClass owlClass = df.getOWLClass(IRI.create(cls.getName()));
 					Model fragment = class2Fragment.get(cls);
@@ -209,9 +268,14 @@ public class OWLAxiomPatternUsageEvaluation {
 					Set<OWLAxiom> annotatedAxioms = asAnnotatedAxioms(result);
 					filterOutTrivialAxioms(annotatedAxioms);
 					filterOutAxiomsBelowThreshold(annotatedAxioms, threshold);
+					int nrOfAxiomsLocal = annotatedAxioms.size();
 					annotatedAxioms = computeScoreGlobal(annotatedAxioms, owlClass);
+					filterOutAxiomsBelowThreshold(annotatedAxioms, threshold);
+					int nrOfAxiomsGlobal = annotatedAxioms.size();
 					learnedAxioms.addAll(annotatedAxioms);
 					printAxioms(annotatedAxioms, threshold);
+					patternClassTimeMon.stop();
+					write2DB(pattern, owlClass, patternClassTimeMon.getLastValue(), nrOfAxiomsLocal, nrOfAxiomsGlobal);
 				}
 				ontology = save(pattern, learnedAxioms, file);
 			} else {
@@ -222,6 +286,7 @@ public class OWLAxiomPatternUsageEvaluation {
 					e.printStackTrace();
 				}
 			}
+			patternTimeMon.stop();
 			if(sampling){
 				List<OWLAxiom> sample = createSample(ontology);//, classes);
 				List<String> lines = new ArrayList<String>();
@@ -789,6 +854,20 @@ public class OWLAxiomPatternUsageEvaluation {
 		return axioms2Score;
 	}
 	
+	private void write2DB(OWLAxiom pattern, OWLClass cls, double runtime, int nrOfAxiomsLocal, int nrOfAxiomsGlobal){
+		try {
+			ps.setString(1, render(pattern));
+			ps.setString(2, axiomRenderer.render(pattern));
+			ps.setString(3, axiomRenderer.render(cls));
+			ps.setDouble(4, runtime);
+			ps.setInt(5, nrOfAxiomsLocal);
+			ps.setInt(6, nrOfAxiomsGlobal);
+			ps.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private Map<OWLAxiom, Score> applyPattern2(OWLSubClassOfAxiom pattern, OWLClass cls, Model fragment) {
 		Map<OWLAxiom, Score> axioms2Score = new HashMap<OWLAxiom, Score>();
 		
@@ -950,6 +1029,11 @@ public class OWLAxiomPatternUsageEvaluation {
 					}
 				}
 			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			
 		} else {
 			QueryExecution queryExecution = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
@@ -1029,51 +1113,60 @@ public class OWLAxiomPatternUsageEvaluation {
 	
 	private Set<OWLAxiom> computeScoreGlobal(Set<OWLAxiom> axioms, OWLClass cls){
 		Set<OWLAxiom> newAxioms = new HashSet<OWLAxiom>();
+		int subClassCnt = -1;
+		ResultSet rs;
 		for (Iterator<OWLAxiom> iter =  axioms.iterator(); iter.hasNext();) {
-			OWLAxiom axiom = iter.next();
-			OWLClassExpression subClass;
-			OWLClassExpression superClass = null;
-			OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-			if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
-				Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom) axiom).asOWLSubClassOfAxioms();
-				for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
-					if (subClassOfAxiom.getSubClass().equals(cls)) {
-						superClass = subClassOfAxiom.getSuperClass();
-						break;
+			try {
+				OWLAxiom axiom = iter.next();
+				OWLClassExpression subClass;
+				OWLClassExpression superClass = null;
+				OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+				if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+					Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom) axiom).asOWLSubClassOfAxioms();
+					for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
+						if (subClassOfAxiom.getSubClass().equals(cls)) {
+							superClass = subClassOfAxiom.getSuperClass();
+							break;
+						}
 					}
+				} else if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
+					superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
 				}
-			} else if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
-				superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
+				//count subclass
+				Query query = converter.asQuery("?x", cls, true);
+				if(subClassCnt == -1){
+					System.out.println(query);
+					rs = executeSelectQuery(query);
+					subClassCnt = rs.next().getLiteral("cnt").getInt();
+				}
+				//count superClass
+				query = converter.asQuery("?x", superClass, true);System.out.println(query);
+				rs = executeSelectQuery(query);
+				int superClassCnt = rs.next().getLiteral("cnt").getInt();
+				//count subclass+superClass
+				query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(cls, superClass), true);System.out.println(query);
+				rs = executeSelectQuery(query);
+				int overlap = rs.next().getLiteral("cnt").getInt();
+				
+				double precision = wald(superClassCnt, overlap);
+				double recall = wald(subClassCnt, overlap);
+				
+				double fScore = 0;
+				if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
+					fScore = Heuristics.getFScore(recall, precision, 3);
+				} else if(axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)){
+					fScore = Heuristics.getFScore(recall, precision, 1);
+				}
+				
+				System.out.println(axiom);
+				System.out.println(subClassCnt + "|" + superClassCnt + "|" + overlap);
+				System.out.println("P=" + precision + "|R=" + recall  +"|F=" + fScore);
+				
+				newAxioms.add(axiom.getAxiomWithoutAnnotations().getAnnotatedAxiom(
+						Collections.singleton(df.getOWLAnnotation(confidenceProperty, df.getOWLLiteral(fScore)))));
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			//count subclass
-			Query query = converter.asQuery("?x", cls, true);System.out.println(query);
-			ResultSet rs = executeSelectQuery(query);
-			int subClassCnt = rs.next().getLiteral("cnt").getInt();
-			//count subclass+superClass
-			query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(cls, superClass), true);System.out.println(query);
-			rs = executeSelectQuery(query);
-			int overlap = rs.next().getLiteral("cnt").getInt();
-			//count superClass
-			query = converter.asQuery("?x", superClass, true);System.out.println(query);
-			rs = executeSelectQuery(query);
-			int superClassCnt = rs.next().getLiteral("cnt").getInt();
-			
-			double precision = wald(superClassCnt, overlap);
-			double recall = wald(subClassCnt, overlap);
-			
-			double fScore = 0;
-			if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
-				fScore = Heuristics.getFScore(recall, precision, 3);
-			} else if(axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)){
-				fScore = Heuristics.getFScore(recall, precision, 1);
-			}
-			
-			System.out.println(axiom);
-			System.out.println(subClassCnt + "|" + superClassCnt + "|" + overlap);
-			System.out.println("P=" + precision + "|R=" + recall  +"|F=" + fScore);
-			
-			newAxioms.add(axiom.getAxiomWithoutAnnotations().getAnnotatedAxiom(
-					Collections.singleton(df.getOWLAnnotation(confidenceProperty, df.getOWLLiteral(fScore)))));
 				
 		}
 		return newAxioms;
@@ -1123,6 +1216,21 @@ public class OWLAxiomPatternUsageEvaluation {
 		double confidence = confidenceInterval[1] - confidenceInterval[0];
 		
 		return new AxiomScore(accuracy, confidence, total, success, total-success);
+	}
+	
+	private String render(OWLAxiom axiom){
+		try {
+			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			OWLOntology ontology = man.createOntology();
+			man.addAxiom(ontology, axiom);
+			StringWriter sw = new StringWriter();
+			org.coode.owlapi.functionalrenderer.OWLObjectRenderer r = new org.coode.owlapi.functionalrenderer.OWLObjectRenderer(man, ontology, sw);
+			axiom.accept(r);
+			return sw.toString();
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public static void main(String[] args) throws Exception {
