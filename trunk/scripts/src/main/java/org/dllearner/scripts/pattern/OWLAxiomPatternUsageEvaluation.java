@@ -1132,24 +1132,32 @@ public class OWLAxiomPatternUsageEvaluation {
 				} else if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
 					superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
 				}
+				//count subclass+superClass
+				Query query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(cls, superClass), true);System.out.println(query);
+				rs = executeSelectQuery(query);
+				int overlap = rs.next().getLiteral("cnt").getInt();
 				//count subclass
-				Query query = converter.asQuery("?x", cls, true);
+				query = converter.asQuery("?x", cls, true);
 				if(subClassCnt == -1){
 					System.out.println(query);
 					rs = executeSelectQuery(query);
 					subClassCnt = rs.next().getLiteral("cnt").getInt();
 				}
+				
+				//compute recall
+				double recall = wald(subClassCnt, overlap);
+				//if recall is too low we can skip the computation of the precision
+				if(recall < 0.2){
+					logger.warn("Recall(" + recall + ") too low. Skipping precision computation.");
+					continue;
+				}
 				//count superClass
 				query = converter.asQuery("?x", superClass, true);System.out.println(query);
 				rs = executeSelectQuery(query);
 				int superClassCnt = rs.next().getLiteral("cnt").getInt();
-				//count subclass+superClass
-				query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(cls, superClass), true);System.out.println(query);
-				rs = executeSelectQuery(query);
-				int overlap = rs.next().getLiteral("cnt").getInt();
-				
+				//compute precision
 				double precision = wald(superClassCnt, overlap);
-				double recall = wald(subClassCnt, overlap);
+				
 				
 				double fScore = 0;
 				if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
