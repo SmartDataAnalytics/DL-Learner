@@ -19,11 +19,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NavigableSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -79,8 +79,10 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Sets;
+import com.google.common.collect.TreeMultimap;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -149,7 +151,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		Collections.shuffle(classesList, new Random(123));
 		classesList = classesList.subList(0, maxNrOfTestedClasses);
 		classes = classesList;
-//		classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/ChristianBishop"));
+		classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/ChristianBishop"));
 		
 		//get the maximum modal depth in the pattern axioms
 		int maxModalDepth = maxModalDepth(patterns);
@@ -187,6 +189,7 @@ public class OWLAxiomPatternUsageEvaluation {
 							df.getOWLClass(IRI.create(cls.getName())), fragment);
 					Set<OWLAxiom> annotatedAxioms = asAnnotatedAxioms(result);
 					filterOutTrivialAxioms(annotatedAxioms);
+					learnedAxioms.addAll(annotatedAxioms);
 					printAxioms(annotatedAxioms, threshold);
 				}
 				ontology = save(pattern, learnedAxioms, file);
@@ -199,7 +202,7 @@ public class OWLAxiomPatternUsageEvaluation {
 				}
 			}
 			if(sampling){
-				List<OWLAxiom> sample = createSample(ontology);
+				List<OWLAxiom> sample = createSample(ontology);//createSample(ontology, classes);
 				List<String> lines = new ArrayList<String>();
 				for (OWLAxiom axiom : sample) {
 					double accuracy = getAccuracy(axiom);
@@ -260,6 +263,31 @@ public class OWLAxiomPatternUsageEvaluation {
 			}
 		}
 		List<OWLAxiom> axiomList = new ArrayList<OWLAxiom>(axioms);
+		Collections.shuffle(axiomList, new Random(123));
+		return axiomList.subList(0, Math.min(sampleSize, axiomList.size()));
+	}
+	
+	private List<OWLAxiom> createSample(OWLOntology ontology, Collection<NamedClass> classes){
+		List<OWLAxiom> axiomList = new ArrayList<OWLAxiom>();
+		for (NamedClass cls : classes) {
+			OWLClass owlClass = df.getOWLClass(IRI.create(cls.getName()));
+			Set<OWLAxiom> referencingAxioms = ontology.getReferencingAxioms(owlClass);
+			Multimap<Double, OWLAxiom> accuracyWithAxioms = TreeMultimap.create();
+			for (OWLAxiom axiom : referencingAxioms) {
+				double accuracy = getAccuracy(axiom);
+				if(accuracy >= sampleThreshold){
+					accuracyWithAxioms.put(accuracy, axiom);
+				}
+			}
+			//pick the set of axioms with highest score
+			NavigableSet<Double> keySet = (NavigableSet<Double>)accuracyWithAxioms.keySet();
+			Double score = keySet.first();
+			Collection<OWLAxiom> axiomsWithHighestScore = accuracyWithAxioms.get(score);
+			for (OWLAxiom ax : axiomsWithHighestScore) {
+				System.out.println(ax + ":" + getAccuracy(ax));
+			}
+		}
+		
 		Collections.shuffle(axiomList, new Random(123));
 		return axiomList.subList(0, Math.min(sampleSize, axiomList.size()));
 	}
