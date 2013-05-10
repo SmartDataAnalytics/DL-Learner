@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
@@ -33,6 +34,7 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.log4j.Logger;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.core.EvaluatedAxiom;
@@ -70,12 +72,14 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultiset;
@@ -130,11 +134,25 @@ public class OWLAxiomPatternUsageEvaluation {
 	private double sampleThreshold = 0.8;
 	private int sampleSize = 100;
 	private Set<String> entites2Ignore = Sets.newHashSet("subject", "Concept", "wikiPage");
+	//DBpedia schema
+	private OWLOntology dbpediaOntology;
+	private String ontologyURL = "http://downloads.dbpedia.org/3.8/dbpedia_3.8.owl.bz2";
+	private OWLReasoner reasoner;
 
 	public OWLAxiomPatternUsageEvaluation() {
+		try {
+			BZip2CompressorInputStream is = new BZip2CompressorInputStream(new URL(ontologyURL).openStream());
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			dbpediaOntology = manager.loadOntologyFromOntologyDocument(is);
+			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(dbpediaOntology);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-	
-	
 	
 	public void runUsingFragmentExtraction(SparqlEndpoint endpoint, OWLOntology patternOntology, File outputFile, int maxNrOfTestedClasses){
 		ks = new SparqlEndpointKS(endpoint, cache);
@@ -151,7 +169,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		Collections.shuffle(classesList, new Random(123));
 		classesList = classesList.subList(0, maxNrOfTestedClasses);
 		classes = classesList;
-		classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/ChristianBishop"));
+		//classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/ChristianBishop"));
 		
 		//get the maximum modal depth in the pattern axioms
 		int maxModalDepth = maxModalDepth(patterns);
@@ -202,7 +220,7 @@ public class OWLAxiomPatternUsageEvaluation {
 				}
 			}
 			if(sampling){
-				List<OWLAxiom> sample = createSample(ontology);//createSample(ontology, classes);
+				List<OWLAxiom> sample = createSample(ontology);//, classes);
 				List<String> lines = new ArrayList<String>();
 				for (OWLAxiom axiom : sample) {
 					double accuracy = getAccuracy(axiom);
@@ -283,11 +301,42 @@ public class OWLAxiomPatternUsageEvaluation {
 			NavigableSet<Double> keySet = (NavigableSet<Double>)accuracyWithAxioms.keySet();
 			Double score = keySet.first();
 			Collection<OWLAxiom> axiomsWithHighestScore = accuracyWithAxioms.get(score);
-			for (OWLAxiom ax : axiomsWithHighestScore) {
-				System.out.println(ax + ":" + getAccuracy(ax));
+			Map<OWLAxiom, OWLClassExpression> superClasses = new HashMap<OWLAxiom, OWLClassExpression>();
+			for (OWLAxiom axiom : axiomsWithHighestScore) {
+				if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+					Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom) axiom).asOWLSubClassOfAxioms();
+					for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
+						if (subClassOfAxiom.getSubClass().equals(owlClass)) {
+							superClasses.put(axiom, subClassOfAxiom.getSuperClass());
+							break;
+						}
+					}
+				}
+				if (axiom.isOfType(AxiomType.SUBCLASS_OF)) {
+					superClasses.put(axiom, ((OWLSubClassOfAxiom) axiom).getSuperClass());
+				}
 			}
+			
+			for (Entry<OWLAxiom, OWLClassExpression> entry : superClasses.entrySet()) {
+				OWLAxiom axiom1 = entry.getKey();
+				OWLClassExpression ce1 = entry.getValue();
+				boolean remove = false;
+				for (Entry<OWLAxiom, OWLClassExpression> entry2 : superClasses.entrySet()) {
+					OWLAxiom axiom2 = entry2.getKey();
+					if(!axiom1.equals(axiom2)){
+						OWLClassExpression ce2 = entry2.getValue();
+						if(reasoner.isEntailed(df.getOWLSubClassOfAxiom(ce2, ce1))){
+							remove = true;
+							break;
+						}
+					}
+				}
+				if(remove){
+					axiomsWithHighestScore.remove(axiom1);
+				}
+			}
+			axiomList.addAll(axiomsWithHighestScore);
 		}
-		
 		Collections.shuffle(axiomList, new Random(123));
 		return axiomList.subList(0, Math.min(sampleSize, axiomList.size()));
 	}
@@ -296,6 +345,10 @@ public class OWLAxiomPatternUsageEvaluation {
 		for (Iterator<OWLAxiom> iter = axioms.iterator(); iter.hasNext();) {
 			OWLAxiom axiom = iter.next();
 			if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+				if(((OWLEquivalentClassesAxiom) axiom).getClassExpressions().size() == 1){
+					iter.remove();
+					continue;
+				}
 				Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom) axiom).asOWLSubClassOfAxioms();
 				for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
 					if (!subClassOfAxiom.getSubClass().isAnonymous()) {
