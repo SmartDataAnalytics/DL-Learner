@@ -49,7 +49,6 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
-import org.semanticweb.elk.reasoner.saturation.classes.SuperClassExpression;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
@@ -121,7 +120,7 @@ public class OWLAxiomPatternUsageEvaluation {
 	private double threshold = 0.6;
 	private OWLAnnotationProperty confidenceProperty = df.getOWLAnnotationProperty(IRI.create("http://dl-learner.org/pattern/confidence"));
 	
-	private long maxFragmentExtractionTime = TimeUnit.SECONDS.toMillis(10);
+	private long maxFragmentExtractionTime = TimeUnit.SECONDS.toMillis(60);
 	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 	private long maxExecutionTime = TimeUnit.SECONDS.toMillis(20);
 	private int queryLimit = 10000;
@@ -134,66 +133,6 @@ public class OWLAxiomPatternUsageEvaluation {
 	}
 	
 	
-	public void run(SparqlEndpoint endpoint, OWLOntology ontology, File outputFile, int maxNrOfTestedClasses){
-		ks = new SparqlEndpointKS(endpoint, cache);
-		SPARQLReasoner reasoner = new SPARQLReasoner(ks, cache);
-		
-		//get the axiom patterns to evaluate
-		List<OWLAxiom> patterns = getPatternsToEvaluate(ontology);
-		
-		//get all classes in KB
-		Collection<NamedClass> classes = reasoner.getTypes(ns);
-		List<NamedClass> classesList = new ArrayList<NamedClass>(classes);
-		Collections.shuffle(classesList, new Random(123));
-		classesList = classesList.subList(0, maxNrOfTestedClasses);
-		classes = classesList;
-		
-		//for each pattern
-		for (OWLAxiom pattern : patterns) {
-			File file = new File(axiomRenderer.render(pattern).replace(" ", "_") + "-instantiations.ttl");
-			if(!file.exists()){
-				//if pattern is equivalent classes axiom, we need to get the subclass axiom where the named class is the subclass
-				if(pattern.isOfType(AxiomType.EQUIVALENT_CLASSES)){
-					Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom)pattern).asOWLSubClassOfAxioms();
-					for (OWLSubClassOfAxiom axiom : subClassOfAxioms) {
-						if(!axiom.getSubClass().isAnonymous()){
-							pattern = axiom;
-							break;
-						}
-					}
-				}
-				if(pattern.isOfType(AxiomType.SUBCLASS_OF)){
-					logger.info("Processing " + pattern + "...");
-					Map<OWLAxiom, Score> axioms2Score = new LinkedHashMap<OWLAxiom, Score>();
-					//for each class
-					int i = 1;
-					for (NamedClass cls : classes) {
-						logger.info("Processing " + cls + "...");
-						
-						Map<OWLAxiom, Score> result = evaluateUsingFragmentExtraction(pattern, cls);
-						axioms2Score.putAll(result);
-						
-						for (Entry<OWLAxiom, Score> entry : result.entrySet()) {
-							OWLAxiom axiom = entry.getKey();
-							Score score = entry.getValue();
-							if(score.getAccuracy() >= threshold){
-								logger.info(axiom + "(" + format.format(score.getAccuracy()) + ")");
-							}
-						}
-						
-						//wait some time to avoid flooding of endpoint
-						try {
-							Thread.sleep(waitingTime);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-//						if(i++ == 3) break;
-					}
-					save(pattern, axioms2Score, file);
-				}
-			}
-		}
-	}
 	
 	public void runUsingFragmentExtraction(SparqlEndpoint endpoint, OWLOntology patternOntology, File outputFile, int maxNrOfTestedClasses){
 		ks = new SparqlEndpointKS(endpoint, cache);
@@ -210,6 +149,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		Collections.shuffle(classesList, new Random(123));
 		classesList = classesList.subList(0, maxNrOfTestedClasses);
 		classes = classesList;
+//		classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/ChristianBishop"));
 		
 		//get the maximum modal depth in the pattern axioms
 		int maxModalDepth = maxModalDepth(patterns);
@@ -238,26 +178,18 @@ public class OWLAxiomPatternUsageEvaluation {
 			OWLOntology ontology = null;
 			if(!file.exists()){
 				logger.info("Applying pattern " + pattern + "...");
-				// if pattern is equivalent classes axiom, we need to get the
-				// subclass axiom where the named class is the subclass
-				Map<OWLAxiom, Score> axioms2Score = new LinkedHashMap<OWLAxiom, Score>();
+				Set<OWLAxiom> learnedAxioms = new HashSet<OWLAxiom>();
 				// for each class
 				for (NamedClass cls : classes) {
 					logger.info("...on class " + cls + "...");
 					Model fragment = class2Fragment.get(cls);
 					Map<OWLAxiom, Score> result = applyPattern(pattern,
 							df.getOWLClass(IRI.create(cls.getName())), fragment);
-					axioms2Score.putAll(result);
-
-					for (Entry<OWLAxiom, Score> entry : result.entrySet()) {
-						OWLAxiom axiom = entry.getKey();
-						Score score = entry.getValue();
-						if (score.getAccuracy() >= threshold) {
-							logger.info(axiom + "(" + format.format(score.getAccuracy()) + ")");
-						}
-					}
+					Set<OWLAxiom> annotatedAxioms = asAnnotatedAxioms(result);
+					filterOutTrivialAxioms(annotatedAxioms);
+					printAxioms(annotatedAxioms, threshold);
 				}
-				ontology = save(pattern, axioms2Score, file);
+				ontology = save(pattern, learnedAxioms, file);
 			} else {
 				OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 				try {
@@ -282,8 +214,32 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 	}
 	
+	private Set<OWLAxiom> asAnnotatedAxioms(Map<OWLAxiom, Score> axioms2Score){
+		Set<OWLAxiom> annotatedAxioms = new HashSet<OWLAxiom>();
+		for (Entry<OWLAxiom, Score> entry : axioms2Score.entrySet()) {
+			OWLAxiom axiom = entry.getKey();
+			Score score = entry.getValue();
+			if(score.getAccuracy() >= threshold){
+				annotatedAxioms.add(axiom.getAnnotatedAxiom(Collections.singleton(df.getOWLAnnotation(confidenceProperty, df.getOWLLiteral(score.getAccuracy())))));
+				
+			}
+		}
+		return annotatedAxioms;
+	}
+	
+	private void printAxioms(Set<OWLAxiom> axioms, double threshold){
+		for (Iterator<OWLAxiom> iter =  axioms.iterator(); iter.hasNext();) {
+			OWLAxiom axiom = iter.next();
+			double accuracy = getAccuracy(axiom);
+			if (accuracy >= threshold) {
+				logger.info(axiom + "(" + format.format(accuracy) + ")");
+			}
+		}
+	}
+	
 	private List<OWLAxiom> createSample(OWLOntology ontology){
 		Set<OWLAxiom> axioms = ontology.getAxioms();
+		filterOutTrivialAxioms(axioms);
 		for (Iterator<OWLAxiom> iter =  axioms.iterator(); iter.hasNext();) {
 			OWLAxiom axiom = iter.next();
 			double accuracy = getAccuracy(axiom);
@@ -300,49 +256,53 @@ public class OWLAxiomPatternUsageEvaluation {
 				}
 				if(remove){
 					iter.remove();
-				} else {
-					if(axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)){
-						Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom)axiom).asOWLSubClassOfAxioms();
-						for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
-							if(!subClassOfAxiom.getSubClass().isAnonymous()){
-								axiom = subClassOfAxiom; 
-								break;
-							}
-						}
-					}
-					//check for some trivial axioms
-					if(axiom.isOfType(AxiomType.SUBCLASS_OF)){
-						OWLClassExpression subClass = ((OWLSubClassOfAxiom)axiom).getSubClass();
-						OWLClassExpression superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
-						if(superClass.isOWLThing()){
-							iter.remove();
-						} else if(subClass.equals(superClass)){
-							iter.remove();
-						} else if(superClass instanceof OWLObjectIntersectionOf){
-							List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) superClass).getOperandsAsList();
-							
-							
-							if(operands.size() == 1){//how can this happen?
-								iter.remove();
-							} else if(operands.size() > ((OWLObjectIntersectionOf) superClass).getOperands().size()){//duplicates
-								iter.remove();
-							} else {
-								for (OWLClassExpression op : operands) {
-									if(op.isOWLThing() || op.equals(subClass)){
-										iter.remove();
-										break;
-									}
-								}
-							}
-						} 
-					}
-				}
-				
+				} 
 			}
 		}
 		List<OWLAxiom> axiomList = new ArrayList<OWLAxiom>(axioms);
 		Collections.shuffle(axiomList, new Random(123));
 		return axiomList.subList(0, Math.min(sampleSize, axiomList.size()));
+	}
+	
+	private void filterOutTrivialAxioms(Set<OWLAxiom> axioms) {
+		for (Iterator<OWLAxiom> iter = axioms.iterator(); iter.hasNext();) {
+			OWLAxiom axiom = iter.next();
+			if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+				Set<OWLSubClassOfAxiom> subClassOfAxioms = ((OWLEquivalentClassesAxiom) axiom).asOWLSubClassOfAxioms();
+				for (OWLSubClassOfAxiom subClassOfAxiom : subClassOfAxioms) {
+					if (!subClassOfAxiom.getSubClass().isAnonymous()) {
+						axiom = subClassOfAxiom;
+						break;
+					}
+				}
+			}
+			// check for some trivial axioms
+			if (axiom.isOfType(AxiomType.SUBCLASS_OF)) {
+				OWLClassExpression subClass = ((OWLSubClassOfAxiom) axiom).getSubClass();
+				OWLClassExpression superClass = ((OWLSubClassOfAxiom) axiom).getSuperClass();
+				if (superClass.isOWLThing()) {
+					iter.remove();
+				} else if (subClass.equals(superClass)) {
+					iter.remove();
+				} else if (superClass instanceof OWLObjectIntersectionOf) {
+					List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) superClass).getOperandsAsList();
+
+					if (operands.size() == 1) {// how can this happen?
+						iter.remove();
+					} else if (operands.size() > ((OWLObjectIntersectionOf) superClass).getOperands().size()) {// duplicates
+						iter.remove();
+					} else {
+						for (OWLClassExpression op : operands) {
+							if (op.isOWLThing() || op.equals(subClass)) {
+								iter.remove();
+								break;
+							}
+						}
+					}
+				}
+			}
+
+		}
 	}
 	
 	private double getAccuracy(OWLAxiom axiom){
@@ -432,12 +392,13 @@ public class OWLAxiomPatternUsageEvaluation {
 				}
 			}
 			logger.info("...got " + fragment.size() + " triples.");
-			class2Fragment.put(cls, fragment);
 			try {
 				fragment.write(new FileOutputStream(file), "TURTLE");
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
+			filterModel(fragment);
+			class2Fragment.put(cls, fragment);
 		}
 		return class2Fragment;
 	}
@@ -452,6 +413,8 @@ public class OWLAxiomPatternUsageEvaluation {
 				statements2Remove.add(st);
 			}
 			if(st.getPredicate().hasURI("http://xmlns.com/foaf/0.1/depiction") || st.getPredicate().hasURI("http://dbpedia.org/ontology/thumbnail")){
+				statements2Remove.add(st);
+			} else if(!st.getPredicate().equals(RDF.type) && !st.getPredicate().getURI().startsWith("http://dbpedia.org/ontology/")){
 				statements2Remove.add(st);
 			}
 		}
@@ -672,6 +635,9 @@ public class OWLAxiomPatternUsageEvaluation {
 		} else if(pattern.isOfType(AxiomType.SUBCLASS_OF)){
 			patternSubClass = ((OWLSubClassOfAxiom) pattern).getSubClass();
 			patternSuperClass = ((OWLSubClassOfAxiom) pattern).getSuperClass();
+		} else if(pattern.isOfType(AxiomType.SUBCLASS_OF)){
+			patternSubClass = ((OWLSubClassOfAxiom) pattern).getSubClass();
+			patternSuperClass = ((OWLSubClassOfAxiom) pattern).getSuperClass();
 		} else {
 			logger.warn("Pattern " + pattern + " not supported yet.");
 			return axioms2Score;
@@ -722,6 +688,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		int total = resources.size();
 		for (OWLAxiom axiom : instantiations.elementSet()) {
 			int frequency = instantiations.count(axiom);
+//			System.out.println(axiom + ":" + frequency);
 			Score score = computeScore(total, Math.min(total, frequency));
 			axioms2Score.put(axiom, score);
 		}
@@ -825,19 +792,10 @@ public class OWLAxiomPatternUsageEvaluation {
 		return template.asQuery();
 	}
 	
-	private OWLOntology save(OWLAxiom pattern, Map<OWLAxiom, Score> axioms2Score, File file){
+	private OWLOntology save(OWLAxiom pattern, Set<OWLAxiom> learnedAxioms, File file){
 		try {
-			Set<OWLAxiom> annotatedAxioms = new HashSet<OWLAxiom>();
-			for (Entry<OWLAxiom, Score> entry : axioms2Score.entrySet()) {
-				OWLAxiom axiom = entry.getKey();
-				Score score = entry.getValue();
-				if(score.getAccuracy() >= threshold){
-					annotatedAxioms.add(axiom.getAnnotatedAxiom(Collections.singleton(df.getOWLAnnotation(confidenceProperty, df.getOWLLiteral(score.getAccuracy())))));
-					
-				}
-			}
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-			OWLOntology ontology = man.createOntology(annotatedAxioms);
+			OWLOntology ontology = man.createOntology(learnedAxioms);
 			man.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream(file));
 			return ontology;
 		} catch (OWLOntologyCreationException e) {
