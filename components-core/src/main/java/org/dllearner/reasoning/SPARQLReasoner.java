@@ -498,6 +498,44 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		return siblings;
 	}
 
+	/**
+	 * Returns a set of classes which are Parent of current class
+	 * in the class hierarchy.
+	 * @param cls
+	 * @param limit
+	 * @return
+	 */
+	public Set<NamedClass> getParentClasses(NamedClass cls) {
+		Set<NamedClass> parents = new HashSet<NamedClass>();
+		String query = "SELECT DISTINCT ?parentClass WHERE { <" + cls.getName() + "> <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?parentClass }";
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			parents.add(new NamedClass(qs.getResource("parentClass").getURI()));
+		}
+		return parents;
+	}
+	
+	/**
+	 * Returns a set of classes which are children of current class
+	 * in the class hierarchy.
+	 * @param cls
+	 * @param limit
+	 * @return
+	 */
+	public Set<NamedClass> getChildClasses(NamedClass cls) {
+		Set<NamedClass> children = new HashSet<NamedClass>();
+		String query = "SELECT DISTINCT ?childClass WHERE { ?childClass <http://www.w3.org/2000/01/rdf-schema#subClassOf> <" + cls.getName() + ">}";
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			children.add(new NamedClass(qs.getResource("childClass").getURI()));
+		}
+		return children;
+	}
+	
 	@Override
 	public boolean hasType(Description description, Individual individual) {
 		if(!(description instanceof NamedClass)){
