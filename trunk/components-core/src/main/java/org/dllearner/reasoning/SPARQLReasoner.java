@@ -22,6 +22,7 @@ package org.dllearner.reasoning;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -576,6 +577,37 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		return individuals;
 	}	
 
+	/**
+	 * @param wantedClass
+	 * @param excludeClass
+	 * @param limit
+	 * @return get individual of class wantedClass excluding all individual of type excludeClass
+	 * @author sherif
+	 */
+	public SortedSet<Individual> getIndividualsExcluding(Description wantedClass, Description excludeClass, int limit) {
+		
+		if(!(wantedClass instanceof NamedClass)){
+			throw new UnsupportedOperationException("Only named classes are supported.");
+		}
+		SortedSet<Individual> individuals = new TreeSet<Individual>();
+		String query = 
+				"SELECT DISTINCT ?ind WHERE {" +
+						"?ind a <"+((NamedClass)wantedClass).getName() + "> . " +
+						"FILTER(NOT EXISTS { ?ind a <" + ((NamedClass)excludeClass).getName() + "> } )}";
+		if(limit != 0) {
+			query += " LIMIT " + limit;
+		}
+		System.out.println("query: "+query);
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			if(qs.get("ind").isURIResource()){
+				individuals.add(new Individual(qs.getResource("ind").getURI()));
+			}
+		}
+		return individuals;
+	}	
 	
 	/**
 	 * @param cls
@@ -602,6 +634,40 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		}
 		return individuals;
 	}	
+	
+	/**
+	 * @param cls
+	 * @param limit
+	 * @return Random Individuals not including any of the input classes individuals
+	 * @author sherif
+	 */
+	public SortedSet<Individual> getRandomIndividuals(Set<NamedClass> cls, int limit) {
+		SortedSet<Individual> individuals = new TreeSet<Individual>();
+		
+		String filterStr="";
+		for(NamedClass nc : cls){
+			filterStr = filterStr.concat("FILTER(NOT EXISTS { ?ind a <").concat(nc.getName()).concat("> } ) ");
+		}
+		
+		String query = 
+				" SELECT DISTINCT ?ind WHERE {"+
+						"?ind ?p ?o ."+
+						filterStr+ " }";
+		if(limit != 0) {
+			query += " LIMIT " + limit;
+		}
+		
+		System.out.println("!!!!!!!!!!!!!!!!!!!! "+query);
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			if(qs.get("ind").isURIResource()){
+				individuals.add(new Individual(qs.getResource("ind").getURI()));
+			}
+		}
+		return individuals;
+	}
 
 	/**
 	 * @param cls
@@ -618,9 +684,14 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 					" SELECT DISTINCT ?ind WHERE { "+
 							"?ind a <" + parentClass.getName() + "> ."+
 							"FILTER(NOT EXISTS { ?ind a <" + cls.getName() + "> } ) }";
+			
+			
 			if(limit != 0) {
 				query += " LIMIT " + limit/parentClasses.size();
 			}
+			
+			System.out.println("----------------------------------------------  "+query);
+			
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
 			while(rs.hasNext()){
@@ -629,7 +700,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 					individuals.add(new Individual(qs.getResource("ind").getURI()));
 				}
 			}
+			System.out.println(individuals.size());
+			System.out.println(individuals);
 		}
+		
 		return individuals;
 	}
 
