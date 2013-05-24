@@ -651,7 +651,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		
 		String query = 
 				" SELECT DISTINCT ?ind WHERE {"+
-						"?ind ?p ?o ."+
+						"?ind a ?o .?o <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2002/07/owl#Class>"+
 						filterStr+ " }";
 		if(limit != 0) {
 			query += " LIMIT " + limit;

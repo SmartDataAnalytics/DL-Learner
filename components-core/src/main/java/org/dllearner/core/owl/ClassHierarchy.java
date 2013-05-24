@@ -203,18 +203,21 @@ public class ClassHierarchy {
 		if (subClass.equals(superClass)) {
 			return true;
 		} else {
-			for (Description moreGeneralClass : subsumptionHierarchyUp.get(subClass)) {
-				
-				// search the upper classes of the subclass
-				if (moreGeneralClass instanceof NamedClass) {
-					if (isSubclassOf((NamedClass) moreGeneralClass, superClass)) {
-						return true;
+			SortedSet<Description> superClasses = subsumptionHierarchyUp.get(subClass);
+			if(superClasses != null){
+				for (Description moreGeneralClass : subsumptionHierarchyUp.get(subClass)) {
+					
+					// search the upper classes of the subclass
+					if (moreGeneralClass instanceof NamedClass) {
+						if (isSubclassOf((NamedClass) moreGeneralClass, superClass)) {
+							return true;
+						}
+						// we reached top, so we can return false (if top is a
+						// direct upper
+						// class, then no other upper classes can exist)
+					} else {
+						return false;
 					}
-					// we reached top, so we can return false (if top is a
-					// direct upper
-					// class, then no other upper classes can exist)
-				} else {
-					return false;
 				}
 			}
 			// we cannot reach the class via any of the upper classes,
