@@ -101,6 +101,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	private Map<NamedClass, Integer> classPopularityMap;
 	private Map<ObjectProperty, Integer> objectPropertyPopularityMap;
 	private Map<DatatypeProperty, Integer> dataPropertyPopularityMap;
+	
+	private boolean prepared = false;
 
 
 	public SPARQLReasoner(SparqlEndpointKS ks) {
@@ -247,54 +249,57 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	}
 
 	public final ClassHierarchy prepareSubsumptionHierarchy() {
-		logger.info("Preparing subsumption hierarchy ...");
-		long startTime = System.currentTimeMillis();
-		ConceptComparator conceptComparator = new ConceptComparator();
-		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, SortedSet<Description>>(
-				conceptComparator);
-		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, SortedSet<Description>>(
-				conceptComparator);
+		if(!prepared){
+			logger.info("Preparing subsumption hierarchy ...");
+			long startTime = System.currentTimeMillis();
+			ConceptComparator conceptComparator = new ConceptComparator();
+			TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, SortedSet<Description>>(
+					conceptComparator);
+			TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, SortedSet<Description>>(
+					conceptComparator);
 
-		// parents/children of top ...
-		SortedSet<Description> tmp = getSubClasses(Thing.instance);
-		subsumptionHierarchyUp.put(Thing.instance, new TreeSet<Description>(conceptComparator));
-		subsumptionHierarchyDown.put(Thing.instance, tmp);
+			// parents/children of top ...
+			SortedSet<Description> tmp = getSubClasses(Thing.instance);
+			subsumptionHierarchyUp.put(Thing.instance, new TreeSet<Description>(conceptComparator));
+			subsumptionHierarchyDown.put(Thing.instance, tmp);
 
-		// ... bottom ...
-		tmp = getSuperClasses(Nothing.instance);
-		subsumptionHierarchyUp.put(Nothing.instance, tmp);
-		subsumptionHierarchyDown.put(Nothing.instance, new TreeSet<Description>(conceptComparator));
+			// ... bottom ...
+			tmp = getSuperClasses(Nothing.instance);
+			subsumptionHierarchyUp.put(Nothing.instance, tmp);
+			subsumptionHierarchyDown.put(Nothing.instance, new TreeSet<Description>(conceptComparator));
 
-		// ... and named classes
-		Set<NamedClass> atomicConcepts;
-		if(ks.isRemote()){
-			atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
-		} else {
-			atomicConcepts = new TreeSet<NamedClass>();
-			for(OntClass cls :  ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().toList()){
-				if(!cls.isAnon()){
-					atomicConcepts.add(new NamedClass(cls.getURI()));
+			// ... and named classes
+			Set<NamedClass> atomicConcepts;
+			if(ks.isRemote()){
+				atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+			} else {
+				atomicConcepts = new TreeSet<NamedClass>();
+				for(OntClass cls :  ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().toList()){
+					if(!cls.isAnon()){
+						atomicConcepts.add(new NamedClass(cls.getURI()));
+					}
 				}
 			}
+
+			for (NamedClass atom : atomicConcepts) {
+				tmp = getSubClasses(atom);
+				// quality control: we explicitly check that no reasoner implementation returns null here
+				if(tmp == null) {
+					logger.error("Class hierarchy: getSubClasses returned null instead of empty set."); 
+				}			
+				subsumptionHierarchyDown.put(atom, tmp);
+
+				tmp = getSuperClasses(atom);
+				// quality control: we explicitly check that no reasoner implementation returns null here
+				if(tmp == null) {
+					logger.error("Class hierarchy: getSuperClasses returned null instead of empty set."); 
+				}			
+				subsumptionHierarchyUp.put(atom, tmp);
+			}		
+			logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
+			hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
+			prepared = true;
 		}
-
-		for (NamedClass atom : atomicConcepts) {
-			tmp = getSubClasses(atom);
-			// quality control: we explicitly check that no reasoner implementation returns null here
-			if(tmp == null) {
-				logger.error("Class hierarchy: getSubClasses returned null instead of empty set."); 
-			}			
-			subsumptionHierarchyDown.put(atom, tmp);
-
-			tmp = getSuperClasses(atom);
-			// quality control: we explicitly check that no reasoner implementation returns null here
-			if(tmp == null) {
-				logger.error("Class hierarchy: getSuperClasses returned null instead of empty set."); 
-			}			
-			subsumptionHierarchyUp.put(atom, tmp);
-		}		
-		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
-		hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 		return hierarchy;
 	}
 
