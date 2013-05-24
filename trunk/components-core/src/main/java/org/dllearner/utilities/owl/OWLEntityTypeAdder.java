@@ -3,7 +3,6 @@ package org.dllearner.utilities.owl;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -28,7 +27,8 @@ public class OWLEntityTypeAdder {
 		while(iterator.hasNext()){
 			Statement st = iterator.next();
 			Property predicate = st.getPredicate();
-			if(!predicate.getURI().startsWith(RDF.getURI()) && !predicate.getURI().startsWith(RDFS.getURI())){
+			if(!predicate.getURI().startsWith(RDF.getURI()) && !predicate.getURI().startsWith(RDFS.getURI()) 
+					&& !predicate.getURI().startsWith(OWL.getURI())){
 				RDFNode object = st.getObject();
 				if(object.isLiteral()){
 					dataPropertyPredicates.add(predicate);
@@ -38,13 +38,6 @@ public class OWLEntityTypeAdder {
 			}
 		}
 		iterator.close();
-		
-		for (Property property : Sets.difference(objectPropertyPredicates, dataPropertyPredicates)) {
-			model.add(property, RDF.type, OWL.ObjectProperty);
-		}
-		for (Property property : Sets.difference(dataPropertyPredicates, objectPropertyPredicates)) {
-			model.add(property, RDF.type, OWL.DatatypeProperty);
-		}
 	}
 
 }
