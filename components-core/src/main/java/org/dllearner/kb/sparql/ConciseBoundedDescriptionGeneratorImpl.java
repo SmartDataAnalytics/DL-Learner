@@ -1,16 +1,24 @@
 package org.dllearner.kb.sparql;
 
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.extra.CacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
+import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 //import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDescriptionGenerator{
@@ -25,6 +33,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	
 	private List<String> namespaces;
 	private int maxRecursionDepth = 1;
+	private String cacheDir;
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache) {
 		this.endpoint = endpoint;
@@ -37,8 +46,19 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		this.maxRecursionDepth = maxRecursionDepth;
 	}
 	
+	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir, int maxRecursionDepth) {
+		this.endpoint = endpoint;
+		this.cacheDir = cacheDir;
+		this.maxRecursionDepth = maxRecursionDepth;
+	}
+	
+	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir) {
+		this.endpoint = endpoint;
+		this.cacheDir = cacheDir;
+	}
+	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint) {
-		this(endpoint, null);
+		this(endpoint, (String)null);
 	}
 	
 	public ConciseBoundedDescriptionGeneratorImpl(Model model) {
@@ -59,34 +79,28 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	
 	private Model getModelChunked(String resource, int depth){
 		String query = makeConstructQueryOptional(resource, chunkSize, 0, depth);
-		Model all = ModelFactory.createDefaultModel();
-		try {
-			Model model;
-			if(cache == null){
-				model = getModel(query);
-			} else {
-				model = cache.executeConstructQuery(endpoint, query);
-			}
-			all.add(model);
-			int i = 1;
-			do{
-//			while(model.size() == CHUNK_SIZE){
-				query = makeConstructQueryOptional(resource, chunkSize, i * chunkSize, depth);
-				if(cache == null){
-					model = getModel(query);
-				} else {
-					model = cache.executeConstructQuery(endpoint, query);
+		QueryExecutionFactory qef;
+		if(endpoint != null){
+			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+			if(cacheDir != null){
+				try {
+					long timeToLive = TimeUnit.DAYS.toMillis(30);
+					CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDir, timeToLive, true);
+					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				} catch (SQLException e) {
+					e.printStackTrace();
 				}
-				all.add(model);
-				i++;
-			} while(chunkSize > 0 && model.size() != 0);
-		} catch (UnsupportedEncodingException e) {
-			logger.error(e);
-		} catch (SQLException e) {
-			logger.error(e);
+			}
+			qef = new QueryExecutionFactoryPaginated(qef, 10000);
+		} else {
+			qef = new QueryExecutionFactoryModel(baseModel);
 		}
-		
-		return all;
+		QueryExecution qe = qef.createQueryExecution(query);
+		Model model = qe.execConstruct();
+		return model;
 	}
 	
 	@Override
@@ -149,36 +163,6 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 			filter += ")";
 		}
 		return filter;
-	}
-	
-	private Model getModel(String query) throws UnsupportedEncodingException, SQLException{
-		if(logger.isDebugEnabled()){
-			logger.debug("Sending SPARQL query ...");
-			logger.debug("Query:\n" + query.toString());
-		}
-
-		Model model;
-		if(baseModel == null){
-			if(cache == null){
-				QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
-				for (String dgu : endpoint.getDefaultGraphURIs()) {
-					queryExecution.addDefaultGraph(dgu);
-				}
-				for (String ngu : endpoint.getNamedGraphURIs()) {
-					queryExecution.addNamedGraph(ngu);
-				}
-				model = queryExecution.execConstruct();
-			} else {
-				model = cache.executeConstructQuery(endpoint, query);
-			}
-		} else {
-			model = QueryExecutionFactory.create(query, baseModel).execConstruct();
-		}
-		
-		if(logger.isDebugEnabled()){
-			logger.debug("Got " + model.size() + " new triples in.");
-		}
-		return model;
 	}
 	
 	public static void main(String[] args) {

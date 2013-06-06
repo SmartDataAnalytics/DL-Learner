@@ -124,6 +124,12 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		addChild(subTree, tree.getEdge(child));
     	}
     }
+    
+    public boolean sameType(QueryTree<N> tree){
+    	return (isResourceNode && tree.isResourceNode()) ||
+    		(isVarNode() && tree.isVarNode()) ||
+    		(isLiteralNode && tree.isLiteralNode());
+    }
 
     public N getUserObject() {
         return userObject;
@@ -327,6 +333,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     @Override
     public boolean isSubsumedBy(QueryTree<N> tree) {
+//    	if(!sameType(tree)){
+//    		return false;
+//    	}
     	if(!(tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject))){
     		return false;
     	}

@@ -145,7 +145,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 //				}
 //			}
 //		}
-		if(!lgg.getUserObject().equals(tree2.getUserObject())){
+		if(!lgg.sameType(tree2) || !lgg.getUserObject().equals(tree2.getUserObject())){
 			lgg.setUserObject((N)"?");
 			lgg.setLiteralNode(false);
 			lgg.setResourceNode(false);

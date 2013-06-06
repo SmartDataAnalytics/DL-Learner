@@ -78,6 +78,10 @@ public class ExtractionDBCache {
 		Statement stmt = conn.createStatement();
 		stmt.execute("CREATE TABLE IF NOT EXISTS QUERY_CACHE(QUERYHASH BINARY PRIMARY KEY,QUERY VARCHAR(20000), TRIPLES CLOB, STORE_TIME TIMESTAMP)");		
 	}
+	
+	public String getCacheDirectory() {
+		return databaseDirectory;
+	}
 
 	public ExtractionDBCache(String cacheDir) {
 		databaseDirectory = cacheDir;
