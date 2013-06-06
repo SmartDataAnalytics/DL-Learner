@@ -55,6 +55,8 @@ public interface QueryTree<N> {
     
     QueryTree<N> getNodeById(int nodeId);
     
+     boolean sameType(QueryTree<N> tree);
+    	
     boolean isLiteralNode();
     
     void setLiteralNode(boolean isLiteralNode);

@@ -73,11 +73,6 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	
 	private String sparql = "";
 	private Stack<String> variables = new Stack<String>();
-	private Map<OWLEntity, String> variablesMapping = new HashMap<OWLEntity, String>();
-	
-	private int classCnt = 0;
-	private int propCnt = 0;
-	private int indCnt = 0;
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
@@ -86,7 +81,18 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private Map<Integer, Boolean> intersection;
 	private Set<? extends OWLEntity> variableEntities = new HashSet<OWLEntity>();
 	
+	private VariablesMapping mapping;
+	
+	public OWLClassExpressionToSPARQLConverter(VariablesMapping mapping) {
+		this.mapping = mapping;
+	}
+	
 	public OWLClassExpressionToSPARQLConverter() {
+		mapping = new VariablesMapping();
+	}
+	
+	public VariablesMapping getVariablesMapping() {
+		return mapping;
 	}
 
 	public String convert(String rootVariable, OWLClassExpression expr){
@@ -132,7 +138,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			queryString += rootVariable + " WHERE {";
 		} else {
 			for (OWLEntity owlEntity : variableEntities) {
-				String var = variablesMapping.get(owlEntity);
+				String var = mapping.get(owlEntity);
 				queryString += var + " ";
 			}
 			if(count){
@@ -149,7 +155,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			if(count){
 				queryString += "GROUP BY ";
 				for (OWLEntity owlEntity : variableEntities) {
-					String var = variablesMapping.get(owlEntity);
+					String var = mapping.get(owlEntity);
 					queryString += var;
 				}
 				queryString += " ORDER BY DESC(?cnt)";
@@ -158,38 +164,12 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		return QueryFactory.create(queryString, Syntax.syntaxARQ);
 	}
 	
-	public Map<OWLEntity, String> getVariablesMapping() {
-		return variablesMapping;
-	}
-	
 	private void reset(){
-		variablesMapping.clear();
 		variables.clear();
 		properties.clear();
-		classCnt = 0;
-		propCnt = 0;
-		indCnt = 0;
 		sparql = "";
 		intersection = new HashMap<Integer, Boolean>();
-	}
-	
-	private String getVariable(OWLEntity entity){
-		String var = variablesMapping.get(entity);
-		if(var == null){
-			if(entity.isOWLClass()){
-				var = "?cls" + classCnt++;
-			} else if(entity.isOWLObjectProperty() || entity.isOWLDataProperty()){
-				var = "?p" + propCnt++;
-			} else if(entity.isOWLNamedIndividual()){
-				var = buildIndividualVariable();
-			} 
-			variablesMapping.put(entity, var);
-		}
-		return var;
-	}
-	
-	private String buildIndividualVariable(){
-		return "?s" + indCnt++;
+		mapping.reset();
 	}
 	
 	private int modalDepth(){
@@ -253,7 +233,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private String render(OWLEntity entity){
 		String s;
 		if(variableEntities.contains(entity)){
-			s = getVariable(entity);
+			s = mapping.getVariable(entity);
 		} else {
 			s = "<" + entity.toStringID() + ">";
 		}
@@ -295,8 +275,8 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		if(props.size() > 1){
 			Collection<String> vars = new TreeSet<String>();
 			for (OWLEntity p : props) {
-				if(variablesMapping.containsKey(p)){
-					vars.add(variablesMapping.get(p));
+				if(mapping.containsKey(p)){
+					vars.add(mapping.get(p));
 				}
 			}
 			if(vars.size() == 2){
@@ -334,7 +314,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLObjectSomeValuesFrom ce) {
-		String objectVariable = buildIndividualVariable();
+		String objectVariable = mapping.newIndividualVariable();
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
 		if(propertyExpression.isAnonymous()){
 			//property expression is inverse of a property
@@ -356,7 +336,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLObjectAllValuesFrom ce) {
 		String subject = variables.peek();
-		String objectVariable = buildIndividualVariable();
+		String objectVariable = mapping.newIndividualVariable();
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
 		OWLObjectProperty predicate = propertyExpression.getNamedProperty();
 		OWLClassExpression filler = ce.getFiller();
@@ -367,7 +347,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			sparql += triple(variables.peek(), predicate, objectVariable);
 		}
 		
-		String var = buildIndividualVariable();
+		String var = mapping.newIndividualVariable();
 		sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt1) WHERE {";
 		sparql += triple(subject, predicate, var);
 		variables.push(var);
@@ -375,7 +355,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		variables.pop();
 		sparql += "} GROUP BY " + subject + "}";
 		
-		var = buildIndividualVariable();
+		var = mapping.newIndividualVariable();
 		sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt2) WHERE {";
 		sparql += triple(subject, predicate, var);
 		sparql += "} GROUP BY " + subject + "}";
@@ -399,7 +379,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLObjectMinCardinality ce) {
 		String subjectVariable = variables.peek();
-		String objectVariable = buildIndividualVariable();
+		String objectVariable = mapping.newIndividualVariable();
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
 		int cardinality = ce.getCardinality();
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
@@ -411,7 +391,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		}
 		OWLClassExpression filler = ce.getFiller();
 		if(filler.isAnonymous()){
-			String var = buildIndividualVariable();
+			String var = mapping.newIndividualVariable();
 			variables.push(var);
 			sparql += triple(objectVariable, "a", var);
 			filler.accept(this);
@@ -427,7 +407,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLObjectExactCardinality ce) {
 		String subjectVariable = variables.peek();
-		String objectVariable = buildIndividualVariable();
+		String objectVariable = mapping.newIndividualVariable();
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
 		int cardinality = ce.getCardinality();
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
@@ -439,7 +419,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		}
 		OWLClassExpression filler = ce.getFiller();
 		if(filler.isAnonymous()){
-			String var = buildIndividualVariable();
+			String var = mapping.newIndividualVariable();
 			variables.push(var);
 			sparql += triple(objectVariable, "a", var);
 			filler.accept(this);
@@ -454,7 +434,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLObjectMaxCardinality ce) {
 		String subjectVariable = variables.peek();
-		String objectVariable = buildIndividualVariable();
+		String objectVariable = mapping.newIndividualVariable();
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
 		int cardinality = ce.getCardinality();
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
@@ -466,7 +446,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		}
 		OWLClassExpression filler = ce.getFiller();
 		if(filler.isAnonymous()){
-			String var = buildIndividualVariable();
+			String var = mapping.newIndividualVariable();
 			variables.push(var);
 			sparql += triple(objectVariable, "a", var);
 			filler.accept(this);
@@ -506,7 +486,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLDataSomeValuesFrom ce) {
-		String objectVariable = buildIndividualVariable();
+		String objectVariable = mapping.newIndividualVariable();
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
 		sparql += triple(variables.peek(), propertyExpression.asOWLDataProperty(), objectVariable);
 		OWLDataRange filler = ce.getFiller();
@@ -518,13 +498,13 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLDataAllValuesFrom ce) {
 		String subject = variables.peek();
-		String objectVariable = buildIndividualVariable();
+		String objectVariable = mapping.newIndividualVariable();
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
 		String predicate = propertyExpression.asOWLDataProperty().toStringID();
 		OWLDataRange filler = ce.getFiller();
 		sparql += triple(variables.peek(), predicate, objectVariable);
 		
-		String var = buildIndividualVariable();
+		String var = mapping.newIndividualVariable();
 		sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt1) WHERE {";
 		sparql += triple(subject, predicate, var);
 		variables.push(var);
@@ -532,7 +512,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		variables.pop();
 		sparql += "} GROUP BY " + subject + "}";
 		
-		var = buildIndividualVariable();
+		var = mapping.newIndividualVariable();
 		sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt2) WHERE {";
 		sparql += triple(subject, predicate, var);
 		sparql += "} GROUP BY " + subject + "}";
@@ -550,7 +530,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLDataMinCardinality ce) {
 		String subjectVariable = variables.peek();
-		String objectVariable = buildIndividualVariable();
+		String objectVariable = mapping.newIndividualVariable();
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
 		int cardinality = ce.getCardinality();
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
@@ -566,7 +546,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLDataExactCardinality ce) {
 		String subjectVariable = variables.peek();
-		String objectVariable = buildIndividualVariable();
+		String objectVariable = mapping.newIndividualVariable();
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
 		int cardinality = ce.getCardinality();
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
@@ -582,7 +562,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLDataMaxCardinality ce) {
 		String subjectVariable = variables.peek();
-		String objectVariable = buildIndividualVariable();
+		String objectVariable = mapping.newIndividualVariable();
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
 		int cardinality = ce.getCardinality();
 		sparql += "{SELECT " + subjectVariable + " WHERE {";
@@ -774,7 +754,4 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		System.out.println(expr + "\n" + query);
 		
 	}
-
-	
-	
 }

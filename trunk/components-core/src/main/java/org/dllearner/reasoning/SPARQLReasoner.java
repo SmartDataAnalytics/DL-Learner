@@ -73,6 +73,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -494,7 +495,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		Set<NamedClass> siblings = new HashSet<NamedClass>();
 		String query = "SELECT ?sub WHERE { <" + cls.getName() + "> <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
 		query += "?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
-		query += "FILTER( !SAMETERM(?sub, <" + cls.getName() + ">)) . }";
+		query += "FILTER( !SAMETERM(?sub, <" + cls.getName() + ">)) . }";System.out.println(query);
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -590,7 +591,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	 * @author sherif
 	 */
 	public SortedSet<Individual> getIndividualsExcluding(Description wantedClass, Description excludeClass, int limit) {
-		
 		if(!(wantedClass instanceof NamedClass)){
 			throw new UnsupportedOperationException("Only named classes are supported.");
 		}
@@ -598,7 +598,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		String query = 
 				"SELECT DISTINCT ?ind WHERE {" +
 						"?ind a <"+((NamedClass)wantedClass).getName() + "> . " +
-						"FILTER(NOT EXISTS { ?ind a <" + ((NamedClass)excludeClass).getName() + "> } )}";
+						"FILTER NOT EXISTS { ?ind a <" + ((NamedClass)excludeClass).getName() + "> } }";
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
