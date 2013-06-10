@@ -38,11 +38,11 @@ public class SetManipulation {
 	 * @param set
 	 * @param limit
 	 */
-	public static SortedSet<String> fuzzyShrink(SortedSet<String> set, int limit) {
+	public static <T> SortedSet<T> fuzzyShrink(SortedSet<T> set, int limit) {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<String> ret = new TreeSet<String>();
+		SortedSet<T> ret = new TreeSet<T>();
 		Random r = new Random();
 		double treshold = ((double) limit) / set.size();
 		// System.out.println("treshold"+howmany);
@@ -50,7 +50,7 @@ public class SetManipulation {
 		// System.out.println("treshold"+treshold);
 
 		while (ret.size() < limit) {
-			for (String oneInd : set) {
+			for (T oneInd : set) {
 				if (r.nextDouble() < treshold) {
 					ret.add(oneInd);
 					if (ret.size() >= limit)

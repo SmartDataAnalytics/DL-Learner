@@ -1158,6 +1158,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 
 	}
+	
+	public void setSubsumptionHierarchy(ClassHierarchy subsumptionHierarchy) {
+		this.subsumptionHierarchy = subsumptionHierarchy;
+	}
 
 	public List<ObjectProperty> getAtomicRolesList() {
 		if (atomicRolesList == null)
