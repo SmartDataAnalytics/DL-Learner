@@ -9,6 +9,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.learningproblems.Heuristics;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -48,7 +49,7 @@ public class NoiseSensitiveLGG<N> {
 					}
 				}
 				//compute score
-				double score = (trees.size() - uncoveredExamples.size()) / (double)trees.size();
+				double score = Heuristics.getConfidenceInterval95WaldAverage(trees.size(), trees.size() - uncoveredExamples.size());
 				//add to todo list, if not already contained in todo list or solution list
 				EvaluatedQueryTree<N> solution = new EvaluatedQueryTree<N>(lgg, uncoveredExamples, score);
 				todo(solution);

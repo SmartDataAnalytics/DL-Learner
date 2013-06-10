@@ -346,7 +346,9 @@ public class ClassHierarchy {
 					// case 2: it is not allowed, so we try its super classes
 					} else {
 						Set<Description> tmp = subsumptionHierarchyUp.get(d);
-						superClasses.addAll(tmp);
+						if(tmp != null){
+							superClasses.addAll(tmp);
+						}
 					}
 				}
 				

@@ -36,16 +36,21 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.datastructures.SetManipulation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
+import com.google.common.collect.Sets;
 /**
  * 
  * Utility class for automatically retrieving negative examples from a 
@@ -56,6 +61,8 @@ import com.google.common.collect.Multisets;
  *
  */
 public class AutomaticNegativeExampleFinderSPARQL2 {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AutomaticNegativeExampleFinderSPARQL2.class.getSimpleName());
 	
 	public enum Strategy{
 		SUPERCLASS, SIBLING, RANDOM;
@@ -113,6 +120,27 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
         return negEx;
 	}
 	
+	public SortedSet<Individual> getNegativeExamples(NamedClass classToDescribe, Set<Individual> positiveExamples, int limit) {
+		return getNegativeExamples(classToDescribe, positiveExamples, Arrays.asList(SUPERCLASS, SIBLING, RANDOM), limit);
+	}
+	
+	public SortedSet<Individual> getNegativeExamples(NamedClass classToDescribe, Set<Individual> positiveExamples, Collection<Strategy> strategies, int limit) {
+		Map<Strategy, Double> strategiesWithWeight = new HashMap<Strategy, Double>();
+		double weight = 1d/strategies.size();
+		for (Strategy strategy : strategies) {
+			strategiesWithWeight.put(strategy, weight);
+		}
+		return getNegativeExamples(classToDescribe, positiveExamples, strategiesWithWeight, limit);
+	}
+	
+	public SortedSet<Individual> getNegativeExamples(NamedClass classToDescribe, Set<Individual> positiveExamples, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
+		//set class to describe as the type for each instance
+		Multiset<NamedClass> types = HashMultiset.create();
+		types.add(classToDescribe);
+		
+		return computeNegativeExamples(types, strategiesWithWeight, maxNrOfReturnedInstances);
+	}
+	
 	public SortedSet<Individual> getNegativeExamples(Set<Individual> positiveExamples, int limit) {
 		return getNegativeExamples(positiveExamples, Arrays.asList(SUPERCLASS, SIBLING, RANDOM), limit);
 	}
@@ -127,8 +155,6 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	}
 	
 	public SortedSet<Individual> getNegativeExamples(Set<Individual> positiveExamples, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
-		SortedSet<Individual> negEx = new TreeSet<Individual>();
-		
 		//get the types for each instance
 		Multiset<NamedClass> types = HashMultiset.create();
 		for (Individual ex : positiveExamples) {
@@ -136,54 +162,87 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		}
 		
 		//remove types that do not have the given namespace
-		if(namespace != null){
-			types = Multisets.filter(types, new Predicate<NamedClass>() {
-				public boolean apply(NamedClass input){
-					return input.getName().startsWith(namespace);
-				}
-			});
-		}
+		types = filterByNamespace(types);
 		
 		//keep the most specific types
 		keepMostSpecificClasses(types);
+		return computeNegativeExamples(types, strategiesWithWeight, maxNrOfReturnedInstances);
+	}
+	
+	private SortedSet<Individual> computeNegativeExamples(Multiset<NamedClass> positiveExamplesTypes, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
+		SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
 		
 		for (Entry<Strategy, Double> entry : strategiesWithWeight.entrySet()) {
 			Strategy strategy = entry.getKey();
 			Double weight = entry.getValue();
 			//the max number of instances returned by the current strategy
-			int limit = (int)(weight * maxNrOfReturnedInstances);
+			int strategyLimit = (int)(weight * maxNrOfReturnedInstances);
 			//the highest frequency value
-			int maxFrequency = types.entrySet().iterator().next().getCount();
-			if(strategy == SIBLING){
-				System.out.println("Sibling Classes Strategy");
-				for (NamedClass nc : types.elementSet()) {
-					int frequency = types.count(nc);
+			int maxFrequency = positiveExamplesTypes.entrySet().iterator().next().getCount();
+			
+			if(strategy == SIBLING){//get sibling class based examples
+				SortedSet<Individual> siblingNegativeExamples = new TreeSet<Individual>();
+				//for each type of the positive examples
+				for (NamedClass nc : positiveExamplesTypes.elementSet()) {
+					int frequency = positiveExamplesTypes.count(nc);
 					//get sibling classes
 					Set<NamedClass> siblingClasses = sr.getSiblingClasses(nc);
-					int nrOfSiblings = siblingClasses.size();
-					int v = (int)Math.ceil(((double)frequency / types.size()) / nrOfSiblings * limit); System.out.println(nc + ": " + v);
-					for (NamedClass siblingClass : siblingClasses) {
-						negEx.addAll(sr.getIndividualsExcluding(siblingClass, nc, v));
-					}
+					siblingClasses = filterByNamespace(siblingClasses);
+					System.out.println("Sibling classes: " + siblingClasses);
 					
-				}
-			} else if(strategy == SUPERCLASS){
-				System.out.println("Super Classes Strategy");
-				for (NamedClass nc : types.elementSet()) {
-					int frequency = types.count(nc);
-					//get sibling classes
-					Set<Description> superClasses = sr.getSuperClasses(nc);System.out.println(superClasses);
-					int nrOfSuperClasses = superClasses.size();
-					int v = (int)Math.ceil(((double)frequency / types.size()) / nrOfSuperClasses * limit); System.out.println(nc + ": " + v);
-					for (Description superClass : superClasses) {
-						negEx.addAll(sr.getIndividualsExcluding(superClass, nc, v));
+					int limit = (int)Math.ceil(((double)frequency / positiveExamplesTypes.size()) / siblingClasses.size() * strategyLimit);
+					//get instances for each sibling class
+					for (NamedClass siblingClass : siblingClasses) {
+						siblingNegativeExamples.addAll(sr.getIndividualsExcluding(siblingClass, nc, limit));
 					}
 				}
-			} else if(strategy == RANDOM){
+				siblingNegativeExamples = SetManipulation.fuzzyShrink(siblingNegativeExamples, strategyLimit);
+				negativeExamples.addAll(siblingNegativeExamples);
+			} else if(strategy == SUPERCLASS){//get super class based examples
+				SortedSet<Individual> superClassNegativeExamples = new TreeSet<Individual>();
+				//for each type of the positive examples
+				for (NamedClass nc : positiveExamplesTypes.elementSet()) {
+					int frequency = positiveExamplesTypes.count(nc);
+					//get super classes
+					Set<Description> superClasses = sr.getSuperClasses(nc);
+					superClasses.remove(new NamedClass(Thing.instance.getURI()));
+					superClasses = filterByNamespace(superClasses);
+					
+					int limit = (int)Math.ceil(((double)frequency / positiveExamplesTypes.size()) / superClasses.size() * strategyLimit);
+					//get instances for each super class
+					for (Description superClass : superClasses) {
+						superClassNegativeExamples.addAll(sr.getIndividualsExcluding(superClass, nc, limit));
+					}
+				}
+				superClassNegativeExamples = SetManipulation.fuzzyShrink(superClassNegativeExamples, strategyLimit);
+				negativeExamples.addAll(superClassNegativeExamples);
+			} else if(strategy == RANDOM){//get some random examples
 				
 			}
 		}
-        return negEx;
+        return negativeExamples;
+	}
+	
+	private <T extends Description> Set<T> filterByNamespace(Set<T> classes){
+		if(namespace != null){
+			return Sets.filter(classes, new Predicate<T>() {
+				public boolean apply(T input){
+					return input.toString().startsWith(namespace);
+				}
+			});
+		}
+		return classes;
+	}
+	
+	private Multiset<NamedClass> filterByNamespace(Multiset<NamedClass> classes){
+		if(namespace != null){
+			return Multisets.filter(classes, new Predicate<NamedClass>() {
+				public boolean apply(NamedClass input){
+					return input.getName().startsWith(namespace);
+				}
+			});
+		}
+		return classes;
 	}
 	
 	private void keepMostSpecificClasses(Multiset<NamedClass> classes){
