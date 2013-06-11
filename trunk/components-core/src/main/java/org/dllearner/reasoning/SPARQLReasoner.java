@@ -492,7 +492,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	 * @return
 	 */
 	public Set<NamedClass> getSiblingClasses(NamedClass cls) {
-		Set<NamedClass> siblings = new HashSet<NamedClass>();
+		Set<NamedClass> siblings = new TreeSet<NamedClass>();
 		String query = "SELECT ?sub WHERE { <" + cls.getName() + "> <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
 		query += "?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
 		query += "FILTER( !SAMETERM(?sub, <" + cls.getName() + ">)) . }";System.out.println(query);
