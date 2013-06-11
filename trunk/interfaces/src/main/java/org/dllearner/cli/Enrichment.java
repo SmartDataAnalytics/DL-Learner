@@ -52,6 +52,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -61,6 +66,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.aksw.commons.jena_owlapi.Conversion;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.jena.riot.checker.CheckerLiterals;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.log4j.ConsoleAppender;
@@ -123,10 +129,10 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.EnrichmentVocabulary;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.PrefixCCMap;
-import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
@@ -151,13 +157,17 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Sets;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -225,6 +235,8 @@ public class Enrichment {
 	private int chunksize = 1000;
 	private boolean omitExistingAxioms;
 	private List<String> allowedNamespaces = new ArrayList<String>();
+	private int maxNrOfPositiveExamples = 20;
+	private int maxNrOfNegativeExamples = 20;
 	
 	private boolean useInference;
 	private SPARQLReasoner reasoner;
@@ -333,7 +345,7 @@ public class Enrichment {
 			// loop over all entities and call appropriate algorithms
 			
 			Set<NamedClass> classes = reasoner.getTypes();//st.getAllClasses();
-			filterByNamespaces(classes);
+			filterByNamespaces(classes);//classes = Sets.newHashSet(new NamedClass("http://dbpedia.org/ontology/GrandPrix"));
 			int entities = 0;
 			for(NamedClass nc : classes) {
 				try {
@@ -406,6 +418,39 @@ public class Enrichment {
 		}
 	}
 	
+	private void filterByNamespaces(Model model){
+		if(allowedNamespaces != null && !allowedNamespaces.isEmpty()){
+			for (StmtIterator iterator = model.listStatements(); iterator.hasNext();) {
+				Statement st = iterator.next();
+				Property predicate = st.getPredicate();
+				RDFNode object = st.getObject();
+				boolean startsWithAllowedNamespace = false;
+				if(predicate.equals(RDF.type)){
+					if(object.isURIResource()){
+						for (String ns : allowedNamespaces) {
+							if(object.asResource().getURI().startsWith(ns)){
+								startsWithAllowedNamespace = true;
+								break;
+							}
+						}
+					} else {
+						startsWithAllowedNamespace = true;
+					}
+				} else {
+					for (String ns : allowedNamespaces) {
+						if(predicate.getURI().startsWith(ns)){
+							startsWithAllowedNamespace = true;
+							break;
+						}
+					}
+				}
+				if(!startsWithAllowedNamespace){
+					iterator.remove();
+				}
+			}
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void runClassLearningAlgorithms(SparqlEndpointKS ks, NamedClass nc) throws ComponentInitException {
 		System.out.println("Running algorithms for class " + nc);
@@ -435,12 +480,10 @@ public class Enrichment {
 	}	
 	
 	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, NamedClass nc, boolean equivalence, boolean reuseKnowledgeSource) throws ComponentInitException {
-
 		// get instances of class as positive examples
-		SPARQLReasoner sr = new SPARQLReasoner(ks);
 		System.out.print("finding positives ... ");
 		long startTime = System.currentTimeMillis();
-		SortedSet<Individual> posExamples = sr.getIndividuals(nc, 20);
+		SortedSet<Individual> posExamples = reasoner.getIndividuals(nc, maxNrOfPositiveExamples);
 		long runTime = System.currentTimeMillis() - startTime;
 		if(posExamples.isEmpty()){
 			System.out.println("Skipping CELOE because class " + nc.toString() + " is empty.");
@@ -452,13 +495,11 @@ public class Enrichment {
 		// use own implementation of negative example finder
 		System.out.print("finding negatives ... ");
 		startTime = System.currentTimeMillis();
-		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
-		SortedSet<String> negExStr = finder.getNegativeExamples(nc.getName(), posExStr);
-		negExStr = SetManipulation.stableShrink(negExStr, 20);
-		SortedSet<Individual> negExamples = Helper.getIndividualSet(negExStr);
+		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(reasoner, "http://dbpedia.org/ontology");
+		SortedSet<Individual> negExamples = finder.getNegativeExamples(nc, posExamples, maxNrOfNegativeExamples);
 		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
 		runTime = System.currentTimeMillis() - startTime;
-		System.out.println("done (" + negExStr.size()+ " examples found in " + runTime + " ms)");
+		System.out.println("done (" + negExamples.size()+ " examples found in " + runTime + " ms)");
 		
 		AbstractReasonerComponent rc;
 		KnowledgeSource ksFragment;
@@ -468,14 +509,11 @@ public class Enrichment {
 		} else {
 			System.out.print("extracting fragment ... ");//com.hp.hpl.jena.shared.impl.JenaParameters.enableEagerLiteralValidation = true;
 			startTime = System.currentTimeMillis();
-			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), cache, 2);
-			Model model = ModelFactory.createDefaultModel();
-			for(Individual example : Sets.union(posExamples, negExamples)){
-				Model cbd = cbdGen.getConciseBoundedDescription(example.getName());
-				model.add(cbd);
-			}
+			Model model = getFragmentMultithreaded(ks, Sets.union(posExamples, negExamples));
 			filter(model);
+			filterByNamespaces(model);
 			OWLEntityTypeAdder.addEntityTypes(model);
+			
 			runTime = System.currentTimeMillis() - startTime;
 			System.out.println("done (" + model.size()+ " triples found in " + runTime + " ms)");
 			OWLOntology ontology = asOWLOntology(model);
@@ -483,8 +521,12 @@ public class Enrichment {
 //			ksFragment.init();
 			rc = new FastInstanceChecker(ksFragment);
 			rc.init();
+			rc.setSubsumptionHierarchy(reasoner.getClassHierarchy());
 			ksCached = ksFragment;
 			rcCached = rc;
+//			for (Individual ind : posExamples) {
+//				System.out.println(ResultSetFormatter.asText(com.hp.hpl.jena.query.QueryExecutionFactory.create("SELECT * WHERE {<" + ind.getName() + "> ?p ?o. OPTIONAL{?o a ?o_type}}",model).execSelect()));
+//			}
 		}
 		
 		/*//old way to get SPARQL fragment
@@ -516,7 +558,7 @@ public class Enrichment {
             ksCached = ks2;
             rcCached = rc;
         }*/
-
+		
         ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(nc);
         lp.setEquivalence(equivalence);
@@ -528,7 +570,9 @@ public class Enrichment {
         CELOE la = new CELOE(lp, rc);
         la.setMaxExecutionTimeInSeconds(10);
         la.setNoisePercentage(25);
+        la.setMaxNrOfResults(100);
         la.init();
+        ((RhoDRDown)la.getOperator()).setUseNegation(false);
         startTime = System.currentTimeMillis();
         System.out.print("running CELOE (for " + (equivalence ? "equivalent classes" : "sub classes") + ") ... ");
         la.start();
@@ -552,6 +596,42 @@ public class Enrichment {
         learnedEvaluatedAxioms.addAll(learnedAxioms);
         algorithmRuns.add(new AlgorithmRun(CELOE.class, learnedAxioms, ConfigHelper.getConfigOptionValues(la)));	
 		return learnedAxioms;
+	}
+	
+	private Model getFragment(SparqlEndpointKS ks, Set<Individual> individuals){
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), cache, 2);
+		Model model = ModelFactory.createDefaultModel();
+		for(Individual ind : individuals){
+			Model cbd = cbdGen.getConciseBoundedDescription(ind.getName());
+			model.add(cbd);
+		}
+		return model;
+	}
+	
+	private Model getFragmentMultithreaded(final SparqlEndpointKS ks, Set<Individual> individuals){
+		Model model = ModelFactory.createDefaultModel();
+		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		List<Future<Model>> futures = new ArrayList<Future<Model>>();
+		for (final Individual ind : individuals) {
+			futures.add(threadPool.submit(new Callable<Model>() {
+				@Override
+				public Model call() throws Exception {
+					ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), cache, 2);
+					return cbdGen.getConciseBoundedDescription(ind.getName());
+				}
+			}));
+		}
+		for (Future<Model> future : futures) {
+			try {
+				model.add(future.get());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+		threadPool.shutdown();
+		return model;
 	}
 	
 	private List<EvaluatedAxiom> applyLearningAlgorithm(Class<? extends AxiomLearningAlgorithm> algorithmClass, SparqlEndpointKS ks, Entity entity) throws ComponentInitException {
