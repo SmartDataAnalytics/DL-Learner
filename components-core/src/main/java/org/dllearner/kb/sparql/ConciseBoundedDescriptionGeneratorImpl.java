@@ -11,7 +11,7 @@ import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.extra.CacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+//import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.log4j.Level;

@@ -90,27 +90,25 @@ public class SetManipulation {
 		}
 		return ret;
 	}
-
+	
 	/**
 	 * shrinks a set to the limit takes the first elements up to limit
 	 * 
 	 * @param set
 	 * @param limit
 	 */
-	public static SortedSet<String> stableShrink(SortedSet<String> set,
+	public static <T> SortedSet<T> stableShrink(SortedSet<T> set,
 			int limit) {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<String> ret = new TreeSet<String>();
+		SortedSet<T> ret = new TreeSet<T>();
 
-		for (String oneInd : set) {
+		for (T oneInd : set) {
 			ret.add(oneInd);
 			if (ret.size() >= limit)
 				break;
-
 		}
-
 		return ret;
 	}
 	

@@ -38,6 +38,16 @@ public class OWLEntityTypeAdder {
 			}
 		}
 		iterator.close();
+		for (Property property : dataPropertyPredicates) {
+			if(!objectPropertyPredicates.contains(property)){
+				model.add(property, RDF.type, OWL.DatatypeProperty);
+			}
+		}
+		for (Property property : objectPropertyPredicates) {
+			if(!dataPropertyPredicates.contains(property)){
+				model.add(property, RDF.type, OWL.ObjectProperty);
+			}
+		}
 	}
 
 }

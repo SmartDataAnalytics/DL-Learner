@@ -196,7 +196,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 						siblingNegativeExamples.addAll(sr.getIndividualsExcluding(siblingClass, nc, limit));
 					}
 				}
-				siblingNegativeExamples = SetManipulation.fuzzyShrink(siblingNegativeExamples, strategyLimit);
+				siblingNegativeExamples = SetManipulation.stableShrink(siblingNegativeExamples, strategyLimit);
 				negativeExamples.addAll(siblingNegativeExamples);
 			} else if(strategy == SUPERCLASS){//get super class based examples
 				SortedSet<Individual> superClassNegativeExamples = new TreeSet<Individual>();
@@ -214,7 +214,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 						superClassNegativeExamples.addAll(sr.getIndividualsExcluding(superClass, nc, limit));
 					}
 				}
-				superClassNegativeExamples = SetManipulation.fuzzyShrink(superClassNegativeExamples, strategyLimit);
+				superClassNegativeExamples = SetManipulation.stableShrink(superClassNegativeExamples, strategyLimit);
 				negativeExamples.addAll(superClassNegativeExamples);
 			} else if(strategy == RANDOM){//get some random examples
 				
