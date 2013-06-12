@@ -226,7 +226,7 @@ public class Enrichment {
 
 	// restrict tested number of entities per type (only for testing purposes);
 	// should be set to -1 in production mode
-	int maxEntitiesPerType = 5;
+	int maxEntitiesPerType = -1;
 	
 	// number of axioms which will be learned/considered (only applies to
 	// some learners)
@@ -345,7 +345,7 @@ public class Enrichment {
 			// loop over all entities and call appropriate algorithms
 			
 			Set<NamedClass> classes = reasoner.getTypes();//st.getAllClasses();
-			filterByNamespaces(classes);//classes = Sets.newHashSet(new NamedClass("http://dbpedia.org/ontology/GrandPrix"));
+			filterByNamespaces(classes);//classes = Sets.newHashSet(new NamedClass("http://dbpedia.org/ontology/AdministrativeRegion"));
 			int entities = 0;
 			for(NamedClass nc : classes) {
 				try {
@@ -425,7 +425,7 @@ public class Enrichment {
 				Property predicate = st.getPredicate();
 				RDFNode object = st.getObject();
 				boolean startsWithAllowedNamespace = false;
-				if(predicate.equals(RDF.type)){
+				if(predicate.equals(RDF.type) || predicate.equals(OWL.equivalentClass)){
 					if(object.isURIResource()){
 						for (String ns : allowedNamespaces) {
 							if(object.asResource().getURI().startsWith(ns)){
@@ -517,11 +517,14 @@ public class Enrichment {
 			runTime = System.currentTimeMillis() - startTime;
 			System.out.println("done (" + model.size()+ " triples found in " + runTime + " ms)");
 			OWLOntology ontology = asOWLOntology(model);
+			if(reasoner.getClassHierarchy() != null){
+				ontology.getOWLOntologyManager().addAxioms(ontology, reasoner.getClassHierarchy().toOWLAPIAxioms());
+			}
 			ksFragment = new OWLAPIOntology(ontology);
 //			ksFragment.init();
 			rc = new FastInstanceChecker(ksFragment);
 			rc.init();
-			rc.setSubsumptionHierarchy(reasoner.getClassHierarchy());
+//			rc.setSubsumptionHierarchy(reasoner.getClassHierarchy());
 			ksCached = ksFragment;
 			rcCached = rc;
 //			for (Individual ind : posExamples) {
@@ -616,7 +619,7 @@ public class Enrichment {
 			futures.add(threadPool.submit(new Callable<Model>() {
 				@Override
 				public Model call() throws Exception {
-					ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), cache, 2);
+					ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), "enrichment-cache", 2);
 					return cbdGen.getConciseBoundedDescription(ind.getName());
 				}
 			}));
