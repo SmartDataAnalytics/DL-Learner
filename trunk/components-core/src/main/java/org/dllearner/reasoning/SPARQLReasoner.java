@@ -104,6 +104,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	private Map<DatatypeProperty, Integer> dataPropertyPopularityMap;
 	
 	private boolean prepared = false;
+	
+	private ConceptComparator conceptComparator = new ConceptComparator();
 
 
 	public SPARQLReasoner(SparqlEndpointKS ks) {
@@ -602,7 +604,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
-		System.out.println("query: "+query);
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -1149,16 +1150,22 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		if(description instanceof Nothing){
 			description = new NamedClass("http://www.w3.org/2002/07/owl#Nothing");
 		}
-		SortedSet<Description> superClasses = new TreeSet<Description>();
+		SortedSet<Description> superClasses = new TreeSet<Description>(conceptComparator);
 		String query = String.format("SELECT ?sup {<%s> <%s> ?sup. FILTER(isIRI(?sup))}", 
 				((NamedClass)description).getURI().toString(),
 				RDFS.subClassOf.getURI()
 				);
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
+		String uri = null;
 		while(rs.hasNext()){
 			qs = rs.next();
-			superClasses.add(new NamedClass(qs.getResource("sup").getURI()));
+			uri = qs.getResource("sup").getURI();
+			if(uri.equals(Thing.instance.getURI().toString())){
+				superClasses.add(Thing.instance);
+			} else {
+				superClasses.add(new NamedClass(uri));
+			}
 		}
 		superClasses.remove(description);
 		return superClasses;

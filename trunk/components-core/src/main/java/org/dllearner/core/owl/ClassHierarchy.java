@@ -71,6 +71,8 @@ public class ClassHierarchy {
 	}
 
 	public SortedSet<Description> getSubClasses(Description concept) {
+		String s= concept.toString();
+		
 		SortedSet<Description> result =  subsumptionHierarchyDown.get(concept);
 		if(result == null) {
 			logger.error("Query for sub class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
