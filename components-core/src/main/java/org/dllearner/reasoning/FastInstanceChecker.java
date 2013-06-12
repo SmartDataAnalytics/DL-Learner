@@ -310,6 +310,9 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 //		 System.out.println("FIC: " + description + " " + individual);
 
 		if (description instanceof NamedClass) {
+			if(((NamedClass) description).getURI().equals(Thing.instance.getURI())){
+				return true;
+			} else
 			if(!atomicConcepts.contains(description)) {
 				throw new ReasoningMethodUnsupportedException("Class " + description + " is not contained in knowledge base.");
 			}
