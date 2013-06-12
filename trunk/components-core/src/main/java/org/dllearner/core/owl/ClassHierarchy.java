@@ -28,6 +28,8 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.semanticweb.owlapi.model.OWLAxiom;
 
 /**
  * Represents a subsumption hierarchy (ignoring equivalent concepts).
@@ -379,6 +381,31 @@ public class ClassHierarchy {
 		}		
 		
 		return new ClassHierarchy(subsumptionHierarchyUpNew, subsumptionHierarchyDownNew);
+	}
+	
+	public Set<Axiom> toAxioms(){
+		return toAxioms(Thing.instance);
+	}
+	
+	public Set<OWLAxiom> toOWLAPIAxioms(){
+		Set<OWLAxiom> owlAxioms = new HashSet<OWLAxiom>();
+		Set<Axiom> axioms = toAxioms();
+		for(Axiom axiom : axioms){
+			owlAxioms.add(OWLAPIConverter.getOWLAPIAxiom(axiom));
+		}
+		return owlAxioms;
+	}
+	
+	public Set<Axiom> toAxioms(Description concept){
+		Set<Axiom> axioms = new HashSet<Axiom>();
+		Set<Description> subConcepts = subsumptionHierarchyDown.get(concept);
+		if (subConcepts != null) {
+			for (Description sub : subConcepts){
+				axioms.add(new SubClassAxiom(sub, concept));
+				axioms.addAll(toAxioms(sub));
+			}
+		}
+		return axioms;
 	}
 	
 	/**
