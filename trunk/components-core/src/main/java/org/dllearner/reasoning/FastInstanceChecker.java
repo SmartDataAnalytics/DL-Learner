@@ -137,8 +137,10 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
             "to return all those which do not have an r-filler not in C. The domain semantics is to use those" +
             "which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to"+
             "use those which have at least one r-filler and do not have an r-filler not in C.",defaultValue = "standard",propertyEditorClass = StringTrimmerEditor.class)
-    private String forAllSemantics;
+    private ForallSemantics forallSemantics = ForallSemantics.Standard;
 
+    public enum ForallSemantics { Standard, SomeOnly }
+    
 	/**
 	 * Creates an instance of the fast instance checker.
 	 */
@@ -400,7 +402,11 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			}
 			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
 			if (roleFillers == null) {
-				return true;
+				if(forallSemantics == ForallSemantics.Standard) {
+					return true;	
+				} else {
+					return false;
+				}
 			}
 			for (Individual roleFiller : roleFillers) {
 				if (!hasTypeImpl(child, roleFiller)) {
@@ -1124,11 +1130,13 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
         this.defaultNegation = defaultNegation;
     }
 
-    public String getForAllSemantics() {
-        return forAllSemantics;
-    }
+	public ForallSemantics getForAllSemantics() {
+		return forallSemantics;
+	}
 
-    public void setForAllSemantics(String forAllSemantics) {
-        this.forAllSemantics = forAllSemantics;
-    }
+	public void setForAllSemantics(ForallSemantics forallSemantics) {
+		this.forallSemantics = forallSemantics;
+	}
+
+
 }
