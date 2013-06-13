@@ -21,6 +21,7 @@ package org.dllearner.kb;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Collections;
 
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.OntologyFormat;
@@ -39,10 +40,12 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
 	
     private byte[] ontologyBytes;
     private OntologyToByteConverter converter = new SimpleOntologyToByteConverter();
+	private OWLOntology ontology;
 
 	
-	public OWLAPIOntology(OWLOntology onto) {
-        ontologyBytes = converter.convert(onto);
+	public OWLAPIOntology(OWLOntology ontology) {
+        this.ontology = ontology;
+//		ontologyBytes = converter.convert(ontology);
     }
 	
 	public static String getName() {
@@ -51,7 +54,20 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
 
     @Override
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {
-        return converter.convert(ontologyBytes, manager);
+    	OWLOntology copy = null;
+    	try {
+    		IRI iri;
+    		if(ontology.getOntologyID().isAnonymous()){
+    			iri = IRI.generateDocumentIRI();
+    		} else {
+    			iri = ontology.getOntologyID().getOntologyIRI();
+    		}
+			copy = manager.createOntology(iri, Collections.singleton(ontology));
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
+//        return converter.convert(ontologyBytes, manager);
+    	return copy;
     }
 
     @Override

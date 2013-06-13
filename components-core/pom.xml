@@ -102,36 +102,7 @@
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
-			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-dlsyntax</artifactId>
-			<version>3.3</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-functional</artifactId>
-			<version>3.3</version>
-		</dependency>
-		
-		<dependency>
-	<groupId>net.sourceforge.owlapi</groupId>
-	<artifactId>owlapi-reasoner</artifactId>
-</dependency>
-<dependency>
-	<groupId>net.sourceforge.owlapi</groupId>
-	<artifactId>owlapi-debugging</artifactId>
-	<version>3.3</version>
-</dependency>
-<dependency>
-	<groupId>net.sourceforge.owlapi</groupId>
-	<artifactId>owlapi-modularity</artifactId>
-	<version>3.3</version>
-</dependency>
-<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-util</artifactId>
+			<version>3.4.4</version>
 		</dependency>
 
 		<!-- THIS IS FROM THE UNIBAS REPO -->

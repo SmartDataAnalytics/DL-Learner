@@ -11,7 +11,6 @@ import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.extra.CacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-//import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.log4j.Level;
@@ -19,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.Model;
+//import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 //import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDescriptionGenerator{
@@ -27,34 +27,42 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	
 	private int chunkSize = 0;
 	
-	private ExtractionDBCache cache;
-	private SparqlEndpoint endpoint;
 	private Model baseModel;
 	
 	private List<String> namespaces;
+	private static final int MAX_RECURSION_DEPTH_DEFAULT = 1;
 	private int maxRecursionDepth = 1;
-	private String cacheDir;
+	private QueryExecutionFactory qef;
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache) {
-		this.endpoint = endpoint;
-		this.cache = cache;
+		this(endpoint, cache, MAX_RECURSION_DEPTH_DEFAULT);
 	}
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache, int maxRecursionDepth) {
-		this.endpoint = endpoint;
-		this.cache = cache;
-		this.maxRecursionDepth = maxRecursionDepth;
+		this(endpoint, cache.getCacheDirectory(), maxRecursionDepth);
 	}
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir, int maxRecursionDepth) {
-		this.endpoint = endpoint;
-		this.cacheDir = cacheDir;
 		this.maxRecursionDepth = maxRecursionDepth;
+		
+		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+		if(cacheDir != null){
+			try {
+				long timeToLive = TimeUnit.DAYS.toMillis(30);
+				CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDir, timeToLive, true);
+				CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		qef = new QueryExecutionFactoryPaginated(qef, 10000);
 	}
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir) {
-		this.endpoint = endpoint;
-		this.cacheDir = cacheDir;
+		this(endpoint, cacheDir, MAX_RECURSION_DEPTH_DEFAULT);
 	}
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint) {
@@ -63,6 +71,8 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	
 	public ConciseBoundedDescriptionGeneratorImpl(Model model) {
 		this.baseModel = model;
+		
+		qef = new QueryExecutionFactoryModel(baseModel);
 	}
 	
 	public Model getConciseBoundedDescription(String resourceURI){
@@ -79,25 +89,6 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	
 	private Model getModelChunked(String resource, int depth){
 		String query = makeConstructQueryOptional(resource, chunkSize, 0, depth);
-		QueryExecutionFactory qef;
-		if(endpoint != null){
-			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			if(cacheDir != null){
-				try {
-					long timeToLive = TimeUnit.DAYS.toMillis(30);
-					CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDir, timeToLive, true);
-					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
-					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			qef = new QueryExecutionFactoryPaginated(qef, 10000);
-		} else {
-			qef = new QueryExecutionFactoryModel(baseModel);
-		}
 		QueryExecution qe = qef.createQueryExecution(query);
 		Model model = qe.execConstruct();
 		return model;
