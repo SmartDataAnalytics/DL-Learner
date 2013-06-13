@@ -18,7 +18,6 @@ import java.util.TreeSet;
 
 import javax.xml.ws.http.HTTPException;
 
-import org.aksw.commons.jena.ExtendedQueryEngineHTTP;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.GeneralisedQueryTree;
@@ -41,6 +40,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_LogicalNot;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
@@ -1401,8 +1401,8 @@ public class NBR<N> {
     private ResultSet executeSelectQuery(String query){
     	ResultSet rs;
     	if(model == null){
-    		ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(), query);
-    		queryExecution.setTimeOut(maxExecutionTimeInSeconds * 1000);
+    		QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+    		queryExecution.setTimeout(maxExecutionTimeInSeconds * 1000);
     		for (String dgu : endpoint.getDefaultGraphURIs()) {
     			queryExecution.addDefaultGraph(dgu);
     		}

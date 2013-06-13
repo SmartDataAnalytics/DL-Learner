@@ -225,7 +225,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		Collections.shuffle(classesList, new Random(123));
 		classesList = classesList.subList(0, maxNrOfTestedClasses);
 		classes = classesList;
-		//classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/ChristianBishop"));
+		classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/BaseballPlayer"));
 		
 		//get the maximum modal depth in the pattern axioms
 		int maxModalDepth = maxModalDepth(patterns);
@@ -1147,7 +1147,7 @@ public class OWLAxiomPatternUsageEvaluation {
 				//compute recall
 				double recall = wald(subClassCnt, overlap);
 				//if recall is too low we can skip the computation of the precision
-				if(recall < 0.2){
+				if(recall < 0.3){
 					logger.warn("Recall(" + recall + ") too low. Skipping precision computation.");
 					continue;
 				}
