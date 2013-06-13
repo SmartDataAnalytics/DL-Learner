@@ -521,6 +521,10 @@
 					<!-- Exclude Project-D from Project-B -->
 					<artifactId>slf4j-log4j12</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.sourceforge</groupId>
+					<artifactId>owlapi</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>

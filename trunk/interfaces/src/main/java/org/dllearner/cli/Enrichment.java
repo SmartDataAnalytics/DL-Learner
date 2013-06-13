@@ -67,6 +67,7 @@ import joptsimple.OptionSpec;
 
 import org.aksw.commons.jena_owlapi.Conversion;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.checker.CheckerLiterals;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.log4j.ConsoleAppender;
@@ -345,7 +346,7 @@ public class Enrichment {
 			// loop over all entities and call appropriate algorithms
 			
 			Set<NamedClass> classes = reasoner.getTypes();//st.getAllClasses();
-			filterByNamespaces(classes);//classes = Sets.newHashSet(new NamedClass("http://dbpedia.org/ontology/AdministrativeRegion"));
+			filterByNamespaces(classes);//classes = Sets.newHashSet(new NamedClass("http://dbpedia.org/ontology/Arachnid"));
 			int entities = 0;
 			for(NamedClass nc : classes) {
 				try {
@@ -856,16 +857,14 @@ public class Enrichment {
 			model.write(fos, "TURTLE", null);
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = man.loadOntologyFromOntologyDocument(new ByteArrayInputStream(baos.toByteArray()));
-			try {
-				man.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream("error.owl"));
-			} catch (OWLOntologyStorageException e) {
-				e.printStackTrace();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
 			return ontology;
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
+			try {
+				model.write(new FileOutputStream("parse-error.ttl"), "TURTLE", null);
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
 		}
 		return null;
 	}
