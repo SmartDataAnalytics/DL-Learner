@@ -123,12 +123,17 @@
 			<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
-			<version>3.4.3</version>
+			<version>3.4.4</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-reasoner</artifactId>
+			<version>3.3</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-debugging</artifactId>
 			<version>3.3</version>
 		</dependency>
 		<dependency>
@@ -524,6 +529,12 @@
 			<url>http://elk-reasoner.googlecode.com/svn/m2/releases</url>
             <releases/>
 		</repository>
+		 <repository>
+          <id>central</id>
+          <url>http://oss.sonatype.org</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
 	</repositories>
 
 	<distributionManagement>

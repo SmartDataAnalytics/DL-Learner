@@ -21,8 +21,8 @@ package org.dllearner.reasoning;
 
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,11 +31,17 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
-import org.aksw.commons.sparql.api.core.QueryExecutionFactory;
-import org.aksw.commons.sparql.api.http.QueryExecutionFactoryHttp;
-import org.aksw.commons.sparql.api.pagination.core.QueryExecutionFactoryPaginated;
 import org.aksw.commons.util.strings.StringUtils;
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.extra.CacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.IndividualReasoner;
 import org.dllearner.core.SchemaReasoner;
@@ -61,7 +67,6 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.slf4j.Logger;
@@ -73,7 +78,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -1360,22 +1364,26 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		logger.debug("Sending query \n {}", query);
 		ResultSet rs = null;
 		if(ks.isRemote()){
-			if(useCache && cache != null){
-				rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(ks.getEndpoint(), query));
-			} else {
-				QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
-				for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
-					queryExecution.addDefaultGraph(dgu);
+			SparqlEndpoint endpoint = ks.getEndpoint();
+			QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+			if(cache != null){
+				try {
+					long timeToLive = TimeUnit.DAYS.toMillis(30);
+					CacheCoreEx cacheBackend = CacheCoreH2.create(cache.getCacheDirectory(), timeToLive, true);
+					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				} catch (SQLException e) {
+					e.printStackTrace();
 				}
-				for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
-					queryExecution.addNamedGraph(ngu);
-				}			
-				rs = queryExecution.execSelect();
 			}
+			qef = new QueryExecutionFactoryPaginated(qef, 10000);
+			QueryExecution qe = qef.createQueryExecution(query);
+			rs = qe.execSelect();
 		} else {
 			QueryExecution qExec = com.hp.hpl.jena.query.QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
 			rs = qExec.execSelect();
-
 		}
 		return rs;
 	}
