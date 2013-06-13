@@ -19,7 +19,6 @@
 
 package org.dllearner.reasoning;
 
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,6 +40,7 @@ import org.aksw.jena_sparql_api.cache.extra.CacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.IndividualReasoner;
@@ -81,9 +81,6 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
-import com.hp.hpl.jena.sparql.resultset.ResultSetMem;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -98,6 +95,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	private boolean useCache = true;
 
 	private ExtractionDBCache cache;
+	private QueryExecutionFactory qef;
 
 	private SparqlEndpointKS ks;
 	private ClassHierarchy hierarchy;
@@ -128,6 +126,27 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 
 		classPopularityMap = new HashMap<NamedClass, Integer>();
 		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
+		
+		if(ks.isRemote()){
+			SparqlEndpoint endpoint = ks.getEndpoint();
+			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+			if(cache != null){
+				try {
+					long timeToLive = TimeUnit.DAYS.toMillis(30);
+					CacheCoreEx cacheBackend = CacheCoreH2.create(cache.getCacheDirectory(), timeToLive, true);
+					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			qef = new QueryExecutionFactoryPaginated(qef, 10000);
+			
+		} else {
+			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
+		}
 	}
 
 	public SPARQLReasoner(OntModel model) {
@@ -1362,57 +1381,24 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 
 	private ResultSet executeSelectQuery(String query){
 		logger.debug("Sending query \n {}", query);
-		ResultSet rs = null;
-		if(ks.isRemote()){
-			SparqlEndpoint endpoint = ks.getEndpoint();
-			QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			if(cache != null){
-				try {
-					long timeToLive = TimeUnit.DAYS.toMillis(30);
-					CacheCoreEx cacheBackend = CacheCoreH2.create(cache.getCacheDirectory(), timeToLive, true);
-					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
-					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			qef = new QueryExecutionFactoryPaginated(qef, 10000);
-			QueryExecution qe = qef.createQueryExecution(query);
-			rs = qe.execSelect();
-		} else {
-			QueryExecution qExec = com.hp.hpl.jena.query.QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
-			rs = qExec.execSelect();
-		}
+		QueryExecution qe = qef.createQueryExecution(query);
+		ResultSet rs = qe.execSelect();
 		return rs;
 	}
 
 	private ResultSet executeSelectQuery(String query, long timeout){
 		logger.debug("Sending query \n {}", query);
-		ResultSet rs = null;
-		if(ks.isRemote()){
-			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
-			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
-					query);
-			queryExecution.setTimeout(timeout);
-			queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
-			queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
-			try {
-				rs = queryExecution.execSelect();
-			} catch (QueryExceptionHTTP e) {
-				if(e.getCause() instanceof SocketTimeoutException){
-					logger.warn("Got timeout");
-				} else {
-					logger.error("Exception executing query", e);
-				}
-				rs = new ResultSetMem();
-			}
-		} else {
-			QueryExecution qExec = com.hp.hpl.jena.query.QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
-			rs = qExec.execSelect();
-		}
+		QueryExecution qe = qef.createQueryExecution(query);
+		qe.setTimeout(timeout);
+		ResultSet rs = qe.execSelect();
 		return rs;
+	}
+	
+	private boolean executeAskQuery(String query){
+		logger.debug("Sending query \n {}", query);
+		QueryExecution qe = qef.createQueryExecution(query);
+		boolean ret = qe.execAsk();
+		return ret;
 	}
 
 	/**
@@ -1430,27 +1416,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	public void setUseCache(boolean useCache) {
 		this.useCache = useCache;
 	}
-
-	private boolean executeAskQuery(String query){
-		boolean ret;
-		if(ks.isRemote()){
-			QueryEngineHTTP queryExecution = new QueryEngineHTTP(ks.getEndpoint().getURL().toString(), query);
-			for (String dgu : ks.getEndpoint().getDefaultGraphURIs()) {
-				queryExecution.addDefaultGraph(dgu);
-			}
-			for (String ngu : ks.getEndpoint().getNamedGraphURIs()) {
-				queryExecution.addNamedGraph(ngu);
-			}			
-			ret = queryExecution.execAsk();
-
-		} else {
-			QueryExecution qExec = com.hp.hpl.jena.query.QueryExecutionFactory.create(query,  ((LocalModelBasedSparqlEndpointKS)ks).getModel());
-			ret = qExec.execAsk();
-		}
-
-		return ret;
-	}
-
 
 	public static void main(String[] args) throws Exception{
 		//		QueryEngineHTTP e = new QueryEngineHTTP("http://bibleontology.com/sparql/index.jsp",
