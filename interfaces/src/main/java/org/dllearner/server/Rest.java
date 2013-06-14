@@ -9,6 +9,8 @@ import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +75,7 @@ public class Rest extends HttpServlet {
                         "} ";
 
                 learningResult.put("success", "1");
-                learningResult.put("manchester", manchester);
+                learningResult.put("manchester", manchester); 
                 learningResult.put("kbsyntax", "other syntax");
                 learningResult.put("sparql", sparql);
                 learningResult.put("accuracy", 1.0);
@@ -87,11 +89,12 @@ public class Rest extends HttpServlet {
 
                 SparqlQueryDescriptionConvertVisitor sqd = new SparqlQueryDescriptionConvertVisitor();
                 sqd.setLimit(limit);
-
-                learningResult.put("success", "1");
+                OWLClassExpressionToSPARQLConverter sparqlConv = new OWLClassExpressionToSPARQLConverter();
+                               learningResult.put("success", "1");
                 learningResult.put("manchester", ed.getDescription().toManchesterSyntaxString(null, null));
                 learningResult.put("kbsyntax", ed.getDescription().toKBSyntaxString());
-                learningResult.put("sparql", sqd.getSparqlQuery(ed.getDescription()));
+//                learningResult.put("sparql", sqd.getSparqlQuery(ed.getDescription()));
+                learningResult.put("sparql",  sparqlConv.asQuery("?subject", OWLAPIConverter.getOWLAPIDescription(ed.getDescription())));
                 learningResult.put("accuracy", ed.getAccuracy());
                 learningResult.put("truePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredPositives()));
                 learningResult.put("falsePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredPositives()));
