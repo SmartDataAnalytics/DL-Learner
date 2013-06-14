@@ -31,6 +31,7 @@ import org.junit.Test;
  * 
  */
 public class SomeOnlyReasonerTest {
+	
     @Test
     public void someOnlyTest() throws ComponentInitException, LearningProblemUnsupportedException {
         // TODO: use aksw-commons-sparql instead of sparql-scala
