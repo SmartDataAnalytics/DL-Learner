@@ -139,7 +139,11 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
             "use those which have at least one r-filler and do not have an r-filler not in C.",defaultValue = "standard",propertyEditorClass = StringTrimmerEditor.class)
     private ForallSemantics forallSemantics = ForallSemantics.Standard;
 
-    public enum ForallSemantics { Standard, SomeOnly }
+    public enum ForallSemantics { 
+    	Standard, // standard all quantor
+    	NonEmpty, // p only C for instance a returns false if there is no fact p(a,x) for any x  
+    	SomeOnly  // p only C for instance a returns false if there is no fact p(a,x) with x \ in C  
+    }
     
 	/**
 	 * Creates an instance of the fast instance checker.
@@ -401,6 +405,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 				return true;
 			}
 			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			
 			if (roleFillers == null) {
 				if(forallSemantics == ForallSemantics.Standard) {
 					return true;	
@@ -408,12 +413,20 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 					return false;
 				}
 			}
+			boolean hasCorrectFiller = false;
 			for (Individual roleFiller : roleFillers) {
-				if (!hasTypeImpl(child, roleFiller)) {
+				if (hasTypeImpl(child, roleFiller)) {
+					hasCorrectFiller = true;
+				} else {
 					return false;
-				}
+				}				
 			}
-			return true;
+			
+			if(forallSemantics == ForallSemantics.SomeOnly) {
+				return hasCorrectFiller;
+			} else {
+				return true;
+			}
 		} else if (description instanceof ObjectMinCardinalityRestriction) {
 			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
 			if (!(ope instanceof ObjectProperty)) {
