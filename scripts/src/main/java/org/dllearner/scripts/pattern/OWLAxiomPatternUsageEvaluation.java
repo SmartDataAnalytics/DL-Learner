@@ -33,6 +33,7 @@ import java.util.NavigableSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 
@@ -90,6 +91,10 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
@@ -153,7 +158,13 @@ public class OWLAxiomPatternUsageEvaluation {
 	private Connection conn;
 	
 	private PreparedStatement ps;
-
+	
+	private LoadingCache<NamedClass, Model> fragments;
+	
+	private File samplesDir;
+	private File instantiationsDir;
+	
+	
 	public OWLAxiomPatternUsageEvaluation() {
 		try {
 			BZip2CompressorInputStream is = new BZip2CompressorInputStream(new URL(ontologyURL).openStream());
@@ -169,6 +180,11 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 		
 		initDBConnection();
+		
+		samplesDir = new File("pattern-instantiations-samples");
+		samplesDir.mkdir();
+		instantiationsDir = new File("pattern-instantiations");
+		instantiationsDir.mkdir();
 	}
 	
 	private void initDBConnection() {
@@ -218,13 +234,21 @@ public class OWLAxiomPatternUsageEvaluation {
 		List<OWLAxiom> patterns = getPatternsToEvaluate(patternOntology);
 		
 		//get all classes in KB
-		Collection<NamedClass> classes = reasoner.getTypes(ns);
+		Collection<NamedClass> classes = reasoner.getOWLClasses();
 		
-		//randomize and extract a chunk
+		//get n random classes which contain at least x instances
+		int minNrOfInstances = 5;
 		List<NamedClass> classesList = new ArrayList<NamedClass>(classes);
 		Collections.shuffle(classesList, new Random(123));
-		classesList = classesList.subList(0, maxNrOfTestedClasses);
-		classes = classesList;
+		classes = new TreeSet<NamedClass>();
+		for (NamedClass cls : classesList) {
+			if(reasoner.getIndividualsCount(cls) >= minNrOfInstances){
+				classes.add(cls);
+			}
+			if(classes.size() == maxNrOfTestedClasses){
+				break;
+			}
+		}
 		classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/BaseballPlayer"));
 		
 		//get the maximum modal depth in the pattern axioms
@@ -264,8 +288,7 @@ public class OWLAxiomPatternUsageEvaluation {
 					logger.info("...on class " + cls + "...");
 					OWLClass owlClass = df.getOWLClass(IRI.create(cls.getName()));
 					Model fragment = class2Fragment.get(cls);
-					Map<OWLAxiom, Score> result = applyPattern(pattern,	owlClass, fragment);
-					Set<OWLAxiom> annotatedAxioms = asAnnotatedAxioms(result);
+					Set<OWLAxiom> annotatedAxioms = applyPattern(pattern,	owlClass, fragment);
 					filterOutTrivialAxioms(annotatedAxioms);
 					filterOutAxiomsBelowThreshold(annotatedAxioms, threshold);
 					int nrOfAxiomsLocal = annotatedAxioms.size();
@@ -277,7 +300,7 @@ public class OWLAxiomPatternUsageEvaluation {
 					patternClassTimeMon.stop();
 					write2DB(pattern, owlClass, patternClassTimeMon.getLastValue(), nrOfAxiomsLocal, nrOfAxiomsGlobal);
 				}
-				ontology = save(pattern, learnedAxioms, file);
+				ontology = save(pattern, learnedAxioms);
 			} else {
 				OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 				try {
@@ -288,7 +311,7 @@ public class OWLAxiomPatternUsageEvaluation {
 			}
 			patternTimeMon.stop();
 			if(sampling){
-				List<OWLAxiom> sample = createSample(ontology);//, classes);
+				List<OWLAxiom> sample = createSample(ontology, classes);
 				List<String> lines = new ArrayList<String>();
 				for (OWLAxiom axiom : sample) {
 					double accuracy = getAccuracy(axiom);
@@ -301,6 +324,95 @@ public class OWLAxiomPatternUsageEvaluation {
 				}
 			}
 		}
+	}
+	
+	public void runUsingFragmentExtraction2(SparqlEndpoint endpoint, OWLOntology patternOntology, File outputFile, int maxNrOfTestedClasses){
+		ks = new SparqlEndpointKS(endpoint, cache);
+		SPARQLReasoner reasoner = new SPARQLReasoner(ks, cache);
+		
+		//get the axiom patterns to evaluate
+		List<OWLAxiom> patterns = getPatternsToEvaluate(patternOntology);
+		
+		//get all classes in KB
+		Collection<NamedClass> classes = reasoner.getOWLClasses();
+		
+		//get n random classes which contain at least x instances
+		int minNrOfInstances = 5;
+		List<NamedClass> classesList = new ArrayList<NamedClass>(classes);
+		Collections.shuffle(classesList, new Random(123));
+		classes = new TreeSet<NamedClass>();
+		for (NamedClass cls : classesList) {
+			if(!cls.getName().startsWith("http://dbpedia.org/ontology/"))continue;
+			if (reasoner.getIndividualsCount(cls) >= minNrOfInstances) {
+				classes.add(cls);
+			}
+			if (classes.size() == maxNrOfTestedClasses) {
+				break;
+			}
+		}
+//		classes = Collections.singleton(new NamedClass("http://dbpedia.org/ontology/BaseballPlayer"));
+		
+		//get the maximum modal depth in the pattern axioms
+		final int maxModalDepth = maxModalDepth(patterns);
+		
+		//create cache and fill the cache
+		fragments = CacheBuilder.newBuilder()
+			       .maximumSize(maxNrOfTestedClasses)
+			       .expireAfterWrite(100, TimeUnit.HOURS)
+			       .build(
+			           new CacheLoader<NamedClass, Model>() {
+			             public Model load(NamedClass cls) {
+			               return extractFragment(cls, maxModalDepth);
+			             }
+			           });
+		Model fragment;
+		for (NamedClass cls : classes) {
+			try {
+				fragment = fragments.get(cls);
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+		System.exit(0);
+		
+		Monitor patternTimeMon = MonitorFactory.getTimeMonitor("pattern-runtime");
+		//for each pattern
+		for (OWLAxiom pattern : patterns) {
+			patternTimeMon.start();
+			//run if not already exists a result on disk
+			File file = getPatternInstantiationsFile(pattern);
+			OWLOntology ontology = null;
+			if(!file.exists()){
+				ontology = applyPattern(pattern, classes);
+			} else {
+				OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+				try {
+					ontology = man.loadOntologyFromOntologyDocument(file);
+				} catch (OWLOntologyCreationException e) {
+					e.printStackTrace();
+				}
+			}
+			patternTimeMon.stop();
+			if(sampling){
+				
+				List<OWLAxiom> sample = createSample(ontology, classes);
+				List<String> lines = new ArrayList<String>();
+				for (OWLAxiom axiom : sample) {
+					double accuracy = getAccuracy(axiom);
+					lines.add(axiomRenderer.render(axiom) + "," + format.format(accuracy));
+				}
+				try {
+					Files.write(Joiner.on("\n").join(lines), new File(samplesDir, axiomRenderer.render(pattern).replace(" ", "_") + "-instantiations-sample.csv"), Charsets.UTF_8);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	
+	private File getPatternInstantiationsFile(OWLAxiom pattern){
+		return new File(instantiationsDir, axiomRenderer.render(pattern).replace(" ", "_") + "-instantiations.ttl");
 	}
 	
 	private Set<OWLAxiom> asAnnotatedAxioms(Map<OWLAxiom, Score> axioms2Score){
@@ -326,34 +438,39 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 	}
 	
-	private List<OWLAxiom> createSample(OWLOntology ontology){
+	private List<OWLAxiom> createSample(OWLOntology ontology, Collection<NamedClass> classes){
+		List<OWLAxiom> sample = new ArrayList<OWLAxiom>();
+		
 		Set<OWLAxiom> axioms = ontology.getAxioms();
+		//filter out trivial axioms, e.g. A SubClassOf Thing or A EquivalentTo A and B
 		filterOutTrivialAxioms(axioms);
-		for (Iterator<OWLAxiom> iter =  axioms.iterator(); iter.hasNext();) {
-			OWLAxiom axiom = iter.next();
-			double accuracy = getAccuracy(axiom);
-			if(accuracy < sampleThreshold){
-				iter.remove();
-			} else {
-				String axiomString = axiomRenderer.render(axiom);
-				boolean remove = false;
-				for (String s : entites2Ignore) {
-					if(axiomString.contains(s)){
-						remove = true;
-						break;
+		//filter out axioms below threshold
+		filterOutAxiomsBelowThreshold(axioms, sampleThreshold);
+		//get for each class some random axioms
+		int limit = sampleSize / classes.size();
+		while(!axioms.isEmpty() && sample.size() < sampleSize){
+			for (NamedClass cls : classes) {
+				List<OWLAxiom> relatedAxioms = new ArrayList<OWLAxiom>(ontology.getReferencingAxioms(df.getOWLClass(IRI.create(cls.getName()))));
+				relatedAxioms.retainAll(axioms);
+				Collections.shuffle(relatedAxioms, new Random(123));
+				int cnt = 0;
+				Iterator<OWLAxiom> iter = relatedAxioms.iterator();
+				while(iter.hasNext() && cnt < limit){
+					OWLAxiom axiom = iter.next();
+					if(!sample.contains(axiom)){
+						sample.add(axiom);
+						axioms.remove(axiom);
+						cnt++;
 					}
 				}
-				if(remove){
-					iter.remove();
-				} 
 			}
 		}
-		List<OWLAxiom> axiomList = new ArrayList<OWLAxiom>(axioms);
-		Collections.shuffle(axiomList, new Random(123));
-		return axiomList.subList(0, Math.min(sampleSize, axiomList.size()));
+		
+		Collections.shuffle(sample, new Random(123));
+		return sample.subList(0, Math.min(sampleSize, sample.size()));
 	}
 	
-	private List<OWLAxiom> createSample(OWLOntology ontology, Collection<NamedClass> classes){
+	private List<OWLAxiom> createSample2(OWLOntology ontology, Collection<NamedClass> classes){
 		List<OWLAxiom> axiomList = new ArrayList<OWLAxiom>();
 		for (NamedClass cls : classes) {
 			OWLClass owlClass = df.getOWLClass(IRI.create(cls.getName()));
@@ -507,74 +624,92 @@ public class OWLAxiomPatternUsageEvaluation {
 	
 	private Map<NamedClass, Model> extractFragments(Collection<NamedClass> classes, int depth){
 		Map<NamedClass, Model> class2Fragment = new HashMap<NamedClass, Model>();
-		//get the maximum modal depth in the patterns
+		Model fragment;
 		for (NamedClass cls : classes) {
-			logger.info("Extracting fragment for " + cls + "...");
-			Model fragment = ModelFactory.createDefaultModel();
-			//try to load from cache
-			HashFunction hf = Hashing.md5();
-			HashCode hc = hf.newHasher().putString(cls.getName()).hash();
-			File file = new File("pattern-cache/" + hc.toString() + ".ttl");
-			if(file.exists()){
-				try {
-					fragment.read(new FileInputStream(file), null, "TURTLE");
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-				filterModel(fragment);
-				class2Fragment.put(cls, fragment);
-				logger.info("...got " + fragment.size() + " triples.");
-				continue;
-			}
-			
-			//build the CONSTRUCT query
-			Query query = buildConstructQuery(cls, depth);
-			query.setLimit(queryLimit);
-			//get triples until time elapsed
-			long startTime = System.currentTimeMillis();
-			int offset = 0;
-			boolean hasMoreResults = true;
-			while(hasMoreResults && (System.currentTimeMillis() - startTime)<= maxFragmentExtractionTime){
-				query.setOffset(offset);
-				logger.info(query);
-				Model m = executeConstructQuery(query);
-				fragment.add(m);
-				if(m.size() == 0){
-					hasMoreResults = false;
-				}
-				offset += queryLimit;
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			logger.info("...got " + fragment.size() + " triples.");
-			try {
-				fragment.write(new FileOutputStream(file), "TURTLE");
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			filterModel(fragment);
+			fragment = extractFragment(cls, depth);
 			class2Fragment.put(cls, fragment);
 		}
 		return class2Fragment;
 	}
 	
+	private Model extractFragment(NamedClass cls, int depth){
+		logger.info("Extracting fragment for " + cls + "...");
+		Model fragment = ModelFactory.createDefaultModel();
+		//try to load from cache
+		HashFunction hf = Hashing.md5();
+		HashCode hc = hf.newHasher().putString(cls.getName()).hash();
+		File file = new File("pattern-cache/" + hc.toString() + ".ttl");
+		if(file.exists()){
+			try {
+				fragment.read(new FileInputStream(file), null, "TURTLE");
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			filterModel(fragment);
+			logger.info("...got " + fragment.size() + " triples.");
+			return fragment;
+		}
+		
+		//build the CONSTRUCT query
+		Query query = buildConstructQuery(cls, depth);
+		query.setLimit(queryLimit);
+		//get triples until time elapsed
+		long startTime = System.currentTimeMillis();
+		int offset = 0;
+		boolean hasMoreResults = true;
+		while(hasMoreResults && (System.currentTimeMillis() - startTime)<= maxFragmentExtractionTime){
+			query.setOffset(offset);
+			logger.info(query);
+			Model m = executeConstructQuery(query);
+			fragment.add(m);
+			if(m.size() == 0){
+				hasMoreResults = false;
+			}
+			offset += queryLimit;
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		logger.info("...got " + fragment.size() + " triples.");
+		try {
+			fragment.write(new FileOutputStream(file), "TURTLE");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		filterModel(fragment);
+		return fragment;
+	}
+	
 	private void filterModel(Model model){
+		Set<String> blackList = Sets.newHashSet(
+				"http://dbpedia.org/ontology/thumbnail",
+				"http://dbpedia.org/ontology/wikiPageRedirects",
+				"http://dbpedia.org/ontology/wikiPageExternalLink",
+				"http://dbpedia.org/ontology/wikiPageWikiLink",
+				"http://dbpedia.org/ontology/wikiPageRevisionID",
+				"http://dbpedia.org/ontology/wikiPageID",
+				"http://dbpedia.org/ontology/wikiPageDisambiguates",
+				"http://dbpedia.org/ontology/wikiPageInterLanguageLink",
+				"http://dbpedia.org/ontology/abstract"
+				);
 		List<Statement> statements2Remove = new ArrayList<Statement>();
 		for (Statement st : model.listStatements().toSet()) {
-			if(st.getObject().isLiteral()){
-				statements2Remove.add(st);
+			if(st.getPredicate().equals(RDF.type)){
+				if(st.getObject().isURIResource() && !st.getObject().asResource().getURI().startsWith("http://dbpedia.org/ontology/")){
+					statements2Remove.add(st);
+				}
+			} else {
+				if(!st.getPredicate().getURI().startsWith("http://dbpedia.org/ontology/")){
+					statements2Remove.add(st);
+				} else {
+					if(blackList.contains(st.getPredicate().getURI())){
+						statements2Remove.add(st);
+					}
+				}
 			}
-			if(st.getPredicate().equals(RDF.type) && !st.getObject().asResource().getURI().startsWith("http://dbpedia.org/ontology/")){
-				statements2Remove.add(st);
-			}
-			if(st.getPredicate().hasURI("http://xmlns.com/foaf/0.1/depiction") || st.getPredicate().hasURI("http://dbpedia.org/ontology/thumbnail")){
-				statements2Remove.add(st);
-			} else if(!st.getPredicate().equals(RDF.type) && !st.getPredicate().getURI().startsWith("http://dbpedia.org/ontology/")){
-				statements2Remove.add(st);
-			}
+			
 		}
 		model.remove(statements2Remove);
 	}
@@ -775,7 +910,43 @@ public class OWLAxiomPatternUsageEvaluation {
 		return axioms2Score;
 	}
 	
-	private Map<OWLAxiom, Score> applyPattern(OWLAxiom pattern, OWLClass cls, Model fragment) {
+	private OWLOntology applyPattern(OWLAxiom pattern, Collection<NamedClass> classes) {
+		logger.info("Applying pattern " + pattern + "...");
+		Set<OWLAxiom> learnedAxioms = new HashSet<OWLAxiom>();
+		Monitor patternClassTimeMon = MonitorFactory.getTimeMonitor("class-pattern-runtime");
+		// for each class
+		for (NamedClass cls : classes) {
+			logger.info("...on class " + cls + "...");
+			try {
+				OWLClass owlClass = df.getOWLClass(IRI.create(cls.getName()));
+				
+				//get the fragment
+				Model fragment = fragments.get(cls);
+				
+				//apply the pattern
+				patternClassTimeMon.start();
+				Set<OWLAxiom> annotatedAxioms = applyPattern(pattern, owlClass, fragment);
+				patternClassTimeMon.stop();
+				
+				filterOutTrivialAxioms(annotatedAxioms);
+				filterOutAxiomsBelowThreshold(annotatedAxioms, threshold);
+				int nrOfAxiomsLocal = annotatedAxioms.size();
+				annotatedAxioms = computeScoreGlobal(annotatedAxioms, owlClass);
+				filterOutAxiomsBelowThreshold(annotatedAxioms, threshold);
+				int nrOfAxiomsGlobal = annotatedAxioms.size();
+				learnedAxioms.addAll(annotatedAxioms);
+				printAxioms(annotatedAxioms, threshold);
+				
+				write2DB(pattern, owlClass, patternClassTimeMon.getLastValue(), nrOfAxiomsLocal, nrOfAxiomsGlobal);
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+		OWLOntology ontology = save(pattern, learnedAxioms);
+		return ontology;
+	}
+	
+	private Set<OWLAxiom> applyPattern(OWLAxiom pattern, OWLClass cls, Model fragment) {
 		Map<OWLAxiom, Score> axioms2Score = new HashMap<OWLAxiom, Score>();
 		
 		OWLClassExpression patternSubClass = null;
@@ -798,7 +969,7 @@ public class OWLAxiomPatternUsageEvaluation {
 			patternSuperClass = ((OWLSubClassOfAxiom) pattern).getSuperClass();
 		} else {
 			logger.warn("Pattern " + pattern + " not supported yet.");
-			return axioms2Score;
+			return asAnnotatedAxioms(axioms2Score);
 		}
 		
 		Set<OWLEntity> signature = patternSuperClass.getSignature();
@@ -851,7 +1022,7 @@ public class OWLAxiomPatternUsageEvaluation {
 			axioms2Score.put(axiom, score);
 		}
 
-		return axioms2Score;
+		return asAnnotatedAxioms(axioms2Score);
 	}
 	
 	private void write2DB(OWLAxiom pattern, OWLClass cls, double runtime, int nrOfAxiomsLocal, int nrOfAxiomsGlobal){
@@ -964,11 +1135,11 @@ public class OWLAxiomPatternUsageEvaluation {
 		return template.asQuery();
 	}
 	
-	private OWLOntology save(OWLAxiom pattern, Set<OWLAxiom> learnedAxioms, File file){
+	private OWLOntology save(OWLAxiom pattern, Set<OWLAxiom> learnedAxioms){
 		try {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = man.createOntology(learnedAxioms);
-			man.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream(file));
+			man.saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream(getPatternInstantiationsFile(pattern)));
 			return ontology;
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
@@ -1133,15 +1304,18 @@ public class OWLAxiomPatternUsageEvaluation {
 					superClass = ((OWLSubClassOfAxiom)axiom).getSuperClass();
 				}
 				//count subclass+superClass
-				Query query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(cls, superClass), true);System.out.println(query);
+				System.out.println("Counting instances of " + df.getOWLObjectIntersectionOf(cls, superClass)  + "...");
+				Query query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(cls, superClass), true);
 				rs = executeSelectQuery(query);
 				int overlap = rs.next().getLiteral("cnt").getInt();
+				System.out.println("..." + overlap + " instances.");
 				//count subclass
-				query = converter.asQuery("?x", cls, true);
 				if(subClassCnt == -1){
-					System.out.println(query);
+					System.out.println("Counting instances of " + cls);
+					query = converter.asQuery("?x", cls, true);
 					rs = executeSelectQuery(query);
 					subClassCnt = rs.next().getLiteral("cnt").getInt();
+					System.out.println("..." + subClassCnt + " instances.");
 				}
 				
 				//compute recall
@@ -1152,9 +1326,11 @@ public class OWLAxiomPatternUsageEvaluation {
 					continue;
 				}
 				//count superClass
-				query = converter.asQuery("?x", superClass, true);System.out.println(query);
+				System.out.println("Counting instances of " + superClass);
+				query = converter.asQuery("?x", superClass, true);
 				rs = executeSelectQuery(query);
 				int superClassCnt = rs.next().getLiteral("cnt").getInt();
+				System.out.println("..." + superClassCnt + " instances.");
 				//compute precision
 				double precision = wald(superClassCnt, overlap);
 				
@@ -1320,7 +1496,7 @@ public class OWLAxiomPatternUsageEvaluation {
 				System.exit(0);
 			}
 			int maxNrOfTestedClasses = (Integer) options.valueOf("limit");
-			new OWLAxiomPatternUsageEvaluation().runUsingFragmentExtraction(endpoint, patternsOntology, outputFile, maxNrOfTestedClasses);
+			new OWLAxiomPatternUsageEvaluation().runUsingFragmentExtraction2(endpoint, patternsOntology, outputFile, maxNrOfTestedClasses);
 		}
 		
 	}
