@@ -74,6 +74,7 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -373,7 +374,7 @@ public class OWLAxiomPatternUsageEvaluation {
 				e.printStackTrace();
 			}
 		}
-		System.exit(0);
+//		System.exit(0);
 		
 		Monitor patternTimeMon = MonitorFactory.getTimeMonitor("pattern-runtime");
 		//for each pattern
@@ -438,10 +439,46 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 	}
 	
+//	private List<OWLAxiom> createSample(OWLOntology ontology, Collection<NamedClass> classes){
+//		List<OWLAxiom> sample = new ArrayList<OWLAxiom>();
+//		
+//		Set<OWLAxiom> axioms = ontology.getAxioms();
+//		//filter out trivial axioms, e.g. A SubClassOf Thing or A EquivalentTo A and B
+//		filterOutTrivialAxioms(axioms);
+//		//filter out axioms below threshold
+//		filterOutAxiomsBelowThreshold(axioms, sampleThreshold);
+//		//get for each class some random axioms
+//		for (NamedClass cls : classes) {
+//			List<OWLAxiom> relatedAxioms = new ArrayList<OWLAxiom>(ontology.getReferencingAxioms(df.getOWLClass(IRI
+//					.create(cls.getName()))));
+//			Multimap<Double, OWLAxiom> accuracyWithAxioms = TreeMultimap.create();
+//			for (OWLAxiom axiom : relatedAxioms) {
+//				double accuracy = getAccuracy(axiom);
+//				if(accuracy >= sampleThreshold){
+//					accuracyWithAxioms.put(accuracy, axiom);
+//				}
+//			}
+//			//pick the set of axioms with highest score
+//			NavigableSet<Double> keySet = (NavigableSet<Double>)accuracyWithAxioms.keySet();
+//			if(!keySet.isEmpty()){
+//				Double score = keySet.first();
+//				Collection<OWLAxiom> axiomsWithHighestScore = accuracyWithAxioms.get(score);
+//				List<OWLAxiom> axiomList = new ArrayList<OWLAxiom>(axiomsWithHighestScore);
+//				Collections.shuffle(axiomList, new Random(123));
+//				if(!axiomList.isEmpty()){
+//					sample.add(axiomList.get(0));
+//				}
+//			}
+//		}
+//		
+//		Collections.shuffle(sample, new Random(123));
+//		return sample.subList(0, Math.min(sampleSize, sample.size()));
+//	}
+	
 	private List<OWLAxiom> createSample(OWLOntology ontology, Collection<NamedClass> classes){
 		List<OWLAxiom> sample = new ArrayList<OWLAxiom>();
 		
-		Set<OWLAxiom> axioms = ontology.getAxioms();
+		Set<OWLLogicalAxiom> axioms = ontology.getLogicalAxioms();
 		//filter out trivial axioms, e.g. A SubClassOf Thing or A EquivalentTo A and B
 		filterOutTrivialAxioms(axioms);
 		//filter out axioms below threshold
@@ -526,8 +563,8 @@ public class OWLAxiomPatternUsageEvaluation {
 		return axiomList.subList(0, Math.min(sampleSize, axiomList.size()));
 	}
 	
-	private void filterOutAxiomsBelowThreshold(Set<OWLAxiom> axioms, double threshold) {
-		for (Iterator<OWLAxiom> iter = axioms.iterator(); iter.hasNext();) {
+	private void filterOutAxiomsBelowThreshold(Set<? extends OWLAxiom> axioms, double threshold) {
+		for (Iterator<? extends OWLAxiom> iter = axioms.iterator(); iter.hasNext();) {
 			OWLAxiom axiom = iter.next();
 			if(getAccuracy(axiom) < threshold){
 				iter.remove();
@@ -535,8 +572,8 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 	}
 	
-	private void filterOutTrivialAxioms(Set<OWLAxiom> axioms) {
-		for (Iterator<OWLAxiom> iter = axioms.iterator(); iter.hasNext();) {
+	private void filterOutTrivialAxioms(Set<? extends OWLAxiom> axioms) {
+		for (Iterator<? extends OWLAxiom> iter = axioms.iterator(); iter.hasNext();) {
 			OWLAxiom axiom = iter.next();
 			if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
 				if(((OWLEquivalentClassesAxiom) axiom).getClassExpressions().size() == 1){
