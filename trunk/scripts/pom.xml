@@ -146,7 +146,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2</version>
+				<version>1.2.1</version>
 				<executions>
 
 					<execution>
@@ -159,7 +159,7 @@
 					<executable>java</executable>
 					<arguments>
 						<argument>-Xms512m</argument>
-						<argument>-Xmx3000m</argument>
+						<argument>-Xmx10000m</argument>
 					</arguments>
 				</configuration>
 			</plugin>
