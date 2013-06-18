@@ -94,7 +94,7 @@ public class Rest extends HttpServlet {
                 learningResult.put("manchester", ed.getDescription().toManchesterSyntaxString(null, null));
                 learningResult.put("kbsyntax", ed.getDescription().toKBSyntaxString());
 //                learningResult.put("sparql", sqd.getSparqlQuery(ed.getDescription()));
-                learningResult.put("sparql",  sparqlConv.asQuery("?subject", OWLAPIConverter.getOWLAPIDescription(ed.getDescription())));
+                learningResult.put("sparql", " "+ sparqlConv.asQuery("?subject", OWLAPIConverter.getOWLAPIDescription(ed.getDescription()))+" ");
                 learningResult.put("accuracy", ed.getAccuracy());
                 learningResult.put("truePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredPositives()));
                 learningResult.put("falsePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredPositives()));

@@ -26,7 +26,7 @@ public class ABoxQueryGenerator {
         if (aboxfilter != null) {
             builder.append(aboxfilter);
         }
-        builder.append("FILTER (! (?p=rdf:type))");
+        builder.append("FILTER ( (?p!=rdf:type))");
         builder.append("}");
         monABoxQueryGeneration.stop();
         return builder.toString();
