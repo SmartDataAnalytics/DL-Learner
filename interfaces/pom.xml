@@ -356,7 +356,7 @@
 	<build>
 		<finalName>dl-learner</finalName>
 		<plugins>
-			<plugin>
+		<!--	<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>1.6</version>
@@ -376,7 +376,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>xmlbeans-maven-plugin</artifactId>
@@ -521,8 +521,8 @@
 					<!-- Exclude Project-D from Project-B -->
 					<artifactId>slf4j-log4j12</artifactId>
 				</exclusion>
-				<exclusion>
-					<groupId>net.sourceforge</groupId>
+				 <exclusion>
+					<groupId>net.sourceforge.owlapi</groupId>
 					<artifactId>owlapi</artifactId>
 				</exclusion>
 			</exclusions>
