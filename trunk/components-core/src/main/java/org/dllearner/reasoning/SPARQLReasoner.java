@@ -94,7 +94,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	@ConfigOption(name = "useCache", description = "Whether to use a DB cache", defaultValue = "true", required = false, propertyEditorClass = BooleanEditor.class)
 	private boolean useCache = true;
 
-	private ExtractionDBCache cache;
 	private QueryExecutionFactory qef;
 
 	private SparqlEndpointKS ks;
@@ -111,18 +110,11 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 
 
 	public SPARQLReasoner(SparqlEndpointKS ks) {
-		this.ks = ks;
-
-		if(useCache){
-			cache = new ExtractionDBCache("cache");
-		}
-		classPopularityMap = new HashMap<NamedClass, Integer>();
-		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
+		this(ks, (String)null);
 	}
-
-	public SPARQLReasoner(SparqlEndpointKS ks, ExtractionDBCache cache) {
+	
+	public SPARQLReasoner(SparqlEndpointKS ks, String cacheDirectory) {
 		this.ks = ks;
-		this.cache = cache;
 
 		classPopularityMap = new HashMap<NamedClass, Integer>();
 		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
@@ -130,10 +122,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ks.getEndpoint();
 			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			if(cache != null){
+			if(cacheDirectory != null){
 				try {
 					long timeToLive = TimeUnit.DAYS.toMillis(30);
-					CacheCoreEx cacheBackend = CacheCoreH2.create(cache.getCacheDirectory(), timeToLive, true);
+					CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
 					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
 					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
 				} catch (ClassNotFoundException e) {
@@ -147,6 +139,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		} else {
 			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}
+	}
+
+	public SPARQLReasoner(SparqlEndpointKS ks, ExtractionDBCache cache) {
+		this(ks, cache.getCacheDirectory());
 	}
 
 	public SPARQLReasoner(OntModel model) {
@@ -1410,7 +1406,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	}
 
 	public void setCache(ExtractionDBCache cache) {
-		this.cache = cache;
+//		this.cache = cache;
 	}
 
 	public void setUseCache(boolean useCache) {
