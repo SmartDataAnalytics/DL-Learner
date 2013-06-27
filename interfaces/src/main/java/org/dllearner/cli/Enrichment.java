@@ -341,7 +341,7 @@ public class Enrichment {
 
 			// loop over all entities and call appropriate algorithms
 			
-			Set<NamedClass> classes = reasoner.getTypes();//st.getAllClasses();
+			Set<NamedClass> classes = allowedNamespaces.isEmpty() ? reasoner.getOWLClasses() : reasoner.getOWLClasses(allowedNamespaces.iterator().next());//st.getAllClasses();
 			filterByNamespaces(classes);//classes = Sets.newHashSet(new NamedClass("http://dbpedia.org/ontology/Arachnid"));
 			int entities = 0;
 			for(NamedClass nc : classes) {
