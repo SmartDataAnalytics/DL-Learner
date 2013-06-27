@@ -52,13 +52,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.Set;
-import java.util.SortedSet;
 
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
@@ -66,8 +66,6 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.aksw.commons.jena_owlapi.Conversion;
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.checker.CheckerLiterals;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.log4j.ConsoleAppender;
@@ -75,7 +73,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
-import org.coode.owlapi.turtle.TurtleOntologyFormat;
+import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
@@ -158,9 +156,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -306,7 +302,7 @@ public class Enrichment {
 		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
-//		classAlgorithms.add(DisjointClassesLearner.class);
+		classAlgorithms.add(DisjointClassesLearner.class);
 //		classAlgorithms.add(SimpleSubclassLearner.class);
 		classAlgorithms.add(CELOE.class);		
 		
@@ -359,26 +355,26 @@ public class Enrichment {
 					break;
 				}	
 			}
-//			entities = 0;
-//			Set<ObjectProperty> objectProperties = st.getAllObjectProperties();
-//			filterByNamespaces(objectProperties);
-//			for(ObjectProperty property : objectProperties) {
-//				runObjectPropertyAlgorithms(ks, property);	
-//				entities++;
-//				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
-//					break;
-//				}				
-//			}
-//			entities = 0;
-//			Set<DatatypeProperty> dataProperties = st.getAllDataProperties();
-//			filterByNamespaces(dataProperties);
-//			for(DatatypeProperty property : dataProperties) {
-//				runDataPropertyAlgorithms(ks, property);
-//				entities++;
-//				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
-//					break;
-//				}					
-//			}
+			entities = 0;
+			Set<ObjectProperty> objectProperties = st.getAllObjectProperties();
+			filterByNamespaces(objectProperties);
+			for(ObjectProperty property : objectProperties) {
+				runObjectPropertyAlgorithms(ks, property);	
+				entities++;
+				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
+					break;
+				}				
+			}
+			entities = 0;
+			Set<DatatypeProperty> dataProperties = st.getAllDataProperties();
+			filterByNamespaces(dataProperties);
+			for(DatatypeProperty property : dataProperties) {
+				runDataPropertyAlgorithms(ks, property);
+				entities++;
+				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
+					break;
+				}					
+			}
 		} else {
 			if(resource instanceof ObjectProperty) {
 				System.out.println(resource + " appears to be an object property. Running appropriate algorithms.\n");
