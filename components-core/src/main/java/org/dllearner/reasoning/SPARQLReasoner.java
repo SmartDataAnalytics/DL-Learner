@@ -504,6 +504,18 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		}
 		return types;
 	}
+	
+	public Set<NamedClass> getOWLClasses(String namespace) {
+		Set<NamedClass> types = new HashSet<NamedClass>();
+		String query = String.format("SELECT DISTINCT ?class WHERE {?class a <%s>. FILTER(REGEX(?class,'%s'))}",OWL.Class.getURI(), namespace);
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			types.add(new NamedClass(qs.getResource("class").getURI()));
+		}
+		return types;
+	}
 
 	/**
 	 * Returns a set of classes which are siblings, i.e. on the same level
