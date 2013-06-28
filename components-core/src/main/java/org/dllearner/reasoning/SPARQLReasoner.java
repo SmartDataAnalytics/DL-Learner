@@ -214,6 +214,19 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 
 		return cnt;
 	}
+	
+	public int getSubjectCountForProperty(Property p){
+		int cnt = -1;
+		String query = String.format(
+				"SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}",
+				p.getName());
+		ResultSet rs = executeSelectQuery(query);
+		if(rs.hasNext()){
+			cnt = rs.next().getLiteral("cnt").getInt();
+		}
+
+		return cnt;
+	}
 
 	public int getObjectCountForProperty(ObjectProperty p, long timeout){
 		int cnt = -1;
@@ -221,6 +234,19 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 				"SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}",
 				p.getName());
 		ResultSet rs = executeSelectQuery(query, timeout);
+		if(rs.hasNext()){
+			cnt = rs.next().getLiteral("cnt").getInt();
+		}
+
+		return cnt;
+	}
+	
+	public int getObjectCountForProperty(ObjectProperty p){
+		int cnt = -1;
+		String query = String.format(
+				"SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}",
+				p.getName());
+		ResultSet rs = executeSelectQuery(query);
 		if(rs.hasNext()){
 			cnt = rs.next().getLiteral("cnt").getInt();
 		}
