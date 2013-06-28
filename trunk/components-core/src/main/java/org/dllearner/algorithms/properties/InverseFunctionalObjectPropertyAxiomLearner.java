@@ -136,7 +136,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 	
 	private void runSPARQL1_1_Mode() {
 		// get number of instances of s with <s p o>
-		int numberOfObjects = reasoner.getObjectCountForProperty(propertyToDescribe, getRemainingRuntimeInMilliSeconds());
+		int numberOfObjects = reasoner.getObjectCountForProperty(propertyToDescribe);//TODO, getRemainingRuntimeInMilliSeconds());
 		if(numberOfObjects == -1){
 			logger.warn("Early termination: Got timeout while counting number of distinct objects for given property.");
 			return;
@@ -164,12 +164,12 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		InverseFunctionalObjectPropertyAxiomLearner l = new InverseFunctionalObjectPropertyAxiomLearner(ks);
 		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/profession"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
-		l.setForceSPARQL_1_0_Mode(true);
+//		l.setForceSPARQL_1_0_Mode(true);
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(1));
 	}
