@@ -135,7 +135,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 	}
 	
 	private void runSPARQL1_1_Mode() {
-		int numberOfSubjects = reasoner.getSubjectCountForProperty(propertyToDescribe, getRemainingRuntimeInMilliSeconds());
+		int numberOfSubjects = reasoner.getSubjectCountForProperty(propertyToDescribe);//TODO, getRemainingRuntimeInMilliSeconds());
 		if(numberOfSubjects == -1){
 			logger.warn("Early termination: Got timeout while counting number of distinct subjects for given property.");
 			return;
