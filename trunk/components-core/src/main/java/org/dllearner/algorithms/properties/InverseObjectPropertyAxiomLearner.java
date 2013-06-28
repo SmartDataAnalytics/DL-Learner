@@ -42,7 +42,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-@ComponentAnn(name="inverse objectproperty domain axiom learner", shortName="oplinv", version=0.1)
+@ComponentAnn(name="inverse objectproperty axiom learner", shortName="oplinv", version=0.1)
 public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(InverseObjectPropertyAxiomLearner.class);
@@ -78,7 +78,7 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 		}
 		
 		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
-			runSingleQueryMode();
+			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
@@ -157,12 +157,12 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://[2001:638:902:2010:0:168:35:138]/sparql")));
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		
 		InverseObjectPropertyAxiomLearner l = new InverseObjectPropertyAxiomLearner(ks);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/animal"));
-		l.setMaxExecutionTimeInSeconds(10);
-		l.setForceSPARQL_1_0_Mode(true);
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/routeEnd"));
+		l.setMaxExecutionTimeInSeconds(60);
+//		l.setForceSPARQL_1_0_Mode(true);
 //		l.setReturnOnlyNewAxioms(true);
 		l.init();
 		l.start();
