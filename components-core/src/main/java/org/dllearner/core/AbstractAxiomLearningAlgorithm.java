@@ -416,6 +416,10 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected Score computeScore(int total, int success){
+		if(success > total){
+			logger.warn("success value > total value");
+		}
+		success = Math.min(total, success);//TODO this is a workaround as Virtuoso sometimes returns wrong counts
 		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
 		
 		double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
