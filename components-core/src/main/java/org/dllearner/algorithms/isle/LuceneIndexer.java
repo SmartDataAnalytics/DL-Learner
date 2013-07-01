@@ -25,8 +25,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
@@ -51,12 +53,12 @@ public class LuceneIndexer {
 		Date start = new Date();
 		try {
 
-			IndexWriter writer = new IndexWriter( FSDirectory.open( INDEX ), 
-										new StandardAnalyzer( Version.LUCENE_CURRENT ), true, IndexWriter.MaxFieldLength.LIMITED );
+			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_43, analyzer);
+			IndexWriter writer = new IndexWriter( FSDirectory.open( INDEX ), indexWriterConfig);
 			System.out.println( "Creating index ..." );
 			index( writer, docDir );
 			System.out.println( "Optimizing index ..." );
-			writer.optimize();
 			writer.close();
 			Date end = new Date();
 			System.out.println( end.getTime() - start.getTime() + " total milliseconds" );

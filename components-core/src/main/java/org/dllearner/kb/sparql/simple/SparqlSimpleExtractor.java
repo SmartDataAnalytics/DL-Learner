@@ -11,7 +11,6 @@ import java.util.Set;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
@@ -36,7 +35,6 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 @ComponentAnn(name = "efficient SPARQL fragment extractor", shortName = "sparqls", version = 0.1)
-
 public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource{
 
 
@@ -334,5 +332,10 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
         JenaToOwlapiConverter converter = new JenaToOwlapiConverter();
         return converter.convert(this.model,manager);
     }
+    
+    public static String getName(){
+    	return "efficient SPARQL fragment extractor";
+    }
+    
 
 }

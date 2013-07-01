@@ -116,7 +116,7 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomai
 		//compute the overlap if exist
 		Map<ObjectProperty, Integer> property2Overlap = new HashMap<ObjectProperty, Integer>(); 
 		String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p", propertyToDescribe.getName());
-		System.out.println(query);ResultSet rs = executeSelectQuery(query);
+		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();

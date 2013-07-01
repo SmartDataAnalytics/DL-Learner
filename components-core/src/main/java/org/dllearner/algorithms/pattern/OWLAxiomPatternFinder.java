@@ -364,7 +364,7 @@ public class OWLAxiomPatternFinder {
 			System.out.print(i++ + ": ");
 			URI uri = entry.getPhysicalURI();
 //			if(uri.toString().startsWith("http://rest.bioontology.org/bioportal/ontologies/download/42764")){
-			if (!ontologyProcessed(uri)) {
+			if (!ontologyProcessed(uri)) {//if(entry.getOntologyShortName().equals("00698"))continue;
 				System.out.print("Loading \"" + entry.getOntologyShortName() + "\" from "+ uri);
 				try {
 					manager = OWLManager.createOWLOntologyManager();

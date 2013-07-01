@@ -43,6 +43,6 @@ public interface EntityTextRetriever {
 	 * @param entity The entity to handle.
 	 * @return A weighted set of strings. For a value x, we need to have 0 <= x <= 1.
 	 */
-	public Map<String, Integer> getRelevantText(Entity entity);
+	public Map<String, Double> getRelevantText(Entity entity);
 	
 }

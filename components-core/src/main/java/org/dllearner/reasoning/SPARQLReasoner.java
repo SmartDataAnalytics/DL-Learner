@@ -22,10 +22,12 @@ package org.dllearner.reasoning;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -73,6 +75,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.clarkparsia.owlapiv3.XSD;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -80,6 +84,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
@@ -134,7 +139,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 					e.printStackTrace();
 				}
 			}
-			qef = new QueryExecutionFactoryPaginated(qef, 10000);
+//			qef = new QueryExecutionFactoryPaginated(qef, 10000);
 			
 		} else {
 			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
@@ -517,6 +522,100 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 			types.add(new NamedClass(qs.getResource("class").getURI()));
 		}
 		return types;
+	}
+	
+	public Set<Property> getProperties(boolean inferType, String namespace) {
+		Set<Property> properties = new HashSet<Property>();
+		String query = "SELECT DISTINCT ?p ?type WHERE {?s ?p ?o."
+						+ (namespace != null ? ("FILTER(REGEX(?p,'^" + namespace + "'))") : "")
+						+ "OPTIONAL{?p a ?type.}}";
+		ResultSet rs = executeSelectQuery(query);
+		Multimap<String, String> uri2Types = HashMultimap.create();
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			String uri = qs.getResource("p").getURI();
+			String type = "";
+			if(qs.getResource("type") != null){
+				type = qs.getResource("type").getURI();
+			}
+			uri2Types.put(uri, type);
+		}
+		for (Entry<String, Collection<String>> entry : uri2Types.asMap().entrySet()) {
+			String uri = entry.getKey();
+			Collection<String> types = entry.getValue();
+			if(types.contains(OWL.ObjectProperty.getURI()) && !types.contains(OWL.DatatypeProperty.getURI())){
+				properties.add(new ObjectProperty(uri));
+			} else if(!types.contains(OWL.ObjectProperty.getURI()) && types.contains(OWL.DatatypeProperty.getURI())){
+				properties.add(new DatatypeProperty(uri));
+			} else {
+				//infer the type by values
+				query = "SELECT ?o WHERE {?s <" + uri + "> ?o. } LIMIT 100";
+				rs = executeSelectQuery(query);
+				boolean op = true;
+				boolean dp = true;
+				RDFNode node;
+				while(rs.hasNext()){
+					node = rs.next().get("o");
+					op = node.isResource();
+					dp = node.isLiteral();
+				}
+				if(op && !dp){
+					properties.add(new ObjectProperty(uri));
+				} else if(!op && dp){
+					properties.add(new DatatypeProperty(uri));
+				} else {
+					//not possible to decide
+				}
+			}
+		}
+		return properties;
+	}
+	
+	public Set<Property> getProperties(boolean inferType) {
+		Set<Property> properties = new TreeSet<Property>();
+		String query = "SELECT DISTINCT ?p ?type WHERE {?s ?p ?o. OPTIONAL{?p a ?type.}}";
+		ResultSet rs = executeSelectQuery(query);
+		Multimap<String, String> uri2Types = HashMultimap.create();
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			String uri = qs.getResource("p").getURI();
+			String type = "";
+			if(qs.getResource("type") != null){
+				type = qs.getResource("type").getURI();
+			}
+			uri2Types.put(uri, type);
+		}
+		for (Entry<String, Collection<String>> entry : uri2Types.asMap().entrySet()) {
+			String uri = entry.getKey();
+			Collection<String> types = entry.getValue();
+			if(types.contains(OWL.ObjectProperty.getURI()) && !types.contains(OWL.DatatypeProperty.getURI())){
+				properties.add(new ObjectProperty(uri));
+			} else if(!types.contains(OWL.ObjectProperty.getURI()) && types.contains(OWL.DatatypeProperty.getURI())){
+				properties.add(new DatatypeProperty(uri));
+			} else {
+				//infer the type by values
+				query = "SELECT ?o WHERE {?s <" + uri + "> ?o. } LIMIT 100";
+				rs = executeSelectQuery(query);
+				boolean op = true;
+				boolean dp = true;
+				RDFNode node;
+				while(rs.hasNext()){
+					node = rs.next().get("o");
+					op = node.isResource();
+					dp = node.isLiteral();
+				}
+				if(op && !dp){
+					properties.add(new ObjectProperty(uri));
+				} else if(!op && dp){
+					properties.add(new DatatypeProperty(uri));
+				} else {
+					//not possible to decide
+				}
+			}
+		}
+		return properties;
 	}
 
 	public Set<NamedClass> getOWLClasses() {

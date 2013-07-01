@@ -90,7 +90,7 @@ public class OxfordRepository implements OntologyRepository{
         private URI physicalURI;
 
         public RepositoryEntry(URI ontologyIRI) {
-            this.ontologyURI = ontologyIRI;System.out.println(ontologyIRI);
+            this.ontologyURI = ontologyIRI;
             OntologyIRIShortFormProvider sfp = new OntologyIRIShortFormProvider();
             shortName = sfp.getShortForm(IRI.create(ontologyIRI));
             physicalURI = ontologyIRI;
