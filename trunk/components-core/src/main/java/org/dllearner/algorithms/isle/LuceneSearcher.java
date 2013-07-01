@@ -32,13 +32,14 @@ import java.util.Map;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Scorer;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
@@ -48,7 +49,7 @@ public class LuceneSearcher {
 	private String FIELD = "contents";
 	
 	private IndexReader m_reader = null;
-	private Searcher m_searcher = null;
+	private IndexSearcher m_searcher = null;
 	private Analyzer m_analyzer = null;
 	private QueryParser m_parser = null;
 	
@@ -70,10 +71,10 @@ public class LuceneSearcher {
 	
 	@SuppressWarnings("deprecation")
 	public LuceneSearcher() throws Exception {
-		m_reader = IndexReader.open( FSDirectory.open( new File( INDEX ) ), true );
+		m_reader = DirectoryReader.open( FSDirectory.open( new File( INDEX ) ));
 		m_searcher = new IndexSearcher( m_reader );
-		m_analyzer = new StandardAnalyzer( Version.LUCENE_CURRENT );
-		m_parser = new QueryParser( Version.LUCENE_CURRENT, FIELD, m_analyzer );
+		m_analyzer = new StandardAnalyzer( Version.LUCENE_43);
+		m_parser = new QueryParser( Version.LUCENE_43, FIELD, m_analyzer );
 	}
 	
 	public void close() throws Exception {
@@ -139,12 +140,12 @@ public class LuceneSearcher {
 				return true;
 			}
 			@Override
-			public void setNextReader( IndexReader reader, int docBase ) throws IOException {
-				this.docBase = docBase;
-			}
-			@Override
 			public void setScorer(Scorer scorer) throws IOException {
 				this.scorer = scorer;
+			}
+			@Override
+			public void setNextReader(AtomicReaderContext context) throws IOException {
+				this.docBase = context.docBase;
 			}
 		};
 		m_searcher.search( query, collector );
