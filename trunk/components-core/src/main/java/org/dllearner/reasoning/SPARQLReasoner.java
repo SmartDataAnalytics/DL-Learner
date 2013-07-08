@@ -377,22 +377,24 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 			while(rs.hasNext()){
 				repeat = true;
 				qs = rs.next();
-				Description sub = new NamedClass(qs.get("sub").asResource().getURI());
-				Description sup = new NamedClass(qs.get("sup").asResource().getURI());
-				//add subclasses
-				SortedSet<Description> subClasses = subsumptionHierarchyDown.get(sup);
-				if(subClasses == null){
-					subClasses = new TreeSet<Description>(conceptComparator);
-					subsumptionHierarchyDown.put(sup, subClasses);
+				if(qs.get("sub").isURIResource() && qs.get("sup").isURIResource()){
+					Description sub = new NamedClass(qs.get("sub").asResource().getURI());
+					Description sup = new NamedClass(qs.get("sup").asResource().getURI());
+					//add subclasses
+					SortedSet<Description> subClasses = subsumptionHierarchyDown.get(sup);
+					if(subClasses == null){
+						subClasses = new TreeSet<Description>(conceptComparator);
+						subsumptionHierarchyDown.put(sup, subClasses);
+					}
+					subClasses.add(sub);
+					//add superclasses
+					SortedSet<Description> superClasses = subsumptionHierarchyUp.get(sub);
+					if(superClasses == null){
+						superClasses = new TreeSet<Description>(conceptComparator);
+						subsumptionHierarchyUp.put(sub, superClasses);
+					}
+					superClasses.add(sup);
 				}
-				subClasses.add(sub);
-				//add superclasses
-				SortedSet<Description> superClasses = subsumptionHierarchyUp.get(sub);
-				if(superClasses == null){
-					superClasses = new TreeSet<Description>(conceptComparator);
-					subsumptionHierarchyUp.put(sub, superClasses);
-				}
-				superClasses.add(sup);
 			}
 			offset += limit;
 		}
@@ -403,10 +405,15 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	}
 
 	public Model loadSchema(){
+		return loadSchema(null);
+	}
+	
+	public Model loadSchema(String namespace){
 		Model model = ModelFactory.createDefaultModel();
 
 		//load class hierarchy
-		String query = "CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?o} WHERE {?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?o.FILTER(!REGEX(STR(?s), 'http://dbpedia.org/class/yago/'))}";
+		String query = String.format("CONSTRUCT {?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?o} WHERE " +
+				"{?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?o." + (namespace != null ? "FILTER(REGEX(STR(?s), '^" + namespace + "'))}" : ""));
 		model.add(loadIncrementally(query));
 		query = "CONSTRUCT {?s <http://www.w3.org/2002/07/owl#equivalentClass> ?o} WHERE {?s <http://www.w3.org/2002/07/owl#equivalentClass> ?o}";
 		model.add(loadIncrementally(query));
@@ -474,25 +481,66 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 
 		return model;
 	}
+	
+	/**
+	 * Gets all logical axioms according to entities of type owl:Class, owl:ObjectProperty and owl:DatatypeProperty.
+	 * @return
+	 */
+	public Model loadOWLSchema(){
+		Model schema = ModelFactory.createDefaultModel();
+		//axioms according to owl:Class entities
+		String query = 
+				"CONSTRUCT {" +
+				"?s a owl:Class." +
+				"?s rdfs:subClassOf ?sup." +
+				"?s owl:equivalentClass ?equiv." +
+				"?s owl:djsointWith ?disj." +
+				"} WHERE {" +
+				"?s a owl:Class." +
+				"OPTIONAL{?s rdfs:subClassOf ?sup.}" +
+				"OPTIONAL{?s owl:equivalentClass ?equiv.}" +
+				"OPTIONAL{?s owl:djsointWith ?disj.}" +
+				"}";
+		schema.add(loadIncrementally(query));
+		//axioms according to owl:ObjectProperty entities
+		query = 
+				"CONSTRUCT {" +
+				"?s a owl:ObjectProperty." +
+				"?s a ?type." +
+				"?s rdfs:domain ?domain." +
+				"?s rdfs:range ?range." +
+				"} WHERE {" +
+				"?s a owl:ObjectProperty." +
+				"?s a ?type." +
+				"OPTIONAL{?s rdfs:domain ?domain.}" +
+				"OPTIONAL{?s rdfs:range ?range.}" +
+				"}";
+		schema.add(loadIncrementally(query));
+
+		//axioms according to owl:ObjectProperty entities
+		query = 
+				"CONSTRUCT {" +
+				"?s a owl:DatatypeProperty." +
+				"?s a ?type." +
+				"?s rdfs:domain ?domain." +
+				"?s rdfs:range ?range." +
+				"} WHERE {" +
+				"?s a owl:DatatypeProperty." +
+				"?s a ?type." +
+				"OPTIONAL{?s rdfs:domain ?domain.}" +
+				"OPTIONAL{?s rdfs:range ?range.}" +
+				"}";		
+		schema.add(loadIncrementally(query));
+		
+		return schema;
+	}
 
 	private Model loadIncrementally(String query){
-		System.out.println(StringUtils.md5Hash(query));
-		//		try {
-		QueryExecutionFactory f = new QueryExecutionFactoryHttp(ks.getEndpoint().getURL().toString(), ks.getEndpoint().getDefaultGraphURIs());
-		//			f = new QueryExecutionFactoryCache(f, new CacheImpl(CacheCoreH2.create("cache", 60 * 24 *5)));
-		//			System.out.println("SPARQLReasoner.loadIncrementally needs to be rewritten for aksw-commons 0.1");
-		//			System.exit(0);
-		f = new QueryExecutionFactoryPaginated(f, 1000);
-		Model model = f.createQueryExecution(query).execConstruct();
 		System.out.println(query);
-		System.out.println("Got " + model.size() + " triple.");
+		QueryExecution qe = qef.createQueryExecution(query);
+		Model model = qe.execConstruct();
+		qe.close();
 		return model;
-		//		} catch (ClassNotFoundException e) {
-		//			e.printStackTrace();
-		//		} catch (SQLException e) {
-		//			e.printStackTrace();
-		//		}
-		//		return null;
 	}
 
 	@Override
@@ -1556,9 +1604,15 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		//		e.addParam("type1", "xml");System.out.println(e.toString());
 		//		e.execSelect();
 
-
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql/")));
+		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://aemet.linkeddata.es/sparql"));
+//		endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
 		SPARQLReasoner r = new SPARQLReasoner(ks);
+		Model schema = r.loadSchema("http://dbpedia.org/ontology/");
+		System.out.println(schema.size());
+		schema = r.loadOWLSchema();
+		System.out.println(schema.size());
+		
 		long startTime = System.currentTimeMillis();
 		ClassHierarchy h = r.prepareSubsumptionHierarchyFast();
 		System.out.println(h.toString(false));

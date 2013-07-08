@@ -51,8 +51,6 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
-import eu.trowl.vocab.RDF;
-
 /**
  * A collection of methods for exchanging objects between OWL API and
  * DL-Learner.
@@ -136,9 +134,23 @@ public final class OWLAPIConverter {
 		return new ObjectProperty(property.getIRI().toString());
 	}
 	
-	public static DatatypeProperty convertIndividual(OWLDataProperty property) {
+	public static DatatypeProperty convertDatatypeProperty(OWLDataProperty property) {
 		return new DatatypeProperty(property.getIRI().toString());
 	}	
+	
+	public static Entity getEntity(OWLEntity entity) {
+		if(entity instanceof OWLObjectProperty) {
+			return convertObjectProperty((OWLObjectProperty) entity);
+		} else if(entity instanceof OWLDataProperty) {
+			return convertDatatypeProperty((OWLDataProperty) entity);
+		} else if(entity instanceof OWLClass) {
+			return new NamedClass(entity.toStringID());			
+		} else if(entity instanceof OWLNamedIndividual) {
+			return convertIndividual((OWLNamedIndividual) entity);				
+		}
+		// should never happen
+		throw new Error("OWL API entity conversion for " + entity + " not supported.");
+	}
 	
 	public static Description convertClass(OWLClass owlClass) {
 		if(owlClass.isOWLThing()) {

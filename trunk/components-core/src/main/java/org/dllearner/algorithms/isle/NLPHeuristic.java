@@ -20,8 +20,13 @@
 package org.dllearner.algorithms.isle;
 
 import java.util.Comparator;
+import java.util.Map;
 
 import org.dllearner.algorithms.celoe.OENode;
+import org.dllearner.core.Component;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.owl.Entity;
 import org.dllearner.utilities.owl.ConceptComparator;
 
 /**
@@ -31,7 +36,8 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * @author Jens Lehmann
  *
  */
-public class NLPHeuristic implements Comparator<OENode> {
+public class NLPHeuristic implements Component, Comparator<OENode>{
+	
 	// strong penalty for long descriptions
 	private double expansionPenaltyFactor = 0.1;
 	// bonus for being better than parent node
@@ -41,6 +47,22 @@ public class NLPHeuristic implements Comparator<OENode> {
 	private double nodeRefinementPenalty = 0.0001;
 	// syntactic comparison as final comparison criterion
 	private ConceptComparator conceptComparator = new ConceptComparator();
+	
+	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
+	private double startNodeBonus = 0.1;
+	
+	private Map<Entity, Double> entityRelevance;
+	
+	public NLPHeuristic() {}
+	
+	public NLPHeuristic(Map<Entity,Double> entityRelevance) {
+		this.entityRelevance = entityRelevance;
+	}
+	
+	@Override
+	public void init() throws ComponentInitException {
+
+	}		
 	
 	@Override
 	public int compare(OENode node1, OENode node2) {
@@ -67,6 +89,9 @@ public class NLPHeuristic implements Comparator<OENode> {
 		if(!node.isRoot()) {
 			double parentAccuracy = node.getParent().getAccuracy();
 			score += (parentAccuracy - score) * gainBonusFactor;
+		// the root node also gets a bonus to possibly spawn useful disjunctions
+		} else {
+			score += startNodeBonus;
 		}
 		// penalty for horizontal expansion
 		score -= node.getHorizontalExpansion() * expansionPenaltyFactor;
@@ -77,6 +102,48 @@ public class NLPHeuristic implements Comparator<OENode> {
 
 	public double getExpansionPenaltyFactor() {
 		return expansionPenaltyFactor;
+	}
+
+	public double getGainBonusFactor() {
+		return gainBonusFactor;
+	}
+
+	public void setGainBonusFactor(double gainBonusFactor) {
+		this.gainBonusFactor = gainBonusFactor;
+	}
+
+	public double getNodeRefinementPenalty() {
+		return nodeRefinementPenalty;
+	}
+
+	public void setNodeRefinementPenalty(double nodeRefinementPenalty) {
+		this.nodeRefinementPenalty = nodeRefinementPenalty;
+	}
+
+	public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
+		this.expansionPenaltyFactor = expansionPenaltyFactor;
+	}
+
+	public double getStartNodeBonus() {
+		return startNodeBonus;
+	}
+
+	public void setStartNodeBonus(double startNodeBonus) {
+		this.startNodeBonus = startNodeBonus;
 	}	
+	
+	/**
+	 * @param entityRelevance the entityRelevance to set
+	 */
+	public void setEntityRelevance(Map<Entity, Double> entityRelevance) {
+		this.entityRelevance = entityRelevance;
+	}
+	
+	/**
+	 * @return the entityRelevance
+	 */
+	public Map<Entity, Double> getEntityRelevance() {
+		return entityRelevance;
+	}
 
 }

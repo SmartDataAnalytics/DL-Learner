@@ -40,13 +40,14 @@ import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Scorer;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 public class LuceneSearcher {
 	
-	private String INDEX = "index";
-	private String FIELD = "contents";
+	private String INDEX = "/home/me/DBpedia-Lucene-Index";
+	private String FIELD = "short-abstract";
 	
 	private IndexReader m_reader = null;
 	private IndexSearcher m_searcher = null;
@@ -61,17 +62,39 @@ public class LuceneSearcher {
 		LuceneSearcher searcher = new LuceneSearcher();
 		List<Document> docs = searcher.search( sQuery );
 		System.out.println( "\nquery='"+ sQuery +"' all="+ searcher.indexSize() +" hits="+ docs.size() );
-		for( Document doc : docs )
-		{
-//			String sDoc = doc.toString();
-			float score = searcher.getScore( doc );
-			System.out.println( "score="+ score +" doc="+ doc );
-		}
+//		for( Document doc : docs )
+//		{
+////			String sDoc = doc.toString();
+//			float score = searcher.getScore( doc );
+//			System.out.println( "score="+ score +" doc="+ doc );
+//		}
 	}
 	
 	@SuppressWarnings("deprecation")
 	public LuceneSearcher() throws Exception {
 		m_reader = DirectoryReader.open( FSDirectory.open( new File( INDEX ) ));
+		m_searcher = new IndexSearcher( m_reader );
+		m_analyzer = new StandardAnalyzer( Version.LUCENE_43);
+		m_parser = new QueryParser( Version.LUCENE_43, FIELD, m_analyzer );
+	}
+	
+	public LuceneSearcher(IndexReader indexReader) throws Exception {
+		m_reader = indexReader;
+		m_searcher = new IndexSearcher( m_reader );
+		m_analyzer = new StandardAnalyzer( Version.LUCENE_43);
+		m_parser = new QueryParser( Version.LUCENE_43, FIELD, m_analyzer );
+	}
+	
+	public LuceneSearcher(Directory directory, String seachField) throws Exception {
+		this.FIELD = seachField;
+		m_reader = DirectoryReader.open(directory);
+		m_searcher = new IndexSearcher( m_reader );
+		m_analyzer = new StandardAnalyzer( Version.LUCENE_43);
+		m_parser = new QueryParser( Version.LUCENE_43, FIELD, m_analyzer );
+	}
+	
+	public LuceneSearcher(String indexDirectory) throws Exception {
+		m_reader = DirectoryReader.open(FSDirectory.open(new File(indexDirectory)));
 		m_searcher = new IndexSearcher( m_reader );
 		m_analyzer = new StandardAnalyzer( Version.LUCENE_43);
 		m_parser = new QueryParser( Version.LUCENE_43, FIELD, m_analyzer );

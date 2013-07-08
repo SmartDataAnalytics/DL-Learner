@@ -19,6 +19,7 @@
 
 package org.dllearner.algorithms.isle;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,11 +36,10 @@ import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -51,16 +51,20 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
+import org.dllearner.refinementoperators.CustomStartRefinementOperator;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.OperatorInverter;
-import org.dllearner.refinementoperators.RefinementOperator;
+import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.PropertyContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -71,9 +75,11 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name="ISLE", shortName="isle", version=0.5, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class ISLE extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(CELOE.class);
+//	private CELOEConfigurator configurator;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;	
@@ -83,13 +89,17 @@ public class ISLE extends AbstractCELA {
 	
 	private LengthLimitedRefinementOperator operator;
 	private DescriptionMinimizer minimizer;
+	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
+	private boolean useMinimizer = true;
 	
 	// all nodes in the search tree (used for selecting most promising node)
 	private TreeSet<OENode> nodes;
+//	private OEHeuristicRuntime heuristic; // = new OEHeuristicRuntime();
 	private NLPHeuristic heuristic = new NLPHeuristic();
 	// root of search tree
 	private OENode startNode;
 	// the class with which we start the refinement process
+	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
 	private Description startClass;
 	
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)
@@ -99,6 +109,7 @@ public class ISLE extends AbstractCELA {
 	
 	// if true, then each solution is evaluated exactly instead of approximately
 	// private boolean exactBestDescriptionEvaluation = false;
+	@ConfigOption(name = "singleSuggestionMode", defaultValue="false", description="Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.")
 	private boolean singleSuggestionMode;
 	private Description bestDescription;
 	private double bestAccuracy = Double.MIN_VALUE;
@@ -115,10 +126,15 @@ public class ISLE extends AbstractCELA {
 	
 	private long nanoStartTime;
 	
-	// important parameters
+	// important parameters (non-config options but internal)
 	private double noise;
-	private double maxDepth;
-	private boolean filterFollowsFromKB;
+
+	private boolean filterFollowsFromKB;	
+	
+	// less important parameters
+	// forces that one solution cannot be subexpression of another expression; this option is useful to get diversity
+	// but it can also suppress quite useful expressions
+	private boolean forceMutualDifference = false;
 	
 	// utility variables
 	private String baseURI;
@@ -130,80 +146,165 @@ public class ISLE extends AbstractCELA {
 	private int expressionTests = 0;
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
+	
+	// TODO: turn those into config options
+	
+	// important: do not initialise those with empty sets
+	// null = no settings for allowance / ignorance
+	// empty set = allow / ignore nothing (it is often not desired to allow no class!)
+	Set<NamedClass> allowedConcepts = null;
+	Set<NamedClass> ignoredConcepts = null;
 
-	private double noisePercentage = 0.0;
+	@ConfigOption(name = "writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
+	private boolean writeSearchTree = false;
 
+	@ConfigOption(name = "searchTreeFile", defaultValue="log/searchTree.txt", description="file to use for the search tree")
+	private String searchTreeFile = "log/searchTree.txt";
+
+	@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
+	private boolean replaceSearchTree = false;
+	
+	@ConfigOption(name = "maxNrOfResults", defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")	
 	private int maxNrOfResults = 10;
 
-	private boolean filterDescriptionsFollowingFromKB = true;
+	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
+	private double noisePercentage = 0.0;
 
-	private long maxExecutionTimeInSeconds = 10;
+	@ConfigOption(name = "filterDescriptionsFollowingFromKB", defaultValue="false", description="If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.")
+	private boolean filterDescriptionsFollowingFromKB = false;
 
+	@ConfigOption(name = "reuseExistingDescription", defaultValue="false", description="If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.")
 	private boolean reuseExistingDescription = false;
+
+	@ConfigOption(name = "maxClassExpressionTests", defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+	private int maxClassExpressionTests = 0;
+
+	@ConfigOption(name = "maxClassExpressionTestsAfterImprovement", defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+	private int maxClassExpressionTestsAfterImprovement = 0;
+	
+	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
+	private int maxExecutionTimeInSeconds = 10;
+
+	@ConfigOption(defaultValue = "0", name = "maxExecutionTimeInSecondsAfterImprovement", description = "maximum execution of the algorithm in seconds")
+	private int maxExecutionTimeInSecondsAfterImprovement = 0;
+	
+	@ConfigOption(name = "terminateOnNoiseReached", defaultValue="false", description="specifies whether to terminate when noise criterion is met")
+	private boolean terminateOnNoiseReached = false;
+	
+	@ConfigOption(name = "maxDepth", defaultValue="7", description="maximum depth of description")
+	private double maxDepth = 7;
+
+	@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
+	private boolean stopOnFirstDefinition = false;
+	
+	private int expressionTestCountLastImprovement;
+	
+	
+	@SuppressWarnings("unused")
+	private long timeLastImprovement = 0;
+	
+//	public CELOEConfigurator getConfigurator() {
+//		return configurator;
+//	}
+	
+	public ISLE() {
+		
+	}
 	
 	public ISLE(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
+//		configurator = new CELOEConfigurator(this);
 	}
 
 	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
 		problems.add(AbstractLearningProblem.class);
 		return problems;
-	}	
-	
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(CommonConfigOptions.useAllConstructor());
-		options.add(CommonConfigOptions.useExistsConstructor());
-		options.add(CommonConfigOptions.useHasValueConstructor());
-		options.add(CommonConfigOptions.useDataHasValueConstructor());
-		options.add(CommonConfigOptions.valueFreqencyThreshold());
-		options.add(CommonConfigOptions.useCardinalityRestrictions());
-		options.add(CommonConfigOptions.cardinalityLimit());
-		// by default, we do not use negation (should be configurable in GUI)
-		options.add(CommonConfigOptions.useNegation(false));
-		options.add(CommonConfigOptions.useBooleanDatatypes());
-		options.add(CommonConfigOptions.useDoubleDatatypes());
-		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
-		options.add(CommonConfigOptions.getNoisePercentage());
-		options.add(CommonConfigOptions.getMaxDepth(7));
-		options.add(CommonConfigOptions.maxNrOfResults(10));
-		options.add(new BooleanConfigOption("singleSuggestionMode", "Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.", false));
-		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
-		options.add(new BooleanConfigOption("filterDescriptionsFollowingFromKB", "If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.", false));
-		options.add(new BooleanConfigOption("reuseExistingDescription", "If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.", false));
-		return options;
 	}
 	
 	public static String getName() {
-		return "ISLE";
+		return "CELOE";
 	}
 	
 	@Override
 	public void init() throws ComponentInitException {
+			
+		if(maxExecutionTimeInSeconds != 0 && maxExecutionTimeInSecondsAfterImprovement != 0) {
+			maxExecutionTimeInSeconds = Math.min(maxExecutionTimeInSeconds, maxExecutionTimeInSecondsAfterImprovement);
+		}
+		
+		// compute used concepts/roles from allowed/ignored
+		// concepts/roles
+		Set<NamedClass> usedConcepts;
+//		Set<NamedClass> allowedConcepts = configurator.getAllowedConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getAllowedConcepts());
+//		Set<NamedClass> ignoredConcepts = configurator.getIgnoredConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getIgnoredConcepts());
+		if(allowedConcepts != null) {
+			// sanity check to control if no non-existing concepts are in the list
+			Helper.checkConcepts(reasoner, allowedConcepts);
+			usedConcepts = allowedConcepts;
+		} else if(ignoredConcepts != null) {
+			usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
+		} else {
+			usedConcepts = Helper.computeConcepts(reasoner);
+		}
+		
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
-		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
+//		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
+		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
 		classHierarchy.thinOutSubsumptionHierarchy();
+
+		// if no one injected a heuristic, we use a default one
+		if(heuristic == null) {
+			heuristic = new NLPHeuristic();
+		}
 		
 		minimizer = new DescriptionMinimizer(reasoner);
 		
-		startClass = Thing.instance;
+		// start at owl:Thing by default
+		if(startClass == null) {
+			startClass = Thing.instance;
+		}
 		
 //		singleSuggestionMode = configurator.getSingleSuggestionMode();
-		
-		// create refinement operator
-//		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
+		/*
 		// create refinement operator
 		if(operator == null) {
 			operator = new RhoDRDown();
 			((RhoDRDown)operator).setStartClass(startClass);
-			((RhoDRDown)operator).setSubHierarchy(classHierarchy);
 			((RhoDRDown)operator).setReasoner(reasoner);
-			((RhoDRDown)operator).init();
-		}		
+		}
+		((RhoDRDown)operator).setSubHierarchy(classHierarchy);
+		((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+		((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		((RhoDRDown)operator).init();		
+		*/
+		// create a refinement operator and pass all configuration
+		// variables to it
+		if(operator == null) {
+			// we use a default operator and inject the class hierarchy for now
+			operator = new RhoDRDown();
+			if(operator instanceof CustomStartRefinementOperator) {
+				((CustomStartRefinementOperator)operator).setStartClass(startClass);
+			}
+			if(operator instanceof ReasoningBasedRefinementOperator) {
+				((ReasoningBasedRefinementOperator)operator).setReasoner(reasoner);
+			}
+			operator.init();
+		}
+		if(operator instanceof CustomHierarchyRefinementOperator) {
+			((CustomHierarchyRefinementOperator)operator).setClassHierarchy(classHierarchy);
+			((CustomHierarchyRefinementOperator)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		}
+		
+//		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
+		if(writeSearchTree) {
+			File f = new File(searchTreeFile );
+			Files.clearFile(f);
+		}
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
@@ -211,11 +312,17 @@ public class ISLE extends AbstractCELA {
 		
 		// we put important parameters in class variables
 		noise = noisePercentage/100d;
+//		System.out.println("noise " + noise);
 //		maxDepth = configurator.getMaxDepth();
 		// (filterFollowsFromKB is automatically set to false if the problem
 		// is not a class learning problem
-		filterFollowsFromKB = filterDescriptionsFollowingFromKB
-		  && isClassLearningProblem;
+		filterFollowsFromKB = filterDescriptionsFollowingFromKB && isClassLearningProblem;
+		
+//		Set<Description> concepts = operator.refine(Thing.instance, 5);
+//		for(Description concept : concepts) {
+//			System.out.println(concept);
+//		}
+//		System.out.println("refinements of thing: " + concepts.size());
 		
 		// actions specific to ontology engineering
 		if(isClassLearningProblem) {
@@ -230,7 +337,7 @@ public class ISLE extends AbstractCELA {
 			// superfluous to add super classes in this case)
 			if(isEquivalenceProblem) {
 				Set<Description> existingDefinitions = reasoner.getAssertedDefinitions(classToDescribe);
-				if(reuseExistingDescription  && (existingDefinitions.size() > 0)) {
+				if(reuseExistingDescription && (existingDefinitions.size() > 0)) {
 					// the existing definition is reused, which in the simplest case means to
 					// use it as a start class or, if it is already too specific, generalise it
 					
@@ -246,7 +353,10 @@ public class ISLE extends AbstractCELA {
 					
 					LinkedList<Description> startClassCandidates = new LinkedList<Description>();
 					startClassCandidates.add(existingDefinition);
-					((RhoDRDown)operator).setDropDisjuncts(true);
+					// hack for RhoDRDown
+					if(operator instanceof RhoDRDown) {
+						((RhoDRDown)operator).setDropDisjuncts(true);
+					}
 					LengthLimitedRefinementOperator upwardOperator = (LengthLimitedRefinementOperator) new OperatorInverter(operator);
 					
 					// use upward refinement until we find an appropriate start class
@@ -279,7 +389,9 @@ public class ISLE extends AbstractCELA {
 //					System.out.println("existing def: " + existingDefinition);
 //					System.out.println(reasoner.getIndividuals(existingDefinition));
 					
-					((RhoDRDown)operator).setDropDisjuncts(false);
+					if(operator instanceof RhoDRDown) {
+						((RhoDRDown)operator).setDropDisjuncts(false);
+					}
 					
 				} else {
 					Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
@@ -322,6 +434,10 @@ public class ISLE extends AbstractCELA {
 		return bestEvaluatedDescriptions.getSet();
 	}	
 	
+	public double getCurrentlyBestAccuracy() {
+		return bestEvaluatedDescriptions.getBest().getAccuracy();
+	}
+	
 	@Override
 	public void start() {
 //		System.out.println(configurator.getMaxExecutionTimeInSeconds());
@@ -339,10 +455,13 @@ public class ISLE extends AbstractCELA {
 		
 		int loop = 0;
 		while (!terminationCriteriaSatisfied()) {
+//			System.out.println("loop " + loop);
 			
 			if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
 				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
-				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));	
+				expressionTestCountLastImprovement = expressionTests;
+				timeLastImprovement = System.nanoTime();
+				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
 			}
 
 			// chose best node according to heuristics
@@ -358,12 +477,16 @@ public class ISLE extends AbstractCELA {
 //			for(Description refinement : refinements) {
 //				System.out.println("refinement: " + refinement);
 //			}
+//			if((loop+1) % 500 == 0) {
+//				System.out.println(getMinimumHorizontalExpansion() + " - " + getMaximumHorizontalExpansion());
+//				System.exit(0);
+//			}
 			
 			while(refinements.size() != 0) {
 				// pick element from set
 				Description refinement = refinements.pollFirst();
 				int length = refinement.getLength();
-				
+								
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
 				if(length > horizExp && refinement.getDepth() <= maxDepth) {
@@ -385,6 +508,24 @@ public class ISLE extends AbstractCELA {
 			
 			updateMinMaxHorizExp(nextNode);
 			
+			// writing the search tree (if configured)
+			if (writeSearchTree) {
+				String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
+				if (refinements.size() > 1) {
+					treeString += "all expanded nodes:\n";
+					for (Description n : refinements) {
+						treeString += "   " + n + "\n";
+					}
+				}
+				treeString += startNode.toTreeString(baseURI);
+				treeString += "\n";
+
+				if (replaceSearchTree)
+					Files.createFile(new File(searchTreeFile), treeString);
+				else
+					Files.appendToFile(new File(searchTreeFile), treeString);
+			}
+			
 //			System.out.println(loop);
 			loop++;
 		}
@@ -392,7 +533,7 @@ public class ISLE extends AbstractCELA {
 		if (stop) {
 			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
 		} else {
-			logger.info("Algorithm terminated successfully ("+expressionTests+" descriptions tested). "  + nodes.size() + " nodes in the search tree.\n");
+			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(System.nanoTime()-nanoStartTime) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
             logger.info(reasoner.toString());
 		}
 
@@ -445,7 +586,7 @@ public class ISLE extends AbstractCELA {
 	// returns true if node was added and false otherwise
 	private boolean addNode(Description description, OENode parentNode) {
 		
-//		System.out.println(description);
+//		System.out.println("d: " + description);
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
@@ -498,6 +639,8 @@ public class ISLE extends AbstractCELA {
 			return true;
 		} 
 		
+//		System.out.println("description " + description + " accuracy " + accuracy);
+		
 		// maybe add to best descriptions (method keeps set size fixed);
 		// we need to make sure that this does not get called more often than
 		// necessary since rewriting is expensive
@@ -510,30 +653,42 @@ public class ISLE extends AbstractCELA {
 				(accuracy >= accThreshold && description.getLength() < worst.getDescriptionLength()));
 		}
 		
+//		System.out.println(isCandidate);
+		
 //		System.out.println("Test4 " + new Date());
 		if(isCandidate) {
+			
 			Description niceDescription = rewriteNode(node);
 			ConceptTransformation.transformToOrderedForm(niceDescription, descriptionComparator);
 //			Description niceDescription = node.getDescription();
 			
 			// another test: none of the other suggested descriptions should be 
 			// a subdescription of this one unless accuracy is different
+			// => comment: on the one hand, this appears to be too strict, because once A is a solution then everything containing
+			// A is not a candidate; on the other hand this suppresses many meaningless extensions of A
 			boolean shorterDescriptionExists = false;
-			for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
-				if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
-					shorterDescriptionExists = true;
-					break;
-				}
+			if(forceMutualDifference) {
+				for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+					if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
+//						System.out.println("shorter: " + ed.getDescription());
+						shorterDescriptionExists = true;
+						break;
+					}
+				}				
 			}
+			
+//			System.out.println("shorter description? " + shorterDescriptionExists + " nice: " + niceDescription);
 			
 			if(!shorterDescriptionExists) {
 				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
+//					System.out.println("Test2");
 					bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
 //					System.out.println("acc: " + accuracy);
 //					System.out.println(bestEvaluatedDescriptions);
 				}
 			}
 						
+//			System.out.println(bestEvaluatedDescriptions.getSet().size());
 		}
 		
 //		System.out.println("Test5 " + new Date());
@@ -630,14 +785,26 @@ public class ISLE extends AbstractCELA {
 	private Description rewriteNode(OENode node) {
 		Description description = node.getDescription();
 		// minimize description (expensive!) - also performes some human friendly rewrites
-		Description niceDescription = minimizer.minimizeClone(description);
+		Description niceDescription;
+		if(useMinimizer) {
+			niceDescription = minimizer.minimizeClone(description);
+		} else {
+			niceDescription = description;
+		}
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		ConceptTransformation.replaceRange(niceDescription, reasoner);
 		return niceDescription;
 	}
 	
 	private boolean terminationCriteriaSatisfied() {
-		return stop || ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l));
+		return 
+		stop || 
+		(maxClassExpressionTestsAfterImprovement != 0 && (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement)) ||
+		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
+		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement*1000000000l))) ||
+		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l))) ||
+		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage)) ||
+		(stopOnFirstDefinition && (getCurrentlyBestAccuracy() >= 1));
 	}
 	
 	private void reset() {
@@ -740,6 +907,196 @@ public class ISLE extends AbstractCELA {
 	 */
 	public int getClassExpressionTests() {
 		return expressionTests;
+	}
+
+	public LengthLimitedRefinementOperator getOperator() {
+		return operator;
+	}
+
+	@Autowired(required=false)
+	public void setOperator(LengthLimitedRefinementOperator operator) {
+		this.operator = operator;
+	}
+
+	public Description getStartClass() {
+		return startClass;
+	}
+
+	public void setStartClass(Description startClass) {
+		this.startClass = startClass;
+	}
+
+	public Set<NamedClass> getAllowedConcepts() {
+		return allowedConcepts;
+	}
+
+	public void setAllowedConcepts(Set<NamedClass> allowedConcepts) {
+		this.allowedConcepts = allowedConcepts;
+	}
+
+	public Set<NamedClass> getIgnoredConcepts() {
+		return ignoredConcepts;
+	}
+
+	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+		this.ignoredConcepts = ignoredConcepts;
+	}
+
+	public boolean isWriteSearchTree() {
+		return writeSearchTree;
+	}
+
+	public void setWriteSearchTree(boolean writeSearchTree) {
+		this.writeSearchTree = writeSearchTree;
+	}
+
+	public String getSearchTreeFile() {
+		return searchTreeFile;
+	}
+
+	public void setSearchTreeFile(String searchTreeFile) {
+		this.searchTreeFile = searchTreeFile;
+	}
+
+	public int getMaxNrOfResults() {
+		return maxNrOfResults;
+	}
+
+	public void setMaxNrOfResults(int maxNrOfResults) {
+		this.maxNrOfResults = maxNrOfResults;
+	}
+
+	public double getNoisePercentage() {
+		return noisePercentage;
+	}
+
+	public void setNoisePercentage(double noisePercentage) {
+		this.noisePercentage = noisePercentage;
+	}
+
+	public boolean isFilterDescriptionsFollowingFromKB() {
+		return filterDescriptionsFollowingFromKB;
+	}
+
+	public void setFilterDescriptionsFollowingFromKB(boolean filterDescriptionsFollowingFromKB) {
+		this.filterDescriptionsFollowingFromKB = filterDescriptionsFollowingFromKB;
+	}
+
+	public boolean isReplaceSearchTree() {
+		return replaceSearchTree;
+	}
+
+	public void setReplaceSearchTree(boolean replaceSearchTree) {
+		this.replaceSearchTree = replaceSearchTree;
+	}
+
+	public int getMaxClassDescriptionTests() {
+		return maxClassExpressionTests;
+	}
+
+	public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
+		this.maxClassExpressionTests = maxClassDescriptionTests;
+	}
+
+	public int getMaxExecutionTimeInSeconds() {
+		return maxExecutionTimeInSeconds;
+	}
+
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	}
+
+	public boolean isTerminateOnNoiseReached() {
+		return terminateOnNoiseReached;
+	}
+
+	public void setTerminateOnNoiseReached(boolean terminateOnNoiseReached) {
+		this.terminateOnNoiseReached = terminateOnNoiseReached;
+	}
+
+	public boolean isReuseExistingDescription() {
+		return reuseExistingDescription;
+	}
+
+	public void setReuseExistingDescription(boolean reuseExistingDescription) {
+		this.reuseExistingDescription = reuseExistingDescription;
+	}
+
+	public boolean isUseMinimizer() {
+		return useMinimizer;
+	}
+
+	public void setUseMinimizer(boolean useMinimizer) {
+		this.useMinimizer = useMinimizer;
+	}
+
+	public NLPHeuristic getHeuristic() {
+		return heuristic;
+	}
+
+	@Autowired(required=false)
+	public void setHeuristic(NLPHeuristic heuristic) {
+		this.heuristic = heuristic;
+	}
+
+	public int getMaxClassExpressionTestsWithoutImprovement() {
+		return maxClassExpressionTestsAfterImprovement;
+	}
+
+	public void setMaxClassExpressionTestsWithoutImprovement(
+			int maxClassExpressionTestsWithoutImprovement) {
+		this.maxClassExpressionTestsAfterImprovement = maxClassExpressionTestsWithoutImprovement;
+	}
+
+	public int getMaxExecutionTimeInSecondsAfterImprovement() {
+		return maxExecutionTimeInSecondsAfterImprovement;
+	}
+
+	public void setMaxExecutionTimeInSecondsAfterImprovement(
+			int maxExecutionTimeInSecondsAfterImprovement) {
+		this.maxExecutionTimeInSecondsAfterImprovement = maxExecutionTimeInSecondsAfterImprovement;
+	}	
+	
+	public boolean isSingleSuggestionMode() {
+		return singleSuggestionMode;
+	}
+
+	public void setSingleSuggestionMode(boolean singleSuggestionMode) {
+		this.singleSuggestionMode = singleSuggestionMode;
+	}
+
+	public int getMaxClassExpressionTests() {
+		return maxClassExpressionTests;
+	}
+
+	public void setMaxClassExpressionTests(int maxClassExpressionTests) {
+		this.maxClassExpressionTests = maxClassExpressionTests;
+	}
+
+	public int getMaxClassExpressionTestsAfterImprovement() {
+		return maxClassExpressionTestsAfterImprovement;
+	}
+
+	public void setMaxClassExpressionTestsAfterImprovement(
+			int maxClassExpressionTestsAfterImprovement) {
+		this.maxClassExpressionTestsAfterImprovement = maxClassExpressionTestsAfterImprovement;
+	}
+
+	public double getMaxDepth() {
+		return maxDepth;
+	}
+
+	public void setMaxDepth(double maxDepth) {
+		this.maxDepth = maxDepth;
+	}
+	
+	
+	public boolean isStopOnFirstDefinition() {
+		return stopOnFirstDefinition;
+	}
+
+	public void setStopOnFirstDefinition(boolean stopOnFirstDefinition) {
+		this.stopOnFirstDefinition = stopOnFirstDefinition;
 	}	
 	
 }
