@@ -25,7 +25,6 @@ import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.DoubleEditor;
 import org.dllearner.utilities.owl.ConceptComparator;
 
 /**

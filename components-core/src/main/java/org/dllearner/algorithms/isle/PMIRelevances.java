@@ -33,7 +33,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 
-public class Relevances {
+public class PMIRelevances {
 
 	private LuceneSearcher m_searcher = null;
 	
@@ -45,7 +45,7 @@ public class Relevances {
 	
 	
 	public static void main( String args[] ) throws Exception {
-		Relevances relevances = new Relevances( args[0] );
+		PMIRelevances relevances = new PMIRelevances( args[0] );
 		relevances.printScores();
 	}
 	
@@ -64,7 +64,7 @@ public class Relevances {
 		m_searcher.close();
 	}
 
-	public Relevances( String sOntologyURI ) throws Exception {
+	public PMIRelevances( String sOntologyURI ) throws Exception {
 		m_searcher = new LuceneSearcher();
 		loadOntology( sOntologyURI );
 	}
