@@ -256,6 +256,12 @@ public class Enrichment {
 	
 	private Set<OWLAxiom> learnedOWLAxioms;
 	private Set<EvaluatedAxiom> learnedEvaluatedAxioms;
+	private boolean processPropertiesTypeInferred = false;
+	private boolean iterativeMode = false;
+	
+	private boolean processObjectProperties;
+	private boolean processDataProperties;
+	private boolean processClasses;
 	
 	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, int nrOfAxiomsToLearn, 
 			boolean useInference, boolean verbose, int chunksize, 
@@ -302,7 +308,7 @@ public class Enrichment {
 		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
-		classAlgorithms.add(DisjointClassesLearner.class);
+//		classAlgorithms.add(DisjointClassesLearner.class);
 //		classAlgorithms.add(SimpleSubclassLearner.class);
 		classAlgorithms.add(CELOE.class);		
 		
@@ -316,11 +322,19 @@ public class Enrichment {
 		this.allowedNamespaces = allowedNamespaces;
 	}
 	
+	/**
+	 * @param iterativeMode the iterativeMode to set
+	 */
+	public void setIterativeMode(boolean iterativeMode) {
+		this.iterativeMode = iterativeMode;
+	}
+	
 	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
 						
 		// instantiate SPARQL endpoint wrapper component
 		SparqlEndpointKS ks = new SparqlEndpointKS(se);
 		ks.init();
+		ks.setSupportsSPARQL_1_1(!iterativeMode);
 		
 		// common helper objects
 		SPARQLTasks st = new SPARQLTasks(se);
@@ -340,40 +354,69 @@ public class Enrichment {
 		if(resource == null) {
 
 			// loop over all entities and call appropriate algorithms
-			
-			Set<NamedClass> classes = allowedNamespaces.isEmpty() ? reasoner.getOWLClasses() : reasoner.getOWLClasses(allowedNamespaces.iterator().next());//st.getAllClasses();
-			filterByNamespaces(classes);//classes = Sets.newHashSet(new NamedClass("http://dbpedia.org/ontology/Arachnid"));
 			int entities = 0;
-			for(NamedClass nc : classes) {
-				try {
-					runClassLearningAlgorithms(ks, nc);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}		
-				entities++;
-				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
-					break;
-				}	
+			Set<org.dllearner.core.owl.Property> processedProperties = new HashSet<org.dllearner.core.owl.Property>();
+			if(processClasses){
+				Set<NamedClass> classes = allowedNamespaces.isEmpty() ? reasoner.getOWLClasses() : reasoner.getOWLClasses(allowedNamespaces.iterator().next());//st.getAllClasses();
+				filterByNamespaces(classes);//classes = Sets.newHashSet(new NamedClass("http://dbpedia.org/ontology/Arachnid"));
+				for(NamedClass nc : classes) {
+					try {
+						runClassLearningAlgorithms(ks, nc);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}		
+					entities++;
+					if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
+						break;
+					}	
+				}
 			}
 			entities = 0;
-			Set<ObjectProperty> objectProperties = st.getAllObjectProperties();
-			filterByNamespaces(objectProperties);
-			for(ObjectProperty property : objectProperties) {
-				runObjectPropertyAlgorithms(ks, property);	
-				entities++;
-				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
-					break;
-				}				
+			if(processObjectProperties){
+				Set<ObjectProperty> objectProperties = st.getAllObjectProperties();
+				filterByNamespaces(objectProperties);
+				for(ObjectProperty property : objectProperties) {
+					runObjectPropertyAlgorithms(ks, property);	
+					entities++;
+					if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
+						break;
+					}				
+				}
+				processedProperties.addAll(objectProperties);
 			}
 			entities = 0;
-			Set<DatatypeProperty> dataProperties = st.getAllDataProperties();
-			filterByNamespaces(dataProperties);
-			for(DatatypeProperty property : dataProperties) {
-				runDataPropertyAlgorithms(ks, property);
-				entities++;
-				if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
-					break;
-				}					
+			if(processDataProperties){
+				Set<DatatypeProperty> dataProperties = st.getAllDataProperties();
+				filterByNamespaces(dataProperties);
+				for(DatatypeProperty property : dataProperties) {
+					runDataPropertyAlgorithms(ks, property);
+					entities++;
+					if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
+						break;
+					}					
+				}
+				processedProperties.addAll(dataProperties);
+			}
+			
+			//optionally, get all properties and infer its type
+			if(processPropertiesTypeInferred ){
+				reasoner.precomputePopularity();
+				Set<org.dllearner.core.owl.Property> properties = allowedNamespaces.isEmpty() ? reasoner.getProperties(true) : reasoner.getProperties(true, allowedNamespaces.iterator().next());
+				properties.removeAll(processedProperties);
+				filterByNamespaces(properties);
+				for(org.dllearner.core.owl.Property property : properties) {
+					if(property instanceof ObjectProperty){
+						runObjectPropertyAlgorithms(ks, (ObjectProperty) property);
+						entities++;
+					} else if(property instanceof DatatypeProperty){
+						runDataPropertyAlgorithms(ks, (DatatypeProperty) property);
+						entities++;
+					}
+					
+					if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
+						break;
+					}					
+				}
 			}
 		} else {
 			if(resource instanceof ObjectProperty) {
@@ -529,36 +572,6 @@ public class Enrichment {
 //			}
 		}
 		
-		/*//old way to get SPARQL fragment
-        SparqlKnowledgeSource ks2;
-        AbstractReasonerComponent rc;
-        if(reuseKnowledgeSource) {
-        	ks2 = ksCached;
-        	rc = rcCached;
-        	System.out.println("re-using previously generated knowledge base fragment");
-        } else {
-            ks2 = new SparqlKnowledgeSource(); 
-            ks2.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
-            ks2.setUrl(ks.getEndpoint().getURL());
-            ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
-            ks2.setUseLits(false);
-            ks2.setUseCacheDatabase(true);
-            ks2.setCacheDir(cacheDir);
-            ks2.setRecursionDepth(2);
-            ks2.setCloseAfterRecursion(true);
-            ks2.setDissolveBlankNodes(false);
-            ks2.setSaveExtractedFragment(true);
-            startTime = System.currentTimeMillis();
-            System.out.print("getting knowledge base fragment ... ");
-            ks2.init();
-            runTime = System.currentTimeMillis() - startTime;
-            System.out.println("done in " + runTime + " ms");    
-            rc = new FastInstanceChecker(ks2);
-            rc.init();
-            ksCached = ks2;
-            rcCached = rc;
-        }*/
-		
         ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(nc);
         lp.setEquivalence(equivalence);
@@ -572,7 +585,7 @@ public class Enrichment {
         la.setNoisePercentage(25);
         la.setMaxNrOfResults(100);
         la.init();
-        ((RhoDRDown)la.getOperator()).setUseNegation(false);
+//        ((RhoDRDown)la.getOperator()).setUseNegation(false);
         startTime = System.currentTimeMillis();
         System.out.print("running CELOE (for " + (equivalence ? "equivalent classes" : "sub classes") + ") ... ");
         la.start();
@@ -1005,6 +1018,34 @@ public class Enrichment {
 	public List<AlgorithmRun> getAlgorithmRuns() {
 		return algorithmRuns;
 	}
+	
+	/**
+	 * @param processClasses the processClasses to set
+	 */
+	public void setProcessClasses(boolean processClasses) {
+		this.processClasses = processClasses;
+	}
+	
+	/**
+	 * @param processDataProperties the processDataProperties to set
+	 */
+	public void setProcessDataProperties(boolean processDataProperties) {
+		this.processDataProperties = processDataProperties;
+	}
+	
+	/**
+	 * @param processObjectProperties the processObjectProperties to set
+	 */
+	public void setProcessObjectProperties(boolean processObjectProperties) {
+		this.processObjectProperties = processObjectProperties;
+	}
+	
+	/**
+	 * @param processPropertiesTypeInferred the processPropertiesTypeInferred to set
+	 */
+	public void setProcessPropertiesTypeInferred(boolean processPropertiesTypeInferred) {
+		this.processPropertiesTypeInferred = processPropertiesTypeInferred;
+	}
 
 	public static void main(String[] args) throws IOException, ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException {
 		
@@ -1039,6 +1080,8 @@ public class Enrichment {
 		.ofType(Integer.class).defaultsTo(10);
 		parser.acceptsAll(asList("i", "inference"),
 				"Specifies whether to use inference. If yes, the schema will be loaded into a reasoner and used for computing the scores.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+		parser.acceptsAll(asList("iterative"),
+				"Specifies whether to use local fragments or single query mode.").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
 		parser.acceptsAll(asList("s", "serialize"), "Specify a file where the ontology with all axioms can be written.")
 		.withRequiredArg().ofType(File.class);
 		parser.acceptsAll(asList("a", "annotations"),
@@ -1051,6 +1094,13 @@ public class Enrichment {
 				"Specifies whether return only axioms which not already exist in the knowlegde base.").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
 		OptionSpec<String> allowedNamespacesOption = parser.accepts( "ns" ).withRequiredArg().ofType( String.class )
 	            .withValuesSeparatedBy( ',' );
+		
+		parser.acceptsAll(asList("op"),
+				"Specifies whether to compute axiom for object properties.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+		parser.acceptsAll(asList("dp"),
+				"Specifies whether to compute axiom for data properties.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+		parser.acceptsAll(asList("cls"),
+				"Specifies whether compute axiom for classes.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
 		
 		
 		//username and password if endpoint is protected
@@ -1150,6 +1200,7 @@ public class Enrichment {
 			}
 			
 			boolean useInference = (Boolean) options.valueOf("i");
+			boolean iterativeMode = (Boolean) options.valueOf("iterative");
 //			boolean verbose = (Boolean) options.valueOf("v");
 			double threshold = (Double) options.valueOf("t");
 			int maxNrOfResults = (Integer) options.valueOf("l");
@@ -1173,8 +1224,17 @@ public class Enrichment {
 			//extract namespaces to which the analyzed entities will be restricted
 			List<String> allowedNamespaces = options.valuesOf(allowedNamespacesOption);
 			
+			//check which entity types we have to process
+			boolean processObjectProperties = (Boolean) options.valueOf("op");
+			boolean processDataProperties = (Boolean) options.valueOf("dp");
+			boolean processClasses = (Boolean) options.valueOf("cls");
+			
 			Enrichment e = new Enrichment(se, resource, threshold, maxNrOfResults, useInference, false, chunksize, maxExecutionTimeInSeconds, omitExistingAxioms);
 			e.setAllowedNamespaces(allowedNamespaces);
+			e.setIterativeMode(iterativeMode);
+			e.setProcessObjectProperties(processObjectProperties);
+			e.setProcessDataProperties(processDataProperties);
+			e.setProcessClasses(processClasses);
 			e.start();
 
 			SparqlEndpointKS ks = new SparqlEndpointKS(se);
