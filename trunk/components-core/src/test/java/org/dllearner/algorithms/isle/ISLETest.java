@@ -69,7 +69,7 @@ public class ISLETest {
 	}
 	
 	@Test
-	public void testISLE() throws ComponentInitException {
+	public void testISLE() throws Exception {
 		KnowledgeSource ks = new OWLAPIOntology(ontology);
 		AbstractReasonerComponent reasoner = new FastInstanceChecker(ks);
 		reasoner.init();
@@ -78,7 +78,11 @@ public class ISLETest {
 		lp.setClassToDescribe(cls);
 		lp.init();
 		
+		Map<Entity, Double> entityRelevance = relevance.getEntityRelevance(cls);
+		NLPHeuristic heuristic = new NLPHeuristic(entityRelevance);
+		
 		ISLE isle = new ISLE(lp, reasoner);
+		isle.setHeuristic(heuristic);
 		isle.init();
 		
 		isle.start();

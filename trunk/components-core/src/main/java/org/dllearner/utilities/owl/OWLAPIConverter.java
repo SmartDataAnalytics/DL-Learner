@@ -19,6 +19,7 @@
 
 package org.dllearner.utilities.owl;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -150,6 +151,22 @@ public final class OWLAPIConverter {
 		}
 		// should never happen
 		throw new Error("OWL API entity conversion for " + entity + " not supported.");
+	}
+	
+	public static Set<Entity> getEntities(Set<OWLEntity> owlEntities) {
+		Set<Entity> entities = new HashSet<Entity>();
+		for (OWLEntity entity : owlEntities) {
+			if(entity instanceof OWLObjectProperty) {
+				entities.add(convertObjectProperty((OWLObjectProperty) entity));
+			} else if(entity instanceof OWLDataProperty) {
+				entities.add(convertDatatypeProperty((OWLDataProperty) entity));
+			} else if(entity instanceof OWLClass) {
+				entities.add(new NamedClass(entity.toStringID()));			
+			} else if(entity instanceof OWLNamedIndividual) {
+				entities.add(convertIndividual((OWLNamedIndividual) entity));				
+			}
+		}
+		return entities;
 	}
 	
 	public static Description convertClass(OWLClass owlClass) {
