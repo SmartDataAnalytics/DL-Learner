@@ -20,14 +20,20 @@
 package org.dllearner.algorithms.isle;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * 
@@ -50,6 +56,8 @@ public class NLPHeuristic implements Component, Comparator<OENode>{
 	
 	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
 	private double startNodeBonus = 0.1;
+	
+	private double nlpBonusFactor = 0.0001;
 	
 	private Map<Entity, Double> entityRelevance;
 	
@@ -97,6 +105,21 @@ public class NLPHeuristic implements Component, Comparator<OENode>{
 		score -= node.getHorizontalExpansion() * expansionPenaltyFactor;
 		// penalty for having many child nodes (stuck prevention)
 		score -= node.getRefinementCount() * nodeRefinementPenalty;
+		
+		
+		//the NLP based scoring
+		Description expression = node.getExpression();
+		OWLClassExpression owlapiDescription = OWLAPIConverter.getOWLAPIDescription(expression);
+		Set<Entity> entities = OWLAPIConverter.getEntities(owlapiDescription.getSignature());
+		double sum = 0;
+		for (Entity entity : entities) {
+			double relevance = entityRelevance.containsKey(entity) ? entityRelevance.get(entity) : 0;
+			if(!Double.isInfinite(relevance)){
+				sum += relevance;
+			}
+		}
+		score += nlpBonusFactor * sum;
+		
 		return score;
 	}
 
