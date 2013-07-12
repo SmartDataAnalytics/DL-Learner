@@ -3,15 +3,10 @@
  */
 package org.dllearner.algorithms.isle;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.NamedClass;
@@ -39,19 +34,26 @@ public class ISLETest {
 	private LuceneSearcher searcher;
 	private Relevance relevance;
 	private String searchField = "label";
+	
+	/**
+	 * 
+	 */
+	public ISLETest() throws Exception{
+		manager = OWLManager.createOWLOntologyManager();
+		ontology = manager.loadOntologyFromOntologyDocument(new File("../examples/isle/father_labeled.owl"));
+		cls = new NamedClass("http://example.com/father#father");
+		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
+		OWLOntologyLuceneIndex index = new OWLOntologyLuceneIndex(ontology, searchField);
+		searcher = new LuceneSearcher(index.getDirectory(), searchField);
+		relevance = new PMILuceneBasedRelevance(ontology, searcher, textRetriever);
+	}
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
-	public void setUp() throws Exception {
-		manager = OWLManager.createOWLOntologyManager();
-		ontology = manager.loadOntologyFromOntologyDocument(new File("../examples/isle/father_labeled.owl"));
-		cls = new NamedClass("http://example.com/father#father");
-		textRetriever = new LabelEntityTextRetriever(ontology);
-		OWLOntologyLuceneIndex index = new OWLOntologyLuceneIndex(ontology, searchField);
-		searcher = new LuceneSearcher(index.getDirectory(), searchField);
-		relevance = new PMILuceneBasedRelevance(ontology, searcher, textRetriever);
+	public void setUp() throws Exception{
+		
 	}
 
 	@Test
