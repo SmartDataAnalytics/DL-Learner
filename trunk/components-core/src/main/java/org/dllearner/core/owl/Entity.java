@@ -28,6 +28,10 @@ import java.net.URI;
  *
  */
 public interface Entity extends NamedKBElement {
+	
+	public enum Type{
+		CLASS, OBJECT_PROPERTY, DATA_PROPERTY;
+	}
 
 	public URI getURI();
 	

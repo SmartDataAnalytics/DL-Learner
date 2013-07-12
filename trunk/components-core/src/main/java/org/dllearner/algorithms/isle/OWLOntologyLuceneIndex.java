@@ -32,6 +32,7 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
+ * Creates a Lucene Index for the labels if classes and properties.
  * @author Lorenz Buehmann
  *
  */

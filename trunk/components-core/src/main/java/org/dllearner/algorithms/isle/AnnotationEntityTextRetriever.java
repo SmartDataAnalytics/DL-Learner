@@ -13,41 +13,37 @@ import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
-import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 
 /**
  * @author Lorenz Buehmann
  *
  */
-public class LabelEntityTextRetriever implements EntityTextRetriever{
+public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	
 	private OWLOntology ontology;
 	private OWLOntologyManager manager;
-	private OWLDataFactory df = new OWLDataFactoryImpl();
-	
-	private OWLAnnotationProperty label = df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI());
 	
 	private String language = "en";
 	private double weight = 1d;
 	
 	private boolean useShortFormFallback = true;
 	private IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
+	
+	private OWLAnnotationProperty[] properties;
 
-	public LabelEntityTextRetriever(OWLOntology ontology) {
+	public AnnotationEntityTextRetriever(OWLOntology ontology, OWLAnnotationProperty... properties) {
 		this.ontology = ontology;
+		this.properties = properties;
 	}
 	
-	public LabelEntityTextRetriever(OWLAPIOntology ontology) {
+	public AnnotationEntityTextRetriever(OWLAPIOntology ontology, OWLAnnotationProperty... properties) {
 		this.ontology = ontology.createOWLOntology(manager);
 	}
 	
@@ -75,15 +71,17 @@ public class LabelEntityTextRetriever implements EntityTextRetriever{
 		
 		OWLEntity e = OWLAPIConverter.getOWLAPIEntity(entity);
 		
-		Set<OWLAnnotation> annotations = e.getAnnotations(ontology, label);
-		for (OWLAnnotation annotation : annotations) {
-			if (annotation.getValue() instanceof OWLLiteral) {
-	            OWLLiteral val = (OWLLiteral) annotation.getValue();
-	            if (val.hasLang(language)) {
-	            	String label = val.getLiteral();
-	            	textWithWeight.put(label, weight);
-	            }
-	        }
+		for (OWLAnnotationProperty property : properties) {
+			Set<OWLAnnotation> annotations = e.getAnnotations(ontology, property);
+			for (OWLAnnotation annotation : annotations) {
+				if (annotation.getValue() instanceof OWLLiteral) {
+		            OWLLiteral val = (OWLLiteral) annotation.getValue();
+		            if (val.hasLang(language)) {
+		            	String label = val.getLiteral();
+		            	textWithWeight.put(label, weight);
+		            }
+		        }
+			}
 		}
 		
 		if(textWithWeight.isEmpty() && useShortFormFallback){
