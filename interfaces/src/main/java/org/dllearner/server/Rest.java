@@ -57,7 +57,9 @@ public class Rest extends HttpServlet {
             String conf = null;
             int limit = 5;
             if (!isSet("conf", httpServletRequest)) {
-                throw new IllegalArgumentException("Missing parameter: conf is required. ");
+//                throw new IllegalArgumentException("Missing parameter: conf is required. ");
+                httpServletResponse.sendError(400, "Missing parameter: conf is required. ");
+                return;
             } else {
                 conf = httpServletRequest.getParameter("conf");
                 if (isSet("limit", httpServletRequest)) {
@@ -116,6 +118,8 @@ public class Rest extends HttpServlet {
             learningResult.put("success", "0");
             learningResult.put("error", msg);
             learningResult.put("stacktrace", ExceptionUtils.getRootCause(e));
+            result.put("learningresult", learningResult);
+            httpServletResponse.sendError(500, result.toJSONString());
         }
 
         result.put("learningresult", learningResult);
