@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,10 +59,10 @@ public class Rest extends HttpServlet {
             int limit = 5;
             if (!isSet("conf", httpServletRequest)) {
 //                throw new IllegalArgumentException("Missing parameter: conf is required. ");
-                httpServletResponse.sendError(400, "Missing parameter: conf is required. ");
+                httpServletRequest.getRequestDispatcher("/WEB-INF/sparqr.html").forward(httpServletRequest, httpServletResponse);
                 return;
             } else {
-                conf = httpServletRequest.getParameter("conf");
+                conf = URLDecoder.decode(httpServletRequest.getParameter("conf"));
                 if (isSet("limit", httpServletRequest)) {
                     limit = Integer.parseInt(httpServletRequest.getParameter("limit"));
                 }

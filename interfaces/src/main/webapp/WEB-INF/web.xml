@@ -14,6 +14,16 @@
         <servlet-name>rest</servlet-name>
         <url-pattern>/rest</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>conf</servlet-name>
+        <servlet-class>org.dllearner.server.ConfGeneratorServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>conf</servlet-name>
+        <url-pattern>/conf</url-pattern>
+    </servlet-mapping>
 
 
     <servlet>
