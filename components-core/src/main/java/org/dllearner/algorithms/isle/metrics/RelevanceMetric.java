@@ -18,14 +18,16 @@
  */
 
 
-package org.dllearner.algorithms.isle;
-
-import java.util.Map;
+package org.dllearner.algorithms.isle.metrics;
 
 import org.dllearner.core.owl.Entity;
 
 
-public interface Relevance {
-
-	public Map<Entity,Double> getEntityRelevance(Entity entity) throws Exception;
+public interface RelevanceMetric {
+	/**
+	 * @param entity1
+	 * @param entity2
+	 * @return
+	 */
+	double getRelevance(Entity entity1, Entity entity2);
 }

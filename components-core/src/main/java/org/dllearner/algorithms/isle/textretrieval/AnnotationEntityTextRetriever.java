@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.isle;
+package org.dllearner.algorithms.isle.textretrieval;
 
 import java.util.HashMap;
 import java.util.Map;
