@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.isle;
+package org.dllearner.algorithms.isle.textretrieval;
 
 import org.dllearner.kb.OWLAPIOntology;
 import org.semanticweb.owlapi.model.OWLOntology;

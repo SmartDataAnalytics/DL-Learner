@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.isle;
+package org.dllearner.algorithms.isle.index;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -17,10 +17,8 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -36,7 +34,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  * @author Lorenz Buehmann
  *
  */
-public class OWLOntologyLuceneIndex {
+public class OWLOntologyLuceneSyntacticIndexCreator {
 
 	private Directory directory = new RAMDirectory();
 	private OWLOntology ontology;
@@ -47,59 +45,18 @@ public class OWLOntologyLuceneIndex {
 	private String language = "en";
 	private String searchField;
 	
-	public OWLOntologyLuceneIndex(OWLOntology ontology, String searchField) throws IOException {
+	public OWLOntologyLuceneSyntacticIndexCreator(OWLOntology ontology, OWLAnnotationProperty annotationProperty, String searchField) throws IOException {
 		this.ontology = ontology;
+		this.annotationProperty = annotationProperty;
 		this.searchField = searchField;
 		
 		schemaEntities = new HashSet<OWLEntity>();
 		schemaEntities.addAll(ontology.getClassesInSignature());
 		schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
 		schemaEntities.addAll(ontology.getDataPropertiesInSignature());
-		
-		buildIndex();
 	}
 	
-	public OWLOntologyLuceneIndex(OWLOntology ontology, OWLAnnotationProperty annotationProperty) throws IOException {
-		this.ontology = ontology;
-		this.annotationProperty = annotationProperty;
-		
-		schemaEntities = new HashSet<OWLEntity>();
-		schemaEntities.addAll(ontology.getClassesInSignature());
-		schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
-		schemaEntities.addAll(ontology.getDataPropertiesInSignature());
-		
-		buildIndex();
-	}
-	
-	/**
-	 * @return the ontology
-	 */
-	public OWLOntology getOntology() {
-		return ontology;
-	}
-	
-	/**
-	 * @return the directory
-	 */
-	public Directory getDirectory() {
-		return directory;
-	}
-	
-	/**
-	 * @param annotationProperty the annotationProperty to set
-	 */
-	public void setAnnotationProperty(OWLAnnotationProperty annotationProperty) {
-		this.annotationProperty = annotationProperty;
-	}
-	
-	/**
-	 * @param annotationProperty the annotationProperty to set
-	 */
-	public void setAnnotationProperty(String annotationPropertyIRI) {
-		this.annotationProperty = df.getOWLAnnotationProperty(IRI.create(annotationPropertyIRI));
-	}
-	
-	public void buildIndex() throws IOException{
+	public SyntacticIndex buildIndex() throws Exception{
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_43, analyzer);
 		IndexWriter writer = new IndexWriter(directory, indexWriterConfig);
@@ -135,6 +92,8 @@ public class OWLOntologyLuceneIndex {
 		
 		System.out.println("Done.");
 		writer.close();
+		
+		return new LuceneSyntacticIndex(directory, searchField);
 	}
 	
 	
