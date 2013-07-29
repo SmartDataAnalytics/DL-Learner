@@ -82,6 +82,8 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private Set<? extends OWLEntity> variableEntities = new HashSet<OWLEntity>();
 	
 	private VariablesMapping mapping;
+	private boolean ignoreGenericTypeStatements = true;
+	private OWLClassExpression expr;
 	
 	public OWLClassExpressionToSPARQLConverter(VariablesMapping mapping) {
 		this.mapping = mapping;
@@ -96,6 +98,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	}
 
 	public String convert(String rootVariable, OWLClassExpression expr){
+		this.expr = expr;
 		reset();
 		variables.push(rootVariable);
 		expr.accept(this);
@@ -261,7 +264,9 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLClass ce) {
-		sparql += triple(variables.peek(), "a", render(ce));
+		if(ce.equals(expr) || (ignoreGenericTypeStatements && !ce.isOWLThing())){
+			sparql += triple(variables.peek(), "a", render(ce));
+		}
 	}
 
 	@Override
@@ -577,7 +582,9 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	
 	@Override
 	public void visit(OWLDatatype node) {
-		sparql += "FILTER(DATATYPE(" + variables.peek() + "=<" + node.getIRI().toString() + ">))";
+		if(ignoreGenericTypeStatements && !node.isRDFPlainLiteral() && !node.isTopDatatype()){
+			sparql += "FILTER(DATATYPE(" + variables.peek() + "=<" + node.getIRI().toString() + ">))";
+		}
 	}
 
 	@Override

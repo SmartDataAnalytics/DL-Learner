@@ -67,7 +67,7 @@ public class LuceneSyntacticIndex implements SyntacticIndex {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return documents;
 	}
 
 	/* (non-Javadoc)

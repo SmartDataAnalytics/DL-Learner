@@ -8,6 +8,7 @@ import java.util.Queue;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.learningproblems.Heuristics;
 
@@ -15,6 +16,9 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 public class NoiseSensitiveLGG<N> {
+	
+	
+	private static final Logger logger = Logger.getLogger(NoiseSensitiveLGG.class.getName());
 	
 	private LGGGenerator<N> lggGenerator = new LGGGeneratorImpl<N>();
 	
@@ -29,7 +33,8 @@ public class NoiseSensitiveLGG<N> {
 		Monitor lggMon = MonitorFactory.getTimeMonitor("lgg-mon");
 		init(trees);
 		EvaluatedQueryTree<N> currentElement;
-		do{System.out.println("TODO list size: " + todoList.size());
+		do{
+			logger.trace("TODO list size: " + todoList.size());
 			//pick best element from todo list
 			currentElement = todoList.poll();
 			for (QueryTree<N> example : currentElement.getUncoveredExamples()) {
@@ -39,31 +44,34 @@ public class NoiseSensitiveLGG<N> {
 				QueryTree<N> lgg = lggGenerator.getLGG(tree, example);
 				lggMon.stop();
 				//compute examples which are not covered by LGG
-				Collection<QueryTree<N>> uncoveredExamples = new ArrayList<QueryTree<N>>();
-				for (QueryTree<N> queryTree : trees) {
-					subMon.start();
-					boolean subsumed = queryTree.isSubsumedBy(lgg);
-					subMon.stop();
-					if(!subsumed){
-						uncoveredExamples.add(queryTree);
-					}
-				}
+				Collection<QueryTree<N>> uncoveredExamples = getUncoveredTrees(lgg, trees);
 				//compute score
 				double score = Heuristics.getConfidenceInterval95WaldAverage(trees.size(), trees.size() - uncoveredExamples.size());
 				//add to todo list, if not already contained in todo list or solution list
 				EvaluatedQueryTree<N> solution = new EvaluatedQueryTree<N>(lgg, uncoveredExamples, score);
 				todo(solution);
 			}
-			System.out.println("LGG time: " + lggMon.getTotal() + "ms");
-			System.out.println("Avg. LGG time: " + lggMon.getAvg() + "ms");
-			System.out.println("#LGG computations: " + lggMon.getHits());
-			System.out.println("Subsumption test time: " + subMon.getTotal() + "ms");
-			System.out.println("Avg. subsumption test time: " + subMon.getAvg() + "ms");
-			System.out.println("#Subsumption tests: " + subMon.getHits());
 			solutions.add(currentElement);
 //			todoList.remove(currentElement);
 		} while(!terminationCriteriaSatisfied());
+		logger.trace("LGG time: " + lggMon.getTotal() + "ms");
+		logger.trace("Avg. LGG time: " + lggMon.getAvg() + "ms");
+		logger.trace("#LGG computations: " + lggMon.getHits());
+		logger.trace("Subsumption test time: " + subMon.getTotal() + "ms");
+		logger.trace("Avg. subsumption test time: " + subMon.getAvg() + "ms");
+		logger.trace("#Subsumption tests: " + subMon.getHits());
 		return new ArrayList<EvaluatedQueryTree<N>>(solutions);
+	}
+	
+	private Collection<QueryTree<N>> getUncoveredTrees(QueryTree<N> tree, List<QueryTree<N>> allTrees){
+		Collection<QueryTree<N>> uncoveredTrees = new ArrayList<QueryTree<N>>();
+		for (QueryTree<N> queryTree : allTrees) {
+			boolean subsumed = queryTree.isSubsumedBy(tree);
+			if(!subsumed){
+				uncoveredTrees.add(queryTree);
+			}
+		}
+		return uncoveredTrees;
 	}
 	
 	private void init(List<QueryTree<N>> trees){
@@ -76,9 +84,11 @@ public class NoiseSensitiveLGG<N> {
 		for (QueryTree<N> queryTree : trees) {//System.out.println(queryTree.getStringRepresentation());
 			boolean distinct = true;
 			for (QueryTree<N> otherTree : distinctTrees) {
-				if(queryTree.isSubsumedBy(otherTree)){
-					distinct = false;
-					break;
+				if(!queryTree.equals(otherTree)){
+					if(queryTree.isSameTreeAs(otherTree)){
+						distinct = false;
+						break;
+					}
 				}
 			}
 			if(distinct){
@@ -86,9 +96,8 @@ public class NoiseSensitiveLGG<N> {
 			}
 		}
 		for (QueryTree<N> queryTree : distinctTrees) {
-			Collection<QueryTree<N>> uncoveredExamples = new ArrayList<QueryTree<N>>(distinctTrees);
-			uncoveredExamples.remove(queryTree);
-			double score = (trees.size() - uncoveredExamples.size()) / (double)trees.size();
+			Collection<QueryTree<N>> uncoveredExamples = getUncoveredTrees(queryTree, trees);
+			double score = Heuristics.getConfidenceInterval95WaldAverage(trees.size(), trees.size() - uncoveredExamples.size());
 			todoList.add(new EvaluatedQueryTree<N>(queryTree, uncoveredExamples, score));
 		}
 	}
