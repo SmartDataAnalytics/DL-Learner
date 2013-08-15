@@ -220,6 +220,14 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		return bestAxioms;
 	}
 	
+	public List<Axiom> getCurrentlyBestAxioms(double accuracyThreshold) {
+		List<Axiom> bestAxioms = new ArrayList<Axiom>();
+		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(accuracyThreshold)){
+			bestAxioms.add(evAx.getAxiom());
+		}
+		return bestAxioms;
+	}
+	
 	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
 		return currentlyBestAxioms;
 	}
