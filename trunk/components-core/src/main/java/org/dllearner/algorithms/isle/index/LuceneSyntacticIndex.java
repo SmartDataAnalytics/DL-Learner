@@ -3,11 +3,6 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -21,6 +16,11 @@ import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -41,26 +41,26 @@ public class LuceneSyntacticIndex implements SyntacticIndex {
 		parser = new QueryParser( Version.LUCENE_43, searchField, analyzer );
 	}
 	
-	public LuceneSyntacticIndex(Directory directory, String seachField) throws Exception {
-		this(DirectoryReader.open(directory), seachField);
+	public LuceneSyntacticIndex(Directory directory, String searchField) throws Exception {
+		this(DirectoryReader.open(directory), searchField);
 	}
 	
-	public LuceneSyntacticIndex(String indexDirectory, String seachField) throws Exception {
-		this(DirectoryReader.open(FSDirectory.open(new File(indexDirectory))), seachField);
+	public LuceneSyntacticIndex(String indexDirectory, String searchField) throws Exception {
+		this(DirectoryReader.open(FSDirectory.open(new File(indexDirectory))), searchField);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.isle.SyntacticIndex#getDocuments(java.lang.String)
 	 */
 	@Override
-	public Set<String> getDocuments(String searchString) {
-		Set<String> documents = new HashSet<String>();
+	public Set<org.dllearner.algorithms.isle.index.Document> getDocuments(String searchString) {
+		Set<org.dllearner.algorithms.isle.index.Document> documents = new HashSet<org.dllearner.algorithms.isle.index.Document>();
 		try {
 			Query query = parser.parse(searchString);
 			ScoreDoc[] result = searcher.search(query, getSize()).scoreDocs;
 			for (int i = 0; i < result.length; i++) {
 				Document doc = searcher.doc(result[i].doc);
-				documents.add(doc.get(searchField));
+				documents.add(new TextDocument(doc.get(searchField)));
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();

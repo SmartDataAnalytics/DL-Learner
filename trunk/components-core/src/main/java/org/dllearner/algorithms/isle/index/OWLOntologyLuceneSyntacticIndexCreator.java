@@ -3,13 +3,8 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
@@ -19,15 +14,13 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
-import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Creates a Lucene Index for the labels if classes and properties.
@@ -61,8 +54,8 @@ public class OWLOntologyLuceneSyntacticIndexCreator {
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_43, analyzer);
 		IndexWriter writer = new IndexWriter(directory, indexWriterConfig);
 		System.out.println( "Creating index ..." );
-		
-		Set<Document> luceneDocuments = new HashSet<Document>();
+
+        Set<org.apache.lucene.document.Document> luceneDocuments = new HashSet<org.apache.lucene.document.Document>();
         FieldType stringType = new FieldType(StringField.TYPE_STORED);
         stringType.setStoreTermVectors(false);
         FieldType textType = new FieldType(TextField.TYPE_STORED);
@@ -81,7 +74,7 @@ public class OWLOntologyLuceneSyntacticIndexCreator {
 			}
 			
 			if(label != null){
-				Document luceneDocument = new Document();
+                org.apache.lucene.document.Document luceneDocument = new org.apache.lucene.document.Document();
 	            luceneDocument.add(new Field("uri", entity.toStringID(), stringType));
 	            luceneDocument.add(new Field(searchField, label, textType));
 	            luceneDocuments.add(luceneDocument);
