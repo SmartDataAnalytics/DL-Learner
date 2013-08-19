@@ -3,13 +3,11 @@
  */
 package org.dllearner.algorithms.isle;
 
-import java.io.File;
-import java.util.Map;
-
-import org.dllearner.algorithms.isle.index.OWLOntologyLuceneSyntacticIndexCreator;
-import org.dllearner.algorithms.isle.index.SemanticIndex;
-import org.dllearner.algorithms.isle.index.SimpleSemanticIndex;
-import org.dllearner.algorithms.isle.index.SyntacticIndex;
+import com.google.common.base.Joiner;
+import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
+import org.dllearner.algorithms.isle.index.semantic.simple.SimpleSemanticIndex;
+import org.dllearner.algorithms.isle.index.syntactic.OWLOntologyLuceneSyntacticIndexCreator;
+import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceUtils;
@@ -28,10 +26,10 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.base.Joiner;
+import java.io.File;
+import java.util.Map;
 
 /**
  * @author Lorenz Buehmann

@@ -1,7 +1,9 @@
 /**
  *
  */
-package org.dllearner.algorithms.isle.index;
+package org.dllearner.algorithms.isle.index.syntactic;
+
+import org.dllearner.algorithms.isle.index.Document;
 
 import java.util.Set;
 
