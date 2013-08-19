@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.isle.index;
+package org.dllearner.algorithms.isle.index.syntactic;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -16,6 +16,7 @@ import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.dllearner.algorithms.isle.index.TextDocument;
 
 import java.io.File;
 import java.io.IOException;

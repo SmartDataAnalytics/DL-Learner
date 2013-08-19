@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.isle.index;
+package org.dllearner.algorithms.isle.index.syntactic;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;

@@ -1,5 +1,6 @@
-package org.dllearner.algorithms.isle.index;
+package org.dllearner.algorithms.isle.index.semantic;
 
+import org.dllearner.algorithms.isle.index.Document;
 import org.dllearner.core.owl.Entity;
 
 import java.util.Set;
