@@ -3,20 +3,20 @@
  */
 package org.dllearner.algorithms.isle.index;
 
+import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
+import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLOntology;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
-import org.dllearner.core.owl.Entity;
-import org.semanticweb.owlapi.model.OWLOntology;
-
 /**
  * @author Lorenz Buehmann
  *
  */
-public class SimpleSemanticIndex implements SemanticIndex{
+public class SimpleSemanticIndex implements SemanticIndex {
 	
 	private SyntacticIndex syntacticIndex;
 	private RDFSLabelEntityTextRetriever labelRetriever;
@@ -34,8 +34,8 @@ public class SimpleSemanticIndex implements SemanticIndex{
 	 * @see org.dllearner.algorithms.isle.SemanticIndex#getDocuments(org.dllearner.core.owl.Entity)
 	 */
 	@Override
-	public Set<String> getDocuments(Entity entity) {
-		Set<String> documents = new HashSet<String>();
+	public Set<Document> getDocuments(Entity entity) {
+		Set<Document> documents = new HashSet<Document>();
 		Map<String, Double> relevantText = labelRetriever.getRelevantText(entity);
 		
 		for (Entry<String, Double> entry : relevantText.entrySet()) {
