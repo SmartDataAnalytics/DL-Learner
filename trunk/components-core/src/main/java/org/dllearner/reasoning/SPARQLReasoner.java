@@ -34,7 +34,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
-import org.aksw.commons.util.strings.StringUtils;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
@@ -43,7 +42,6 @@ import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
-import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.IndividualReasoner;
 import org.dllearner.core.SchemaReasoner;
@@ -141,6 +139,23 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 			}
 //			qef = new QueryExecutionFactoryPaginated(qef, 10000);
 			
+		} else {
+			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
+		}
+	}
+	
+	public SPARQLReasoner(SparqlEndpointKS ks, CacheCoreEx cacheBackend) {
+		this.ks = ks;
+
+		classPopularityMap = new HashMap<NamedClass, Integer>();
+		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
+		
+		if(ks.isRemote()){
+			SparqlEndpoint endpoint = ks.getEndpoint();
+			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+			CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+			qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+//			qef = new QueryExecutionFactoryPaginated(qef, 10000);
 		} else {
 			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}
