@@ -23,7 +23,7 @@ public interface AnnotatedDocument extends Document {
 	 * Returns all annotations of the document.
 	 * @return
 	 */
-	Set<Annotation> getAnnotations();
+	Set<SemanticAnnotation> getAnnotations();
 	
 	/**
 	 * Returns the annotation at the given position(offset) of given length.
@@ -31,7 +31,7 @@ public interface AnnotatedDocument extends Document {
 	 * @param length
 	 * @return
 	 */
-	Annotation getAnnotation(int offset, int length);
+	SemanticAnnotation getAnnotation(int offset, int length);
 
     /**
      * Returns the number of occurrences of the given entity in this document.

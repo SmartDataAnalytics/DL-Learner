@@ -15,16 +15,16 @@ import org.dllearner.core.owl.Entity;
 public class AnnotatedTextDocument implements AnnotatedDocument{
 	
 	private TextDocument document;
-	private Set<Annotation> annotations;
+	private Set<SemanticAnnotation> annotations;
 	private Set<Entity> entities;
 
 	
-	public AnnotatedTextDocument(TextDocument document, Set<Annotation> annotations) {
+	public AnnotatedTextDocument(TextDocument document, Set<SemanticAnnotation> annotations) {
 		this.document = document;
 		this.annotations = annotations;
 		
 		entities = new HashSet<Entity>();
-		for (Annotation annotation : annotations) {
+		for (SemanticAnnotation annotation : annotations) {
 			entities.add(annotation.getEntity());
 		}
 	}
@@ -57,7 +57,7 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 	 * @see org.dllearner.algorithms.isle.index.AnnotatedDocument#getAnnotations()
 	 */
 	@Override
-	public Set<Annotation> getAnnotations() {
+	public Set<SemanticAnnotation> getAnnotations() {
 		return annotations;
 	}
 
@@ -65,8 +65,8 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 	 * @see org.dllearner.algorithms.isle.index.AnnotatedDocument#getAnnotation(int, int)
 	 */
 	@Override
-	public Annotation getAnnotation(int offset, int length) {
-		for (Annotation annotation : annotations) {
+	public SemanticAnnotation getAnnotation(int offset, int length) {
+		for (SemanticAnnotation annotation : annotations) {
 			if(annotation.getOffset() == offset && annotation.getLength() == length){
 				return annotation;
 			}
@@ -80,7 +80,7 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 	@Override
 	public int getEntityFrequency(Entity entity) {
 		int cnt = 0;
-		for (Annotation annotation : annotations) {
+		for (SemanticAnnotation annotation : annotations) {
 			if(annotation.getEntity().equals(entity)){
 				cnt++;
 			}

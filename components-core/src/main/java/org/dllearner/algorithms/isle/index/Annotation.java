@@ -3,7 +3,6 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import org.dllearner.core.owl.Entity;
 
 /**
  * @author Lorenz Buehmann
@@ -12,23 +11,17 @@ import org.dllearner.core.owl.Entity;
 public class Annotation {
 	
 	private Document getReferencedDocument;
-	private Entity entity;
 	private int offset;
 	private int length;
 	
-	public Annotation(Document getReferencedDocument, Entity entity, int offset, int length) {
+	public Annotation(Document getReferencedDocument, int offset, int length) {
 		this.getReferencedDocument = getReferencedDocument;
-		this.entity = entity;
 		this.offset = offset;
 		this.length = length;
 	}
 
 	public Document getGetReferencedDocument() {
 		return getReferencedDocument;
-	}
-
-	public Entity getEntity() {
-		return entity;
 	}
 
 	public int getOffset() {
@@ -43,7 +36,6 @@ public class Annotation {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((entity == null) ? 0 : entity.hashCode());
 		result = prime * result + ((getReferencedDocument == null) ? 0 : getReferencedDocument.hashCode());
 		result = prime * result + length;
 		result = prime * result + offset;
@@ -59,11 +51,6 @@ public class Annotation {
 		if (getClass() != obj.getClass())
 			return false;
 		Annotation other = (Annotation) obj;
-		if (entity == null) {
-			if (other.entity != null)
-				return false;
-		} else if (!entity.equals(other.entity))
-			return false;
 		if (getReferencedDocument == null) {
 			if (other.getReferencedDocument != null)
 				return false;
