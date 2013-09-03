@@ -11,7 +11,7 @@ import org.dllearner.core.owl.Entity;
  * @author Lorenz Buehmann
  *
  */
-public interface AnnotatedDocument {
+public interface AnnotatedDocument extends Document {
 	
 	/**
 	 * Returns a set of entities which are contained in the document.
@@ -33,4 +33,11 @@ public interface AnnotatedDocument {
 	 */
 	Annotation getAnnotation(int offset, int length);
 
+    /**
+     * Returns the number of occurrences of the given entity in this document.
+     *
+     * @param entity the entity to get frequency for
+     * @return number of occurrences of given entity in this document
+     */
+    int getEntityFrequency(Entity entity);
 }

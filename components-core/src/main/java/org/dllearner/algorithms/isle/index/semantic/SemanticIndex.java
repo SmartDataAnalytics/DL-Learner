@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.isle.index.semantic;
 
+import org.dllearner.algorithms.isle.index.AnnotatedDocument;
 import org.dllearner.algorithms.isle.index.Document;
 import org.dllearner.core.owl.Entity;
 
@@ -14,12 +15,12 @@ import java.util.Set;
  */
 public interface SemanticIndex {
     /**
-     * Returns the set of documents which reference the given entity using one of its surface forms.
+     * Returns the set of annotated documents which reference the given entity using one of its surface forms.
      *
      * @param entity entity to retrieve documents
      * @return documents referencing given entity
      */
-    public Set<Document> getDocuments(Entity entity);
+    public Set<AnnotatedDocument> getDocuments(Entity entity);
 
     /**
      * Returns the number of documents for the given entity.
