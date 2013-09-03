@@ -6,7 +6,6 @@ import java.util.Set;
 import org.dllearner.algorithms.isle.EntityCandidateGenerator;
 import org.dllearner.algorithms.isle.WordSenseDisambiguation;
 import org.dllearner.core.owl.Entity;
-import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
  * Provides methods to annotate documents.
@@ -15,7 +14,6 @@ import org.semanticweb.owlapi.model.OWLOntology;
  */
 public class SemanticAnnotator {
 	
-    private OWLOntology ontology;
 	private WordSenseDisambiguation wordSenseDisambiguation;
 	private EntityCandidateGenerator entityCandidateGenerator;
 	private LinguisticAnnotator linguisticAnnotator;
@@ -26,9 +24,8 @@ public class SemanticAnnotator {
      *
      * @param ontology the ontology to use entities from
      */
-    public SemanticAnnotator(OWLOntology ontology, WordSenseDisambiguation wordSenseDisambiguation, 
+    public SemanticAnnotator(WordSenseDisambiguation wordSenseDisambiguation, 
     		EntityCandidateGenerator entityCandidateGenerator, LinguisticAnnotator linguisticAnnotator) {
-        this.ontology = ontology;
 		this.wordSenseDisambiguation = wordSenseDisambiguation;
 		this.entityCandidateGenerator = entityCandidateGenerator;
 		this.linguisticAnnotator = linguisticAnnotator;
