@@ -9,7 +9,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import java.util.Set;
 
 /**
- * Abstract class for
+ * Abstract class for the word sense disambiguation component.
  *
  * @author Daniel Fleischhacker
  */
@@ -17,7 +17,7 @@ public abstract class WordSenseDisambiguation {
     OWLOntology ontology;
 
     /**
-     * Initialize the word sense disambiguation to use the given ontology.
+     * Initializes the word sense disambiguation to use the given ontology.
      *
      * @param ontology the ontology to disambiguate on
      */
@@ -26,7 +26,7 @@ public abstract class WordSenseDisambiguation {
     }
 
     /**
-     * Chooses the correct entity for the given annotation from a set of candidate enties.
+     * Chooses the correct entity for the given annotation from a set of candidate entities.
      *
      * @param annotation        the annotation to find entity for
      * @param candidateEntities the set of candidate entities
