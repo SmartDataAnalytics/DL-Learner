@@ -3,12 +3,13 @@
  */
 package org.dllearner.algorithms.isle.metrics;
 
-import com.google.common.collect.Sets;
-import org.dllearner.algorithms.isle.index.Document;
+import java.util.Set;
+
+import org.dllearner.algorithms.isle.index.AnnotatedDocument;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
 import org.dllearner.core.owl.Entity;
 
-import java.util.Set;
+import com.google.common.collect.Sets;
 
 /**
  * @author Lorenz Buehmann
@@ -22,9 +23,9 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 
 	@Override
 	public double getRelevance(Entity entityA, Entity entityB){
-		Set<Document> documentsA = index.getDocuments(entityA);
-		Set<Document> documentsB = index.getDocuments(entityB);
-		Set<Document> documentsAB = Sets.intersection(documentsA, documentsB);
+		Set<AnnotatedDocument> documentsA = index.getDocuments(entityA);
+		Set<AnnotatedDocument> documentsB = index.getDocuments(entityB);
+		Set<AnnotatedDocument> documentsAB = Sets.intersection(documentsA, documentsB);
 		int nrOfDocuments = index.getSize();
 		
 		double dPClass = nrOfDocuments == 0 ? 0 : ((double) documentsA.size() / (double) nrOfDocuments);
