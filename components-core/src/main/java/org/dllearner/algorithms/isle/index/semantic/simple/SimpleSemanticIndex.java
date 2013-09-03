@@ -3,6 +3,7 @@
  */
 package org.dllearner.algorithms.isle.index.semantic.simple;
 
+import org.dllearner.algorithms.isle.index.AnnotatedDocument;
 import org.dllearner.algorithms.isle.index.Document;
 import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
@@ -41,7 +42,7 @@ public class SimpleSemanticIndex implements SemanticIndex {
      * @see org.dllearner.algorithms.isle.SemanticIndex#getDocuments(org.dllearner.core.owl.Entity)
      */
     @Override
-    public Set<Document> getDocuments(Entity entity) {
+    public Set<AnnotatedDocument> getDocuments(Entity entity) {
         Set<Document> documents = new HashSet<Document>();
         Map<String, Double> relevantText = labelRetriever.getRelevantText(entity);
 
