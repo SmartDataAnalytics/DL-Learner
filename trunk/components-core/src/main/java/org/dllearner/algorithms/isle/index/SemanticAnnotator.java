@@ -7,7 +7,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
  *
  * @author Daniel Fleischhacker
  */
-public abstract class SemanticAnnotator {
+public class SemanticAnnotator {
+	
     OWLOntology ontology;
 
     /**
@@ -25,5 +26,7 @@ public abstract class SemanticAnnotator {
      * @param document the document to annotate
      * @return the given document extended with annotations
      */
-    public abstract AnnotatedDocument processDocument(Document document);
+    public AnnotatedDocument processDocument(Document document){
+    	return null;
+    }
 }

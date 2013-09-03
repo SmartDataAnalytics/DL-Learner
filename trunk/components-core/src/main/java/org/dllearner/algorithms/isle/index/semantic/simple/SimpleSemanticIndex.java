@@ -43,7 +43,7 @@ public class SimpleSemanticIndex implements SemanticIndex {
      */
     @Override
     public Set<AnnotatedDocument> getDocuments(Entity entity) {
-        Set<Document> documents = new HashSet<Document>();
+        Set<AnnotatedDocument> documents = new HashSet<AnnotatedDocument>();
         Map<String, Double> relevantText = labelRetriever.getRelevantText(entity);
 
         for (Entry<String, Double> entry : relevantText.entrySet()) {
