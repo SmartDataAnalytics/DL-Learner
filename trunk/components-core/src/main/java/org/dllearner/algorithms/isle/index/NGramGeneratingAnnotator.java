@@ -67,7 +67,6 @@ public class NGramGeneratingAnnotator implements LinguisticAnnotator {
                 lastEnd = wordEnd.get(i + j);
             }
             String nGram = sb.toString().trim();
-            System.out.println(nGram);
             annotations.add(new Annotation(document, curStart, lastEnd - curStart));
             i++;
         }
