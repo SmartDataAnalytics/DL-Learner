@@ -22,6 +22,11 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 		this.trie = new PrefixTrie<Set<Entity>>();
 	}
 	
+	public SimpleEntityCandidatesTrie(EntityTextRetriever entityTextRetriever, OWLOntology ontology) {
+		this(entityTextRetriever);
+		buildTrie(ontology);
+	}
+	
 	public void buildTrie(OWLOntology ontology) {		
 		Map<Entity, Set<String>> relevantText = entityTextRetriever.getRelevantText(ontology);
 		
@@ -32,6 +37,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 				if (text.contains(" ")) {
 					for (String subtext : text.split(" ")) {
 						addEntry(subtext, entity);
+						//System.out.println("trie.add("+subtext+","++")");
 					}
 				}
 			}
