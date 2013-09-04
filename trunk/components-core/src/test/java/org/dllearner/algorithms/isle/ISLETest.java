@@ -80,11 +80,13 @@ public class ISLETest {
 		Set<TextDocument> documents = new HashSet<TextDocument>();
 		File folder = new File(testFolder+"corpus/");
 		for (File file  : folder.listFiles()) {
-			try {
-				String text = Files.toString(file, Charsets.UTF_8);
-				documents.add(new TextDocument(text));
-			} catch (IOException e) {
-				e.printStackTrace();
+			if(!file.isDirectory() && !file.isHidden()){
+				try {
+					String text = Files.toString(file, Charsets.UTF_8);
+					documents.add(new TextDocument(text));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return documents;
