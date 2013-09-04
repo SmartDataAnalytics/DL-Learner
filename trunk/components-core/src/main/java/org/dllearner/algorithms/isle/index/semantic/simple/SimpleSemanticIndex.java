@@ -3,7 +3,6 @@
  */
 package org.dllearner.algorithms.isle.index.semantic.simple;
 
-import org.dllearner.algorithms.isle.RandomWordSenseDisambiguation;
 import org.dllearner.algorithms.isle.SimpleWordSenseDisambiguation;
 import org.dllearner.algorithms.isle.index.SimpleEntityCandidateGenerator;
 import org.dllearner.algorithms.isle.index.SimpleEntityCandidatesTrie;

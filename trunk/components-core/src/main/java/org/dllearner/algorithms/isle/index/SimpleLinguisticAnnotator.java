@@ -43,7 +43,7 @@ public class SimpleLinguisticAnnotator implements LinguisticAnnotator {
 			annotations.add(new Annotation(document, start, s.length() - start));
 		}
         annotations.addAll(nGramAnnotator.annotate(document));
-		stopWordFilter.removeStopWordAnnotations(annotations);
+//		stopWordFilter.removeStopWordAnnotations(annotations);
 		return annotations;
 	}
 	
