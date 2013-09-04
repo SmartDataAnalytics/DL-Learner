@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.isle.index.AnnotatedDocument;
 import org.dllearner.algorithms.isle.index.TextDocument;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
@@ -56,12 +57,16 @@ public class ISLETest {
 	private SemanticIndex semanticIndex;
 	private SyntacticIndex syntacticIndex;
 	
+	// we assume that the ontology is named "ontology.owl" and that all text files
+	// are in a subdirectory called "corpus"
+	private String testFolder = "../test/isle/father/";
+	
 	/**
 	 * 
 	 */
 	public ISLETest() throws Exception{
 		manager = OWLManager.createOWLOntologyManager();
-		ontology = manager.loadOntologyFromOntologyDocument(new File("../examples/isle/father_labeled.owl"));
+		ontology = manager.loadOntologyFromOntologyDocument(new File(testFolder + "father_labeled.owl"));
 		cls = new NamedClass("http://example.com/father#father");
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 		syntacticIndex = new OWLOntologyLuceneSyntacticIndexCreator(ontology, df.getRDFSLabel(), searchField).buildIndex();
@@ -71,7 +76,7 @@ public class ISLETest {
 	
 	private Set<TextDocument> createDocuments(){
 		Set<TextDocument> documents = new HashSet<TextDocument>();
-		File folder = new File("../test/isle/father/corpus");
+		File folder = new File(testFolder+"corpus/");
 		for (File file  : folder.listFiles()) {
 			try {
 				String text = Files.toString(file, Charsets.UTF_8);
@@ -148,4 +153,42 @@ public class ISLETest {
 		isle.start();
 	}
 
+	@Test
+	public void compareISLE() throws Exception {
+		KnowledgeSource ks = new OWLAPIOntology(ontology);
+		AbstractReasonerComponent reasoner = new FastInstanceChecker(ks);
+		reasoner.init();
+		
+		ClassLearningProblem lp = new ClassLearningProblem(reasoner);
+		lp.setClassToDescribe(cls);
+		lp.init();
+		
+		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
+		semanticIndex.buildIndex(createDocuments());
+		
+		relevance = new PMIRelevanceMetric(semanticIndex);
+		
+		Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
+		NLPHeuristic heuristic = new NLPHeuristic(entityRelevance);
+		
+		// run ISLE
+		ISLE isle = new ISLE(lp, reasoner);
+		isle.setHeuristic(heuristic);
+		isle.setSearchTreeFile(testFolder + "searchTreeISLE.txt");
+		isle.setWriteSearchTree(true);
+		isle.setReplaceSearchTree(true);
+		isle.setTerminateOnNoiseReached(true);
+		isle.init();
+		isle.start();
+		
+		// run standard CELOE as reference
+		CELOE celoe = new CELOE(lp, reasoner);
+		celoe.setSearchTreeFile(testFolder + "searchTreeCELOE.txt");
+		celoe.setWriteSearchTree(true);
+		celoe.setTerminateOnNoiseReached(true);
+		celoe.setReplaceSearchTree(true);
+		celoe.init();
+		celoe.start();
+	}	
+	
 }
