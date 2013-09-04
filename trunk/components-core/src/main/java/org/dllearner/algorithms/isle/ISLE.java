@@ -146,6 +146,7 @@ public class ISLE extends AbstractCELA {
 	private int expressionTests = 0;
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
+	private long totalRuntimeNs;
 	
 	// TODO: turn those into config options
 	
@@ -533,7 +534,8 @@ public class ISLE extends AbstractCELA {
 		if (stop) {
 			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
 		} else {
-			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(System.nanoTime()-nanoStartTime) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
+			totalRuntimeNs = System.nanoTime()-nanoStartTime;
+			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
             logger.info(reasoner.toString());
 		}
 
@@ -1099,4 +1101,12 @@ public class ISLE extends AbstractCELA {
 		this.stopOnFirstDefinition = stopOnFirstDefinition;
 	}	
 	
+	public long getTotalRuntimeNs() {
+		return totalRuntimeNs;
+	}
+
+	public TreeSet<OENode> getNodes() {
+		return nodes;
+	}
+
 }

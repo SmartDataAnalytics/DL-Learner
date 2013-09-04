@@ -5,6 +5,7 @@ package org.dllearner.algorithms.isle;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.utilities.Helper;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -66,7 +68,7 @@ public class ISLETest {
 	 */
 	public ISLETest() throws Exception{
 		manager = OWLManager.createOWLOntologyManager();
-		ontology = manager.loadOntologyFromOntologyDocument(new File(testFolder + "father_labeled.owl"));
+		ontology = manager.loadOntologyFromOntologyDocument(new File(testFolder + "ontology.owl"));
 		cls = new NamedClass("http://example.com/father#father");
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 		syntacticIndex = new OWLOntologyLuceneSyntacticIndexCreator(ontology, df.getRDFSLabel(), searchField).buildIndex();
@@ -189,6 +191,16 @@ public class ISLETest {
 		celoe.setReplaceSearchTree(true);
 		celoe.init();
 		celoe.start();
+		System.out.println();
+		
+		DecimalFormat df = new DecimalFormat("000.00");
+		System.out.println("Summary ISLE vs. CELOE");
+		System.out.println("======================");
+		System.out.println("accuracy:           " + df.format(100*isle.getCurrentlyBestAccuracy())+"%  vs.  " + df.format(100*celoe.getCurrentlyBestAccuracy())+"%");
+		System.out.println("expressions tested: " + isle.getClassExpressionTests() + "  vs.  " + celoe.getClassExpressionTests());
+		System.out.println("search tree nodes:  " + isle.getNodes().size() + "  vs.  " + celoe.getNodes().size());
+		System.out.println("runtime:            " + Helper.prettyPrintMilliSeconds(isle.getTotalRuntimeNs()) + "  vs.  " + Helper.prettyPrintMilliSeconds(celoe.getTotalRuntimeNs()));
+
 	}	
 	
 }
