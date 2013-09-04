@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.isle.textretrieval;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -89,5 +90,27 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		}
 		
 		return textWithWeight;
+	}
+	
+	/**
+	 * Returns for each entity in the ontology all relevant text, i.e. eitherthe annotations or the short form of the IRI as fallback.
+	 * @return
+	 */
+	public Map<Entity, Set<String>> getRelevantText() {
+		Map<Entity, Set<String>> entity2RelevantText = new HashMap<Entity, Set<String>>();
+		
+		Set<OWLEntity> schemaEntities = new HashSet<OWLEntity>();
+		schemaEntities.addAll(ontology.getClassesInSignature());
+		schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
+		schemaEntities.addAll(ontology.getDataPropertiesInSignature());
+		
+		Map<String, Double> relevantText;
+		for (OWLEntity owlEntity : schemaEntities) {
+			Entity entity = OWLAPIConverter.getEntity(owlEntity);
+			relevantText = getRelevantText(entity);
+			entity2RelevantText.put(entity, relevantText.keySet());
+		}
+		
+		return entity2RelevantText;
 	}
 }

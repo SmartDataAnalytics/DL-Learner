@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
@@ -47,10 +48,12 @@ import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
 import org.dllearner.refinementoperators.CustomStartRefinementOperator;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
@@ -94,8 +97,7 @@ public class ISLE extends AbstractCELA {
 	
 	// all nodes in the search tree (used for selecting most promising node)
 	private TreeSet<OENode> nodes;
-//	private OEHeuristicRuntime heuristic; // = new OEHeuristicRuntime();
-	private NLPHeuristic heuristic = new NLPHeuristic();
+	private NLPHeuristic heuristic; // = new OEHeuristicRuntime();
 	// root of search tree
 	private OENode startNode;
 	// the class with which we start the refinement process
@@ -146,10 +148,11 @@ public class ISLE extends AbstractCELA {
 	private int expressionTests = 0;
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
-	private long totalRuntimeNs;
+	private long totalRuntimeNs = 0;
 	
 	// TODO: turn those into config options
 	
+
 	// important: do not initialise those with empty sets
 	// null = no settings for allowance / ignorance
 	// empty set = allow / ignore nothing (it is often not desired to allow no class!)
@@ -896,6 +899,10 @@ public class ISLE extends AbstractCELA {
 		}
 	}
 	
+	public TreeSet<OENode> getNodes() {
+		return nodes;
+	}
+
 	public int getMaximumHorizontalExpansion() {
 		return maxHorizExp;
 	}
@@ -1099,14 +1106,30 @@ public class ISLE extends AbstractCELA {
 
 	public void setStopOnFirstDefinition(boolean stopOnFirstDefinition) {
 		this.stopOnFirstDefinition = stopOnFirstDefinition;
-	}	
-	
+	}
+
 	public long getTotalRuntimeNs() {
 		return totalRuntimeNs;
 	}
-
-	public TreeSet<OENode> getNodes() {
-		return nodes;
+	
+	public static void main(String[] args) throws Exception{
+		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
+		ks.init();
+		
+		AbstractReasonerComponent rc = new FastInstanceChecker(ks);
+		rc.init();
+		
+		ClassLearningProblem lp = new ClassLearningProblem(rc);
+		lp.setClassToDescribe(new NamedClass("http://example.com/father#father"));
+		lp.init();
+		
+		CELOE alg = new CELOE(lp, rc);
+		alg.setMaxExecutionTimeInSeconds(10);
+		alg.init();
+		
+		alg.start();
+		
 	}
+	
 
 }

@@ -108,17 +108,18 @@ public class NLPHeuristic implements Component, Comparator<OENode>{
 		
 		
 		//the NLP based scoring
-		Description expression = node.getExpression();
-		OWLClassExpression owlapiDescription = OWLAPIConverter.getOWLAPIDescription(expression);
-		Set<Entity> entities = OWLAPIConverter.getEntities(owlapiDescription.getSignature());
-		double sum = 0;
-		for (Entity entity : entities) {
-			double relevance = entityRelevance.containsKey(entity) ? entityRelevance.get(entity) : 0;
-			if(!Double.isInfinite(relevance)){
-				sum += relevance;
-			}
-		}
-		score += nlpBonusFactor * sum;
+//		Description expression = node.getExpression();
+////		OWLClassExpression owlapiDescription = OWLAPIConverter.getOWLAPIDescription(expression);
+////		Set<Entity> entities = OWLAPIConverter.getEntities(owlapiDescription.getSignature());
+//		Set<Entity> entities = expression.getSignature();
+//		double sum = 0;
+//		for (Entity entity : entities) {
+//			double relevance = entityRelevance.containsKey(entity) ? entityRelevance.get(entity) : 0;
+//			if(!Double.isInfinite(relevance)){
+//				sum += relevance;
+//			}
+//		}
+//		score += nlpBonusFactor * sum;
 		
 		return score;
 	}

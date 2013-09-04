@@ -19,9 +19,11 @@
 
 package org.dllearner.core.owl;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A class description is sometimes also called "complex class" or "concept". 
@@ -208,6 +210,36 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 	
 	public String toKBSyntaxString() {
 		return toKBSyntaxString(null, null);
+	}
+	
+	/**
+	 * Returns all named entities. 
+	 * @return
+	 */
+	public Set<Entity> getSignature(){
+		Set<Entity> entities = new HashSet<Entity>();
+		if(this instanceof NamedClass){
+			entities.add((NamedClass)this);
+		} else if(this instanceof Thing){
+			entities.add(new NamedClass(Thing.uri));
+		} else if(this instanceof Nothing){
+			entities.add(new NamedClass(Nothing.uri));
+		} else if(this instanceof Restriction){
+			PropertyExpression propertyExpression = ((Restriction)this).getRestrictedPropertyExpression();
+			if(propertyExpression instanceof ObjectProperty){
+				entities.add((ObjectProperty)propertyExpression);
+			} else if(propertyExpression instanceof DatatypeProperty){
+				entities.add((DatatypeProperty)propertyExpression);
+			}
+			entities.addAll(getChild(0).getSignature());
+			
+		} else {
+			for (Description child : children) {
+				entities.addAll(child.getSignature());
+			}
+		}
+		
+		return entities;
 	}
 	
 	/**

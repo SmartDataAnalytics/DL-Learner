@@ -75,5 +75,25 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 		}
 		return labels;
 	}
+	
+	private Set<String> getRelatedWordPhrases(Entity entity){
+		//add the labels if exist
+		Set<String> relatedWordPhrases = new HashSet<String>();
+		OWLEntity owlEntity = OWLAPIConverter.getOWLAPIEntity(entity);
+		Set<OWLAnnotationAssertionAxiom> axioms = ontology.getAnnotationAssertionAxioms(owlEntity.getIRI());
+		for (OWLAnnotationAssertionAxiom annotation : axioms) {
+			if(annotation.getProperty().equals(annotationProperty)){
+				if (annotation.getValue() instanceof OWLLiteral) {
+                    OWLLiteral val = (OWLLiteral) annotation.getValue();
+                    relatedWordPhrases.add(val.getLiteral());
+                }
+			}
+		}
+		//add the short form of the URI if no labels are available
+		if(relatedWordPhrases.isEmpty()){
+			relatedWordPhrases.add(sfp.getShortForm(IRI.create(entity.getURI())));
+		}
+		return relatedWordPhrases;
+	}
 
 }

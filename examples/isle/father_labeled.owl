@@ -58,7 +58,7 @@
     <!-- http://example.com/father#father -->
 
     <owl:Class rdf:about="&father;father">
-        <rdfs:label xml:lang="en">person which has at least 1 child</rdfs:label>
+        <rdfs:label xml:lang="en">male person which has at least 1 child</rdfs:label>
         <rdfs:subClassOf rdf:resource="&father;male"/>
     </owl:Class>
     
