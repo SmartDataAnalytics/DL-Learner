@@ -42,6 +42,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.core.EvaluatedAxiom;
@@ -51,6 +52,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.QueryEngineHTTP;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.AxiomScore;
@@ -92,7 +94,6 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -117,7 +118,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.jamonapi.Monitor;
@@ -164,6 +164,11 @@ public class OWLAxiomPatternUsageEvaluation {
 	
 	private File samplesDir;
 	private File instantiationsDir;
+	
+	private DescriptiveStatistics fragmentStatistics = new DescriptiveStatistics(100);
+
+
+	private int nrOfEarlyTerminations = 0;
 	
 	
 	public OWLAxiomPatternUsageEvaluation() {
@@ -374,7 +379,9 @@ public class OWLAxiomPatternUsageEvaluation {
 				e.printStackTrace();
 			}
 		}
-//		System.exit(0);
+		logger.info("Early terminations: " + nrOfEarlyTerminations );
+		logger.info(fragmentStatistics.getMin() + "--" + fragmentStatistics.getMax() + "--" + fragmentStatistics.getMean());
+		System.exit(0);
 		
 		Monitor patternTimeMon = MonitorFactory.getTimeMonitor("pattern-runtime");
 		//for each pattern
@@ -694,28 +701,39 @@ public class OWLAxiomPatternUsageEvaluation {
 		long startTime = System.currentTimeMillis();
 		int offset = 0;
 		boolean hasMoreResults = true;
-		while(hasMoreResults && (System.currentTimeMillis() - startTime)<= maxFragmentExtractionTime){
+		long remainingTime = maxFragmentExtractionTime - (System.currentTimeMillis() - startTime);
+		while(hasMoreResults && remainingTime > 0){
 			query.setOffset(offset);
 			logger.info(query);
-			Model m = executeConstructQuery(query);
+			Model m = executeConstructQuery(query, remainingTime);
 			fragment.add(m);
+			remainingTime = maxFragmentExtractionTime - (System.currentTimeMillis() - startTime);
 			if(m.size() == 0){
 				hasMoreResults = false;
+				if(remainingTime > 0){
+					logger.info("No more triples left. Early termination...");
+					nrOfEarlyTerminations++;
+				}
+					
 			}
 			offset += queryLimit;
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				Thread.sleep(500);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 		}
-		logger.info("...got " + fragment.size() + " triples.");
 		try {
 			fragment.write(new FileOutputStream(file), "TURTLE");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		filterModel(fragment);
+		logger.info("...got " + fragment.size() + " triples ");
+		ResultSet rs = QueryExecutionFactory.create("SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a <" + cls.getName() + ">. }", fragment).execSelect();
+		int nrOfInstances = rs.next().getLiteral("cnt").getInt();
+		logger.info("with " + nrOfInstances + " instances of class " + cls.getName());
+		fragmentStatistics.addValue(nrOfInstances);
 		return fragment;
 	}
 	
@@ -1279,6 +1297,45 @@ public class OWLAxiomPatternUsageEvaluation {
 			rs = queryExecution.execSelect();
 		}
 		return rs;
+	}
+	
+	protected Model executeConstructQuery(Query query, long timeout) {
+		if(ks.isRemote()){
+			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
+			ExtractionDBCache cache = ks.getCache();
+			Model model = null;
+			try {
+//				if(cache != null){
+//					try {
+//						model = cache.executeConstructQuery(endpoint, query.toString());
+//					} catch (UnsupportedEncodingException e) {
+//						e.printStackTrace();
+//					} catch (SQLException e) {
+//						e.printStackTrace();
+//					}
+//				} else {
+					QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
+							query);
+					queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
+					queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
+					queryExecution.setTimeout(timeout, timeout);
+					model = queryExecution.execConstruct();
+//				}
+				logger.debug("Got " + model.size() + " triples.");
+				return model;
+			} catch (QueryExceptionHTTP e) {
+				if(e.getCause() instanceof SocketTimeoutException){
+					logger.warn("Got timeout");
+				} else {
+					logger.error("Exception executing query", e);
+				}
+				return ModelFactory.createDefaultModel();
+			}
+		} else {
+			QueryExecution queryExecution = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
+			Model model = queryExecution.execConstruct();
+			return model;
+		}
 	}
 	
 	protected Model executeConstructQuery(Query query) {

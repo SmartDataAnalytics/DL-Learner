@@ -19,6 +19,7 @@
 
 package org.dllearner.core.owl;
 
+import java.net.URI;
 import java.util.Map;
 
 /**
@@ -34,6 +35,8 @@ public class Nothing extends Description {
 	 */
 	private static final long serialVersionUID = -3053885252153066318L;
 	public static final Nothing instance = new Nothing();	
+	
+	public static final URI uri = URI.create("http://www.w3.org/2002/07/owl#Thing");
 	
     public String toString(String baseURI, Map<String,String> prefixes) {
         return "BOTTOM";
@@ -52,7 +55,14 @@ public class Nothing extends Description {
 		// in Protege 4.0 only Nothing
 		//return "owl:Nothing";
 		return "Nothing";
-	}	    
+	}
+	
+	/**
+	 * @return the uri
+	 */
+	public static URI getURI() {
+		return uri;
+	}
     
 	public int getLength() {
 		return 1;

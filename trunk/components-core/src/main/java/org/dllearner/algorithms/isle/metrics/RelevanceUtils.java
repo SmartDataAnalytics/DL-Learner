@@ -40,7 +40,7 @@ public class RelevanceUtils {
 		Set<Entity> otherEntities = OWLAPIConverter.getEntities(owlEntities);
 		
 		for (Entity otherEntity : otherEntities) {
-			double relevance = metric.getRelevance(entity, otherEntity);
+			double relevance = metric.getNormalizedRelevance(entity, otherEntity);
 			relevantEntities.put(otherEntity, relevance);
 		}
 		

@@ -314,11 +314,6 @@
       <artifactId>jwnl</artifactId>
       <version>1.4.1.RC2</version>
     </dependency>
-		<dependency>
-			<groupId>com.google.collections</groupId>
-			<artifactId>google-collections</artifactId>
-			<version>1.0</version>
-		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

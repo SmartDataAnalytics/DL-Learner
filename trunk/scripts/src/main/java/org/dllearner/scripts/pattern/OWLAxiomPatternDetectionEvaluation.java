@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +41,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.UnloadableImportException;
 
+import com.google.common.math.IntMath;
+
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
@@ -57,6 +61,11 @@ public class OWLAxiomPatternDetectionEvaluation {
 	private boolean formatNumbers = true;
 	
 	private int numberOfRowsPerTable = 25;
+	private int minOntologies = 5;
+	
+	private Map<OWLAxiom, Integer> winsorizedFrequencies = new HashMap<OWLAxiom, Integer>();
+	private int percentileInPercent = 95;
+			
 
 	public OWLAxiomPatternDetectionEvaluation() {
 		initDBConnection();
@@ -311,12 +320,13 @@ public class OWLAxiomPatternDetectionEvaluation {
 		String latexTable = "\\begin{table}\n";
 		latexTable += "\\begin{tabular}{lrrr}\n";
 		latexTable += "\\toprule\n";
-		latexTable += "Pattern & Frequency & \\#Ontologies\\\\\\midrule\n";
+		latexTable += "Pattern & Frequency & Winsorised Frequency & \\#Ontologies\\\\\\midrule\n";
 		
 		for (Entry<OWLAxiom, Pair<Integer, Integer>> entry : topN.entrySet()) {
 			OWLAxiom axiom = entry.getKey();
 			Integer frequency = entry.getValue().getKey();
 			Integer df = entry.getValue().getValue();
+			Integer winsorizedFrequency = winsorizedFrequencies.get(axiom);
 			
 			if(axiom != null){
 				String axiomColumn = axiomRenderer.render(axiom);
@@ -330,7 +340,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 					
 				}
 				if(formatNumbers){
-					latexTable += axiomColumn + " & " + "\\num{" + frequency + "} & " + df + "\\\\\n";
+					latexTable += axiomColumn + " & \\num{" + frequency + "} & \\num{" + winsorizedFrequency + "} & "+ df + "\\\\\n";
 				} else {
 					latexTable += axiomColumn + " & " + frequency + " & " + df + "\\\\\n";
 				}
@@ -347,13 +357,13 @@ public class OWLAxiomPatternDetectionEvaluation {
 		LatexWriter w = new LatexWriter(sw);
 		LatexObjectVisitor renderer = new LatexObjectVisitor(w, df);
 		String latexTable = "\\begin{table}\n";
-		latexTable += "\\begin{tabular}{rlrr";
+		latexTable += "\\begin{tabular}{rlrrr";
 		for (int i = 0; i < repositories.size(); i++) {
 			latexTable += "r";
 		}
 		latexTable += "}\n";
 		latexTable += "\\toprule\n";
-		latexTable += " & Pattern & Frequency & \\#Ontologies";
+		latexTable += " & Pattern & Frequency & Winsorized Frequency & \\#Ontologies";
 		for (OntologyRepository repository : repositories) {
 			latexTable += " & " + repository.getName();
 		}
@@ -366,6 +376,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 			OWLAxiom axiom = entry.getValue().keySet().iterator().next();
 			Integer frequency = entry.getValue().values().iterator().next().getKey();
 			Integer df = entry.getValue().values().iterator().next().getValue();
+			int winsorizedFrequency = winsorizedFrequencies.get(axiom);
 			
 			if(axiom != null){
 				String axiomColumn = axiomRenderer.render(axiom);
@@ -378,7 +389,7 @@ public class OWLAxiomPatternDetectionEvaluation {
 					
 				}
 				if(formatNumbers){
-					latexTable += i + ". & " + axiomColumn + " & " + "\\num{" + frequency + "} & " + df;
+					latexTable += i + ". & " + axiomColumn + " & \\num{" + frequency + "} & \\num{" + winsorizedFrequency + "} & "+ df;
 					for (OntologyRepository repository : repositories) {
 						int rank = 0;
 						boolean contained = false;
@@ -433,19 +444,60 @@ public class OWLAxiomPatternDetectionEvaluation {
 			ps = conn.prepareStatement("SELECT P.id, pattern,SUM(occurrences),COUNT(ontology_id) FROM " +
 					"Ontology_Pattern OP, Pattern P, Ontology O WHERE " +
 					"(P.id=OP.pattern_id AND O.id=OP.ontology_id AND P.axiom_type=?) " +
-					"GROUP BY P.id ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
+					"GROUP BY P.id HAVING COUNT(ontology_id)>=? ORDER BY SUM(`OP`.`occurrences`) DESC LIMIT ?");
 			ps.setString(1, axiomType.name());
-			ps.setInt(2, n);
+			ps.setInt(2, minOntologies);
+			ps.setInt(3, n);
 			rs = ps.executeQuery();
 			while(rs.next()){
+				int patternID = rs.getInt(1);
+				OWLAxiom axiom = asOWLAxiom(rs.getString(2));
 				Map<OWLAxiom, Pair<Integer, Integer>> m = new LinkedHashMap<OWLAxiom, Pair<Integer,Integer>>();
-				m.put(asOWLAxiom(rs.getString(2)), new Pair<Integer, Integer>(rs.getInt(3), rs.getInt(4)));
-				topN.put(rs.getInt(1), m);
+				m.put(axiom, new Pair<Integer, Integer>(rs.getInt(3), rs.getInt(4)));
+				topN.put(patternID, m);
+				
+				//get winsorized frequency
+				ps = conn.prepareStatement("SELECT occurrences FROM " +
+						"Ontology_Pattern WHERE " +
+						"(pattern_id=?) ");
+				ps.setInt(1, patternID);
+				ResultSet rs2 = ps.executeQuery();
+				System.out.println("Pattern ID:" + patternID);
+				System.out.println(axiom);
+				
+				List<Integer> values = new ArrayList<Integer>();
+				while(rs2.next()){
+					values.add(rs2.getInt(1));
+				}
+				winsorize(values);
+				int sum = 0;
+				for (Integer val : values) {
+					sum += val;
+				}
+				winsorizedFrequencies.put(axiom, sum);
 			}
+			
+			
+			
 		} catch(SQLException e){
 			e.printStackTrace();
 		}
 		return topN;
+	}
+	
+	private void winsorize(List<Integer> values){
+		//compute 95th percentile
+		int percentile = (int) Math.round(percentileInPercent/100d * values.size() + 1/2d);
+		//sort values
+		Collections.sort(values);System.out.println(values);
+		//get the value at percentile rank
+		int max = values.get(percentile-1);
+		//set all values after to max
+		for (int i = percentile; i < values.size(); i++) {
+			values.set(i, max);
+		}
+		System.out.println(percentile);
+		System.out.println(values);
 	}
 	
 	private Map<Integer, Map<OWLAxiom, Pair<Integer, Integer>>> getTopNAxiomPatternsWithId(OntologyRepository repository, AxiomTypeCategory axiomType, int n){
@@ -569,6 +621,5 @@ public class OWLAxiomPatternDetectionEvaluation {
 		new OWLAxiomPatternDetectionEvaluation().run(analyzeRepositories, Arrays.asList(
 				new TONESRepository(), new BioPortalRepository(), new OxfordRepository()));
 	}
-	
 
 }

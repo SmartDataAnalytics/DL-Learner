@@ -28,9 +28,11 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 		Set<AnnotatedDocument> documentsAB = Sets.intersection(documentsA, documentsB);
 		int nrOfDocuments = index.getSize();
 		
-		double dPClass = nrOfDocuments == 0 ? 0 : ((double) documentsA.size() / (double) nrOfDocuments);
-		double dPClassEntity = documentsB.size() == 0 ? 0 : (double) documentsAB.size() / (double) documentsB.size();
-		double pmi = Math.log(dPClassEntity / dPClass);		
+		double pA = nrOfDocuments == 0 ? 0 : ((double) documentsA.size() / (double) nrOfDocuments);
+		double pB = nrOfDocuments == 0 ? 0 : ((double) documentsB.size() / (double) nrOfDocuments);
+		double pAB = nrOfDocuments == 0 ? 0 : ((double) documentsAB.size() / (double) nrOfDocuments);
+		
+		double pmi = Math.log(pAB / pA * pB);
 		
 		return pmi;
 	}
@@ -42,11 +44,15 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 		Set<AnnotatedDocument> documentsAB = Sets.intersection(documentsA, documentsB);
 		int nrOfDocuments = index.getSize();
 		
-		double dPClass = nrOfDocuments == 0 ? 0 : ((double) documentsA.size() / (double) nrOfDocuments);
-		double dPClassEntity = documentsB.size() == 0 ? 0 : (double) documentsAB.size() / (double) documentsB.size();
-		double pmi = Math.log(dPClassEntity / dPClass);		
+		double pA = nrOfDocuments == 0 ? 0 : ((double) documentsA.size() / (double) nrOfDocuments);
+		double pB = nrOfDocuments == 0 ? 0 : ((double) documentsB.size() / (double) nrOfDocuments);
+		double pAB = nrOfDocuments == 0 ? 0 : ((double) documentsAB.size() / (double) nrOfDocuments);
 		
-		double pAB = (double) documentsAB.size() / (double) nrOfDocuments;
+		if(pA * pB == 0){
+			return 0;
+		}
+		double pmi = Math.log(pAB / pA * pB);
+		
 		double normalizedPMI = (pmi/-Math.log(pAB) + 1)/2;
 		
 		return normalizedPMI;
