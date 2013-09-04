@@ -24,7 +24,6 @@ public class NGramGeneratingAnnotator implements LinguisticAnnotator {
     public Set<Annotation> annotate(Document document) {
         String text = document.getContent();
 
-
         Pattern legalChars = Pattern.compile("[A-Za-z]");
 
         // clean up all texts
