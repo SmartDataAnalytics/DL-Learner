@@ -20,8 +20,10 @@
 package org.dllearner.algorithms.isle.textretrieval;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
  * Interface for methods, which retrieve relevant texts given an entity
@@ -44,5 +46,7 @@ public interface EntityTextRetriever {
 	 * @return A weighted set of strings. For a value x, we need to have 0 <= x <= 1.
 	 */
 	public Map<String, Double> getRelevantText(Entity entity);
+	
+	public Map<Entity, Set<String>> getRelevantText(OWLOntology ontology);
 	
 }

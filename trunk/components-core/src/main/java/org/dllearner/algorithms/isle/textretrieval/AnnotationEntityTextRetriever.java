@@ -96,7 +96,8 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	 * Returns for each entity in the ontology all relevant text, i.e. eitherthe annotations or the short form of the IRI as fallback.
 	 * @return
 	 */
-	public Map<Entity, Set<String>> getRelevantText() {
+	@Override
+	public Map<Entity, Set<String>> getRelevantText(OWLOntology ontology) {
 		Map<Entity, Set<String>> entity2RelevantText = new HashMap<Entity, Set<String>>();
 		
 		Set<OWLEntity> schemaEntities = new HashSet<OWLEntity>();
