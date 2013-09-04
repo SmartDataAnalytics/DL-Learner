@@ -52,7 +52,13 @@ public class SemanticAnnotation extends Annotation{
 		return true;
 	}
 
-
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.isle.index.Annotation#toString()
+	 */
+	@Override
+	public String toString() {
+		return super.toString() + "->" + entity;
+	}
 	
 
 }

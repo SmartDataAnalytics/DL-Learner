@@ -1,9 +1,11 @@
 package org.dllearner.algorithms.isle.index.semantic;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.lucene.document.Field;
 import org.dllearner.algorithms.isle.EntityCandidateGenerator;
 import org.dllearner.algorithms.isle.WordSenseDisambiguation;
 import org.dllearner.algorithms.isle.index.AnnotatedDocument;
@@ -12,6 +14,10 @@ import org.dllearner.algorithms.isle.index.SemanticAnnotator;
 import org.dllearner.algorithms.isle.index.TextDocument;
 import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
 import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
@@ -43,6 +49,7 @@ public abstract class SemanticIndex {
 	 * Precompute the whole index, i.e. iterate over all entities and compute all annotated documents.
 	 */
 	public void buildIndex(Set<TextDocument> documents){
+		index = new HashMap<Entity, Set<AnnotatedDocument>>();
 		for (TextDocument document : documents) {
 			AnnotatedDocument annotatedDocument = semanticAnnotator.processDocument(document);
 			for (Entity entity : annotatedDocument.getContainedEntities()) {
@@ -56,6 +63,35 @@ public abstract class SemanticIndex {
 		}		
 	}
 	
+	public void buildIndex(OWLAnnotationProperty annotationProperty, String language){
+		Set<OWLEntity> schemaEntities = new HashSet<OWLEntity>();
+		schemaEntities.addAll(ontology.getClassesInSignature());
+		schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
+		schemaEntities.addAll(ontology.getDataPropertiesInSignature());
+		Set<TextDocument> documents = new HashSet<TextDocument>();
+		for (OWLEntity entity : schemaEntities) {
+			String label = null;
+			Set<OWLAnnotation> annotations = entity.getAnnotations(ontology, annotationProperty);
+			for (OWLAnnotation annotation : annotations) {
+				if (annotation.getValue() instanceof OWLLiteral) {
+		            OWLLiteral val = (OWLLiteral) annotation.getValue();
+		            if (language != null) {
+		            	if(val.hasLang(language)){
+		            		label = val.getLiteral();
+		            	}
+		            	
+		            } else {
+		            	label = val.getLiteral();
+		            }
+		        }
+			}
+			if(label != null){
+				documents.add(new TextDocument(label));
+			}
+		}
+		buildIndex(documents);
+	}
+	
     /**
      * Returns the set of annotated documents which reference the given entity using one of its surface forms.
      *
@@ -63,6 +99,11 @@ public abstract class SemanticIndex {
      * @return documents referencing given entity
      */
     public Set<AnnotatedDocument> getDocuments(Entity entity){
+    	if(index == null){
+    		System.err.println("You have to prebuild the index before you can use this method.");
+        	System.exit(1);
+    	}
+    	
     	Set<AnnotatedDocument> annotatedDocuments = index.get(entity);
     	return annotatedDocuments;
     }
