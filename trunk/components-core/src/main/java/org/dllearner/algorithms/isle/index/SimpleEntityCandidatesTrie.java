@@ -17,17 +17,13 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 	PrefixTrie<Set<Entity>> trie;
 	EntityTextRetriever entityTextRetriever;
 	
-	public SimpleEntityCandidatesTrie(EntityTextRetriever entityTextRetriever) {
-		this.entityTextRetriever = entityTextRetriever;
-		this.trie = new PrefixTrie<Set<Entity>>();
-	}
-	
 	public SimpleEntityCandidatesTrie(EntityTextRetriever entityTextRetriever, OWLOntology ontology) {
-		this(entityTextRetriever);
+		this.entityTextRetriever = entityTextRetriever;
 		buildTrie(ontology);
 	}
 	
-	public void buildTrie(OWLOntology ontology) {		
+	public void buildTrie(OWLOntology ontology) {	
+		this.trie = new PrefixTrie<Set<Entity>>();
 		Map<Entity, Set<String>> relevantText = entityTextRetriever.getRelevantText(ontology);
 		
 		for (Entity entity : relevantText.keySet()) {
