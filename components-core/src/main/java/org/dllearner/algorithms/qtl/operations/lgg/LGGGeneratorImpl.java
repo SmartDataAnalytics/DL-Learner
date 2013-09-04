@@ -26,10 +26,16 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 
+import com.google.common.collect.Lists;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -112,7 +118,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		return lgg;
 	}
 	
-	private QueryTree<N> computeLGG(QueryTree<N> tree1, QueryTree<N> tree2, boolean learnFilters){
+	private QueryTree<N> computeLGG(QueryTree<N> tree1, QueryTree<N> tree2, boolean learnFilters){System.out.println("call");
 		if(logger.isDebugEnabled()){
 			logger.debug("Computing LGG for");
 			logger.debug(tree1.getStringRepresentation());
@@ -221,6 +227,31 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		for(QueryTree<N> child : tree.getChildren()){
 			addNumbering(child);
 		}
+	}
+	
+	public static void main(String[] args) throws Exception {
+		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
+		
+		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
+		QueryTree<String> tree;
+		Model model;
+		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia(), "cache");
+		cbdGenerator.setRecursionDepth(1);
+		QueryTreeCache treeCache = new QueryTreeCache();
+		List<String> resources = Lists.newArrayList("http://dbpedia.org/resource/Leipzig");//, "http://dbpedia.org/resource/Dresden");
+		for(String resource : resources){
+			try {
+				System.out.println(resource);
+				model = cbdGenerator.getConciseBoundedDescription(resource);
+				tree = treeCache.getQueryTree(resource, model);
+				System.out.println(tree.getStringRepresentation());
+				trees.add(tree);
+				trees.add(tree);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		lggGen.getLGG(trees);
 	}
 
 }
