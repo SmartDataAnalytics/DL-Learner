@@ -93,7 +93,7 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 	 */
 	@Override
 	public String toString() {
-		return "Document:\n" + document.getContent() + "\nAnnotations:" + annotations;
+		return "Document:" + document.getContent() + "\nAnnotations:" + annotations;
 	}
 
 }
