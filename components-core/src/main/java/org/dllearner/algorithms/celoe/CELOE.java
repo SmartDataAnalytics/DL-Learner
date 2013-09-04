@@ -149,9 +149,11 @@ public class CELOE extends AbstractCELA {
 	private int expressionTests = 0;
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
+	private long totalRuntimeNs;
 	
 	// TODO: turn those into config options
 	
+
 	// important: do not initialise those with empty sets
 	// null = no settings for allowance / ignorance
 	// empty set = allow / ignore nothing (it is often not desired to allow no class!)
@@ -536,7 +538,8 @@ public class CELOE extends AbstractCELA {
 		if (stop) {
 			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
 		} else {
-			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(System.nanoTime()-nanoStartTime) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
+			totalRuntimeNs = System.nanoTime()-nanoStartTime;
+			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
             logger.info(reasoner.toString());
 		}
 
@@ -897,6 +900,10 @@ public class CELOE extends AbstractCELA {
 		}
 	}
 	
+	public TreeSet<OENode> getNodes() {
+		return nodes;
+	}
+
 	public int getMaximumHorizontalExpansion() {
 		return maxHorizExp;
 	}
@@ -1102,6 +1109,10 @@ public class CELOE extends AbstractCELA {
 		this.stopOnFirstDefinition = stopOnFirstDefinition;
 	}
 
+	public long getTotalRuntimeNs() {
+		return totalRuntimeNs;
+	}
+	
 	public static void main(String[] args) throws Exception{
 		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
 		ks.init();
