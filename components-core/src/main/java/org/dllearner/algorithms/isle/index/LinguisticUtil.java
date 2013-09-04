@@ -2,15 +2,10 @@ package org.dllearner.algorithms.isle.index;
 
 import edu.northwestern.at.utils.corpuslinguistics.lemmatizer.DefaultLemmatizer;
 import edu.northwestern.at.utils.corpuslinguistics.lemmatizer.Lemmatizer;
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.*;
-import edu.stanford.nlp.util.CoreMap;
 import net.didion.jwnl.data.POS;
 import org.dllearner.algorithms.isle.WordNet;
 
 import java.util.ArrayList;
-import java.util.Properties;
 
 /**
  * Provides shortcuts to commonly used linguistic operations
