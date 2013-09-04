@@ -4,11 +4,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.dllearner.core.owl.Entity;
+import org.dllearner.utilities.datastructures.PrefixTrie;
 
 public interface EntityCandidatesTrie {
-
+	
 	/**
-	 * Adds an entry to the trie. If string already existent, adds to entity to its set of candidates
+	 * Adds an entity to the set of candidates of a string
 	 * @param s
 	 * @param e
 	 */
@@ -22,13 +23,6 @@ public interface EntityCandidatesTrie {
 	 */
 	public Set<Entity> getCandidateEntities(String s);
 	
-	
-	/**
-	 * Gets longest matching string and its candidate entities
-	 * @param s
-	 * @return
-	 */
-	public Entry<String,Set<Entity>> getLongestMatchWithCandidates(String s);
 	
 	/**
 	 * Gets the longest matching string
