@@ -52,7 +52,6 @@ public class ISLETest {
 	private OWLOntologyManager manager;
 	private OWLOntology ontology;
 	private OWLDataFactory df = new OWLDataFactoryImpl();
-	private NamedClass cls;
 	private EntityTextRetriever textRetriever;
 	private RelevanceMetric relevance;
 	private String searchField = "label";
@@ -61,7 +60,9 @@ public class ISLETest {
 	
 	// we assume that the ontology is named "ontology.owl" and that all text files
 	// are in a subdirectory called "corpus"
-	private String testFolder = "../test/isle/father/";
+	private String testFolder = "../test/isle/swore/";
+//	NamedClass cls = new NamedClass("http://example.com/father#father");
+	NamedClass cls = new NamedClass("http://ns.softwiki.de/req/CustomerRequirement");
 	
 	/**
 	 * 
@@ -69,7 +70,6 @@ public class ISLETest {
 	public ISLETest() throws Exception{
 		manager = OWLManager.createOWLOntologyManager();
 		ontology = manager.loadOntologyFromOntologyDocument(new File(testFolder + "ontology.owl"));
-		cls = new NamedClass("http://example.com/father#father");
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 		syntacticIndex = new OWLOntologyLuceneSyntacticIndexCreator(ontology, df.getRDFSLabel(), searchField).buildIndex();
 		
@@ -117,22 +117,17 @@ public class ISLETest {
 	@Test
 	public void testSemanticIndexAnnotationProperty(){
 		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
-		semanticIndex.buildIndex(df.getRDFSLabel(), null);
-		
-		NamedClass nc = new NamedClass("http://example.com/father#father");
-		Set<AnnotatedDocument> documents = semanticIndex.getDocuments(nc);
-		System.out.println("Documents for " + nc + ":\n" + documents);
-		
-		nc = new NamedClass("http://example.com/father#person");
-		documents = semanticIndex.getDocuments(nc);
-		System.out.println("Documents for " + nc + ":\n" + documents);
+		semanticIndex.buildIndex(df.getRDFSLabel(), null);		
+//		NamedClass nc = new NamedClass("http://example.com/father#father");
+		Set<AnnotatedDocument> documents = semanticIndex.getDocuments(cls);
+		System.out.println("Documents for " + cls + ":\n" + documents);
 	}
 	
 	@Test
 	public void testSemanticIndexCorpus(){
 		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
 		semanticIndex.buildIndex(createDocuments());
-		Set<AnnotatedDocument> documents = semanticIndex.getDocuments(new NamedClass("http://example.com/father#father"));
+		Set<AnnotatedDocument> documents = semanticIndex.getDocuments(cls);
 		System.out.println(documents);
 	}
 	
@@ -199,13 +194,13 @@ public class ISLETest {
 		celoe.start();
 		System.out.println();
 		
-		DecimalFormat df = new DecimalFormat("000.00");
+		DecimalFormat df = new DecimalFormat("#00.00");
 		System.out.println("Summary ISLE vs. CELOE");
 		System.out.println("======================");
 		System.out.println("accuracy:           " + df.format(100*isle.getCurrentlyBestAccuracy())+"%  vs.  " + df.format(100*celoe.getCurrentlyBestAccuracy())+"%");
 		System.out.println("expressions tested: " + isle.getClassExpressionTests() + "  vs.  " + celoe.getClassExpressionTests());
 		System.out.println("search tree nodes:  " + isle.getNodes().size() + "  vs.  " + celoe.getNodes().size());
-		System.out.println("runtime:            " + Helper.prettyPrintMilliSeconds(isle.getTotalRuntimeNs()) + "  vs.  " + Helper.prettyPrintMilliSeconds(celoe.getTotalRuntimeNs()));
+		System.out.println("runtime:            " + Helper.prettyPrintNanoSeconds(isle.getTotalRuntimeNs()) + "  vs.  " + Helper.prettyPrintNanoSeconds(celoe.getTotalRuntimeNs()));
 
 	}	
 	

@@ -111,6 +111,9 @@ public abstract class SemanticIndex {
     	}
     	
     	Set<AnnotatedDocument> annotatedDocuments = index.get(entity);
+    	if(annotatedDocuments == null) {
+    		annotatedDocuments = new HashSet<AnnotatedDocument>();
+    	}
     	return annotatedDocuments;
     }
 
