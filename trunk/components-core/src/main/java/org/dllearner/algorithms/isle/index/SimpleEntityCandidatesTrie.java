@@ -1,21 +1,41 @@
 package org.dllearner.algorithms.isle.index;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.dllearner.algorithms.isle.textretrieval.AnnotationEntityTextRetriever;
+import org.dllearner.algorithms.isle.textretrieval.EntityTextRetriever;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.utilities.datastructures.PrefixTrie;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
 	PrefixTrie<Set<Entity>> trie;
-	OWLOntology ontology;
+	EntityTextRetriever entityTextRetriever;
 	
-	public SimpleEntityCandidatesTrie(OWLOntology ontology) {
-		this.ontology = ontology;
+	public SimpleEntityCandidatesTrie(EntityTextRetriever entityTextRetriever) {
+		this.entityTextRetriever = entityTextRetriever;
 		this.trie = new PrefixTrie<Set<Entity>>();
+	}
+	
+	public void buildTrie(OWLOntology ontology) {		
+		Map<Entity, Set<String>> relevantText = entityTextRetriever.getRelevantText(ontology);
+		
+		for (Entity entity : relevantText.keySet()) {
+			for (String text : relevantText.get(entity)) {
+				addEntry(text, entity);
+				// Adds also composing words, e.g. for "has child", "has" and "child" are also added
+				if (text.contains(" ")) {
+					for (String subtext : text.split(" ")) {
+						addEntry(subtext, entity);
+					}
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -25,25 +45,18 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 			candidates = new HashSet<Entity>();
 		
 		candidates.add(e);
+		
+		trie.put(s, candidates);
 	}
 
 	@Override
 	public Set<Entity> getCandidateEntities(String s) {
-		// TODO Auto-generated method stub
-		return null;
+		return trie.get(s);
 	}
 
 	@Override
 	public String getLongestMatch(String s) {
 		return trie.getLongestMatch(s).toString();
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
