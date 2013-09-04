@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.isle.index.semantic.simple;
 
 import org.dllearner.algorithms.isle.RandomWordSenseDisambiguation;
+import org.dllearner.algorithms.isle.SimpleWordSenseDisambiguation;
 import org.dllearner.algorithms.isle.index.SimpleEntityCandidateGenerator;
 import org.dllearner.algorithms.isle.index.SimpleLinguisticAnnotator;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
@@ -28,7 +29,7 @@ public class SimpleSemanticIndex extends SemanticIndex {
     public SimpleSemanticIndex(OWLOntology ontology, SyntacticIndex syntacticIndex) {
        super(ontology,
     		   syntacticIndex, 
-    		   new RandomWordSenseDisambiguation(ontology), 
+    		   new SimpleWordSenseDisambiguation(ontology), 
     		   new SimpleEntityCandidateGenerator(ontology),
     		   new SimpleLinguisticAnnotator());
     }

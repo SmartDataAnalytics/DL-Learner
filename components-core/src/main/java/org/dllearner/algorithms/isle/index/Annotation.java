@@ -10,18 +10,18 @@ package org.dllearner.algorithms.isle.index;
  */
 public class Annotation {
 	
-	private Document getReferencedDocument;
+	private Document referencedDocument;
 	private int offset;
 	private int length;
 	
-	public Annotation(Document getReferencedDocument, int offset, int length) {
-		this.getReferencedDocument = getReferencedDocument;
+	public Annotation(Document referencedDocument, int offset, int length) {
+		this.referencedDocument = referencedDocument;
 		this.offset = offset;
 		this.length = length;
 	}
 
-	public Document getGetReferencedDocument() {
-		return getReferencedDocument;
+	public Document getReferencedDocument() {
+		return referencedDocument;
 	}
 
 	public int getOffset() {
@@ -31,12 +31,16 @@ public class Annotation {
 	public int getLength() {
 		return length;
 	}
+	
+	public String getToken(){
+		return referencedDocument.getContent().substring(offset, offset + length);
+	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((getReferencedDocument == null) ? 0 : getReferencedDocument.hashCode());
+		result = prime * result + ((referencedDocument == null) ? 0 : referencedDocument.hashCode());
 		result = prime * result + length;
 		result = prime * result + offset;
 		return result;
@@ -51,10 +55,10 @@ public class Annotation {
 		if (getClass() != obj.getClass())
 			return false;
 		Annotation other = (Annotation) obj;
-		if (getReferencedDocument == null) {
-			if (other.getReferencedDocument != null)
+		if (referencedDocument == null) {
+			if (other.referencedDocument != null)
 				return false;
-		} else if (!getReferencedDocument.equals(other.getReferencedDocument))
+		} else if (!referencedDocument.equals(other.referencedDocument))
 			return false;
 		if (length != other.length)
 			return false;
@@ -68,6 +72,6 @@ public class Annotation {
 	 */
 	@Override
 	public String toString() {
-		return "\"" + getReferencedDocument.getContent().substring(offset, offset+length) + "\" at position " + offset;
+		return "\"" + referencedDocument.getContent().substring(offset, offset+length) + "\" at position " + offset;
 	}
 }

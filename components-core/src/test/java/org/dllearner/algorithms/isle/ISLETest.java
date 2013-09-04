@@ -118,8 +118,14 @@ public class ISLETest {
 	public void testSemanticIndexAnnotationProperty(){
 		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
 		semanticIndex.buildIndex(df.getRDFSLabel(), null);
-		Set<AnnotatedDocument> documents = semanticIndex.getDocuments(new NamedClass("http://example.com/father#father"));
-		System.out.println(documents);
+		
+		NamedClass nc = new NamedClass("http://example.com/father#father");
+		Set<AnnotatedDocument> documents = semanticIndex.getDocuments(nc);
+		System.out.println("Documents for " + nc + ":\n" + documents);
+		
+		nc = new NamedClass("http://example.com/father#person");
+		documents = semanticIndex.getDocuments(nc);
+		System.out.println("Documents for " + nc + ":\n" + documents);
 	}
 	
 	@Test

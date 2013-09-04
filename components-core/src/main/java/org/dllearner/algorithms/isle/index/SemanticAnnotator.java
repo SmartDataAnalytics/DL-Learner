@@ -43,8 +43,9 @@ public class SemanticAnnotator {
     	for (Annotation annotation : annotations) {
     		Set<Entity> candidateEntities = entityCandidateGenerator.getCandidates(annotation);
     		SemanticAnnotation semanticAnnotation = wordSenseDisambiguation.disambiguate(annotation, candidateEntities);
-    		semanticAnnotations.add(semanticAnnotation);
-    		
+    		if(semanticAnnotation != null){
+    			semanticAnnotations.add(semanticAnnotation);
+    		}
 		}
     	AnnotatedDocument annotatedDocument = new AnnotatedTextDocument(document, semanticAnnotations);
     	return annotatedDocument;
