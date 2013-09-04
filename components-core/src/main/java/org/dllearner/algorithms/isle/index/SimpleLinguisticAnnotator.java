@@ -26,7 +26,7 @@ public class SimpleLinguisticAnnotator implements LinguisticAnnotator {
 
 	@Override
 	public Set<Annotation> annotate(Document document) {
-		String s = document.getRawContent().trim();
+		String s = document.getContent().trim();
 		System.out.println("Document:" + s);
 //		s = stopWordFilter.removeStopWords(s);
 		Set<Annotation> annotations = new HashSet<Annotation>();

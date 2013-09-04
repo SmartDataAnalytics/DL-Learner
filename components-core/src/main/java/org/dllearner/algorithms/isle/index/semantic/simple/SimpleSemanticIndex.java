@@ -33,7 +33,7 @@ public class SimpleSemanticIndex extends SemanticIndex {
         super(ontology,
                 syntacticIndex,
                 new SimpleWordSenseDisambiguation(ontology),
-                new TrieEntityCandidateGenerator(ontology, new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology))),
+                new TrieEntityCandidateGenerator(ontology, new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology)),
                 new SimpleLinguisticAnnotator());
 
     }
