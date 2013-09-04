@@ -30,4 +30,12 @@ public interface RelevanceMetric {
 	 * @return
 	 */
 	double getRelevance(Entity entity1, Entity entity2);
+	
+	/**
+	 * Get  normalized relevance value in [0,1]	 * 
+	 * @param entity1
+	 * @param entity2
+	 * @return
+	 */
+	double getNormalizedRelevance(Entity entity1, Entity entity2);
 }

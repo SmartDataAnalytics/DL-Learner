@@ -30,9 +30,25 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 		
 		double dPClass = nrOfDocuments == 0 ? 0 : ((double) documentsA.size() / (double) nrOfDocuments);
 		double dPClassEntity = documentsB.size() == 0 ? 0 : (double) documentsAB.size() / (double) documentsB.size();
-		double pmi = Math.log(dPClassEntity / dPClass);
+		double pmi = Math.log(dPClassEntity / dPClass);		
 		
 		return pmi;
+	}
+	
+	@Override
+	public double getNormalizedRelevance(Entity entityA, Entity entityB){
+		Set<AnnotatedDocument> documentsA = index.getDocuments(entityA);
+		Set<AnnotatedDocument> documentsB = index.getDocuments(entityB);
+		Set<AnnotatedDocument> documentsAB = Sets.intersection(documentsA, documentsB);
+		int nrOfDocuments = index.getSize();
+		
+		double dPClass = nrOfDocuments == 0 ? 0 : ((double) documentsA.size() / (double) nrOfDocuments);
+		double dPClassEntity = documentsB.size() == 0 ? 0 : (double) documentsAB.size() / (double) documentsB.size();
+		double pmi = Math.log(dPClassEntity / dPClass);		
+		
+		double normalizedPMI = (pmi/-Math.log(dPClassEntity) + 1)/2;
+		
+		return normalizedPMI;
 	}
 
 }
