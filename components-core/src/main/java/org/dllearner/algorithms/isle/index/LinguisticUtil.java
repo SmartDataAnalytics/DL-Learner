@@ -1,9 +1,16 @@
 package org.dllearner.algorithms.isle.index;
 
+import edu.northwestern.at.utils.corpuslinguistics.lemmatizer.DefaultLemmatizer;
+import edu.northwestern.at.utils.corpuslinguistics.lemmatizer.Lemmatizer;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.*;
+import edu.stanford.nlp.util.CoreMap;
 import net.didion.jwnl.data.POS;
 import org.dllearner.algorithms.isle.WordNet;
 
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Provides shortcuts to commonly used linguistic operations
@@ -12,6 +19,16 @@ import java.util.ArrayList;
 public class LinguisticUtil {
     private static final WordNet wn = new WordNet();
     private static POS[] RELEVANT_POS = new POS[]{POS.NOUN, POS.VERB};
+    private static Lemmatizer lemmatizer;
+
+    static {
+        try {
+            lemmatizer = new DefaultLemmatizer();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Processes the given string and puts camelCased words into single words.
@@ -54,7 +71,13 @@ public class LinguisticUtil {
         return underScored.split("_");
     }
 
-    // get synonyms
+    /**
+     * Returns an array of all synonyms for the given word. Only synonyms for the POS in {@link #RELEVANT_POS} are
+     * returned.
+     *
+     * @param word the word to retrieve synonyms for
+     * @return synonyms for the given word
+     */
     public static String[] getSynonymsForWord(String word) {
         ArrayList<String> synonyms = new ArrayList<String>();
 
@@ -64,7 +87,28 @@ public class LinguisticUtil {
         return synonyms.toArray(new String[synonyms.size()]);
     }
 
+    /**
+     * Returns the normalized form of the given word. This method is only able to work with single words! If there is an
+     * error normalizing the given word, the word itself is returned.
+     *
+     * @param word the word to get normalized form for
+     * @return normalized form of the word or the word itself on an error
+     */
+    public static String getNormalizedForm(String word) {
+        try {
+            if (lemmatizer == null) {
+                return word;
+            }
+            return lemmatizer.lemmatize(word);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return word;
+    }
+
     public static void main(String[] args) {
+        System.out.println(getNormalizedForm("going"));
         for (String s : getWordsFromCamelCase("thisIsAClassWith1Name123")) {
             System.out.println(s);
             for (String w : getSynonymsForWord(s)) {
