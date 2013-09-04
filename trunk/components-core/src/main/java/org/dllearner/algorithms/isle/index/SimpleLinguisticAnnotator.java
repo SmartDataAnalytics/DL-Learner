@@ -22,6 +22,7 @@ import org.dllearner.algorithms.isle.StopWordFilter;
 public class SimpleLinguisticAnnotator implements LinguisticAnnotator {
 	
 	private StopWordFilter stopWordFilter = new StopWordFilter();
+    NGramGeneratingAnnotator nGramAnnotator = new NGramGeneratingAnnotator(2);
 
 	@Override
 	public Set<Annotation> annotate(Document document) {
@@ -41,6 +42,7 @@ public class SimpleLinguisticAnnotator implements LinguisticAnnotator {
 		if(start < s.length()-1){
 			annotations.add(new Annotation(document, start, s.length() - start));
 		}
+        annotations.addAll(nGramAnnotator.annotate(document));
 		stopWordFilter.removeStopWordAnnotations(annotations);
 		return annotations;
 	}
