@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import net.didion.jwnl.JWNL;
 import net.didion.jwnl.JWNLException;
@@ -71,8 +72,31 @@ public class WordNet {
 		}
 		return synonyms;
 	}
-	
-	public List<String> getSisterTerms(POS pos, String s){
+
+    public List<String> getAllSynonyms(POS pos, String s) {
+        List<String> synonyms = new ArrayList<String>();
+        try {
+            IndexWord iw = dict.getIndexWord(pos, s);
+            if (iw != null) {
+                Synset[] synsets = iw.getSenses();
+                for (Synset synset : synsets) {
+                    for (Word w : synset.getWords()) {
+                        String lemma = w.getLemma();
+                        if (!lemma.equals(s) && !lemma.contains(" ")) {
+                            synonyms.add(lemma);
+                        }
+                    }
+                }
+            }
+        }
+        catch (JWNLException e) {
+            e.printStackTrace();
+        }
+
+        return synonyms;
+    }
+
+    public List<String> getSisterTerms(POS pos, String s){
 		List<String> sisterTerms = new ArrayList<String>();
 		
 		try {
