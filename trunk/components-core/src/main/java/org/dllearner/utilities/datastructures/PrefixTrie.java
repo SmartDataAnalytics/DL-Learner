@@ -102,6 +102,22 @@ public class PrefixTrie<T> implements PrefixMap<T> {
     }
     return deepestWithValue.value;
   }
+  
+  public CharSequence getLongestMatch(CharSequence s) {
+    Node<T> current = root;
+    int i;
+    for (i = 0; i < s.length(); i++) {
+      int nodeIndex = s.charAt(i) - rangeOffset;
+      if (nodeIndex < 0 || rangeSize <= nodeIndex) {
+        return null;
+      }
+      current = current.next[nodeIndex];
+      if (current == null) {
+        break;
+      }
+    }
+    return s.subSequence(0, i-1);
+  }
 
   /**
    * Returns a Map containing the same data as this structure.
