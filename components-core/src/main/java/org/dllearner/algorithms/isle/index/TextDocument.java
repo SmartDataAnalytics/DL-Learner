@@ -7,15 +7,19 @@ package org.dllearner.algorithms.isle.index;
  */
 public class TextDocument implements Document {
     private String content;
+    private String rawContent;
 
 
     /**
-     * Initializes a text document with the given content.
+     * Initializes a text document with the given raw content. Internally, the content is cleaned up so that it only
+     * contains letters adhering to the regular expression pattern [A-Za-z].
      *
-     * @param content content of this text document
+     * @param content the raw content of this text document
      */
     public TextDocument(String content) {
-        this.content = content;
+        this.rawContent = content;
+        this.content = content.replaceAll("[^A-Za-z ]", " ");
+        this.content = this.content.replaceAll("\\s{2,}", " ");
     }
 
     @Override
@@ -30,7 +34,7 @@ public class TextDocument implements Document {
      */
     @Override
     public String getRawContent() {
-        return content;
+        return rawContent;
     }
 
     @Override
