@@ -6,7 +6,7 @@ import org.dllearner.algorithms.isle.WordNet;
 import java.util.ArrayList;
 
 /**
- * Provides shortcuts to
+ * Provides shortcuts to commonly used linguistic operations
  * @author Daniel Fleischhacker
  */
 public class LinguisticUtil {
