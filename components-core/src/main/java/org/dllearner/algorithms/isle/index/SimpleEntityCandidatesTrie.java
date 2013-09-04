@@ -2,14 +2,11 @@ package org.dllearner.algorithms.isle.index;
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import org.dllearner.algorithms.isle.textretrieval.AnnotationEntityTextRetriever;
 import org.dllearner.algorithms.isle.textretrieval.EntityTextRetriever;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.utilities.datastructures.PrefixTrie;
-import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
