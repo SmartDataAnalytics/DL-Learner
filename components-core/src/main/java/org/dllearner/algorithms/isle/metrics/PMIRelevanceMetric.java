@@ -46,7 +46,8 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 		double dPClassEntity = documentsB.size() == 0 ? 0 : (double) documentsAB.size() / (double) documentsB.size();
 		double pmi = Math.log(dPClassEntity / dPClass);		
 		
-		double normalizedPMI = (pmi/-Math.log(dPClassEntity) + 1)/2;
+		double pAB = (double) documentsAB.size() / (double) nrOfDocuments;
+		double normalizedPMI = (pmi/-Math.log(pAB) + 1)/2;
 		
 		return normalizedPMI;
 	}
