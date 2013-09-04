@@ -227,6 +227,18 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
 	
+	public static SparqlEndpoint getEndpointDBpediaLOD2Cloud() {
+		URL u = null;
+		try { 
+			u = new URL("http://lod.openlinksw.com/sparql/");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		defaultGraphURIs.add("http://dbpedia.org");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+	}
+	
 	public static SparqlEndpoint getEndpointLinkedGeoData() {
 		URL u = null;
 		try { 
