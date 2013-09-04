@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.document.Field;
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.isle.EntityCandidateGenerator;
 import org.dllearner.algorithms.isle.WordSenseDisambiguation;
 import org.dllearner.algorithms.isle.index.AnnotatedDocument;
@@ -29,6 +29,9 @@ import org.semanticweb.owlapi.model.OWLOntology;
  */
 public abstract class SemanticIndex {
 	
+	
+	private static final Logger logger = Logger.getLogger(SemanticIndex.class.getName());
+	
 	private SemanticAnnotator semanticAnnotator;
 	private SyntacticIndex syntacticIndex;
 	private Map<Entity, Set<AnnotatedDocument>> index;
@@ -49,8 +52,10 @@ public abstract class SemanticIndex {
 	 * Precompute the whole index, i.e. iterate over all entities and compute all annotated documents.
 	 */
 	public void buildIndex(Set<TextDocument> documents){
+		logger.info("Creating semantic index...");
 		index = new HashMap<Entity, Set<AnnotatedDocument>>();
 		for (TextDocument document : documents) {
+			logger.debug("Processing document:\n" + document);
 			AnnotatedDocument annotatedDocument = semanticAnnotator.processDocument(document);
 			for (Entity entity : annotatedDocument.getContainedEntities()) {
 				Set<AnnotatedDocument> existingAnnotatedDocuments = index.get(entity);
@@ -60,7 +65,8 @@ public abstract class SemanticIndex {
 				}
 				existingAnnotatedDocuments.add(annotatedDocument);
 			}
-		}		
+		}
+		logger.info("...done.");
 	}
 	
 	public void buildIndex(OWLAnnotationProperty annotationProperty, String language){

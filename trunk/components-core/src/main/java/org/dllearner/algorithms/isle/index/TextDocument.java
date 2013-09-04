@@ -55,4 +55,12 @@ public class TextDocument implements Document {
     public int hashCode() {
         return content.hashCode();
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+    	return content;
+    }
 }
