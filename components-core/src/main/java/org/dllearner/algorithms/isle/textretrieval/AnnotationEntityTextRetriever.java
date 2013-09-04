@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.dllearner.algorithms.isle.index.LinguisticAnnotator;
+import org.dllearner.algorithms.isle.index.LinguisticUtil;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.utilities.owl.OWLAPIConverter;
@@ -20,6 +22,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
+
+import com.google.common.base.Joiner;
 
 
 /**
@@ -86,7 +90,10 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		}
 		
 		if(textWithWeight.isEmpty() && useShortFormFallback){
-			textWithWeight.put(sfp.getShortForm(IRI.create(entity.getURI())), weight);
+			String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
+			shortForm = Joiner.on(" ").join(LinguisticUtil.getWordsFromCamelCase(shortForm));
+			shortForm = Joiner.on(" ").join(LinguisticUtil.getWordsFromUnderscored(shortForm));
+			textWithWeight.put(shortForm, weight);
 		}
 		
 		return textWithWeight;
