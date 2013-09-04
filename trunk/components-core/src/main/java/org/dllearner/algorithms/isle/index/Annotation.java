@@ -63,6 +63,11 @@ public class Annotation {
 		return true;
 	}
 	
-	
-
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "\"" + getReferencedDocument.getContent().substring(offset, offset+length) + "\" at position " + offset;
+	}
 }

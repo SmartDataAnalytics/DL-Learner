@@ -87,5 +87,13 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 		}
 		return cnt;
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Document:\n" + document.getContent() + "\nAnnotations:" + annotations;
+	}
 
 }
