@@ -6,9 +6,13 @@ package org.dllearner.algorithms.isle.index.semantic.simple;
 import org.dllearner.algorithms.isle.RandomWordSenseDisambiguation;
 import org.dllearner.algorithms.isle.SimpleWordSenseDisambiguation;
 import org.dllearner.algorithms.isle.index.SimpleEntityCandidateGenerator;
+import org.dllearner.algorithms.isle.index.SimpleEntityCandidatesTrie;
 import org.dllearner.algorithms.isle.index.SimpleLinguisticAnnotator;
+import org.dllearner.algorithms.isle.index.TrieEntityCandidateGenerator;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
 import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
+import org.dllearner.algorithms.isle.textretrieval.AnnotationEntityTextRetriever;
+import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
@@ -27,11 +31,12 @@ public class SimpleSemanticIndex extends SemanticIndex {
      * @param syntacticIndex index to query for documents containing the labels
      */
     public SimpleSemanticIndex(OWLOntology ontology, SyntacticIndex syntacticIndex) {
-       super(ontology,
-    		   syntacticIndex, 
-    		   new SimpleWordSenseDisambiguation(ontology), 
-    		   new SimpleEntityCandidateGenerator(ontology),
-    		   new SimpleLinguisticAnnotator());
+        super(ontology,
+                syntacticIndex,
+                new SimpleWordSenseDisambiguation(ontology),
+                new TrieEntityCandidateGenerator(ontology, new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology))),
+                new SimpleLinguisticAnnotator());
+
     }
 
 }
