@@ -149,7 +149,7 @@ public class CELOE extends AbstractCELA {
 	private int expressionTests = 0;
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
-	private long totalRuntimeNs;
+	private long totalRuntimeNs = 0;
 	
 	// TODO: turn those into config options
 	
