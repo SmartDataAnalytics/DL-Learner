@@ -48,6 +48,16 @@ public abstract class SemanticIndex {
 				this.semanticAnnotator = semanticAnnotator;
 	}
 	
+	public SemanticIndex() {
+}
+	
+	/**
+	 * @param semanticAnnotator the semanticAnnotator to set
+	 */
+	public void setSemanticAnnotator(SemanticAnnotator semanticAnnotator) {
+		this.semanticAnnotator = semanticAnnotator;
+	}
+	
 	/**
 	 * Precompute the whole index, i.e. iterate over all entities and compute all annotated documents.
 	 */
@@ -55,7 +65,7 @@ public abstract class SemanticIndex {
 		logger.info("Creating semantic index...");
 		index = new HashMap<Entity, Set<AnnotatedDocument>>();
 		for (TextDocument document : documents) {
-			logger.debug("Processing document:\n" + document);
+			logger.info("Processing document:\n" + document);
 			AnnotatedDocument annotatedDocument = semanticAnnotator.processDocument(document);
 			for (Entity entity : annotatedDocument.getContainedEntities()) {
 				Set<AnnotatedDocument> existingAnnotatedDocuments = index.get(entity);
