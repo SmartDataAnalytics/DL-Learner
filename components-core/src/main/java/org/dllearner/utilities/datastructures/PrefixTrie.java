@@ -116,10 +116,10 @@ public class PrefixTrie<T> implements PrefixMap<T> {
         break;
       }
     }
-    if (i<=0)
+    if (i<=1)
     	return null;
     else
-    	return s.subSequence(0, i-1);
+    	return s.subSequence(1, i);
   }
 
   /**
