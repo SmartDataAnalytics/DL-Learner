@@ -55,7 +55,8 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
 	@Override
 	public String getLongestMatch(String s) {
-		return trie.getLongestMatch(s).toString();
+		CharSequence match = trie.getLongestMatch(s);
+		return (match!=null) ? trie.getLongestMatch(s).toString() : null;
 	}
 
 }
