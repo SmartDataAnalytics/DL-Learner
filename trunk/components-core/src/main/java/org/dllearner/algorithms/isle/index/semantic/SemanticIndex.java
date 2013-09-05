@@ -36,6 +36,8 @@ public abstract class SemanticIndex {
     private SyntacticIndex syntacticIndex;
     private Map<Entity, Set<AnnotatedDocument>> index;
     private OWLOntology ontology;
+    
+    private int size = 0;
 
     public SemanticIndex(OWLOntology ontology, SyntacticIndex syntacticIndex, WordSenseDisambiguation wordSenseDisambiguation,
                          EntityCandidateGenerator entityCandidateGenerator, LinguisticAnnotator linguisticAnnotator) {
@@ -77,6 +79,7 @@ public abstract class SemanticIndex {
             }
             logger.info("Annotated document:" + annotatedDocument);
         }
+        size = documents.size();
         logger.info("...done.");
     }
 
@@ -145,6 +148,6 @@ public abstract class SemanticIndex {
      * @return the total number of documents contained in the index
      */
     public int getSize() {
-        return index.size();
+        return size;
     }
 }

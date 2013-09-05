@@ -43,17 +43,26 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 		Set<AnnotatedDocument> documentsB = index.getDocuments(entityB);
 		Set<AnnotatedDocument> documentsAB = Sets.intersection(documentsA, documentsB);
 		int nrOfDocuments = index.getSize();
+//		System.out.println("A:" + documentsA.size());
+//		System.out.println("B:" + documentsB.size());
+//		System.out.println("AB:" + documentsAB.size());
+//		System.out.println(nrOfDocuments);
 		
 		double pA = nrOfDocuments == 0 ? 0 : ((double) documentsA.size() / (double) nrOfDocuments);
 		double pB = nrOfDocuments == 0 ? 0 : ((double) documentsB.size() / (double) nrOfDocuments);
 		double pAB = nrOfDocuments == 0 ? 0 : ((double) documentsAB.size() / (double) nrOfDocuments);
 		
-		if(pA * pB == 0){
+		if(pAB == 0 || pA * pB == 0){
 			return 0;
 		}
-		double pmi = Math.log(pAB / pA * pB);
+		double pmi = Math.log(pAB / (pA * pB));
 		
-		double normalizedPMI = (pmi/-Math.log(pAB) + 1)/2;
+		double denominator = -Math.log(pAB);
+		if(denominator == 0){
+			return 0;
+		}
+		
+		double normalizedPMI = (pmi/denominator + 1)/2;
 		
 		return normalizedPMI;
 	}

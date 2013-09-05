@@ -6,6 +6,7 @@ package org.dllearner.algorithms.isle;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.isle.index.Annotation;
 import org.dllearner.algorithms.isle.index.SemanticAnnotation;
 import org.dllearner.core.owl.Entity;
@@ -28,6 +29,9 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  */
 public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 	
+	
+	private static final Logger logger = Logger.getLogger(SimpleWordSenseDisambiguation.class.getName());
+	
 	private IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	private OWLAnnotationProperty annotationProperty = df.getRDFSLabel();
@@ -44,17 +48,21 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 	 */
 	@Override
 	public SemanticAnnotation disambiguate(Annotation annotation, Set<Entity> candidateEntities) {
-		String token = annotation.getToken();
+		logger.debug("Linguistic annotations:\n" + annotation);
+		logger.debug("Candidate entities:" + candidateEntities);
+		String token = annotation.getToken().trim();
 		//check if annotation token matches label of entity or the part behind #(resp. /)
 		for (Entity entity : candidateEntities) {
 			Set<String> labels = getLabels(entity);
 			for (String label : labels) {
 				if(label.equals(token)){
+					logger.debug("Disambiguated entity: " + entity);
 					return new SemanticAnnotation(annotation, entity);
 				}
 			}
 			String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
 			if(annotation.equals(shortForm)){
+				logger.debug("Disambiguated entity: " + entity);
 				return new SemanticAnnotation(annotation, entity);
 			}
 		}
