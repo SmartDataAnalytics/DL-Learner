@@ -43,8 +43,10 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 	
 	@Override
 	public void addEntry(String s, Entity e) {
-		Set<Entity> candidates = trie.get(s);
-		if (candidates==null)
+		Set<Entity> candidates;
+		if (trie.contains(s)) 
+			candidates = trie.get(s);
+		else
 			candidates = new HashSet<Entity>();
 		
 		candidates.add(e);
@@ -69,7 +71,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 		List<String> termsList = new ArrayList(trieMap.keySet());
 		Collections.sort(termsList);
 		for (String key : termsList) {
-			output += key + ": (";
+			output += key + ":\n";
 			for (Entity candidate: trieMap.get(key)) {
 				output += "\t"+candidate+"\n";
 			}

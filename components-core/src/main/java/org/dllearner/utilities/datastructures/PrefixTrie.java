@@ -82,6 +82,21 @@ public class PrefixTrie<T> implements PrefixMap<T> {
     current.value = value;
     return oldValue;
   }
+  
+  public boolean contains(CharSequence s) {
+	    Node<T> current = root;
+	    for (int i = 0; i < s.length(); i++) {
+	      int nodeIndex = s.charAt(i) - rangeOffset;
+	      if (nodeIndex < 0 || rangeSize <= nodeIndex) {
+	        return false;
+	      }
+	      current = current.next[nodeIndex];
+	      if (current == null) {
+	        return false;
+	      }
+	    }
+	    return (current.value!=null);
+	  }
 
   /** {@inheritDoc} */
   public T get(CharSequence s) {
@@ -120,10 +135,10 @@ public class PrefixTrie<T> implements PrefixMap<T> {
         deepestWithValue = current;
       }
     }
-    if (i<=1 || deepestWithValue==root)
+    if (i<=1 || deepestWithValue==root || deepestWithValue.value==null)
     	return null;
     else
-    	return s.subSequence(1, i);
+    	return s.subSequence(0, i);
   }
 
   /**
