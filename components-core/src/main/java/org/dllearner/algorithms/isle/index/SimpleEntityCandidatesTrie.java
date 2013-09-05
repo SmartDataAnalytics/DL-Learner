@@ -1,17 +1,11 @@
 package org.dllearner.algorithms.isle.index;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.dllearner.algorithms.isle.textretrieval.EntityTextRetriever;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.utilities.datastructures.PrefixTrie;
 import org.semanticweb.owlapi.model.OWLOntology;
+
+import java.util.*;
 
 public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
@@ -62,7 +56,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 	@Override
 	public String getLongestMatch(String s) {
 		CharSequence match = trie.getLongestMatch(s);
-		return (match!=null) ? trie.getLongestMatch(s).toString() : null;
+		return (match!=null) ? match.toString() : null;
 	}
 	
 	public String toString() {
