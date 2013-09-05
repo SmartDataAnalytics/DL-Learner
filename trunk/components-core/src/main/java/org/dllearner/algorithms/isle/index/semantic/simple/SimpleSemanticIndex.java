@@ -29,8 +29,9 @@ public class SimpleSemanticIndex extends SemanticIndex {
      * @param syntacticIndex index to query for documents containing the labels
      */
     public SimpleSemanticIndex(OWLOntology ontology, SyntacticIndex syntacticIndex) {
-    	SimpleEntityCandidatesTrie trie = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology);
-    	setSemanticAnnotator(new SemanticAnnotator(
+        super(ontology);
+        SimpleEntityCandidatesTrie trie = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology);
+        setSemanticAnnotator(new SemanticAnnotator(
                 new SimpleWordSenseDisambiguation(ontology),
                 new TrieEntityCandidateGenerator(ontology, trie),
                 new TrieLinguisticAnnotator(trie)));

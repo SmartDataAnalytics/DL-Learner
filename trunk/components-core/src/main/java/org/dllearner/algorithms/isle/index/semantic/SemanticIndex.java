@@ -28,103 +28,101 @@ import org.semanticweb.owlapi.model.OWLOntology;
  * @author Daniel Fleischhacker
  */
 public abstract class SemanticIndex {
-	
-	
-	private static final Logger logger = Logger.getLogger(SemanticIndex.class.getName());
-	
-	private SemanticAnnotator semanticAnnotator;
-	private SyntacticIndex syntacticIndex;
-	private Map<Entity, Set<AnnotatedDocument>> index;
-	private OWLOntology ontology;
-	
-	public SemanticIndex(OWLOntology ontology, SyntacticIndex syntacticIndex, WordSenseDisambiguation wordSenseDisambiguation, 
-			EntityCandidateGenerator entityCandidateGenerator, LinguisticAnnotator linguisticAnnotator) {
-				this.ontology = ontology;
-				this.syntacticIndex = syntacticIndex;
-				semanticAnnotator = new SemanticAnnotator(wordSenseDisambiguation, entityCandidateGenerator, linguisticAnnotator);
-	}
-	
-	public SemanticIndex(OWLOntology ontology, SyntacticIndex syntacticIndex, SemanticAnnotator semanticAnnotator) {
-				this.semanticAnnotator = semanticAnnotator;
-	}
-	
-	public SemanticIndex() {
-}
-	
-	/**
-	 * @param semanticAnnotator the semanticAnnotator to set
-	 */
-	public void setSemanticAnnotator(SemanticAnnotator semanticAnnotator) {
-		this.semanticAnnotator = semanticAnnotator;
-	}
-	
-	/**
-	 * Precompute the whole index, i.e. iterate over all entities and compute all annotated documents.
-	 */
-	public void buildIndex(Set<TextDocument> documents){
-		logger.info("Creating semantic index...");
-		index = new HashMap<Entity, Set<AnnotatedDocument>>();
-		for (TextDocument document : documents) {
-			logger.info("Processing document:\n" + document);
-			AnnotatedDocument annotatedDocument = semanticAnnotator.processDocument(document);
-			for (Entity entity : annotatedDocument.getContainedEntities()) {
-				Set<AnnotatedDocument> existingAnnotatedDocuments = index.get(entity);
-				if(existingAnnotatedDocuments == null){
-					existingAnnotatedDocuments = new HashSet<AnnotatedDocument>();
-					index.put(entity, existingAnnotatedDocuments);
-				}
-				existingAnnotatedDocuments.add(annotatedDocument);
-			}
-		}
-		logger.info("...done.");
-	}
-	
-	public void buildIndex(OWLAnnotationProperty annotationProperty, String language){
-		Set<OWLEntity> schemaEntities = new HashSet<OWLEntity>();
-		schemaEntities.addAll(ontology.getClassesInSignature());
-		schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
-		schemaEntities.addAll(ontology.getDataPropertiesInSignature());
-		Set<TextDocument> documents = new HashSet<TextDocument>();
-		for (OWLEntity entity : schemaEntities) {
-			String label = null;
-			Set<OWLAnnotation> annotations = entity.getAnnotations(ontology, annotationProperty);
-			for (OWLAnnotation annotation : annotations) {
-				if (annotation.getValue() instanceof OWLLiteral) {
-		            OWLLiteral val = (OWLLiteral) annotation.getValue();
-		            if (language != null) {
-		            	if(val.hasLang(language)){
-		            		label = val.getLiteral();
-		            	}
-		            	
-		            } else {
-		            	label = val.getLiteral();
-		            }
-		        }
-			}
-			if(label != null){
-				documents.add(new TextDocument(label));
-			}
-		}
-		buildIndex(documents);
-	}
-	
+
+
+    private static final Logger logger = Logger.getLogger(SemanticIndex.class.getName());
+
+    private SemanticAnnotator semanticAnnotator;
+    private SyntacticIndex syntacticIndex;
+    private Map<Entity, Set<AnnotatedDocument>> index;
+    private OWLOntology ontology;
+
+    public SemanticIndex(OWLOntology ontology, SyntacticIndex syntacticIndex, WordSenseDisambiguation wordSenseDisambiguation,
+                         EntityCandidateGenerator entityCandidateGenerator, LinguisticAnnotator linguisticAnnotator) {
+        this.ontology = ontology;
+        this.syntacticIndex = syntacticIndex;
+        semanticAnnotator = new SemanticAnnotator(wordSenseDisambiguation, entityCandidateGenerator, linguisticAnnotator);
+    }
+
+    public SemanticIndex(OWLOntology ontology) {
+        this.ontology = ontology;
+    }
+
+    /**
+     * @param semanticAnnotator the semanticAnnotator to set
+     */
+    public void setSemanticAnnotator(SemanticAnnotator semanticAnnotator) {
+        this.semanticAnnotator = semanticAnnotator;
+    }
+
+    /**
+     * Precompute the whole index, i.e. iterate over all entities and compute all annotated documents.
+     */
+    public void buildIndex(Set<TextDocument> documents) {
+        logger.info("Creating semantic index...");
+        index = new HashMap<Entity, Set<AnnotatedDocument>>();
+        for (TextDocument document : documents) {
+            logger.info("Processing document:\n" + document);
+            AnnotatedDocument annotatedDocument = semanticAnnotator.processDocument(document);
+            for (Entity entity : annotatedDocument.getContainedEntities()) {
+                Set<AnnotatedDocument> existingAnnotatedDocuments = index.get(entity);
+                if (existingAnnotatedDocuments == null) {
+                    existingAnnotatedDocuments = new HashSet<AnnotatedDocument>();
+                    index.put(entity, existingAnnotatedDocuments);
+                }
+                existingAnnotatedDocuments.add(annotatedDocument);
+            }
+        }
+        logger.info("...done.");
+    }
+
+    public void buildIndex(OWLAnnotationProperty annotationProperty, String language) {
+        Set<OWLEntity> schemaEntities = new HashSet<OWLEntity>();
+        schemaEntities.addAll(ontology.getClassesInSignature());
+        schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
+        schemaEntities.addAll(ontology.getDataPropertiesInSignature());
+        Set<TextDocument> documents = new HashSet<TextDocument>();
+        for (OWLEntity entity : schemaEntities) {
+            String label = null;
+            Set<OWLAnnotation> annotations = entity.getAnnotations(ontology, annotationProperty);
+            for (OWLAnnotation annotation : annotations) {
+                if (annotation.getValue() instanceof OWLLiteral) {
+                    OWLLiteral val = (OWLLiteral) annotation.getValue();
+                    if (language != null) {
+                        if (val.hasLang(language)) {
+                            label = val.getLiteral();
+                        }
+
+                    }
+                    else {
+                        label = val.getLiteral();
+                    }
+                }
+            }
+            if (label != null) {
+                documents.add(new TextDocument(label));
+            }
+        }
+        buildIndex(documents);
+    }
+
     /**
      * Returns the set of annotated documents which reference the given entity using one of its surface forms.
      *
      * @param entity entity to retrieve documents
      * @return documents referencing given entity
      */
-    public Set<AnnotatedDocument> getDocuments(Entity entity){
-    	if(index == null){
-    		System.err.println("You have to prebuild the index before you can use this method.");
-        	System.exit(1);
-    	}
-    	
-    	Set<AnnotatedDocument> annotatedDocuments = index.get(entity);
-    	if(annotatedDocuments == null) {
-    		annotatedDocuments = new HashSet<AnnotatedDocument>();
-    	}
-    	return annotatedDocuments;
+    public Set<AnnotatedDocument> getDocuments(Entity entity) {
+        if (index == null) {
+            System.err.println("You have to prebuild the index before you can use this method.");
+            System.exit(1);
+        }
+
+        Set<AnnotatedDocument> annotatedDocuments = index.get(entity);
+        if (annotatedDocuments == null) {
+            annotatedDocuments = new HashSet<AnnotatedDocument>();
+        }
+        return annotatedDocuments;
     }
 
     /**
@@ -133,8 +131,8 @@ public abstract class SemanticIndex {
      * @param entity entity to return number of referencing documents for
      * @return number of documents for the given entity in this index
      */
-    public int count(Entity entity){
-    	return index.get(entity).size();
+    public int count(Entity entity) {
+        return index.get(entity).size();
     }
 
     /**
@@ -142,7 +140,7 @@ public abstract class SemanticIndex {
      *
      * @return the total number of documents contained in the index
      */
-    public int getSize(){
-    	return index.size();
+    public int getSize() {
+        return index.size();
     }
 }
