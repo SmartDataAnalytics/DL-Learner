@@ -75,6 +75,7 @@ public abstract class SemanticIndex {
                 }
                 existingAnnotatedDocuments.add(annotatedDocument);
             }
+            logger.info("Annotated document:" + annotatedDocument);
         }
         logger.info("...done.");
     }
