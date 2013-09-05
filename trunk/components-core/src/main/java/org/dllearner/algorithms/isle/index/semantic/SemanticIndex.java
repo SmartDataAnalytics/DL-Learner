@@ -59,6 +59,9 @@ public abstract class SemanticIndex {
      * Precompute the whole index, i.e. iterate over all entities and compute all annotated documents.
      */
     public void buildIndex(Set<TextDocument> documents) {
+        if (semanticAnnotator == null) {
+            throw new RuntimeException("No semantic annotator defined, must be set using the setSemanticAnnotator method");
+        }
         logger.info("Creating semantic index...");
         index = new HashMap<Entity, Set<AnnotatedDocument>>();
         for (TextDocument document : documents) {
