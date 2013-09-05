@@ -1,6 +1,10 @@
 package org.dllearner.algorithms.isle.index;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,6 +61,19 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 	public String getLongestMatch(String s) {
 		CharSequence match = trie.getLongestMatch(s);
 		return (match!=null) ? trie.getLongestMatch(s).toString() : null;
+	}
+	
+	public void printTrie() {
+		System.out.println("Printing tree content:");
+		Map<String,Set<Entity>> trieMap = trie.toMap();
+		List<String> termsList = new ArrayList(trieMap.keySet());
+		Collections.sort(termsList);
+		for (String key : termsList) {
+			System.out.println(key);
+			for (Entity candidate: trieMap.get(key)) {
+				System.out.println("\t"+candidate);
+			}
+		}
 	}
 
 }
