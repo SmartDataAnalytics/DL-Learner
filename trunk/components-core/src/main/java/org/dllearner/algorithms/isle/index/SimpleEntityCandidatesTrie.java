@@ -63,17 +63,23 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 		return (match!=null) ? trie.getLongestMatch(s).toString() : null;
 	}
 	
-	public void printTrie() {
-		System.out.println("Printing tree content:");
+	public String toString() {
+		String output = "";
 		Map<String,Set<Entity>> trieMap = trie.toMap();
 		List<String> termsList = new ArrayList(trieMap.keySet());
 		Collections.sort(termsList);
 		for (String key : termsList) {
-			System.out.println(key);
+			output += key + ": (";
 			for (Entity candidate: trieMap.get(key)) {
-				System.out.println("\t"+candidate);
+				output += "\t"+candidate+"\n";
 			}
 		}
+		return output;
+	}
+	
+	public void printTrie() {
+		System.out.println(this.toString());
+		
 	}
 
 }
