@@ -44,8 +44,10 @@ import com.google.common.base.Joiner;
 import com.google.common.io.Files;
 
 /**
+ * Some tests for the ISLE algorithm.
+ * 
  * @author Lorenz Buehmann
- *
+ * @author Jens Lehmann
  */
 public class ISLETest {
 	
@@ -188,6 +190,7 @@ public class ISLETest {
 		
 		// run standard CELOE as reference
 		CELOE celoe = new CELOE(lp, reasoner);
+//		celoe.setHeuristic(heuristic);
 		celoe.setSearchTreeFile(testFolder + "searchTreeCELOE.txt");
 		celoe.setWriteSearchTree(true);
 		celoe.setTerminateOnNoiseReached(true);
@@ -203,7 +206,13 @@ public class ISLETest {
 		System.out.println("expressions tested: " + isle.getClassExpressionTests() + "  vs.  " + celoe.getClassExpressionTests());
 		System.out.println("search tree nodes:  " + isle.getNodes().size() + "  vs.  " + celoe.getNodes().size());
 		System.out.println("runtime:            " + Helper.prettyPrintNanoSeconds(isle.getTotalRuntimeNs()) + "  vs.  " + Helper.prettyPrintNanoSeconds(celoe.getTotalRuntimeNs()));
-
+	
+		// only ISLE
+//		System.out.println("accuracy:           " + df.format(100*isle.getCurrentlyBestAccuracy())+"%");
+//		System.out.println("expressions tested: " + isle.getClassExpressionTests());
+//		System.out.println("search tree nodes:  " + isle.getNodes().size());
+//		System.out.println("runtime:            " + Helper.prettyPrintNanoSeconds(isle.getTotalRuntimeNs()));
+		
 	}	
 	
 }
