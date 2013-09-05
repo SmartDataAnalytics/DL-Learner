@@ -82,7 +82,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 				if (annotation.getValue() instanceof OWLLiteral) {
 		            OWLLiteral val = (OWLLiteral) annotation.getValue();
 		            if (val.hasLang(language)) {
-		            	String label = val.getLiteral();
+		            	String label = val.getLiteral().trim();
 		            	textWithWeight.put(label, weight);
 		            }
 		        }
@@ -92,7 +92,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		if(textWithWeight.isEmpty() && useShortFormFallback){
 			String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
 			shortForm = Joiner.on(" ").join(LinguisticUtil.getWordsFromCamelCase(shortForm));
-			shortForm = Joiner.on(" ").join(LinguisticUtil.getWordsFromUnderscored(shortForm));
+			shortForm = Joiner.on(" ").join(LinguisticUtil.getWordsFromUnderscored(shortForm)).trim();
 			textWithWeight.put(shortForm, weight);
 		}
 		

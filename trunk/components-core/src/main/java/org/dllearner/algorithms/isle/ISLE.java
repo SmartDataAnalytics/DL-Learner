@@ -81,7 +81,7 @@ import com.jamonapi.MonitorFactory;
 @ComponentAnn(name="ISLE", shortName="isle", version=0.5, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class ISLE extends AbstractCELA {
 
-	private static Logger logger = Logger.getLogger(CELOE.class);
+	private static Logger logger = Logger.getLogger(ISLE.class);
 //	private CELOEConfigurator configurator;
 	
 	private boolean isRunning = false;
