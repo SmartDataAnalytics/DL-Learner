@@ -31,6 +31,7 @@ public class RelevanceUtils {
 	}
 	
 	public static Map<Entity, Double> getRelevantEntities(Entity entity, OWLOntology ontology, RelevanceMetric metric){
+		System.out.println(entity);
 		Map<Entity, Double> relevantEntities = new HashMap<Entity, Double>();
 		
 		Set<OWLEntity> owlEntities = new HashSet<OWLEntity>();
@@ -39,8 +40,10 @@ public class RelevanceUtils {
 		owlEntities.addAll(ontology.getObjectPropertiesInSignature());
 		Set<Entity> otherEntities = OWLAPIConverter.getEntities(owlEntities);
 		
+		otherEntities.remove(entity);
 		for (Entity otherEntity : otherEntities) {
 			double relevance = metric.getNormalizedRelevance(entity, otherEntity);
+			System.out.println(otherEntity + ":" + relevance);
 			relevantEntities.put(otherEntity, relevance);
 		}
 		
