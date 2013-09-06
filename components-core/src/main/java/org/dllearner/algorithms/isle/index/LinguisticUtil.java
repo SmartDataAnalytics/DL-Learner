@@ -83,6 +83,23 @@ public class LinguisticUtil {
     }
 
     /**
+     * Returns an array of the lemmas of the top {@code n} synonyms for the given word. Only synonyms for the POS in
+     * {@link #RELEVANT_POS} are returned.
+     *
+     * @param word the word to retrieve synonyms for
+     * @param n the number of senses to get lemmas for
+     * @return synonyms for the given word
+     */
+    public static String[] getTopSynonymsForWord(String word, int n) {
+        ArrayList<String> synonyms = new ArrayList<String>();
+
+        for (POS pos : RELEVANT_POS) {
+            synonyms.addAll(wn.getTopSynonyms(pos, word, n));
+        }
+        return synonyms.toArray(new String[synonyms.size()]);
+    }
+
+    /**
      * Returns the normalized form of the given word. This method is only able to work with single words! If there is an
      * error normalizing the given word, the word itself is returned.
      *
