@@ -20,6 +20,7 @@ public class TextDocument implements Document {
         this.rawContent = content;
         this.content = content.replaceAll("[^A-Za-z ]", " ");
         this.content = this.content.replaceAll("\\s{2,}", " ");
+        this.content = content.toLowerCase();
     }
 
     @Override
