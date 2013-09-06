@@ -27,7 +27,7 @@ public class TrieLinguisticAnnotator implements LinguisticAnnotator {
         Set<Annotation> annotations = new HashSet<Annotation>();
         for (int i = 0; i < content.length(); i++) {
             String unparsed = content.substring(i);
-            String match = candidatesTrie.getLongestMatch(unparsed);
+            String match = candidatesTrie.getLongestMatch(LinguisticUtil.getInstance().getNormalizedForm(unparsed));
             if (match != null && !match.isEmpty()) {
                 Annotation annotation = new Annotation(document, i, match.length());
                 annotations.add(annotation);

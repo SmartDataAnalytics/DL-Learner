@@ -42,7 +42,10 @@ public class SemanticAnnotator {
     	Set<SemanticAnnotation> semanticAnnotations = new HashSet<SemanticAnnotation>();
     	for (Annotation annotation : annotations) {
     		Set<Entity> candidateEntities = entityCandidateGenerator.getCandidates(annotation);
-    		SemanticAnnotation semanticAnnotation = wordSenseDisambiguation.disambiguate(annotation, candidateEntities);
+            if (candidateEntities == null || candidateEntities.size() == 0) {
+                continue;
+            }
+            SemanticAnnotation semanticAnnotation = wordSenseDisambiguation.disambiguate(annotation, candidateEntities);
     		if(semanticAnnotation != null){
     			semanticAnnotations.add(semanticAnnotation);
     		}

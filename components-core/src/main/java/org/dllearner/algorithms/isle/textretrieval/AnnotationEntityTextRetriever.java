@@ -91,8 +91,8 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		
 		if(textWithWeight.isEmpty() && useShortFormFallback){
 			String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
-			shortForm = Joiner.on(" ").join(LinguisticUtil.getWordsFromCamelCase(shortForm));
-			shortForm = Joiner.on(" ").join(LinguisticUtil.getWordsFromUnderscored(shortForm)).trim();
+			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromCamelCase(shortForm));
+			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromUnderscored(shortForm)).trim();
 			textWithWeight.put(shortForm, weight);
 		}
 		
