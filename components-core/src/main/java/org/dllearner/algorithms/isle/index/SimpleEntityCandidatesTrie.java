@@ -52,7 +52,6 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                 }
                 addEntry(text, entity);
                 for (String alternativeText : nameGenerator.getAlternativeText(text)) {
-                    System.out.println("New alternative text for " + text + " --> " + alternativeText);
                     addEntry(alternativeText, entity);
                 }
                 // Adds also composing words, e.g. for "has child", "has" and "child" are also added
@@ -60,7 +59,6 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                     for (String subtext : text.split(" ")) {
                         addEntry(subtext, entity);
                         for (String alternativeText : nameGenerator.getAlternativeText(subtext)) {
-                            System.out.println("New alternative text for " + subtext + " --> " + alternativeText);
                             addEntry(alternativeText, entity);
                         }
                         //System.out.println("trie.add("+subtext+","++")");
@@ -169,8 +167,8 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
             ArrayList<String> res = new ArrayList<String>();
             res.add(LinguisticUtil.getInstance().getNormalizedForm(word));
 
-            for (String w : LinguisticUtil.getInstance()
-                    .getTopSynonymsForWord(LinguisticUtil.getInstance().getNormalizedForm(word), maxNumberOfSenses)) {
+            for (String w : LinguisticUtil.getInstance().getTopSynonymsForWord(
+                    LinguisticUtil.getInstance().getNormalizedForm(word), maxNumberOfSenses)) {
                 res.add(w.replaceAll("_", " "));
             }
 
