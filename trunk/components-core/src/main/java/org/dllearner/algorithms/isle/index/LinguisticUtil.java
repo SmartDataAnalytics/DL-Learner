@@ -6,23 +6,25 @@ import net.didion.jwnl.data.POS;
 import org.dllearner.algorithms.isle.WordNet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Provides shortcuts to commonly used linguistic operations
  * @author Daniel Fleischhacker
  */
 public class LinguisticUtil {
+    private static LinguisticUtil instance;
+
     private static final WordNet wn = new WordNet();
     private static POS[] RELEVANT_POS = new POS[]{POS.NOUN, POS.VERB};
     private static Lemmatizer lemmatizer;
 
-    static {
-        try {
-            lemmatizer = new DefaultLemmatizer();
+    public static LinguisticUtil getInstance() {
+        if (instance == null) {
+            instance = new LinguisticUtil();
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        return instance;
     }
 
     /**
@@ -30,7 +32,7 @@ public class LinguisticUtil {
      * @param camelCase    the word containing camelcase to split
      * @return all words as camelcase contained in the given word
      */
-    public static String[] getWordsFromCamelCase(String camelCase) {
+    public String[] getWordsFromCamelCase(String camelCase) {
         ArrayList<String> resultingWords = new ArrayList<String>();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < camelCase.length(); i++) {
@@ -66,7 +68,7 @@ public class LinguisticUtil {
      * @param underScored    word to split at underscores
      * @return words contained in given word
      */
-    public static String[] getWordsFromUnderscored(String underScored) {
+    public String[] getWordsFromUnderscored(String underScored) {
         return underScored.split("_");
     }
 
@@ -77,7 +79,7 @@ public class LinguisticUtil {
      * @param word the word to retrieve synonyms for
      * @return synonyms for the given word
      */
-    public static String[] getSynonymsForWord(String word) {
+    public String[] getSynonymsForWord(String word) {
         ArrayList<String> synonyms = new ArrayList<String>();
 
         for (POS pos : RELEVANT_POS) {
@@ -94,7 +96,7 @@ public class LinguisticUtil {
      * @param n the number of senses to get lemmas for
      * @return synonyms for the given word
      */
-    public static String[] getTopSynonymsForWord(String word, int n) {
+    public String[] getTopSynonymsForWord(String word, int n) {
         ArrayList<String> synonyms = new ArrayList<String>();
 
         for (POS pos : RELEVANT_POS) {
@@ -104,30 +106,48 @@ public class LinguisticUtil {
     }
 
     /**
-     * Returns the normalized form of the given word. This method is only able to work with single words! If there is an
-     * error normalizing the given word, the word itself is returned.
+     * Returns the normalized form of the given word. If the word contains spaces, each part separated by spaces is
+     * normalized independently and joined afterwards. If there is an error normalizing the given word, the word itself
+     * is returned.
      *
      * @param word the word to get normalized form for
      * @return normalized form of the word or the word itself on an error
      */
-    public static String getNormalizedForm(String word) {
-        try {
-            if (lemmatizer == null) {
-                return word;
+    public String getNormalizedForm(String word) {
+        StringBuilder res = new StringBuilder();
+
+        boolean first = true;
+
+        ArrayList<String> singleWords = new ArrayList<String>();
+        Collections.addAll(singleWords, word.split(" "));
+
+        for (String w : singleWords) {
+            try {
+                if (first) {
+                    first = false;
+                }
+                else {
+                    res.append(" ");
+                }
+                if (lemmatizer == null) {
+                    res.append(w);
+                }
+                else {
+                    res.append(lemmatizer.lemmatize(w));
+                }
             }
-            return lemmatizer.lemmatize(word);
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return word;
+        return res.toString();
     }
 
     public static void main(String[] args) {
-        System.out.println(getNormalizedForm("going"));
-        for (String s : getWordsFromCamelCase("thisIsAClassWith1Name123")) {
+        System.out.println(LinguisticUtil.getInstance().getNormalizedForm("going"));
+        for (String s : LinguisticUtil.getInstance().getWordsFromCamelCase("thisIsAClassWith1Name123")) {
             System.out.println(s);
-            for (String w : getSynonymsForWord(s)) {
+            for (String w : LinguisticUtil.getInstance().getSynonymsForWord(s)) {
                 System.out.println(" --> " + w);
             }
         }

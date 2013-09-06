@@ -45,14 +45,14 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 		for (Entity entity : relevantText.keySet()) {
 
 			for (String text : relevantText.get(entity)) {
-                text = StringUtils.join(LinguisticUtil.getWordsFromCamelCase(text), " ");
-                text = StringUtils.join(LinguisticUtil.getWordsFromUnderscored(text), " ");
+                text = StringUtils.join(LinguisticUtil.getInstance().getWordsFromCamelCase(text), " ");
+                text = StringUtils.join(LinguisticUtil.getInstance().getWordsFromUnderscored(text), " ");
                 if (text.trim().isEmpty()) {
                     continue;
                 }
                 addEntry(text, entity);
                 for (String alternativeText : nameGenerator.getAlternativeText(text)) {
-//                    System.out.println("New alternative text for " + text + " --> " + alternativeText);
+                    System.out.println("New alternative text for " + text + " --> " + alternativeText);
                     addEntry(alternativeText, entity);
                 }
                 // Adds also composing words, e.g. for "has child", "has" and "child" are also added
@@ -60,7 +60,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                     for (String subtext : text.split(" ")) {
                         addEntry(subtext, entity);
                         for (String alternativeText : nameGenerator.getAlternativeText(subtext)) {
-//                            System.out.println("New alternative text for " + subtext + " --> " + alternativeText);
+                            System.out.println("New alternative text for " + subtext + " --> " + alternativeText);
                             addEntry(alternativeText, entity);
                         }
                         //System.out.println("trie.add("+subtext+","++")");
@@ -146,7 +146,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
         @Override
         public List<String> getAlternativeText(String word) {
-            return Arrays.asList(LinguisticUtil.getTopSynonymsForWord(word, maxNumberOfSenses));
+            return Arrays.asList(LinguisticUtil.getInstance().getTopSynonymsForWord(word, maxNumberOfSenses));
         }
     }
 
@@ -167,10 +167,10 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
         @Override
         public List<String> getAlternativeText(String word) {
             ArrayList<String> res = new ArrayList<String>();
-            res.add(LinguisticUtil.getNormalizedForm(word));
+            res.add(LinguisticUtil.getInstance().getNormalizedForm(word));
 
-            for (String w : LinguisticUtil
-                    .getTopSynonymsForWord(LinguisticUtil.getNormalizedForm(word), maxNumberOfSenses)) {
+            for (String w : LinguisticUtil.getInstance()
+                    .getTopSynonymsForWord(LinguisticUtil.getInstance().getNormalizedForm(word), maxNumberOfSenses)) {
                 res.add(w.replaceAll("_", " "));
             }
 
