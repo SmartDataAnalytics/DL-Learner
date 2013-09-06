@@ -36,7 +36,11 @@ public class LinguisticUtil {
         for (int i = 0; i < camelCase.length(); i++) {
             // we just ignore characters not matching the defined pattern
             char curChar = camelCase.charAt(i);
-            if (!Character.isLetter(curChar)) {
+            if (Character.isWhitespace(curChar)) {
+                sb.append(" ");
+                continue;
+            }
+            else if (!Character.isLetter(curChar)) {
                 continue;
             }
             if (Character.isUpperCase(curChar)) { // found a new upper case letter

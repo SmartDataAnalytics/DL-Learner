@@ -93,7 +93,7 @@ public class WordNet {
 //			IndexWord iw = dict.getMorphologicalProcessor().lookupBaseForm(pos, s);
             if (iw != null) {
                 Synset[] synsets = iw.getSenses();
-                for (int i = 0; i < n; i++) {
+                for (int i = 0; i < Math.min(n, synsets.length); i++) {
                     for (Word word : synsets[i].getWords()) {
                         String c = word.getLemma();
                         if (!c.equals(s) && !c.contains(" ")) {

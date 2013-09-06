@@ -30,7 +30,8 @@ public class SimpleSemanticIndex extends SemanticIndex {
      */
     public SimpleSemanticIndex(OWLOntology ontology, SyntacticIndex syntacticIndex) {
         super(ontology);
-        SimpleEntityCandidatesTrie trie = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology);
+        SimpleEntityCandidatesTrie trie = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology),
+                ontology, new SimpleEntityCandidatesTrie.LemmatizingWordNetNameGenerator(5));
 //        trie.printTrie();
         setSemanticAnnotator(new SemanticAnnotator(
                 new SimpleWordSenseDisambiguation(ontology),
