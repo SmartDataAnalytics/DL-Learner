@@ -3,16 +3,11 @@
  */
 package org.dllearner.algorithms.isle;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
+import com.google.common.io.Files;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.isle.index.AnnotatedDocument;
-import org.dllearner.algorithms.isle.index.TextDocument;
+import org.dllearner.algorithms.isle.index.*;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
 import org.dllearner.algorithms.isle.index.semantic.simple.SimpleSemanticIndex;
 import org.dllearner.algorithms.isle.index.syntactic.OWLOntologyLuceneSyntacticIndexCreator;
@@ -36,12 +31,14 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Some tests for the ISLE algorithm.
@@ -160,6 +157,39 @@ public class ISLETest {
 		isle.start();
 	}
 
+    @Test
+    public void testEntityLinkingWithLemmatizing() throws Exception {
+        EntityCandidatesTrie ect = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology,
+                new SimpleEntityCandidatesTrie.LemmatizingWordNetNameGenerator(5));
+        LinguisticAnnotator linguisticAnnotator = new TrieLinguisticAnnotator(ect);
+        WordSenseDisambiguation wsd = new SimpleWordSenseDisambiguation(ontology);
+        EntityCandidateGenerator ecg = new TrieEntityCandidateGenerator(ontology, ect);
+        SemanticAnnotator semanticAnnotator = new SemanticAnnotator(wsd, ecg, linguisticAnnotator);
+
+        Set<TextDocument> docs = createDocuments();
+        for (TextDocument doc : docs) {
+            AnnotatedDocument annotated = semanticAnnotator.processDocument(doc);
+            System.out.println(annotated);
+        }
+    }
+
+    @Test
+    public void testEntityLinkingWithSimpleStringMatching() throws Exception {
+        EntityCandidatesTrie ect = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology,
+                new SimpleEntityCandidatesTrie.DummyNameGenerator());
+        TrieLinguisticAnnotator linguisticAnnotator = new TrieLinguisticAnnotator(ect);
+        linguisticAnnotator.setNormalizeWords(false);
+        WordSenseDisambiguation wsd = new SimpleWordSenseDisambiguation(ontology);
+        EntityCandidateGenerator ecg = new TrieEntityCandidateGenerator(ontology, ect);
+        SemanticAnnotator semanticAnnotator = new SemanticAnnotator(wsd, ecg, linguisticAnnotator);
+
+        Set<TextDocument> docs = createDocuments();
+        for (TextDocument doc : docs) {
+            AnnotatedDocument annotated = semanticAnnotator.processDocument(doc);
+            System.out.println(annotated);
+        }
+    }
+
 	@Test
 	public void compareISLE() throws Exception {
 		KnowledgeSource ks = new OWLAPIOntology(ontology);
@@ -170,7 +200,7 @@ public class ISLETest {
 		lp.setClassToDescribe(cls);
 		lp.init();
 		
-		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
+		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex, false);
 		semanticIndex.buildIndex(createDocuments());
 		
 		relevance = new PMIRelevanceMetric(semanticIndex);
