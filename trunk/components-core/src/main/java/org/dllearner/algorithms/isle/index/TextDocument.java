@@ -18,9 +18,10 @@ public class TextDocument implements Document {
      */
     public TextDocument(String content) {
         this.rawContent = content;
-        this.content = content.replaceAll("[^A-Za-z ]", " ");
-        this.content = this.content.replaceAll("\\s{2,}", " ");
         this.content = content.toLowerCase();
+        this.content = this.content.replaceAll("[^a-z ]", " ");
+        this.content = this.content.replaceAll("\\s{2,}", " ");
+        this.content = content.trim();
     }
 
     @Override
