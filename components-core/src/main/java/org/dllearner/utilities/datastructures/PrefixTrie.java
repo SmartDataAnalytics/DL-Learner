@@ -138,7 +138,7 @@ public class PrefixTrie<T> implements PrefixMap<T> {
     if (i<=1 || deepestWithValue==root || deepestWithValue.value==null)
     	return null;
     else
-    	return s.subSequence(0, i);
+    	return s.subSequence(0, i - 1);
   }
 
   /**
