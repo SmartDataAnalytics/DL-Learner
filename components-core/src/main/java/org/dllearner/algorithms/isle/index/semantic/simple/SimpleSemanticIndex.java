@@ -23,20 +23,42 @@ public class SimpleSemanticIndex extends SemanticIndex {
 
     /**
      * Initializes the semantic index to use {@code ontology} for finding all labels of an entity and
-     * {@code syntacticIndex} to query for documents containing these labels.
+     * {@code syntacticIndex} to query for documents containing these labels. This consutrctor initializes with
+     * full lemmatizing enabled.
      *
      * @param ontology       ontology to retrieve entity labels from
      * @param syntacticIndex index to query for documents containing the labels
      */
     public SimpleSemanticIndex(OWLOntology ontology, SyntacticIndex syntacticIndex) {
+        this(ontology, syntacticIndex, true);
+    }
+
+    /**
+     * Initializes the semantic index to use {@code ontology} for finding all labels of an entity and
+     * {@code syntacticIndex} to query for documents containing these labels.
+     *
+     * @param ontology       ontology to retrieve entity labels from
+     * @param syntacticIndex index to query for documents containing the labels
+     * @param useWordNormalization    whether word normalization should be used or not
+     */
+    public SimpleSemanticIndex(OWLOntology ontology, SyntacticIndex syntacticIndex, boolean useWordNormalization) {
         super(ontology);
-        SimpleEntityCandidatesTrie trie = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology),
-                ontology, new SimpleEntityCandidatesTrie.LemmatizingWordNetNameGenerator(5));
+        SimpleEntityCandidatesTrie trie;
+        if (useWordNormalization) {
+            trie = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology),
+                    ontology, new SimpleEntityCandidatesTrie.LemmatizingWordNetNameGenerator(5));
+        }
+        else {
+            trie = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology),
+                    ontology, new SimpleEntityCandidatesTrie.DummyNameGenerator());
+        }
 //        trie.printTrie();
+        TrieLinguisticAnnotator linguisticAnnotator = new TrieLinguisticAnnotator(trie);
+        linguisticAnnotator.setNormalizeWords(useWordNormalization);
         setSemanticAnnotator(new SemanticAnnotator(
                 new SimpleWordSenseDisambiguation(ontology),
                 new TrieEntityCandidateGenerator(ontology, trie),
-                new TrieLinguisticAnnotator(trie)));
+                linguisticAnnotator));
 
     }
 
