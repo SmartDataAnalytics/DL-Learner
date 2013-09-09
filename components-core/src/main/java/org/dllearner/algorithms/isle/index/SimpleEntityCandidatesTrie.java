@@ -13,16 +13,16 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 	PrefixTrie<Set<Entity>> trie;
 	EntityTextRetriever entityTextRetriever;
 
-    /**
-     * Initialize the trie with strings from the provided ontology using a no-op name generator, i.e., only the
-     * actual ontology strings are added and no expansion is done.
-     *
-     * @param entityTextRetriever the text retriever to use
-     * @param ontology the ontology to get strings from
-     */
-	public SimpleEntityCandidatesTrie(EntityTextRetriever entityTextRetriever, OWLOntology ontology) {
-        this(entityTextRetriever, ontology, new DummyNameGenerator());
-	}
+//    /**
+//     * Initialize the trie with strings from the provided ontology using a no-op name generator, i.e., only the
+//     * actual ontology strings are added and no expansion is done.
+//     *
+//     * @param entityTextRetriever the text retriever to use
+//     * @param ontology the ontology to get strings from
+//     */
+//	public SimpleEntityCandidatesTrie(EntityTextRetriever entityTextRetriever, OWLOntology ontology) {
+//        this(entityTextRetriever, ontology, new DummyNameGenerator());
+//	}
 
     /**
      * Initialize the trie with strings from the provided ontology and use the given entity name generator
