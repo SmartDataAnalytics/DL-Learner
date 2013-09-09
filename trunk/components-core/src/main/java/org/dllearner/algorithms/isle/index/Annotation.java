@@ -5,6 +5,7 @@ package org.dllearner.algorithms.isle.index;
 
 
 /**
+ * A (non-semantic) annotation which represents an entity in a document by its offset and length.
  * @author Lorenz Buehmann
  *
  */
