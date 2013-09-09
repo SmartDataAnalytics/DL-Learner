@@ -57,7 +57,7 @@ public class NLPHeuristic implements Component, Comparator<OENode>{
 	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
 	private double startNodeBonus = 0.1;
 	
-	private double nlpBonusFactor = 0.0001;
+	private double nlpBonusFactor = 1;
 	
 	private Map<Entity, Double> entityRelevance;
 	
