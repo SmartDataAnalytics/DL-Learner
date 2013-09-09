@@ -6,7 +6,6 @@ import net.didion.jwnl.data.POS;
 import org.dllearner.algorithms.isle.WordNet;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -25,6 +24,15 @@ public class LinguisticUtil {
             instance = new LinguisticUtil();
         }
         return instance;
+    }
+
+    public LinguisticUtil() {
+        try {
+            lemmatizer = new DefaultLemmatizer();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -119,7 +127,7 @@ public class LinguisticUtil {
         boolean first = true;
 
         ArrayList<String> singleWords = new ArrayList<String>();
-        Collections.addAll(singleWords, word.split(" "));
+        Collections.addAll(singleWords, word.trim().split(" "));
 
         for (String w : singleWords) {
             try {
@@ -129,18 +137,27 @@ public class LinguisticUtil {
                 else {
                     res.append(" ");
                 }
-                if (lemmatizer == null) {
-                    res.append(w);
-                }
-                else {
-                    res.append(lemmatizer.lemmatize(w));
-                }
+                res.append(lemmatizeSingleWord(word));
             }
             catch (Exception e) {
-                e.printStackTrace();
+               throw new RuntimeException(e);
             }
         }
         return res.toString();
+    }
+
+    private String lemmatizeSingleWord(String word) {
+        try {
+            if (lemmatizer == null) {
+                return word;
+            }
+            else {
+                return lemmatizer.lemmatize(word);
+            }
+        }
+        catch (NullPointerException e) {
+            return word;
+        }
     }
 
     public static void main(String[] args) {
