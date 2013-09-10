@@ -3,6 +3,7 @@
  */
 package org.dllearner.algorithms.isle;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import org.dllearner.algorithms.isle.index.Annotation;
@@ -22,4 +23,7 @@ public abstract class EntityCandidateGenerator {
 	}
 
 	public abstract Set<Entity> getCandidates(Annotation annotation);
+	
+
+	public abstract HashMap<Annotation,Set<Entity>> getCandidatesMap(Set<Annotation> annotations);
 }

@@ -3,6 +3,7 @@
  */
 package org.dllearner.algorithms.isle.index;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,6 +38,15 @@ public class SimpleEntityCandidateGenerator extends EntityCandidateGenerator{
 	@Override
 	public Set<Entity> getCandidates(Annotation annotation) {
 		return allEntities;
+	}
+
+	@Override
+	public HashMap<Annotation, Set<Entity>> getCandidatesMap(Set<Annotation> annotations) {
+		HashMap<Annotation, Set<Entity>> result = new HashMap<Annotation, Set<Entity>>();
+		for (Annotation annotation: annotations) 
+			result.put(annotation, getCandidates(annotation));
+		
+		return result;
 	}
 
 }
