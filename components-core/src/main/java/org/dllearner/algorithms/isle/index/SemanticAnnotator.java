@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.isle.index;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,8 +41,9 @@ public class SemanticAnnotator {
     public AnnotatedDocument processDocument(TextDocument document){
     	Set<Annotation> annotations = linguisticAnnotator.annotate(document);
     	Set<SemanticAnnotation> semanticAnnotations = new HashSet<SemanticAnnotation>();
-    	for (Annotation annotation : annotations) {
-    		Set<Entity> candidateEntities = entityCandidateGenerator.getCandidates(annotation);
+    	HashMap<Annotation,Set<Entity>> candidatesMap = entityCandidateGenerator.getCandidatesMap(annotations);
+    	for (Annotation annotation : candidatesMap.keySet()) {
+    		Set<Entity> candidateEntities = candidatesMap.get(annotation);
             if (candidateEntities == null || candidateEntities.size() == 0) {
                 continue;
             }
