@@ -52,5 +52,9 @@ public class StopWordFilter {
 			}
 		}
 	}
+	
+	public boolean isStopWord(String token) {
+		return stopWords.contains(token);
+	}
 
 }
