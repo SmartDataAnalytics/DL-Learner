@@ -243,13 +243,13 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 					subTree = new QueryTreeImpl<String>(sb.toString());
 //					subTree = new QueryTreeImpl<String>(lit.toString());
 					subTree.setId(nodeId++);
-					subTree.setLiteralNode(true);
+					subTree.setIsLiteralNode(true);
 					tree.addChild(subTree, st.getPredicate().toString());
 				} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
 					if(tree.getUserObjectPathToRoot().size() < 3 && 
 							!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 						subTree = new QueryTreeImpl<String>(st.getObject().toString());
-						subTree.setResourceNode(true);
+						subTree.setIsResourceNode(true);
 						tree.addChild(subTree, st.getPredicate().toString());
 						fillTree(subTree, resource2Statements);
 					}

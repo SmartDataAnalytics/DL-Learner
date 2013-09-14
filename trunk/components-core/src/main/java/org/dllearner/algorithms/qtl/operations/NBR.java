@@ -558,8 +558,8 @@ public class NBR<N> {
 					genTree.addChange(new QueryTreeChange(node.getId(), ChangeType.REPLACE_LABEL));
 					genTree2Sum.put(genTree, sum(matrix.get(node)));
 					node.setUserObject(label);
-					node.setLiteralNode(isLiteralNode);
-					node.setResourceNode(!isLiteralNode);
+					node.setIsLiteralNode(isLiteralNode);
+					node.setIsResourceNode(!isLiteralNode);
 				}
 			}
 		}
@@ -636,8 +636,8 @@ public class NBR<N> {
 					genTree.addChange(new QueryTreeChange(child.getId(), ChangeType.REPLACE_LABEL));
 					gens.add(genTree);
 					child.setUserObject(label);
-					child.setLiteralNode(isLiteralNode);
-					child.setResourceNode(!isLiteralNode);
+					child.setIsLiteralNode(isLiteralNode);
+					child.setIsResourceNode(!isLiteralNode);
 					for(QueryTree<N> c : child.getChildren()){
 						N oldLabel = node2Label.get(c.getId());
 						if(oldLabel != null){
@@ -814,8 +814,8 @@ public class NBR<N> {
     		}
     		this.nodeId++;
     		subTree = createFilteredTree(child);
-    		subTree.setLiteralNode(child.isLiteralNode());
-    		subTree.setResourceNode(child.isResourceNode());
+    		subTree.setIsLiteralNode(child.isLiteralNode());
+    		subTree.setIsResourceNode(child.isResourceNode());
     		filteredTree.addChild((QueryTreeImpl<N>)subTree, tree.getEdge(child));
     	}
     	return filteredTree;
