@@ -70,6 +70,10 @@ import com.hp.hpl.jena.vocabulary.RDF;
  */
 public class QueryTreeImpl<N> implements QueryTree<N>{
 	
+	enum NodeType{
+		RESOURCE, LITERAL, BLANK, VARIABLE;
+	}
+	
 	private N userObject;
 
     private QueryTreeImpl<N> parent;
@@ -119,8 +123,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	for(QueryTree<N> child : tree.getChildren()){
     		subTree = new QueryTreeImpl<N>(child);
     		subTree.setId(child.getId());
-    		subTree.setLiteralNode(child.isLiteralNode());
-    		subTree.setResourceNode(child.isResourceNode());
+    		subTree.setIsLiteralNode(child.isLiteralNode());
+    		subTree.setIsResourceNode(child.isResourceNode());
     		addChild(subTree, tree.getEdge(child));
     	}
     }
@@ -175,11 +179,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     @Override
-    public void setLiteralNode(boolean isLiteralNode) {
+    public void setIsLiteralNode(boolean isLiteralNode) {
     	this.isLiteralNode = isLiteralNode;
     }
     
-    public void setBlankNode(boolean isBlankNode) {
+    public void setIsBlankNode(boolean isBlankNode) {
 		this.isBlankNode = isBlankNode;
 	}
     
@@ -193,7 +197,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     @Override
-    public void setResourceNode(boolean isResourceNode) {
+    public void setIsResourceNode(boolean isResourceNode) {
     	this.isResourceNode = isResourceNode;
     }
     

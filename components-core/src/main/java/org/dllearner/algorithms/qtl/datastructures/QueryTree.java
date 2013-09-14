@@ -59,11 +59,11 @@ public interface QueryTree<N> {
     	
     boolean isLiteralNode();
     
-    void setLiteralNode(boolean isLiteralNode);
+    void setIsLiteralNode(boolean isLiteralNode);
     
     boolean isResourceNode();
     
-    void setResourceNode(boolean isResourceNode);
+    void setIsResourceNode(boolean isResourceNode);
     
     boolean isVarNode();
     

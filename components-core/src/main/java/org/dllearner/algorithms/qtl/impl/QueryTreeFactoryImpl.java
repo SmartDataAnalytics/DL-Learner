@@ -243,7 +243,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 						subTree = new QueryTreeImpl<String>(sb.toString());
 //						subTree = new QueryTreeImpl<String>(lit.toString());
 						subTree.setId(nodeId++);
-						subTree.setLiteralNode(true);
+						subTree.setIsLiteralNode(true);
 						if(lit.getDatatype() == XSDDatatype.XSDinteger 
 								|| lit.getDatatype() == XSDDatatype.XSDdouble 
 								|| lit.getDatatype() == XSDDatatype.XSDdate
@@ -258,13 +258,13 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 					} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
 						if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 							subTree = new QueryTreeImpl<String>(st.getObject().toString());
-							subTree.setResourceNode(true);
+							subTree.setIsResourceNode(true);
 							tree.addChild(subTree, st.getPredicate().toString());
 							if(depth < maxDepth){
 								fillTree(subTree, resource2Statements, depth);
 							}
 							if(object.isAnon()){
-								subTree.setBlankNode(true);
+								subTree.setIsBlankNode(true);
 							}
 							
 						}
@@ -272,7 +272,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 						if(depth < maxDepth &&
 								!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 							subTree = new QueryTreeImpl<String>(st.getObject().toString());
-							subTree.setResourceNode(true);
+							subTree.setIsResourceNode(true);
 							tree.addChild(subTree, st.getPredicate().toString());
 							fillTree(subTree, resource2Statements, depth);
 						}

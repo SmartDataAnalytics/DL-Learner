@@ -7,12 +7,14 @@ import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
 	private QueryTree<N> tree;
-	private Collection<QueryTree<N>> uncoveredExamples;
+	private Collection<QueryTree<N>> falseNegatives;
+	private Collection<QueryTree<N>> falsePositives;
 	private double score;
 
-	public EvaluatedQueryTree(QueryTree<N> tree, Collection<QueryTree<N>> uncoveredExamples, double score) {
+	public EvaluatedQueryTree(QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, Collection<QueryTree<N>> falsePositives, double score) {
 		this.tree = tree;
-		this.uncoveredExamples = uncoveredExamples;
+		this.falseNegatives = falseNegatives;
+		this.falsePositives = falsePositives;
 		this.score = score;
 	}
 	
@@ -20,8 +22,18 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 		return tree;
 	}
 	
-	public Collection<QueryTree<N>> getUncoveredExamples() {
-		return uncoveredExamples;
+	/**
+	 * @return the falseNegatives
+	 */
+	public Collection<QueryTree<N>> getFalseNegatives() {
+		return falseNegatives;
+	}
+	
+	/**
+	 * @return the falsePositives
+	 */
+	public Collection<QueryTree<N>> getFalsePositives() {
+		return falsePositives;
 	}
 	
 	public double getScore() {
@@ -38,5 +50,13 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 		} else {
 			return 1;
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "QueryTree(Score:" + score + ")\n" + tree.getStringRepresentation();
 	}
 }
