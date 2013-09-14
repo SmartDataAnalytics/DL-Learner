@@ -14,9 +14,6 @@ import org.dllearner.algorithms.isle.StopWordFilter;
 import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import cern.colt.Arrays;
-import cern.colt.list.AbstractCollection;
-
 import edu.stanford.nlp.util.Sets;
 
 /**
