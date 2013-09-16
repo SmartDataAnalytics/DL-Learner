@@ -105,20 +105,9 @@
 			<version>3.4.4</version>
 		</dependency>
 
-		<!-- THIS IS FROM THE UNIBAS REPO -->
 		<dependency>
-			<groupId>com.owldl</groupId>
+			<groupId>com.clarkparsia</groupId>
 			<artifactId>pellet</artifactId>
-			<exclusions>
-				<exclusion>  <!-- declare the exclusion here -->
-					<groupId>org.mortbay.jetty</groupId>
-					<artifactId>org.mortbay.jetty</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>owlapi</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>
