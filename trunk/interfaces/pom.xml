@@ -525,6 +525,10 @@
 					<groupId>net.sourceforge.owlapi</groupId>
 					<artifactId>owlapi</artifactId>
 				</exclusion>
+				 <exclusion>
+					<groupId>com.owldl</groupId>
+					<artifactId>pellet</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
