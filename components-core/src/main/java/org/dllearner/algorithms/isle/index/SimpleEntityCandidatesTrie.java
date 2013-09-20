@@ -50,21 +50,40 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                 if (text.trim().isEmpty()) {
                     continue;
                 }
+                
                 addEntry(text, entity);
+                addSubsequences(entity, text);
+                
                 for (String alternativeText : nameGenerator.getAlternativeText(text)) {
                     addEntry(alternativeText, entity);
                 }
-                // Adds also composing words, e.g. for "has child", "has" and "child" are also added
-                if (text.contains(" ")) {
-                    for (String subtext : text.split(" ")) {
-                        addEntry(subtext, entity);
-                        for (String alternativeText : nameGenerator.getAlternativeText(subtext)) {
-                            addEntry(alternativeText, entity);
-                        }
-                        //System.out.println("trie.add("+subtext+","++")");
-                    }
-                }
+                
+                
             }
+        }
+	}
+	
+	/**
+	 * Adds the subsequences of a test
+	 * @param entity
+	 * @param text
+	 */
+	private void addSubsequences(Entity entity, String text) {
+        if (text.contains(" ")) {
+        	String[] tokens = text.split(" ");
+        	for (int size=1; size<tokens.length; size++) {
+        		
+        		for (int start=0; start<tokens.length-size+1; start++) {
+        			String subsequence = "";
+        			for (int i=0; i<size; i++) {
+        				subsequence += tokens[start+i] + " ";
+        			}
+        			subsequence = subsequence.trim();
+        			
+            		addEntry(subsequence, entity);
+        		}
+        		
+        	}
         }
 	}
 	
