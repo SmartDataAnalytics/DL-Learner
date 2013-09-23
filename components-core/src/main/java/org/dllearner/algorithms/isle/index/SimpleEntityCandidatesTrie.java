@@ -52,13 +52,11 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                 }
                 
                 addEntry(text, entity);
-                addSubsequences(entity, text);
+                addSubsequencesWordNet(entity, text);
                 
                 for (String alternativeText : nameGenerator.getAlternativeText(text)) {
                     addEntry(alternativeText, entity);
                 }
-                
-                
             }
         }
 	}
@@ -86,8 +84,57 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
         	}
         }
 	}
-	
-	@Override
+
+    private void addSubsequencesWordNet(Entity entity, String text) {
+        if (text.contains(" ")) {
+            String[] tokens = text.split(" ");
+
+            List<String>[] wordnetTokens = (ArrayList<String>[]) new ArrayList[tokens.length];
+
+            // generate list of lemmatized wordnet synonyms for each token
+            for (int i = 0; i < tokens.length; i++) {
+                wordnetTokens[i] = new ArrayList<String>();
+                wordnetTokens[i].add(LinguisticUtil.getInstance().getNormalizedForm(tokens[i].toLowerCase()));
+                for (String w : LinguisticUtil.getInstance().getTopSynonymsForWord(tokens[i], 5)) {
+                    wordnetTokens[i].add(LinguisticUtil.getInstance().getNormalizedForm(w).toLowerCase());
+                }
+            }
+
+            // generate subsequences starting at the given start index of the given size
+            Set<String> allPossibleSubsequences = getAllPossibleSubsequences(wordnetTokens);
+
+            for (String s : allPossibleSubsequences) {
+                addEntry(s, entity);
+            }
+        }
+    }
+
+    private static Set<String> getAllPossibleSubsequences(List<String>[] wordnetTokens) {
+        ArrayList<String> res = new ArrayList<String>();
+
+        for (int size = 1; size < wordnetTokens.length + 1; size++) {
+            for (int start = 0; start < wordnetTokens.length - size + 1; start++) {
+                getPossibleSubsequencesRec(res, new ArrayList<String>(), wordnetTokens, 0, size);
+            }
+        }
+
+        return new HashSet<String>(res);
+    }
+
+    private static void getPossibleSubsequencesRec(List<String> allSubsequences, List<String> currentSubsequence, List<String>[] wordnetTokens,
+                                            int curStart, int maxLength) {
+        if (currentSubsequence.size() == maxLength) {
+            allSubsequences.add(StringUtils.join(currentSubsequence, " "));
+            return;
+        }
+        for (String w : wordnetTokens[curStart]) {
+            ArrayList<String> tmpSequence = new ArrayList<String>(currentSubsequence);
+            tmpSequence.add(w);
+            getPossibleSubsequencesRec(allSubsequences, tmpSequence, wordnetTokens, curStart + 1, maxLength);
+        }
+    }
+
+    @Override
 	public void addEntry(String s, Entity e) {
 		Set<Entity> candidates;
 		if (trie.contains(s)) 
@@ -124,8 +171,31 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 		}
 		return output;
 	}
-	
-	public void printTrie() {
+
+    public static void main(String[] args) {
+        String[] tokens = "this is a long and very complex text".split(" ");
+
+        List<String>[] wordnetTokens = (ArrayList<String>[]) new ArrayList[tokens.length];
+
+        // generate list of lemmatized wordnet synonyms for each token
+        for (int i = 0; i < tokens.length; i++) {
+            wordnetTokens[i] = new ArrayList<String>();
+            wordnetTokens[i].add(LinguisticUtil.getInstance().getNormalizedForm(tokens[i]));
+            for (String w : LinguisticUtil.getInstance().getTopSynonymsForWord(tokens[i], 5)) {
+                System.out.println("Adding: " + LinguisticUtil.getInstance().getNormalizedForm(w));
+                wordnetTokens[i].add(LinguisticUtil.getInstance().getNormalizedForm(w).replaceAll("_", " "));
+            }
+        }
+
+        // generate subsequences starting at the given start index of the given size
+        Set<String> allPossibleSubsequences = getAllPossibleSubsequences(wordnetTokens);
+
+        for (String s : allPossibleSubsequences) {
+            System.out.println(s);
+        }
+    }
+
+    public void printTrie() {
 		System.out.println(this.toString());
 		
 	}
@@ -186,9 +256,8 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
             ArrayList<String> res = new ArrayList<String>();
             res.add(LinguisticUtil.getInstance().getNormalizedForm(word));
 
-            for (String w : LinguisticUtil.getInstance().getTopSynonymsForWord(
-                    LinguisticUtil.getInstance().getNormalizedForm(word), maxNumberOfSenses)) {
-                res.add(w.replaceAll("_", " "));
+            for (String w : LinguisticUtil.getInstance().getTopSynonymsForWord(word, maxNumberOfSenses)) {
+                res.add(LinguisticUtil.getInstance().getNormalizedForm(w.replaceAll("_", " ")));
             }
 
             return res;
