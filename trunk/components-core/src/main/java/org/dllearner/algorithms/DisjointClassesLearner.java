@@ -132,8 +132,6 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			return;
 		}
 		
-		computeAllDisjointClassAxiomsOptimized();
-		
 		//at first get all existing classes in knowledge base
 		allClasses = getAllClasses();
 		allClasses.remove(classToDescribe);
