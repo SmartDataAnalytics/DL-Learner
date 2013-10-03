@@ -570,7 +570,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		return schema;
 	}
 
-	private Model loadIncrementally(String query){System.err.println(query);
+	private Model loadIncrementally(String query){
 		QueryExecutionFactory old = qef;
 		qef = new QueryExecutionFactoryPaginated(qef, 10000);
 		QueryExecution qe = qef.createQueryExecution(query);
@@ -1200,6 +1200,23 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		} 
 		return null;
 	}
+	
+	public SortedSet<NamedClass> getDomains(ObjectProperty objectProperty) {
+		String query = String.format("SELECT ?domain WHERE {" +
+				"<%s> <%s> ?domain. FILTER(isIRI(?domain))" +
+				"}", 
+				objectProperty.getName(), RDFS.domain.getURI());
+
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		SortedSet<NamedClass> domains = new TreeSet<NamedClass>();
+		while(rs.hasNext()){
+			qs = rs.next();
+			domains.add(new NamedClass(qs.getResource("domain").getURI()));
+
+		}
+		return domains;
+	}
 
 	@Override
 	public Description getDomain(DatatypeProperty datatypeProperty) {
@@ -1237,7 +1254,6 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		while(rs.hasNext()){
 			qs = rs.next();
 			ranges.add(new NamedClass(qs.getResource("range").getURI()));
-
 		}
 		if(ranges.size() == 1){
 			return ranges.get(0);
@@ -1245,6 +1261,22 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 			return new Intersection(ranges);
 		} 
 		return null;
+	}
+	
+	public SortedSet<NamedClass> getRanges(ObjectProperty objectProperty) {
+		String query = String.format("SELECT ?range WHERE {" +
+				"<%s> <%s> ?range. FILTER(isIRI(?range))" +
+				"}", 
+				objectProperty.getName(), RDFS.range.getURI());
+
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		SortedSet<NamedClass> ranges = new TreeSet<NamedClass>();
+		while(rs.hasNext()){
+			qs = rs.next();
+			ranges.add(new NamedClass(qs.getResource("range").getURI()));
+		}
+		return ranges;
 	}
 
 	public boolean isObjectProperty(String propertyURI){
