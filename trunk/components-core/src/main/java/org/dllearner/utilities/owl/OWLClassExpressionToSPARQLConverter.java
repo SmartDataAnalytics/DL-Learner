@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import org.aksw.commons.collections.diff.ModelDiff;
+import org.dllearner.core.owl.Description;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -63,7 +63,6 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -96,6 +95,10 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	public VariablesMapping getVariablesMapping() {
 		return mapping;
 	}
+	
+	public String convert(String rootVariable, Description description){
+		return convert(rootVariable, OWLAPIConverter.getOWLAPIDescription(description));
+	}
 
 	public String convert(String rootVariable, OWLClassExpression expr){
 		this.expr = expr;
@@ -127,6 +130,23 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		queryString += triplePattern;
 		queryString += "}";
 		return QueryFactory.create(queryString, Syntax.syntaxARQ);
+	}
+	
+	public Query asCountQuery(OWLClassExpression expr){
+		String rootVariable = "?s";
+		String queryString = "SELECT (COUNT(DISTINCT " + rootVariable + ") AS ?cnt) WHERE {";
+		String triplePattern = convert(rootVariable, expr);
+		queryString += triplePattern;
+		queryString += "}";
+		return QueryFactory.create(queryString, Syntax.syntaxARQ);
+	}
+	
+	public Query asCountQuery(Description description){
+		return asCountQuery(OWLAPIConverter.getOWLAPIDescription(description));
+	}
+	
+	public Query asQuery(String rootVariable, Description desc, boolean countQuery){
+		return asQuery(rootVariable, OWLAPIConverter.getOWLAPIDescription(desc), countQuery);
 	}
 	
 	public Query asQuery(String rootVariable, OWLClassExpression expr, Set<? extends OWLEntity> variableEntities){

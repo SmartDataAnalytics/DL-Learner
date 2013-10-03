@@ -42,11 +42,15 @@ import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DisjointClassesAxiom;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,6 +132,8 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			return;
 		}
 		
+		computeAllDisjointClassAxiomsOptimized();
+		
 		//at first get all existing classes in knowledge base
 		allClasses = getAllClasses();
 		allClasses.remove(classToDescribe);
@@ -177,7 +183,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			int cnt = qs.getLiteral("cnt").getInt();
 			class2Overlap.put(cls, cnt);
 		}
-		//for each property in knowledge base
+		//for each class in knowledge base
 		for(NamedClass cls : allClasses){if(!cls.toString().equals("http://dbpedia.org/ontology/MotorcycleRider"))continue;
 			//get the popularity
 			int otherPopularity = reasoner.getPopularity(cls);
@@ -353,7 +359,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		
 		
 		EvaluatedDescription evalDesc;
-		//firstly, create disjoint classexpressions which not occur and give score of 1
+		//firstly, create disjoint classexpressions which do not occur and give score of 1
 		for(NamedClass cls : completeDisjointclasses){
 			if(useClassPopularity){
 				int overlap = 0;
@@ -413,6 +419,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			} else {
 				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1));
 			}
+			evalDescs.add(evalDesc);
 		}
 		
 		class2Count.put(classToDescribe, total);
@@ -450,16 +457,142 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		}
 	}
 	
+	private void computeAllDisjointClassAxiomsOptimized(){
+		//get number of instances of A
+		int instanceCountA = reasoner.getPopularity(classToDescribe);
+		
+		//firstly, we compute the disjointness to all sibling classes
+		Set<EvaluatedDescription> disjointessOfSiblings = computeDisjointessOfSiblings(classToDescribe);
+		System.out.println(disjointessOfSiblings);
+		
+		//we go the hierarchy up
+		SortedSet<Description> superClasses = reasoner.getSuperClasses(classToDescribe);
+		for (Description sup : superClasses) {
+			Set<EvaluatedDescription> disjointessOfSuperClass = computeDisjointessOfSiblings(sup.asNamedClass());
+			System.out.println(disjointessOfSuperClass);
+		}
+	}
+	
+	private Set<EvaluatedDescription> computeDisjointessOfSiblings(NamedClass cls){
+		Set<EvaluatedDescription> evaluatedDescriptions = new HashSet<EvaluatedDescription>();
+		
+		//get number of instances of A
+		int instanceCountA = reasoner.getPopularity(cls);
+		
+		if(instanceCountA > 0){
+			//we compute the disjointness to all sibling classes
+			Set<NamedClass> siblingClasses = reasoner.getSiblingClasses(cls);
+			
+			for (NamedClass sib : siblingClasses) {
+				//get number of instances of B
+				int instanceCountB = reasoner.getPopularity(sib);
+				
+				if(instanceCountB > 0){
+					//get number of instances of (A and B)
+					int instanceCountAB = reasoner.getPopularity(new Intersection(cls, sib));
+
+					//we compute the estimated precision
+					double precision = accuracy(instanceCountB, instanceCountAB);
+					//we compute the estimated recall
+					double recall = accuracy(instanceCountA, instanceCountAB);
+					//compute the overall score
+					double score = 1 - fMEasure(precision, recall);
+					
+					EvaluatedDescription evalDesc = new EvaluatedDescription(sib, new AxiomScore(score));
+					evaluatedDescriptions.add(evalDesc);
+				}
+			}
+		}
+		
+		return evaluatedDescriptions;
+	}
+	
+	private EvaluatedAxiom computeDisjointess(NamedClass clsA, NamedClass clsB){
+		logger.debug("Computing disjointness between " + clsA + " and " + clsB + "...");
+		
+		double scoreValue = 0;
+		
+		//get number of instances of A
+		int instanceCountA = reasoner.getPopularity(clsA);
+		
+		//get number of instances of B
+		int instanceCountB = reasoner.getPopularity(clsB);
+		
+		if(instanceCountA > 0 && instanceCountB > 0){
+			//get number of instances of (A and B)
+			int instanceCountAB = reasoner.getPopularity(new Intersection(clsA, clsB));
+			
+			//we compute the estimated precision
+			double precision = accuracy(instanceCountB, instanceCountAB);
+			
+			//we compute the estimated recall
+			double recall = accuracy(instanceCountA, instanceCountAB);
+			
+			//compute the overall score
+			scoreValue = 1 - fMEasure(precision, recall);
+			
+		}
+		
+		AxiomScore score = new AxiomScore(scoreValue);
+		
+		return new EvaluatedAxiom(new DisjointClassesAxiom(clsA, clsB), score);
+	}
+	
+	public Set<EvaluatedAxiom> computeSchemaDisjointness(){
+		Set<EvaluatedAxiom> axioms = new HashSet<EvaluatedAxiom>();
+		
+		Set<NamedClass> classes = reasoner.getOWLClasses("http://dbpedia.org/ontology/");
+		computeDisjointness(classes);
+		
+		//start from the top level classes, i.e. the classes whose direct super class is owl:Thing
+		SortedSet<Description> topLevelClasses = reasoner.getMostGeneralClasses();
+		axioms.addAll(computeDisjointness(asNamedClasses(topLevelClasses)));
+		
+		for (Description cls : topLevelClasses) {
+			
+		}
+		
+		return axioms;
+	}
+	
+	public Set<EvaluatedAxiom> computeDisjointness(Set<NamedClass> classes){
+		Set<EvaluatedAxiom> axioms = new HashSet<EvaluatedAxiom>();
+		
+		for (NamedClass clsA : classes) {
+			for (NamedClass clsB : classes) {
+				if(!clsA.equals(clsB)){
+					axioms.add(computeDisjointess(clsA, clsB));
+				}
+			}
+		}
+		
+		return axioms;
+	}
+	
+	public static Set<NamedClass> asNamedClasses(Set<Description> descriptions){
+		Set<NamedClass> classes = new TreeSet<NamedClass>();
+		for (Description description : descriptions) {
+			if(description.isNamedClass()){
+				classes.add(description.asNamedClass());
+			}
+		}
+		return classes;
+	}
+	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()));
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		ks = new LocalModelBasedSparqlEndpointKS(new URL("http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/examples/swore/swore.rdf?revision=2217"));
-		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		DisjointClassesLearner l = new DisjointClassesLearner(ks);
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Agent"));
+		SPARQLReasoner sparqlReasoner = new SPARQLReasoner(ks, "cache");
+		sparqlReasoner.prepareSubsumptionHierarchy();
+		sparqlReasoner.precomputeClassPopularity();
+		l.setReasoner(sparqlReasoner);
+		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Actor"));
 		l.setMaxExecutionTimeInSeconds(60);
 		l.init();
-		l.getReasoner().prepareSubsumptionHierarchy();
-		l.getReasoner().precomputeClassPopularity();
+		l.computeSchemaDisjointness();
+		
 //		System.out.println(l.getReasoner().getClassHierarchy().getSubClasses(new NamedClass("http://dbpedia.org/ontology/Athlete"), false));System.exit(0);
 		l.start();
 		

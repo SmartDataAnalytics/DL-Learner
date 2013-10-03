@@ -308,6 +308,23 @@
 			<artifactId>commons-math3</artifactId>
 			<version>3.1.1</version>
 		</dependency>
+		<dependency>
+				<groupId>org.aksw.commons</groupId>
+				<artifactId>collections</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.aksw.commons</groupId>
+				<artifactId>util</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.4.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+			</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

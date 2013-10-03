@@ -3,7 +3,6 @@
  */
 package org.dllearner.algorithms.isle.index.semantic.simple;
 
-import org.dllearner.algorithms.isle.SimpleWordSenseDisambiguation;
 import org.dllearner.algorithms.isle.index.SemanticAnnotator;
 import org.dllearner.algorithms.isle.index.SimpleEntityCandidatesTrie;
 import org.dllearner.algorithms.isle.index.TrieEntityCandidateGenerator;
@@ -11,6 +10,7 @@ import org.dllearner.algorithms.isle.index.TrieLinguisticAnnotator;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
 import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
 import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
+import org.dllearner.algorithms.isle.wsd.SimpleWordSenseDisambiguation;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
