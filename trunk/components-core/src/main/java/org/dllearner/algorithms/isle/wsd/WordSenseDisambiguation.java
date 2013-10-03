@@ -1,12 +1,11 @@
-package org.dllearner.algorithms.isle;
+package org.dllearner.algorithms.isle.wsd;
+
+import java.util.Set;
 
 import org.dllearner.algorithms.isle.index.Annotation;
-import org.dllearner.algorithms.isle.index.Document;
 import org.dllearner.algorithms.isle.index.SemanticAnnotation;
 import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.Set;
 
 /**
  * Abstract class for the word sense disambiguation component.

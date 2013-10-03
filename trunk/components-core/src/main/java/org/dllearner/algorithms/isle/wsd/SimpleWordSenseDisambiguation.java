@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.isle;
+package org.dllearner.algorithms.isle.wsd;
 
 import java.util.HashSet;
 import java.util.Set;
