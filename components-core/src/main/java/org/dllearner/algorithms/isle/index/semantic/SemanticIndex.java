@@ -7,12 +7,12 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.isle.EntityCandidateGenerator;
-import org.dllearner.algorithms.isle.WordSenseDisambiguation;
 import org.dllearner.algorithms.isle.index.AnnotatedDocument;
 import org.dllearner.algorithms.isle.index.LinguisticAnnotator;
 import org.dllearner.algorithms.isle.index.SemanticAnnotator;
 import org.dllearner.algorithms.isle.index.TextDocument;
 import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
+import org.dllearner.algorithms.isle.wsd.WordSenseDisambiguation;
 import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;

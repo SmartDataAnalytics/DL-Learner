@@ -212,6 +212,14 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 		return toKBSyntaxString(null, null);
 	}
 	
+	public boolean isNamedClass(){
+		return this instanceof NamedClass;
+	}
+	
+	public NamedClass asNamedClass(){
+		return (NamedClass)this;
+	}
+	
 	/**
 	 * Returns all named entities. 
 	 * @return

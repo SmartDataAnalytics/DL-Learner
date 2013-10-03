@@ -6,6 +6,7 @@ package org.dllearner.algorithms.isle;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.Files;
+
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.isle.index.*;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
@@ -17,6 +18,8 @@ import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceUtils;
 import org.dllearner.algorithms.isle.textretrieval.EntityTextRetriever;
 import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
+import org.dllearner.algorithms.isle.wsd.SimpleWordSenseDisambiguation;
+import org.dllearner.algorithms.isle.wsd.WordSenseDisambiguation;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Entity;
@@ -28,9 +31,12 @@ import org.dllearner.utilities.Helper;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
@@ -244,5 +250,15 @@ public class ISLETest {
 //		System.out.println("runtime:            " + Helper.prettyPrintNanoSeconds(isle.getTotalRuntimeNs()));
 		
 	}	
+	
+	@Test
+	public void testWordSenseDisambiguation() throws Exception {
+		Set<OWLEntity> context = StructuralEntityContext.getContext(ontology, df.getOWLClass(IRI.create(cls.getName())));
+		System.out.println(context);
+		
+		Set<String> contextNL = StructuralEntityContext.getContextInNaturalLanguage(ontology, df.getOWLClass(IRI.create(cls.getName())));
+		System.out.println(contextNL);
+	}
+	
 	
 }

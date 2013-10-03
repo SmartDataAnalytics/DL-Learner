@@ -42,6 +42,7 @@ import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
+import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.IndividualReasoner;
 import org.dllearner.core.SchemaReasoner;
@@ -69,6 +70,7 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,6 +112,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	private boolean prepared = false;
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
+	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 
 
 	public SPARQLReasoner(SparqlEndpointKS ks) {
@@ -145,6 +148,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	}
 	
 	public SPARQLReasoner(SparqlEndpointKS ks, CacheCoreEx cacheBackend) {
+		this(ks, new CacheExImpl(cacheBackend));
+	}
+	
+	public SPARQLReasoner(SparqlEndpointKS ks, CacheEx cache) {
 		this.ks = ks;
 
 		classPopularityMap = new HashMap<NamedClass, Integer>();
@@ -153,8 +160,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ks.getEndpoint();
 			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
-			qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+			qef = new QueryExecutionFactoryCacheEx(qef, cache);
 //			qef = new QueryExecutionFactoryPaginated(qef, 10000);
 		} else {
 			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
@@ -286,6 +292,17 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 			return cnt;
 		}
 
+	}
+	
+	public int getPopularity(Description description){
+		if(classPopularityMap != null && classPopularityMap.containsKey(description)){
+			return classPopularityMap.get(description);
+		} else {
+			String query = converter.asCountQuery(description).toString();
+			ResultSet rs = executeSelectQuery(query);
+			int cnt = rs.next().getLiteral("cnt").getInt();
+			return cnt;
+		}
 	}
 
 	public int getPopularity(ObjectProperty op){
@@ -503,22 +520,25 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	 */
 	public Model loadOWLSchema(){
 		Model schema = ModelFactory.createDefaultModel();
+		String prefixes = 
+				"PREFIX owl:<http://www.w3.org/2002/07/owl#> "
+				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> ";
 		//axioms according to owl:Class entities
-		String query = 
+		String query = prefixes +
 				"CONSTRUCT {" +
 				"?s a owl:Class." +
 				"?s rdfs:subClassOf ?sup." +
 				"?s owl:equivalentClass ?equiv." +
-				"?s owl:djsointWith ?disj." +
+				"?s owl:disjointWith ?disj." +
 				"} WHERE {" +
-				"?s a owl:Class." +
-				"OPTIONAL{?s rdfs:subClassOf ?sup.}" +
-				"OPTIONAL{?s owl:equivalentClass ?equiv.}" +
-				"OPTIONAL{?s owl:djsointWith ?disj.}" +
+				"?s a owl:Class. " +
+				"OPTIONAL{?s rdfs:subClassOf ?sup.} " +
+				"OPTIONAL{?s owl:equivalentClass ?equiv.} " +
+				"OPTIONAL{?s owl:disjointWith ?disj.}" +
 				"}";
 		schema.add(loadIncrementally(query));
 		//axioms according to owl:ObjectProperty entities
-		query = 
+		query = prefixes +
 				"CONSTRUCT {" +
 				"?s a owl:ObjectProperty." +
 				"?s a ?type." +
@@ -526,14 +546,14 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 				"?s rdfs:range ?range." +
 				"} WHERE {" +
 				"?s a owl:ObjectProperty." +
-				"?s a ?type." +
-				"OPTIONAL{?s rdfs:domain ?domain.}" +
+				"?s a ?type. " +
+				"OPTIONAL{?s rdfs:domain ?domain.} " +
 				"OPTIONAL{?s rdfs:range ?range.}" +
 				"}";
 		schema.add(loadIncrementally(query));
 
 		//axioms according to owl:ObjectProperty entities
-		query = 
+		query = prefixes +
 				"CONSTRUCT {" +
 				"?s a owl:DatatypeProperty." +
 				"?s a ?type." +
@@ -541,8 +561,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 				"?s rdfs:range ?range." +
 				"} WHERE {" +
 				"?s a owl:DatatypeProperty." +
-				"?s a ?type." +
-				"OPTIONAL{?s rdfs:domain ?domain.}" +
+				"?s a ?type. " +
+				"OPTIONAL{?s rdfs:domain ?domain.} " +
 				"OPTIONAL{?s rdfs:range ?range.}" +
 				"}";		
 		schema.add(loadIncrementally(query));
@@ -550,11 +570,13 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		return schema;
 	}
 
-	private Model loadIncrementally(String query){
-		System.out.println(query);
+	private Model loadIncrementally(String query){System.err.println(query);
+		QueryExecutionFactory old = qef;
+		qef = new QueryExecutionFactoryPaginated(qef, 10000);
 		QueryExecution qe = qef.createQueryExecution(query);
 		Model model = qe.execConstruct();
 		qe.close();
+		qef = old;
 		return model;
 	}
 
@@ -693,9 +715,13 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		return types;
 	}
 	
-	public Set<NamedClass> getOWLClasses(String namespace) {
-		Set<NamedClass> types = new HashSet<NamedClass>();
-		String query = String.format("SELECT DISTINCT ?class WHERE {?class a <%s>. FILTER(REGEX(?class,'%s'))}",OWL.Class.getURI(), namespace);
+	public SortedSet<NamedClass> getOWLClasses(String namespace) {
+		SortedSet<NamedClass> types = new TreeSet<NamedClass>();
+		String query = "SELECT DISTINCT ?class WHERE {?class a <" + OWL.Class.getURI() + ">.";
+		if(namespace != null){
+			query += "FILTER(REGEX(STR(?class),'" + namespace + "'))";
+		}
+		query += "}";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -716,7 +742,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		Set<NamedClass> siblings = new TreeSet<NamedClass>();
 		String query = "SELECT ?sub WHERE { <" + cls.getName() + "> <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
 		query += "?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
-		query += "FILTER( !SAMETERM(?sub, <" + cls.getName() + ">)) . }";System.out.println(query);
+		query += "FILTER( !SAMETERM(?sub, <" + cls.getName() + ">)) . }";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -1359,6 +1385,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	@Override
 	public ClassHierarchy getClassHierarchy() {
 		return hierarchy;
+	}
+	
+	public SortedSet<Description> getMostGeneralClasses() {
+		return hierarchy.getMostGeneralClasses();
 	}
 
 	@Override

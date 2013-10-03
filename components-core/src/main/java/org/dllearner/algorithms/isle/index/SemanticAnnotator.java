@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.dllearner.algorithms.isle.EntityCandidateGenerator;
-import org.dllearner.algorithms.isle.WordSenseDisambiguation;
+import org.dllearner.algorithms.isle.wsd.WordSenseDisambiguation;
 import org.dllearner.core.owl.Entity;
 
 /**
