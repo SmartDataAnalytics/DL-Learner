@@ -278,7 +278,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected Model executeConstructQuery(String query) {
-		logger.debug("Sending query\n{} ...", query);
+		logger.trace("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
 			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
@@ -315,7 +315,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected ResultSet executeSelectQuery(String query) {
-		logger.info("Sending query\n{} ...", query);
+		logger.trace("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
 			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
@@ -347,7 +347,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected ResultSet executeSelectQuery(String query, Model model) {
-		logger.debug("Sending query on local model\n{} ...", query);
+		logger.trace("Sending query on local model\n{} ...", query);
 		QueryExecution qexec = QueryExecutionFactory.create(QueryFactory.create(query, Syntax.syntaxARQ), model);
 		ResultSet rs = qexec.execSelect();;
 
@@ -355,7 +355,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	protected boolean executeAskQuery(String query){
-		logger.debug("Sending query\n{} ...", query);
+		logger.trace("Sending query\n{} ...", query);
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
 			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);

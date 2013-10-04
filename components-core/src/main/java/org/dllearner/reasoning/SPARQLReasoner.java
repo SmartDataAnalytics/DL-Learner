@@ -592,6 +592,22 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		}
 		return types;
 	}
+	
+	public Set<NamedClass> getTypes(Individual individual, String namespace) {
+		Set<NamedClass> types = new HashSet<NamedClass>();
+		String query = "SELECT DISTINCT ?class WHERE {<" + individual.getName() + "> a ?class.";
+		if(namespace != null){
+			query += "FILTER(REGEX(STR(?class),'^" + namespace + "'))";
+		}
+		query += "}";
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			types.add(new NamedClass(qs.getResource("class").getURI()));
+		}
+		return types;
+	}
 
 	public Set<NamedClass> getTypes() {
 		return getTypes((String)null);
@@ -1638,14 +1654,14 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	}
 
 	private ResultSet executeSelectQuery(String query){
-		logger.debug("Sending query \n {}", query);
+		logger.trace("Sending query \n {}", query);
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
 		return rs;
 	}
 
 	private ResultSet executeSelectQuery(String query, long timeout){
-		logger.debug("Sending query \n {}", query);
+		logger.trace("Sending query \n {}", query);
 		QueryExecution qe = qef.createQueryExecution(query);
 		qe.setTimeout(timeout);
 		ResultSet rs = qe.execSelect();
@@ -1653,7 +1669,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	}
 	
 	private boolean executeAskQuery(String query){
-		logger.debug("Sending query \n {}", query);
+		logger.trace("Sending query \n {}", query);
 		QueryExecution qe = qef.createQueryExecution(query);
 		boolean ret = qe.execAsk();
 		return ret;
