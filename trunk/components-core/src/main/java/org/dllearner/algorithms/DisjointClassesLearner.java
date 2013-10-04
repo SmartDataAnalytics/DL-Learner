@@ -505,8 +505,18 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		return evaluatedDescriptions;
 	}
 	
-	private EvaluatedAxiom computeDisjointess(NamedClass clsA, NamedClass clsB){
+	public EvaluatedAxiom computeDisjointess(NamedClass clsA, NamedClass clsB){
 		logger.debug("Computing disjointness between " + clsA + " and " + clsB + "...");
+		
+		//if clsA = clsB
+		if(clsA.equals(clsB)){
+			return new EvaluatedAxiom(new DisjointClassesAxiom(clsA, clsB), new AxiomScore(0d, 1d));
+		};
+		
+		//if the classes are connected via subsumption we assume that they are not disjoint 
+		if(reasoner.isSuperClassOf(clsA, clsB) || reasoner.isSuperClassOf(clsB, clsA)){
+			return new EvaluatedAxiom(new DisjointClassesAxiom(clsA, clsB), new AxiomScore(0d, 1d));
+		};
 		
 		double scoreValue = 0;
 		
