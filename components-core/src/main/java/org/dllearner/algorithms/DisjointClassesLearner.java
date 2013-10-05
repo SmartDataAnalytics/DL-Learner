@@ -568,9 +568,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		
 		for (NamedClass clsA : classes) {
 			for (NamedClass clsB : classes) {
-				if(!clsA.equals(clsB)){
-					axioms.add(computeDisjointess(clsA, clsB));
-				}
+				axioms.add(computeDisjointess(clsA, clsB));
 			}
 		}
 		
