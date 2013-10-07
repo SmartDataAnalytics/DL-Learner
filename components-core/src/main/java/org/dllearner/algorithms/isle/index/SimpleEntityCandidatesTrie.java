@@ -149,7 +149,8 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
 	@Override
 	public Set<Entity> getCandidateEntities(String s) {
-		return trie.get(s);
+        Set<Entity> res = trie.get(s);
+		return res == null ? new HashSet<Entity>() : trie.get(s);
 	}
 
 	@Override
@@ -261,6 +262,36 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
             }
 
             return res;
+        }
+    }
+
+    /**
+     * Pair of the actual word and the word after processing.
+     */
+    public static class ActualModifiedWordPair {
+        private String actualString;
+        private String modifiedString;
+
+        public String getActualString() {
+            return actualString;
+        }
+
+        public void setActualString(String actualString) {
+            this.actualString = actualString;
+        }
+
+        public String getModifiedString() {
+            return modifiedString;
+        }
+
+        public void setModifiedString(String modifiedString) {
+            this.modifiedString = modifiedString;
+        }
+
+        public ActualModifiedWordPair(String actualString, String modifiedString) {
+
+            this.actualString = actualString;
+            this.modifiedString = modifiedString;
         }
     }
 }
