@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
@@ -41,6 +40,14 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.extra.CacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
@@ -51,10 +58,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ExtractionDBCache;
-import org.dllearner.kb.sparql.QueryEngineHTTP;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -109,7 +113,6 @@ import com.google.common.io.Files;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -132,10 +135,12 @@ public class OWLAxiomPatternUsageEvaluation {
 	private OWLObjectRenderer axiomRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
-	private ExtractionDBCache cache = new ExtractionDBCache("pattern-cache/db");
+	private String cacheDirectory = "pattern-cache/db";
+	private CacheEx cache;
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	private QueryExecutionFactory qef;
 	
-	private SparqlEndpointKS ks = new SparqlEndpointKS(endpoint, cache);//new LocalModelBasedSparqlEndpointKS(model);
+	private SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);//new LocalModelBasedSparqlEndpointKS(model);
 	private String ns = "http://dbpedia.org/ontology/";
 	
 	private DecimalFormat format = new DecimalFormat("00.0%");
@@ -183,6 +188,25 @@ public class OWLAxiomPatternUsageEvaluation {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		
+		if(ks.isRemote()){
+			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+			if(cacheDirectory != null){
+				try {
+					long timeToLive = TimeUnit.DAYS.toMillis(30);
+					CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+					cache = new CacheExImpl(cacheBackend);
+					qef = new QueryExecutionFactoryCacheEx(qef, cache);
+					ks.setCache(cache);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}
 		
 		initDBConnection();
@@ -730,7 +754,8 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 		filterModel(fragment);
 		logger.info("...got " + fragment.size() + " triples ");
-		ResultSet rs = QueryExecutionFactory.create("SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a <" + cls.getName() + ">. }", fragment).execSelect();
+		QueryExecutionFactory qef = new QueryExecutionFactoryModel(fragment);
+		ResultSet rs = qef.createQueryExecution("SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a <" + cls.getName() + ">. }").execSelect();
 		int nrOfInstances = rs.next().getLiteral("cnt").getInt();
 		logger.info("with " + nrOfInstances + " instances of class " + cls.getName());
 		fragmentStatistics.addValue(nrOfInstances);
@@ -928,14 +953,15 @@ public class OWLAxiomPatternUsageEvaluation {
 		
 		//2. execute SPARQL query on local model 
 		query = QueryFactory.create("SELECT (COUNT(DISTINCT ?x) AS ?cnt) WHERE {" + converter.convert("?x", patternSubClass) + "}",Syntax.syntaxARQ);
-		int subClassCnt = QueryExecutionFactory.create(query, fragment).execSelect().next().getLiteral("cnt").getInt();
+		QueryExecutionFactory qef = new QueryExecutionFactoryModel(fragment);
+		int subClassCnt = qef.createQueryExecution(query).execSelect().next().getLiteral("cnt").getInt();
 		System.out.println(subClassCnt);
 		
 		Set<OWLEntity> signature = patternSuperClass.getSignature();
 		signature.remove(patternSubClass);
 		query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(patternSubClass, patternSuperClass), signature, true);
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
-		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
+		com.hp.hpl.jena.query.ResultSet rs = qef.createQueryExecution(query).execSelect();
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -1032,7 +1058,8 @@ public class OWLAxiomPatternUsageEvaluation {
 		Query query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(cls, patternSuperClass), signature);
 		logger.info("Running query\n" + query);
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
-		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
+		QueryExecutionFactory qef = new QueryExecutionFactoryModel(fragment);
+		com.hp.hpl.jena.query.ResultSet rs = qef.createQueryExecution(query).execSelect();
 		QuerySolution qs;
 		Set<String> resources = new HashSet<String>();
 		Multiset<OWLAxiom> instantiations = HashMultiset.create();
@@ -1106,14 +1133,15 @@ public class OWLAxiomPatternUsageEvaluation {
 		Query query = QueryFactory.create(
 				"SELECT (COUNT(DISTINCT ?x) AS ?cnt) WHERE {" + converter.convert("?x", patternSubClass) + "}",
 				Syntax.syntaxARQ);
-		int subClassCnt = QueryExecutionFactory.create(query, fragment).execSelect().next().getLiteral("cnt").getInt();
+		QueryExecutionFactory qef = new QueryExecutionFactoryModel(fragment);
+		int subClassCnt = qef.createQueryExecution(query).execSelect().next().getLiteral("cnt").getInt();
 
 		Set<OWLEntity> signature = patternSuperClass.getSignature();
 		signature.remove(patternSubClass);
 		query = converter.asQuery("?x", df.getOWLObjectIntersectionOf(patternSubClass, patternSuperClass), signature, true);
 		logger.info("Running query\n" + query);
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
-		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
+		com.hp.hpl.jena.query.ResultSet rs = qef.createQueryExecution(query).execSelect();
 		QuerySolution qs;
 		while (rs.hasNext()) {
 			qs = rs.next();
@@ -1233,146 +1261,41 @@ public class OWLAxiomPatternUsageEvaluation {
 	}
 	
 	protected com.hp.hpl.jena.query.ResultSet executeSelectQuery(Query query) {
-		com.hp.hpl.jena.query.ResultSet rs = null;
-		if(ks.isRemote()){
-			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
-			ExtractionDBCache cache = ks.getCache();
-			if(cache != null){
-				rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query.toString()));
-			} else {
-				QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
-						query);
-				queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
-				queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
-				try {
-					rs = queryExecution.execSelect();
-					return rs;
-				} catch (QueryExceptionHTTP e) {
-					if(e.getCause() instanceof SocketTimeoutException){
-						logger.warn("Got timeout");
-					} else {
-						logger.error("Exception executing query", e);
-					}
-				}
-			}
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-		} else {
-			QueryExecution queryExecution = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
-			rs = queryExecution.execSelect();
-		}
+		com.hp.hpl.jena.query.ResultSet rs = qef.createQueryExecution(query).execSelect();
 		return rs;
 	}
 	
 	protected com.hp.hpl.jena.query.ResultSet executeSelectQuery(Query query, boolean cached) {
-		com.hp.hpl.jena.query.ResultSet rs = null;
-		if(ks.isRemote()){
-			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
-			ExtractionDBCache cache = ks.getCache();
-			if(cache != null && cached){
-				rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query.toString()));
-			} else {
-				QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
-						query);
-				queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
-				queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
-				try {
-					rs = queryExecution.execSelect();
-					return rs;
-				} catch (QueryExceptionHTTP e) {
-					if(e.getCause() instanceof SocketTimeoutException){
-						logger.warn("Got timeout");
-					} else {
-						logger.error("Exception executing query", e);
-					}
-				}
-			}
-			
-		} else {
-			QueryExecution queryExecution = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
-			rs = queryExecution.execSelect();
-		}
+		com.hp.hpl.jena.query.ResultSet rs = qef.createQueryExecution(query).execSelect();
 		return rs;
 	}
 	
 	protected Model executeConstructQuery(Query query, long timeout) {
-		if(ks.isRemote()){
-			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
-			ExtractionDBCache cache = ks.getCache();
-			Model model = null;
-			try {
-//				if(cache != null){
-//					try {
-//						model = cache.executeConstructQuery(endpoint, query.toString());
-//					} catch (UnsupportedEncodingException e) {
-//						e.printStackTrace();
-//					} catch (SQLException e) {
-//						e.printStackTrace();
-//					}
-//				} else {
-					QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
-							query);
-					queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
-					queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
-					queryExecution.setTimeout(timeout, timeout);
-					model = queryExecution.execConstruct();
-//				}
-				logger.debug("Got " + model.size() + " triples.");
-				return model;
-			} catch (QueryExceptionHTTP e) {
-				if(e.getCause() instanceof SocketTimeoutException){
-					logger.warn("Got timeout");
-				} else {
-					logger.error("Exception executing query", e);
-				}
-				return ModelFactory.createDefaultModel();
+		QueryExecution qe = qef.createQueryExecution(query);
+		qe.setTimeout(timeout);
+		try {
+			return qe.execConstruct();
+		} catch (QueryExceptionHTTP e) {
+			if(e.getCause() instanceof SocketTimeoutException){
+				logger.warn("Got timeout");
+			} else {
+				logger.error("Exception executing query", e);
 			}
-		} else {
-			QueryExecution queryExecution = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
-			Model model = queryExecution.execConstruct();
-			return model;
+			return ModelFactory.createDefaultModel();
 		}
 	}
 	
 	protected Model executeConstructQuery(Query query) {
-		if(ks.isRemote()){
-			SparqlEndpoint endpoint = ((SparqlEndpointKS) ks).getEndpoint();
-			ExtractionDBCache cache = ks.getCache();
-			Model model = null;
-			try {
-				if(cache != null){
-					try {
-						model = cache.executeConstructQuery(endpoint, query.toString());
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				} else {
-					QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(),
-							query);
-					queryExecution.setDefaultGraphURIs(endpoint.getDefaultGraphURIs());
-					queryExecution.setNamedGraphURIs(endpoint.getNamedGraphURIs());
-					model = queryExecution.execConstruct();
-				}
-				logger.debug("Got " + model.size() + " triples.");
-				return model;
-			} catch (QueryExceptionHTTP e) {
-				if(e.getCause() instanceof SocketTimeoutException){
-					logger.warn("Got timeout");
-				} else {
-					logger.error("Exception executing query", e);
-				}
-				return ModelFactory.createDefaultModel();
+		QueryExecution qe = qef.createQueryExecution(query);
+		try {
+			return qe.execConstruct();
+		} catch (QueryExceptionHTTP e) {
+			if(e.getCause() instanceof SocketTimeoutException){
+				logger.warn("Got timeout");
+			} else {
+				logger.error("Exception executing query", e);
 			}
-		} else {
-			QueryExecution queryExecution = QueryExecutionFactory.create(query, ((LocalModelBasedSparqlEndpointKS)ks).getModel());
-			Model model = queryExecution.execConstruct();
-			return model;
+			return ModelFactory.createDefaultModel();
 		}
 	}
 	

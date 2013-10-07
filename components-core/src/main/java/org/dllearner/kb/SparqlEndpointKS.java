@@ -23,12 +23,12 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.aksw.jena_sparql_api.cache.extra.CacheEx;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ListStringEditor;
-import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.springframework.beans.propertyeditors.URLEditor;
@@ -45,7 +45,7 @@ import org.springframework.beans.propertyeditors.URLEditor;
 public class SparqlEndpointKS implements KnowledgeSource {
 
 	private SparqlEndpoint endpoint;
-	private ExtractionDBCache cache;
+	private CacheEx cache;
 	private boolean supportsSPARQL_1_1 = false;
 	private boolean isRemote = true;
 	private boolean initialized = false;
@@ -69,13 +69,20 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		this(endpoint, null);
 	}
 	
-	public SparqlEndpointKS(SparqlEndpoint endpoint, ExtractionDBCache cache) {
+	public SparqlEndpointKS(SparqlEndpoint endpoint, CacheEx cache) {
 		this.endpoint = endpoint;
 		this.cache = cache;
 	}
 	
-	public ExtractionDBCache getCache() {
+	public CacheEx getCache() {
 		return cache;
+	}
+	
+	/**
+	 * @param cache the cache to set
+	 */
+	public void setCache(CacheEx cache) {
+		this.cache = cache;
 	}
 	
 	@Override
