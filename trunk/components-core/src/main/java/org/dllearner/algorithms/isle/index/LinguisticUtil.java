@@ -137,7 +137,7 @@ public class LinguisticUtil {
                 else {
                     res.append(" ");
                 }
-                res.append(lemmatizeSingleWord(word));
+                res.append(lemmatizeSingleWord(w));
             }
             catch (Exception e) {
                throw new RuntimeException(e);

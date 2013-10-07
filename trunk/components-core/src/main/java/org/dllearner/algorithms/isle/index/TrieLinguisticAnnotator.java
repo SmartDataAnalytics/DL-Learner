@@ -37,6 +37,8 @@ public class TrieLinguisticAnnotator implements LinguisticAnnotator {
             }
             String match = candidatesTrie.getLongestMatch(unparsed);
             if (match != null && !match.isEmpty()) {
+
+                //TODO: here we are losing the original offset and index...
                 Annotation annotation = new Annotation(document, i, match.length());
                 annotations.add(annotation);
                 i += match.length() - 1;
