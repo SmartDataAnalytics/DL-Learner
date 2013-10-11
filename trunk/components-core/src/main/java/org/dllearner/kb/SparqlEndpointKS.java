@@ -20,10 +20,16 @@
 package org.dllearner.kb;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.extra.CacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -66,12 +72,27 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	}
 	
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
-		this(endpoint, null);
+		this(endpoint, (String)null);
 	}
 	
 	public SparqlEndpointKS(SparqlEndpoint endpoint, CacheEx cache) {
 		this.endpoint = endpoint;
 		this.cache = cache;
+	}
+	
+	public SparqlEndpointKS(SparqlEndpoint endpoint, String cacheDirectory) {
+		this.endpoint = endpoint;
+		if(cacheDirectory != null){
+			try {
+				long timeToLive = TimeUnit.DAYS.toMillis(30);
+				CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+				cache = new CacheExImpl(cacheBackend);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public CacheEx getCache() {
