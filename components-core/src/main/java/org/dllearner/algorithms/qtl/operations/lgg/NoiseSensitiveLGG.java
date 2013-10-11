@@ -16,8 +16,6 @@ import org.dllearner.learningproblems.Heuristics;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-import edu.stanford.nlp.util.Sets;
-
 public class NoiseSensitiveLGG<N> {
 	
 	

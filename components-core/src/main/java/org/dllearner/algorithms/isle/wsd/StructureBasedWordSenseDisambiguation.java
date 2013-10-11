@@ -18,11 +18,14 @@ import org.semanticweb.owlapi.model.OWLOntology;
  */
 public class StructureBasedWordSenseDisambiguation extends WordSenseDisambiguation{
 
+	private ContextExtractor contextExtractor;
+
 	/**
 	 * @param ontology
 	 */
-	public StructureBasedWordSenseDisambiguation(OWLOntology ontology) {
+	public StructureBasedWordSenseDisambiguation(ContextExtractor contextExtractor, OWLOntology ontology) {
 		super(ontology);
+		this.contextExtractor = contextExtractor;
 	}
 
 	/* (non-Javadoc)
@@ -30,12 +33,13 @@ public class StructureBasedWordSenseDisambiguation extends WordSenseDisambiguati
 	 */
 	@Override
 	public SemanticAnnotation disambiguate(Annotation annotation, Set<Entity> candidateEntities) {
-		//TODO we should find the sentence in which the annotated token is contained in
-		String content = annotation.getReferencedDocument().getContent();
+		//get the context of the annotated token
+		Set<String> tokenContext = contextExtractor.extractContext(annotation.getToken(), annotation.getReferencedDocument().getContent());
+		//compare this context with the context of each entity candidate
 		for (Entity entity : candidateEntities) {
 			Set<String> entityContext = StructuralEntityContext.getContextInNaturalLanguage(ontology, entity);
+			
 		}
 		return null;
 	}
-
 }

@@ -14,7 +14,7 @@ import org.dllearner.algorithms.isle.StopWordFilter;
 import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import edu.stanford.nlp.util.Sets;
+import com.google.common.collect.Sets;
 
 /**
  * Generates candidates using a entity candidates prefix trie
