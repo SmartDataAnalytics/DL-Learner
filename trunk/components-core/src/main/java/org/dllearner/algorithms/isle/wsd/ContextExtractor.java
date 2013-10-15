@@ -3,7 +3,10 @@
  */
 package org.dllearner.algorithms.isle.wsd;
 
-import java.util.Set;
+import java.util.List;
+
+import org.dllearner.algorithms.isle.index.Annotation;
+
 
 /**
  * @author Lorenz Buehmann
@@ -11,5 +14,5 @@ import java.util.Set;
  */
 public interface ContextExtractor {
 
-	Set<String> extractContext(String token, String document);
+	List<String> extractContext(Annotation annotation);
 }
