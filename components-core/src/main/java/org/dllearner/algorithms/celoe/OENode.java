@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.dllearner.algorithms.SearchTreeNode;
+import org.dllearner.algorithms.isle.NLPHeuristic;
 import org.dllearner.core.owl.Description;
 
 /**
@@ -119,6 +120,7 @@ public class OENode implements SearchTreeNode {
 	
 	public String getShortDescription(String baseURI) {
 		String ret = description.toString(baseURI,null) + " [";
+//		ret += "score" + NLPHeuristic.getNodeScore(this) + ",";
 		ret += "acc:" + dfPercent.format(accuracy) + ", ";
 		ret += "he:" + horizontalExpansion + ", ";
 		ret += "c:" + children.size() + ", ";

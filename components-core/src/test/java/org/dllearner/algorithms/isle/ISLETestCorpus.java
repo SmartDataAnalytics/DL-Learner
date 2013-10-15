@@ -6,6 +6,7 @@ package org.dllearner.algorithms.isle;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.Files;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.isle.index.*;
@@ -36,6 +37,7 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -52,7 +54,7 @@ import java.util.Set;
  * @author Lorenz Buehmann
  * @author Jens Lehmann
  */
-public class ISLETest {
+public class ISLETestCorpus {
 	
 	private OWLOntologyManager manager;
 	private OWLOntology ontology;
@@ -72,7 +74,7 @@ public class ISLETest {
 	/**
 	 * 
 	 */
-	public ISLETest() throws Exception{
+	public ISLETestCorpus() throws Exception{
 		manager = OWLManager.createOWLOntologyManager();
 		ontology = manager.loadOntologyFromOntologyDocument(new File(testFolder + "ontology.owl"));
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
@@ -162,7 +164,7 @@ public class ISLETest {
 		
 		isle.start();
 	}
-
+	
     @Test
     public void testEntityLinkingWithLemmatizing() throws Exception {
         EntityCandidatesTrie ect = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology,
@@ -219,7 +221,7 @@ public class ISLETest {
 		isle.setHeuristic(heuristic);
 		isle.setSearchTreeFile(testFolder + "searchTreeISLE.txt");
 		isle.setWriteSearchTree(true);
-		isle.setReplaceSearchTree(true);
+//		isle.setReplaceSearchTree(true);
 		isle.setTerminateOnNoiseReached(true);
 		isle.init();
 		isle.start();
