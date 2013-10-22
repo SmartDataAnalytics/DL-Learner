@@ -68,8 +68,10 @@ public class ISLETestCorpus {
 	// we assume that the ontology is named "ontology.owl" and that all text files
 	// are in a subdirectory called "corpus"
 	private String testFolder = "../test/isle/swore/";
-//	NamedClass cls = new NamedClass("http://example.com/father#father");
-	NamedClass cls = new NamedClass("http://ns.softwiki.de/req/CustomerRequirement");
+	private NamedClass cls = new NamedClass("http://ns.softwiki.de/req/CustomerRequirement");
+//	private String testFolder = "../test/isle/father/";
+//	private NamedClass cls = new NamedClass("http://example.com/father#father");
+
 	
 	/**
 	 * 
