@@ -669,7 +669,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/CustomerRequirement -->
 
     <owl:Class rdf:about="&req;CustomerRequirement">
-        <rdfs:label>customer requirement</rdfs:label>
+        <rdfs:label>customer requirement (a requirement created by a customer)</rdfs:label>
         <owl:equivalentClass>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
