@@ -3,12 +3,6 @@
  */
 package org.dllearner.algorithms.isle.wsd;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
-import org.dllearner.algorithms.isle.index.TextDocument;
-
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
@@ -16,6 +10,11 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
+import org.dllearner.algorithms.isle.index.TextDocument;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Lorenz Buehmann
@@ -37,14 +36,14 @@ public class SentenceBasedContextExtractor implements ContextExtractor{
 	@Override
 	public List<String> extractContext(org.dllearner.algorithms.isle.index.Annotation annotation) {
 		//split text into sentences
-		List<CoreMap> sentences = getSentences(annotation.getReferencedDocument().getRawContent());
-		
+		List<CoreMap> sentences = getSentences(annotation.getReferencedDocument().getContent());
+
 		//find the sentence containing the token of the annotation
 		int tokenStart = annotation.getOffset();
 		int index = 0;
 		for (CoreMap sentence : sentences) {
 			String s = sentence.toString();
-			if (index < tokenStart && s.length() > tokenStart) {
+			if (index <= tokenStart && s.length() > tokenStart) {
 				List<String> context = new ArrayList<String>();
 				for (CoreLabel label : sentence.get(TokensAnnotation.class)) {
 					// this is the text of the token
