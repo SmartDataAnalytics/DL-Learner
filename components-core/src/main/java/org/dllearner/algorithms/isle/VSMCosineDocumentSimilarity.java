@@ -182,6 +182,10 @@ public class VSMCosineDocumentSimilarity {
     private Map<String, Double> getTermWeights(IndexReader reader, int docId)
             throws IOException {
         Terms vector = reader.getTermVector(docId, CONTENT);
+        //TODO: not sure if this is reasonable but it prevents NPEs
+        if (vector == null) {
+            return new HashMap<String, Double>();
+        }
         TermsEnum termsEnum = vector.iterator(null);
         Map<String, Double> weights = new HashMap<String, Double>();
         BytesRef text = null;
