@@ -25,23 +25,22 @@ public class TrieLinguisticAnnotator implements LinguisticAnnotator {
      */
     @Override
     public Set<Annotation> annotate(Document document) {
-        String content = document.getContent();
         Set<Annotation> annotations = new HashSet<Annotation>();
+        NormalizedTextMapper mapper = new NormalizedTextMapper(document);
+        String content = mapper.getNormalizedText();
         for (int i = 0; i < content.length(); i++) {
             if (Character.isWhitespace(content.charAt(i))) {
                 continue;
             }
             String unparsed = content.substring(i);
-            if (normalizeWords) {
-                unparsed = LinguisticUtil.getInstance().getNormalizedForm(unparsed);
-            }
-            String match = candidatesTrie.getLongestMatch(unparsed);
+            String match = candidatesTrie.getLongestMatchingText(unparsed);
             if (match != null && !match.isEmpty()) {
-
-                //TODO: here we are losing the original offset and index...
-                Annotation annotation = new Annotation(document, i, match.length());
+                Annotation annotation = mapper.getOriginalAnnotationForPosition(i, match.length());
                 annotations.add(annotation);
                 i += match.length() - 1;
+            }
+            while (!Character.isWhitespace(content.charAt(i)) && i < content.length()) {
+                i++;
             }
         }
         return annotations;

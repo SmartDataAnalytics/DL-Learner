@@ -10,7 +10,7 @@ import java.util.*;
 
 public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
-	PrefixTrie<Set<Entity>> trie;
+	PrefixTrie<FullTokenEntitySetPair> trie;
 	EntityTextRetriever entityTextRetriever;
 
 //    /**
@@ -39,7 +39,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
     }
 	
 	public void buildTrie(OWLOntology ontology, NameGenerator nameGenerator) {
-		this.trie = new PrefixTrie<Set<Entity>>();
+		this.trie = new PrefixTrie<FullTokenEntitySetPair>();
 		Map<Entity, Set<String>> relevantText = entityTextRetriever.getRelevantText(ontology);
 		
 		for (Entity entity : relevantText.keySet()) {
@@ -55,7 +55,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                 addSubsequencesWordNet(entity, text);
                 
                 for (String alternativeText : nameGenerator.getAlternativeText(text)) {
-                    addEntry(alternativeText, entity);
+                    addEntry(alternativeText, entity, text);
                 }
             }
         }
@@ -136,37 +136,55 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
     @Override
 	public void addEntry(String s, Entity e) {
-		Set<Entity> candidates;
+		FullTokenEntitySetPair candidates;
 		if (trie.contains(s)) 
 			candidates = trie.get(s);
 		else
-			candidates = new HashSet<Entity>();
+			candidates = new FullTokenEntitySetPair(s);
 		
-		candidates.add(e);
+		candidates.addEntity(e);
 		
 		trie.put(s, candidates);
 	}
 
+    public void addEntry(String s, Entity e, String originalString) {
+        FullTokenEntitySetPair candidates;
+        if (trie.contains(s))
+            candidates = trie.get(s);
+        else
+            candidates = new FullTokenEntitySetPair(originalString);
+
+        candidates.addEntity(e);
+
+        trie.put(s, candidates);
+    }
+
 	@Override
 	public Set<Entity> getCandidateEntities(String s) {
-        Set<Entity> res = trie.get(s);
-		return res == null ? new HashSet<Entity>() : trie.get(s);
+        FullTokenEntitySetPair res = trie.get(s);
+		return res == null ? new HashSet<Entity>() : trie.get(s).getEntitySet();
 	}
 
 	@Override
-	public String getLongestMatch(String s) {
+	public String getGeneratingStringForLongestMatch(String s) {
 		CharSequence match = trie.getLongestMatch(s);
-		return (match!=null) ? match.toString() : null;
+		return (match!=null) ? trie.get(match).getFullToken() : null;
 	}
+
+    @Override
+    public String getLongestMatchingText(String s) {
+        CharSequence match = trie.getLongestMatch(s);
+        return (match!=null) ? match.toString() : null;
+    }
 	
 	public String toString() {
 		String output = "";
-		Map<String,Set<Entity>> trieMap = trie.toMap();
+		Map<String,FullTokenEntitySetPair> trieMap = trie.toMap();
 		List<String> termsList = new ArrayList<String>(trieMap.keySet());
 		Collections.sort(termsList);
 		for (String key : termsList) {
 			output += key + ":\n";
-			for (Entity candidate: trieMap.get(key)) {
+			for (Entity candidate: trieMap.get(key).getEntitySet()) {
 				output += "\t"+candidate+"\n";
 			}
 		}

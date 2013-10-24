@@ -10,7 +10,8 @@ import org.dllearner.algorithms.isle.index.TrieLinguisticAnnotator;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
 import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
 import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
-import org.dllearner.algorithms.isle.wsd.SimpleWordSenseDisambiguation;
+import org.dllearner.algorithms.isle.wsd.StructureBasedWordSenseDisambiguation;
+import org.dllearner.algorithms.isle.wsd.WindowBasedContextExtractor;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
@@ -56,7 +57,7 @@ public class SimpleSemanticIndex extends SemanticIndex {
         TrieLinguisticAnnotator linguisticAnnotator = new TrieLinguisticAnnotator(trie);
         linguisticAnnotator.setNormalizeWords(useWordNormalization);
         setSemanticAnnotator(new SemanticAnnotator(
-                new SimpleWordSenseDisambiguation(ontology),
+                new StructureBasedWordSenseDisambiguation(new WindowBasedContextExtractor(), ontology),
                 new TrieEntityCandidateGenerator(ontology, trie),
                 linguisticAnnotator));
 
