@@ -21,7 +21,7 @@ public class TextDocument implements Document {
         this.content = content.toLowerCase();
         this.content = this.content.replaceAll("[^a-z ]", " ");
         this.content = this.content.replaceAll("\\s{2,}", " ");
-        this.content = content.trim();
+        this.content = this.content.trim();
     }
 
     @Override
