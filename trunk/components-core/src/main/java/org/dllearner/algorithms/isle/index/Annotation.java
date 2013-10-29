@@ -14,8 +14,17 @@ public class Annotation {
 	private Document referencedDocument;
 	private int offset;
 	private int length;
-	
-	public Annotation(Document referencedDocument, int offset, int length) {
+    private String matchedString;
+
+    public String getMatchedString() {
+        return matchedString;
+    }
+
+    public void setMatchedString(String matchedString) {
+        this.matchedString = matchedString;
+    }
+
+    public Annotation(Document referencedDocument, int offset, int length) {
 		this.referencedDocument = referencedDocument;
 		this.offset = offset;
 		this.length = length;

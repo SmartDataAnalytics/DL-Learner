@@ -36,6 +36,7 @@ public class TrieLinguisticAnnotator implements LinguisticAnnotator {
             String match = candidatesTrie.getLongestMatchingText(unparsed);
             if (match != null && !match.isEmpty()) {
                 Annotation annotation = mapper.getOriginalAnnotationForPosition(i, match.length());
+                annotation.setMatchedString(match);
                 annotations.add(annotation);
                 i += match.length() - 1;
             }

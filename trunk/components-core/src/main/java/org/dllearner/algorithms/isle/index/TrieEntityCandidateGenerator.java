@@ -1,20 +1,13 @@
 package org.dllearner.algorithms.isle.index;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-
+import com.google.common.collect.Sets;
 import org.dllearner.algorithms.isle.EntityCandidateGenerator;
 import org.dllearner.algorithms.isle.StopWordFilter;
 import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import com.google.common.collect.Sets;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Generates candidates using a entity candidates prefix trie
@@ -33,7 +26,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
 	}
 	
 	public Set<Entity> getCandidates(Annotation annotation) {
-		return candidatesTrie.getCandidateEntities(annotation.getToken());
+		return candidatesTrie.getCandidateEntities(annotation.getMatchedString());
 	}
 
     /**
@@ -131,7 +124,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
 		for (Annotation annotation: annotations) 
 			candidatesMap.put(annotation, getCandidates(annotation));
 		
-		postProcess(candidatesMap, window, stopWordFilter);
+		//postProcess(candidatesMap, window, stopWordFilter);
 		
 		return candidatesMap;
 	}
