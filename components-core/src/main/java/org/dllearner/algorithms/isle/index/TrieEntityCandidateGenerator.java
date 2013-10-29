@@ -25,7 +25,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
 		this.candidatesTrie = candidatesTrie;
 	}
 	
-	public Set<Entity> getCandidates(Annotation annotation) {System.out.println(annotation);
+	public Set<Entity> getCandidates(Annotation annotation) {
 		return candidatesTrie.getCandidateEntities(annotation.getMatchedString());
 	}
 
