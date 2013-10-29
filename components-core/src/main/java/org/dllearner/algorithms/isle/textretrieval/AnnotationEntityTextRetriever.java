@@ -104,7 +104,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	}
 	
 	/**
-	 * Returns for each entity in the ontology all relevant text, i.e. eitherthe annotations or the short form of the IRI as fallback.
+	 * Returns for each entity in the ontology all relevant text, i.e. either the annotations or the short form of the IRI as fallback.
 	 * @return
 	 */
 	@Override
