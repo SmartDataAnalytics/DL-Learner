@@ -81,15 +81,20 @@ public class StructuralEntityContext {
 	 */
 	public static Set<OWLEntity> getContext(OWLOntology ontology, OWLEntity entity){
 		
+		Set<OWLEntity> context;
 		if(entity.isOWLClass()){
-			return getContext(ontology, entity.asOWLClass());
+			context = getContext(ontology, entity.asOWLClass());
 		} else if(entity.isOWLObjectProperty()){
-			return getContext(ontology, entity.asOWLObjectProperty());
+			context = getContext(ontology, entity.asOWLObjectProperty());
 		} else if(entity.isOWLDataProperty()){
-			return getContext(ontology, entity.asOWLDataProperty());
+			context = getContext(ontology, entity.asOWLDataProperty());
+		} else {
+			throw new UnsupportedOperationException("Unsupported entity type: " + entity);
 		}
 		
-		throw new UnsupportedOperationException("Unsupported entity type: " + entity);
+		context.add(entity);
+		
+		return context;
 	}
 	
 	/**
