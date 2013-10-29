@@ -104,17 +104,7 @@ public class StructuralEntityContext {
 	 * @return
 	 */
 	public static Set<OWLEntity> getContext(OWLOntology ontology, Entity entity){
-		
-		OWLEntity owlEntity = OWLAPIConverter.getOWLAPIEntity(entity);
-		if(owlEntity.isOWLClass()){
-			return getContext(ontology, owlEntity.asOWLClass());
-		} else if(owlEntity.isOWLObjectProperty()){
-			return getContext(ontology, owlEntity.asOWLObjectProperty());
-		} else if(owlEntity.isOWLDataProperty()){
-			return getContext(ontology, owlEntity.asOWLDataProperty());
-		}
-		
-		throw new UnsupportedOperationException("Unsupported entity type: " + entity);
+		return getContext(ontology, OWLAPIConverter.getOWLAPIEntity(entity));
 	}
 	
 	public static Set<OWLEntity> getContext(OWLOntology ontology, OWLObjectProperty property){
