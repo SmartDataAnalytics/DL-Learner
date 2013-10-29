@@ -45,7 +45,7 @@ public class StructureBasedWordSenseDisambiguation extends WordSenseDisambiguati
 			List<String> tokenContext = contextExtractor.extractContext(annotation);
 			
 			//compare this context with the context of each entity candidate
-			double maxScore = Double.MIN_VALUE;
+			double maxScore = Double.NEGATIVE_INFINITY;
 			Entity bestEntity = null;
 			for (Entity entity : candidateEntities) {
 				//get the context of the entity by analyzing the structure of the ontology
