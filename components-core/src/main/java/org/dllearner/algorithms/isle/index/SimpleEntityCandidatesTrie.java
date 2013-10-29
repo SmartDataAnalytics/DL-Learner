@@ -55,7 +55,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                 addSubsequencesWordNet(entity, text);
                 
                 for (String alternativeText : nameGenerator.getAlternativeText(text)) {
-                    addEntry(alternativeText, entity, text);
+                    addEntry(alternativeText.toLowerCase(), entity, text);
                 }
             }
         }
@@ -101,36 +101,46 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
             }
 
             // generate subsequences starting at the given start index of the given size
-            Set<String> allPossibleSubsequences = getAllPossibleSubsequences(wordnetTokens);
+            Set<String[]> allPossibleSubsequences = getAllPossibleSubsequences(tokens, wordnetTokens);
 
-            for (String s : allPossibleSubsequences) {
-                addEntry(s, entity);
+            for (String[] s : allPossibleSubsequences) {
+                addEntry(s[0], entity, s[1]);
             }
         }
     }
 
-    private static Set<String> getAllPossibleSubsequences(List<String>[] wordnetTokens) {
-        ArrayList<String> res = new ArrayList<String>();
+    private static Set<String[]> getAllPossibleSubsequences(String[] originalTokens, List<String>[] wordnetTokens) {
+        ArrayList<String[]> res = new ArrayList<String[]>();
 
         for (int size = 1; size < wordnetTokens.length + 1; size++) {
             for (int start = 0; start < wordnetTokens.length - size + 1; start++) {
-                getPossibleSubsequencesRec(res, new ArrayList<String>(), wordnetTokens, 0, size);
+                getPossibleSubsequencesRec(originalTokens, res, new ArrayList<String>(), new ArrayList<String>(),
+                        wordnetTokens, 0, size);
             }
         }
 
-        return new HashSet<String>(res);
+        return new HashSet<String[]>(res);
     }
 
-    private static void getPossibleSubsequencesRec(List<String> allSubsequences, List<String> currentSubsequence, List<String>[] wordnetTokens,
-                                            int curStart, int maxLength) {
+
+    private static void getPossibleSubsequencesRec(String[] originalTokens, List<String[]> allSubsequences,
+                                                   List<String> currentSubsequence,
+                                                   List<String> currentOriginalSubsequence,
+                                                   List<String>[] wordnetTokens,
+                                                   int curStart, int maxLength) {
+
         if (currentSubsequence.size() == maxLength) {
-            allSubsequences.add(StringUtils.join(currentSubsequence, " "));
+            allSubsequences.add(new String[]{StringUtils.join(currentSubsequence, " ").toLowerCase(), StringUtils
+                    .join(currentOriginalSubsequence, " ").toLowerCase()});
             return;
         }
         for (String w : wordnetTokens[curStart]) {
             ArrayList<String> tmpSequence = new ArrayList<String>(currentSubsequence);
+            ArrayList<String> tmpOriginalSequence = new ArrayList<String>(currentOriginalSubsequence);
             tmpSequence.add(w);
-            getPossibleSubsequencesRec(allSubsequences, tmpSequence, wordnetTokens, curStart + 1, maxLength);
+            tmpOriginalSequence.add(originalTokens[curStart]);
+            getPossibleSubsequencesRec(originalTokens, allSubsequences, tmpSequence, tmpOriginalSequence, wordnetTokens,
+                    curStart + 1, maxLength);
         }
     }
 
@@ -183,7 +193,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 		List<String> termsList = new ArrayList<String>(trieMap.keySet());
 		Collections.sort(termsList);
 		for (String key : termsList) {
-			output += key + ":\n";
+			output += key + " (" + trieMap.get(key).getFullToken() + ") :\n";
 			for (Entity candidate: trieMap.get(key).getEntitySet()) {
 				output += "\t"+candidate+"\n";
 			}
@@ -207,10 +217,10 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
         }
 
         // generate subsequences starting at the given start index of the given size
-        Set<String> allPossibleSubsequences = getAllPossibleSubsequences(wordnetTokens);
+        Set<String[]> allPossibleSubsequences = getAllPossibleSubsequences(tokens, wordnetTokens);
 
-        for (String s : allPossibleSubsequences) {
-            System.out.println(s);
+        for (String[] s : allPossibleSubsequences) {
+            System.out.println(String.format("%s - %s", s[0], s[1]));
         }
     }
 

@@ -42,7 +42,7 @@ public class OWLOntologyLuceneSyntacticIndexCreator {
 		this.ontology = ontology;
 		this.annotationProperty = annotationProperty;
 		this.searchField = searchField;
-		
+
 		schemaEntities = new HashSet<OWLEntity>();
 		schemaEntities.addAll(ontology.getClassesInSignature());
 		schemaEntities.addAll(ontology.getObjectPropertiesInSignature());

@@ -6,14 +6,12 @@ package org.dllearner.algorithms.isle;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.Files;
-import com.hp.hpl.jena.vocabulary.RDFS;
-
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.isle.index.*;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
 import org.dllearner.algorithms.isle.index.semantic.simple.SimpleSemanticIndex;
-import org.dllearner.algorithms.isle.index.syntactic.OWLOntologyLuceneSyntacticIndexCreator;
 import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
+import org.dllearner.algorithms.isle.index.syntactic.TextDocumentSyntacticIndexCreator;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceUtils;
@@ -32,17 +30,12 @@ import org.dllearner.utilities.Helper;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
-
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Map;
@@ -80,10 +73,10 @@ public class ISLETestCorpus {
 		manager = OWLManager.createOWLOntologyManager();
 		ontology = manager.loadOntologyFromOntologyDocument(new File(testFolder + "ontology.owl"));
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
-		syntacticIndex = new OWLOntologyLuceneSyntacticIndexCreator(ontology, df.getRDFSLabel(), searchField).buildIndex();
-		
-		
-	}
+        RemoteDataProvider chapterIndexProvider = new RemoteDataProvider(
+                new URL("http://gold.linkeddata.org/data/bible/chapter_index.zip"));
+        syntacticIndex = TextDocumentSyntacticIndexCreator.loadIndex(chapterIndexProvider.getLocalDirectory());
+    }
 	
 	private Set<TextDocument> createDocuments(){
 		Set<TextDocument> documents = new HashSet<TextDocument>();
@@ -100,10 +93,27 @@ public class ISLETestCorpus {
 		}
 		return documents;
 	}
-	
-	
 
-	/**
+    private Set<TextDocument> createBibleDocuments() throws IOException {
+        Set<TextDocument> documents = new HashSet<TextDocument>();
+        RemoteDataProvider bibleByChapter = new RemoteDataProvider(
+                new URL("http://gold.linkeddata.org/data/bible/split_by_chapter.zip"));
+        File folder = bibleByChapter.getLocalDirectory();
+        for (File file  : folder.listFiles()) {
+            if(!file.isDirectory() && !file.isHidden()){
+                try {
+                    String text = Files.toString(file, Charsets.UTF_8);
+                    documents.add(new TextDocument(text));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return documents;
+    }
+
+
+    /**
 	 * @throws java.lang.Exception
 	 */
 	@Before
@@ -153,7 +163,7 @@ public class ISLETestCorpus {
 		lp.init();
 		
 		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
-		semanticIndex.buildIndex(createDocuments());
+		semanticIndex.buildIndex(createBibleDocuments());
 		
 		relevance = new PMIRelevanceMetric(semanticIndex);
 		
@@ -209,9 +219,9 @@ public class ISLETestCorpus {
 		ClassLearningProblem lp = new ClassLearningProblem(reasoner);
 		lp.setClassToDescribe(cls);
 		lp.init();
-		
-		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex, false);
-		semanticIndex.buildIndex(createDocuments());
+
+        semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex, false);
+		semanticIndex.buildIndex(createBibleDocuments());
 		
 		relevance = new PMIRelevanceMetric(semanticIndex);
 		
