@@ -53,7 +53,7 @@ public class SimpleSemanticIndex extends SemanticIndex {
             trie = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology),
                     ontology, new SimpleEntityCandidatesTrie.DummyNameGenerator());
         }
-//        trie.printTrie();
+        trie.printTrie();
         TrieLinguisticAnnotator linguisticAnnotator = new TrieLinguisticAnnotator(trie);
         linguisticAnnotator.setNormalizeWords(useWordNormalization);
         setSemanticAnnotator(new SemanticAnnotator(
