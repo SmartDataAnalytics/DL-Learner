@@ -124,7 +124,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
 		for (Annotation annotation: annotations) 
 			candidatesMap.put(annotation, getCandidates(annotation));
 		
-		//postProcess(candidatesMap, window, stopWordFilter);
+		postProcess(candidatesMap, window, stopWordFilter);
 		
 		return candidatesMap;
 	}
