@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.dllearner.algorithms.isle.index.LinguisticAnnotator;
 import org.dllearner.algorithms.isle.index.LinguisticUtil;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.kb.OWLAPIOntology;
@@ -16,12 +15,15 @@ import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.google.common.base.Joiner;
 
@@ -42,6 +44,8 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	private IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 	
 	private OWLAnnotationProperty[] properties;
+	
+	private static final OWLClass OWL_THING = new OWLDataFactoryImpl().getOWLThing();
 
 	public AnnotationEntityTextRetriever(OWLOntology ontology, OWLAnnotationProperty... properties) {
 		this.ontology = ontology;
@@ -111,6 +115,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		schemaEntities.addAll(ontology.getClassesInSignature());
 		schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
 		schemaEntities.addAll(ontology.getDataPropertiesInSignature());
+		schemaEntities.remove(OWL_THING);
 		
 		Map<String, Double> relevantText;
 		for (OWLEntity owlEntity : schemaEntities) {
