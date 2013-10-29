@@ -23,17 +23,31 @@ import java.util.Properties;
 public class WindowBasedContextExtractor implements ContextExtractor{
 	
 	private StanfordCoreNLP pipeline;
+	private int tokensLeft = 10;
+	private int tokensRight = 10;
 
-	/**
-	 * 
-	 */
-	public WindowBasedContextExtractor() {
-	
+	public WindowBasedContextExtractor(int tokensLeft, int tokensRight) {
+		this.tokensLeft = tokensLeft;
+		this.tokensRight = tokensRight;
+		
 		Properties props = new Properties();
 		props.put("annotators", "tokenize, ssplit");
 		pipeline = new StanfordCoreNLP(props);
-
+	}
+	
+	public WindowBasedContextExtractor(int tokensLeftRight) {
+		tokensLeft = tokensLeftRight;
+		tokensRight = tokensLeftRight;
 		
+		Properties props = new Properties();
+		props.put("annotators", "tokenize, ssplit");
+		pipeline = new StanfordCoreNLP(props);
+	}
+	
+	public WindowBasedContextExtractor() {
+		Properties props = new Properties();
+		props.put("annotators", "tokenize, ssplit");
+		pipeline = new StanfordCoreNLP(props);
 	}
 
 	/* (non-Javadoc)
