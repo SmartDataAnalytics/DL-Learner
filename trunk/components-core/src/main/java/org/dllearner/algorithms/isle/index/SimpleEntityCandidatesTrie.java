@@ -3,10 +3,12 @@ package org.dllearner.algorithms.isle.index;
 import org.apache.commons.lang.StringUtils;
 import org.dllearner.algorithms.isle.textretrieval.EntityTextRetriever;
 import org.dllearner.core.owl.Entity;
+import org.dllearner.utilities.MapUtils;
 import org.dllearner.utilities.datastructures.PrefixTrie;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
@@ -50,6 +52,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                 if (text.trim().isEmpty()) {
                     continue;
                 }
+                text = text.trim();
                 
                 addEntry(text, entity);
                 addSubsequencesWordNet(entity, text);
@@ -59,6 +62,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                 }
             }
         }
+		
 	}
 	
 	/**
@@ -188,17 +192,18 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
     }
 	
 	public String toString() {
-		String output = "";
+		StringBuilder output = new StringBuilder();
 		Map<String,FullTokenEntitySetPair> trieMap = trie.toMap();
-		List<String> termsList = new ArrayList<String>(trieMap.keySet());
-		Collections.sort(termsList);
-		for (String key : termsList) {
-			output += key + " (" + trieMap.get(key).getFullToken() + ") :\n";
-			for (Entity candidate: trieMap.get(key).getEntitySet()) {
-				output += "\t"+candidate+"\n";
+		
+		for (Entry<String, FullTokenEntitySetPair> entry : trieMap.entrySet()) {
+			String key = entry.getKey();
+			FullTokenEntitySetPair pair = entry.getValue();
+			output.append(key + " (" + pair.getFullToken() + ") :\n");
+			for (Entity candidate: pair.getEntitySet()) {
+				output.append("\t"+candidate+"\n");
 			}
 		}
-		return output;
+		return output.toString();
 	}
 
     public static void main(String[] args) {

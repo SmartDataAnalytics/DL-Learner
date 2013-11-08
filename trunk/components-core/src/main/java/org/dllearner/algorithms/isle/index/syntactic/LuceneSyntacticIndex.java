@@ -78,6 +78,20 @@ public class LuceneSyntacticIndex implements SyntacticIndex {
 	public int getSize() {
 		return indexReader.numDocs();
 	}
+	
+	public Set<TextDocument> getAllDocuments(){
+		Set<TextDocument> documents = new HashSet<TextDocument>(indexReader.numDocs());
+		for (int i = 0; i < indexReader.numDocs(); i++) {
+			try {
+				Document doc = indexReader.document(i);
+				String content = doc.get(searchField);
+				documents.add(new TextDocument(content));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return documents;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.isle.SyntacticIndex#count(java.lang.String)

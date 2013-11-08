@@ -67,7 +67,7 @@ public abstract class SemanticIndex {
         logger.info("Creating semantic index...");
         index = new HashMap<Entity, Set<AnnotatedDocument>>();
         for (TextDocument document : documents) {
-            logger.info("Processing document:\n" + document);
+            logger.debug("Processing document:" + document);
             AnnotatedDocument annotatedDocument = semanticAnnotator.processDocument(document);
             for (Entity entity : annotatedDocument.getContainedEntities()) {
                 Set<AnnotatedDocument> existingAnnotatedDocuments = index.get(entity);
@@ -77,7 +77,7 @@ public abstract class SemanticIndex {
                 }
                 existingAnnotatedDocuments.add(annotatedDocument);
             }
-            logger.info("Annotated document:" + annotatedDocument);
+            logger.debug("Annotated document:" + annotatedDocument);
         }
         size = documents.size();
         logger.info("...done.");
