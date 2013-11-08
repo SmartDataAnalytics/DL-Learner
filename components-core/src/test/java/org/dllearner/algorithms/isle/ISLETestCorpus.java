@@ -150,6 +150,10 @@ public class ISLETestCorpus {
 		semanticIndex.buildIndex(createDocuments());
 		Set<AnnotatedDocument> documents = semanticIndex.getDocuments(cls);
 		System.out.println(documents);
+		relevance = new PMIRelevanceMetric(semanticIndex);
+		
+		Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
+		System.out.println(entityRelevance);
 	}
 	
 	@Test

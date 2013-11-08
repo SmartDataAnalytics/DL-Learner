@@ -47,7 +47,7 @@ public class ISLETestNoCorpus {
 	
 	public ISLETestNoCorpus() throws Exception{
 		manager = OWLManager.createOWLOntologyManager();
-		ontology = manager.loadOntologyFromOntologyDocument(new File(testFolder + "ontology.owl"));
+		ontology = manager.loadOntologyFromOntologyDocument(new File(testFolder + "ontology_with_comments.owl"));
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 		syntacticIndex = new OWLOntologyLuceneSyntacticIndexCreator(ontology, df.getRDFSLabel(), searchField).buildIndex();
 		
@@ -66,7 +66,7 @@ public class ISLETestNoCorpus {
 		lp.init();
 		
 		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
-		semanticIndex.buildIndex(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_COMMENT.getIRI()), "en");
+		semanticIndex.buildIndex(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_COMMENT.getIRI()), null);
 		
 //		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
 //		semanticIndex.buildIndex(createDocuments());
