@@ -14,6 +14,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
+import org.dllearner.algorithms.isle.index.TextDocument;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -77,6 +78,33 @@ public class TextDocumentSyntacticIndexCreator {
 		
 		return new LuceneSyntacticIndex(indexDirectory, searchField);
 	}
+    
+    public SyntacticIndex buildIndex(Set<TextDocument> documents) throws Exception{
+		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
+		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_43, analyzer);
+		IndexWriter writer = new IndexWriter(indexDirectory, indexWriterConfig);
+		System.out.println( "Creating index ..." );
+
+        Set<org.apache.lucene.document.Document> luceneDocuments = new HashSet<org.apache.lucene.document.Document>();
+        FieldType stringType = new FieldType(StringField.TYPE_STORED);
+        stringType.setStoreTermVectors(false);
+        FieldType textType = new FieldType(TextField.TYPE_STORED);
+        textType.setStoreTermVectors(false);
+		
+        int id = 1;
+		for (TextDocument document : documents) {
+            org.apache.lucene.document.Document luceneDocument = new org.apache.lucene.document.Document();
+            luceneDocument.add(new Field("uri", Integer.toString(id++), stringType));
+            luceneDocument.add(new Field(searchField, document.getContent(), textType));
+            luceneDocuments.add(luceneDocument);
+        }
+        writer.addDocuments(luceneDocuments);
+		
+		System.out.println("Done.");
+		writer.close();
+		
+		return new LuceneSyntacticIndex(indexDirectory, searchField);
+	}
 
     public static SyntacticIndex loadIndex(File indexDirectory) throws Exception {
         return new LuceneSyntacticIndex(new SimpleFSDirectory(indexDirectory), searchField);
@@ -84,7 +112,7 @@ public class TextDocumentSyntacticIndexCreator {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.println("Usage: <input director> <index directory>");
+            System.err.println("Usage: <input directory> <index directory>");
             System.exit(1);
             return;
         }
