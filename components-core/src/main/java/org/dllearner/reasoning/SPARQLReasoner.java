@@ -766,6 +766,34 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		}
 		return types;
 	}
+	
+	public Set<ObjectProperty> getOWLObjectProperties() {
+		Set<ObjectProperty> types = new HashSet<ObjectProperty>();
+		String query = String.format("SELECT DISTINCT ?p WHERE {?p a <%s>.}",OWL.ObjectProperty.getURI());
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			types.add(new ObjectProperty(qs.getResource("p").getURI()));
+		}
+		return types;
+	}
+	
+	public SortedSet<ObjectProperty> getOWLObjectProperties(String namespace) {
+		SortedSet<ObjectProperty> types = new TreeSet<ObjectProperty>();
+		String query = "SELECT DISTINCT ?p WHERE {?p a <" + OWL.ObjectProperty.getURI() + ">.";
+		if(namespace != null){
+			query += "FILTER(REGEX(STR(?p),'" + namespace + "'))";
+		}
+		query += "}";
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			types.add(new ObjectProperty(qs.getResource("p").getURI()));
+		}
+		return types;
+	}
 
 	/**
 	 * Returns a set of classes which are siblings, i.e. on the same level

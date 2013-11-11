@@ -21,6 +21,7 @@ package org.dllearner.algorithms.qtl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,9 @@ import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.NoiseSensitiveLGG;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -425,6 +429,31 @@ public class LGGTest {
 				}
 			}
 			System.out.println("Covered negatives:" + coveredNegatives);
+		}
+	}
+	
+	@Test
+	public void testTCGA() throws Exception{
+		URL url = new URL("http://vmlion14.deri.ie/node43/8080/sparql");
+		SparqlEndpoint endpoint = new SparqlEndpoint(url);
+		List<String> posExamples = Lists.newArrayList("http://tcga.deri.ie/TCGA-BI-A0VS","http://tcga.deri.ie/TCGA-BI-A20A");
+		
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint);
+		
+		QueryTreeFactory<String> queryTreeFactory = new QueryTreeFactoryImpl();
+		
+		List<QueryTree<String>> posExampleTrees = new ArrayList<QueryTree<String>>();
+		for (String ex : posExamples) {
+			Model cbd = cbdGen.getConciseBoundedDescription(ex, 0);
+			System.out.println(cbd.size());
+			QueryTreeImpl<String> tree = queryTreeFactory.getQueryTree(ex, cbd);
+			posExampleTrees.add(tree);
+		}
+		
+		NoiseSensitiveLGG<String> lggGenerator = new NoiseSensitiveLGG<String>();
+		List<EvaluatedQueryTree<String>> lggs = lggGenerator.computeLGG(posExampleTrees);
+		for (EvaluatedQueryTree<String> lgg : lggs) {
+			System.out.println(lgg);
 		}
 	}
 

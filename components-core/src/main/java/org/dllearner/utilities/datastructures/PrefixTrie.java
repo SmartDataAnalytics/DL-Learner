@@ -150,7 +150,7 @@ public class PrefixTrie<T> implements PrefixMap<T> {
    * @return A Map mapping each prefix to its corresponding value.
    */
   public Map<String, T> toMap() {
-    Map<String, T> map = com.google.common.collect.Maps.newLinkedHashMap();
+    Map<String, T> map = com.google.common.collect.Maps.newTreeMap();
     addEntries(root, new StringBuilder(), map);
     return map;
   }

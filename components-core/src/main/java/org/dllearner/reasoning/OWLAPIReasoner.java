@@ -357,6 +357,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         if (!inconsistentOntology) {
             reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
         } else {
+        	reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
             throw new ComponentInitException("Inconsistent ontologies.");
         }
 

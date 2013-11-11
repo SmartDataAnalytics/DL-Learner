@@ -29,19 +29,24 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.AbstractLearningProblem;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.statistics.Stat;
-import org.dllearner.utilities.Files;
+
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 
 /**
  * Performs cross validation for the given problem. Supports
@@ -69,6 +74,8 @@ public class CrossValidation {
 	protected Stat testingCompletenessStat = new Stat();
 	protected Stat testingCorrectnessStat = new Stat();
 	
+	static HashFunction hf = Hashing.crc32();
+	
 	public CrossValidation() {
 		
 	}
@@ -90,7 +97,7 @@ public class CrossValidation {
 				posExamples = ((PosNegLP)lp).getPositiveExamples();
 				negExamples = ((PosNegLP)lp).getNegativeExamples();
 			} else if(lp instanceof PosOnlyLP){
-				posExamples = ((PosNegLP)lp).getPositiveExamples();
+				posExamples = ((PosOnlyLP)lp).getPositiveExamples();
 				negExamples = new HashSet<Individual>();
 			} else {
 				throw new IllegalArgumentException("Only PosNeg and PosOnly learning problems are supported");
@@ -184,7 +191,7 @@ public class CrossValidation {
 			int trainingCorrectNegClassified = getCorrectNegClassified(rs, concept, trainingSetsNeg.get(currFold));
 			int trainingCorrectExamples = trainingCorrectPosClassified + trainingCorrectNegClassified;
 			double trainingAccuracy = 100*((double)trainingCorrectExamples/(trainingSetsPos.get(currFold).size()+
-					trainingSetsNeg.get(currFold).size()));			
+					trainingSetsNeg.get(currFold).size()));			HashFunction hf = Hashing.md5();
 			accuracyTraining.addNumber(trainingAccuracy);
 			// calculate test accuracies
 			int correctPosClassified = getCorrectPosClassified(rs, concept, testSetsPos.get(currFold));
@@ -308,5 +315,18 @@ public class CrossValidation {
 	public Stat getfMeasureTraining() {
 		return fMeasureTraining;
 	}
-
+	
+	/**
+	 * Returns for a given URI the fold number to which the URI is supposed to belong to.
+	 * @param uri
+	 * @param nrOfFolds
+	 * @return
+	 */
+	public static int belongsToFoldNumber(String uri, int nrOfFolds){
+		HashCode hc = hf.newHasher()
+		       .putString(uri, Charsets.UTF_8)
+		       .hash();
+		int fold = hc.asInt() % nrOfFolds;
+		return fold;
+	}
 }

@@ -348,13 +348,16 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			sparql += triple(variables.peek(), propertyExpression.getNamedProperty(), objectVariable);
 		}
 		OWLClassExpression filler = ce.getFiller();
-		if(filler.isAnonymous()){
-			variables.push(objectVariable);
-			filler.accept(this);
-			variables.pop();
-		} else {
-			sparql += triple(objectVariable, "a", filler.asOWLClass());
-		}
+		variables.push(objectVariable);
+		filler.accept(this);
+		variables.pop();
+//		if(filler.isAnonymous()){
+//			variables.push(objectVariable);
+//			filler.accept(this);
+//			variables.pop();
+//		} else {
+//			sparql += triple(objectVariable, "a", filler.asOWLClass());
+//		}
 		
 	}
 

@@ -47,6 +47,7 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.rdf.arp.ARPOptions;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -254,6 +255,8 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 				+ "      GROUP BY ?x ?p0"
 				+ "    }"
 				+ "    FILTER ( ?cnt1 = ?cnt2 )  }";
+		
+		query = "SELECT ?x WHERE {?x a <http://ex.org/A>. FILTER NOT EXISTS{?x <http://ex.org/p> ?s1. FILTER NOT EXISTS{?s1 a <http://ex.org/B>.}}} ";
 		
 		rs = QueryExecutionFactory.create(query, model).execSelect();
 		System.out.println(ResultSetFormatter.asText(rs));

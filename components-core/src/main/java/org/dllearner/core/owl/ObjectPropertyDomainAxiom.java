@@ -70,6 +70,12 @@ public class ObjectPropertyDomainAxiom extends PropertyDomainAxiom {
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
 	}
+	
+	public SubClassAxiom asSubClassOfAxiom(){
+		Description subClass = new ObjectSomeRestriction(getProperty(), new Thing());
+		Description superClass = getDomain();
+		return new SubClassAxiom(subClass, superClass);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)

@@ -20,6 +20,7 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,19 +34,28 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.ObjectPropertyEditor;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.KBElement;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.SubClassAxiom;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -111,6 +121,113 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		
 		runSPARQL1_0_Mode();
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	}
+	
+	private void buildSampleFragment(){
+		workingModel = ModelFactory.createDefaultModel();
+		int limit = 10000;
+		int offset = 0;
+		String filter = "";
+		for (String ns : allowedNamespaces) {
+			filter += "FILTER(STRSTARTS(STR(?type), '" + ns + "'))";
+		}
+		ParameterizedSparqlString queryTemplate = new ParameterizedSparqlString("CONSTRUCT {?s a ?type.} WHERE {?s ?p ?o. ?s a ?type. " + filter + "}");
+		queryTemplate.setIri("p", propertyToDescribe.getName());
+		Query query =  queryTemplate.asQuery();
+		query.setLimit(limit);
+		Model tmp = executeConstructQuery(query.toString());
+		workingModel.add(tmp);
+		while(!tmp.isEmpty() && !terminationCriteriaSatisfied()){
+			//increase offset by limit
+			offset += limit;
+			query.setOffset(offset);
+			//run query
+			tmp = executeConstructQuery(query.toString());
+			workingModel.add(tmp);
+		}
+	}
+	
+	private void run(){
+		//extract sample fragment from KB
+		buildSampleFragment();
+		
+		//generate a set of axiom candidates
+		computeAxiomCandidates();
+		
+		//compute evidence score on the whole KB
+		List<Axiom> axioms = getCurrentlyBestAxioms();
+		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
+		//get total number of instances of A
+		int cntA = reasoner.getPopularity(propertyToDescribe);
+		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+		for (Axiom axiom : axioms) {
+			//get total number of instances of B
+			NamedClass domain = ((ObjectPropertyDomainAxiom)axiom).getDomain().asNamedClass();
+			int cntB = reasoner.getPopularity(domain);
+			
+			//get number of instances of (A AND B)
+			Query query = converter.asCountQuery(new Intersection(domain, new ObjectSomeRestriction(propertyToDescribe, new Thing())));
+//			System.out.println(query);
+			int cntAB = executeSelectQuery(query.toString()).next().getLiteral("cnt").getInt();
+			
+			//precision (A AND B)/B
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
+			
+			//recall (A AND B)/A
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(cntA, cntAB);
+			
+			//beta
+			double beta = 3.0;
+			
+			//F score
+			double fscore = Heuristics.getFScore(recall, precision, beta);
+			System.out.println(axiom + ":" + fscore + "(P=" + precision + "|R=" + recall + ")");
+			currentlyBestAxioms.add(new EvaluatedAxiom(axiom, new AxiomScore(fscore)));
+//			System.out.println(new EvaluatedAxiom(axiom, new AxiomScore(fscore)));
+		}
+	}
+	
+	private void computeAxiomCandidates() {
+		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
+		// get number of distinct subjects
+		String query = "SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s a ?type.}";
+		ResultSet rs = executeSelectQuery(query, workingModel);
+		QuerySolution qs;
+		int all = 1;
+		while (rs.hasNext()) {
+			qs = rs.next();
+			all = qs.getLiteral("all").getInt();
+		}
+
+		// get class and number of instances
+		query = "SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type.} GROUP BY ?type ORDER BY DESC(?cnt)";
+		rs = executeSelectQuery(query, workingModel);
+
+		if (all > 0) {
+			currentlyBestAxioms.clear();
+			while (rs.hasNext()) {
+				qs = rs.next();
+				Resource type = qs.get("type").asResource();
+				// omit owl:Thing as trivial domain
+				if (type.equals(OWL.Thing)) {
+					continue;
+				}
+				currentlyBestAxioms.add(new EvaluatedAxiom(new ObjectPropertyDomainAxiom(propertyToDescribe,
+						new NamedClass(type.getURI())), computeScore(all, qs.get("cnt").asLiteral().getInt())));
+			}
+		}
+	}
+	
+	private void computeLocalScore(){
+		
+	}
+	
+	private void computeScore(Set<ObjectPropertyDomainAxiom> axioms){
+		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+		for (ObjectPropertyDomainAxiom axiom : axioms) {
+			SubClassAxiom sub = axiom.asSubClassOfAxiom();
+			String subClassQuery = converter.convert("?s", sub.getSubConcept());
+		}
 	}
 	
 	private void runSPARQL1_0_Mode() {
@@ -193,29 +310,34 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
 		org.apache.log4j.Logger.getLogger(DataPropertyDomainAxiomLearner.class).setLevel(Level.INFO);		
 		
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia(), "cache");
 		
-		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
+		SPARQLReasoner reasoner = new SPARQLReasoner(ks, "cache");
 		reasoner.prepareSubsumptionHierarchy();
 		
 		
 		ObjectPropertyDomainAxiomLearner2 l = new ObjectPropertyDomainAxiomLearner2(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/league"));
-		l.setMaxFetchedRows(20000);
-		l.setMaxExecutionTimeInSeconds(20);
-		l.addFilterNamespace("http://dbpedia.org/ontology/");
-//		l.setReturnOnlyNewAxioms(true);
-		l.init();
-		l.start();
-		
-		List<EvaluatedAxiom> axioms = l.getCurrentlyBestEvaluatedAxioms(10, 0.3);
-		System.out.println(axioms);
-		for(EvaluatedAxiom axiom : axioms){
-			printSubset(l.getPositiveExamples(axiom), 10);
-			printSubset(l.getNegativeExamples(axiom), 10);
-			l.explainScore(axiom);
+		for (ObjectProperty p : reasoner.getOWLObjectProperties("http://dbpedia.org/ontology/")) {
+			System.out.println(p);
+			l.setPropertyToDescribe(p);
+			l.setMaxExecutionTimeInSeconds(10);
+			l.addFilterNamespace("http://dbpedia.org/ontology/");
+//			l.setReturnOnlyNewAxioms(true);
+			l.init();
+//			l.start();
+			l.run();
+			List<EvaluatedAxiom> axioms = l.getCurrentlyBestEvaluatedAxioms(10, 0.5);
+//			System.out.println(axioms);
+			System.out.println(l.getBestEvaluatedAxiom());
 		}
+		
+		
+//		for(EvaluatedAxiom axiom : axioms){
+//			printSubset(l.getPositiveExamples(axiom), 10);
+//			printSubset(l.getNegativeExamples(axiom), 10);
+//			l.explainScore(axiom);
+//		}
 	}
 	
 }
