@@ -118,7 +118,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	protected boolean fullDataLoaded = false;
 	
-	private List<String> filterNamespaces = new ArrayList<String>();
+	protected List<String> allowedNamespaces = new ArrayList<String>();
 	
 	protected ParameterizedSparqlString iterativeQueryTemplate;
 	
@@ -272,6 +272,13 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		}
 		
 		return returnList;
+	}
+	
+	public EvaluatedAxiom getBestEvaluatedAxiom(){
+		if(!currentlyBestAxioms.isEmpty()){
+			return new TreeSet<EvaluatedAxiom>(currentlyBestAxioms).last();
+		}
+		return null;
 	}
 	
 	protected Set<NamedClass> getAllClasses() {
@@ -457,7 +464,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	private Query buildQuery(){
 		Query query = iterativeQueryTemplate.asQuery();
-		for(String ns : filterNamespaces){
+		for(String ns : allowedNamespaces){
 			((ElementGroup)query.getQueryPattern()).addElementFilter(
 					new ElementFilter(
 							new E_Regex(
@@ -470,7 +477,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 	
 	public void addFilterNamespace(String namespace){
-		filterNamespaces.add(namespace);
+		allowedNamespaces.add(namespace);
 	}
 	
 	public Set<KBElement> getPositiveExamples(EvaluatedAxiom axiom){

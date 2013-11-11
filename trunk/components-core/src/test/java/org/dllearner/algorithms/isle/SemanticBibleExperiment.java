@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.isle.index.RemoteDataProvider;
 import org.dllearner.algorithms.isle.index.TextDocument;
 import org.dllearner.core.owl.NamedClass;
@@ -22,6 +23,9 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * @author Lorenz Buehmann
@@ -41,6 +45,11 @@ public class SemanticBibleExperiment extends Experiment{
 			OWLOntology mergedOntology = man.createOntology(IRI.create("http://semanticbible.com/merged.owl"));
 			man.addAxioms(mergedOntology, schema.getAxioms());
 			man.addAxioms(mergedOntology, instances.getAxioms());
+//			Model model = ModelFactory.createDefaultModel();
+//			model.read("http://www.semanticbible.com/2006/11/NTNames.owl");
+//			model.read("http://www.semanticbible.com/2006/11/NTN-individuals.owl");
+//			QueryExecutionFactoryModel qef = new QueryExecutionFactoryModel(model);
+//			System.out.println(ResultSetFormatter.asText(qef.createQueryExecution("SELECT ?s ?p WHERE {?s a <http://semanticbible.org/ns/2006/NTNames#Woman>. ?s ?p ?o.}").execSelect()));
 			return mergedOntology;
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();

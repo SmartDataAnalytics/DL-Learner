@@ -172,7 +172,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>fuzzydll</groupId>
+			<groupId>org.fuzzy</groupId>
 			<artifactId>fuzzydl</artifactId>
 			<version>1.0</version>
 		</dependency>
