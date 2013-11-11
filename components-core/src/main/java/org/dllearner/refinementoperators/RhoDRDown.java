@@ -84,7 +84,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * domain/range restrictions. Furthermore, it makes use of disjoint
  * classes in the knowledge base.
  * 
- * TODO Some of the code has moved to {@link Utility} in a modified
+ * Note: Some of the code has moved to {@link Utility} in a modified
  * form to make it accessible for implementations of other refinement
  * operators. These utility methods may be completed and carefully
  * integrated back later. 
@@ -232,48 +232,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		
 	}
 	
-//	public RhoDRDown(AbstractReasonerComponent reasoningService) {
-////		this(reasoningService, reasoningService.getClassHierarchy(), null, true, true, true, true, true, 3, true, true, true, true, null);
-//		this.reasoner = reasoningService;
-//		this.subHierarchy = reasoner.getClassHierarchy();
-//		init();
-//	}
-		
-	// TODO constructor which takes a RhoDRDownConfigurator object;
-	// this should be an interface implemented e.g. by ExampleBasedROLComponentConfigurator;
-	// the goal is to use the configurator system while still being flexible enough to
-	// use one refinement operator in several learning algorithms
-//	public RhoDRDown(AbstractReasonerComponent reasoningService, ClassHierarchy subHierarchy, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
-//			boolean useExistsConstructor, boolean useHasValueConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass,
-//			int cardinalityLimit, boolean useStringDatatypes, boolean instanceBasedDisjoints) {
-//		this.reasoner = reasoningService;
-//		this.subHierarchy = subHierarchy;
-//		this.applyAllFilter = applyAllFilter;
-//		this.applyExistsFilter = applyExistsFilter;
-//		this.useAllConstructor = useAllConstructor;
-//		this.useExistsConstructor = useExistsConstructor;
-//		this.useHasValueConstructor = useHasValueConstructor;
-//		this.frequencyThreshold = valueFrequencyThreshold;
-//		this.useCardinalityRestrictions = useCardinalityRestrictions;
-//		this.cardinalityLimit = cardinalityLimit;
-//		this.useNegation = useNegation;
-//		this.useBooleanDatatypes = useBooleanDatatypes;
-//		this.useDoubleDatatypes = useDoubleDatatypes;
-//		this.useStringDatatypes = useStringDatatypes;
-//		this.instanceBasedDisjoints = instanceBasedDisjoints;
-//		if(startClass != null) {
-//			this.startClass = startClass;
-//		}
-//		init();
-//	}
-		
-//		subHierarchy = rs.getClassHierarchy();
 	public void init() throws ComponentInitException {	
 		if(isInitialised) {
 			throw new ComponentInitException("Refinement operator cannot be nitialised twice.");
 		}
 //		System.out.println("subHierarchy: " + subHierarchy);
-//		System.out.println("object properties: " + );
+//		System.out.println("object properties: " + reasoner.getObjectProperties());
 		
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
