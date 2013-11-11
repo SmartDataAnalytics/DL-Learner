@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
@@ -39,6 +40,8 @@ import org.dllearner.core.options.StringSetConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 
+import com.google.common.collect.Sets;
+
 /**
  * A learning problem, where we learn from positive examples only.
  * 
@@ -47,15 +50,23 @@ import org.dllearner.core.owl.Individual;
  */
 @ComponentAnn(name = "positive only learning problem", shortName = "posonlylp", version = 0.6)
 public class PosOnlyLP extends AbstractLearningProblem {
+	
+	private static Logger logger = Logger.getLogger(PosOnlyLP.class);
+    private long nanoStartTime;
 
 	protected SortedSet<Individual> positiveExamples;
 	
 	private List<Individual> positiveExamplesShuffled;
 //	protected SortedSet<Individual> pseudoNegatives;
 	private List<Individual> individuals;
+	
+	private boolean useApproximations = false;
 
 	// approximation of accuracy +- 0.03 %
 	private static final double approx = 0.03;	
+	
+	// factor for higher weight on recall (needed for subclass learning)
+	private double coverageFactor;
 	
 	public PosOnlyLP() {
 		super(null);
@@ -130,6 +141,13 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	}	
 	
 	/**
+	 * @param useApproximations the useApproximations to set
+	 */
+	public void setUseApproximations(boolean useApproximations) {
+		this.useApproximations = useApproximations;
+	}
+	
+	/**
 	 * @return the pseudoNegatives
 	 */
 //	public SortedSet<Individual> getPseudoNegatives() {
@@ -139,7 +157,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 
 //	public int coveredPseudoNegativeExamplesOrTooWeak(Description concept) {
 //		return definitionLP.coveredNegativeExamplesOrTooWeak(concept);
-//	}
+//	}posOnlyLPLearningTests
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#computeScore(org.dllearner.core.owl.Description)
@@ -195,11 +213,8 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		return getAccuracy(coverage, protusion);		
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
-	 */
-	@Override
-	public double getAccuracyOrTooWeak(Description description, double noise) {
+	
+	public double getAccuracyOrTooWeakApprox(Description description, double noise) {
 		
 		// instead of using the standard operation, we use optimisation
 		// and approximation here
@@ -315,6 +330,48 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		}		
 	
 		return getAccuracy(coverage, protusion);		
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractLearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
+	 */
+	@Override
+	public double getAccuracyOrTooWeak(Description description, double noise) {
+		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);
+	}
+	
+	// exact computation for 5 heuristics; each one adapted to super class
+	// learning;
+	// each one takes the noise parameter into account
+	public double getAccuracyOrTooWeakExact(Description description, double noise) {
+
+		nanoStartTime = System.nanoTime();
+		
+		SortedSet<Individual> individualsC = reasoner.getIndividuals(description);
+
+		// computing R(C) restricted to relevant instances
+		int additionalInstances = Sets.difference(individualsC, positiveExamples).size();
+
+		// computing R(A)
+		int coveredInstances = Sets.intersection(individualsC, positiveExamples).size();
+
+		double recall = coveredInstances / (double) positiveExamples.size();
+
+		// noise computation is incorrect
+		// if(recall < 1 - noise) {
+		// return -1;
+		// }
+
+		double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances
+				/ (double) (coveredInstances + additionalInstances);
+
+		// best reachable concept has same recall and precision 1:
+		if (((1 + Math.sqrt(coverageFactor)) * recall) / (Math.sqrt(coverageFactor) + 1) < 1 - noise) {
+			return -1;
+		} else {
+			return Heuristics.getFScore(recall, precision, coverageFactor);
+		}
+
 	}
 	
 	// see paper: expression used in confidence interval estimation

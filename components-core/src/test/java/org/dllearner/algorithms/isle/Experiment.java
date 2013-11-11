@@ -53,6 +53,10 @@ import com.google.common.collect.Sets;
 public abstract class Experiment {
 	
 	/**
+	 * 
+	 */
+	private static final int maxExecutionTimeInSeconds = 20;
+	/**
 	 * The number of folds for the cross-validation
 	 */
 	private final int FOLDS = 10;
@@ -60,6 +64,8 @@ public abstract class Experiment {
 	 * Whether to perform k-fold cross-validation or leave-one-out cross-validation
 	 */
 	private final boolean LEAVE_ONE_OUT = false;
+	
+	private boolean equivalence = true;
 	
 	private PosOnlyLP lp;
 	private RelevanceMetric relevance;
@@ -221,18 +227,15 @@ public abstract class Experiment {
 		lp.init();
 		
 		//get the start class for the learning algorithms
-		Description startClass = getStartClass(cls, true, true);
+		Description startClass = getStartClass(cls, equivalence, true);
 		
 		Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
 		NLPHeuristic heuristic = new NLPHeuristic(entityRelevance);
-		// heuristic.setStartNodeBonus(100);
-		heuristic.init();
 		
 		ClassLearningProblem clp = new ClassLearningProblem(reasoner);
 		clp.setClassToDescribe(cls);
+		clp.setEquivalence(equivalence);
 		clp.init();
-		
-		System.out.println(reasoner.getObjectProperties());
 		
 		RhoDRDown rop = new RhoDRDown();
 		rop.setReasoner(reasoner);
@@ -240,11 +243,12 @@ public abstract class Experiment {
 		rop.init();
 		
 		// perform cross validation with ISLE
-		ISLE isle = new ISLE(clp, reasoner);
+		ISLE isle = new ISLE(lp, reasoner);
 		isle.setHeuristic(heuristic);
-		isle.setMaxNrOfResults(1);
+		isle.setMaxNrOfResults(3);
 		isle.setOperator(rop);
-//		isle.setStartClass(startClass);
+		isle.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+		isle.setStartClass(startClass);
 		new File(testFolder).mkdirs();
 		isle.setSearchTreeFile(testFolder  + "searchTreeISLE.txt");
 		isle.setWriteSearchTree(true);
