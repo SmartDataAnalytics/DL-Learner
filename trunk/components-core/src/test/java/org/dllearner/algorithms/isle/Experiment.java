@@ -225,7 +225,8 @@ public abstract class Experiment {
 		
 		Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
 		NLPHeuristic heuristic = new NLPHeuristic(entityRelevance);
-		heuristic.setStartNodeBonus(100);
+		// heuristic.setStartNodeBonus(100);
+		heuristic.init();
 		
 		ClassLearningProblem clp = new ClassLearningProblem(reasoner);
 		clp.setClassToDescribe(cls);
@@ -235,13 +236,13 @@ public abstract class Experiment {
 		
 		RhoDRDown rop = new RhoDRDown();
 		rop.setReasoner(reasoner);
-		rop.setUseNegation(false);
+		rop.setUseNegation(true);
 		rop.init();
 		
 		// perform cross validation with ISLE
 		ISLE isle = new ISLE(clp, reasoner);
 		isle.setHeuristic(heuristic);
-		isle.setMaxNrOfResults(30);
+		isle.setMaxNrOfResults(1);
 		isle.setOperator(rop);
 //		isle.setStartClass(startClass);
 		new File(testFolder).mkdirs();
@@ -251,6 +252,7 @@ public abstract class Experiment {
 //		isle.setTerminateOnNoiseReached(true);
 		isle.setIgnoredConcepts(Collections.singleton(cls));
 		isle.setReplaceSearchTree(true);
+		isle.setMaxExecutionTimeInSeconds(10);
 		isle.init();
 		isle.start();System.exit(1);
 		List<? extends EvaluatedDescription> currentlyBestDescriptions = isle.getCurrentlyBestEvaluatedDescriptions(20);
