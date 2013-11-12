@@ -52,7 +52,6 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                 if (text.trim().isEmpty()) {
                     continue;
                 }
-                text = text.trim();
                 
                 addEntry(text, entity);
                 addSubsequencesWordNet(entity, text);
@@ -150,6 +149,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
     @Override
 	public void addEntry(String s, Entity e) {
+    	s = s.trim();
 		FullTokenEntitySetPair candidates;
 		if (trie.contains(s)) 
 			candidates = trie.get(s);
@@ -162,6 +162,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 	}
 
     public void addEntry(String s, Entity e, String originalString) {
+    	s = s.trim();
         FullTokenEntitySetPair candidates;
         if (trie.contains(s))
             candidates = trie.get(s);
