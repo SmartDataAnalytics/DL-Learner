@@ -19,6 +19,8 @@
  */
 package org.dllearner.algorithms.qtl;
 
+import java.util.Set;
+
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.filters.Filter;
 
@@ -49,5 +51,9 @@ public interface QueryTreeFactory<N> {
 	void setStatementSelector(Selector selector);
 	
 	void setStatementFilter(com.hp.hpl.jena.util.iterator.Filter<Statement> filter);
+	
+	void addAllowedNamespaces(Set<String> allowedNamespaces);
+	
+	void addIgnoredPropperties(Set<String> ignoredProperties);
 
 }

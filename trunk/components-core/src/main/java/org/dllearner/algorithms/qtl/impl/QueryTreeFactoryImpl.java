@@ -35,6 +35,7 @@ import org.dllearner.algorithms.qtl.filters.Filters;
 import org.dllearner.algorithms.qtl.filters.QuestionBasedStatementFilter;
 import org.dllearner.algorithms.qtl.filters.ZeroFilter;
 
+import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -44,6 +45,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * 
@@ -62,6 +64,9 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	private com.hp.hpl.jena.util.iterator.Filter<Statement> keepFilter;
 	
 	private int maxDepth = 3;
+	
+	private Set<String> allowedNamespaces = Sets.newHashSet(RDF.getURI());
+	private Set<String> ignoredProperties = Sets.newHashSet();
 	
 	public QueryTreeFactoryImpl(){
 		comparator = new StatementComparator();
@@ -172,7 +177,52 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	}
 	
 	private void fillMap(Resource s, Model model, SortedMap<String, SortedSet<Statement>> resource2Statements){
-		Iterator<Statement> it = model.listStatements(s, null, (RDFNode)null).filterKeep(keepFilter);
+		com.hp.hpl.jena.util.iterator.Filter<Statement> nsFilter = null;
+		if(allowedNamespaces.size() > 1){
+			nsFilter = new com.hp.hpl.jena.util.iterator.Filter<Statement>() {
+
+				@Override
+				public boolean accept(Statement st) {
+					boolean valid = false;
+					if(st.getSubject().isURIResource()){
+						for (String ns : allowedNamespaces) {
+							if(st.getSubject().getURI().startsWith(ns)){
+								valid = true;
+								break;
+							}
+						}
+					} else {
+						valid = true;
+					}
+					if(valid){
+						valid = false;
+						if(!ignoredProperties.contains(st.getPredicate().getURI())){
+							for (String ns : allowedNamespaces) {
+								if(st.getPredicate().getURI().startsWith(ns)){
+									valid = true;
+									break;
+								}
+							}
+						}
+					}
+					if(valid){
+						if(st.getObject().isURIResource()){
+							valid = false;
+							for (String ns : allowedNamespaces) {
+								if(st.getObject().asResource().getURI().startsWith(ns)){
+									valid = true;
+									break;
+								}
+							}
+						}
+					}
+					
+					return valid;
+				}
+			};
+		}
+		Iterator<Statement> it = model.listStatements(s, null, (RDFNode)null).filterKeep(nsFilter);
+		
 		Statement st;
 		SortedSet<Statement> statements;
 		while(it.hasNext()){
@@ -193,18 +243,21 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		nodeId = 0;
 		SortedMap<String, SortedSet<Statement>> resource2Statements = new TreeMap<String, SortedSet<Statement>>();
 		
-		Statement st;
-		SortedSet<Statement> statements;
-		Iterator<Statement> it = model.listStatements(statementSelector);
-		while(it.hasNext()){
-			st = it.next();
-			statements = resource2Statements.get(st.getSubject().toString());
-			if(statements == null){
-				statements = new TreeSet<Statement>(comparator);
-				resource2Statements.put(st.getSubject().toString(), statements);
-			}
-			statements.add(st);
-		}
+//		Statement st;
+//		SortedSet<Statement> statements;
+//		Iterator<Statement> it = model.listStatements(statementSelector);
+//		while(it.hasNext()){
+//			st = it.next();
+//			statements = resource2Statements.get(st.getSubject().toString());
+//			if(statements == null){
+//				statements = new TreeSet<Statement>(comparator);
+//				resource2Statements.put(st.getSubject().toString(), statements);
+//			}
+//			statements.add(st);
+//		}
+		
+		fillMap(s, model, resource2Statements);	
+		
 		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
 		int depth = 0;
 		fillTree(tree, resource2Statements, depth);
@@ -340,5 +393,21 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
         }
         return encodedHtml.toString();
     }
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.QueryTreeFactory#addAllowedNamespaces(java.util.Set)
+	 */
+	@Override
+	public void addAllowedNamespaces(Set<String> allowedNamespaces) {
+		this.allowedNamespaces.addAll(allowedNamespaces);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.QueryTreeFactory#addIgnoredPropperties(java.util.Set)
+	 */
+	@Override
+	public void addIgnoredPropperties(Set<String> ignoredProperties) {
+		this.ignoredProperties.addAll(ignoredProperties);
+	}
 
 }

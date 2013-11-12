@@ -66,7 +66,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		QueryTree<N> lgg = computeLGG(tree1, tree2, learnFilters);
 		mon.stop();
 		addNumbering(lgg);
-		System.out.println("Calls needed: " + calls);
+		logger.debug("Calls needed: " + calls);
 		return lgg;
 	}
 

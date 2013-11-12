@@ -317,4 +317,18 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
         return encodedHtml.toString();
     }
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.QueryTreeFactory#addAllowedNamespaces(java.util.Set)
+	 */
+	@Override
+	public void addAllowedNamespaces(Set<String> allowedNamespaces) {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.QueryTreeFactory#addIgnoredPropperties(java.util.Set)
+	 */
+	@Override
+	public void addIgnoredPropperties(Set<String> ignoredProperties) {
+	}
+
 }
