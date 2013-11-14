@@ -334,7 +334,7 @@
 											</mapper>
 										</data>
 										<data>
-											<src>${basedir}/log/interfaces.log</src>
+											<src>${basedir}/src/debian/interfaces.log</src>
 											<type>file</type>
 											<mapper>
 												<type>perm</type>
