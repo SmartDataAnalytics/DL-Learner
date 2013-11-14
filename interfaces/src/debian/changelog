@@ -1,1 +1,5 @@
+dl-learner-cli (1.0) UNRELEASED; urgency=low
 
+  * Initial release. (Closes: #XXXXXX)
+
+ -- dcherix <dcherix@jl-Latitude-E6420>  Thu, 14 Nov 2013 07:12:07 +0100
