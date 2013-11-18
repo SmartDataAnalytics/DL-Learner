@@ -2,7 +2,7 @@
 <question answertype="resource" id="0">
 <string>houses/NNS in/IN Headington/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -18,7 +18,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="1">
 <string>houses/NNS in/IN Abingdon/NNP with/IN more/JJR than/IN 2/CD bedrooms/NNS</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -37,7 +37,7 @@ GROUP BY ?x0
 <question answertype="resource" id="2">
 <string>houses/NNS with/IN garden/NN in/IN Wheatley/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -55,7 +55,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="3">
 <string>detached/JJ houses/NNS in/IN Oxford/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -73,7 +73,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="4">
 <string>Victorian/JJ houses/NNS in/IN Oxfordshire/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -91,7 +91,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="5">
 <string>Edwardian/JJ house/NN in/IN Oxfordshire/NNP for/IN less/JJR than/IN 1000000/CD</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -111,7 +111,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="6">
 <string>houses/NNS with/IN double/JJ garage/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -128,7 +128,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="7">
 <string>houses/NNS with/IN large/JJ garden/NN and/CC equipped/JJ kitchen/NN</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -147,7 +147,7 @@ SELECT ?x ?y1 WHERE {
 <question answertype="resource" id="8">
 <string>houses/NNS with/IN more/JJR than/IN 1/CD reception/NN room/NN</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -163,8 +163,8 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="9">
 <string>houses/NNS with/IN conservatory/NN room/NN and/CC less/JJR than/IN 900000/CD pounds/NNS</string>
 <queryStatus>
-<evaluation>incorrect</correct>
-<notes><note>templateproblem</note></note>
+<evaluation>incorrect</evaluation>
+<notes><note>templateproblem</note></notes>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -182,7 +182,7 @@ GROUP BY ?x ?y0
 <question answertype="resource" id="10">
 <string>houses/NNS in/IN Old/NNP Marston/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -198,7 +198,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="11">
 <string>family/NN houses/NNS with/IN more/JJR than/IN 2/CD bathrooms/NNS and/CC more/JJR than/IN 4/CD bedrooms/NNS</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -217,7 +217,7 @@ GROUP BY ?x
 <question answertype="resource" id="12">
 <string>houses/NNS close/RB to/TO Iffley/NNP Sport/NNP Centre/NNP</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -232,7 +232,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="13">
 <string>houses/NNS in/IN Oxford/NNP close/RB to/TO the/DT train/NN station/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -250,7 +250,7 @@ SELECT ?y0 ?x0 WHERE {
 <question answertype="resource" id="14">
 <string>houses/NNS in/IN Summertown/NNP for/IN less/JJR than/IN 400000/CD pounds/NNS</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -268,7 +268,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="15">
 <string>two/CD floors/NNS houses/NNS in/IN East/NNP Oxford/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -284,7 +284,7 @@ ASK WHERE {
 <question answertype="resource" id="16">
 <string>brand/NN new/JJ houses/NNS in/IN Oxford/NNP for/IN less/JJR than/IN 500000/CD pounds/NNS</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -305,7 +305,7 @@ SELECT ?y ?y0 WHERE {
 <question answertype="resource" id="17">
 <string>houses/NNS close/RB to/TO Brookes/NNP University/NNP</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -320,7 +320,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="18">
 <string>houses/NNS in/IN Jericho/NNP area/NN</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -336,7 +336,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="19">
 <string>house/NN close/RB to/TO Headington/NNP hospitals/NNS</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -351,7 +351,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="20">
 <string>modern/JJ houses/NNS with/IN gas/NN central/JJ heating/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -369,7 +369,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="21">
 <string>houses/NNS with/IN electric/JJ heating/NN</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -392,7 +392,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="23">
 <string>houses/NNS close/RB to/TO an/DT Italian/JJ restaurant/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -410,7 +410,7 @@ SELECT ?y ?x0 WHERE {
 <question answertype="resource" id="24">
 <string>houses/NNS at/IN walking/VBG distance/NN from/IN a/DT pharmacy/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -426,7 +426,7 @@ SELECT ?y ?x0 WHERE {
 <question answertype="resource" id="25">
 <string>houses/NNS at/IN walking/VBG distance/NN from/IN Tesco/NNP or/CC Sainsburys/NNP shops/NNS</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -440,7 +440,7 @@ ASK WHERE {
 <question answertype="resource" id="26">
 <string>houses/NNS nearby/JJ Sheldonian/NNP Theatre/NNP</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -455,7 +455,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="27">
 <string>houses/NNS with/IN underfloor/JJ heating/NN</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -471,7 +471,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="28">
 <string>houses/NNS with/IN wood/NN floor/NN</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -487,7 +487,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="29">
 <string>houses/NNS close/RB to/TO The/DT King/NN 's/POS Arms/NNS pub/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -512,7 +512,7 @@ SELECT ?x WHERE {
 <string>houses/NNS with/IN many/JJ reception/NN rooms/NNS</string>
 <queryStatus>
 <type>OK</type>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -533,7 +533,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="33">
 <string>houses/NNS with/IN balcony/NN</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -549,7 +549,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="34">
 <string>houses/NNS with/IN double/JJ glazed/JJ windows/NNS</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -565,7 +565,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="35">
 <string>2/CD bedroom/NN houses/NNS near/IN Oxford/NNP train/NN station/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -582,7 +582,7 @@ HAVING (?v0 = 2)
 <question answertype="resource" id="36">
 <string>4/CD bedroom/NN detached/VBD houses/NNS in/IN Oxford/NNP</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -608,7 +608,7 @@ HAVING (?v2 = 4)
 <question answertype="resource" id="38">
 <string>freehold/NN houses/NNS with/IN 2/CD bedrooms/NNS and/CC a/DT living/NN room/NN in/IN Banbury/NNP</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -628,7 +628,7 @@ HAVING (?v2 = 2)
 <question answertype="resource" id="39">
 <string>houses/NNS in/IN Oxford/NNP city/NN center/NN with/IN at/IN most/JJS 2/CD bedrooms/NNS</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -647,7 +647,7 @@ GROUP BY ?x1
 <question answertype="resource" id="40">
 <string>victorian/JJ town/NN houses/NNS in/IN north/JJ Oxford/NNP</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -666,7 +666,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="41">
 <string>terrace/NN houses/NNS with/IN west/NN facing/VBG garden/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -684,7 +684,7 @@ SELECT ?y1 ?x0 WHERE {
 <question answertype="resource" id="42">
 <string>modernized/JJ end/NN terrace/NN houses/NNS with/IN private/JJ parking/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -703,7 +703,7 @@ SELECT ?y1 ?x0 WHERE {
 <question answertype="resource" id="43">
 <string>three/CD bedroom/NN houses/NNS with/IN open/JJ fireplace/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -728,7 +728,7 @@ HAVING (?v0 = 3)
 <question answertype="resource" id="45">
 <string>houses/NNS on/IN Rawlinson/NNP Road/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -744,7 +744,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="46">
 <string>flats/NNS near/IN supermarket/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -872,7 +872,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="63">
 <string>houses/NNS in/IN Botley/NNP Road/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -888,7 +888,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="64">
 <string>houses/NNS in/IN Littlemore/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -911,7 +911,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="66">
 <string>houses/NNS with/IN 3/CD bedrooms/NNS in/IN Florence/NNP Park/NNP Road/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -930,7 +930,7 @@ HAVING (?v2 = 3)
 <question answertype="resource" id="67">
 <string>houses/NNS with/IN front/JJ garden/NN and/CC rear/NN garden/NN</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -954,7 +954,7 @@ SELECT ?x ?y0 WHERE {
 <question answertype="resource" id="69">
 <string>houses/NNS with/IN ample/JJ parking/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -971,7 +971,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="70">
 <string>house/NN with/IN electric/JJ central/JJ heating/NN system/NN</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -994,7 +994,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="72">
 <string>houses/NNS with/IN countryside/NN views/NNS</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1009,7 +1009,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="73">
 <string>houses/NNS with/IN farmland/NN views/NNS</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1025,7 +1025,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="74">
 <string>houses/NNS nearby/JJ River/NNP Thames/NNPS</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1040,7 +1040,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="75">
 <string>houses/NNS having/VBG one/CD utility/NN room/NN or/CC cloakroom/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1057,7 +1057,7 @@ SELECT ?y0 WHERE {
 <question answertype="resource" id="76">
 <string>houses/NNS in/IN Oxfordshire/NNP with/IN fireplaces/NNS</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1075,7 +1075,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="77">
 <string>houses/NNS with/IN open/JJ plan/NN kitchen/NN near/IN Oxford/NNP</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1092,7 +1092,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="78">
 <string>houses/NNS with/IN walled/JJ garden/NN near/IN Oxford/NNP</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1109,7 +1109,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="79">
 <string>houses/NNS with/IN river/NN views/NNS</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1139,7 +1139,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="82">
 <string>house/NN with/IN balcony/NN and/CC vaulted/VBD ceiling/NN</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1165,7 +1165,7 @@ SELECT ?x ?y1 WHERE {
 <question answertype="resource" id="84">
 <string>house/NN in/IN a/DT corner/NN or/CC end/NN of/IN terrace/NN plot/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1188,7 +1188,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="86">
 <string>house/NN with/IN at/IN least/JJS 2/CD reception/NN rooms/NNS and/CC a/DT garden/NN</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1205,7 +1205,7 @@ SELECT ?x WHERE {
 <question answertype="resource" id="87">
 <string>house/NN with/IN a/DT courtyard/NN</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1242,7 +1242,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="91">
 <string>house/NN in/IN a/DT retirement/NN complex/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1258,7 +1258,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="92">
 <string>house/NN with/IN double/JJ glazing/NN and/CC central/JJ heating/NN</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1282,7 +1282,7 @@ SELECT ?x ?y0 WHERE {
 <question answertype="resource" id="94">
 <string>house/NN listed/VBD Grade/NNP I/NNP or/CC Grade/NNP II/NNP</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1305,7 +1305,7 @@ SELECT ?x WHERE {
 <question answertype="resource" id="96">
 <string>house/NN in/IN Witney/NNP or/CC Wolvercote/NNP</string>
 <queryStatus>
-<evaluation>partlycorrect</correct>
+<evaluation>partlycorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1329,7 +1329,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="98">
 <string>house/NN in/IN Banbury/NNP Road/NNP</string>
 <queryStatus>
-<evaluation>correct</correct>
+<evaluation>correct</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1345,7 +1345,7 @@ SELECT ?x0 WHERE {
 <question answertype="resource" id="99">
 <string>house/NN in/IN the/DT area/NN of/IN John/NNP Radcliffe/NNP hospital/NN</string>
 <queryStatus>
-<evaluation>incorrect</correct>
+<evaluation>incorrect</evaluation>
 <type>OK</type>
 </queryStatus>
 <query><![CDATA[PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

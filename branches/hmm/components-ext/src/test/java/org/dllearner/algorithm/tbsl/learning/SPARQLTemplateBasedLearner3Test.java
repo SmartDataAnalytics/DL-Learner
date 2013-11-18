@@ -48,7 +48,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
@@ -132,7 +131,7 @@ public class SPARQLTemplateBasedLearner3Test
 	protected static final int QUESTION_OFFSET = 0;
 	protected static final int QUESTION_LIMIT = Integer.MAX_VALUE;
 
-	protected static final boolean WHITELIST_ONLY = true;
+	protected static final boolean WHITELIST_ONLY = false;
 	protected static final Set<Integer> WHITELIST = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(new Integer[] {24})));
 	protected static final boolean	GENERATE_HTML_ONLY	= false;
 	protected static final int	MAX_THREADS	= 4;
@@ -359,7 +358,7 @@ public class SPARQLTemplateBasedLearner3Test
 
 	}
 
-	@Test @SuppressWarnings("null") public void createXMLOxford() throws IOException
+	/*@Test*/ @SuppressWarnings("null") public void createXMLOxford() throws IOException
 	{			
 		/**more will be left out of the xml file */		
 		List<String> questions = new LinkedList<String>();
@@ -731,9 +730,12 @@ public class SPARQLTemplateBasedLearner3Test
 	{
 		final Set<Integer> aMinusB 			= new HashSet<Integer>();
 		final Set<Integer> bMinusA 			= new HashSet<Integer>();
-		final Set<Integer> intersection 	= new HashSet<Integer>();
+		final Set<Integer> intersection 	= new HashSet<Integer>();				
+		final Set<Integer> differentQueries = new HashSet<Integer>();
+		/** only contains ids of who have the same query*/
 		final Set<Integer> differentAnswers	= new HashSet<Integer>();
 
+		/** assumes that the same questions have the same ids in both test datas */
 		public Diff(QueryTestData reference, QueryTestData newData)
 		{
 			//		if(d.id2Question.size()!=e.id2Question.size())
@@ -753,14 +755,30 @@ public class SPARQLTemplateBasedLearner3Test
 			intersection.retainAll(newData.id2Question.keySet());
 
 			for(int i: intersection)
-			{
-				// the questions are the same - we don't care about the answer
+			{										
 				if(reference.id2Question.get(i).equals(newData.id2Question.get(i))) 
-
-					if(reference.id2Answers.containsKey(i)&&!reference.id2Answers.get(i).equals(newData.id2Answers.get(i)))
+				{
+					{	
+						boolean r = reference.id2Query.containsKey(i);
+						boolean n = newData.id2Query.containsKey(i);
+						// no queries - stop
+						if(!r&&!n) {continue;}
+						// if exactly one of them contains queries or both do and the queries are different 
+						if((r^n)||(!reference.id2Query.get(i).equals(newData.id2Query.get(i))))
+						{
+							differentQueries.add(i);
+							continue;
+						}
+					}
+					// both have the same queries - check the answers
+					boolean r = reference.id2Answers.containsKey(i);
+					boolean n = newData.id2Answers.containsKey(i);
+					if(!r&&!n) {continue;}
+					if(r^n||!reference.id2Answers.get(i).equals(newData.id2Answers.get(i)))
 					{
 						differentAnswers.add(i);
-					} 
+					}
+				} 
 			}
 		}
 
@@ -1641,4 +1659,27 @@ public class SPARQLTemplateBasedLearner3Test
 		in.close();
 		out.close();
 	}
+
+	@Test public void diffXML()
+	{
+		String oldXML = "eval/eval2.xml";
+		String newXML = "log/test_limitNONE_offset0_timeoutSeconds_120_threads4_mode-BEST_QUERY_generateAnswers-true.xml";
+		QueryTestData oldData = QueryTestData.readQaldXml(new File(oldXML));
+		QueryTestData newData = QueryTestData.readQaldXml(new File(newXML));
+		Diff diff = new Diff(oldData, newData);		
+
+		for(Integer id: diff.differentQueries)
+		{
+			System.out.println(oldData.id2Question.get(id)+"*******************************************************************************");
+			System.out.println(id+" with "+newData.id2Answers.get(id).size()+" answers, old query: "+oldData.id2Query.get(id)+"\n new query:"+newData.id2Query.get(id));
+		}
+		
+		// TODO: are there correct questions that are different now?
+
+//		for(Integer id: oldData.id2AnswerStatus.keySet())
+//		{
+//			if(oldData.id2AnswerStatus.get(id).type)
+//		}
+	}
+
 }

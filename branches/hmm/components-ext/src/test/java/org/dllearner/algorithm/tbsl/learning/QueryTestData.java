@@ -38,12 +38,15 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 public class QueryTestData implements Serializable
 {
+	public enum EvaluationStatus {CORRECT,PARTIALLY_CORRECT,INCORRECT};
+	
 	private static final long	serialVersionUID	= 2L;
 	public boolean hmm = false;
 	public SortedMap<Integer, String> id2Question = new ConcurrentSkipListMap<Integer, String>();
 	public SortedMap<Integer, String> id2Query = new ConcurrentSkipListMap<Integer, String>();
 	public SortedMap<Integer, Set<String>> id2Answers = new ConcurrentSkipListMap<Integer, Set<String>>();
 	public SortedMap<Integer, LearnStatus> id2QueryStatus = new ConcurrentSkipListMap<Integer, LearnStatus>();
+	public SortedMap<Integer, EvaluationStatus> id2EvaluationStatus = new ConcurrentSkipListMap<Integer, EvaluationStatus>();
 	/** TODO: include in the xml*/
 	public SortedMap<Integer, LearnStatus> id2AnswerStatus = new ConcurrentSkipListMap<Integer, LearnStatus>();
 
@@ -100,6 +103,11 @@ public class QueryTestData implements Serializable
 		}
 		return this;
 	}
+	/** @see readQaldXml(File file, int MAX_NUMBER_OF_QUESTIONS, boolean whitelistOnly, Set<Integer> whitelist)**/
+	public static QueryTestData readQaldXml(final File file)
+	{
+		return readQaldXml(file, Integer.MAX_VALUE, false,null);
+	}
 
 	/** reads test data from a QALD2 benchmark XML file, including questions, queries and answers.
 	 * each question needs to have a query but not necessarily an answer.
@@ -127,38 +135,44 @@ public class QueryTestData implements Serializable
 				//read question ID
 				id = Integer.valueOf(questionNode.getAttribute("id"));
 				if(whitelistOnly&&!whitelist.contains(id)) {continue;}
-
+				
 				//Read question
 				question = ((Element)questionNode.getElementsByTagName("string").item(0)).getChildNodes().item(0).getNodeValue().trim();
+				// TODO: read evaluation status
 				//Read SPARQL query
-				query = ((Element)questionNode.getElementsByTagName("query").item(0)).getChildNodes().item(0).getNodeValue().trim();
-				//				//Read answers
-				//				answers = new HashSet<String>();
-				//				NodeList aswersNodes = questionNode.getElementsByTagName("answer");
-				//				for(int j = 0; j < aswersNodes.getLength(); j++){
-				//					Element answerNode = (Element) aswersNodes.item(j);
-				//					answers.add(((Element)answerNode.getElementsByTagName("uri").item(0)).getChildNodes().item(0).getNodeValue().trim());
-				//				}
 
-				if(!query.equals("OUT OF SCOPE")) // marker in qald benchmark file, will create holes interval of ids (e.g. 1,2,5,7)   
+				NodeList queryElements = questionNode.getElementsByTagName("query");
+				if(queryElements.getLength()>0)
 				{
-					testData.id2Question.put(id, question);
-					testData.id2Query.put(id, query);					
-					Element answersElement = (Element) questionNode.getElementsByTagName("answers").item(0);
-					// some of our qald files were mistakenly created so that they have the "answer" elements directly under the question node 
-					// with no answers element
-					if(answersElement==null) answersElement = (Element)questionNode;
-					//				if(answersElement!=null)
+					query = queryElements.item(0).getChildNodes().item(0).getNodeValue().trim();
+					//				//Read answers
+					//				answers = new HashSet<String>();
+					//				NodeList aswersNodes = questionNode.getElementsByTagName("answer");
+					//				for(int j = 0; j < aswersNodes.getLength(); j++){
+					//					Element answerNode = (Element) aswersNodes.item(j);
+					//					answers.add(((Element)answerNode.getElementsByTagName("uri").item(0)).getChildNodes().item(0).getNodeValue().trim());
+					//				}
+
+					if(!query.equals("OUT OF SCOPE")) // marker in qald benchmark file, will create holes interval of ids (e.g. 1,2,5,7)   
 					{
-						NodeList answerElements = answersElement.getElementsByTagName("answer");						
-						for(int j=0; j<answerElements.getLength();j++)
+						testData.id2Question.put(id, question);
+						testData.id2Query.put(id, query);					
+						Element answersElement = (Element) questionNode.getElementsByTagName("answers").item(0);
+						// some of our qald files were mistakenly created so that they have the "answer" elements directly under the question node 
+						// with no answers element
+						if(answersElement==null) answersElement = (Element)questionNode;
+						//				if(answersElement!=null)
 						{
-							String answer = ((Element)answerElements.item(j)).getTextContent();
-							answers.add(answer);
+							NodeList answerElements = answersElement.getElementsByTagName("answer");						
+							for(int j=0; j<answerElements.getLength();j++)
+							{
+								String answer = ((Element)answerElements.item(j)).getTextContent();
+								answers.add(answer);
+							}
+							testData.id2Answers.put(id, answers);
 						}
-						testData.id2Answers.put(id, answers);
 					}
-				}				
+				}
 				//				question2Answers.put(question, answers);
 
 			}
