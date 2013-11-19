@@ -24,6 +24,7 @@ import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.extra.CacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
@@ -60,7 +61,7 @@ public class QALDExperiment {
 	
 	QueryExecutionFactory qef;
 	String cacheDirectory = "cache";
-	int nrOfPositiveExamples = 5;
+	int nrOfPositiveExamples = 3;
 	int maxDepth = 1;
 	
 	QueryTreeFactory<String> queryTreeFactory;
@@ -93,15 +94,18 @@ public class QALDExperiment {
 	}
 	
 	public void run(){
+		DescriptiveStatistics stats = new DescriptiveStatistics();
+		
 		List<String> sparqlQueries = loadSPARQLQueries();
 		
 		for (String sparqlQuery : sparqlQueries) {
-			logger.info("Processing query\n" + sparqlQuery);
 			try {
 				//get result set of SPARQL query
 				List<String> resources = getResult(sparqlQuery);
 				
 				if(resources.size() >= nrOfPositiveExamples){
+					logger.info("Processing query\n" + sparqlQuery);
+					
 					//shuffle the list to avoid bias
 					Collections.shuffle(resources, new Random(123));
 					
@@ -118,11 +122,13 @@ public class QALDExperiment {
 					
 					double fmeasure = fMeasure(sparqlQuery, learnedSPARQLQuery);
 					logger.info("F-Score: " + fmeasure);
+					stats.addValue(fmeasure);
 				}
 			} catch (Exception e) {
 				logger.error("Error occured.", e);
 			}
 		}
+		logger.info(stats);
 	}
 	
 	private List<QueryTree<String>> getQueryTrees(List<String> resources){

@@ -177,11 +177,17 @@
 			<version>1.0</version>
 		</dependency>
 
+<!-- 		<dependency> -->
+<!-- 			<groupId>fuzzydll</groupId> -->
+<!-- 			<artifactId>fuzzyowl2fuzzydlparser</artifactId> -->
+<!-- 			<version>1.0</version> -->
+<!-- 		</dependency> -->
+		
 		<dependency>
-			<groupId>fuzzydll</groupId>
-			<artifactId>fuzzyowl2fuzzydlparser</artifactId>
-			<version>1.0</version>
-		</dependency>
+      <groupId>org.fuzzy</groupId>
+      <artifactId>fuzzyowl</artifactId>
+      <version>1.0</version>
+    </dependency>
 
         <dependency>
             <groupId>edu.northwestern.at</groupId>
