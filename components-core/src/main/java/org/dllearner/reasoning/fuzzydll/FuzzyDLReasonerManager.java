@@ -19,7 +19,9 @@
 
 package org.dllearner.reasoning.fuzzydll;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashSet;
@@ -30,6 +32,7 @@ import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.FuzzyOwl2toFuzzyDL;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -37,7 +40,6 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -68,6 +70,7 @@ import org.semanticweb.owlapi.util.Version;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
+import edu.stanford.nlp.io.StringOutputStream;
 import fuzzydl.AllInstancesQuery;
 import fuzzydl.Concept;
 import fuzzydl.ConfigReader;
@@ -78,8 +81,6 @@ import fuzzydl.Query;
 import fuzzydl.exception.FuzzyOntologyException;
 import fuzzydl.milp.Solution;
 import fuzzydl.parser.Parser;
-import fuzzydll.fuzzyowl2fuzzydlparser.FuzzyOwl2toFuzzyDL;
-import fuzzydll.fuzzyowl2fuzzydlparser.OWLAPI_fuzzyDLObjectParser;
 
 public class FuzzyDLReasonerManager implements OWLReasoner {
 
@@ -104,6 +105,8 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 //	private PrintStream out;
 //	private int counter = 1;
 //	private int counter2 = 1;
+	
+	private ByteArrayOutputStream baos;
 
 	public FuzzyDLReasonerManager(String ontologyFile, OWLOntology ontology, OWLReasonerConfiguration conf, OWLDataFactory factory, String baseURI) throws Exception {
 		
@@ -132,11 +135,26 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 
 		fuzzyKB = parseOWLontologyToFuzzyDLsyntax(ontologyFile);
 //		fuzzyFileParser.setBaseKB(fuzzyKB);
-		OWLAPI_fuzzyDLObjectParser.setParsingFuzzyKB(fuzzyFileParser, fuzzyKB);
+//		OWLAPI_fuzzyDLObjectParser.setParsingFuzzyKB(fuzzyFileParser, fuzzyKB);
+		
+		baos = new ByteArrayOutputStream();
+		fuzzyFileParser.setPrintStream(new PrintStream(baos));
 		
 		solveKB();
 		
-		  // errorFile = new FileOutputStream("errorFile.txt");
+		  // errorFile = new FileOutputStream("errorFile.txt")name;
+	}
+	
+	private Concept convert(OWLClassExpression classExpression){
+		baos.reset();
+		String name = fuzzyFileParser.getClassName(classExpression);
+		return fuzzyKB.getConcept(name);
+	}
+	
+	private Individual convert(OWLIndividual individual){
+		baos.reset();
+		String name = fuzzyFileParser.getIndividualName(individual);
+		return fuzzyKB.getIndividual(name);
 	}
 
 	private void startPellet(OWLOntology ontology, OWLReasonerConfiguration conf) {
@@ -173,9 +191,10 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 
 	// added by Josue
 	public double getFuzzyMembership(OWLClassExpression oce, OWLIndividual i) {
-
-			Individual fIndividual = fuzzyKB.getIndividual(shortFormParser.getShortForm((OWLEntity) i));
-			Concept fConcept = OWLAPI_fuzzyDLObjectParser.getFuzzyDLExpresion(oce);
+		
+			Individual fIndividual = convert(i);
+			Concept fConcept = convert(oce);
+			System.out.println(fConcept + "(" + fIndividual + ")?");
 			try {
 				
 			Query q = new MinInstanceQuery(fConcept, fIndividual);
@@ -215,7 +234,6 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 //				Scanner sc = new Scanner(System.in);
 //				sc.nextLine();		
 			}
-			
 			// return (1 - Math.abs(truthDegree - queryResult.getSolution()));
 			return queryResult.getSolution();
 	}
@@ -379,7 +397,7 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 		Set<OWLNamedIndividual> owlApiInstances = owlApiOutput.getFlattened();
 		//get all instances using FuzzyDL
 		try {
-			Concept fuzzyConcept = OWLAPI_fuzzyDLObjectParser.getFuzzyDLExpresion(cls);
+			Concept fuzzyConcept = convert(cls);
 			AllInstancesQuery query = new AllInstancesQuery(fuzzyConcept);
 			Solution solution = query.solve(fuzzyKB);
 			if(solution.isConsistentKB() && solution.getSolution() == 0){
