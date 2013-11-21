@@ -1,6 +1,4 @@
-MILP_SOLVER = /Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/fuzzyDLcbc
-EPSILON = 0.01
-solver = z
-max_individuals = -1
 debugPrint = false
-CBC = 1
+epsilon = 0.001
+maxIndividuals = -1
+showVersion = true
