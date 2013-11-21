@@ -3,9 +3,9 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import java.util.Set;
-
 import org.dllearner.core.owl.Entity;
+
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -25,14 +25,6 @@ public interface AnnotatedDocument extends Document {
 	 */
 	Set<SemanticAnnotation> getAnnotations();
 	
-	/**
-	 * Returns the annotation at the given position(offset) of given length.
-	 * @param offset
-	 * @param length
-	 * @return
-	 */
-	SemanticAnnotation getAnnotation(int offset, int length);
-
     /**
      * Returns the number of occurrences of the given entity in this document.
      *
