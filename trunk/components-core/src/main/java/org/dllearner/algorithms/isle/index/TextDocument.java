@@ -10,23 +10,17 @@ import java.util.LinkedList;
 public class TextDocument extends LinkedList<Token> implements Document {
     @Override
     public String getContent() {
-        return getContentStartingAtToken(this.getFirst(), Level.STEMMED);
+        return getContentStartingAtToken(this.getFirst(), SurfaceFormLevel.STEMMED);
     }
 
     @Override
     public String getRawContent() {
-        return getContentStartingAtToken(this.getFirst(), Level.RAW);
+        return getContentStartingAtToken(this.getFirst(), SurfaceFormLevel.RAW);
     }
 
     @Override
     public String getPOSTaggedContent() {
-        return getContentStartingAtToken(this.getFirst(), Level.POS_TAGGED);
-    }
-
-    public static enum Level {
-        RAW,
-        POS_TAGGED,
-        STEMMED
+        return getContentStartingAtToken(this.getFirst(), SurfaceFormLevel.POS_TAGGED);
     }
 
     /**
@@ -37,7 +31,7 @@ public class TextDocument extends LinkedList<Token> implements Document {
      * @param l level of surface forms to use
      * @return built string
      */
-    public String getContentStartingAtToken(Token start, Level l) {
+    public String getContentStartingAtToken(Token start, SurfaceFormLevel l) {
         StringBuilder sb = new StringBuilder();
         boolean found = false;
         for (Token t : this) {
@@ -54,7 +48,7 @@ public class TextDocument extends LinkedList<Token> implements Document {
         return sb.toString();
     }
 
-    private String getStringForLevel(Token t, Level l) {
+    private String getStringForLevel(Token t, SurfaceFormLevel l) {
         switch (l) {
             case RAW:
                 return t.getRawForm();
