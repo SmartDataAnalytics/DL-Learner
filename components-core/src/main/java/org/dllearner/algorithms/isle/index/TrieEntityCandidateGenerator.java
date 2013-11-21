@@ -54,7 +54,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
     		Annotation annotation_i = sortedAnnotations.get(i);
     		int begin_i = annotation_i.getOffset();
     		int end_i = begin_i + annotation_i.getLength()-1;
-    		String token_i = annotation_i.getToken();
+    		String token_i = annotation_i.getString();
     		Set<Entity> candidates_i = getCandidates(annotation_i);
     		Set<Entity> newCandidates_i = new HashSet<Entity>();
     		
@@ -68,7 +68,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
     		for (int j=windowStart; j<sortedAnnotations.size() && j<windowEnd; j++) {
     			if (j!=i) {
 	    			Annotation annotation_j = sortedAnnotations.get(j);
-	    			String token_j = annotation_j.getToken();
+	    			String token_j = annotation_j.getString();
 	    			Set<Entity> candidates_j = getCandidates(annotation_j);
 	    			Set<Entity> intersection = Sets.intersection(candidates_i, candidates_j);
 	    			Set<Entity> newCandidates_ij = new HashSet<Entity>();
@@ -83,7 +83,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
 	    			if (!newCandidates_ij.isEmpty()) {
 	    				Annotation mergedAnnotation = mergeAnnotations(annotation_i,annotation_j);
 	    				// If there's no punctuation in the merged annotation
-	    				if (!Pattern.matches("\\p{Punct}", mergedAnnotation.getToken())) {
+	    				if (!Pattern.matches("\\p{Punct}", mergedAnnotation.getString())) {
 		    				candidatesMap.put(mergedAnnotation, newCandidates_ij);
 		    				candidatesMap.remove(annotation_i);
 		    				candidatesMap.remove(annotation_j);

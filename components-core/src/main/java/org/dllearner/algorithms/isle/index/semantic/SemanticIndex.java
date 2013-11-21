@@ -48,6 +48,7 @@ public abstract class SemanticIndex {
 
     public SemanticIndex(OWLOntology ontology) {
         this.ontology = ontology;
+
     }
 
     /**

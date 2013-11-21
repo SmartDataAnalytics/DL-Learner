@@ -57,7 +57,7 @@ public class SentenceBasedContextExtractor implements ContextExtractor{
 			}
 			index += s.length();
 		}
-		throw new RuntimeException("Token " + annotation.getToken() + " not found in text " + annotation.getReferencedDocument().getRawContent());
+		throw new RuntimeException("Token " + annotation.getString() + " not found in text " + annotation.getReferencedDocument().getRawContent());
 	}
 	
 	private List<CoreMap> getSentences(String document) {
