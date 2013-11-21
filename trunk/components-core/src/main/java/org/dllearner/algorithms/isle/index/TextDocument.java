@@ -1,6 +1,8 @@
 package org.dllearner.algorithms.isle.index;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A simple text document without further formatting or markup.
@@ -8,6 +10,16 @@ import java.util.LinkedList;
  * @author Daniel Fleischhacker
  */
 public class TextDocument extends LinkedList<Token> implements Document {
+    public static void main(String[] args) {
+        TextDocument t = new TextDocument();
+        String s = "This is a very long, nice text for testing our new implementation of TextDocument.";
+        for (String e : s.split(" ")) {
+            t.add(new Token(e));
+        }
+
+        System.out.println(t.getRawContent());
+    }
+
     @Override
     public String getContent() {
         return getContentStartingAtToken(this.getFirst(), SurfaceFormLevel.STEMMED);
@@ -28,7 +40,7 @@ public class TextDocument extends LinkedList<Token> implements Document {
      * surface forms according to {@code level} are used to build the string.
      *
      * @param start token to start building the string at, i.e., the first token in the returned string
-     * @param l level of surface forms to use
+     * @param l     level of surface forms to use
      * @return built string
      */
     public String getContentStartingAtToken(Token start, SurfaceFormLevel l) {
@@ -51,6 +63,42 @@ public class TextDocument extends LinkedList<Token> implements Document {
         return sb.toString();
     }
 
+    /**
+     * Returns a list containing {@code numberOfTokens} successive tokens from this document starting at the given start
+     * token. If {@code ignorePunctuation} is set, tokens which represent punctuation are added to the result but not
+     * counted for the number of tokens.
+     *
+     * @param start             token to start collecting tokens from the document
+     * @param numberOfTokens    number of tokens to collect from the document
+     * @param ignorePunctuation if true, punctuation are not counted towards the number of tokens to return
+     * @return list containing the given number of relevant tokens, depending in the value of ignorePunctuation, the
+     *          list might contain additional non-relevant (punctuation) tokens
+     */
+    public List<Token> getTokensStartingAtToken(Token start, int numberOfTokens, boolean ignorePunctuation) {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+
+        int relevantTokens = 0;
+        boolean found = false;
+
+        for (Token t : this) {
+            if (found) {
+                tokens.add(t);
+                if (!ignorePunctuation || !t.isPunctuation()) {
+                    relevantTokens++;
+                }
+            }
+            else if (t == start) {
+                found = true;
+                tokens.add(t);
+            }
+            if (relevantTokens == numberOfTokens) {
+                break;
+            }
+        }
+
+        return tokens;
+    }
+
     private String getStringForLevel(Token t, SurfaceFormLevel l) {
         switch (l) {
             case RAW:
@@ -62,15 +110,5 @@ public class TextDocument extends LinkedList<Token> implements Document {
         }
 
         return null;
-    }
-
-    public static void main(String[] args) {
-        TextDocument t = new TextDocument();
-        String s = "This is a very long, nice text for testing our new implementation of TextDocument.";
-        for (String e : s.split(" ")) {
-            t.add(new Token(e));
-        }
-
-        System.out.println(t.getRawContent());
     }
 }
