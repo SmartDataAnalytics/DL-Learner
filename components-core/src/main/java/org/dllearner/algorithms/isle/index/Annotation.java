@@ -34,6 +34,13 @@ public class Annotation {
 	public Document getReferencedDocument() {
 		return referencedDocument;
 	}
+	
+	/**
+	 * @return the tokens
+	 */
+	public ArrayList<Token> getTokens() {
+		return tokens;
+	}
 
 	public String getString(){
         StringBuilder sb = new StringBuilder();

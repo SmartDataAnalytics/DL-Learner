@@ -16,6 +16,7 @@ import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.dllearner.algorithms.isle.TextDocumentGenerator;
 import org.dllearner.algorithms.isle.index.TextDocument;
 
 import java.io.File;
@@ -61,7 +62,7 @@ public class LuceneSyntacticIndex implements SyntacticIndex {
 			ScoreDoc[] result = searcher.search(query, getSize()).scoreDocs;
 			for (int i = 0; i < result.length; i++) {
 				Document doc = searcher.doc(result[i].doc);
-				documents.add(new TextDocument(doc.get(searchField)));
+				documents.add(TextDocumentGenerator.getInstance().generateDocument(doc.get(searchField)));
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -85,7 +86,7 @@ public class LuceneSyntacticIndex implements SyntacticIndex {
 			try {
 				Document doc = indexReader.document(i);
 				String content = doc.get(searchField);
-				documents.add(new TextDocument(content));
+				documents.add(TextDocumentGenerator.getInstance().generateDocument(content));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

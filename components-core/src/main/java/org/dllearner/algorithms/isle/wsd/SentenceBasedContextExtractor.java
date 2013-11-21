@@ -3,6 +3,14 @@
  */
 package org.dllearner.algorithms.isle.wsd;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+
+import org.dllearner.algorithms.isle.TextDocumentGenerator;
+import org.dllearner.algorithms.isle.index.Token;
+
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
@@ -10,11 +18,6 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
-import org.dllearner.algorithms.isle.index.TextDocument;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * @author Lorenz Buehmann
@@ -36,26 +39,29 @@ public class SentenceBasedContextExtractor implements ContextExtractor{
 	@Override
 	public List<String> extractContext(org.dllearner.algorithms.isle.index.Annotation annotation) {
 		//split text into sentences
-		List<CoreMap> sentences = getSentences(annotation.getReferencedDocument().getContent());
+		List<CoreMap> sentences = getSentences(annotation.getReferencedDocument().getRawContent());
 
 		//find the sentence containing the token of the annotation
-		int tokenStart = annotation.getOffset();
-		int index = 0;
+		Token firstToken = annotation.getTokens().get(0);
 		for (CoreMap sentence : sentences) {
-			String s = sentence.toString();
-			if (index <= tokenStart && s.length() > tokenStart) {
+			boolean found = false;
+			for (CoreLabel label : sentence.get(TokensAnnotation.class)) {
+				// this is the text of the token
+				String word = label.get(TextAnnotation.class);
+				if(word.equals(firstToken.getRawForm())){
+					found = true;
+					break;
+				}
+			}
+			if(found){
 				List<String> context = new ArrayList<String>();
 				for (CoreLabel label : sentence.get(TokensAnnotation.class)) {
 					// this is the text of the token
 					String word = label.get(TextAnnotation.class);
-					
-					if(!word.isEmpty() && !word.matches("\\p{Punct}")){
-						context.add(word);
-					}
+					context.add(word);
 				}
 				return context;
 			}
-			index += s.length();
 		}
 		throw new RuntimeException("Token " + annotation.getString() + " not found in text " + annotation.getReferencedDocument().getRawContent());
 	}
@@ -79,9 +85,8 @@ public class SentenceBasedContextExtractor implements ContextExtractor{
 		String s = "International Business Machines Corporation, or IBM, is an American multinational services technology and consulting corporation, with headquarters in Armonk, New York, United States. IBM manufactures and markets computer hardware and software,"
 				+ " and offers infrastructure, hosting and consulting services in areas ranging from mainframe computers to nanotechnology.";
 	
-		String token = "services";
 		SentenceBasedContextExtractor extractor = new SentenceBasedContextExtractor();
-		List<String> context = extractor.extractContext(new org.dllearner.algorithms.isle.index.Annotation(new TextDocument(s), s.indexOf(token), token.length()));
+		List<String> context = extractor.extractContext(new org.dllearner.algorithms.isle.index.Annotation(TextDocumentGenerator.getInstance().generateDocument(s), Arrays.asList(new Token("American"))));
 		System.out.println(context);
 	}
 
