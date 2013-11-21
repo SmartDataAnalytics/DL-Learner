@@ -29,7 +29,7 @@ public class TextDocument implements Document {
     }
     
     private void buildCleanedContent(){
-    	this.content = content.toLowerCase();
+    	this.content = rawContent.toLowerCase();
         this.content = this.content.replaceAll("[^a-z ]", " ");
         this.content = this.content.replaceAll("\\s{2,}", " ");
         this.content = this.content.trim();
