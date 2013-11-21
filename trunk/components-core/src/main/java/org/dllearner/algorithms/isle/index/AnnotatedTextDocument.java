@@ -3,10 +3,10 @@
  */
 package org.dllearner.algorithms.isle.index;
 
+import org.dllearner.core.owl.Entity;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import org.dllearner.core.owl.Entity;
 
 /**
  * @author Lorenz Buehmann
@@ -67,19 +67,6 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 	@Override
 	public Set<SemanticAnnotation> getAnnotations() {
 		return annotations;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.isle.index.AnnotatedDocument#getAnnotation(int, int)
-	 */
-	@Override
-	public SemanticAnnotation getAnnotation(int offset, int length) {
-		for (SemanticAnnotation annotation : annotations) {
-			if(annotation.getOffset() == offset && annotation.getLength() == length){
-				return annotation;
-			}
-		}
-		return null;
 	}
 
 	/* (non-Javadoc)
