@@ -14,12 +14,7 @@ public class SemanticAnnotation extends Annotation{
 	private Entity entity;
 	
 	public SemanticAnnotation(Annotation annotation, Entity entity) {
-		super(annotation.getReferencedDocument(), annotation.getOffset(), annotation.getLength());
-		this.entity = entity;
-	}
-	
-	public SemanticAnnotation(Document getReferencedDocument, Entity entity, int offset, int length) {
-		super(getReferencedDocument, offset, length);
+		super(annotation.getReferencedDocument(), annotation.getTokens());
 		this.entity = entity;
 	}
 
