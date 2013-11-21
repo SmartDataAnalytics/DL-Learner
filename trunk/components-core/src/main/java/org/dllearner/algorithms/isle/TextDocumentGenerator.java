@@ -19,7 +19,10 @@ import edu.stanford.nlp.util.CoreMap;
 public class TextDocumentGenerator {
 
 	private static TextDocumentGenerator instance;
+	
 	private StanfordCoreNLP pipeline;
+	private final String punctuationPattern = "\\p{Punct}";
+	private final StopWordFilter stopWordFilter = new StopWordFilter();
 	
 	private TextDocumentGenerator(){
 		Properties props = new Properties();
@@ -54,14 +57,22 @@ public class TextDocumentGenerator {
 	            String pos = label.get(PartOfSpeechAnnotation.class);
 	            //this is the POS tag of the token
 	            String lemma = label.get(LemmaAnnotation.class);
+	            //check if token is punctuation
+	            boolean isPunctuation = word.matches(punctuationPattern);
+	            //check if it is a stop word
+	            boolean isStopWord = stopWordFilter.isStopWord(word);
 	           
-	            Token token = new Token(word);
-	            token.setPOSTag(pos);
-	            token.setStemmedForm(lemma);
+	            Token token = new Token(word, lemma, pos, isPunctuation, isStopWord);
+	           
 	            document.add(token);
 	          }
 	    }
 		
 		return document;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		TextDocument document = TextDocumentGenerator.getInstance().tag("And he said, Amos, what seest thou? And I said, A basket of summer fruit. Then said the LORD unto me, The end is come upon my people of Israel; I will not again pass by them any more. ");
+		System.out.println(document);
 	}
 }

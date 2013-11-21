@@ -12,11 +12,21 @@ public class Token {
 	private String rawForm;
 	private String stemmedForm;
 	private String posTag;
+	private boolean isPunctuation;
+	private boolean isStopWord;
 	
 	public Token(String rawForm) {
-		posTag = rawForm;
+		this.rawForm = rawForm;
 	}
 	
+	public Token(String rawForm, String stemmedForm, String posTag, boolean isPunctuation, boolean isStopWord) {
+		this.rawForm = rawForm;
+		this.stemmedForm = stemmedForm;
+		this.posTag = posTag;
+		this.isPunctuation = isPunctuation;
+		this.isStopWord = isStopWord;
+	}
+
 	/**
 	 * @return the rawForm
 	 */
@@ -39,6 +49,20 @@ public class Token {
 	}
 	
 	/**
+	 * @return the isPunctuation
+	 */
+	public boolean isPunctuation() {
+		return isPunctuation;
+	}
+	
+	/**
+	 * @return the isStopWord
+	 */
+	public boolean isStopWord() {
+		return isStopWord;
+	}
+	
+	/**
 	 * @param stemmedForm the stemmedForm to set
 	 */
 	public void setStemmedForm(String stemmedForm) {
@@ -51,14 +75,28 @@ public class Token {
 	public void setPOSTag(String posTag) {
 		this.posTag = posTag;
 	}
+	
+	/**
+	 * @param isPunctuation the isPunctuation to set
+	 */
+	public void setIsPunctuation(boolean isPunctuation) {
+		this.isPunctuation = isPunctuation;
+	}
+	
+	/**
+	 * @param isStopWord the isStopWord to set
+	 */
+	public void setIsStopWord(boolean isStopWord) {
+		this.isStopWord = isStopWord;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "Word: " + rawForm + "\n" 
+		return "\n[Word: " + rawForm + "\n" 
 				+ "Stemmed word: " + stemmedForm + "\n"
-				+ "POS tag: " + posTag;
+				+ "POS tag: " + posTag + "]";
 	}
 }
