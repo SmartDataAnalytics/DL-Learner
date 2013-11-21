@@ -44,6 +44,14 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 	public String getRawContent() {
 		return document.getRawContent();
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.isle.index.Document#getPOSTaggedContent()
+	 */
+	@Override
+	public String getPOSTaggedContent() {
+		return document.getPOSTaggedContent();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.isle.index.AnnotatedDocument#getContainedEntities()
