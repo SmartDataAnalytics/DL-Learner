@@ -21,4 +21,11 @@ public interface Document {
      * @return uncleaned content of this document
      */
     public String getRawContent();
+    
+    /**
+     * Returns the uncleaned content with POS tags in form of word1/pos1 word2/pos2 ... as string.
+     *
+     * @return uncleaned content with POS tags
+     */
+    public String getPOSTaggedContent();
 }

@@ -147,8 +147,14 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 	
 	private Concept convert(OWLClassExpression classExpression){
 		baos.reset();
-		String name = fuzzyFileParser.getClassName(classExpression);
-		return fuzzyKB.getConcept(name);
+		if(classExpression.isOWLThing()){
+			return Concept.CONCEPT_TOP;
+		} else if(classExpression.isOWLNothing()){
+			return Concept.CONCEPT_BOTTOM;
+		} else {
+			String name = fuzzyFileParser.getClassName(classExpression);
+			return fuzzyKB.getConcept(name);
+		}
 	}
 	
 	private Individual convert(OWLIndividual individual){
@@ -183,22 +189,16 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 
 //		System.err.println("WARNING: you're using a particular fuzzy ontology");
 //		parser = new Parser(new FileInputStream(CHANGING_JUST_HIERARCHI_PROBLEM));
-		parser = new Parser(new FileInputStream(FUZZYOWL2FUZZYDLPARSEROUTPUT));
-
-		parser.Start();
-		return parser.getKB();
+		return Parser.getKB(FUZZYOWL2FUZZYDLPARSEROUTPUT);
 	}
 
 	// added by Josue
 	public double getFuzzyMembership(OWLClassExpression oce, OWLIndividual i) {
-		
 			Individual fIndividual = convert(i);
 			Concept fConcept = convert(oce);
-			System.out.println(fConcept + "(" + fIndividual + ")?");
 			try {
 				
-			Query q = new MinInstanceQuery(fConcept, fIndividual);
-
+				Query q = new MinInstanceQuery(fConcept, fIndividual);
 			
 				KnowledgeBase clonedFuzzyKB = fuzzyKB.clone();
 				
@@ -206,7 +206,7 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 //				long start = System.nanoTime();
 				
 				queryResult = q.solve(clonedFuzzyKB);
-				
+				System.out.println(q.toString() + queryResult.getSolution());
 				// TODO: just for testing, remove
 //				out.println(counter + " * " + (System.nanoTime() - start));
 //				counter++;

@@ -8,6 +8,7 @@ package org.dllearner.algorithms.isle.index;
 public class TextDocument implements Document {
     private String content;
     private String rawContent;
+	private String posTaggedContent;
 
 
     /**
@@ -18,6 +19,21 @@ public class TextDocument implements Document {
      */
     public TextDocument(String content) {
         this.rawContent = content;
+        this.content = content.toLowerCase();
+        this.content = this.content.replaceAll("[^a-z ]", " ");
+        this.content = this.content.replaceAll("\\s{2,}", " ");
+        this.content = this.content.trim();
+    }
+    
+    /**
+     * Initializes a text document with the given raw content. Internally, the content is cleaned up so that it only
+     * contains letters adhering to the regular expression pattern [A-Za-z].
+     *
+     * @param content the raw content of this text document
+     */
+    public TextDocument(String content, String posTaggedContent) {
+        this.rawContent = content;
+		this.posTaggedContent = posTaggedContent;
         this.content = content.toLowerCase();
         this.content = this.content.replaceAll("[^a-z ]", " ");
         this.content = this.content.replaceAll("\\s{2,}", " ");
@@ -37,6 +53,14 @@ public class TextDocument implements Document {
     @Override
     public String getRawContent() {
         return rawContent;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.dllearner.algorithms.isle.index.Document#getPOSTaggedContent()
+     */
+    @Override
+    public String getPOSTaggedContent() {
+    	return posTaggedContent;
     }
 
     @Override
