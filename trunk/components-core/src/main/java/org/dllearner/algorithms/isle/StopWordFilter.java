@@ -45,8 +45,7 @@ public class StopWordFilter {
 	public void removeStopWordAnnotations(Set<Annotation> annotations) {
 		for (Iterator<Annotation> iter = annotations.iterator(); iter.hasNext();) {
 			Annotation annotation = iter.next();
-			String content = annotation.getReferencedDocument().getContent();
-			String token = content.substring(annotation.getOffset(), annotation.getOffset()+annotation.getLength());
+			String token = annotation.getTokens().get(0).getRawForm();
 			if(stopWords.contains(token)){
 				iter.remove();
 			}
