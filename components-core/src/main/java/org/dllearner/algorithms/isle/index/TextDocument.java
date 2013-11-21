@@ -37,7 +37,10 @@ public class TextDocument extends LinkedList<Token> implements Document {
         for (Token t : this) {
             if (found) {
                 sb.append(" ");
-                sb.append(getStringForLevel(t, l));
+                String surfaceForm = getStringForLevel(t, l);
+                if (surfaceForm != null) {
+                    sb.append(surfaceForm);
+                }
             }
             else if (t == start) {
                 found = true;
@@ -55,9 +58,19 @@ public class TextDocument extends LinkedList<Token> implements Document {
             case POS_TAGGED:
                 return t.getPOSTag();
             case STEMMED:
-                return t.getStemmedForm();
+                return t.isPunctuation() ? null : t.getStemmedForm();
         }
 
         return null;
+    }
+
+    public static void main(String[] args) {
+        TextDocument t = new TextDocument();
+        String s = "This is a very long, nice text for testing our new implementation of TextDocument.";
+        for (String e : s.split(" ")) {
+            t.add(new Token(e));
+        }
+
+        System.out.println(t.getRawContent());
     }
 }
