@@ -50,7 +50,7 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 	public SemanticAnnotation disambiguate(Annotation annotation, Set<Entity> candidateEntities) {
 		logger.debug("Linguistic annotations:\n" + annotation);
 		logger.debug("Candidate entities:" + candidateEntities);
-		String token = annotation.getToken().trim();
+		String token = annotation.getString().trim();
 		//check if annotation token matches label of entity or the part behind #(resp. /)
 		for (Entity entity : candidateEntities) {
 			Set<String> labels = getLabels(entity);
