@@ -32,6 +32,12 @@ private HttpSolrServer server;
 		server.setRequestWriter(new BinaryRequestWriter());
 	}
 	
+	public SOLRIndex(String solrServerURL, String primarySearchField){
+		server = new HttpSolrServer(solrServerURL);
+		server.setRequestWriter(new BinaryRequestWriter());
+		this.primarySearchField = primarySearchField;
+	}
+	
 	public void setSearchFields(String primarySearchField, String secondarySearchField){
 		this.primarySearchField = primarySearchField;
 		this.secondarySearchField = secondarySearchField;
