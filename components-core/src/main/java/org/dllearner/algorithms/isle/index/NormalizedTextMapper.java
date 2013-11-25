@@ -60,6 +60,7 @@ public class NormalizedTextMapper {
                 curNormalizedLength += p.getNormalizedLength();
                 curOriginalLength += p.getOriginalLength();
                 if (curNormalizedLength >= length) {
+                	//TODO refactoring
 //                    return new Annotation(originalDocument, originalStart, curOriginalLength);
                 }
 
