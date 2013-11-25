@@ -39,6 +39,8 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
     public void postProcess(HashMap<Annotation,Set<Entity>> candidatesMap, int window, StopWordFilter stopWordFilter) {
     	Set<Annotation> annotations = candidatesMap.keySet();
     	List<Annotation> sortedAnnotations = new ArrayList<Annotation>(annotations);
+    	/**
+    	  
     	
     	// Sort annotations by offset in ascending order
     	Collections.sort(sortedAnnotations, new Comparator<Annotation>(){
@@ -102,20 +104,21 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
     	}
     	
     	
-    	
+    	 */
     }
 
 	private Annotation mergeAnnotations(Annotation annotation_i, Annotation annotation_j) {
-		int offset;
-		int length;
-		if (annotation_i.getOffset() < annotation_j.getOffset()) {
-			offset = annotation_i.getOffset();
-			length = annotation_j.getOffset() - offset + annotation_j.getLength(); 
-		} else {
-			offset = annotation_j.getOffset();
-			length = annotation_i.getOffset() - offset + annotation_i.getLength();
-		}
-		return new Annotation(annotation_i.getReferencedDocument(), offset, length);
+		return null;
+//		int offset;
+//		int length;
+//		if (annotation_i.getOffset() < annotation_j.getOffset()) {
+//			offset = annotation_i.getOffset();
+//			length = annotation_j.getOffset() - offset + annotation_j.getLength(); 
+//		} else {
+//			offset = annotation_j.getOffset();
+//			length = annotation_i.getOffset() - offset + annotation_i.getLength();
+//		}
+//		return new Annotation(annotation_i.getReferencedDocument(), offset, length);
 	}
 
 	@Override
