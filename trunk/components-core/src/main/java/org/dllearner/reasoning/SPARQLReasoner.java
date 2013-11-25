@@ -125,6 +125,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 
 		classPopularityMap = new HashMap<NamedClass, Integer>();
 		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
+		dataPropertyPopularityMap = new HashMap<DatatypeProperty, Integer>();
+		individualPopularityMap = new HashMap<Individual, Integer>();
 		
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ks.getEndpoint();
