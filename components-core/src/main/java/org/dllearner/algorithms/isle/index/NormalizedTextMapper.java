@@ -60,7 +60,7 @@ public class NormalizedTextMapper {
                 curNormalizedLength += p.getNormalizedLength();
                 curOriginalLength += p.getOriginalLength();
                 if (curNormalizedLength >= length) {
-                    return new Annotation(originalDocument, originalStart, curOriginalLength);
+//                    return new Annotation(originalDocument, originalStart, curOriginalLength);
                 }
 
                 // include space
@@ -82,16 +82,16 @@ public class NormalizedTextMapper {
     }
 
     public static void main(String[] args) {
-        NormalizedTextMapper n = new NormalizedTextMapper(new TextDocument("This is a testing text using letters"));
-        System.out.println(n.getOriginalText());
-        System.out.println(n.getNormalizedText());
-        for (OccurenceMappingPair p : n.normalizedIndexToOriginalIndex) {
-            System.out.println(p);
-        }
-        System.out.println(n.getOriginalAnnotationForPosition(7,6));
-        System.out.println(n.getOriginalAnnotationForPosition(23,6));
-        System.out.println(n.getOriginalAnnotationForPosition(7,1));
-        System.out.println(n.getOriginalAnnotationForPosition(14,15));
+//        NormalizedTextMapper n = new NormalizedTextMapper(new TextDocument("This is a testing text using letters"));
+//        System.out.println(n.getOriginalText());
+//        System.out.println(n.getNormalizedText());
+//        for (OccurenceMappingPair p : n.normalizedIndexToOriginalIndex) {
+//            System.out.println(p);
+//        }
+//        System.out.println(n.getOriginalAnnotationForPosition(7,6));
+//        System.out.println(n.getOriginalAnnotationForPosition(23,6));
+//        System.out.println(n.getOriginalAnnotationForPosition(7,1));
+//        System.out.println(n.getOriginalAnnotationForPosition(14,15));
     }
 
     /**

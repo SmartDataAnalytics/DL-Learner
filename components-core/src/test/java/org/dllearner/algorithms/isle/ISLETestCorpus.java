@@ -85,7 +85,7 @@ public class ISLETestCorpus {
 			if(!file.isDirectory() && !file.isHidden()){
 				try {
 					String text = Files.toString(file, Charsets.UTF_8);
-					documents.add(new TextDocument(text));
+					documents.add(TextDocumentGenerator.getInstance().generateDocument(text));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -103,7 +103,7 @@ public class ISLETestCorpus {
             if(!file.isDirectory() && !file.isHidden()){
                 try {
                     String text = Files.toString(file, Charsets.UTF_8);
-                    documents.add(new TextDocument(text));
+                    documents.add(TextDocumentGenerator.getInstance().generateDocument(text));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

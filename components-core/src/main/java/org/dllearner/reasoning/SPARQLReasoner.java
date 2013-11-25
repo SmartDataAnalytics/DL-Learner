@@ -108,6 +108,7 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 	private Map<NamedClass, Integer> classPopularityMap;
 	private Map<ObjectProperty, Integer> objectPropertyPopularityMap;
 	private Map<DatatypeProperty, Integer> dataPropertyPopularityMap;
+	private Map<Individual, Integer> individualPopularityMap;
 	
 	private boolean prepared = false;
 	
@@ -156,6 +157,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 
 		classPopularityMap = new HashMap<NamedClass, Integer>();
 		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
+		dataPropertyPopularityMap = new HashMap<DatatypeProperty, Integer>();
+		individualPopularityMap = new HashMap<Individual, Integer>();
 		
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ks.getEndpoint();
@@ -176,6 +179,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 
 		classPopularityMap = new HashMap<NamedClass, Integer>();
 		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
+		dataPropertyPopularityMap = new HashMap<DatatypeProperty, Integer>();
+		individualPopularityMap = new HashMap<Individual, Integer>();
 	}
 
 	public void precomputePopularity(){
@@ -330,7 +335,19 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 			dataPropertyPopularityMap.put(dp, cnt);
 			return cnt;
 		}
+	}
+	
+	public int getPopularity(Individual ind){
+		if(individualPopularityMap != null && individualPopularityMap.containsKey(ind)){
+			return individualPopularityMap.get(ind);
+		} else {
+			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {<%s> ?p ?o}";
 
+			ResultSet rs = executeSelectQuery(String.format(queryTemplate, ind.getName()));
+			int cnt = rs.next().getLiteral("cnt").getInt();
+			individualPopularityMap.put(ind, cnt);
+			return cnt;
+		}
 	}
 
 	public final ClassHierarchy prepareSubsumptionHierarchy() {
