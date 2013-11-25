@@ -1,6 +1,8 @@
 package org.dllearner.algorithms.isle.index;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import org.dllearner.algorithms.isle.EntityCandidateGenerator;
 import org.dllearner.algorithms.isle.StopWordFilter;
 import org.dllearner.core.owl.Entity;
@@ -39,6 +41,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
     public void postProcess(HashMap<Annotation,Set<Entity>> candidatesMap, int window, StopWordFilter stopWordFilter) {
     	Set<Annotation> annotations = candidatesMap.keySet();
     	List<Annotation> sortedAnnotations = new ArrayList<Annotation>(annotations);
+    	//TODO refactoring
     	/**
     	  
     	
@@ -108,17 +111,10 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
     }
 
 	private Annotation mergeAnnotations(Annotation annotation_i, Annotation annotation_j) {
-		return null;
-//		int offset;
-//		int length;
-//		if (annotation_i.getOffset() < annotation_j.getOffset()) {
-//			offset = annotation_i.getOffset();
-//			length = annotation_j.getOffset() - offset + annotation_j.getLength(); 
-//		} else {
-//			offset = annotation_j.getOffset();
-//			length = annotation_i.getOffset() - offset + annotation_i.getLength();
-//		}
-//		return new Annotation(annotation_i.getReferencedDocument(), offset, length);
+		List<Token> tokens = Lists.newArrayList();
+		tokens.addAll(annotation_i.getTokens());
+		tokens.addAll(annotation_j.getTokens());
+		return new Annotation(annotation_i.getReferencedDocument(), tokens);
 	}
 
 	@Override
