@@ -1,13 +1,16 @@
 package org.dllearner.common.index;
 
 import java.util.List;
-import java.util.Map;
 
-public interface Index {
-	List<String> getResources(String queryString);
-	List<String> getResources(String queryString, int limit);
-	List<String> getResources(String queryString, int limit, int offset);
-	IndexResultSet getResourcesWithScores(String queryString);
-	IndexResultSet getResourcesWithScores(String queryString, int limit);
-	IndexResultSet getResourcesWithScores(String queryString, int limit, int offset);
+public abstract class Index
+{
+	static final int	DEFAULT_LIMIT	= 10;
+	
+	public List<String> getResources(String queryString) {return getResources(queryString,DEFAULT_LIMIT);}
+	public List<String> getResources(String queryString, int limit) {return getResources(queryString,DEFAULT_LIMIT,0);}
+	abstract public List<String> getResources(String queryString, int limit, int offset);
+	
+	public IndexResultSet getResourcesWithScores(String queryString) {return getResourcesWithScores(queryString,DEFAULT_LIMIT);}
+	public IndexResultSet getResourcesWithScores(String queryString, int limit) {return getResourcesWithScores(queryString,DEFAULT_LIMIT,0);}
+	abstract public IndexResultSet getResourcesWithScores(String queryString, int limit, int offset);
 }

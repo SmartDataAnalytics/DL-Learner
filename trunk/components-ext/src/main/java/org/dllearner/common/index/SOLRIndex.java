@@ -13,12 +13,9 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
 
-public class SOLRIndex implements Index{
+public class SOLRIndex extends Index{
 	
 private HttpSolrServer server;
-	
-	private static final int DEFAULT_LIMIT = 10;
-	private static final int DEFAULT_OFFSET = 0;
 	
 	private String primarySearchField;
 	private String secondarySearchField;
@@ -52,16 +49,6 @@ private HttpSolrServer server;
 	}
 	
 	@Override
-	public List<String> getResources(String queryString) {
-		return getResources(queryString, DEFAULT_LIMIT);
-	}
-
-	@Override
-	public List<String> getResources(String queryString, int limit) {
-		return getResources(queryString, limit, DEFAULT_OFFSET);
-	}
-
-	@Override
 	public List<String> getResources(String queryString, int limit, int offset) {
 		List<String> resources = new ArrayList<String>();
 		QueryResponse response;
@@ -79,16 +66,6 @@ private HttpSolrServer server;
 			e.printStackTrace();
 		}
 		return resources;
-	}
-
-	@Override
-	public IndexResultSet getResourcesWithScores(String queryString) {
-		return getResourcesWithScores(queryString, DEFAULT_LIMIT);
-	}
-
-	@Override
-	public IndexResultSet getResourcesWithScores(String queryString, int limit) {
-		return getResourcesWithScores(queryString, limit, DEFAULT_OFFSET);
 	}
 
 	@Override

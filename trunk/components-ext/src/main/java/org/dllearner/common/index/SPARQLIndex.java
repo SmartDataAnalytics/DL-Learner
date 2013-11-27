@@ -16,10 +16,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
-public class SPARQLIndex implements Index{
-	
-	private static final int DEFAULT_LIMIT = 10;
-	private static final int DEFAULT_OFFSET = 0;
+public class SPARQLIndex extends Index{
 	
 	private SparqlEndpoint endpoint;
 	private ExtractionDBCache cache;
@@ -65,16 +62,6 @@ public class SPARQLIndex implements Index{
 	}
 	
 	@Override
-	public List<String> getResources(String searchTerm) {
-		return getResources(searchTerm, DEFAULT_LIMIT);
-	}
-
-	@Override
-	public List<String> getResources(String searchTerm, int limit) {
-		return getResources(searchTerm, limit, DEFAULT_OFFSET);
-	}
-	
-	@Override
 	public List<String> getResources(String searchTerm, int limit, int offset) {
 		List<String> resources = new ArrayList<String>();
 		
@@ -91,16 +78,6 @@ public class SPARQLIndex implements Index{
 			}
 		}
 		return resources;
-	}
-	
-	@Override
-	public IndexResultSet getResourcesWithScores(String searchTerm) {
-		return getResourcesWithScores(searchTerm, DEFAULT_LIMIT);
-	}
-
-	@Override
-	public IndexResultSet getResourcesWithScores(String searchTerm, int limit) {
-		return getResourcesWithScores(searchTerm, limit, DEFAULT_OFFSET);
 	}
 
 	@Override
