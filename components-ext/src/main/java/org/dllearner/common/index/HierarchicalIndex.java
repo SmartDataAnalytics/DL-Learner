@@ -3,10 +3,8 @@ package org.dllearner.common.index;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HierarchicalIndex implements Index{
-	
-	private static final int DEFAULT_LIMIT = 10;
-	private static final int DEFAULT_OFFSET = 0;
+public class HierarchicalIndex extends Index
+{
 	
 	private Index primaryIndex;
 	private Index secondaryIndex;
@@ -23,16 +21,6 @@ public class HierarchicalIndex implements Index{
 	public Index getSecondaryIndex() {
 		return secondaryIndex;
 	}
-
-	@Override
-	public List<String> getResources(String queryString) {
-		return getResources(queryString, DEFAULT_LIMIT);
-	}
-	
-	@Override
-	public List<String> getResources(String queryString, int limit) {
-		return getResources(queryString, limit, DEFAULT_OFFSET);
-	}
 	
 	@Override
 	public List<String> getResources(String queryString, int limit, int offset) {
@@ -47,11 +35,6 @@ public class HierarchicalIndex implements Index{
 	@Override
 	public IndexResultSet getResourcesWithScores(String queryString) {
 		return getResourcesWithScores(queryString, DEFAULT_LIMIT);
-	}
-
-	@Override
-	public IndexResultSet getResourcesWithScores(String queryString, int limit) {
-		return getResourcesWithScores(queryString, limit, DEFAULT_OFFSET);
 	}
 
 	@Override

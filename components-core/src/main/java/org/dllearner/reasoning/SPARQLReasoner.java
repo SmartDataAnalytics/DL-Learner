@@ -331,8 +331,8 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 			return dataPropertyPopularityMap.get(dp);
 		} else {
 			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
-
-			ResultSet rs = executeSelectQuery(String.format(queryTemplate, dp.getName()));
+String query = String.format(queryTemplate, dp.getName());
+			ResultSet rs = executeSelectQuery(query);
 			int cnt = rs.next().getLiteral("cnt").getInt();
 			dataPropertyPopularityMap.put(dp, cnt);
 			return cnt;
