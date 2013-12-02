@@ -145,21 +145,18 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
     }
 
 	@Override
-	public Set<Entity> getCandidateEntities(String s) {
-        FullTokenEntitySetPair res = trie.get(s);
-		return res == null ? new HashSet<Entity>() : trie.get(s).getEntitySet();
+	public Set<Entity> getCandidateEntities(List<Token> tokens) {
+        return tree.get(tokens);
 	}
 
 	@Override
-	public String getGeneratingStringForLongestMatch(String s) {
-		CharSequence match = trie.getLongestMatch(s);
-		return (match!=null) ? trie.get(match).getFullToken() : null;
+	public List<Token> getGeneratingStringForLongestMatch(List<Token> tokens) {
+		return tree.getOriginalTokensForLongestMatch(tokens);
 	}
 
     @Override
-    public String getLongestMatchingText(String s) {
-        CharSequence match = trie.getLongestMatch(s);
-        return (match!=null) ? match.toString() : null;
+    public List<Token> getLongestMatchingText(List<Token> tokens) {
+        return tree.getLongestMatch(tokens);
     }
 	
 	public String toString() {

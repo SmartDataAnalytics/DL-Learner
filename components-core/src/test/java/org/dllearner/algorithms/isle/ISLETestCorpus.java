@@ -6,6 +6,7 @@ package org.dllearner.algorithms.isle;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.Files;
+
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.isle.index.*;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
@@ -31,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
+
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -124,7 +127,7 @@ public class ISLETestCorpus {
 //	@Test
 	public void testTextRetrieval() {
 		System.out.println("Text for entity " + cls + ":");
-		Map<String, Double> relevantText = textRetriever.getRelevantText(cls);
+		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(cls);
 		System.out.println(Joiner.on("\n").join(relevantText.entrySet()));
 	}
 	
