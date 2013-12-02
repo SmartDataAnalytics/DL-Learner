@@ -1,10 +1,9 @@
 package org.dllearner.algorithms.isle.index;
 
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.NamedClass;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import org.dllearner.core.owl.Entity;
+import org.dllearner.core.owl.NamedClass;
 
 import java.util.*;
 
@@ -112,7 +111,7 @@ public class TokenTree {
 
         return fallback.entities;
     }
-    
+
     public static void main(String[] args) throws Exception {
     	List<Token> tokens1 = Lists.newLinkedList();
     	for (String s : Splitter.on(" ").split("this is a token tree")) {
@@ -127,5 +126,28 @@ public class TokenTree {
 		TokenTree tree = new TokenTree();
 		tree.add(tokens1, new NamedClass("TokenTree"));
 		tree.add(tokens2, new NamedClass("TokenizedTree"));
-	}
+        System.out.println(tree);
+    }
+
+    
+    public String toString() {
+        return "TokenTree\n"+ toString(0);
+    }
+
+    public String toString(int indent) {
+        StringBuilder indentStringBuilder = new StringBuilder();
+        for (int i = 0; i < indent; i++) {
+            indentStringBuilder.append(" ");
+        }
+        String indentString = indentStringBuilder.toString();
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Token, TokenTree> e : children.entrySet()) {
+            sb.append(indentString).append(e.getKey().toString());
+            sb.append("\n");
+            sb.append(e.getValue().toString(indent + 1));
+        }
+        return sb.toString();
+    }
+
+    
 }
