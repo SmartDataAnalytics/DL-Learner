@@ -160,18 +160,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
     }
 	
 	public String toString() {
-		StringBuilder output = new StringBuilder();
-		Map<String,FullTokenEntitySetPair> trieMap = trie.toMap();
-		
-		for (Entry<String, FullTokenEntitySetPair> entry : trieMap.entrySet()) {
-			String key = entry.getKey();
-			FullTokenEntitySetPair pair = entry.getValue();
-			output.append(key + " (" + pair.getFullToken() + ") :\n");
-			for (Entity candidate: pair.getEntitySet()) {
-				output.append("\t"+candidate+"\n");
-			}
-		}
-		return output.toString();
+		return tree.toString();
 	}
 
     public static void main(String[] args) {

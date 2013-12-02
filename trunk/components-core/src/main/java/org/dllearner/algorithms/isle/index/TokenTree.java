@@ -16,12 +16,21 @@ public class TokenTree {
     private HashMap<Token, TokenTree> children;
     private Set<Entity> entities;
     private List<Token> originalTokens;
+    private boolean ignoreStopWords = true;
 
     public TokenTree() {
         this.children = new HashMap<>();
         this.entities = new HashSet<>();
         this.originalTokens = new ArrayList<>();
     }
+    
+    /**
+     * If set to TRUE, stopwords like 'of, on' are ignored during creation and retrieval operations.
+	 * @param ignoreStopWords the ignoreStopWords to set
+	 */
+	public void setIgnoreStopWords(boolean ignoreStopWords) {
+		this.ignoreStopWords = ignoreStopWords;
+	}
 
     /**
      * Adds all given entities to the end of the path resulting from the given tokens.
@@ -32,12 +41,16 @@ public class TokenTree {
     public void add(List<Token> tokens, Set<Entity> entities, List<Token> originalTokens) {
         TokenTree curNode = this;
         for (Token t : tokens) {
-            TokenTree nextNode = curNode.children.get(t);
-            if (nextNode == null) {
-                nextNode = new TokenTree();
-                curNode.children.put(t, nextNode);
-            }
-            curNode = nextNode;
+        	if(!ignoreStopWords || (ignoreStopWords && !t.isStopWord())){
+        		TokenTree nextNode = curNode.children.get(t);
+                if (nextNode == null) {
+                    nextNode = new TokenTree();
+                    curNode.children.put(t, nextNode);
+                }
+                curNode = nextNode;
+        	} else {
+        		System.out.println("ignored " + t);
+        	}
         }
         curNode.entities.addAll(entities);
         curNode.originalTokens = new ArrayList<>(originalTokens);
