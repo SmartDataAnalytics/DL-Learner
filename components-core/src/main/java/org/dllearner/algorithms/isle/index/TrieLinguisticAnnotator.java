@@ -27,14 +27,14 @@ public class TrieLinguisticAnnotator implements LinguisticAnnotator {
     @Override
     public Set<Annotation> annotate(TextDocument document) {
         Set<Annotation> annotations = new HashSet<Annotation>();
-        NormalizedTextMapper mapper = new NormalizedTextMapper(document);
-        String content = mapper.getNormalizedText();
         
         List<Token> matchedTokens;
         for (Token token : document) {
         	matchedTokens = candidatesTrie.getLongestMatchingText(document.getTokensStartingAtToken(token, true));
-			Annotation annotation = new Annotation(document, matchedTokens);
-            annotations.add(annotation);
+        	if(matchedTokens != null && !matchedTokens.isEmpty()){
+        		Annotation annotation = new Annotation(document, matchedTokens);
+                annotations.add(annotation);
+        	}
 		}
         return annotations;
     }
