@@ -87,7 +87,7 @@ public class SemanticBibleExperiment extends Experiment{
 			            String text = Files.toString(file, Charsets.UTF_8);
 //			            String posTagged = getPOSTaggedText(text);
 //			            Files.write(posTagged, new File(taggedFolder, file.getName() + ".tagged"), Charsets.UTF_8);
-			            documents.add(TextDocumentGenerator.getInstance().generateDocument(text));
+//			            documents.add(TextDocumentGenerator.getInstance().generateDocument(text));
 			        } catch (IOException e) {
 			            e.printStackTrace();
 			        }
