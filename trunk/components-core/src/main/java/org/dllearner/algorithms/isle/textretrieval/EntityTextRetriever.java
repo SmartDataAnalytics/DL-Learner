@@ -19,9 +19,11 @@
 
 package org.dllearner.algorithms.isle.textretrieval;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.dllearner.algorithms.isle.index.Token;
 import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -45,8 +47,8 @@ public interface EntityTextRetriever {
 	 * @param entity The entity to handle.
 	 * @return A weighted set of strings. For a value x, we need to have 0 <= x <= 1.
 	 */
-	public Map<String, Double> getRelevantText(Entity entity);
+	public Map<List<Token>, Double> getRelevantText(Entity entity);
 	
-	public Map<Entity, Set<String>> getRelevantText(OWLOntology ontology);
+	public Map<Entity, Set<List<Token>>> getRelevantText(OWLOntology ontology);
 	
 }

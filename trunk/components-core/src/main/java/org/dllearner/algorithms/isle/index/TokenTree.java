@@ -127,6 +127,15 @@ public class TokenTree {
 		tree.add(tokens1, new NamedClass("TokenTree"));
 		tree.add(tokens2, new NamedClass("TokenizedTree"));
         System.out.println(tree);
+        
+        System.out.println(tree.getEntitiesForLongestMatch(tokens1));
+        System.out.println(tree.getLongestMatch(tokens1));
+        
+        List<Token> tokens3 = Lists.newLinkedList();
+    	for (String s : Splitter.on(" ").split("this is a very nice tokenized tree")) {
+			tokens3.add(new Token(s, s, s, false, false));
+		};
+        System.out.println(tree.getLongestMatch(tokens3));
     }
 
     
