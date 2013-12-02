@@ -1,6 +1,10 @@
 package org.dllearner.algorithms.isle.index;
 
 import org.dllearner.core.owl.Entity;
+import org.dllearner.core.owl.NamedClass;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 import java.util.*;
 
@@ -108,4 +112,20 @@ public class TokenTree {
 
         return fallback.entities;
     }
+    
+    public static void main(String[] args) throws Exception {
+    	List<Token> tokens1 = Lists.newLinkedList();
+    	for (String s : Splitter.on(" ").split("this is a token tree")) {
+			tokens1.add(new Token(s, s, s, false, false));
+		};
+		
+		List<Token> tokens2 = Lists.newLinkedList();
+    	for (String s : Splitter.on(" ").split("this is a tokenized tree")) {
+			tokens2.add(new Token(s, s, s, false, false));
+		};
+		
+		TokenTree tree = new TokenTree();
+		tree.add(tokens1, new NamedClass("TokenTree"));
+		tree.add(tokens2, new NamedClass("TokenizedTree"));
+	}
 }
