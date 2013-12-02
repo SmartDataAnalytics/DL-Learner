@@ -99,6 +99,31 @@ public class TextDocument extends LinkedList<Token> implements Document {
         return tokens;
     }
 
+    /**
+     * Returns a list containing all successive tokens from this document starting at the given start
+     * token. If {@code ignorePunctuation} is set, tokens which represent punctuation are added to the result but not
+     * counted for the number of tokens.
+     *
+     * @param start             token to start collecting tokens from the document
+     * @param ignorePunctuation if true, punctuation are not counted towards the number of tokens to return
+     * @return list containing all relevant tokens, depending in the value of ignorePunctuation, the
+     *          list might contain additional non-relevant (punctuation) tokens
+     */
+    public List<Token> getTokensStartingAtToken(Token start, boolean ignorePunctuation) {
+        ArrayList<Token> tokens = new ArrayList<Token>();
+
+        boolean found = false;
+
+        for (int i = 0; i < this.size(); i++) {
+            Token t = this.get(i);
+            if (t == start) {
+                return this.subList(i, this.size());
+            }
+        }
+
+        return tokens;
+    }
+
     private String getStringForLevel(Token t, SurfaceFormLevel l) {
         switch (l) {
             case RAW:
