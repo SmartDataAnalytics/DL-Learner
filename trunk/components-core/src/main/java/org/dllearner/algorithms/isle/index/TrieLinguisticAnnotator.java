@@ -1,6 +1,7 @@
 package org.dllearner.algorithms.isle.index;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,26 +25,17 @@ public class TrieLinguisticAnnotator implements LinguisticAnnotator {
      * @return the set of annotation for the given document
      */
     @Override
-    public Set<Annotation> annotate(Document document) {
+    public Set<Annotation> annotate(TextDocument document) {
         Set<Annotation> annotations = new HashSet<Annotation>();
         NormalizedTextMapper mapper = new NormalizedTextMapper(document);
         String content = mapper.getNormalizedText();
-        for (int i = 0; i < content.length(); i++) {
-            if (Character.isWhitespace(content.charAt(i))) {
-                continue;
-            }
-            String unparsed = content.substring(i);
-            String match = candidatesTrie.getLongestMatchingText(unparsed);
-            if (match != null && !match.isEmpty()) {
-                Annotation annotation = mapper.getOriginalAnnotationForPosition(i, match.length());
-                annotation.setMatchedString(match);
-                annotations.add(annotation);
-                i += match.length() - 1;
-            }
-            while (!Character.isWhitespace(content.charAt(i)) && i < content.length()) {
-                i++;
-            }
-        }
+        
+        List<Token> matchedTokens;
+        for (Token token : document) {
+        	matchedTokens = candidatesTrie.getLongestMatchingText(document.getTokensStartingAtToken(token, true));
+			Annotation annotation = new Annotation(document, matchedTokens);
+            annotations.add(annotation);
+		}
         return annotations;
     }
 

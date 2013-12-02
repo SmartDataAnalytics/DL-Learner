@@ -15,6 +15,6 @@ public interface LinguisticAnnotator {
      * @param document the document to get annotation for
      * @return set of annotations for the given document
      */
-	Set<Annotation> annotate(Document document);
+	Set<Annotation> annotate(TextDocument document);
 
 }

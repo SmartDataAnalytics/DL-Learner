@@ -16,11 +16,11 @@ public interface EntityCandidatesTrie {
 	
 	
 	/**
-	 * Gets set of candidate entities for an exact given String
+	 * Gets set of candidate entities for a list of tokens
 	 * @param s
 	 * @return
 	 */
-	public Set<Entity> getCandidateEntities(String s);
+	public Set<Entity> getCandidateEntities(List<Token> tokens);
 
 
 	/**
@@ -31,12 +31,12 @@ public interface EntityCandidatesTrie {
 	 * @param s the string to search in the trie
 	 * @return string generating the path of the longest match in the trie
 	 */
-	public String getGeneratingStringForLongestMatch(String s);
+	public List<Token> getGeneratingStringForLongestMatch(List<Token> tokens);
 
     /**
      * Gets the longest matching string
      * @param s
      * @return
      */
-    public String getLongestMatchingText(String s);
+    public List<Token> getLongestMatchingText(List<Token> tokens);
 }
