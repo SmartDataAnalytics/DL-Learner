@@ -15,10 +15,12 @@ import java.util.*;
 public class TokenTree {
     private HashMap<Token, TokenTree> children;
     private Set<Entity> entities;
+    private List<Token> originalTokens;
 
     public TokenTree() {
         this.children = new HashMap<>();
         this.entities = new HashSet<>();
+        this.originalTokens = new ArrayList<>();
     }
 
     /**
@@ -27,7 +29,7 @@ public class TokenTree {
      * @param tokens   tokens to locate insertion point for entities
      * @param entities entities to add
      */
-    public void add(List<Token> tokens, Set<Entity> entities) {
+    public void add(List<Token> tokens, Set<Entity> entities, List<Token> originalTokens) {
         TokenTree curNode = this;
         for (Token t : tokens) {
             TokenTree nextNode = curNode.children.get(t);
@@ -38,6 +40,11 @@ public class TokenTree {
             curNode = nextNode;
         }
         curNode.entities.addAll(entities);
+        curNode.originalTokens = new ArrayList<>(originalTokens);
+    }
+
+    public void add(List<Token> tokens, Set<Entity> entities) {
+        add(tokens, entities, tokens);
     }
 
     /**
@@ -48,6 +55,10 @@ public class TokenTree {
      */
     public void add(List<Token> tokens, Entity entity) {
         add(tokens, Collections.singleton(entity));
+    }
+
+    public void add(List<Token> tokens, Entity entity, List<Token> originalTokens) {
+        add(tokens, Collections.singleton(entity), originalTokens);
     }
 
     /**
@@ -110,6 +121,27 @@ public class TokenTree {
         }
 
         return fallback == null ? Collections.<Entity>emptySet() : fallback.entities;
+    }
+
+    /**
+     * Returns the original token for the longest match
+     */
+    public List<Token> getOriginalTokensForLongestMatch(List<Token> tokens) {
+        TokenTree fallback = this.entities.isEmpty() ? null : this;
+        TokenTree curNode = this;
+
+        for (Token t : tokens) {
+            TokenTree nextNode = curNode.children.get(t);
+            if (nextNode == null) {
+                return fallback == null ? null : fallback.originalTokens;
+            }
+            curNode = nextNode;
+            if (!curNode.entities.isEmpty()) {
+                fallback = curNode;
+            }
+        }
+
+        return fallback == null ? Collections.<Token>emptyList() : fallback.originalTokens;
     }
 
     public static void main(String[] args) throws Exception {

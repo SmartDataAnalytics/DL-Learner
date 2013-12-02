@@ -3,7 +3,6 @@ package org.dllearner.algorithms.isle.index;
 import org.apache.commons.lang.StringUtils;
 import org.dllearner.algorithms.isle.textretrieval.EntityTextRetriever;
 import org.dllearner.core.owl.Entity;
-import org.dllearner.utilities.MapUtils;
 import org.dllearner.utilities.datastructures.PrefixTrie;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -11,7 +10,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
-
+    TokenTree tree;
 	PrefixTrie<FullTokenEntitySetPair> trie;
 	EntityTextRetriever entityTextRetriever;
 
@@ -41,7 +40,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
     }
 	
 	public void buildTrie(OWLOntology ontology, NameGenerator nameGenerator) {
-		this.trie = new PrefixTrie<FullTokenEntitySetPair>();
+		this.tree = new TokenTree();
 		Map<Entity, Set<List<Token>>> entity2TokenSet = entityTextRetriever.getRelevantText(ontology);
 		
 		
@@ -62,50 +61,44 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 	/**
 	 * Adds the subsequences of a test
 	 * @param entity
-	 * @param text
+     * @param tokens
 	 */
-	private void addSubsequences(Entity entity, String text) {
-        if (text.contains(" ")) {
-        	String[] tokens = text.split(" ");
-        	for (int size=1; size<tokens.length; size++) {
-        		
-        		for (int start=0; start<tokens.length-size+1; start++) {
-        			String subsequence = "";
-        			for (int i=0; i<size; i++) {
-        				subsequence += tokens[start+i] + " ";
-        			}
-        			subsequence = subsequence.trim();
-        			
-            		addEntry(subsequence, entity);
-        		}
-        		
-        	}
-        }
-	}
-
-    private void addSubsequencesWordNet(Entity entity, String text) {
-        if (text.contains(" ")) {
-            String[] tokens = text.split(" ");
-
-            List<String>[] wordnetTokens = (ArrayList<String>[]) new ArrayList[tokens.length];
-
-            // generate list of lemmatized wordnet synonyms for each token
-            for (int i = 0; i < tokens.length; i++) {
-                wordnetTokens[i] = new ArrayList<String>();
-                wordnetTokens[i].add(LinguisticUtil.getInstance().getNormalizedForm(tokens[i].toLowerCase()));
-                for (String w : LinguisticUtil.getInstance().getTopSynonymsForWord(tokens[i], 5)) {
-                    wordnetTokens[i].add(LinguisticUtil.getInstance().getNormalizedForm(w).toLowerCase());
+    private void addSubsequences(Entity entity, List<Token> tokens) {
+        tree.add(tokens, entity);
+        for (int size = 1; size < tokens.size(); size++) {
+            for (int start = 0; start < tokens.size() - size + 1; start++) {
+                ArrayList<Token> subsequence = new ArrayList<>();
+                for (int i = 0; i < size; i++) {
+                    subsequence.add(tokens.get(start + i));
                 }
-            }
-
-            // generate subsequences starting at the given start index of the given size
-            Set<String[]> allPossibleSubsequences = getAllPossibleSubsequences(tokens, wordnetTokens);
-
-            for (String[] s : allPossibleSubsequences) {
-                addEntry(s[0], entity, s[1]);
+                addEntry(subsequence, entity);
             }
         }
     }
+
+//    private void addSubsequencesWordNet(Entity entity, String text) {
+//        if (text.contains(" ")) {
+//            String[] tokens = text.split(" ");
+//
+//            List<String>[] wordnetTokens = (ArrayList<String>[]) new ArrayList[tokens.length];
+//
+//            // generate list of lemmatized wordnet synonyms for each token
+//            for (int i = 0; i < tokens.length; i++) {
+//                wordnetTokens[i] = new ArrayList<String>();
+//                wordnetTokens[i].add(LinguisticUtil.getInstance().getNormalizedForm(tokens[i].toLowerCase()));
+//                for (String w : LinguisticUtil.getInstance().getTopSynonymsForWord(tokens[i], 5)) {
+//                    wordnetTokens[i].add(LinguisticUtil.getInstance().getNormalizedForm(w).toLowerCase());
+//                }
+//            }
+//
+//            // generate subsequences starting at the given start index of the given size
+//            Set<String[]> allPossibleSubsequences = getAllPossibleSubsequences(tokens, wordnetTokens);
+//
+//            for (String[] s : allPossibleSubsequences) {
+//                addEntry(s[0], entity, s[1]);
+//            }
+//        }
+//    }
 
     private static Set<String[]> getAllPossibleSubsequences(String[] originalTokens, List<String>[] wordnetTokens) {
         ArrayList<String[]> res = new ArrayList<String[]>();
@@ -143,30 +136,12 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
     }
 
     @Override
-	public void addEntry(String s, Entity e) {
-    	s = s.trim();
-		FullTokenEntitySetPair candidates;
-		if (trie.contains(s)) 
-			candidates = trie.get(s);
-		else
-			candidates = new FullTokenEntitySetPair(s);
-		
-		candidates.addEntity(e);
-		
-		trie.put(s, candidates);
+	public void addEntry(List<Token> s, Entity e) {
+        tree.add(s, e);
 	}
 
-    public void addEntry(String s, Entity e, String originalString) {
-    	s = s.trim();
-        FullTokenEntitySetPair candidates;
-        if (trie.contains(s))
-            candidates = trie.get(s);
-        else
-            candidates = new FullTokenEntitySetPair(originalString);
-
-        candidates.addEntity(e);
-
-        trie.put(s, candidates);
+    public void addEntry(List<Token> s, Entity e, List<Token> originalTokens) {
+        tree.add(s, e, originalTokens);
     }
 
 	@Override
