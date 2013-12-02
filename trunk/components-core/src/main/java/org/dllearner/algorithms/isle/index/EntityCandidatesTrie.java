@@ -2,6 +2,7 @@ package org.dllearner.algorithms.isle.index;
 
 import org.dllearner.core.owl.Entity;
 
+import java.util.List;
 import java.util.Set;
 
 public interface EntityCandidatesTrie {
@@ -11,7 +12,7 @@ public interface EntityCandidatesTrie {
 	 * @param s
 	 * @param e
 	 */
-	public void addEntry(String s, Entity e);
+	public void addEntry(List<Token> s, Entity e);
 	
 	
 	/**
