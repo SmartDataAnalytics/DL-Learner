@@ -112,12 +112,19 @@ public class TextDocument extends LinkedList<Token> implements Document {
     public List<Token> getTokensStartingAtToken(Token start, boolean ignorePunctuation) {
         ArrayList<Token> tokens = new ArrayList<Token>();
 
+        int relevantTokens = 0;
         boolean found = false;
 
-        for (int i = 0; i < this.size(); i++) {
-            Token t = this.get(i);
-            if (t == start) {
-                return this.subList(i, this.size());
+        for (Token t : this) {
+            if (found) {
+                tokens.add(t);
+                if (!ignorePunctuation || !t.isPunctuation()) {
+                    relevantTokens++;
+                }
+            }
+            else if (t == start) {
+                found = true;
+                tokens.add(t);
             }
         }
 
