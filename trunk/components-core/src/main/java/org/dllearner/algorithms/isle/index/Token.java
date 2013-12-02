@@ -95,9 +95,7 @@ public class Token {
 	 */
 	@Override
 	public String toString() {
-		return "\n[Word: " + rawForm + "\n" 
-				+ "Stemmed word: " + stemmedForm + "\n"
-				+ "POS tag: " + posTag + "]";
+		return "[Word: " + rawForm + " | Stemmed word: " + stemmedForm + " | POS tag: " + posTag + "]";
 	}
 
     @Override
