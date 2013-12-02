@@ -109,7 +109,7 @@ public class TokenTree {
             }
         }
 
-        return fallback.entities;
+        return fallback == null ? Collections.<Entity>emptySet() : fallback.entities;
     }
 
     public static void main(String[] args) throws Exception {
