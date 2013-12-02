@@ -42,26 +42,21 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 	
 	public void buildTrie(OWLOntology ontology, NameGenerator nameGenerator) {
 		this.trie = new PrefixTrie<FullTokenEntitySetPair>();
-		Map<Entity, Set<String>> relevantText = entityTextRetriever.getRelevantText(ontology);
+		Map<Entity, Set<List<Token>>> entity2TokenSet = entityTextRetriever.getRelevantText(ontology);
 		
-		for (Entity entity : relevantText.keySet()) {
-
-			for (String text : relevantText.get(entity)) {
-                text = StringUtils.join(LinguisticUtil.getInstance().getWordsFromCamelCase(text), " ");
-                text = StringUtils.join(LinguisticUtil.getInstance().getWordsFromUnderscored(text), " ");
-                if (text.trim().isEmpty()) {
-                    continue;
-                }
-                
-                addEntry(text, entity);
-                addSubsequencesWordNet(entity, text);
-                
-                for (String alternativeText : nameGenerator.getAlternativeText(text)) {
-                    addEntry(alternativeText.toLowerCase(), entity, text);
-                }
-            }
-        }
 		
+		for (Entry<Entity, Set<List<Token>>> entry : entity2TokenSet.entrySet()) {
+			Entity entity = entry.getKey();
+			Set<List<Token>> tokenSet = entry.getValue();
+			for (List<Token> tokens : tokenSet) {
+				addEntry(tokens, entity);
+                addSubsequences(entity, tokens);
+//                addSubsequencesWordNet(entity, text);
+//                for (String alternativeText : nameGenerator.getAlternativeText(text)) {
+//                    addEntry(alternativeText.toLowerCase(), entity, text);
+//                }
+			}
+		}
 	}
 	
 	/**
