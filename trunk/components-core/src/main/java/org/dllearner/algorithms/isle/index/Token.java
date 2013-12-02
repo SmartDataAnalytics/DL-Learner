@@ -99,4 +99,32 @@ public class Token {
 				+ "Stemmed word: " + stemmedForm + "\n"
 				+ "POS tag: " + posTag + "]";
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Token token = (Token) o;
+
+        if (!posTag.equals(token.posTag)) {
+            return false;
+        }
+        if (!stemmedForm.equals(token.stemmedForm)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = stemmedForm.hashCode();
+        result = 31 * result + posTag.hashCode();
+        return result;
+    }
 }
