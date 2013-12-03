@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.isle.index;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @author Lorenz Buehmann
  *
  */
-public class Annotation {
+public class Annotation implements Serializable{
 	
 	private Document referencedDocument;
     private ArrayList<Token> tokens;
