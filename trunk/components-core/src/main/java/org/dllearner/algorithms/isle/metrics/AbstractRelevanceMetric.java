@@ -3,11 +3,11 @@
  */
 package org.dllearner.algorithms.isle.metrics;
 
-import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
-import org.semanticweb.owlapi.model.OWLEntity;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * @author Lorenz Buehmann

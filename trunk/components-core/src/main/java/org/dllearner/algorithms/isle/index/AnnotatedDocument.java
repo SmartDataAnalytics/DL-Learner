@@ -5,13 +5,14 @@ package org.dllearner.algorithms.isle.index;
 
 import org.dllearner.core.owl.Entity;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
  *
  */
-public interface AnnotatedDocument extends Document {
+public interface AnnotatedDocument extends Document, Serializable{
 	
 	/**
 	 * Returns a set of entities which are contained in the document.

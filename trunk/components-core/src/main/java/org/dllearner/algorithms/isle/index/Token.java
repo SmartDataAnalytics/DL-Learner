@@ -3,15 +3,15 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.Serializable;
+
+import com.google.common.collect.ComparisonChain;
 
 /**
  * @author Lorenz Buehmann
  *
  */
-public class Token {
+public class Token implements Comparable<Token>, Serializable{
 	
 	private String rawForm;
 	private String stemmedForm;
@@ -159,9 +159,9 @@ public class Token {
 
         Token token = (Token) o;
 
-        if (!posTag.equals(token.posTag)) {
-            return false;
-        }
+//        if (!posTag.equals(token.posTag)) {
+//            return false;
+//        }
         if (!stemmedForm.equals(token.stemmedForm)) {
             return false;
         }
@@ -172,31 +172,18 @@ public class Token {
     @Override
     public int hashCode() {
         int result = stemmedForm.hashCode();
-        result = 31 * result + posTag.hashCode();
+//        result = 31 * result + posTag.hashCode();
         return result;
     }
 
-    public static void main(String[] args) {
-        Token t1 = new Token("requirement", "requirement", "NN", false, false);
-        t1.addAlternativeForm("demand");
-        t1.addAlternativeForm("condition");
-
-        Token t2 = new Token("demand", "demand", "NN", false, false);
-        t2.addAlternativeForm("must");
-
-
-        Token t3 = new Token("must", "must", "NN", false, false);
-        t1.addAlternativeForm("condition");
-
-        Token t4 = new Token("mustache", "mustache", "NN", false, false);
-
-
-        Token[] tokens = new Token[]{t1, t2, t3, t4};
-
-        for (Token t : tokens) {
-            for (Token o : tokens) {
-                System.out.println(t + " - " + o + " --> " + t.equalsWithAlternativeForms(o));
-            }
-        }
-    }
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(Token other) {
+		return ComparisonChain.start()
+				.compare(this.rawForm, other.rawForm)
+				.compare(this.posTag, other.posTag)
+				.result();
+	}
 }

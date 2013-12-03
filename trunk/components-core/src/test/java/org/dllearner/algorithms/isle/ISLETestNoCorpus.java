@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
-import org.dllearner.algorithms.isle.index.semantic.simple.SimpleSemanticIndex;
+import org.dllearner.algorithms.isle.index.semantic.SemanticIndexGenerator;
 import org.dllearner.algorithms.isle.index.syntactic.OWLOntologyLuceneSyntacticIndexCreator;
 import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
@@ -65,8 +65,7 @@ public class ISLETestNoCorpus {
 		lp.setClassToDescribe(cls);
 		lp.init();
 		
-		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
-		semanticIndex.buildIndex(df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_COMMENT.getIRI()), null);
+		semanticIndex = SemanticIndexGenerator.generateIndex(ontology, df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_COMMENT.getIRI()), null, false);
 		
 //		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
 //		semanticIndex.buildIndex(createDocuments());

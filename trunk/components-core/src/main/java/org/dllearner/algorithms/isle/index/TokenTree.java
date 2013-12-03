@@ -48,9 +48,7 @@ public class TokenTree {
                     curNode.children.put(t, nextNode);
                 }
                 curNode = nextNode;
-        	} else {
-        		System.out.println("ignored " + t);
-        	}
+        	} 
         }
         curNode.entities.addAll(entities);
         curNode.originalTokens = new ArrayList<>(originalTokens);
@@ -195,7 +193,7 @@ public class TokenTree {
         }
         String indentString = indentStringBuilder.toString();
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Token, TokenTree> e : children.entrySet()) {
+        for (Map.Entry<Token, TokenTree> e : new TreeMap<>(children).entrySet()) {
             sb.append(indentString).append(e.getKey().toString());
             sb.append("\n");
             sb.append(e.getValue().toString(indent + 1));
