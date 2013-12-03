@@ -4,6 +4,9 @@
 package org.dllearner.algorithms.isle.index;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.common.collect.ComparisonChain;
 
@@ -159,9 +162,9 @@ public class Token implements Comparable<Token>, Serializable{
 
         Token token = (Token) o;
 
-//        if (!posTag.equals(token.posTag)) {
-//            return false;
-//        }
+        if (!WordTypeComparator.sameWordType(posTag, token.posTag)) {
+            return false;
+        }
         if (!stemmedForm.equals(token.stemmedForm)) {
             return false;
         }
@@ -172,7 +175,7 @@ public class Token implements Comparable<Token>, Serializable{
     @Override
     public int hashCode() {
         int result = stemmedForm.hashCode();
-//        result = 31 * result + posTag.hashCode();
+        result = 31 * result + WordTypeComparator.hashCode(posTag);
         return result;
     }
 

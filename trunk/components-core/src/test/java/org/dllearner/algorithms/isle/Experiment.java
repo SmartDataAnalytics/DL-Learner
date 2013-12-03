@@ -4,20 +4,15 @@
 package org.dllearner.algorithms.isle;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.isle.index.TextDocument;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndexGenerator;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
@@ -46,15 +41,6 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.google.common.collect.Sets;
-
-import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.util.CoreMap;
 
 /**
  * Experimental setup:
@@ -86,52 +72,19 @@ public abstract class Experiment {
 	private String testFolder = "experiments/logs/";
 	
 	private OWLOntology ontology;
-	private Set<TextDocument> documents;
+	private Set<String> documents;
 	
 	private boolean initialized = false;
 	private RhoDRDown operator;
-	protected StanfordCoreNLP pipeline;
 
 	
 	protected abstract OWLOntology getOntology();
-	protected abstract Set<TextDocument> getDocuments();
+	protected abstract Set<String> getDocuments();
 	
 	/**
 	 * 
 	 */
 	public Experiment() {
-		// creates a StanfordCoreNLP object, with POS tagging, lemmatization, NER, parsing, and coreference resolution 
-	    Properties props = new Properties();
-	    props.put("annotators", "tokenize, ssplit, pos");
-	    pipeline = new StanfordCoreNLP(props);
-	}
-	
-	protected String getPOSTaggedText(String text){
-	    // create an empty Annotation just with the given text
-	    Annotation document = new Annotation(text);
-	    
-	    // run all Annotators on this text
-	    pipeline.annotate(document);
-	    
-	    // these are all the sentences in this document
-	    // a CoreMap is essentially a Map that uses class objects as keys and has values with custom types
-	    List<CoreMap> sentences = document.get(SentencesAnnotation.class);
-	    
-	    StringBuilder sb = new StringBuilder();
-	    for(CoreMap sentence: sentences) {
-	      // traversing the words in the current sentence
-	      // a CoreLabel is a CoreMap with additional token-specific methods
-	      for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
-	        // this is the text of the token
-	        String word = token.get(TextAnnotation.class);
-	        // this is the POS tag of the token
-	        String pos = token.get(PartOfSpeechAnnotation.class);
-	        
-	        sb.append(word).append("/").append(pos).append(" ");
-	      }
-	      
-	    }
-	    return sb.toString();
 	}
 	
 	private void initIfNecessary() {
@@ -141,13 +94,6 @@ public abstract class Experiment {
 			
 			// build semantic index
 			SemanticIndex semanticIndex = SemanticIndexGenerator.generateIndex(documents, ontology, false);
-			try {
-				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("semantic-index.ser"));
-				oos.writeObject(semanticIndex);
-				oos.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
 			
 			// set the relevance metric
 			relevance = new PMIRelevanceMetric(semanticIndex);

@@ -18,10 +18,28 @@ public class WordTypeComparator {
 	 * @return
 	 */
 	public static boolean sameWordType(String posTag1, String posTag2){
-		if(posTag1.startsWith("NN") && posTag2.startsWith("NN") ||
-				posTag1.startsWith("V") && posTag2.startsWith("V")){
+		if(posTag1.startsWith("NN") && posTag2.startsWith("NN") || //nouns
+			posTag1.startsWith("V") && posTag2.startsWith("V") || //verbs
+			posTag1.startsWith("JJ") && posTag2.startsWith("JJ") || //adjectives
+			posTag1.startsWith("RB") && posTag2.startsWith("RB"))  //adverbs
+		{
 			return true;
+		} else {
+			return posTag1.equals(posTag2);
 		}
-		return false;
+	}
+	
+	public static int hashCode(String posTag){
+		if(posTag.startsWith("NN")){//nouns
+			return "NN".hashCode();
+		} else if(posTag.startsWith("V")){//verbs
+			return "V".hashCode();
+		} else if(posTag.startsWith("JJ")){//adjectives
+			return "JJ".hashCode();
+		} else if(posTag.startsWith("RB")){//adverbs
+			return "RB".hashCode();
+		} else {
+			return posTag.hashCode();
+		}
 	}
 }

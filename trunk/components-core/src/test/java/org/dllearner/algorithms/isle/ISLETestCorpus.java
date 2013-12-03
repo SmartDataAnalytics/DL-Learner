@@ -90,14 +90,14 @@ public class ISLETestCorpus {
                 new URL("http://gold.linkeddata.org/data/bible/chapter_index.zip"));
     }
 	
-	private Set<TextDocument> createDocuments(){
-		Set<TextDocument> documents = new HashSet<TextDocument>();
+	private Set<String> createDocuments(){
+		Set<String> documents = new HashSet<String>();
 		File folder = new File(testFolder+"corpus/");
 		for (File file  : folder.listFiles()) {
 			if(!file.isDirectory() && !file.isHidden()){
 				try {
 					String text = Files.toString(file, Charsets.UTF_8);
-					documents.add(TextDocumentGenerator.getInstance().generateDocument(text));
+					documents.add(text);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -106,8 +106,8 @@ public class ISLETestCorpus {
 		return documents;
 	}
 
-    private Set<TextDocument> createBibleDocuments() throws IOException {
-        Set<TextDocument> documents = new HashSet<TextDocument>();
+    private Set<String> createBibleDocuments() throws IOException {
+        Set<String> documents = new HashSet<String>();
         RemoteDataProvider bibleByChapter = new RemoteDataProvider(
                 new URL("http://gold.linkeddata.org/data/bible/split_by_chapter.zip"));
         File folder = bibleByChapter.getLocalDirectory();
@@ -115,7 +115,7 @@ public class ISLETestCorpus {
             if(!file.isDirectory() && !file.isHidden()){
                 try {
                     String text = Files.toString(file, Charsets.UTF_8);
-                    documents.add(TextDocumentGenerator.getInstance().generateDocument(text));
+                    documents.add(text);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -191,9 +191,9 @@ public class ISLETestCorpus {
         EntityCandidateGenerator ecg = new TrieEntityCandidateGenerator(ontology, ect);
         SemanticAnnotator semanticAnnotator = new SemanticAnnotator(wsd, ecg, linguisticAnnotator);
 
-        Set<TextDocument> docs = createDocuments();
-        for (TextDocument doc : docs) {
-            AnnotatedDocument annotated = semanticAnnotator.processDocument(doc);
+        Set<String> docs = createDocuments();
+        for (String doc : docs) {
+            AnnotatedDocument annotated = semanticAnnotator.processDocument(TextDocumentGenerator.getInstance().generateDocument(doc));
             System.out.println(annotated);
         }
     }
@@ -208,9 +208,9 @@ public class ISLETestCorpus {
         EntityCandidateGenerator ecg = new TrieEntityCandidateGenerator(ontology, ect);
         SemanticAnnotator semanticAnnotator = new SemanticAnnotator(wsd, ecg, linguisticAnnotator);
 
-        Set<TextDocument> docs = createDocuments();
-        for (TextDocument doc : docs) {
-            AnnotatedDocument annotated = semanticAnnotator.processDocument(doc);
+        Set<String> docs = createDocuments();
+        for (String doc : docs) {
+            AnnotatedDocument annotated = semanticAnnotator.processDocument(TextDocumentGenerator.getInstance().generateDocument(doc));
             System.out.println(annotated);
         }
     }
