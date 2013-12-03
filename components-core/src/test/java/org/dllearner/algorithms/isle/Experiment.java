@@ -4,6 +4,9 @@
 package org.dllearner.algorithms.isle;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -16,7 +19,7 @@ import java.util.SortedSet;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.isle.index.TextDocument;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
-import org.dllearner.algorithms.isle.index.semantic.simple.SimpleSemanticIndex;
+import org.dllearner.algorithms.isle.index.semantic.SemanticIndexGenerator;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceUtils;
@@ -42,14 +45,13 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import com.clarkparsia.sparqlowl.parser.antlr.SparqlOwlParser.whereClause_return;
 import com.google.common.collect.Sets;
 
-import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
+import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
@@ -138,8 +140,15 @@ public abstract class Experiment {
 			documents = getDocuments();
 			
 			// build semantic index
-			SemanticIndex semanticIndex = new SimpleSemanticIndex(ontology, null, false);
-			semanticIndex.buildIndex(documents);
+			SemanticIndex semanticIndex = SemanticIndexGenerator.generateIndex(documents, ontology, false);
+			try {
+				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("semantic-index.ser"));
+				oos.writeObject(semanticIndex);
+				oos.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
 			// set the relevance metric
 			relevance = new PMIRelevanceMetric(semanticIndex);
 			try {

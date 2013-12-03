@@ -3,16 +3,28 @@
  */
 package org.dllearner.algorithms.isle;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.isle.index.*;
+import org.dllearner.algorithms.isle.index.AnnotatedDocument;
+import org.dllearner.algorithms.isle.index.EntityCandidatesTrie;
+import org.dllearner.algorithms.isle.index.LinguisticAnnotator;
+import org.dllearner.algorithms.isle.index.RemoteDataProvider;
+import org.dllearner.algorithms.isle.index.SemanticAnnotator;
+import org.dllearner.algorithms.isle.index.SimpleEntityCandidatesTrie;
+import org.dllearner.algorithms.isle.index.TextDocument;
+import org.dllearner.algorithms.isle.index.Token;
+import org.dllearner.algorithms.isle.index.TrieEntityCandidateGenerator;
+import org.dllearner.algorithms.isle.index.TrieLinguisticAnnotator;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
-import org.dllearner.algorithms.isle.index.semantic.simple.SimpleSemanticIndex;
-import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
-import org.dllearner.algorithms.isle.index.syntactic.TextDocumentSyntacticIndexCreator;
+import org.dllearner.algorithms.isle.index.semantic.SemanticIndexGenerator;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceUtils;
@@ -31,18 +43,17 @@ import org.dllearner.utilities.Helper;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
+import com.google.common.io.Files;
 
 /**
  * Some tests for the ISLE algorithm.
@@ -59,7 +70,6 @@ public class ISLETestCorpus {
 	private RelevanceMetric relevance;
 	private String searchField = "label";
 	private SemanticIndex semanticIndex;
-	private SyntacticIndex syntacticIndex;
 	
 	// we assume that the ontology is named "ontology.owl" and that all text files
 	// are in a subdirectory called "corpus"
@@ -78,7 +88,6 @@ public class ISLETestCorpus {
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
         RemoteDataProvider chapterIndexProvider = new RemoteDataProvider(
                 new URL("http://gold.linkeddata.org/data/bible/chapter_index.zip"));
-        syntacticIndex = TextDocumentSyntacticIndexCreator.loadIndex(chapterIndexProvider.getLocalDirectory());
     }
 	
 	private Set<TextDocument> createDocuments(){
@@ -139,18 +148,8 @@ public class ISLETestCorpus {
 	}
 	
 	@Test
-	public void testSemanticIndexAnnotationProperty(){
-		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
-		semanticIndex.buildIndex(df.getRDFSLabel(), null);		
-//		NamedClass nc = new NamedClass("http://example.com/father#father");
-		Set<AnnotatedDocument> documents = semanticIndex.getDocuments(cls);
-		System.out.println("Documents for " + cls + ":\n" + documents);
-	}
-	
-	@Test
 	public void testSemanticIndexCorpus(){
-		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
-		semanticIndex.buildIndex(createDocuments());
+		semanticIndex = SemanticIndexGenerator.generateIndex(createDocuments(), ontology, false);
 		Set<AnnotatedDocument> documents = semanticIndex.getDocuments(cls);
 		System.out.println(documents);
 		relevance = new PMIRelevanceMetric(semanticIndex);
@@ -169,8 +168,7 @@ public class ISLETestCorpus {
 		lp.setClassToDescribe(cls);
 		lp.init();
 		
-		semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex);
-		semanticIndex.buildIndex(createBibleDocuments());
+		semanticIndex = SemanticIndexGenerator.generateIndex(createBibleDocuments(), ontology, false);
 		
 		relevance = new PMIRelevanceMetric(semanticIndex);
 		
@@ -227,8 +225,7 @@ public class ISLETestCorpus {
 		lp.setClassToDescribe(cls);
 		lp.init();
 
-        semanticIndex = new SimpleSemanticIndex(ontology, syntacticIndex, false);
-		semanticIndex.buildIndex(createBibleDocuments());
+        semanticIndex = SemanticIndexGenerator.generateIndex(createBibleDocuments(), ontology, false);
 		
 		relevance = new PMIRelevanceMetric(semanticIndex);
 		

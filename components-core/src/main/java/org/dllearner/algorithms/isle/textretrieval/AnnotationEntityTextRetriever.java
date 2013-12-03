@@ -13,6 +13,7 @@ import org.dllearner.algorithms.isle.TextDocumentGenerator;
 import org.dllearner.algorithms.isle.index.LinguisticUtil;
 import org.dllearner.algorithms.isle.index.Token;
 import org.dllearner.core.owl.Entity;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.model.IRI;
@@ -90,6 +91,9 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		            OWLLiteral val = (OWLLiteral) annotation.getValue();
 		            if (val.hasLang(language)) {
 		            	String label = val.getLiteral().trim();
+		            	if(entity instanceof NamedClass){
+		            		label = label.toLowerCase();
+		            	}
 		            	textWithWeight.put(TextDocumentGenerator.getInstance().generateDocument(label), weight);
 		            }
 		        }
