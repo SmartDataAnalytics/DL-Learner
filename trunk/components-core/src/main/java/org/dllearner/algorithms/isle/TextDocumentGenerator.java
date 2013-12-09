@@ -14,6 +14,9 @@ import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.trees.CollinsHeadFinder;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
 import edu.stanford.nlp.util.CoreMap;
 
 public class TextDocumentGenerator {
@@ -26,7 +29,7 @@ public class TextDocumentGenerator {
 	
 	private TextDocumentGenerator(){
 		Properties props = new Properties();
-	    props.put("annotators", "tokenize, ssplit, pos, lemma");
+	    props.put("annotators", "tokenize, ssplit, pos, lemma, parse");
 	    pipeline = new StanfordCoreNLP(props);
 	}
 	
@@ -58,12 +61,21 @@ public class TextDocumentGenerator {
 	            //this is the POS tag of the token
 	            String lemma = label.get(LemmaAnnotation.class);
 	            //check if token is punctuation
-	            boolean isPunctuation = word.matches(punctuationPattern);
+	            boolean isPunctuation = word.matches(punctuationPattern) 
+	            		|| pos.equalsIgnoreCase("-lrb-")
+	            		|| pos.equalsIgnoreCase("-rrb-")
+	            		|| word.startsWith("'")
+	            		;
 	            //check if it is a stop word
-	            boolean isStopWord = stopWordFilter.isStopWord(word);
+	            boolean isStopWord = stopWordFilter.isStopWord(word.toLowerCase());
 	           
 	            Token token = new Token(word, lemma, pos, isPunctuation, isStopWord);
-	           
+	            
+	            //determine the head noun
+	            Tree tree = sentence.get(TreeAnnotation.class);
+	            CollinsHeadFinder headFinder = new CollinsHeadFinder();
+	            Tree head = headFinder.determineHead(tree);
+	            
 	            document.add(token);
 	          }
 	    }
