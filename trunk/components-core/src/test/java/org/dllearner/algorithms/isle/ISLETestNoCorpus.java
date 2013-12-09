@@ -3,10 +3,10 @@ package org.dllearner.algorithms.isle;
 import java.io.File;
 import java.util.Map;
 
+import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndexGenerator;
 import org.dllearner.algorithms.isle.index.syntactic.OWLOntologyLuceneSyntacticIndexCreator;
-import org.dllearner.algorithms.isle.index.syntactic.SyntacticIndex;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceUtils;
@@ -37,7 +37,7 @@ public class ISLETestNoCorpus {
 	private RelevanceMetric relevance;
 	private String searchField = "label";
 	private SemanticIndex semanticIndex;
-	private SyntacticIndex syntacticIndex;
+	private Index syntacticIndex;
 	
 	// we assume that the ontology is named "ontology.owl" and that all text files
 	// are in a subdirectory called "corpus"
