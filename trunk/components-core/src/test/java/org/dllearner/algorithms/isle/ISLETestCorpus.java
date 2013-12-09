@@ -3,26 +3,11 @@
  */
 package org.dllearner.algorithms.isle;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
+import com.google.common.io.Files;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.isle.index.AnnotatedDocument;
-import org.dllearner.algorithms.isle.index.EntityCandidatesTrie;
-import org.dllearner.algorithms.isle.index.LinguisticAnnotator;
-import org.dllearner.algorithms.isle.index.RemoteDataProvider;
-import org.dllearner.algorithms.isle.index.SemanticAnnotator;
-import org.dllearner.algorithms.isle.index.SimpleEntityCandidatesTrie;
-import org.dllearner.algorithms.isle.index.TextDocument;
-import org.dllearner.algorithms.isle.index.Token;
-import org.dllearner.algorithms.isle.index.TrieEntityCandidateGenerator;
-import org.dllearner.algorithms.isle.index.TrieLinguisticAnnotator;
+import org.dllearner.algorithms.isle.index.*;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndexGenerator;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
@@ -43,17 +28,17 @@ import org.dllearner.utilities.Helper;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Some tests for the ISLE algorithm.
@@ -184,8 +169,7 @@ public class ISLETestCorpus {
 	
     @Test
     public void testEntityLinkingWithLemmatizing() throws Exception {
-        EntityCandidatesTrie ect = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology,
-                new SimpleEntityCandidatesTrie.LemmatizingWordNetNameGenerator(5));
+        EntityCandidatesTrie ect = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology);
         LinguisticAnnotator linguisticAnnotator = new TrieLinguisticAnnotator(ect);
         WordSenseDisambiguation wsd = new SimpleWordSenseDisambiguation(ontology);
         EntityCandidateGenerator ecg = new TrieEntityCandidateGenerator(ontology, ect);
@@ -200,8 +184,7 @@ public class ISLETestCorpus {
 
     @Test
     public void testEntityLinkingWithSimpleStringMatching() throws Exception {
-        EntityCandidatesTrie ect = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology,
-                new SimpleEntityCandidatesTrie.DummyNameGenerator());
+        EntityCandidatesTrie ect = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology);
         TrieLinguisticAnnotator linguisticAnnotator = new TrieLinguisticAnnotator(ect);
         linguisticAnnotator.setNormalizeWords(false);
         WordSenseDisambiguation wsd = new SimpleWordSenseDisambiguation(ontology);

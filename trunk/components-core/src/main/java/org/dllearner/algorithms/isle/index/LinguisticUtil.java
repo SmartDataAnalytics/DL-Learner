@@ -97,6 +97,20 @@ public class LinguisticUtil {
     }
 
     /**
+     * Returns an array of all synonyms for the given word. Only synonyms for the POS in {@link #RELEVANT_POS} are
+     * returned.
+     *
+     * @param word the word to retrieve synonyms for
+     * @return synonyms for the given word
+     */
+    public String[] getSynonymsForWord(String word, POS pos) {
+        ArrayList<String> synonyms = new ArrayList<String>();
+
+        synonyms.addAll(wn.getAllSynonyms(pos, word));
+        return synonyms.toArray(new String[synonyms.size()]);
+    }
+
+    /**
      * Returns an array of the lemmas of the top {@code n} synonyms for the given word. Only synonyms for the POS in
      * {@link #RELEVANT_POS} are returned.
      *
