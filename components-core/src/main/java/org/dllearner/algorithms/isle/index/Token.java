@@ -138,7 +138,7 @@ public class Token implements Comparable<Token>, Serializable{
 	 */
 	@Override
 	public String toString() {
-		return "[Word: " + rawForm + " | Stemmed word: " + stemmedForm + " | POS tag: " + posTag + "]";
+		return "[Word: " + rawForm + " | Stemmed word: " + stemmedForm + " | POS tag: " + posTag + " | Alternatives: " + alternativeForms.toString() + "]";
 	}
 
     /**
