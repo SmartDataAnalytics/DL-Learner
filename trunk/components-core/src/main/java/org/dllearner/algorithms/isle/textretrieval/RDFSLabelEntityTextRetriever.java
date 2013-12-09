@@ -34,10 +34,12 @@ public class RDFSLabelEntityTextRetriever extends AnnotationEntityTextRetriever{
 	
 	public RDFSLabelEntityTextRetriever(OWLOntology ontology) {
 		super(ontology, new OWLDataFactoryImpl().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()));
+		determineHeadNoun = true;
 	}
 	
 	public RDFSLabelEntityTextRetriever(OWLAPIOntology ontology) {
 		super(ontology, new OWLDataFactoryImpl().getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI()));
+		determineHeadNoun = true;
 	}
 	
 	public static void main(String[] args) throws Exception {

@@ -46,6 +46,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	
 	private boolean useShortFormFallback = true;
 	private IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
+	protected boolean determineHeadNoun = false;
 	
 	private OWLAnnotationProperty[] properties;
 	
@@ -97,7 +98,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		            	}
 		            	//remove content in brackets like (...)
 		            	label = label.replaceAll("\\s?\\((.*?)\\)", "");
-		            	textWithWeight.put(TextDocumentGenerator.getInstance().generateDocument(label), weight);
+		            	textWithWeight.put(TextDocumentGenerator.getInstance().generateDocument(label, determineHeadNoun), weight);
 		            }
 		        }
 			}
@@ -107,7 +108,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 			String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
 			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromCamelCase(shortForm));
 			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromUnderscored(shortForm)).trim();
-			textWithWeight.put(TextDocumentGenerator.getInstance().generateDocument(shortForm), weight);
+			textWithWeight.put(TextDocumentGenerator.getInstance().generateDocument(shortForm, determineHeadNoun), weight);
 		}
 		
 		return textWithWeight;
