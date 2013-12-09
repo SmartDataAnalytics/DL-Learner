@@ -13,13 +13,13 @@ import java.util.*;
  * @author Daniel Fleischhacker
  */
 public class TokenTree {
-    private HashMap<Token, TokenTree> children;
+    private LinkedHashMap<Token, TokenTree> children;
     private Set<Entity> entities;
     private List<Token> originalTokens;
     private boolean ignoreStopWords = true;
 
     public TokenTree() {
-        this.children = new HashMap<>();
+        this.children = new LinkedHashMap<>();
         this.entities = new HashSet<>();
         this.originalTokens = new ArrayList<>();
     }
@@ -73,7 +73,7 @@ public class TokenTree {
     }
 
     /**
-     * Returns the set of entities located by the given list of tokens.
+     * Returns the set of entities located by the given list of tokens. This method does not consider alternative forms.
      *
      * @param tokens tokens to locate the information to get
      * @return located set of entities or null if token sequence not contained in tree
@@ -101,7 +101,7 @@ public class TokenTree {
         TokenTree curNode = this;
 
         for (Token t : tokens) {
-            TokenTree nextNode = curNode.children.get(t);
+            TokenTree nextNode = getNextTokenTree(curNode, t);
             if (nextNode == null) {
                 return fallbackTokenList;
             }
@@ -109,6 +109,19 @@ public class TokenTree {
             fallbackTokenList.add(t);
         }
         return fallbackTokenList;
+    }
+
+    private TokenTree getNextTokenTree(TokenTree current, Token t) {
+        TokenTree next = current.children.get(t);
+        if (next != null) {
+            return next;
+        }
+        for (Map.Entry<Token, TokenTree> child : current.children.entrySet()) {
+            if (child.getKey().equalsWithAlternativeForms(t)) {
+                return child.getValue();
+            }
+        }
+        return null;
     }
 
     /**
@@ -121,7 +134,7 @@ public class TokenTree {
         TokenTree curNode = this;
 
         for (Token t : tokens) {
-            TokenTree nextNode = curNode.children.get(t);
+            TokenTree nextNode = getNextTokenTree(curNode, t);
             if (nextNode == null) {
                 return fallback == null ? null : fallback.entities;
             }
@@ -142,7 +155,7 @@ public class TokenTree {
         TokenTree curNode = this;
 
         for (Token t : tokens) {
-            TokenTree nextNode = curNode.children.get(t);
+            TokenTree nextNode = getNextTokenTree(curNode, t);
             if (nextNode == null) {
                 return fallback == null ? null : fallback.originalTokens;
             }
