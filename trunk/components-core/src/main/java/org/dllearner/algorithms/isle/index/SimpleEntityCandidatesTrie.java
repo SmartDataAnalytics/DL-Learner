@@ -91,6 +91,10 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
             String[] synonyms = LinguisticUtil.getInstance().getSynonymsForWord(t.getRawForm(), wordnetPos);
 
             for (String synonym : synonyms) {
+                // ignore all multi word synonyms
+                if (synonym.contains("_")) {
+                    continue;
+                }
                 t.addAlternativeForm(LinguisticUtil.getInstance().getNormalizedForm(synonym));
             }
         }
