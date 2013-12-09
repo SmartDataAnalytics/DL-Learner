@@ -12,6 +12,8 @@ import java.util.Set;
 public class TrieLinguisticAnnotator implements LinguisticAnnotator {
     EntityCandidatesTrie candidatesTrie;
     private boolean normalizeWords = true;
+    
+    private boolean ignoreStopWords = true;
 
     public TrieLinguisticAnnotator(EntityCandidatesTrie candidatesTrie) {
         this.candidatesTrie = candidatesTrie;
@@ -30,11 +32,13 @@ public class TrieLinguisticAnnotator implements LinguisticAnnotator {
         
         List<Token> matchedTokens;
         for (Token token : document) {
-        	matchedTokens = candidatesTrie.getLongestMatchingText(document.getTokensStartingAtToken(token, true));
-        	if(matchedTokens != null && !matchedTokens.isEmpty()){
-        		Annotation annotation = new Annotation(document, matchedTokens);
-                annotations.add(annotation);
-        	}
+        	if(!(token.isPunctuation() ||token.isStopWord())){
+        		matchedTokens = candidatesTrie.getLongestMatchingText(document.getTokensStartingAtToken(token, true));
+            	if(matchedTokens != null && !matchedTokens.isEmpty()){
+            		Annotation annotation = new Annotation(document, matchedTokens);
+                    annotations.add(annotation);
+            	}
+        	} 
 		}
         return annotations;
     }

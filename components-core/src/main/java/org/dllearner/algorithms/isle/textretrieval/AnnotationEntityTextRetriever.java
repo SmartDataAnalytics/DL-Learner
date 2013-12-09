@@ -90,10 +90,13 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 				if (annotation.getValue() instanceof OWLLiteral) {
 		            OWLLiteral val = (OWLLiteral) annotation.getValue();
 		            if (val.hasLang(language)) {
+		            	//trim
 		            	String label = val.getLiteral().trim();
 		            	if(entity instanceof NamedClass){
 		            		label = label.toLowerCase();
 		            	}
+		            	//remove content in brackets like (...)
+		            	label = label.replaceAll("\\s?\\((.*?)\\)", "");
 		            	textWithWeight.put(TextDocumentGenerator.getInstance().generateDocument(label), weight);
 		            }
 		        }

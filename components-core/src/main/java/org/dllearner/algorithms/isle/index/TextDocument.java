@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dllearner.algorithms.isle.TextDocumentGenerator;
+
 /**
  * A simple text document without further formatting or markup.
  *
@@ -11,13 +13,10 @@ import java.util.List;
  */
 public class TextDocument extends LinkedList<Token> implements Document {
     public static void main(String[] args) {
-        TextDocument t = new TextDocument();
         String s = "This is a very long, nice text for testing our new implementation of TextDocument.";
-        for (String e : s.split(" ")) {
-            t.add(new Token(e));
-        }
+        TextDocument doc = TextDocumentGenerator.getInstance().generateDocument(s);
 
-        System.out.println(t.getRawContent());
+        System.out.println(doc.getRawContent());
     }
 
     @Override
