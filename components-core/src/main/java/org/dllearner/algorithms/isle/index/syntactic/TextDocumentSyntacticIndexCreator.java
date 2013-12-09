@@ -3,6 +3,13 @@
  */
 package org.dllearner.algorithms.isle.index.syntactic;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Field;
@@ -14,14 +21,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
+import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.algorithms.isle.index.TextDocument;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Creates a syntactic index from text files stored on disk
@@ -39,7 +40,7 @@ public class TextDocumentSyntacticIndexCreator {
         this.inputDirectory = inputDirectory;
     }
 
-    public SyntacticIndex buildIndex() throws Exception{
+    public Index buildIndex() throws Exception{
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_43, analyzer);
 		IndexWriter writer = new IndexWriter(indexDirectory, indexWriterConfig);
@@ -79,7 +80,7 @@ public class TextDocumentSyntacticIndexCreator {
 		return new LuceneSyntacticIndex(indexDirectory, searchField);
 	}
     
-    public SyntacticIndex buildIndex(Set<TextDocument> documents) throws Exception{
+    public Index buildIndex(Set<TextDocument> documents) throws Exception{
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_43, analyzer);
 		IndexWriter writer = new IndexWriter(indexDirectory, indexWriterConfig);
@@ -106,7 +107,7 @@ public class TextDocumentSyntacticIndexCreator {
 		return new LuceneSyntacticIndex(indexDirectory, searchField);
 	}
 
-    public static SyntacticIndex loadIndex(File indexDirectory) throws Exception {
+    public static Index loadIndex(File indexDirectory) throws Exception {
         return new LuceneSyntacticIndex(new SimpleFSDirectory(indexDirectory), searchField);
     }
 

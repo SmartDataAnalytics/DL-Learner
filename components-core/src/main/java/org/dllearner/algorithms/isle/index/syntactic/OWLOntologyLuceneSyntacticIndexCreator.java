@@ -3,6 +3,10 @@
  */
 package org.dllearner.algorithms.isle.index.syntactic;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Field;
@@ -14,13 +18,16 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
-import org.semanticweb.owlapi.model.*;
+import org.dllearner.algorithms.isle.index.Index;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Creates a Lucene Index for the labels if classes and properties.
@@ -49,7 +56,7 @@ public class OWLOntologyLuceneSyntacticIndexCreator {
 		schemaEntities.addAll(ontology.getDataPropertiesInSignature());
 	}
 	
-	public SyntacticIndex buildIndex() throws Exception{
+	public Index buildIndex() throws Exception{
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_43, analyzer);
 		IndexWriter writer = new IndexWriter(directory, indexWriterConfig);

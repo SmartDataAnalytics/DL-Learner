@@ -17,6 +17,8 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.trees.CollinsHeadFinder;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
+import edu.stanford.nlp.trees.tregex.TregexMatcher;
+import edu.stanford.nlp.trees.tregex.TregexPattern;
 import edu.stanford.nlp.util.CoreMap;
 
 public class TextDocumentGenerator {
@@ -41,6 +43,10 @@ public class TextDocumentGenerator {
 	}
 
 	public TextDocument generateDocument(String text) {
+		return generateDocument(text, false);
+	}
+	
+	public TextDocument generateDocument(String text, boolean determineHead) {
 		TextDocument document = new TextDocument();
 	    // create an empty Annotation just with the given text
 	    Annotation annotatedDocument = new Annotation(text);
@@ -53,6 +59,33 @@ public class TextDocumentGenerator {
 	    List<CoreMap> sentences = annotatedDocument.get(SentencesAnnotation.class);
 	    
 	    for(CoreMap sentence: sentences) {
+	    	
+	    	//determine the head noun
+	    	String head = null;
+	    	if(determineHead){
+	    		//if phrase only contains one single token, the task is trivial
+	    		if(sentence.get(TokensAnnotation.class).size() == 1){
+	    			head = sentence.get(TokensAnnotation.class).get(0).get(TextAnnotation.class);
+	    		} else {
+	    			Tree tree = sentence.get(TreeAnnotation.class);
+		            CollinsHeadFinder headFinder = new CollinsHeadFinder();
+//		            Tree head = headFinder.determineHead(tree);
+//		            System.out.println(sentence);
+//		            System.out.println(tree.headTerminal(headFinder));
+		            head = tree.headTerminal(headFinder).toString();
+		            
+		            // Create a reusable pattern object 
+		            TregexPattern patternMW = TregexPattern.compile("__ >># NP"); 
+		            // Run the pattern on one particular tree 
+		            TregexMatcher matcher = patternMW.matcher(tree); 
+		            // Iterate over all of the subtrees that matched 
+		            while (matcher.findNextMatchingNode()) { 
+		              Tree match = matcher.getMatch(); 
+		              // do what we want to with the subtree 
+		            }
+	    		}
+	    	}
+           
 	    	for (CoreLabel label: sentence.get(TokensAnnotation.class)) {
 	    		// this is the text of the token
 	            String word = label.get(TextAnnotation.class);
@@ -71,10 +104,9 @@ public class TextDocumentGenerator {
 	           
 	            Token token = new Token(word, lemma, pos, isPunctuation, isStopWord);
 	            
-	            //determine the head noun
-	            Tree tree = sentence.get(TreeAnnotation.class);
-	            CollinsHeadFinder headFinder = new CollinsHeadFinder();
-	            Tree head = headFinder.determineHead(tree);
+	            if(determineHead && word.equals(head)){
+	            	token.setIsHead(true);
+	            }
 	            
 	            document.add(token);
 	          }
