@@ -93,7 +93,7 @@ public class OWLOntologyLuceneSyntacticIndexCreator {
 		System.out.println("Done.");
 		writer.close();
 		
-		return new LuceneSyntacticIndex(directory, searchField);
+		return new LuceneSyntacticIndex(ontology, directory, searchField);
 	}
 	
 	
