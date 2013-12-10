@@ -3,7 +3,6 @@ package org.dllearner.algorithms.isle.index;
 import com.google.common.collect.Lists;
 import org.dllearner.algorithms.isle.EntityCandidateGenerator;
 import org.dllearner.algorithms.isle.StopWordFilter;
-import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.ArrayList;
@@ -27,8 +26,8 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
 		this.candidatesTrie = candidatesTrie;
 	}
 	
-	public Set<Entity> getCandidates(Annotation annotation) {
-        Set<Entity> candidateEntities = candidatesTrie.getCandidateEntities(annotation.getTokens());
+	public Set<EntityScorePair> getCandidates(Annotation annotation) {
+        Set<EntityScorePair> candidateEntities = candidatesTrie.getCandidateEntities(annotation.getTokens());
         System.out.println(annotation + " --> " + candidateEntities);
         return candidateEntities;
 	}
@@ -39,7 +38,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
      * @param window : maximum distance between the annotations
      * @return
      */
-    public void postProcess(HashMap<Annotation,Set<Entity>> candidatesMap, int window, StopWordFilter stopWordFilter) {
+    public void postProcess(HashMap<Annotation,Set<EntityScorePair>> candidatesMap, int window, StopWordFilter stopWordFilter) {
     	Set<Annotation> annotations = candidatesMap.keySet();
     	List<Annotation> sortedAnnotations = new ArrayList<Annotation>(annotations);
     	//TODO refactoring
@@ -119,8 +118,8 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
 	}
 
 	@Override
-	public HashMap<Annotation, Set<Entity>> getCandidatesMap(Set<Annotation> annotations) {
-		HashMap<Annotation, Set<Entity>> candidatesMap = new HashMap<Annotation, Set<Entity>>();
+	public HashMap<Annotation, Set<EntityScorePair>> getCandidatesMap(Set<Annotation> annotations) {
+		HashMap<Annotation, Set<EntityScorePair>> candidatesMap = new HashMap<>();
 		for (Annotation annotation: annotations) 
 			candidatesMap.put(annotation, getCandidates(annotation));
 		

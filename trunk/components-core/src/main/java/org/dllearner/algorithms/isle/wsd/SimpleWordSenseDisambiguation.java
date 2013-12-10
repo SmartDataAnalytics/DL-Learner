@@ -3,25 +3,19 @@
  */
 package org.dllearner.algorithms.isle.wsd;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.isle.index.Annotation;
+import org.dllearner.algorithms.isle.index.EntityScorePair;
 import org.dllearner.algorithms.isle.index.SemanticAnnotation;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.utilities.owl.OWLAPIConverter;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -47,26 +41,27 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 	 * @see org.dllearner.algorithms.isle.WordSenseDisambiguation#disambiguate(org.dllearner.algorithms.isle.index.Annotation, java.util.Set)
 	 */
 	@Override
-	public SemanticAnnotation disambiguate(Annotation annotation, Set<Entity> candidateEntities) {
+	public SemanticAnnotation disambiguate(Annotation annotation, Set<EntityScorePair> candidateEntities) {
 		logger.debug("Linguistic annotations:\n" + annotation);
 		logger.debug("Candidate entities:" + candidateEntities);
 		String token = annotation.getString().trim();
 		//check if annotation token matches label of entity or the part behind #(resp. /)
-		for (Entity entity : candidateEntities) {
-			Set<String> labels = getLabels(entity);
-			for (String label : labels) {
-				if(label.equals(token)){
-					logger.debug("Disambiguated entity: " + entity);
-					return new SemanticAnnotation(annotation, entity);
-				}
-			}
-			String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
-			if(annotation.equals(shortForm)){
-				logger.debug("Disambiguated entity: " + entity);
-				return new SemanticAnnotation(annotation, entity);
-			}
-		}
-		return null;
+		for (EntityScorePair entityScorePair : candidateEntities) {
+            Entity entity = entityScorePair.getEntity();
+            Set<String> labels = getLabels(entity);
+            for (String label : labels) {
+                if (label.equals(token)) {
+                    logger.debug("Disambiguated entity: " + entity);
+                    return new SemanticAnnotation(annotation, entity);
+                }
+            }
+            String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
+            if (annotation.equals(shortForm)) {
+                logger.debug("Disambiguated entity: " + entity);
+                return new SemanticAnnotation(annotation, entity);
+            }
+        }
+        return null;
 	}
 	
 	private Set<String> getLabels(Entity entity){

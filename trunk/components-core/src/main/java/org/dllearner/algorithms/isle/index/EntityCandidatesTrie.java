@@ -17,10 +17,9 @@ public interface EntityCandidatesTrie {
 	
 	/**
 	 * Gets set of candidate entities for a list of tokens
-	 * @param s
 	 * @return
 	 */
-	public Set<Entity> getCandidateEntities(List<Token> tokens);
+	public Set<EntityScorePair> getCandidateEntities(List<Token> tokens);
 
 
 	/**
@@ -28,14 +27,12 @@ public interface EntityCandidatesTrie {
      * ontology string when the parameter string has been added to the trie after generation by using
      * WordNet or other additional methods.
      *
-	 * @param s the string to search in the trie
 	 * @return string generating the path of the longest match in the trie
 	 */
 	public List<Token> getGeneratingStringForLongestMatch(List<Token> tokens);
 
     /**
      * Gets the longest matching string
-     * @param s
      * @return
      */
     public List<Token> getLongestMatchingText(List<Token> tokens);

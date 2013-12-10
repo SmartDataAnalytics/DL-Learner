@@ -3,12 +3,13 @@
  */
 package org.dllearner.algorithms.isle;
 
-import java.util.HashMap;
-import java.util.Set;
-
 import org.dllearner.algorithms.isle.index.Annotation;
+import org.dllearner.algorithms.isle.index.EntityScorePair;
 import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLOntology;
+
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -22,8 +23,8 @@ public abstract class EntityCandidateGenerator {
 		this.ontology = ontology;
 	}
 
-	public abstract Set<Entity> getCandidates(Annotation annotation);
+	public abstract Set<EntityScorePair> getCandidates(Annotation annotation);
 	
 
-	public abstract HashMap<Annotation,Set<Entity>> getCandidatesMap(Set<Annotation> annotations);
+	public abstract HashMap<Annotation,Set<EntityScorePair>> getCandidatesMap(Set<Annotation> annotations);
 }
