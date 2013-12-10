@@ -28,7 +28,9 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
 	}
 	
 	public Set<Entity> getCandidates(Annotation annotation) {
-		return candidatesTrie.getCandidateEntities(annotation.getTokens());
+        Set<Entity> candidateEntities = candidatesTrie.getCandidateEntities(annotation.getTokens());
+        System.out.println(annotation + " --> " + candidateEntities);
+        return candidateEntities;
 	}
 
     /**

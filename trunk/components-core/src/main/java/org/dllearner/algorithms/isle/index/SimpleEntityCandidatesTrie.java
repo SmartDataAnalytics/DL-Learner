@@ -88,14 +88,16 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
             if (wordnetPos == null) {
                 continue;
             }
-            String[] synonyms = LinguisticUtil.getInstance().getSynonymsForWord(t.getRawForm(), wordnetPos);
+            //String[] synonyms = LinguisticUtil.getInstance().getSynonymsForWord(t.getRawForm(), wordnetPos);
+            String[] synonyms = LinguisticUtil.getInstance().getAllHyponymsForWord(t.getRawForm(), wordnetPos);
 
             for (String synonym : synonyms) {
                 // ignore all multi word synonyms
                 if (synonym.contains("_")) {
                     continue;
                 }
-                t.addAlternativeForm(LinguisticUtil.getInstance().getNormalizedForm(synonym));
+                //t.addAlternativeForm(LinguisticUtil.getInstance().getNormalizedForm(synonym));
+                t.addAlternativeForm(synonym);
             }
         }
     }
@@ -111,7 +113,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
 	@Override
 	public Set<Entity> getCandidateEntities(List<Token> tokens) {
-        return tree.get(tokens);
+        return tree.getAllEntities(tokens);
 	}
 
 	@Override
