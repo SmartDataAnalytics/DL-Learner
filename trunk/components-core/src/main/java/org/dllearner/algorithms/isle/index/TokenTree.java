@@ -81,13 +81,32 @@ public class TokenTree {
     public Set<Entity> get(List<Token> tokens) {
         TokenTree curNode = this;
         for (Token t : tokens) {
-            TokenTree nextNode = curNode.children.get(t);
+            TokenTree nextNode = getNextTokenTree(curNode, t);
             if (nextNode == null) {
                 return null;
             }
             curNode = nextNode;
         }
         return curNode.entities;
+    }
+
+    public Set<Entity> getAllEntities(List<Token> tokens) {
+        HashSet<Entity> resEntities = new HashSet<>();
+        getAllEntitiesRec(tokens, 0, this, resEntities);
+        return resEntities;
+    }
+
+    public void getAllEntitiesRec(List<Token> tokens, int curPosition, TokenTree curTree, HashSet<Entity> resEntities) {
+        if (curPosition == tokens.size()) {
+            resEntities.addAll(curTree.entities);
+            return;
+        }
+        Token t = tokens.get(curPosition);
+        for (Map.Entry<Token, TokenTree> entry : curTree.children.entrySet()) {
+            if (t.equalsWithAlternativeForms(entry.getKey())) {
+                getAllEntitiesRec(tokens, curPosition + 1, entry.getValue(), resEntities);
+            }
+        }
     }
 
     /**
@@ -148,7 +167,7 @@ public class TokenTree {
     }
 
     /**
-     * Returns the original token for the longest match
+     * Returns the original ontology tokens for the longest match
      */
     public List<Token> getOriginalTokensForLongestMatch(List<Token> tokens) {
         TokenTree fallback = this.entities.isEmpty() ? null : this;
