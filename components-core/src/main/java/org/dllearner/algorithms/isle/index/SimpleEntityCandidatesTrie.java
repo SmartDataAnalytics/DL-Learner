@@ -114,12 +114,8 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
     }
 
 	@Override
-	public Set<Entity> getCandidateEntities(List<Token> tokens) {
-        Set<Entity> res = tree.getAllEntities(tokens);
-        System.out.println("Unscored: " + res);
-        Set<EntityScorePair> scored = tree.getAllEntitiesScored(tokens);
-        System.out.println("Scored: " + scored);
-
+	public Set<EntityScorePair> getCandidateEntities(List<Token> tokens) {
+        Set<EntityScorePair> res = tree.getAllEntitiesScored(tokens);
         return res;
     }
 

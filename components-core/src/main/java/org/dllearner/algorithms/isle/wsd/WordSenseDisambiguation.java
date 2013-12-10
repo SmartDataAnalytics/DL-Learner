@@ -1,11 +1,11 @@
 package org.dllearner.algorithms.isle.wsd;
 
-import java.util.Set;
-
 import org.dllearner.algorithms.isle.index.Annotation;
+import org.dllearner.algorithms.isle.index.EntityScorePair;
 import org.dllearner.algorithms.isle.index.SemanticAnnotation;
-import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLOntology;
+
+import java.util.Set;
 
 /**
  * Abstract class for the word sense disambiguation component.
@@ -27,9 +27,10 @@ public abstract class WordSenseDisambiguation {
     /**
      * Chooses the correct entity for the given annotation from a set of candidate entities.
      *
+     *
      * @param annotation        the annotation to find entity for
      * @param candidateEntities the set of candidate entities
      * @return semantic annotation containing the given annotation and the chosen entity
      */
-    public abstract SemanticAnnotation disambiguate(Annotation annotation, Set<Entity> candidateEntities);
+    public abstract SemanticAnnotation disambiguate(Annotation annotation, Set<EntityScorePair> candidateEntities);
 }

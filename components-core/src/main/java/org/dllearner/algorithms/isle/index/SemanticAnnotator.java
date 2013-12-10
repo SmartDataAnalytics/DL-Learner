@@ -1,12 +1,11 @@
 package org.dllearner.algorithms.isle.index;
 
+import org.dllearner.algorithms.isle.EntityCandidateGenerator;
+import org.dllearner.algorithms.isle.wsd.WordSenseDisambiguation;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.dllearner.algorithms.isle.EntityCandidateGenerator;
-import org.dllearner.algorithms.isle.wsd.WordSenseDisambiguation;
-import org.dllearner.core.owl.Entity;
 
 /**
  * Provides methods to annotate documents.
@@ -23,7 +22,6 @@ public class SemanticAnnotator {
     /**
      * Initialize this semantic annotator to use the entities from the provided ontology.
      *
-     * @param ontology the ontology to use entities from
      */
     public SemanticAnnotator(WordSenseDisambiguation wordSenseDisambiguation, 
     		EntityCandidateGenerator entityCandidateGenerator, LinguisticAnnotator linguisticAnnotator) {
@@ -41,9 +39,9 @@ public class SemanticAnnotator {
     public AnnotatedDocument processDocument(TextDocument document){
     	Set<Annotation> annotations = linguisticAnnotator.annotate(document);
     	Set<SemanticAnnotation> semanticAnnotations = new HashSet<SemanticAnnotation>();
-    	HashMap<Annotation,Set<Entity>> candidatesMap = entityCandidateGenerator.getCandidatesMap(annotations);
+    	HashMap<Annotation, Set<EntityScorePair>> candidatesMap = entityCandidateGenerator.getCandidatesMap(annotations);
     	for (Annotation annotation : candidatesMap.keySet()) {
-    		Set<Entity> candidateEntities = candidatesMap.get(annotation);
+    		Set<EntityScorePair> candidateEntities = candidatesMap.get(annotation);
             if (candidateEntities == null || candidateEntities.size() == 0) {
                 continue;
             }
