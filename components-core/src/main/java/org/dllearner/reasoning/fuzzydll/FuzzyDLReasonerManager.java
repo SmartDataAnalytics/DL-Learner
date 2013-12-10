@@ -33,6 +33,7 @@ import java.util.Set;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.FuzzyOwl2toFuzzyDL;
+import org.dllearner.utilities.OWLClassExpression2FuzzyDLConverter;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -107,6 +108,7 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 //	private int counter2 = 1;
 	
 	private ByteArrayOutputStream baos;
+	private OWLClassExpression2FuzzyDLConverter classExpression2fuzzyDLConverter;
 
 	public FuzzyDLReasonerManager(String ontologyFile, OWLOntology ontology, OWLReasonerConfiguration conf, OWLDataFactory factory, String baseURI) throws Exception {
 		
@@ -140,21 +142,24 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 		baos = new ByteArrayOutputStream();
 		fuzzyFileParser.setPrintStream(new PrintStream(baos));
 		
+		classExpression2fuzzyDLConverter = new OWLClassExpression2FuzzyDLConverter(fuzzyFileParser);
+		
 		solveKB();
 		
 		  // errorFile = new FileOutputStream("errorFile.txt")name;
 	}
 	
 	private Concept convert(OWLClassExpression classExpression){
-		baos.reset();
-		if(classExpression.isOWLThing()){
-			return Concept.CONCEPT_TOP;
-		} else if(classExpression.isOWLNothing()){
-			return Concept.CONCEPT_BOTTOM;
-		} else {
-			String name = fuzzyFileParser.getClassName(classExpression);
-			return fuzzyKB.getConcept(name);
-		}
+//		baos.reset();
+//		if(classExpression.isOWLThing()){
+//			return Concept.CONCEPT_TOP;
+//		} else if(classExpression.isOWLNothing()){
+//			return Concept.CONCEPT_BOTTOM;
+//		} else {
+//			String name = fuzzyFileParser.getClassName(classExpression);
+//			return fuzzyKB.getConcept(name);
+//		}
+		return classExpression2fuzzyDLConverter.convert(classExpression);
 	}
 	
 	private Individual convert(OWLIndividual individual){
@@ -201,12 +206,16 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 				Query q = new MinInstanceQuery(fConcept, fIndividual);
 			
 				KnowledgeBase clonedFuzzyKB = fuzzyKB.clone();
-				
+//				q = new MinInstanceQuery(Concept.some("hasCar", Concept.CONCEPT_TOP), fuzzyKB.getIndividual("east1"));
+//				System.out.println(fConcept);
+//				System.out.println(Concept.some("hasCar", Concept.CONCEPT_TOP));
+//				q = new MinInstanceQuery(fuzzyKB.getConcept("Train"), fuzzyKB.getIndividual("east1"));
 				// TODO: just for testing, remove
 //				long start = System.nanoTime();
 				
 				queryResult = q.solve(clonedFuzzyKB);
 				System.out.println(q.toString() + queryResult.getSolution());
+//				System.exit(0);
 				// TODO: just for testing, remove
 //				out.println(counter + " * " + (System.nanoTime() - start));
 //				counter++;

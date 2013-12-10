@@ -2,6 +2,7 @@ package org.dllearner.utilities;
 
 import java.util.*;
 
+import fuzzydl.Concept;
 import fuzzyowl2.*;
 
 import org.semanticweb.owlapi.model.*;
@@ -49,7 +50,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 	@Override
 	protected String getTopConceptName()
 	{
-		return("*top*");
+		return Concept.CONCEPT_TOP.toString();//("*top*");
 	}
 
 
@@ -92,7 +93,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 	@Override
 	protected String getObjectSomeValuesFromName(OWLObjectPropertyExpression p, OWLClassExpression c)
 	{
-		return "(some " + getObjectPropertyName(p) + " " + getClassName(c) + " )";
+		return "(some " + getObjectPropertyName(p) + " " + getClassName(c) + ")";
 	}
 
 
@@ -1076,7 +1077,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 
 
 	@Override
-	protected String getShortName(OWLEntity e)
+	public String getShortName(OWLEntity e)
 	{
 		String aux = pm.getShortForm(e);
 		if (isReservedWord(aux))

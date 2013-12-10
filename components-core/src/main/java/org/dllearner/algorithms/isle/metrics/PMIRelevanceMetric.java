@@ -3,13 +3,8 @@
  */
 package org.dllearner.algorithms.isle.metrics;
 
-import java.util.Set;
-
-import org.dllearner.algorithms.isle.index.AnnotatedDocument;
 import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.core.owl.Entity;
-
-import com.google.common.collect.Sets;
 
 /**
  * @author Lorenz Buehmann
@@ -40,18 +35,15 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 	
 	@Override
 	public double getNormalizedRelevance(Entity entityA, Entity entityB){
-		Set<AnnotatedDocument> documentsA = index.getDocuments(entityA);
-		Set<AnnotatedDocument> documentsB = index.getDocuments(entityB);
-		Set<AnnotatedDocument> documentsAB = Sets.intersection(documentsA, documentsB);
-		long nrOfDocuments = index.getTotalNumberOfDocuments();
-//		System.out.println("A:" + documentsA.size());
-//		System.out.println("B:" + documentsB.size());
-//		System.out.println("AB:" + documentsAB.size());
-//		System.out.println(nrOfDocuments);
+		long nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
+		long nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
+		long nrOfDocumentsAB = index.getNumberOfDocumentsFor(entityA, entityB);
 		
-		double pA = nrOfDocuments == 0 ? 0 : ((double) documentsA.size() / (double) nrOfDocuments);
-		double pB = nrOfDocuments == 0 ? 0 : ((double) documentsB.size() / (double) nrOfDocuments);
-		double pAB = nrOfDocuments == 0 ? 0 : ((double) documentsAB.size() / (double) nrOfDocuments);
+		long nrOfDocuments = index.getTotalNumberOfDocuments();
+		
+		double pA = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsA / (double) nrOfDocuments);
+		double pB = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsB / (double) nrOfDocuments);
+		double pAB = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsAB / (double) nrOfDocuments);
 		
 		if(pAB == 0 || pA * pB == 0){
 			return 0;

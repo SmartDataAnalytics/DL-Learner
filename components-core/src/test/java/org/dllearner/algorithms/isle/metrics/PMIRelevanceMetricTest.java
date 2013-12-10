@@ -27,7 +27,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 public class PMIRelevanceMetricTest {
 	
 	AbstractRelevanceMetric metric;
-	static final String solrServerURL = "http://[2001:638:902:2010:0:168:35:138]:8080/solr/en_dbpedia_resources/";
+	static final String solrServerURL = "http://solr.aksw.org/en_dbpedia_resources/";
 	static final String searchField = "comment";
 	static final String DBPEDIA_NS = "http://dbpedia.org/ontology/";
 	

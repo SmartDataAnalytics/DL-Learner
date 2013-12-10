@@ -19,6 +19,8 @@ import java.util.Set;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.dllearner.algorithms.isle.index.Index;
+import org.dllearner.algorithms.isle.index.syntactic.SolrSyntacticIndex;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.owl.OWLEntityTypeAdder;
@@ -48,8 +50,16 @@ public class DBpediaExperiment extends Experiment{
 	
 	final SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 	final int maxNrOfInstancesPerClass = 10;
+	static final String solrServerURL = "http://solr.aksw.org/en_dbpedia_resources/";
+	static final String searchField = "comment";
 	
-	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.isle.Experiment#getIndex()
+	 */
+	@Override
+	protected Index getIndex() {
+		return new SolrSyntacticIndex(ontology, solrServerURL, searchField);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.isle.Experiment#getOntology()
@@ -81,10 +91,10 @@ public class DBpediaExperiment extends Experiment{
 		cleanUpModel(sample);
 		filter(sample, "http://dbpedia.org/ontology/");
 		OWLEntityTypeAdder.addEntityTypes(sample);
-		StmtIterator iterator = sample.listStatements();
-		while(iterator.hasNext()){
-			System.out.println(iterator.next());
-		}
+//		StmtIterator iterator = sample.listStatements();
+//		while(iterator.hasNext()){
+//			System.out.println(iterator.next());
+//		}
 		
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
