@@ -6,7 +6,7 @@ package org.dllearner.algorithms.isle.metrics;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
+import org.dllearner.algorithms.isle.index.Index;
 import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
@@ -15,9 +15,9 @@ import org.semanticweb.owlapi.model.OWLEntity;
  */
 public abstract class AbstractRelevanceMetric implements RelevanceMetric {
 
-	protected SemanticIndex index;
+	protected Index index;
 
-	public AbstractRelevanceMetric(SemanticIndex index) {
+	public AbstractRelevanceMetric(Index index) {
 		this.index = index;
 	}
 	

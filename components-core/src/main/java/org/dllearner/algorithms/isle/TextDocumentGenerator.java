@@ -74,15 +74,15 @@ public class TextDocumentGenerator {
 //		            System.out.println(tree.headTerminal(headFinder));
 		            head = tree.headTerminal(headFinder).toString();
 		            
-		            // Create a reusable pattern object 
-		            TregexPattern patternMW = TregexPattern.compile("__ >># NP"); 
-		            // Run the pattern on one particular tree 
-		            TregexMatcher matcher = patternMW.matcher(tree); 
-		            // Iterate over all of the subtrees that matched 
-		            while (matcher.findNextMatchingNode()) { 
-		              Tree match = matcher.getMatch(); 
-		              // do what we want to with the subtree 
-		            }
+//		            // Create a reusable pattern object 
+//		            TregexPattern patternMW = TregexPattern.compile("__ >># NP"); 
+//		            // Run the pattern on one particular tree 
+//		            TregexMatcher matcher = patternMW.matcher(tree); 
+//		            // Iterate over all of the subtrees that matched 
+//		            while (matcher.findNextMatchingNode()) { 
+//		              Tree match = matcher.getMatch(); 
+//		              // do what we want to with the subtree 
+//		            }
 	    		}
 	    	}
            
