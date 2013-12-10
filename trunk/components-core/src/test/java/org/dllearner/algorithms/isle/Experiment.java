@@ -12,8 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
+import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndexGenerator;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
@@ -50,6 +51,9 @@ import com.google.common.collect.Sets;
  */
 public abstract class Experiment {
 	
+	
+	private static final Logger logger = Logger.getLogger(Experiment.class.getName());
+	
 	/**
 	 * 
 	 */
@@ -71,7 +75,7 @@ public abstract class Experiment {
 	
 	private String testFolder = "experiments/logs/";
 	
-	private OWLOntology ontology;
+	protected OWLOntology ontology;
 	private Set<String> documents;
 	
 	private boolean initialized = false;
@@ -93,10 +97,11 @@ public abstract class Experiment {
 			documents = getDocuments();
 			
 			// build semantic index
-//			SemanticIndex semanticIndex = SemanticIndexGenerator.generateIndex(documents, ontology, false);
+			Index index = getIndex();
+			logger.info("Index created.");
 //			
 //			// set the relevance metric
-//			relevance = new PMIRelevanceMetric(semanticIndex);
+			relevance = new PMIRelevanceMetric(index);
 			try {
 				// set KB
 				KnowledgeSource ks = new OWLAPIOntology(ontology);
@@ -147,6 +152,10 @@ public abstract class Experiment {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	protected Index getIndex(){
+		return SemanticIndexGenerator.generateIndex(documents, ontology, false);
 	}
 	
 	private Description getStartClass(NamedClass cls, boolean isEquivalenceProblem, boolean reuseExistingDescription){
@@ -224,6 +233,7 @@ public abstract class Experiment {
 	public void run(NamedClass cls) throws ComponentInitException {
 		initIfNecessary();
 		
+		logger.info("Learning definiton of class " + cls);
 //		lp.setClassToDescribe(cls);
 		//get the positive examples, here just the instances of the class to describe
 		SortedSet<Individual> individuals = reasoner.getIndividuals(cls);
@@ -233,8 +243,8 @@ public abstract class Experiment {
 		//get the start class for the learning algorithms
 		Description startClass = getStartClass(cls, equivalence, true);
 		
-//		Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
-//		NLPHeuristic heuristic = new NLPHeuristic(entityRelevance);
+		Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
+		NLPHeuristic heuristic = new NLPHeuristic(entityRelevance);
 		
 		ClassLearningProblem clp = new ClassLearningProblem(reasoner);
 		clp.setClassToDescribe(cls);
@@ -248,7 +258,7 @@ public abstract class Experiment {
 		
 		// perform cross validation with ISLE
 		ISLE isle = new ISLE(clp, reasoner);
-//		isle.setHeuristic(heuristic);
+		isle.setHeuristic(heuristic);
 		isle.setMaxNrOfResults(20);
 		isle.setOperator(rop);
 		isle.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);

@@ -229,7 +229,7 @@ public class FuzzyOwl2
 	protected OWLDataFactory dataFactory;
 	protected Hashtable<String, FuzzyConcept> definedConcepts;
 	protected Hashtable<String, FuzzyProperty> definedProperties;
-	protected Hashtable<String, FuzzyDatatype> fuzzyDatatypes;
+	public Hashtable<String, FuzzyDatatype> fuzzyDatatypes;
 	protected Hashtable<String, FuzzyModifier> fuzzyModifiers;
 	protected OWLAnnotationProperty label;
 	protected OWLOntologyManager manager;
@@ -1187,7 +1187,7 @@ public class FuzzyOwl2
 	 * @param p An OWL 2 object property.
 	 * @return A String representation of p.
 	 */
-	protected String getObjectPropertyName(OWLObjectPropertyExpression p)
+	public String getObjectPropertyName(OWLObjectPropertyExpression p)
 	{
 		if (p.isOWLTopObjectProperty())
 			return getTopObjectPropertyName();
@@ -1204,7 +1204,7 @@ public class FuzzyOwl2
 	 * @param p An OWL 2 data property.
 	 * @return A String representation of p.
 	 */
-	protected String getDataPropertyName(OWLDataPropertyExpression p)
+	public String getDataPropertyName(OWLDataPropertyExpression p)
 	{
 		if (p.isOWLTopDataProperty())
 			return getTopDataPropertyName();
@@ -1345,7 +1345,7 @@ public class FuzzyOwl2
 	 * @param e An OWL 2 entity.
 	 * @return Short name of e.
 	 */
-	protected String getShortName(OWLEntity e)
+	public String getShortName(OWLEntity e)
 	{
 		return pm.getShortForm(e);
 	}

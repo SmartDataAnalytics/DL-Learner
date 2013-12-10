@@ -542,8 +542,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
 			// remove reasoner calls
-//			Set<ObjectProperty> moreSpecialRoles = reasoner.getSubProperties(ar);
-			Set<ObjectProperty> moreSpecialRoles = objectPropertyHierarchy.getMoreSpecialRoles(ar);
+			Set<ObjectProperty> moreSpecialRoles = reasoner.getSubProperties(ar);
+//			Set<ObjectProperty> moreSpecialRoles = objectPropertyHierarchy.getMoreSpecialRoles(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles)
 				refinements.add(new ObjectSomeRestriction(moreSpecialRole, description.getChild(0)));
 
@@ -587,15 +587,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
-//			Set<ObjectProperty> moreSpecialRoles = reasoner.getSubProperties(ar);
-			Set<ObjectProperty> moreSpecialRoles = objectPropertyHierarchy.getMoreSpecialRoles(ar);
+			Set<ObjectProperty> moreSpecialRoles = reasoner.getSubProperties(ar);
+//			Set<ObjectProperty> moreSpecialRoles = objectPropertyHierarchy.getMoreSpecialRoles(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
 				refinements.add(new ObjectAllRestriction(moreSpecialRole, description.getChild(0)));
 			}
 			
 			// rule 4: ALL r.D => <= (maxFillers-1) r.D
 			// (length increases by 1 so we have to check whether max length is sufficient)
-			// => commented out because this is acutally not a downward refinement
+			// => commented out because this is actually not a downward refinement
 //			if(useCardinalityRestrictions) {
 //				if(maxLength > description.getLength() && maxNrOfFillers.get(ar)>1) {
 //					ObjectMaxCardinalityRestriction max = new ObjectMaxCardinalityRestriction(maxNrOfFillers.get(ar)-1,role,description.getChild(0));

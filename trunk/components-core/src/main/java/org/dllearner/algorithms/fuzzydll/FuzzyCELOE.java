@@ -175,7 +175,7 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 
 	private int maxClassDescriptionTests = 0;
 
-	private int maxExecutionTimeInSeconds = 100;
+	private int maxExecutionTimeInSeconds = 200;
 
 	private boolean terminateOnNoiseReached = false;
 	
@@ -390,6 +390,13 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 		 else if (learningProblem instanceof FuzzyPosNegLP) {
 			examples = Helper.union(((FuzzyPosNegLP)learningProblem).getPositiveExamples(),((FuzzyPosNegLP)learningProblem).getNegativeExamples());
 		 }
+		
+		
+		//cardinality has to be deactivated as it is not supported by FuzzyDL
+		if(operator instanceof RhoDRDown){
+			((RhoDRDown) operator).setUseCardinalityRestrictions(false);
+		}
+		
 	}
 
 	@Override

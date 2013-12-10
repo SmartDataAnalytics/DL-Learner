@@ -64,7 +64,6 @@ public class SolrSyntacticIndex implements Index{
 		    	try {
 					QueryResponse response = solr.query(query);
 					SolrDocumentList list = response.getResults();
-					System.out.println(list.getNumFound());
 					for (SolrDocument doc : list) {
 						String uri = (String) doc.getFieldValue("uri");
 						String comment = (String) doc.getFieldValue(searchField);
@@ -120,7 +119,7 @@ public class SolrSyntacticIndex implements Index{
 		queryString += Joiner.on("OR").join(terms);
 		queryString += ")";
 		
-		SolrQuery query = new SolrQuery(searchField + ":" + queryString);System.out.println(query);
+		SolrQuery query = new SolrQuery(searchField + ":" + queryString);//System.out.println(query);
     	try {
 			QueryResponse response = solr.query(query);
 			SolrDocumentList list = response.getResults();
@@ -162,7 +161,7 @@ public class SolrSyntacticIndex implements Index{
 		String queryStringConjuction = "(" + Joiner.on("AND").join(queryStringParts) + ")";
 		
 		
-		SolrQuery query = new SolrQuery(searchField + ":" + queryStringConjuction);System.out.println(query);
+		SolrQuery query = new SolrQuery(searchField + ":" + queryStringConjuction);//System.out.println(query);
     	try {
 			QueryResponse response = solr.query(query);
 			SolrDocumentList list = response.getResults();
