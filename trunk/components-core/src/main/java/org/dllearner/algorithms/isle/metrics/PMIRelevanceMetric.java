@@ -6,7 +6,7 @@ package org.dllearner.algorithms.isle.metrics;
 import java.util.Set;
 
 import org.dllearner.algorithms.isle.index.AnnotatedDocument;
-import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
+import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.core.owl.Entity;
 
 import com.google.common.collect.Sets;
@@ -17,20 +17,21 @@ import com.google.common.collect.Sets;
  */
 public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 
-	public PMIRelevanceMetric(SemanticIndex index) {
+	public PMIRelevanceMetric(Index index) {
 		super(index);
 	}
 
 	@Override
 	public double getRelevance(Entity entityA, Entity entityB){
-		Set<AnnotatedDocument> documentsA = index.getDocuments(entityA);
-		Set<AnnotatedDocument> documentsB = index.getDocuments(entityB);
-		Set<AnnotatedDocument> documentsAB = Sets.intersection(documentsA, documentsB);
-		int nrOfDocuments = index.getTotalNrOfDocuments();
+		long nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
+		long nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
+		long nrOfDocumentsAB = index.getNumberOfDocumentsFor(entityA, entityB);
 		
-		double pA = nrOfDocuments == 0 ? 0 : ((double) documentsA.size() / (double) nrOfDocuments);
-		double pB = nrOfDocuments == 0 ? 0 : ((double) documentsB.size() / (double) nrOfDocuments);
-		double pAB = nrOfDocuments == 0 ? 0 : ((double) documentsAB.size() / (double) nrOfDocuments);
+		long nrOfDocuments = index.getTotalNumberOfDocuments();
+		
+		double pA = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsA / (double) nrOfDocuments);
+		double pB = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsB / (double) nrOfDocuments);
+		double pAB = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsAB / (double) nrOfDocuments);
 		
 		double pmi = Math.log(pAB / pA * pB);
 		
@@ -42,7 +43,7 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 		Set<AnnotatedDocument> documentsA = index.getDocuments(entityA);
 		Set<AnnotatedDocument> documentsB = index.getDocuments(entityB);
 		Set<AnnotatedDocument> documentsAB = Sets.intersection(documentsA, documentsB);
-		int nrOfDocuments = index.getTotalNrOfDocuments();
+		long nrOfDocuments = index.getTotalNumberOfDocuments();
 //		System.out.println("A:" + documentsA.size());
 //		System.out.println("B:" + documentsB.size());
 //		System.out.println("AB:" + documentsAB.size());

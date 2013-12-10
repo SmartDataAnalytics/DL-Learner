@@ -80,7 +80,7 @@ public class LuceneSyntacticIndex implements Index {
 			for (Token token : tokens) {
 				try {
 					Query query = parser.parse(token.getRawForm());
-					ScoreDoc[] result = searcher.search(query, getTotalNumberOfDocuments()).scoreDocs;
+					ScoreDoc[] result = searcher.search(query, indexReader.numDocs()).scoreDocs;
 					for (int i = 0; i < result.length; i++) {
 						Document doc = searcher.doc(result[i].doc);
 						documents.add(new AnnotatedTextDocument(
@@ -102,7 +102,7 @@ public class LuceneSyntacticIndex implements Index {
 	 * @see org.dllearner.algorithms.isle.index.Index#getTotalNumberOfDocuments()
 	 */
 	@Override
-	public int getTotalNumberOfDocuments() {
+	public long getTotalNumberOfDocuments() {
 		return indexReader.numDocs();
 	}
 	
@@ -118,6 +118,22 @@ public class LuceneSyntacticIndex implements Index {
 			}
 		}
 		return documents;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity)
+	 */
+	@Override
+	public long getNumberOfDocumentsFor(Entity entity) {
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity[])
+	 */
+	@Override
+	public long getNumberOfDocumentsFor(Entity... entities) {
+		return 0;
 	}
 
 

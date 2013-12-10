@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.dllearner.algorithms.isle.index.AnnotatedDocument;
+import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.core.owl.Entity;
 
 /**
@@ -14,7 +15,7 @@ import org.dllearner.core.owl.Entity;
  * @author Lorenz Buehmann
  * @author Daniel Fleischhacker
  */
-public class SemanticIndex extends HashMap<Entity, Set<AnnotatedDocument>>{
+public class SemanticIndex extends HashMap<Entity, Set<AnnotatedDocument>> implements Index{
 
     private int nrOfDocuments;
 
@@ -49,11 +50,33 @@ public class SemanticIndex extends HashMap<Entity, Set<AnnotatedDocument>>{
 		this.nrOfDocuments = nrOfDocuments;
 	}
 	
-	/**
-	 * @return the nrOfDocuments
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.isle.index.Index#getTotalNumberOfDocuments()
 	 */
-	public int getTotalNrOfDocuments() {
+	@Override
+	public long getTotalNumberOfDocuments() {
 		return nrOfDocuments;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity)
+	 */
+	@Override
+	public long getNumberOfDocumentsFor(Entity entity) {
+		return getDocuments(entity).size();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity[])
+	 */
+	@Override
+	public long getNumberOfDocumentsFor(Entity... entities) {
+		
+		Set<AnnotatedDocument> documents = getDocuments(entities[0]);
+		for (int i = 1; i < entities.length; i++) {
+			documents.retainAll(getDocuments(entities[i]));
+		}
+		return 0;
 	}
 
 }
