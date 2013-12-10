@@ -5,8 +5,7 @@ import edu.northwestern.at.utils.corpuslinguistics.lemmatizer.Lemmatizer;
 import net.didion.jwnl.data.POS;
 import org.dllearner.algorithms.isle.WordNet;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Provides shortcuts to commonly used linguistic operations
@@ -33,6 +32,26 @@ public class LinguisticUtil {
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public Set<WordNet.LemmaScorePair> getScoredHyponyms(String word, POS pos) {
+        List<WordNet.LemmaScorePair> pairs = wn.getHyponymsScored(pos, word);
+        HashMap<String, Double> lemmaScores = new HashMap<>();
+        for (WordNet.LemmaScorePair p : pairs) {
+            if (!lemmaScores.containsKey(p.getLemma())) {
+                lemmaScores.put(p.getLemma(), p.getScore());
+            }
+            else {
+                lemmaScores.put(p.getLemma(), Math.max(p.getScore(), lemmaScores.get(p.getLemma())));
+            }
+        }
+
+        TreeSet<WordNet.LemmaScorePair> scoredPairs = new TreeSet<>();
+        for (Map.Entry<String, Double> e : lemmaScores.entrySet()) {
+            scoredPairs.add(new WordNet.LemmaScorePair(e.getKey(), e.getValue()));
+        }
+
+        return scoredPairs;
     }
 
     /**

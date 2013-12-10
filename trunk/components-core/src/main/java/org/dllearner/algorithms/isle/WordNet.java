@@ -13,6 +13,8 @@ import java.util.List;
 
 public class WordNet {
 
+    private static final double SYNONYM_FACTOR = 0.8;
+    private static final double HYPONYM_FACTOR = 0.4;
     public Dictionary dict;
 
     public WordNet() {
@@ -280,6 +282,42 @@ public class WordNet {
         }
     }
 
+    public List<LemmaScorePair> getHyponymsScored(POS pos, String s) {
+        ArrayList<LemmaScorePair> result = new ArrayList<>();
+        try {
+            IndexWord word = dict.getIndexWord(pos, s);
+            if (word == null) {
+                System.err.println("Unable to find index word for " + s);
+                return result;
+            }
+            Synset sense = word.getSense(1);
+            getHyponymsScoredRecursive(result, sense, 3, SYNONYM_FACTOR);
+        }
+        catch (JWNLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return result;
+    }
+
+    public void getHyponymsScoredRecursive(List<LemmaScorePair> lemmas, Synset sense, int depthToGo, double score) {
+        for (Word w : sense.getWords()) {
+            lemmas.add(new LemmaScorePair(w.getLemma(), score));
+        }
+        if (depthToGo == 0) {
+            return;
+        }
+        try {
+            PointerTargetNodeList directHyponyms = PointerUtils.getInstance().getDirectHyponyms(sense);
+            for (Object directHyponym : directHyponyms) {
+                getHyponymsScoredRecursive(lemmas, ((PointerTargetNode) directHyponym).getSynset(), depthToGo - 1,
+                        score * HYPONYM_FACTOR);
+            }
+        }
+        catch (JWNLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
     /**
      * Funktion returns a List of Hypo and Hypernyms of a given string
      *
@@ -354,6 +392,73 @@ public class WordNet {
 
 
         return result;
+    }
+
+    public static class LemmaScorePair implements Comparable<LemmaScorePair> {
+        private String lemma;
+        private Double score;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            LemmaScorePair that = (LemmaScorePair) o;
+
+            if (lemma != null ? !lemma.equals(that.lemma) : that.lemma != null) {
+                return false;
+            }
+            if (score != null ? !score.equals(that.score) : that.score != null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = lemma != null ? lemma.hashCode() : 0;
+            result = 31 * result + (score != null ? score.hashCode() : 0);
+            return result;
+        }
+
+        public String getLemma() {
+
+            return lemma;
+        }
+
+        public void setLemma(String lemma) {
+            this.lemma = lemma;
+        }
+
+        public Double getScore() {
+            return score;
+        }
+
+        public void setScore(Double score) {
+            this.score = score;
+        }
+
+        public LemmaScorePair(String lemma, Double score) {
+
+            this.lemma = lemma;
+            this.score = score;
+        }
+
+        @Override
+        public int compareTo(LemmaScorePair o) {
+            int val = score.compareTo(o.score);
+
+            if (val == 0) {
+                val = lemma.compareTo(o.getLemma());
+            }
+
+            return val;
+        }
     }
 
 }
