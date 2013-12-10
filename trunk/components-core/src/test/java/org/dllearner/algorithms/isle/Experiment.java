@@ -93,10 +93,10 @@ public abstract class Experiment {
 			documents = getDocuments();
 			
 			// build semantic index
-			SemanticIndex semanticIndex = SemanticIndexGenerator.generateIndex(documents, ontology, false);
-			
-			// set the relevance metric
-			relevance = new PMIRelevanceMetric(semanticIndex);
+//			SemanticIndex semanticIndex = SemanticIndexGenerator.generateIndex(documents, ontology, false);
+//			
+//			// set the relevance metric
+//			relevance = new PMIRelevanceMetric(semanticIndex);
 			try {
 				// set KB
 				KnowledgeSource ks = new OWLAPIOntology(ontology);
@@ -233,8 +233,8 @@ public abstract class Experiment {
 		//get the start class for the learning algorithms
 		Description startClass = getStartClass(cls, equivalence, true);
 		
-		Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
-		NLPHeuristic heuristic = new NLPHeuristic(entityRelevance);
+//		Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
+//		NLPHeuristic heuristic = new NLPHeuristic(entityRelevance);
 		
 		ClassLearningProblem clp = new ClassLearningProblem(reasoner);
 		clp.setClassToDescribe(cls);
@@ -247,9 +247,9 @@ public abstract class Experiment {
 		rop.init();
 		
 		// perform cross validation with ISLE
-		ISLE isle = new ISLE(lp, reasoner);
-		isle.setHeuristic(heuristic);
-		isle.setMaxNrOfResults(3);
+		ISLE isle = new ISLE(clp, reasoner);
+//		isle.setHeuristic(heuristic);
+		isle.setMaxNrOfResults(20);
 		isle.setOperator(rop);
 		isle.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		isle.setStartClass(startClass);
@@ -260,9 +260,10 @@ public abstract class Experiment {
 //		isle.setTerminateOnNoiseReached(true);
 		isle.setIgnoredConcepts(Collections.singleton(cls));
 		isle.setReplaceSearchTree(true);
-		isle.setMaxExecutionTimeInSeconds(10);
+		isle.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		isle.init();
-		isle.start();System.exit(1);
+		isle.start();
+		System.exit(1);
 		List<? extends EvaluatedDescription> currentlyBestDescriptions = isle.getCurrentlyBestEvaluatedDescriptions(20);
 		for (EvaluatedDescription description : currentlyBestDescriptions) {
 			System.out.println(description);
