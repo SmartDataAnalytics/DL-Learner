@@ -3,8 +3,7 @@ package org.dllearner.algorithms.isle;
 import net.didion.jwnl.JWNL;
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.*;
-import net.didion.jwnl.data.list.PointerTargetNode;
-import net.didion.jwnl.data.list.PointerTargetNodeList;
+import net.didion.jwnl.data.list.*;
 import net.didion.jwnl.dictionary.Dictionary;
 
 import java.io.InputStream;
@@ -49,6 +48,13 @@ public class WordNet {
     public static void main(String[] args) {
         System.out.println(new WordNet().getBestSynonyms(POS.VERB, "learn"));
         System.out.println(new WordNet().getSisterTerms(POS.NOUN, "actress"));
+        System.out.println("Hypernyms **************************");
+        System.out.println(new WordNet().getHypernyms(POS.NOUN, "man"));
+        System.out.println("Hyponyms ****************************");
+        System.out.println(new WordNet().getHyponyms(POS.NOUN, "god"));
+        System.out.println("Words for first synset **************************");
+        System.out.println(new WordNet().getWordsForFirstSynset(POS.NOUN, "man"));
+
     }
 
     public List<String> getBestSynonyms(POS pos, String s) {
@@ -175,6 +181,103 @@ public class WordNet {
         }
 
         return result;
+    }
+
+    /**
+     * Returns a list of lemmas for the most frequent synset of the given word.
+     * @param word word to get synonyms for
+     * @param pos POS of the word to look up
+     * @return list of lemmas of the most frequent synset
+     */
+    public List<String> getWordsForFirstSynset(POS pos, String word) {
+        List<String> result = new ArrayList<>();
+        IndexWord indexWord = null;
+        Synset sense = null;
+
+        try {
+            indexWord = dict.getIndexWord(pos, word);
+            sense = indexWord.getSense(1);
+            for (Word w : sense.getWords()) {
+                result.add(w.getLemma());
+            }
+        }
+        catch (JWNLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a list of words being lemmas of a most frequent synset for the given word or one of its hypernyms.
+     */
+    public List<String> getHypernyms(POS pos, String word) {
+        List<String> result = new ArrayList<>();
+
+        IndexWord indexWord;
+        Synset sense;
+
+        try {
+            indexWord = dict.getIndexWord(pos, word);
+            if (indexWord == null) {
+                return result;
+            }
+            sense = indexWord.getSense(1);
+            for (Word w : sense.getWords()) {
+                result.add(w.getLemma());
+            }
+            PointerTargetNodeList target = PointerUtils.getInstance().getDirectHypernyms(sense);
+            while (target != null && !target.isEmpty()) {
+                for (int i = 0; i < target.size(); i++) {
+                    Synset s = ((PointerTargetNode) target.get(i)).getSynset();
+                    for (Word w : sense.getWords()) {
+                        result.add(w.getLemma());
+                    }
+                }
+                target = PointerUtils.getInstance().getDirectHyponyms(((PointerTargetNode) target.get(0)).getSynset());
+                System.out.println(target);
+            }
+        }
+        catch (JWNLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        return result;
+    }
+
+    public List<String> getHyponyms(POS pos, String s) {
+        ArrayList<String> result = new ArrayList<>();
+        try {
+            IndexWord word = dict.getIndexWord(pos, s);
+            if (word == null) {
+                System.err.println("Unable to find index word for " + s);
+                return result;
+            }
+            Synset sense = word.getSense(1);
+            getHyponymsRecursive(result, sense, 3);
+        }
+        catch (JWNLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return result;
+    }
+
+    public void getHyponymsRecursive(List<String> lemmas, Synset sense, int depthToGo) {
+        for (Word w : sense.getWords()) {
+            lemmas.add(w.getLemma());
+        }
+        if (depthToGo == 0) {
+            return;
+        }
+        try {
+            PointerTargetNodeList directHyponyms = PointerUtils.getInstance().getDirectHyponyms(sense);
+            for (Object directHyponym : directHyponyms) {
+                getHyponymsRecursive(lemmas, ((PointerTargetNode) directHyponym).getSynset(), depthToGo - 1);
+            }
+        }
+        catch (JWNLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     /**

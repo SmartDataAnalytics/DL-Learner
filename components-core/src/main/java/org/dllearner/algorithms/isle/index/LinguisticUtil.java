@@ -97,10 +97,25 @@ public class LinguisticUtil {
     }
 
     /**
-     * Returns an array of all synonyms for the given word. Only synonyms for the POS in {@link #RELEVANT_POS} are
-     * returned.
+     * Iterates through the hypernym tree for the given word at the given POS and returns a list of all lemmas of the
+     * most frequent synsets visited during traversing the tree.
+     * @param word word to get hypernyms for
+     * @param pos POS to get hypernyms for
+     * @return list of all lemmas of all hypernyms for the given word
+     */
+    public String[] getAllHyponymsForWord(String word, POS pos) {
+        ArrayList<String> hyponyms = new ArrayList<>();
+
+        hyponyms.addAll(wn.getHyponyms(pos, word));
+
+        return hyponyms.toArray(new String[hyponyms.size()]);
+    }
+
+    /**
+     * Returns an array of all synonyms for the given word for the given POS.
      *
      * @param word the word to retrieve synonyms for
+     * @param pos  POS to retrieve synonyms for
      * @return synonyms for the given word
      */
     public String[] getSynonymsForWord(String word, POS pos) {

@@ -3,16 +3,8 @@
  */
 package org.dllearner.algorithms.isle;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -23,8 +15,11 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.rdf.model.Model;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -92,7 +87,7 @@ public class DBpediaExperiment extends Experiment{
 				maxNrOfInstancesPerClass));
         
 		documents.clear();
-        documents.add("Thomas Cruise Mapother IV, widely known as Tom Cruise, is an American film actor and producer. He has been nominated for three Academy Awards and has won three Golden Globe Awards. He started his career at age 19 in the 1981 film Taps. His first leading role was in Risky Business, released in August 1983. Cruise became a full-fledged movie star after starring in Top Gun (1986). He is well known for his role as secret agent Ethan Hunt in the Mission: Impossible film series between 1996 and 2011. Cruise has starred in many Hollywood blockbusters, including Rain Man (1988), A Few Good Men (1992), Jerry Maguire (1996), Vanilla Sky (2001), Minority Report (2002), The Last Samurai (2003), Collateral (2004), War of the Worlds (2005), Tropic Thunder (2008) and Jack Reacher (2012). As of 2012, Cruise is Hollywood's highest-paid actor. Cruise is known for his Scientologist faith and for his support of the Church of Scientology.");
+        documents.add("Thomas Cruise Mapother IV, widely known as Tom Cruise, is an American film player and producer. He has been nominated for three Academy Awards and has won three Golden Globe Awards. He started his career at age 19 in the 1981 film Taps. His first leading role was in Risky Business, released in August 1983. Cruise became a full-fledged movie star after starring in Top Gun (1986). He is well known for his role as secret agent Ethan Hunt in the Mission: Impossible film series between 1996 and 2011. Cruise has starred in many Hollywood blockbusters, including Rain Man (1988), A Few Good Men (1992), Jerry Maguire (1996), Vanilla Sky (2001), Minority Report (2002), The Last Samurai (2003), Collateral (2004), War of the Worlds (2005), Tropic Thunder (2008) and Jack Reacher (2012). As of 2012, Cruise is Hollywood's highest-paid actor. Cruise is known for his Scientologist faith and for his support of the Church of Scientology.");
         
         return documents;
 	}
