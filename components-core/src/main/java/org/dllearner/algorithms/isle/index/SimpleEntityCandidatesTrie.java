@@ -1,6 +1,7 @@
 package org.dllearner.algorithms.isle.index;
 
 import net.didion.jwnl.data.POS;
+import org.dllearner.algorithms.isle.WordNet;
 import org.dllearner.algorithms.isle.textretrieval.EntityTextRetriever;
 import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -89,15 +90,16 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
                 continue;
             }
             //String[] synonyms = LinguisticUtil.getInstance().getSynonymsForWord(t.getRawForm(), wordnetPos);
-            String[] synonyms = LinguisticUtil.getInstance().getAllHyponymsForWord(t.getRawForm(), wordnetPos);
+            Set<WordNet.LemmaScorePair> alternativeFormPairs = LinguisticUtil.getInstance()
+                    .getScoredHyponyms(t.getRawForm(), wordnetPos);
 
-            for (String synonym : synonyms) {
+            for (WordNet.LemmaScorePair synonym : alternativeFormPairs) {
                 // ignore all multi word synonyms
-                if (synonym.contains("_")) {
+                if (synonym.getLemma().contains("_")) {
                     continue;
                 }
                 //t.addAlternativeForm(LinguisticUtil.getInstance().getNormalizedForm(synonym));
-                t.addAlternativeForm(synonym);
+                t.addAlternativeForm(synonym.getLemma(), synonym.getScore());
             }
         }
     }
@@ -113,8 +115,13 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
 	@Override
 	public Set<Entity> getCandidateEntities(List<Token> tokens) {
-        return tree.getAllEntities(tokens);
-	}
+        Set<Entity> res = tree.getAllEntities(tokens);
+        System.out.println("Unscored: " + res);
+        Set<EntityScorePair> scored = tree.getAllEntitiesScored(tokens);
+        System.out.println("Scored: " + scored);
+
+        return res;
+    }
 
 	@Override
 	public List<Token> getGeneratingStringForLongestMatch(List<Token> tokens) {

@@ -13,6 +13,9 @@ import java.util.*;
  * @author Daniel Fleischhacker
  */
 public class TokenTree {
+    public static final double WORDNET_FACTOR = 0.3d;
+    public static final double ORIGINAL_FACTOR = 1.0d;
+
     private LinkedHashMap<Token, TokenTree> children;
     private Set<Entity> entities;
     private List<Token> originalTokens;
@@ -23,14 +26,15 @@ public class TokenTree {
         this.entities = new HashSet<>();
         this.originalTokens = new ArrayList<>();
     }
-    
+
     /**
      * If set to TRUE, stopwords like 'of, on' are ignored during creation and retrieval operations.
-	 * @param ignoreStopWords the ignoreStopWords to set
-	 */
-	public void setIgnoreStopWords(boolean ignoreStopWords) {
-		this.ignoreStopWords = ignoreStopWords;
-	}
+     *
+     * @param ignoreStopWords the ignoreStopWords to set
+     */
+    public void setIgnoreStopWords(boolean ignoreStopWords) {
+        this.ignoreStopWords = ignoreStopWords;
+    }
 
     /**
      * Adds all given entities to the end of the path resulting from the given tokens.
@@ -41,14 +45,14 @@ public class TokenTree {
     public void add(List<Token> tokens, Set<Entity> entities, List<Token> originalTokens) {
         TokenTree curNode = this;
         for (Token t : tokens) {
-        	if(!ignoreStopWords || (ignoreStopWords && !t.isStopWord())){
-        		TokenTree nextNode = curNode.children.get(t);
+            if (!ignoreStopWords || (ignoreStopWords && !t.isStopWord())) {
+                TokenTree nextNode = curNode.children.get(t);
                 if (nextNode == null) {
                     nextNode = new TokenTree();
                     curNode.children.put(t, nextNode);
                 }
                 curNode = nextNode;
-        	} 
+            }
         }
         curNode.entities.addAll(entities);
         curNode.originalTokens = new ArrayList<>(originalTokens);
@@ -88,6 +92,75 @@ public class TokenTree {
             curNode = nextNode;
         }
         return curNode.entities;
+    }
+
+    public Set<EntityScorePair> getAllEntitiesScored(List<Token> tokens) {
+        HashSet<EntityScorePair> resEntities = new HashSet<>();
+        getAllEntitiesScoredRec(tokens, 0, this, resEntities, 1.0);
+
+        // only keep highest confidence for each entity
+        HashMap<Entity, Double> entityScores = new HashMap<>();
+
+        for (EntityScorePair p : resEntities) {
+            if (!entityScores.containsKey(p.getEntity())) {
+                entityScores.put(p.getEntity(), p.getScore());
+            }
+            else {
+                entityScores.put(p.getEntity(), Math.max(p.getScore(), entityScores.get(p.getEntity())));
+            }
+        }
+
+        TreeSet<EntityScorePair> result = new TreeSet<>();
+        for (Map.Entry<Entity, Double> e : entityScores.entrySet()) {
+            result.add(new EntityScorePair(e.getKey(), e.getValue()));
+        }
+
+        return result;
+    }
+
+    public void getAllEntitiesScoredRec(List<Token> tokens, int curPosition, TokenTree curTree,
+                                        HashSet<EntityScorePair> resEntities, Double curScore) {
+
+        if (curPosition == tokens.size()) {
+            for (Entity e : curTree.entities) {
+                resEntities.add(new EntityScorePair(e, curScore));
+            }
+            return;
+        }
+        Token currentTextToken = tokens.get(curPosition);
+        for (Map.Entry<Token, TokenTree> treeTokenEntry : curTree.children.entrySet()) {
+            if (currentTextToken.equals(treeTokenEntry.getKey())) {
+                getAllEntitiesScoredRec(tokens, curPosition + 1, treeTokenEntry.getValue(), resEntities,
+                        curScore * ORIGINAL_FACTOR);
+            }
+            else {
+                for (Map.Entry<String, Double> treeAlternativeForm : treeTokenEntry.getKey().getScoredAlternativeForms()
+                        .entrySet()) {
+                    if (currentTextToken.getStemmedForm().equals(treeAlternativeForm.getKey())) {
+                        getAllEntitiesScoredRec(tokens, curPosition + 1, treeTokenEntry.getValue(), resEntities,
+                                curScore * ORIGINAL_FACTOR * treeAlternativeForm.getValue());
+                    }
+                }
+                for (Map.Entry<String, Double> textAlternativeForm : currentTextToken.getScoredAlternativeForms()
+                        .entrySet()) {
+                    if (treeTokenEntry.getKey().getStemmedForm().equals(textAlternativeForm.getKey())) {
+                        getAllEntitiesScoredRec(tokens, curPosition + 1, treeTokenEntry.getValue(), resEntities,
+                                curScore * ORIGINAL_FACTOR * textAlternativeForm.getValue());
+                    }
+                }
+
+                for (Map.Entry<String, Double> treeAlternativeForm : treeTokenEntry.getKey().getScoredAlternativeForms()
+                        .entrySet()) {
+                    for (Map.Entry<String, Double> textAlternativeForm : currentTextToken.getScoredAlternativeForms()
+                            .entrySet()) {
+                        if (treeAlternativeForm.getKey().equals(textAlternativeForm.getKey())) {
+                            getAllEntitiesScoredRec(tokens, curPosition + 1, treeTokenEntry.getValue(), resEntities,
+                                    curScore * treeAlternativeForm.getValue() * textAlternativeForm.getValue());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public Set<Entity> getAllEntities(List<Token> tokens) {
@@ -145,7 +218,8 @@ public class TokenTree {
 
     /**
      * Returns the set of entities assigned to the longest matching token subsequence of the given token sequence.
-     * @param tokens    token sequence to search for longest match
+     *
+     * @param tokens token sequence to search for longest match
      * @return set of entities assigned to the longest matching token subsequence of the given token sequence
      */
     public Set<Entity> getEntitiesForLongestMatch(List<Token> tokens) {
@@ -188,34 +262,37 @@ public class TokenTree {
     }
 
     public static void main(String[] args) throws Exception {
-    	List<Token> tokens1 = Lists.newLinkedList();
-    	for (String s : Splitter.on(" ").split("this is a token tree")) {
-			tokens1.add(new Token(s, s, s, false, false));
-		};
-		
-		List<Token> tokens2 = Lists.newLinkedList();
-    	for (String s : Splitter.on(" ").split("this is a tokenized tree")) {
-			tokens2.add(new Token(s, s, s, false, false));
-		};
-		
-		TokenTree tree = new TokenTree();
-		tree.add(tokens1, new NamedClass("TokenTree"));
-		tree.add(tokens2, new NamedClass("TokenizedTree"));
+        List<Token> tokens1 = Lists.newLinkedList();
+        for (String s : Splitter.on(" ").split("this is a token tree")) {
+            tokens1.add(new Token(s, s, s, false, false));
+        }
+        ;
+
+        List<Token> tokens2 = Lists.newLinkedList();
+        for (String s : Splitter.on(" ").split("this is a tokenized tree")) {
+            tokens2.add(new Token(s, s, s, false, false));
+        }
+        ;
+
+        TokenTree tree = new TokenTree();
+        tree.add(tokens1, new NamedClass("TokenTree"));
+        tree.add(tokens2, new NamedClass("TokenizedTree"));
         System.out.println(tree);
-        
+
         System.out.println(tree.getEntitiesForLongestMatch(tokens1));
         System.out.println(tree.getLongestMatch(tokens1));
-        
+
         List<Token> tokens3 = Lists.newLinkedList();
-    	for (String s : Splitter.on(" ").split("this is a very nice tokenized tree")) {
-			tokens3.add(new Token(s, s, s, false, false));
-		};
+        for (String s : Splitter.on(" ").split("this is a very nice tokenized tree")) {
+            tokens3.add(new Token(s, s, s, false, false));
+        }
+        ;
         System.out.println(tree.getLongestMatch(tokens3));
     }
 
-    
+
     public String toString() {
-        return "TokenTree\n"+ toString(0);
+        return "TokenTree\n" + toString(0);
     }
 
     public String toString(int indent) {
@@ -233,5 +310,5 @@ public class TokenTree {
         return sb.toString();
     }
 
-    
+
 }
