@@ -408,22 +408,22 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 	
 	public boolean isFunctional(ObjectProperty property){
-		String query = "ASK {<" + property + "> a " + OWL.FunctionalProperty.getURI() + "}";
+		String query = "ASK {<" + property + "> a <" + OWL.FunctionalProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
 	public boolean isInverseFunctional(ObjectProperty property){
-		String query = "ASK {<" + property + "> a " + OWL.InverseFunctionalProperty.getURI() + "}";
+		String query = "ASK {<" + property + "> a <" + OWL.InverseFunctionalProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
 	public boolean isAsymmetric(ObjectProperty property){
-		String query = "ASK {<" + property + "> a " + OWL2.AsymmetricProperty.getURI() + "}";
+		String query = "ASK {<" + property + "> a <" + OWL2.AsymmetricProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
 	public boolean isIrreflexive(ObjectProperty property){
-		String query = "ASK {<" + property + "> a " + OWL2.IrreflexiveProperty.getURI() + "}";
+		String query = "ASK {<" + property + "> a <" + OWL2.IrreflexiveProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 
