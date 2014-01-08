@@ -27,6 +27,10 @@ public class NoiseSensitiveLGG<N> {
 	private SortedSet<EvaluatedQueryTree<N>> solutions;
 	
 	private double currentlyBestScore = 0d;
+
+	private List<QueryTree<N>> posExamples;
+
+	private List<QueryTree<N>> negExamples;
 	
 	public NoiseSensitiveLGG() {
 	}
@@ -36,7 +40,11 @@ public class NoiseSensitiveLGG<N> {
 	}
 	
 	public List<EvaluatedQueryTree<N>> computeLGG(List<QueryTree<N>> posExamples, List<QueryTree<N>> negExamples){
+		this.posExamples = posExamples;
+		this.negExamples = negExamples;
+		
 		currentlyBestScore = 0d;
+		
 		Monitor subMon = MonitorFactory.getTimeMonitor("subsumption-mon");
 		Monitor lggMon = MonitorFactory.getTimeMonitor("lgg-mon");
 		init(posExamples, negExamples);
@@ -51,23 +59,14 @@ public class NoiseSensitiveLGG<N> {
 				lggMon.start();
 				QueryTree<N> lgg = lggGenerator.getLGG(tree, example);
 				lggMon.stop();
-				//compute positive examples which are not covered by LGG
-				Collection<QueryTree<N>> uncoveredPositiveExamples = getUncoveredTrees(lgg, posExamples);
-				//compute negative examples which are covered by LGG
-				Collection<QueryTree<N>> coveredNegativeExamples = getCoveredTrees(lgg, negExamples);
-				//compute score
-				int coveredPositiveExamples = posExamples.size() - uncoveredPositiveExamples.size();
-				double recall = coveredPositiveExamples / (double)posExamples.size();
-				double precision = (coveredNegativeExamples.size() + coveredPositiveExamples == 0) 
-								? 0 
-								: coveredPositiveExamples / (double)(coveredPositiveExamples + coveredNegativeExamples.size());
 				
-				double score = Heuristics.getFScore(recall, precision);
-				if(score > currentlyBestScore){
+				//evaluate the LGG
+				EvaluatedQueryTree<N> solution = evaluate(lgg);
+				
+				if(solution.getScore() > currentlyBestScore){
 					//add to todo list, if not already contained in todo list or solution list
-					EvaluatedQueryTree<N> solution = new EvaluatedQueryTree<N>(lgg, uncoveredPositiveExamples, coveredNegativeExamples, score);
 					todo(solution);
-					currentlyBestScore = score;
+					currentlyBestScore = solution.getScore();
 				}
 				
 			}
@@ -81,6 +80,25 @@ public class NoiseSensitiveLGG<N> {
 		logger.trace("Avg. subsumption test time: " + subMon.getAvg() + "ms");
 		logger.trace("#Subsumption tests: " + subMon.getHits());
 		return new ArrayList<EvaluatedQueryTree<N>>(solutions);
+	}
+	
+	private EvaluatedQueryTree<N> evaluate(QueryTree<N> lgg){
+		//compute positive examples which are not covered by LGG
+		Collection<QueryTree<N>> uncoveredPositiveExamples = getUncoveredTrees(lgg, posExamples);
+		//compute negative examples which are covered by LGG
+		Collection<QueryTree<N>> coveredNegativeExamples = getCoveredTrees(lgg, negExamples);
+		//compute score
+		int coveredPositiveExamples = posExamples.size() - uncoveredPositiveExamples.size();
+		double recall = coveredPositiveExamples / (double)posExamples.size();
+		double precision = (coveredNegativeExamples.size() + coveredPositiveExamples == 0) 
+						? 0 
+						: coveredPositiveExamples / (double)(coveredPositiveExamples + coveredNegativeExamples.size());
+		
+		double score = Heuristics.getFScore(recall, precision);
+		
+		EvaluatedQueryTree<N> solution = new EvaluatedQueryTree<N>(lgg, uncoveredPositiveExamples, coveredNegativeExamples, score);
+		
+		return solution;
 	}
 	
 	/**

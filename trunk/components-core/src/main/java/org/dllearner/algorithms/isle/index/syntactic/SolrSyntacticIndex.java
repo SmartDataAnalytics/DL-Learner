@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.isle.index.syntactic;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,8 @@ public class SolrSyntacticIndex implements Index{
 	private String searchField;
 	
 	long totalNumberOfDocuments = -1;
+	
+	Map<Entity, Long> cache = new HashMap<>();
 	
 	public SolrSyntacticIndex(OWLOntology ontology, String solrServerURL, String searchField) {
 		this.searchField = searchField;
@@ -102,6 +105,9 @@ public class SolrSyntacticIndex implements Index{
 	 */
 	@Override
 	public long getNumberOfDocumentsFor(Entity entity) {
+		if(cache.containsKey(entity)){
+			return cache.get(entity);
+		}
 		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
 		
 		String queryString = "(";
@@ -123,6 +129,7 @@ public class SolrSyntacticIndex implements Index{
     	try {
 			QueryResponse response = solr.query(query);
 			SolrDocumentList list = response.getResults();
+			cache.put(entity, list.getNumFound());
 			return list.getNumFound();
 		} catch (SolrServerException e) {
 			e.printStackTrace();

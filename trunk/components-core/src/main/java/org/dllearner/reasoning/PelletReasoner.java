@@ -1448,7 +1448,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 				concepts.add(new Thing());
 			} else if(concept.isOWLNothing()) {
 				concepts.add(new Nothing());
-			} else {
+			} else if(!concept.isBuiltIn() && !concept.getIRI().isReservedVocabulary()){
 				concepts.add(new NamedClass(concept.toStringID()));
 			}
 		}

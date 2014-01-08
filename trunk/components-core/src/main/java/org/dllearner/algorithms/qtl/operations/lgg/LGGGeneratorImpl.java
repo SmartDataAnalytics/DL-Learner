@@ -131,11 +131,11 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			logger.debug(tree2.getStringRepresentation());
 		}
 		
-		
 		QueryTree<N> lgg;
 		//firstly, we check if both root nodes are resource nodes and have the same URI, i.e. the trees describe the same resource 
 		//if YES all child nodes should be also the same and we can just return one of the two tree as LGG
-		if(tree1.isResourceNode() && tree2.isResourceNode() && tree1.getUserObject().equals(tree2.getUserObject())){
+		if((tree1.isResourceNode() && tree2.isResourceNode() || tree1.isLiteralNode() && tree2.isLiteralNode()) 
+				&& tree1.getUserObject().equals(tree2.getUserObject())){
 			if(logger.isDebugEnabled()){
 				logger.debug("Early termination. Tree 1(" + tree1 + ") and tree 2(" + tree2 + ") describe the same resource.");
 			}
@@ -171,7 +171,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			lgg.setUserObject((N)"?");
 			lgg.setIsLiteralNode(false);
 			lgg.setIsResourceNode(false);
-		}
+		} 
 		
 		if(tree1.isLiteralNode() && tree2.isLiteralNode()){
 			RDFDatatype d1 = tree1.getDatatype();

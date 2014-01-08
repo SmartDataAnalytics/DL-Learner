@@ -81,6 +81,8 @@ public abstract class Experiment {
 	private boolean initialized = false;
 	private RhoDRDown operator;
 
+	protected NamedClass classToDescribe;
+
 	
 	protected abstract OWLOntology getOntology();
 	protected abstract Set<String> getDocuments();
@@ -101,7 +103,10 @@ public abstract class Experiment {
 			logger.info("Index created.");
 //			
 //			// set the relevance metric
-			relevance = new PMIRelevanceMetric(index);
+			if(index != null){
+				relevance = new PMIRelevanceMetric(index);
+			}
+			
 			try {
 				// set KB
 				KnowledgeSource ks = new OWLAPIOntology(ontology);
@@ -231,9 +236,10 @@ public abstract class Experiment {
 	 * @throws ComponentInitException
 	 */
 	public void run(NamedClass cls) throws ComponentInitException {
+		this.classToDescribe = cls;
 		initIfNecessary();
 		
-		logger.info("Learning definiton of class " + cls);
+		logger.info("Learning definition of class " + cls);
 //		lp.setClassToDescribe(cls);
 		//get the positive examples, here just the instances of the class to describe
 		SortedSet<Individual> individuals = reasoner.getIndividuals(cls);
@@ -243,8 +249,12 @@ public abstract class Experiment {
 		//get the start class for the learning algorithms
 		Description startClass = getStartClass(cls, equivalence, true);
 		
-		Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
-		NLPHeuristic heuristic = new NLPHeuristic(entityRelevance);
+		NLPHeuristic heuristic = null;
+		if(relevance != null){
+			Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
+			heuristic = new NLPHeuristic(entityRelevance);
+		}
+		
 		
 		ClassLearningProblem clp = new ClassLearningProblem(reasoner);
 		clp.setClassToDescribe(cls);
@@ -258,7 +268,10 @@ public abstract class Experiment {
 		
 		// perform cross validation with ISLE
 		ISLE isle = new ISLE(clp, reasoner);
-		isle.setHeuristic(heuristic);
+		if(heuristic != null){
+			isle.setHeuristic(heuristic);
+		}
+		
 		isle.setMaxNrOfResults(20);
 		isle.setOperator(rop);
 		isle.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
