@@ -95,7 +95,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     private boolean isResourceNode = false;
     private boolean isBlankNode = false;
     
-    private List<Literal> literals = new ArrayList<Literal>();
+    private Set<Literal> literals = new HashSet<Literal>();
     
 
     public QueryTreeImpl(N userObject) {
@@ -107,6 +107,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
             public String render(QueryTree<N> object) {
             	String label = object.toString() + "(" + object.getId() + ")";
             	if(object.isLiteralNode()){
+//            		if(object.getLiterals().size() == 1){
+//            			label += object.getLiterals().iterator().next();
+//            		} else if(object.getLiterals().size() > 1){
+//            			label += "Values: " + object.getLiterals();
+//            		}
             		if(!object.getLiterals().isEmpty()){
             			label += "Values: " + object.getLiterals();
             		}
@@ -809,7 +814,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	} 
     }
     
-    private String getFilter(String varName, List<Literal> literals){
+    private String getFilter(String varName, Set<Literal> literals){
     	String filter = "FILTER(";
     	
     	Literal min = getMin(literals);
@@ -824,7 +829,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return filter;
     }
     
-    private Literal getMin(List<Literal> literals){
+    private Literal getMin(Set<Literal> literals){
     	Iterator<Literal> iter = literals.iterator();
     	Literal min = iter.next();
     	Literal l;
@@ -841,7 +846,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return min;
     }
     
-    private Literal getMax(List<Literal> literals){
+    private Literal getMax(Set<Literal> literals){
     	Iterator<Literal> iter = literals.iterator();
     	Literal max = iter.next();
     	Literal l;
@@ -928,7 +933,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	literals.add(l);
     }
     
-    public List<Literal> getLiterals() {
+    public Set<Literal> getLiterals() {
 		return literals;
 	}
     
@@ -939,7 +944,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     public RDFDatatype getDatatype(){
     	if(isLiteralNode){
     		if(!literals.isEmpty()){
-    			return literals.get(0).getDatatype();
+    			return literals.iterator().next().getDatatype();
     		} else {
     			return null;
     		}
@@ -972,7 +977,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			if(child.isLiteralNode()){
     				OWLDataProperty p = df.getOWLDataProperty(IRI.create((String) tree.getEdge(child)));
     				if(childLabel.equals("?")){
-    					List<Literal> literals = child.getLiterals();
+    					Set<Literal> literals = child.getLiterals();
             			Literal lit = literals.iterator().next();
             			RDFDatatype datatype = lit.getDatatype();
             			String datatypeURI;
@@ -983,7 +988,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
             			}
             			classExpressions.add(df.getOWLDataSomeValuesFrom(p, df.getOWLDatatype(IRI.create(datatypeURI))));
     				} else {
-    					List<Literal> literals = child.getLiterals();
+    					Set<Literal> literals = child.getLiterals();
             			Literal lit = literals.iterator().next();
             			RDFDatatype datatype = lit.getDatatype();
             			OWLLiteral owlLiteral;

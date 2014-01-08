@@ -147,6 +147,6 @@ public interface QueryTree<N> {
     
     RDFDatatype getDatatype();
     
-    List<Literal> getLiterals();
+    Set<Literal> getLiterals();
     
 }

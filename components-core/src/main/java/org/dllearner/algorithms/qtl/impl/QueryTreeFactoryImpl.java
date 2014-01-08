@@ -221,7 +221,12 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 				}
 			};
 		}
-		Iterator<Statement> it = model.listStatements(s, null, (RDFNode)null).filterKeep(nsFilter);
+		Iterator<Statement> it;
+		if(nsFilter != null){
+			it = model.listStatements(s, null, (RDFNode)null).filterKeep(nsFilter);
+		} else {
+			it = model.listStatements(s, null, (RDFNode)null);
+		}
 		
 		Statement st;
 		SortedSet<Statement> statements;

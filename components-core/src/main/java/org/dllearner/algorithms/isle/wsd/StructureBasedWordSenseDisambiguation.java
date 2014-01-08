@@ -3,21 +3,28 @@
  */
 package org.dllearner.algorithms.isle.wsd;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.dllearner.algorithms.isle.StructuralEntityContext;
 import org.dllearner.algorithms.isle.VSMCosineDocumentSimilarity;
 import org.dllearner.algorithms.isle.index.Annotation;
 import org.dllearner.algorithms.isle.index.EntityScorePair;
 import org.dllearner.algorithms.isle.index.SemanticAnnotation;
+import org.dllearner.algorithms.isle.index.Token;
+import org.dllearner.algorithms.isle.textretrieval.AnnotationEntityTextRetriever;
+import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
 import org.dllearner.core.owl.Entity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 
 /**
  * @author Lorenz Buehmann
@@ -26,6 +33,7 @@ import java.util.Set;
 public class StructureBasedWordSenseDisambiguation extends WordSenseDisambiguation{
 
 	private ContextExtractor contextExtractor;
+	private AnnotationEntityTextRetriever textRetriever;
 
 	/**
 	 * @param ontology
@@ -33,6 +41,8 @@ public class StructureBasedWordSenseDisambiguation extends WordSenseDisambiguati
 	public StructureBasedWordSenseDisambiguation(ContextExtractor contextExtractor, OWLOntology ontology) {
 		super(ontology);
 		this.contextExtractor = contextExtractor;
+		
+		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 	}
 
 	/* (non-Javadoc)
@@ -40,6 +50,41 @@ public class StructureBasedWordSenseDisambiguation extends WordSenseDisambiguati
 	 */
 	@Override
 	public SemanticAnnotation disambiguate(Annotation annotation, Set<EntityScorePair> candidateEntities) {
+		//filter out candidates for which the head noun does not match with the annotated token
+		for (Iterator<EntityScorePair> iterator = candidateEntities.iterator(); iterator.hasNext();) {
+			EntityScorePair entityPair = iterator.next();
+			Entity entity = entityPair.getEntity();
+			
+			Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
+			
+			boolean matched = false;
+			
+			for (Entry<List<Token>, Double> entry : relevantText.entrySet()) {
+				List<Token> tokens = entry.getKey();
+				
+				
+				for (Token token : tokens) {
+					if(token.isHead()){
+						for (Token annotatedToken : annotation.getTokens()) {
+							if(token.getRawForm().equals(annotatedToken.getRawForm())){
+								matched = true;
+							}
+						}
+					}
+				}
+				
+			}
+			
+			if(!matched){
+				iterator.remove();
+			}
+		}
+		
+		System.out.println(annotation);
+		for (EntityScorePair entityScorePair : candidateEntities) {
+			System.out.println(entityScorePair);
+		}
+		
 		if(!candidateEntities.isEmpty()){
 			//get the context of the annotated token
 			List<String> tokenContext = contextExtractor.extractContext(annotation);

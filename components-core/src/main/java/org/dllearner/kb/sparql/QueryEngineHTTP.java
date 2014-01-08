@@ -268,7 +268,7 @@ public class QueryEngineHTTP implements QueryExecution
     private Model execModel(Model model)
     {
         HttpQuery httpQuery = makeHttpQuery() ;
-        httpQuery.setAccept(WebContent.contentTypeTurtleAlt1) ;
+        httpQuery.setAccept(WebContent.contentTypeRDFXML) ;
         InputStream in = httpQuery.exec() ;
         
         //Don't assume the endpoint actually gives back the content type we asked for
@@ -284,7 +284,7 @@ public class QueryEngineHTTP implements QueryExecution
         //Try to select language appropriately here based on the model content type
         Lang lang = WebContent.contentTypeToLang(actualContentType);
         if (! RDFLanguages.isTriples(lang))  throw new QueryException("Endpoint returned Content Type: " + actualContentType + " which is not a valid RDF Graph syntax");
-        model.read(in, null, Lang.TURTLE.getName()) ; 
+        model.read(in, null, Lang.RDFXML.getName()) ; 
         
         return model ;
     }

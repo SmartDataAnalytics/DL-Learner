@@ -232,7 +232,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	
 	private void runSPARQL1_0_Mode() {
 		workingModel = ModelFactory.createDefaultModel();
-		int limit = 1000;
+		int limit = 10000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s a ?type.} WHERE {?s <%s> ?o. ?s a ?type.} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
@@ -246,7 +246,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 			int all = 1;
 			while (rs.hasNext()) {
 				qs = rs.next();
-				all = qs.getLiteral("all").getInt();
+				all = qs.getLiteral("all").getInt();System.out.println(all);
 			}
 			
 			// get class and number of instances
@@ -318,19 +318,36 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		
 		ObjectPropertyDomainAxiomLearner2 l = new ObjectPropertyDomainAxiomLearner2(ks);
 		l.setReasoner(reasoner);
-		for (ObjectProperty p : reasoner.getOWLObjectProperties("http://dbpedia.org/ontology/")) {
-			System.out.println(p);
-			l.setPropertyToDescribe(p);
-			l.setMaxExecutionTimeInSeconds(10);
-			l.addFilterNamespace("http://dbpedia.org/ontology/");
-//			l.setReturnOnlyNewAxioms(true);
-			l.init();
-//			l.start();
-			l.run();
-			List<EvaluatedAxiom> axioms = l.getCurrentlyBestEvaluatedAxioms(10, 0.5);
-//			System.out.println(axioms);
-			System.out.println(l.getBestEvaluatedAxiom());
-		}
+		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/birthPlace"));
+		l.setMaxExecutionTimeInSeconds(20);
+		l.addFilterNamespace("http://dbpedia.org/ontology/");
+		l.init();
+		l.start();
+//		l.run();
+		System.out.println(l.getBestEvaluatedAxiom());
+		
+		ObjectPropertyDomainAxiomLearner l2 = new ObjectPropertyDomainAxiomLearner(ks);
+		l2.setReasoner(reasoner);
+		l2.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/birthPlace"));
+		l2.setMaxExecutionTimeInSeconds(10);
+		l2.addFilterNamespace("http://dbpedia.org/ontology/");
+		l2.init();
+		l2.start();
+		System.out.println(l2.getCurrentlyBestEvaluatedAxioms(0.2));
+		System.out.println(l2.getBestEvaluatedAxiom());
+//		for (ObjectProperty p : reasoner.getOWLObjectProperties("http://dbpedia.org/ontology/")) {
+//			System.out.println(p);
+//			l.setPropertyToDescribe(p);
+//			l.setMaxExecutionTimeInSeconds(10);
+//			l.addFilterNamespace("http://dbpedia.org/ontology/");
+////			l.setReturnOnlyNewAxioms(true);
+//			l.init();
+////			l.start();
+//			l.run();
+//			List<EvaluatedAxiom> axioms = l.getCurrentlyBestEvaluatedAxioms(10, 0.5);
+////			System.out.println(axioms);
+//			System.out.println(l.getBestEvaluatedAxiom());
+//		}
 		
 		
 //		for(EvaluatedAxiom axiom : axioms){
