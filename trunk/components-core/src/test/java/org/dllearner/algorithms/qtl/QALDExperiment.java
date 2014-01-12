@@ -29,9 +29,12 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
+import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
+import org.dllearner.algorithms.qtl.operations.lgg.NoiseSensitiveLGG;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
@@ -43,16 +46,23 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.clarkparsia.pellet.rules.LiteralFilter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
  * @author Lorenz Buehmann
@@ -64,9 +74,9 @@ public class QALDExperiment {
 	private static final Logger logger = Logger.getLogger(QALDExperiment.class.getName());
 	
 	List<String> datasetFiles = Lists.newArrayList(
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald1/dbpedia-train.xml"
-//			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/3/dbpedia-train.xml",
-//			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/3/dbpedia-test.xml"
+//			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald1/dbpedia-train.xml",
+			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/3/dbpedia-train.xml",
+			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/3/dbpedia-test.xml"
 			);
 	
 	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
@@ -77,13 +87,14 @@ public class QALDExperiment {
 	QueryExecutionFactory qef;
 	String cacheDirectory = "cache";
 	
-	int minNrOfPositiveExamples = 3;
+	int minNrOfPositiveExamples = 5;
 	int maxDepth = 2;
-	double noise = 0d;
+	double noise = 0.4d;
 	
 	QueryTreeFactory<String> queryTreeFactory;
 	ConciseBoundedDescriptionGenerator cbdGen;
-	private LGGGenerator<String> lggGenerator;
+//	private LGGGenerator<String> lggGenerator;
+	private NoiseSensitiveLGG<String> lggGenerator;
 	
 	
 	public QALDExperiment() {
@@ -104,10 +115,12 @@ public class QALDExperiment {
 		queryTreeFactory = new QueryTreeFactoryImpl();
 		queryTreeFactory.addAllowedNamespaces(allowedNamespaces);
 		queryTreeFactory.addIgnoredPropperties(ignoredProperties);
-		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint);
+		queryTreeFactory.setMaxDepth(maxDepth);
+		
+		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDirectory);
 		cbdGen.setRecursionDepth(maxDepth);
 		
-		lggGenerator = new LGGGeneratorImpl<String>();
+		lggGenerator = new NoiseSensitiveLGG<>();// LGGGeneratorImpl<String>();
 	}
 	
 	public void run(){
@@ -120,21 +133,24 @@ public class QALDExperiment {
 		
 		for (String sparqlQuery : sparqlQueries) {
 			try {
-				//generate a set of examples as input for the learning algorithm
-				Set<String> examples = generateExamples(sparqlQuery, noise);
-				
-				if(examples.size() >= minNrOfPositiveExamples){
 					logger.info("Processing query\n" + sparqlQuery);
 					
 					//convert examples to query trees
-					List<QueryTree<String>> queryTrees = getQueryTrees(examples);
+					List<QueryTree<String>> queryTrees = generateExamples(sparqlQuery, noise);
+					for (QueryTree<String> queryTree : queryTrees) {
+						logger.info(queryTree.getStringRepresentation());
+					}
 					
 					//run LGG
-					QueryTree<String> lgg = lggGenerator.getLGG(queryTrees);
-					logger.info("Computed LGG:\n" + lgg.getStringRepresentation());
+					List<EvaluatedQueryTree<String>> lggs = lggGenerator.computeLGG(queryTrees);
+					EvaluatedQueryTree<String> bestLGG = lggs.get(0);
+					logger.info("Got " + lggs.size() + " LGG query trees. Best computed LGG:\n" + bestLGG);
+					
+					//find the best extensionally matching tree in the list
+					EvaluatedQueryTree<String> bestTree = findBestMatchingTree(lggs, sparqlQuery);
 					
 					//convert to SPARQL query
-					String learnedSPARQLQuery = lgg.toSPARQLQueryString(true, false);
+					String learnedSPARQLQuery = bestLGG.getTree().toSPARQLQueryString(true, false);
 					logger.info("Learned Query:\n" + learnedSPARQLQuery);
 					
 					
@@ -148,7 +164,6 @@ public class QALDExperiment {
 					fMeasureStats.addValue(fmeasure);
 					
 					logger.info(String.format("P=%f\nR=%f\nF-Score=%f", precision, recall, fmeasure));
-				}
 			} catch (Exception e) {
 				logger.error("Error occured.", e);
 			}
@@ -158,9 +173,25 @@ public class QALDExperiment {
 		logger.info("Overall FMeasure:\n" + fMeasureStats);
 	}
 	
-	private Set<String> generateExamples(String sparqlQuery, double noise){
-		Set<String> examples = new TreeSet<>();
-		
+	private EvaluatedQueryTree<String> findBestMatchingTree(List<EvaluatedQueryTree<String>> trees, String targetSPARQLQuery){
+		logger.info("Finding best matching query tree...");
+		//get the tree with the highest fmeasure
+		EvaluatedQueryTree<String> bestTree = null;
+		double bestFMeasure = -1;
+		for (EvaluatedQueryTree<String> tree : trees) {
+			String learnedSPARQLQuery = tree.getTree().toSPARQLQueryString();
+			System.out.println(learnedSPARQLQuery);
+			System.out.println(tree.getScore());
+			double fMeasure = fMeasure(targetSPARQLQuery, learnedSPARQLQuery);
+			if(fMeasure > bestFMeasure){
+				bestTree = tree;
+			}
+			System.out.println(fMeasure);
+		}
+		return bestTree;
+	}
+	
+	private List<QueryTree<String>> generateExamples(String sparqlQuery, double noise){
 		//get all resources returned by the query
 		List<String> resources = getResult(sparqlQuery);
 		
@@ -169,22 +200,81 @@ public class QALDExperiment {
 		
 		//pick some positive examples from the list
 		List<String> positiveExamples = resources.subList(0, Math.min(minNrOfPositiveExamples, resources.size()));
+		if(positiveExamples.size() < minNrOfPositiveExamples){
+			return new ArrayList<>();
+		}
 		
-		//add some noise
-		///TODO
+		//convert examples to query trees
+		List<QueryTree<String>> queryTrees = getQueryTrees(positiveExamples);
 		
-		examples.addAll(positiveExamples);
-		return examples;
+		//add some noise, i.e.
+		//a)add wrong negative examples
+		//b)take positive examples and modify relevant attributes
+		Random randomGen = new Random(123);
+		TriplePatternExtractor triplePatternExtractor = new TriplePatternExtractor();
+		List<Triple> triplePatterns = new ArrayList<Triple>(triplePatternExtractor.extractTriplePattern(QueryFactory.create(sparqlQuery, Syntax.syntaxARQ)));
+		for (QueryTree<String> queryTree : queryTrees) {
+			double rnd = randomGen.nextDouble();
+			if(rnd <= noise){
+				//pick a random property to modify
+				Collections.shuffle(triplePatterns, randomGen);
+				Triple triplePattern = triplePatterns.get(0);
+				String predicate = triplePattern.getPredicate().getURI();
+				Node object = triplePattern.getObject();
+				logger.info("Modifying edge <" + queryTree + ", " + predicate + ", " + object + ">");
+				//get the corresponding edge in the tree
+				Set<Object> edges = queryTree.getEdges();
+				for (Object edge : edges) {
+					if (predicate.equals(edge)) {
+						List<QueryTree<String>> children = queryTree.getChildren(edge);
+						for (QueryTree<String> child : children) {
+							if (child.getUserObject().replace("<", "").replace(">", "").equals(object.toString())) {
+								if (child.isResourceNode()) {
+									QueryTree<String> similarTree = getSimilarTree(child, predicate, 1);
+									if (similarTree != null) {
+										int id = child.getId();
+										queryTree.removeChild((QueryTreeImpl<String>) child);
+										similarTree.setId(id);
+										queryTree.addChild((QueryTreeImpl<String>) similarTree, edge);
+									} else {
+										child.setUserObject("http://dl-learner.org/qtl#noiseModification");
+									}
+								} else if (child.isLiteralNode()) {
+									child.setUserObject("\"-999999\"^^<http://www.w3.org/2001/XMLSchema#integer>");
+									child.getLiterals().clear();
+									child.getLiterals().add(ResourceFactory.createTypedLiteral(-999999));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return queryTrees;
 	}
 	
-	private List<QueryTree<String>> getQueryTrees(Set<String> resources){
+	private QueryTree<String> getSimilarTree(QueryTree<String> tree, String property, int maxTreeDepth){
+		String query = "SELECT ?o WHERE {?s <" + property + "> ?o. FILTER(isURI(?o) && ?o != <" + tree.getUserObject() + ">)} LIMIT 1";
+		QueryExecution qe = qef.createQueryExecution(query);
+		ResultSet rs = qe.execSelect();
+		if(rs.hasNext()){
+			String uri = rs.next().getResource("o").getURI();
+			Model cbd = cbdGen.getConciseBoundedDescription(uri, maxTreeDepth);
+			QueryTree<String> similarTree = queryTreeFactory.getQueryTree(uri, cbd);
+			similarTree.setUserObject(uri);
+			return similarTree;
+		}
+		return null;
+	}
+	
+	private List<QueryTree<String>> getQueryTrees(List<String> resources){
 		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
 		
 		for (String resource : resources) {
 			Model cbd = cbdGen.getConciseBoundedDescription(resource);
 			QueryTree<String> tree = queryTreeFactory.getQueryTree(resource, cbd);
 			trees.add(tree);
-			System.out.println(tree.getStringRepresentation());
 		}
 		
 		return trees;
@@ -232,7 +322,7 @@ public class QALDExperiment {
 	                
 	            	Element questionNode = (Element) questionNodes.item(i);
 	                
-	            	int id = Integer.valueOf(questionNode.getAttribute("id")); if(id != 44)continue;
+	            	int id = Integer.valueOf(questionNode.getAttribute("id")); //if(id != 44)continue;
 //	            	String answerType = questionNode.getAttribute("answerType");
 	            	boolean aggregation = false;//Boolean.valueOf(questionNode.getAttribute("aggregation"));
 	            	boolean onlydbo = true;//Boolean.valueOf(questionNode.getAttribute("onlydbo"));

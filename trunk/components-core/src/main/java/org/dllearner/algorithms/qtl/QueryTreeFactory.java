@@ -55,5 +55,7 @@ public interface QueryTreeFactory<N> {
 	void addAllowedNamespaces(Set<String> allowedNamespaces);
 	
 	void addIgnoredPropperties(Set<String> ignoredProperties);
+	
+	void setMaxDepth(int maxDepth);
 
 }
