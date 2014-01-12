@@ -331,4 +331,11 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 	public void addIgnoredPropperties(Set<String> ignoredProperties) {
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.QueryTreeFactory#setMaxDepth(int)
+	 */
+	@Override
+	public void setMaxDepth(int maxDepth) {
+	}
+
 }

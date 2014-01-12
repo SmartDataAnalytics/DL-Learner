@@ -34,6 +34,9 @@ import org.dllearner.algorithms.qtl.filters.Filter;
 import org.dllearner.algorithms.qtl.filters.Filters;
 import org.dllearner.algorithms.qtl.filters.QuestionBasedStatementFilter;
 import org.dllearner.algorithms.qtl.filters.ZeroFilter;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -79,6 +82,13 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	
 	public void setObjectFilter(Filter filter){
 		this.objectFilter = filter;
+	}
+	
+	/**
+	 * @param maxDepth the maxDepth to set
+	 */
+	public void setMaxDepth(int maxDepth) {
+		this.maxDepth = maxDepth;
 	}
 	
 	@Override
@@ -413,6 +423,15 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	@Override
 	public void addIgnoredPropperties(Set<String> ignoredProperties) {
 		this.ignoredProperties.addAll(ignoredProperties);
+	}
+	
+	public static void main(String[] args) throws Exception {
+		QueryTreeFactoryImpl factory = new QueryTreeFactoryImpl();
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpediaLOD2Cloud());
+		String resourceURI = "http://dbpedia.org/resource/Athens";
+		Model cbd = cbdGen.getConciseBoundedDescription(resourceURI, 0);
+		QueryTreeImpl<String> queryTree = factory.getQueryTree(resourceURI, cbd);
+		System.out.println(queryTree.toSPARQLQueryString());
 	}
 
 }
