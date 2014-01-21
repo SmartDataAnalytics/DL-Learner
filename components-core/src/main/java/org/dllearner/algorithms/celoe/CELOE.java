@@ -32,6 +32,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -57,7 +58,6 @@ import org.dllearner.refinementoperators.CustomStartRefinementOperator;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
-import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -98,7 +98,7 @@ public class CELOE extends AbstractCELA {
 	
 	// all nodes in the search tree (used for selecting most promising node)
 	private TreeSet<OENode> nodes;
-	private OEHeuristicRuntime heuristic; // = new OEHeuristicRuntime();
+	private AbstractHeuristic heuristic; // = new OEHeuristicRuntime();
 	// root of search tree
 	private OENode startNode;
 	// the class with which we start the refinement process
@@ -132,7 +132,7 @@ public class CELOE extends AbstractCELA {
 	// important parameters (non-config options but internal)
 	private double noise;
 
-	private boolean filterFollowsFromKB;	
+	private boolean filterFollowsFromKB = false;	
 	
 	// less important parameters
 	// forces that one solution cannot be subexpression of another expression; this option is useful to get diversity
@@ -207,6 +207,7 @@ public class CELOE extends AbstractCELA {
 	
 	@SuppressWarnings("unused")
 	private long timeLastImprovement = 0;
+	private boolean expandAccuracy100Nodes = false;
 	
 //	public CELOEConfigurator getConfigurator() {
 //		return configurator;
@@ -563,8 +564,12 @@ public class CELOE extends AbstractCELA {
 		Iterator<OENode> it = nodes.descendingIterator();
 		while(it.hasNext()) {
 			OENode node = it.next();
-			if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
-				return node;
+			if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < node.getDescription().getLength()) {
+					return node;
+			} else {
+				if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
+					return node;
+				}
 			}
 		}
 		
@@ -693,7 +698,9 @@ public class CELOE extends AbstractCELA {
 //					System.out.println(bestEvaluatedDescriptions);
 				}
 			}
-						
+			
+//			bestEvaluatedDescriptions.add(node.getDescription(), accuracy, learningProblem);
+			
 //			System.out.println(bestEvaluatedDescriptions.getSet().size());
 		}
 		
@@ -1040,12 +1047,12 @@ public class CELOE extends AbstractCELA {
 		this.useMinimizer = useMinimizer;
 	}
 
-	public OEHeuristicRuntime getHeuristic() {
+	public AbstractHeuristic getHeuristic() {
 		return heuristic;
 	}
 
 	@Autowired(required=false)
-	public void setHeuristic(OEHeuristicRuntime heuristic) {
+	public void setHeuristic(AbstractHeuristic heuristic) {
 		this.heuristic = heuristic;
 	}
 
@@ -1113,6 +1120,20 @@ public class CELOE extends AbstractCELA {
 		return totalRuntimeNs;
 	}
 	
+	/**
+	 * @return the expandAccuracy100Nodes
+	 */
+	public boolean isExpandAccuracy100Nodes() {
+		return expandAccuracy100Nodes;
+	}
+
+	/**
+	 * @param expandAccuracy100Nodes the expandAccuracy100Nodes to set
+	 */
+	public void setExpandAccuracy100Nodes(boolean expandAccuracy100Nodes) {
+		this.expandAccuracy100Nodes = expandAccuracy100Nodes;
+	}
+
 	public static void main(String[] args) throws Exception{
 		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
 		ks.init();

@@ -25,6 +25,7 @@ import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.log4j.Logger;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -44,6 +45,8 @@ import com.hp.hpl.jena.query.ResultSet;
  *
  */
 public class DBpediaCorpusGenerator {
+	
+	private static final Logger logger = Logger.getLogger(DBpediaCorpusGenerator.class.getName());
 	
 	/**
 	 * Loads DBpedia ontology from remote URL.
@@ -68,6 +71,7 @@ public class DBpediaCorpusGenerator {
 	}
 	
 	public static Set<String> getDBpediaCorpusSample(String textProperty, int maxNrOfInstancesPerClass){
+		logger.info("Generating DBpedia corpus based on " + textProperty + " for at most " + maxNrOfInstancesPerClass + " instances...");
 		Set<String> documents = new HashSet<>();
 		
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
@@ -115,10 +119,12 @@ public class DBpediaCorpusGenerator {
 				}
 			}
 		}
+		logger.info("...done.");
 		return documents;
 	}
 	
 	public static Set<String> getDBpediaCorpusSample(String textProperty, Set<NamedClass> classes, int maxNrOfInstancesPerClass){
+		logger.info("Generating DBpedia corpus based on " + textProperty + " for " + classes + " based on at most " + maxNrOfInstancesPerClass + " instances...");
 		Set<String> documents = new HashSet<>();
 		
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
@@ -163,6 +169,7 @@ public class DBpediaCorpusGenerator {
 				}
 			}
 		}
+		logger.info("...done.");
 		return documents;
 	}
 	

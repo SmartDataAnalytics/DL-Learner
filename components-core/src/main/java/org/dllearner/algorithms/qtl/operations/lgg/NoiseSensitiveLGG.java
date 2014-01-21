@@ -31,6 +31,9 @@ public class NoiseSensitiveLGG<N> {
 	private List<QueryTree<N>> posExamples;
 
 	private List<QueryTree<N>> negExamples;
+
+	private double coverageWeight = 0.6;
+	private double specifityWeight = 0.4;
 	
 	public NoiseSensitiveLGG() {
 	}
@@ -53,6 +56,7 @@ public class NoiseSensitiveLGG<N> {
 			logger.trace("TODO list size: " + todoList.size());
 			//pick best element from todo list
 			currentElement = todoList.poll();
+			//generate the LGG between the chosen tree and each uncovered positive example
 			for (QueryTree<N> example : currentElement.getFalseNegatives()) {
 				QueryTree<N> tree = currentElement.getTree();
 				//compute the LGG
@@ -63,7 +67,7 @@ public class NoiseSensitiveLGG<N> {
 				//evaluate the LGG
 				EvaluatedQueryTree<N> solution = evaluate(lgg);
 				
-				if(solution.getScore() > currentlyBestScore){
+				if(solution.getScore() >= currentlyBestScore){
 					//add to todo list, if not already contained in todo list or solution list
 					todo(solution);
 					currentlyBestScore = solution.getScore();
@@ -83,6 +87,7 @@ public class NoiseSensitiveLGG<N> {
 	}
 	
 	private EvaluatedQueryTree<N> evaluate(QueryTree<N> lgg){
+		//1. get a score for the coverage = recall oriented
 		//compute positive examples which are not covered by LGG
 		Collection<QueryTree<N>> uncoveredPositiveExamples = getUncoveredTrees(lgg, posExamples);
 		//compute negative examples which are covered by LGG
@@ -94,7 +99,19 @@ public class NoiseSensitiveLGG<N> {
 						? 0 
 						: coveredPositiveExamples / (double)(coveredPositiveExamples + coveredNegativeExamples.size());
 		
-		double score = Heuristics.getFScore(recall, precision);
+		double coverageScore = recall;//Heuristics.getFScore(recall, precision);
+		
+		//2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
+		int numberOfSpecificNodes = 0;
+		for (QueryTree<N> childNode : lgg.getChildrenClosure()) {
+			if(!childNode.getUserObject().equals("?")){
+				numberOfSpecificNodes++;
+			}
+		}
+		double specifityScore = Math.log(numberOfSpecificNodes);
+		
+		//3.compute the total score
+		double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 		
 		EvaluatedQueryTree<N> solution = new EvaluatedQueryTree<N>(lgg, uncoveredPositiveExamples, coveredNegativeExamples, score);
 		

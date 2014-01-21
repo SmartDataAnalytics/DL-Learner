@@ -15,6 +15,7 @@ import java.util.SortedSet;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.isle.index.Index;
+import org.dllearner.algorithms.isle.index.RelevanceMapGenerator;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndexGenerator;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
@@ -38,6 +39,7 @@ import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -70,7 +72,7 @@ public abstract class Experiment {
 	private boolean equivalence = true;
 	
 	private PosOnlyLP lp;
-	private RelevanceMetric relevance;
+	private RelevanceMetric relevanceMetric;
 	private AbstractReasonerComponent reasoner;
 	
 	private String testFolder = "experiments/logs/";
@@ -86,6 +88,7 @@ public abstract class Experiment {
 	
 	protected abstract OWLOntology getOntology();
 	protected abstract Set<String> getDocuments();
+	
 	
 	/**
 	 * 
@@ -104,7 +107,7 @@ public abstract class Experiment {
 //			
 //			// set the relevance metric
 			if(index != null){
-				relevance = new PMIRelevanceMetric(index);
+				relevanceMetric = new PMIRelevanceMetric(index);
 			}
 			
 			try {
@@ -250,11 +253,13 @@ public abstract class Experiment {
 		Description startClass = getStartClass(cls, equivalence, true);
 		
 		NLPHeuristic heuristic = null;
-		if(relevance != null){
-			Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
+		if(relevanceMetric != null){
+//			for (OWLClass cls2 : ontology.getClassesInSignature()) {System.out.println(cls2);
+//				Map<Entity, Double> entityRelevance = RelevanceMapGenerator.generateRelevanceMap(new NamedClass(cls2.toStringID()), ontology, relevanceMetric, true);
+//			}
+			Map<Entity, Double> entityRelevance = RelevanceMapGenerator.generateRelevanceMap(cls, ontology, relevanceMetric, true);
 			heuristic = new NLPHeuristic(entityRelevance);
 		}
-		
 		
 		ClassLearningProblem clp = new ClassLearningProblem(reasoner);
 		clp.setClassToDescribe(cls);
@@ -263,7 +268,7 @@ public abstract class Experiment {
 		
 		RhoDRDown rop = new RhoDRDown();
 		rop.setReasoner(reasoner);
-		rop.setUseNegation(true);
+		rop.setUseNegation(false);
 		rop.init();
 		
 		// perform cross validation with ISLE
@@ -279,7 +284,6 @@ public abstract class Experiment {
 		new File(testFolder).mkdirs();
 		isle.setSearchTreeFile(testFolder  + "searchTreeISLE.txt");
 		isle.setWriteSearchTree(true);
-//		isle.setReplaceSearchTree(true);
 //		isle.setTerminateOnNoiseReached(true);
 		isle.setIgnoredConcepts(Collections.singleton(cls));
 		isle.setReplaceSearchTree(true);

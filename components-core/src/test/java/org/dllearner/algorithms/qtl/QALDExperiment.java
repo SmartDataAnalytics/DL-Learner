@@ -4,16 +4,17 @@
 package org.dllearner.algorithms.qtl;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -32,8 +33,6 @@ import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
-import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
-import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.NoiseSensitiveLGG;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
@@ -42,15 +41,11 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.TriplePatternExtractor;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.clarkparsia.pellet.rules.LiteralFilter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
@@ -61,8 +56,17 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.vocabulary.XSD;
+import com.hp.hpl.jena.sparql.expr.E_NotExists;
+import com.hp.hpl.jena.sparql.syntax.Element;
+import com.hp.hpl.jena.sparql.syntax.ElementFilter;
+import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.syntax.ElementOptional;
+import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
+import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
+import com.hp.hpl.jena.sparql.syntax.ElementUnion;
+import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
 
 /**
  * @author Lorenz Buehmann
@@ -79,7 +83,14 @@ public class QALDExperiment {
 			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/3/dbpedia-test.xml"
 			);
 	
-	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	static SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	static {
+		try {
+			endpoint = new SparqlEndpoint(new URL("http://[2001:638:902:2010:0:168:35:138]/sparql"), "http://dbpedia.org");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+	}
 	Set<String> allowedNamespaces = Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/");
 	Set<String> ignoredProperties = Sets.newHashSet("http://dbpedia.org/ontology/wikiPageID","http://dbpedia.org/ontology/wikiPageRevisionID",
 			"http://dbpedia.org/ontology/wikiPageExtracted", "http://dbpedia.org/ontology/wikiPageModified");
@@ -96,6 +107,7 @@ public class QALDExperiment {
 //	private LGGGenerator<String> lggGenerator;
 	private NoiseSensitiveLGG<String> lggGenerator;
 	
+	private Random rnd = new Random(123);
 	
 	public QALDExperiment() {
 		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
@@ -180,13 +192,13 @@ public class QALDExperiment {
 		double bestFMeasure = -1;
 		for (EvaluatedQueryTree<String> tree : trees) {
 			String learnedSPARQLQuery = tree.getTree().toSPARQLQueryString();
-			System.out.println(learnedSPARQLQuery);
-			System.out.println(tree.getScore());
+			logger.info(learnedSPARQLQuery);
+			logger.info("Tree Score: " + tree.getScore());
 			double fMeasure = fMeasure(targetSPARQLQuery, learnedSPARQLQuery);
 			if(fMeasure > bestFMeasure){
 				bestTree = tree;
 			}
-			System.out.println(fMeasure);
+			logger.info("Extensional fMeasure: " + fMeasure);
 		}
 		return bestTree;
 	}
@@ -205,53 +217,12 @@ public class QALDExperiment {
 		}
 		
 		//convert examples to query trees
-		List<QueryTree<String>> queryTrees = getQueryTrees(positiveExamples);
+		List<QueryTree<String>> posExampleQueryTrees = getQueryTrees(positiveExamples);
 		
-		//add some noise, i.e.
-		//a)add wrong negative examples
-		//b)take positive examples and modify relevant attributes
-		Random randomGen = new Random(123);
-		TriplePatternExtractor triplePatternExtractor = new TriplePatternExtractor();
-		List<Triple> triplePatterns = new ArrayList<Triple>(triplePatternExtractor.extractTriplePattern(QueryFactory.create(sparqlQuery, Syntax.syntaxARQ)));
-		for (QueryTree<String> queryTree : queryTrees) {
-			double rnd = randomGen.nextDouble();
-			if(rnd <= noise){
-				//pick a random property to modify
-				Collections.shuffle(triplePatterns, randomGen);
-				Triple triplePattern = triplePatterns.get(0);
-				String predicate = triplePattern.getPredicate().getURI();
-				Node object = triplePattern.getObject();
-				logger.info("Modifying edge <" + queryTree + ", " + predicate + ", " + object + ">");
-				//get the corresponding edge in the tree
-				Set<Object> edges = queryTree.getEdges();
-				for (Object edge : edges) {
-					if (predicate.equals(edge)) {
-						List<QueryTree<String>> children = queryTree.getChildren(edge);
-						for (QueryTree<String> child : children) {
-							if (child.getUserObject().replace("<", "").replace(">", "").equals(object.toString())) {
-								if (child.isResourceNode()) {
-									QueryTree<String> similarTree = getSimilarTree(child, predicate, 1);
-									if (similarTree != null) {
-										int id = child.getId();
-										queryTree.removeChild((QueryTreeImpl<String>) child);
-										similarTree.setId(id);
-										queryTree.addChild((QueryTreeImpl<String>) similarTree, edge);
-									} else {
-										child.setUserObject("http://dl-learner.org/qtl#noiseModification");
-									}
-								} else if (child.isLiteralNode()) {
-									child.setUserObject("\"-999999\"^^<http://www.w3.org/2001/XMLSchema#integer>");
-									child.getLiterals().clear();
-									child.getLiterals().add(ResourceFactory.createTypedLiteral(-999999));
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		//generate noise
+		generateNoise1(sparqlQuery, posExampleQueryTrees);;
 		
-		return queryTrees;
+		return posExampleQueryTrees;
 	}
 	
 	private QueryTree<String> getSimilarTree(QueryTree<String> tree, String property, int maxTreeDepth){
@@ -268,16 +239,94 @@ public class QALDExperiment {
 		return null;
 	}
 	
+	private void generateNoise2(String sparqlQuery, List<QueryTree<String>> posExampleQueryTrees){
+		//add some noise, i.e.
+				//a)add wrong negative examples
+				//b)take positive examples and modify relevant attributes
+				Random randomGen = new Random(123);
+				TriplePatternExtractor triplePatternExtractor = new TriplePatternExtractor();
+				List<Triple> triplePatterns = new ArrayList<Triple>(triplePatternExtractor.extractTriplePattern(QueryFactory.create(sparqlQuery, Syntax.syntaxARQ)));
+				for (QueryTree<String> queryTree : posExampleQueryTrees) {
+					double rnd = randomGen.nextDouble();
+					if(rnd <= noise){
+						//pick a random property to modify
+						Collections.shuffle(triplePatterns, randomGen);
+						Triple triplePattern = triplePatterns.get(0);
+						String predicate = triplePattern.getPredicate().getURI();
+						Node object = triplePattern.getObject();
+						logger.info("Modifying edge <" + queryTree + ", " + predicate + ", " + object + ">");
+						//get the corresponding edge in the tree
+						Set<Object> edges = queryTree.getEdges();
+						for (Object edge : edges) {
+							if (predicate.equals(edge)) {
+								List<QueryTree<String>> children = queryTree.getChildren(edge);
+								for (QueryTree<String> child : children) {
+									if (child.getUserObject().replace("<", "").replace(">", "").equals(object.toString())) {
+										if (child.isResourceNode()) {
+											QueryTree<String> similarTree = getSimilarTree(child, predicate, 1);
+											if (similarTree != null) {
+												int id = child.getId();
+												queryTree.removeChild((QueryTreeImpl<String>) child);
+												similarTree.setId(id);
+												queryTree.addChild((QueryTreeImpl<String>) similarTree, edge);
+											} else {
+												child.setUserObject("http://dl-learner.org/qtl#noiseModification");
+											}
+										} else if (child.isLiteralNode()) {
+											child.setUserObject("\"-999999\"^^<http://www.w3.org/2001/XMLSchema#integer>");
+											child.getLiterals().clear();
+											child.getLiterals().add(ResourceFactory.createTypedLiteral(-999999));
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+	}
+	
+	private void generateNoise1(String sparqlQuery, List<QueryTree<String>> posExampleQueryTrees){
+		NegativeExampleSPARQLQueryGenerator negExGen = new NegativeExampleSPARQLQueryGenerator();
+		
+		//get the positive examples
+		List<String> posExamples = getResult(sparqlQuery);
+		
+		//generate a modified SPARQL query
+		Query query = negExGen.generateSPARQLQuery(QueryFactory.create(sparqlQuery));
+		query.setLimit(1000);
+		
+		//get a random number of negative examples
+		List<String> negExamples = getResult(query.toString());
+		negExamples.removeAll(posExamples);
+		Collections.shuffle(negExamples);
+		
+		//replace some of the query trees of the positive examples with negative related ones
+		List<QueryTree<String>> negExampleTrees = new ArrayList<>();
+		for (Iterator<QueryTree<String>> iterator = posExampleQueryTrees.iterator(); iterator.hasNext();) {
+			QueryTree<String> tree = iterator.next();
+			if(rnd.nextDouble() <= noise){
+				QueryTree<String> newTree = getQueryTree(negExamples.remove(0));
+				negExampleTrees.add(newTree);
+				iterator.remove();
+			}
+		}
+		posExampleQueryTrees.addAll(negExampleTrees);
+	}
+	
 	private List<QueryTree<String>> getQueryTrees(List<String> resources){
 		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
 		
 		for (String resource : resources) {
-			Model cbd = cbdGen.getConciseBoundedDescription(resource);
-			QueryTree<String> tree = queryTreeFactory.getQueryTree(resource, cbd);
-			trees.add(tree);
+			trees.add(getQueryTree(resource));
 		}
 		
 		return trees;
+	}
+	
+	private QueryTree<String> getQueryTree(String resource){
+		Model cbd = cbdGen.getConciseBoundedDescription(resource);
+		QueryTree<String> tree = queryTreeFactory.getQueryTree(resource, cbd);
+		return tree;
 	}
 	
 	private List<String> getResult(String sparqlQuery){
@@ -320,7 +369,7 @@ public class QALDExperiment {
 	            
 	            for( int i = 0; i < questionNodes.getLength(); i++){
 	                
-	            	Element questionNode = (Element) questionNodes.item(i);
+	            	org.w3c.dom.Element questionNode = (org.w3c.dom.Element) questionNodes.item(i);
 	                
 	            	int id = Integer.valueOf(questionNode.getAttribute("id")); //if(id != 44)continue;
 //	            	String answerType = questionNode.getAttribute("answerType");
@@ -330,7 +379,7 @@ public class QALDExperiment {
 	            	
 	            	
 	                // Read SPARQL query
-	            	String sparqlQuery = ((Element)questionNode.getElementsByTagName("query").item(0)).getChildNodes().item(0).getNodeValue().trim();
+	            	String sparqlQuery = ((org.w3c.dom.Element)questionNode.getElementsByTagName("query").item(0)).getChildNodes().item(0).getNodeValue().trim();
 	            	sparqlQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " + sparqlQuery;
 	            	if(sparqlQuery.contains("OPTIONAL {?uri rdfs:label ?string . FILTER (lang(?string) = 'en') }")){
 	            		sparqlQuery = sparqlQuery.replace("OPTIONAL {?uri rdfs:label ?string . FILTER (lang(?string) = 'en') }", "");
@@ -395,6 +444,8 @@ public class QALDExperiment {
 		catch (IOException e) {
 	            e.printStackTrace();
 	    }
+//		queries.clear();
+//		queries.add("select ?uri where {?uri a <http://dbpedia.org/ontology/Book>. ?uri <http://dbpedia.org/ontology/author> <http://dbpedia.org/resource/Dan_Brown>.}");
 		return queries;
 	}
 	
@@ -490,6 +541,102 @@ public class QALDExperiment {
 	
 	public static void main(String[] args) throws Exception {
 		new QALDExperiment().run();
+	}
+	
+	class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
+		
+		private boolean inOptionalClause;
+		private Stack<ElementGroup> parentGroup = new Stack<>();
+		private TriplePatternExtractor triplePatternExtractor = new TriplePatternExtractor();
+		private Triple triple;
+		Random randomGen = new Random(123);
+
+		/**
+		 * Returns a modified SPARQL query such that it is similar but different by choosing one of the triple patterns and use
+		 * the negation of its existence.
+		 * @param query
+		 */
+		public Query generateSPARQLQuery(Query query){
+			//choose a random triple for the modification
+			List<Triple> triplePatterns = new ArrayList<Triple>(triplePatternExtractor.extractTriplePattern(query));
+			Collections.shuffle(triplePatterns, randomGen);
+			triple = triplePatterns.get(0);
+			
+			Query modifiedQuery = query.cloneQuery();
+			modifiedQuery.getQueryPattern().visit(this);
+			logger.info("Negative examples query:\n" + modifiedQuery.toString());
+			return modifiedQuery;
+		}
+		
+		@Override
+		public void visit(ElementGroup el) {
+			parentGroup.push(el);
+			for (Iterator<Element> iterator = new ArrayList<Element>(el.getElements()).iterator(); iterator.hasNext();) {
+				Element e = iterator.next();
+				e.visit(this);
+			}
+			parentGroup.pop();
+		}
+
+		@Override
+		public void visit(ElementOptional el) {
+			inOptionalClause = true;
+			el.getOptionalElement().visit(this);
+			inOptionalClause = false;
+		}
+
+		@Override
+		public void visit(ElementTriplesBlock el) {
+			for (Iterator<Triple> iterator = el.patternElts(); iterator.hasNext();) {
+				Triple t = iterator.next();
+				if(inOptionalClause){
+					
+				} else {
+					if(t.equals(triple)){
+						ElementGroup parent = parentGroup.peek();
+						ElementTriplesBlock elementTriplesBlock = new ElementTriplesBlock();
+						elementTriplesBlock.addTriple(t);
+						ElementGroup eg = new ElementGroup();
+						eg.addElement(elementTriplesBlock);
+						parent.addElement(new ElementFilter(new E_NotExists(eg)));
+						iterator.remove();
+					}
+				}
+			}
+		}
+
+		@Override
+		public void visit(ElementPathBlock el) {
+			for (Iterator<TriplePath> iterator = el.patternElts(); iterator.hasNext();) {
+				TriplePath tp = iterator.next();
+				if(inOptionalClause){
+					
+				} else {
+					if(tp.asTriple().equals(triple)){
+						ElementGroup parent = parentGroup.peek();
+						ElementPathBlock elementTriplesBlock = new ElementPathBlock();
+						elementTriplesBlock.addTriple(tp);
+						ElementGroup eg = new ElementGroup();
+						eg.addElement(elementTriplesBlock);
+						parent.addElement(new ElementFilter(new E_NotExists(eg)));
+						iterator.remove();
+					}
+				}
+			}
+		}
+
+		@Override
+		public void visit(ElementUnion el) {
+			for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
+				Element e = iterator.next();
+				e.visit(this);
+			}
+		}
+		
+		@Override
+		public void visit(ElementFilter el) {
+		}
+
 	}
 
 }

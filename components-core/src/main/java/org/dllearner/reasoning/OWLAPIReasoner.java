@@ -434,6 +434,20 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public SortedSet<Individual> getIndividuals() {
         return individuals;
     }
+    
+    /**
+	 * @param prefixes the prefixes to set
+	 */
+	public void setPrefixes(Map<String, String> prefixes) {
+		this.prefixes = prefixes;
+	}
+	
+	/**
+	 * @param baseURI the baseURI to set
+	 */
+	public void setBaseURI(String baseURI) {
+		this.baseURI = baseURI;
+	}
 
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getReasonerType()

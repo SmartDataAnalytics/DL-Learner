@@ -3,6 +3,7 @@
  */
 package org.dllearner.algorithms.isle.index.syntactic;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +27,10 @@ import org.dllearner.algorithms.isle.index.Token;
 import org.dllearner.algorithms.isle.textretrieval.AnnotationEntityTextRetriever;
 import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
 import org.dllearner.core.owl.Entity;
+import org.dllearner.core.owl.NamedClass;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import com.google.common.base.Joiner;
 
@@ -39,6 +43,7 @@ public class SolrSyntacticIndex implements Index{
 	private SolrServer solr;
 	private AnnotationEntityTextRetriever textRetriever;
 	private String searchField;
+	private String typesField = "types";
 	
 	long totalNumberOfDocuments = -1;
 	
@@ -49,7 +54,7 @@ public class SolrSyntacticIndex implements Index{
 		solr = new HttpSolrServer(solrServerURL);
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.isle.index.Index#getDocuments(org.dllearner.core.owl.Entity)
 	 */
@@ -120,7 +125,7 @@ public class SolrSyntacticIndex implements Index{
 				phrase += token.getRawForm() + " ";
 			}
 			phrase.trim();
-			terms.add(phrase);
+			terms.add(quotedString(phrase));
 		}
 		queryString += Joiner.on("OR").join(terms);
 		queryString += ")";
@@ -136,7 +141,7 @@ public class SolrSyntacticIndex implements Index{
 		}
 		return -1;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity[])
 	 */
@@ -158,7 +163,7 @@ public class SolrSyntacticIndex implements Index{
 					phrase += token.getRawForm() + " ";
 				}
 				phrase.trim();
-				terms.add(phrase);
+				terms.add(quotedString(phrase));
 			}
 			queryString += Joiner.on("OR").join(terms);
 			queryString += ")";
@@ -177,6 +182,58 @@ public class SolrSyntacticIndex implements Index{
 			e.printStackTrace();
 		}
 		return -1;
+	}
+	
+	
+	public long getNumberOfDocumentsForTyped(NamedClass resourceClass, Entity entity) {
+		
+		
+		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
+		
+		String queryString = "(";
+		Set<String> terms = new HashSet<>();
+		for (Entry<List<Token>, Double> entry : relevantText.entrySet()) {
+			List<Token> tokens = entry.getKey();
+			String phrase = "";
+			for (Token token : tokens) {
+//				terms.add(token.getRawForm());
+				phrase += token.getRawForm() + " ";
+			}
+			phrase.trim();
+			terms.add(quotedString(phrase));
+		}
+		queryString += Joiner.on("OR").join(terms);
+		queryString += ")";System.out.println(queryString);
+		
+		SolrQuery query = new SolrQuery(
+				searchField + ":" + queryString + " AND " + typesField + ":" + quotedString(resourceClass.getName()));//System.out.println(query);
+    	try {
+			QueryResponse response = solr.query(query);
+			SolrDocumentList list = response.getResults();
+			return list.getNumFound();
+		} catch (SolrServerException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	private String quotedString(String s){
+		return "\"" + s.trim() + "\"";
+	}
+	
+	public static void main(String[] args) throws Exception {
+		String solrServerURL = "http://solr.aksw.org/en_dbpedia_resources/";
+		String searchField = "comment";
+		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("src/test/resources/org/dllearner/algorithms/isle/dbpedia_3.9.owl"));
+		SolrSyntacticIndex index = new SolrSyntacticIndex(ontology, solrServerURL, searchField);
+		long n = index.getNumberOfDocumentsFor(new NamedClass("http://dbpedia.org/ontology/Person"), new NamedClass("http://schema.org/Canal"));
+		System.out.println(n);
+		n = index.getNumberOfDocumentsForTyped(new NamedClass("http://dbpedia.org/ontology/Person"), new NamedClass("http://schema.org/Canal"));
+		System.out.println(n);
+		n = index.getNumberOfDocumentsForTyped(new NamedClass("http://dbpedia.org/ontology/Person"), new NamedClass("http://dbpedia.org/ontology/nationality"));
+		System.out.println(n);
+		n = index.getNumberOfDocumentsForTyped(new NamedClass("http://dbpedia.org/ontology/Person"), new NamedClass("http://dbpedia.org/ontology/birthPlace"));
+		System.out.println(n);
 	}
 
 }

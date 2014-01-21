@@ -111,7 +111,7 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 		logger.info("Pattern: " + pattern);
 		
 		//get the maximum modal depth in the pattern axioms
-		int modalDepth = MaximumModalDepthDetector.getMaxModalDepth(OWLAPIAxiomConvertVisitor.convertAxiom(pattern));
+		int modalDepth = MaximumModalDepthDetector.getMaxModalDepth(OWLAPIAxiomConvertVisitor.convertAxiom(pattern));modalDepth++;
 		logger.info("Modal depth: " + modalDepth);
 		
 		//extract fragment
@@ -119,7 +119,9 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 		
 		//try to find instantiation of the pattern with confidence above threshold
 		Set<OWLAxiom> instantiations = applyPattern(OWLAPIAxiomConvertVisitor.convertAxiom(pattern), dataFactory.getOWLClass(IRI.create(cls.getName())), fragment);
-		System.out.println(instantiations);
+		for (OWLAxiom instantiation : instantiations) {
+			System.out.println(instantiation);
+		}
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
