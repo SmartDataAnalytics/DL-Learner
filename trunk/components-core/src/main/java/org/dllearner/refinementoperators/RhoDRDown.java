@@ -608,11 +608,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			int number = ((ObjectCardinalityRestriction)description).getCardinality();
 			if(description instanceof ObjectMaxCardinalityRestriction) {
 				// rule 1: <= x r.C =>  <= x r.D
-				tmp = refine(description.getChild(0), maxLength-3, null, range);
-
-				for(Description d : tmp) {
-					refinements.add(new ObjectMaxCardinalityRestriction(number,role,d));
-				}				
+				if(useNegation || number > 0){
+					tmp = refine(description.getChild(0), maxLength-3, null, range);
+	
+					for(Description d : tmp) {
+						refinements.add(new ObjectMaxCardinalityRestriction(number,role,d));
+					}	
+				}
 				
 				// rule 2: <= x r.C  =>  <= (x-1) r.C
 				ObjectMaxCardinalityRestriction max = (ObjectMaxCardinalityRestriction) description;
@@ -1033,7 +1035,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				// zero fillers: <= -1 r.C does not make sense
 				// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
 				// but we still keep it, because ALL r.NOT C may be difficult to reach
-				if(maxFillers > 0)
+				if((useNegation && maxFillers > 0) || (!useNegation && maxFillers > 1))
 					m4.add(new ObjectMaxCardinalityRestriction(maxFillers-1, r, new Thing()));
 			}			
 		}
