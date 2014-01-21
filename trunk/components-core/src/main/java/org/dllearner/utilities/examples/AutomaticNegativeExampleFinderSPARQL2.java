@@ -181,6 +181,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 			int maxFrequency = positiveExamplesTypes.entrySet().iterator().next().getCount();
 			
 			if(strategy == SIBLING){//get sibling class based examples
+				logger.info("Applying sibling classes strategy...");
 				SortedSet<Individual> siblingNegativeExamples = new TreeSet<Individual>();
 				//for each type of the positive examples
 				for (NamedClass nc : positiveExamplesTypes.elementSet()) {
@@ -188,17 +189,22 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 					//get sibling classes
 					Set<NamedClass> siblingClasses = sr.getSiblingClasses(nc);
 					siblingClasses = filterByNamespace(siblingClasses);
-					System.out.println("Sibling classes: " + siblingClasses);
+					logger.info("Sibling classes: " + siblingClasses);
 					
 					int limit = (int)Math.ceil(((double)frequency / positiveExamplesTypes.size()) / siblingClasses.size() * strategyLimit);
 					//get instances for each sibling class
 					for (NamedClass siblingClass : siblingClasses) {
-						siblingNegativeExamples.addAll(sr.getIndividualsExcluding(siblingClass, nc, limit));
+						SortedSet<Individual> individuals = sr.getIndividualsExcluding(siblingClass, nc, maxNrOfReturnedInstances);
+						individuals.removeAll(siblingNegativeExamples);
+						SetManipulation.stableShrink(individuals, limit);
+						siblingNegativeExamples.addAll(individuals);
 					}
 				}
 				siblingNegativeExamples = SetManipulation.stableShrink(siblingNegativeExamples, strategyLimit);
+				logger.info("Negative examples(" + siblingNegativeExamples.size() + "): " + siblingNegativeExamples);
 				negativeExamples.addAll(siblingNegativeExamples);
 			} else if(strategy == SUPERCLASS){//get super class based examples
+				logger.info("Applying super class strategy...");
 				SortedSet<Individual> superClassNegativeExamples = new TreeSet<Individual>();
 				//for each type of the positive examples
 				for (NamedClass nc : positiveExamplesTypes.elementSet()) {
@@ -206,15 +212,22 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 					//get super classes
 					Set<Description> superClasses = sr.getSuperClasses(nc);
 					superClasses.remove(new NamedClass(Thing.instance.getURI()));
+					superClasses.remove(Thing.instance);
 					superClasses = filterByNamespace(superClasses);
+					logger.info("Super classes: " + superClasses);
 					
 					int limit = (int)Math.ceil(((double)frequency / positiveExamplesTypes.size()) / superClasses.size() * strategyLimit);
 					//get instances for each super class
 					for (Description superClass : superClasses) {
-						superClassNegativeExamples.addAll(sr.getIndividualsExcluding(superClass, nc, limit));
+						SortedSet<Individual> individuals = sr.getIndividualsExcluding(superClass, nc, maxNrOfReturnedInstances);
+						individuals.removeAll(negativeExamples);
+						individuals.removeAll(superClassNegativeExamples);
+						SetManipulation.stableShrink(individuals, limit);
+						superClassNegativeExamples.addAll(individuals);
 					}
 				}
 				superClassNegativeExamples = SetManipulation.stableShrink(superClassNegativeExamples, strategyLimit);
+				logger.info("Negative examples(" + superClassNegativeExamples.size() + "): " + superClassNegativeExamples);
 				negativeExamples.addAll(superClassNegativeExamples);
 			} else if(strategy == RANDOM){//get some random examples
 				

@@ -206,6 +206,7 @@ public class ISLE extends AbstractCELA {
 	
 	@SuppressWarnings("unused")
 	private long timeLastImprovement = 0;
+	private boolean expandAccuracy100Nodes = false;
 	
 //	public CELOEConfigurator getConfigurator() {
 //		return configurator;
@@ -562,8 +563,12 @@ public class ISLE extends AbstractCELA {
 		Iterator<OENode> it = nodes.descendingIterator();
 		while(it.hasNext()) {
 			OENode node = it.next();
-			if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
+			if (isExpandAccuracy100Nodes()) {
 				return node;
+			} else {
+				if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
+					return node;
+				}
 			}
 		}
 		
@@ -1112,6 +1117,20 @@ public class ISLE extends AbstractCELA {
 		return totalRuntimeNs;
 	}
 	
+	/**
+	 * @return the expandAccuracy100Nodes
+	 */
+	public boolean isExpandAccuracy100Nodes() {
+		return expandAccuracy100Nodes;
+	}
+
+	/**
+	 * @param expandAccuracy100Nodes the expandAccuracy100Nodes to set
+	 */
+	public void setExpandAccuracy100Nodes(boolean expandAccuracy100Nodes) {
+		this.expandAccuracy100Nodes = expandAccuracy100Nodes;
+	}
+
 	public static void main(String[] args) throws Exception{
 		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
 		ks.init();

@@ -3,29 +3,25 @@
  */
 package org.dllearner.algorithms.isle;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.dllearner.algorithms.isle.index.Index;
-import org.dllearner.algorithms.isle.index.syntactic.SolrSyntacticIndex;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -36,7 +32,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -50,8 +45,6 @@ public class DBpediaPlainExperiment extends Experiment{
 	
 	final SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 	final int maxNrOfInstancesPerClass = 10;
-	static final String solrServerURL = "http://solr.aksw.org/en_dbpedia_resources/";
-	static final String searchField = "comment";
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.isle.Experiment#getIndex()
@@ -69,19 +62,11 @@ public class DBpediaPlainExperiment extends Experiment{
 		//load the DBpedia schema
 		OWLOntology schema = null;
 		try {
-			URL url = new URL("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl.bz2");
-			InputStream is = new BufferedInputStream(url.openStream());
-			 CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
-			 schema = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(in);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (CompressorException e) {
-			e.printStackTrace();
-		} catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
+			schema = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("src/test/resources/org/dllearner/algorithms/isle/dbpedia_3.9.owl"));
+		} catch (OWLOntologyCreationException e1) {
+			e1.printStackTrace();
 		}
+		
 		//load some sample data for the machine learning part
 		Model sample = KnowledgebaseSampleGenerator.createKnowledgebaseSample(
 				endpoint, 
@@ -95,16 +80,21 @@ public class DBpediaPlainExperiment extends Experiment{
 //		while(iterator.hasNext()){
 //			System.out.println(iterator.next());
 //		}
-		
+//		sample.remove(sample.createResource("http://dbpedia.org/ontology/mission"), RDFS.domain, sample.createResource("http://dbpedia.org/ontology/Aircraft"));
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			sample.write(baos, "TURTLE", null);
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			OWLDataFactory df = man.getOWLDataFactory();
 			OWLOntology ontology = man.loadOntologyFromOntologyDocument(new ByteArrayInputStream(baos.toByteArray()));
 			man.addAxioms(ontology, schema.getAxioms());
 			man.removeAxioms(ontology, ontology.getAxioms(AxiomType.FUNCTIONAL_DATA_PROPERTY));
 			man.removeAxioms(ontology, ontology.getAxioms(AxiomType.FUNCTIONAL_OBJECT_PROPERTY));
 			man.removeAxioms(ontology, ontology.getAxioms(AxiomType.DATA_PROPERTY_RANGE));
+			man.removeAxioms(ontology, ontology.getAxioms(AxiomType.SAME_INDIVIDUAL));
+			man.removeAxiom(ontology, df.getOWLObjectPropertyDomainAxiom(
+					df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/mission")), 
+					df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Aircraft"))));
 			return ontology;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -195,6 +185,6 @@ public class DBpediaPlainExperiment extends Experiment{
 	}
 	
 	public static void main(String[] args) throws Exception {
-		new DBpediaPlainExperiment().run(new NamedClass("http://dbpedia.org/ontology/SpaceShuttle"));
+		new DBpediaPlainExperiment().run(new NamedClass("http://dbpedia.org/ontology/Astronaut"));
 	}
 }

@@ -43,24 +43,24 @@ public class KnowledgebaseSampleGenerator {
 	
 	private static final Logger logger = Logger.getLogger(KnowledgebaseSampleGenerator.class.getName());
 	
-	private static String cacheDir = "sparql-cache";
-	private static int maxCBDDepth = 0;
+	public static String cacheDir = "sparql-cache";
+	public static int maxCBDDepth = 1;
 	
 	public static Model createKnowledgebaseSample(SparqlEndpoint endpoint, String namespace, Set<NamedClass> classes, int maxNrOfInstancesPerClass){
 		Model model = ModelFactory.createDefaultModel();
-		
+		logger.info("Generating sample(" + maxNrOfInstancesPerClass + " instances) for " + classes + "...");
+		long startTime = System.currentTimeMillis();
 		//try to load existing sample from file system
 		HashFunction hf = Hashing.md5();
 		HashCode hc = hf.newHasher().putString(endpoint.getURL().toString(), Charsets.UTF_8).
 				putInt(classes.hashCode()).hash();
-		String filename = hc.toString() + "-" + maxNrOfInstancesPerClass + ".ttl.bz2";
+		String filename = hc.toString() + "-instances" + maxNrOfInstancesPerClass + "-depth" + maxCBDDepth + ".ttl.bz2";
 		File file = new File(filename);
 		
 		if(!file.exists()){//if not exists
-			logger.info("Generating sample...");
-			long startTime = System.currentTimeMillis();
+			logger.info("Asking endpoint...");
 			SPARQLReasoner reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cacheDir);
-			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDir);
+			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDir, maxCBDDepth);
 			
 			//get for each class n instances and compute the CBD for each instance
 			for (NamedClass cls : classes) {
@@ -81,6 +81,67 @@ public class KnowledgebaseSampleGenerator {
 					}
 				}
 			}
+			//add schema
+			model.add(reasoner.loadOWLSchema());
+			logger.debug("Writing sample to disk...");
+			startTime = System.currentTimeMillis();
+			try {
+				CompressorOutputStream out = new CompressorStreamFactory()
+				.createCompressorOutputStream(CompressorStreamFactory.BZIP2, new FileOutputStream(file));
+				model.write(out,"TURTLE");
+				out.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (CompressorException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			logger.debug("...done in " + (System.currentTimeMillis() - startTime) + "ms");
+		} else {
+			logger.info("Loading from disk...");
+			try {
+				CompressorInputStream in = new CompressorStreamFactory().
+						createCompressorInputStream(CompressorStreamFactory.BZIP2, new FileInputStream(file));
+				model.read(in, null, "TURTLE");
+				in.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (CompressorException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		logger.info("...done in " + (System.currentTimeMillis() - startTime) + "ms");
+		return model;
+	}
+	
+	public static Model createKnowledgebaseSample(SparqlEndpoint endpoint, String namespace, Set<Individual> individuals){
+		Model model = ModelFactory.createDefaultModel();
+		
+		//try to load existing sample from file system
+		HashFunction hf = Hashing.md5();
+		HashCode hc = hf.newHasher().putString(endpoint.getURL().toString(), Charsets.UTF_8).putInt(individuals.hashCode()).hash();
+		String filename = hc.toString() + "-depth" + maxCBDDepth + ".ttl.bz2";
+		File file = new File(filename);
+		
+		if(!file.exists()){//if not exists
+			logger.info("Generating sample...");
+			long startTime = System.currentTimeMillis();
+			SPARQLReasoner reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cacheDir);
+			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDir, maxCBDDepth);
+			
+			Model cbd;
+			for (Individual individual : individuals) {
+				try {
+					cbd = cbdGen.getConciseBoundedDescription(individual.getName(), maxCBDDepth);
+					model.add(cbd);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
 			logger.info("...done in " + (System.currentTimeMillis() - startTime) + "ms");
 			//add schema
 			model.add(reasoner.loadOWLSchema());
@@ -126,7 +187,9 @@ public class KnowledgebaseSampleGenerator {
 		//try to load existing sample from file system
 		HashFunction hf = Hashing.md5();
 		HashCode hc = hf.newHasher().putString(endpoint.getURL().toString(), Charsets.UTF_8).hash();
-		String filename = hc.toString() + ("-" + ((maxNrOfClasses == Integer.MAX_VALUE) ? "all" : maxNrOfClasses)) + "-" + maxNrOfInstancesPerClass + ".ttl.bz2";
+		String filename = hc.toString()
+				+ ("-classes" + ((maxNrOfClasses == Integer.MAX_VALUE) ? "all" : maxNrOfClasses))
+				+ "-instances" + maxNrOfInstancesPerClass + "-depth" + maxCBDDepth + ".ttl.bz2";
 		File file = new File(filename);
 		
 		if(!file.exists()){//if not exists

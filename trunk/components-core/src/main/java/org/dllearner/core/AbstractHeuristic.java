@@ -17,11 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.algorithms.celoe;
+package org.dllearner.core;
 
-import org.dllearner.core.AbstractHeuristic;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
+import java.util.Comparator;
+
+import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.owl.ConceptComparator;
 
@@ -34,8 +34,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
  *
  */
 @ComponentAnn(name = "OEHeuristicRuntime", shortName = "celoe_heuristic", version = 0.5)
-public class OEHeuristicRuntime extends AbstractHeuristic{
-	
+public abstract class AbstractHeuristic extends AbstractComponent implements Heuristic, Comparator<OENode>{
 	
 	// strong penalty for long descriptions
 	private double expansionPenaltyFactor = 0.1;
@@ -50,7 +49,7 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
 	private double startNodeBonus = 0.1;
 	
-	public OEHeuristicRuntime() {
+	public AbstractHeuristic() {
 
 	}
 	
@@ -58,24 +57,26 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 	public void init() throws ComponentInitException {
 
 	}		
-
-	public double getNodeScore(OENode node) {
-		// accuracy as baseline
-		double score = node.getAccuracy();
-		// being better than the parent gives a bonus;
-		if(!node.isRoot()) {
-			double parentAccuracy = node.getParent().getAccuracy();
-			score += (parentAccuracy - score) * gainBonusFactor;
-		// the root node also gets a bonus to possibly spawn useful disjunctions
+	
+	@Override
+	public int compare(OENode node1, OENode node2) {
+//		System.out.println("node1 " + node1);
+//		System.out.println("score: " + getNodeScore(node1));
+//		System.out.println("node2 " + node2);
+//		System.out.println("score: " + getNodeScore(node2));
+		
+		double diff = getNodeScore(node1) - getNodeScore(node2);
+		
+		if(diff>0) {		
+			return 1;
+		} else if(diff<0) {
+			return -1;
 		} else {
-			score += startNodeBonus;
+			return conceptComparator.compare(node1.getDescription(), node2.getDescription());
 		}
-		// penalty for horizontal expansion
-		score -= node.getHorizontalExpansion() * expansionPenaltyFactor;
-		// penalty for having many child nodes (stuck prevention)
-		score -= node.getRefinementCount() * nodeRefinementPenalty;
-		return score;
 	}
+
+	public abstract double getNodeScore(OENode node);
 
 	public double getExpansionPenaltyFactor() {
 		return expansionPenaltyFactor;
@@ -108,6 +109,4 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 	public void setStartNodeBonus(double startNodeBonus) {
 		this.startNodeBonus = startNodeBonus;
 	}
-
-
 }

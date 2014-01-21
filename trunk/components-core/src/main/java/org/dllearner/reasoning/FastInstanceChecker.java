@@ -1016,6 +1016,17 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	public Map<String, String> getPrefixes() {
 		return rc.getPrefixes();
 	}
+	
+	public void setPrefixes(Map<String, String> prefixes) {
+		rc.setPrefixes(prefixes);
+	}
+	
+	/**
+	 * @param baseURI the baseURI to set
+	 */
+	public void setBaseURI(String baseURI) {
+		rc.setBaseURI(baseURI);
+	}
 
 	@Override
 	public Description getDomainImpl(ObjectProperty objectProperty) {

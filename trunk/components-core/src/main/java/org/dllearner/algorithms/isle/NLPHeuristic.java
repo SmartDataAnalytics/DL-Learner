@@ -19,21 +19,15 @@
 
 package org.dllearner.algorithms.isle;
 
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.algorithms.celoe.OENode;
-import org.dllearner.core.Component;
-import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.utilities.owl.ConceptComparator;
-import org.dllearner.utilities.owl.OWLAPIConverter;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * 
@@ -42,7 +36,7 @@ import org.semanticweb.owlapi.model.OWLEntity;
  * @author Jens Lehmann
  *
  */
-public class NLPHeuristic implements Component, Comparator<OENode>{
+public class NLPHeuristic extends AbstractHeuristic{
 	
 	// strong penalty for long descriptions
 	private double expansionPenaltyFactor = 0.1;
@@ -67,29 +61,6 @@ public class NLPHeuristic implements Component, Comparator<OENode>{
 		this.entityRelevance = entityRelevance;
 	}
 	
-	@Override
-	public void init() throws ComponentInitException {
-
-	}		
-	
-	@Override
-	public int compare(OENode node1, OENode node2) {
-//		System.out.println("node1 " + node1);
-//		System.out.println("score: " + getNodeScore(node1));
-//		System.out.println("node2 " + node2);
-//		System.out.println("score: " + getNodeScore(node2));
-		
-		double diff = getNodeScore(node1) - getNodeScore(node2);
-		
-		if(diff>0) {		
-			return 1;
-		} else if(diff<0) {
-			return -1;
-		} else {
-			return conceptComparator.compare(node1.getDescription(), node2.getDescription());
-		}
-	}
-
 	public double getNodeScore(OENode node) {
 		// accuracy as baseline
 		double score = node.getAccuracy();
@@ -124,38 +95,6 @@ public class NLPHeuristic implements Component, Comparator<OENode>{
 		return score;
 	}
 
-	public double getExpansionPenaltyFactor() {
-		return expansionPenaltyFactor;
-	}
-
-	public double getGainBonusFactor() {
-		return gainBonusFactor;
-	}
-
-	public void setGainBonusFactor(double gainBonusFactor) {
-		this.gainBonusFactor = gainBonusFactor;
-	}
-
-	public double getNodeRefinementPenalty() {
-		return nodeRefinementPenalty;
-	}
-
-	public void setNodeRefinementPenalty(double nodeRefinementPenalty) {
-		this.nodeRefinementPenalty = nodeRefinementPenalty;
-	}
-
-	public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
-		this.expansionPenaltyFactor = expansionPenaltyFactor;
-	}
-
-	public double getStartNodeBonus() {
-		return startNodeBonus;
-	}
-
-	public void setStartNodeBonus(double startNodeBonus) {
-		this.startNodeBonus = startNodeBonus;
-	}	
-	
 	/**
 	 * @param entityRelevance the entityRelevance to set
 	 */

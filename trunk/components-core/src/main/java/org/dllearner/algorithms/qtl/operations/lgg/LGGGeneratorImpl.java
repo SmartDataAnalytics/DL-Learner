@@ -143,10 +143,9 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		}
 		//if NO we have to create a new tree as LGG and compute the LGG for the all child node pairs having the same edge to the parent nodes
 		lgg = new QueryTreeImpl<N>(tree1.getUserObject());
-		if(tree1.isResourceNode() && tree2.isResourceNode()){
-			lgg.setIsResourceNode(true);
-			
-		}
+//		if(tree1.isResourceNode() && tree2.isResourceNode()){
+//			lgg.setIsResourceNode(true);
+//		}
 		
 //		if(!lgg.getUserObject().equals(tree2.getUserObject())){
 //			lgg.setUserObject((N)"?");

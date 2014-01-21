@@ -1505,6 +1505,19 @@ String query = String.format(queryTemplate, dp.getName());
 	public SortedSet<Description> getMostGeneralClasses() {
 		return hierarchy.getMostGeneralClasses();
 	}
+	
+	public SortedSet<NamedClass> getMostSpecificClasses() {
+		SortedSet<NamedClass> classes = new TreeSet<>(conceptComparator);
+		String query = "SELECT ?cls WHERE {?cls a <http://www.w3.org/2002/07/owl#Class>. "
+				+ "FILTER NOT EXISTS{?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?cls. FILTER(?sub != <http://www.w3.org/2002/07/owl#Nothing>)}}";
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			classes.add(new NamedClass(qs.getResource("cls").getURI()));
+		}
+		return classes;
+	}
 
 	@Override
 	public SortedSet<Description> getSuperClasses(Description description) {
