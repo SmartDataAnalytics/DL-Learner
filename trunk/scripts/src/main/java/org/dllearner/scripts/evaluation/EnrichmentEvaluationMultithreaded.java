@@ -645,19 +645,15 @@ public class EnrichmentEvaluationMultithreaded {
 	
 	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, NamedClass nc, boolean equivalence) throws ComponentInitException {
 		// get instances of class as positive examples
-		SPARQLReasoner sr = new SPARQLReasoner(ks);
-		SortedSet<Individual> posExamples = sr.getIndividuals(nc, 20);
-		SortedSet<String> posExStr = Helper.getStringSet(posExamples);
-		
-		// get negative examples via various strategies
-		System.out.print("finding negatives ... ");
-		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
-		SortedSet<String> negExStr = finder.getNegativeExamples(nc.getName(), posExStr);
-		negExStr = SetManipulation.fuzzyShrink(negExStr, 20);
-		SortedSet<Individual> negExamples = Helper.getIndividualSet(negExStr);
-		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
-		
-		System.out.println("done (" + negExStr.size()+ ")");
+				SPARQLReasoner sr = new SPARQLReasoner(ks);
+				SortedSet<Individual> posExamples = sr.getIndividuals(nc, 20);
+				
+				// get negative examples via various strategies
+				System.out.print("finding negatives ... ");
+				AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
+				SortedSet<Individual> negExamples = finder.getNegativeExamples(nc, posExamples, 20);
+				SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
+				System.out.println("done (" + negExamples.size()+ ")");
 		
         ComponentManager cm = ComponentManager.getInstance();
 

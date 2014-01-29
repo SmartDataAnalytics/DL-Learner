@@ -430,11 +430,20 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://purl.org/dc/elements/1.1/description -->
 
-    <owl:ObjectProperty rdf:about="&dc;description">
+    <owl:DatatypeProperty rdf:about="&dc;description">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:label rdf:datatype="&xsd;string">description</rdfs:label>
         <rdfs:label xml:lang="de">Beschreibung</rdfs:label>
         <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:ObjectProperty>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&req;Goal"/>
+                    <rdf:Description rdf:about="&req;Requirement"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
     
 
 

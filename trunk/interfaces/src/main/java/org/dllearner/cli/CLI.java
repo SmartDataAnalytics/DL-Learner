@@ -205,7 +205,7 @@ public class CLI {
             cli.setContext(context);
             cli.setConfFile(file);
             cli.run();
-        } catch (Exception e) {
+        } catch (Exception e) {e.printStackTrace();
             String stacktraceFileName = "log/error.log";
 
 //            e.printStackTrace();
