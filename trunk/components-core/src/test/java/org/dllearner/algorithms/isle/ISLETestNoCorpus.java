@@ -3,6 +3,7 @@ package org.dllearner.algorithms.isle;
 import java.io.File;
 import java.util.Map;
 
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndex;
 import org.dllearner.algorithms.isle.index.semantic.SemanticIndexGenerator;
@@ -75,7 +76,7 @@ public class ISLETestNoCorpus {
 		Map<Entity, Double> entityRelevance = RelevanceUtils.getRelevantEntities(cls, ontology, relevance);
 		NLPHeuristic heuristic = new NLPHeuristic(entityRelevance);
 		
-		ISLE isle = new ISLE(lp, reasoner);
+		CELOE isle = new CELOE(lp, reasoner);
 		isle.setHeuristic(heuristic);
 		isle.init();
 		

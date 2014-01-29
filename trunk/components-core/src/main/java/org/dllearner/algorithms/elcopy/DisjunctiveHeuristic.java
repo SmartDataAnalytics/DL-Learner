@@ -17,12 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.core.owl;
+package org.dllearner.algorithms.elcopy;
 
-/**
- * @author Jens Lehmann
- *
- */
-public interface DataRange extends PropertyRange {
-	boolean isDatatype();
+public class DisjunctiveHeuristic implements ELHeuristic {
+
+	ELDescriptionTreeComparator edt = new ELDescriptionTreeComparator();
+	
+	public int compare(SearchTreeNode tree1, SearchTreeNode tree2) {
+		double diff = tree1.getScore()-tree2.getScore();
+		if(diff < 0.00001 && diff > -0.00001) {
+			return edt.compare(tree1.getDescriptionTree(), tree2.getDescriptionTree());
+		} else if(diff > 0){
+			return 1;
+//			return (int)Math.signum(diff);
+		} else {
+			return -1;
+		}
+	}
+
 }

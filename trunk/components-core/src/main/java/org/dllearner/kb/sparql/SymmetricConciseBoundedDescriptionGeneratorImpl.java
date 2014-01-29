@@ -208,4 +208,12 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
+	 */
+	@Override
+	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
+		return null;
+	}
+
 }

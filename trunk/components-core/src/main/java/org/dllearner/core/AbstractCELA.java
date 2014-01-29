@@ -19,14 +19,19 @@
 
 package org.dllearner.core;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.dllearner.core.owl.Description;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
+import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -48,6 +53,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 public abstract class AbstractCELA extends AbstractComponent implements ClassExpressionLearningAlgorithm, StoppableLearningAlgorithm {
+	
+	protected EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(AbstractCELA.MAX_NR_OF_RESULTS);
+	protected DecimalFormat dfPercent = new DecimalFormat("0.00%");
+	protected ConceptComparator descriptionComparator = new ConceptComparator();
+	protected String baseURI;
+	protected Map<String, String> prefixes;
 
 	/**
 	 * The learning problem variable, which must be used by
@@ -78,6 +89,9 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public AbstractCELA(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoner = reasoningService;
+		
+		baseURI = reasoner.getBaseURI();
+		prefixes = reasoner.getPrefixes();	
 	}
 	
 	/**
@@ -277,6 +291,28 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 */
 	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
 		return new LinkedList<Class<? extends AbstractLearningProblem>>();
+	}
+	
+	// central function for printing description
+	protected String descriptionToString(Description description) {
+		return description.toManchesterSyntaxString(baseURI, prefixes);
+	}
+		
+	
+	protected String getSolutionString() {
+		int current = 1;
+		String str = "";
+		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
+			// temporary code
+			if(learningProblem instanceof PosNegLPStandard) {
+				str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
+			} else {
+				str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
+//				System.out.println(ed);
+			}
+			current++;
+		}
+		return str;
 	}
 
     /**

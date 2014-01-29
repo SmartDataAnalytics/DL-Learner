@@ -239,11 +239,15 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 			} else if(propertyExpression instanceof DatatypeProperty){
 				entities.add((DatatypeProperty)propertyExpression);
 			}
-			if(!(this instanceof ObjectValueRestriction || this instanceof DatatypeValueRestriction) ){
+			if(this instanceof ObjectSomeRestriction){
 				entities.addAll(getChild(0).getSignature());
+			} else if(this instanceof DatatypeSomeRestriction){
+				
+			} else if(this instanceof ObjectValueRestriction){
+				entities.add((Individual)((ObjectValueRestriction)this).getValue());
 			}
 		} else {
-			for (Description child : children) {
+			for (Description child : children) { 
 				entities.addAll(child.getSignature());
 			}
 		}

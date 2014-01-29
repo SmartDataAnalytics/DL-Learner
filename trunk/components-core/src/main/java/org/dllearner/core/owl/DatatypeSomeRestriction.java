@@ -65,14 +65,14 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return restrictedPropertyExpression.toString(baseURI, prefixes) + dataRange.toString(baseURI, prefixes);
+		return restrictedPropertyExpression.toString(baseURI, prefixes) + "." + dataRange.toString(baseURI, prefixes);
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#toKBSyntaxString(java.lang.String, java.util.Map)
 	 */
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + dataRange.toKBSyntaxString(baseURI, prefixes);
+		return restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + "." + dataRange.toKBSyntaxString(baseURI, prefixes);
 	}
 
 	/* (non-Javadoc)
@@ -92,7 +92,7 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return restrictedPropertyExpression.toManchesterSyntaxString(baseURI, prefixes) + dataRange.toManchesterSyntaxString(baseURI, prefixes);
+		return restrictedPropertyExpression.toManchesterSyntaxString(baseURI, prefixes) + " some " +  dataRange.toManchesterSyntaxString(baseURI, prefixes);
 	}
 
 	/**

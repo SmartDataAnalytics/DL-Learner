@@ -20,12 +20,10 @@
 package org.dllearner.algorithms.celoe;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -50,7 +48,6 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
@@ -108,7 +105,6 @@ public class CELOE extends AbstractCELA {
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)
 	private TreeSet<Description> descriptions;
 	
-	private EvaluatedDescriptionSet bestEvaluatedDescriptions;
 	
 	// if true, then each solution is evaluated exactly instead of approximately
 	// private boolean exactBestDescriptionEvaluation = false;
@@ -140,10 +136,6 @@ public class CELOE extends AbstractCELA {
 	private boolean forceMutualDifference = false;
 	
 	// utility variables
-	private String baseURI;
-	private Map<String, String> prefixes;
-	private DecimalFormat dfPercent = new DecimalFormat("0.00%");
-	private ConceptComparator descriptionComparator = new ConceptComparator();
 	
 	// statistical variables
 	private int expressionTests = 0;
@@ -305,8 +297,7 @@ public class CELOE extends AbstractCELA {
 		}
 		
 //		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
-		baseURI = reasoner.getBaseURI();
-		prefixes = reasoner.getPrefixes();		
+			
 		if(writeSearchTree) {
 			File f = new File(searchTreeFile );
 			Files.clearFile(f);
@@ -797,7 +788,7 @@ public class CELOE extends AbstractCELA {
 	// check whether the node is a potential solution candidate
 	private Description rewriteNode(OENode node) {
 		Description description = node.getDescription();
-		// minimize description (expensive!) - also performes some human friendly rewrites
+		// minimize description (expensive!) - also performs some human friendly rewrites
 		Description niceDescription;
 		if(useMinimizer) {
 			niceDescription = minimizer.minimizeClone(description);
@@ -808,6 +799,21 @@ public class CELOE extends AbstractCELA {
 		ConceptTransformation.replaceRange(niceDescription, reasoner);
 		return niceDescription;
 	}
+	
+	// check whether the node is a potential solution candidate
+		private Description rewriteNodeSimple(OENode node) {
+			Description description = node.getDescription();
+			// minimize description (expensive!) - also performs some human friendly rewrites
+			Description niceDescription;
+			if(useMinimizer) {
+				niceDescription = minimizer.minimizeClone(description);
+			} else {
+				niceDescription = description;
+			}
+			// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
+			ConceptTransformation.replaceRange(niceDescription, reasoner);
+			return niceDescription;
+		}
 	
 	private boolean terminationCriteriaSatisfied() {
 		return 
@@ -843,33 +849,12 @@ public class CELOE extends AbstractCELA {
 		return startNode;
 	}
 	
-	// central function for printing description
-	private String descriptionToString(Description description) {
-		return description.toManchesterSyntaxString(baseURI, prefixes);
-	}
-	
 	@SuppressWarnings("unused")
 	private String bestDescriptionToString() {
 		EvaluatedDescription best = bestEvaluatedDescriptions.getBest();
 		return best.getDescription().toManchesterSyntaxString(baseURI, prefixes) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
 	}	
 	
-	private String getSolutionString() {
-		int current = 1;
-		String str = "";
-		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
-			// temporary code
-			if(learningProblem instanceof PosNegLPStandard) {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
-			} else {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
-//				System.out.println(ed);
-			}
-			current++;
-		}
-		return str;
-	}
-
 //	private String getTemporaryString(Description description) {
 //		return descriptionToString(description) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")";
 //	}

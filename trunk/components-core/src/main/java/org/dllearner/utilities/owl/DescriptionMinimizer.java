@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectAllRestriction;
@@ -240,6 +241,7 @@ public class DescriptionMinimizer {
 	}
 	
 	private boolean isSubclassOf(Description d1, Description d2) {
+		if(!(d1.isNamedClass() && d2.isNamedClass())) return false;
 		// check whether we have cached this query
 		Map<Description,Boolean> tmp = cachedSubclassOf.get(d1);
 		Boolean tmp2 = null;

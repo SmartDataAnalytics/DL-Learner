@@ -44,4 +44,17 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 		cbdGen.setRecursionDepth(maxRecursionDepth);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
+	 */
+	@Override
+	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
+		Model cbd = cache.get(resourceURI);
+		if(cbd == null){
+			cbd = cbdGen.getConciseBoundedDescription(resourceURI, depth, withTypesForLeafs);
+			cache.put(resourceURI, cbd);
+		}
+		return cbd;
+	}
+
 }

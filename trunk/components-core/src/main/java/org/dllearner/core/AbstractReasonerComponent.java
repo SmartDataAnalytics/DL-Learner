@@ -24,11 +24,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.owl.Axiom;
@@ -40,12 +40,13 @@ import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.core.owl.Property;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
@@ -1219,6 +1220,15 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	public int getNrOfMultiInstanceChecks() {
 		return nrOfMultiInstanceChecks;
+	}
+	
+	public boolean isSubPropertyOf(Property subProperty, Property superProperty){
+		if(subProperty instanceof ObjectProperty && superProperty instanceof ObjectProperty){
+			return roleHierarchy.isSubpropertyOf((ObjectProperty)subProperty, (ObjectProperty)superProperty);
+		} else if(subProperty instanceof DatatypeProperty && superProperty instanceof DatatypeProperty){
+			return datatypePropertyHierarchy.isSubpropertyOf((DatatypeProperty)subProperty, (DatatypeProperty)superProperty);
+		}
+		return false;
 	}
 
 	@Override

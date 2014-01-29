@@ -43,7 +43,8 @@ public class KnowledgebaseSampleGenerator {
 	
 	private static final Logger logger = Logger.getLogger(KnowledgebaseSampleGenerator.class.getName());
 	
-	public static String cacheDir = "sparql-cache";
+	public static String cacheDir = "cache/samples/";
+	public static String sparqlCacheDir = "sparql-cache";
 	public static int maxCBDDepth = 1;
 	
 	public static Model createKnowledgebaseSample(SparqlEndpoint endpoint, String namespace, Set<NamedClass> classes, int maxNrOfInstancesPerClass){
@@ -54,13 +55,13 @@ public class KnowledgebaseSampleGenerator {
 		HashFunction hf = Hashing.md5();
 		HashCode hc = hf.newHasher().putString(endpoint.getURL().toString(), Charsets.UTF_8).
 				putInt(classes.hashCode()).hash();
-		String filename = hc.toString() + "-instances" + maxNrOfInstancesPerClass + "-depth" + maxCBDDepth + ".ttl.bz2";
+		String filename = cacheDir + hc.toString() + "-instances" + maxNrOfInstancesPerClass + "-depth" + maxCBDDepth + ".ttl.bz2";
 		File file = new File(filename);
 		
 		if(!file.exists()){//if not exists
 			logger.info("Asking endpoint...");
-			SPARQLReasoner reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cacheDir);
-			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDir, maxCBDDepth);
+			SPARQLReasoner reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), sparqlCacheDir);
+			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, sparqlCacheDir, maxCBDDepth);
 			
 			//get for each class n instances and compute the CBD for each instance
 			for (NamedClass cls : classes) {
@@ -71,7 +72,7 @@ public class KnowledgebaseSampleGenerator {
 				int cnt = 0;
 				for (Individual individual : individuals) {
 					try {
-						cbd = cbdGen.getConciseBoundedDescription(individual.getName(), maxCBDDepth);
+						cbd = cbdGen.getConciseBoundedDescription(individual.getName(), maxCBDDepth, true);
 						model.add(cbd);
 						if(cnt++ == maxNrOfInstancesPerClass){
 							break;
@@ -123,19 +124,19 @@ public class KnowledgebaseSampleGenerator {
 		//try to load existing sample from file system
 		HashFunction hf = Hashing.md5();
 		HashCode hc = hf.newHasher().putString(endpoint.getURL().toString(), Charsets.UTF_8).putInt(individuals.hashCode()).hash();
-		String filename = hc.toString() + "-depth" + maxCBDDepth + ".ttl.bz2";
+		String filename = cacheDir + hc.toString() + "-depth" + maxCBDDepth + ".ttl.bz2";
 		File file = new File(filename);
 		
 		if(!file.exists()){//if not exists
 			logger.info("Generating sample...");
 			long startTime = System.currentTimeMillis();
-			SPARQLReasoner reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cacheDir);
-			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDir, maxCBDDepth);
+			SPARQLReasoner reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), sparqlCacheDir);
+			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, sparqlCacheDir, maxCBDDepth);
 			
 			Model cbd;
 			for (Individual individual : individuals) {
 				try {
-					cbd = cbdGen.getConciseBoundedDescription(individual.getName(), maxCBDDepth);
+					cbd = cbdGen.getConciseBoundedDescription(individual.getName(), maxCBDDepth, true);
 					model.add(cbd);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -187,7 +188,7 @@ public class KnowledgebaseSampleGenerator {
 		//try to load existing sample from file system
 		HashFunction hf = Hashing.md5();
 		HashCode hc = hf.newHasher().putString(endpoint.getURL().toString(), Charsets.UTF_8).hash();
-		String filename = hc.toString()
+		String filename = cacheDir + hc.toString()
 				+ ("-classes" + ((maxNrOfClasses == Integer.MAX_VALUE) ? "all" : maxNrOfClasses))
 				+ "-instances" + maxNrOfInstancesPerClass + "-depth" + maxCBDDepth + ".ttl.bz2";
 		File file = new File(filename);
@@ -195,8 +196,8 @@ public class KnowledgebaseSampleGenerator {
 		if(!file.exists()){//if not exists
 			logger.info("Generating sample...");
 			long startTime = System.currentTimeMillis();
-			SPARQLReasoner reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cacheDir);
-			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDir);
+			SPARQLReasoner reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), sparqlCacheDir);
+			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, sparqlCacheDir);
 			
 			//get all OWL classes
 			Set<NamedClass> classes = reasoner.getOWLClasses(namespace);
@@ -215,7 +216,7 @@ public class KnowledgebaseSampleGenerator {
 				int cnt = 0;
 				for (Individual individual : individuals) {
 					try {
-						cbd = cbdGen.getConciseBoundedDescription(individual.getName(), maxCBDDepth);
+						cbd = cbdGen.getConciseBoundedDescription(individual.getName(), maxCBDDepth, true);
 						model.add(cbd);
 						if(cnt++ == maxNrOfInstancesPerClass){
 							break;

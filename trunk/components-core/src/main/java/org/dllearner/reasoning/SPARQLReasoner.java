@@ -1476,7 +1476,7 @@ String query = String.format(queryTemplate, dp.getName());
 	@Override
 	public Set<Description> getAssertedDefinitions(NamedClass namedClass) {
 		Set<Description> definitions = new HashSet<Description>();
-		String query = String.format("SELECT ?class { {<%s> <%s> ?class. FILTER(isIRI(?class))} UNION {?class. <%s> <%s>. FILTER(isIRI(?class))} }", 
+		String query = String.format("SELECT ?class { {<%s> <%s> ?class. FILTER(isIRI(?class))} UNION {?class <%s> <%s>. FILTER(isIRI(?class))} }", 
 				namedClass.getURI().toString(),
 				OWL.equivalentClass.getURI(),
 				OWL.equivalentClass.getURI(),

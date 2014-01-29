@@ -17,12 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.core.owl;
+package org.dllearner.algorithms.elcopy;
+
+import java.util.Comparator;
 
 /**
  * @author Jens Lehmann
  *
  */
-public interface DataRange extends PropertyRange {
-	boolean isDatatype();
+public class ELDescriptionEdgeComparator implements Comparator<ELDescriptionEdge> {
+
+	private ELDescriptionNodeComparator nodeComp;
+	
+	public ELDescriptionEdgeComparator() {
+		nodeComp = new ELDescriptionNodeComparator();
+	}	
+	
+	@Override
+	public int compare(ELDescriptionEdge edge1, ELDescriptionEdge edge2) {
+		// perform string comparison on node labels
+		int comp = edge1.getLabel().getURI().compareTo(edge2.getLabel().getURI());
+		if(comp==0) {
+			return nodeComp.compare(edge1.getNode(), edge2.getNode());
+		} else {
+			return comp;
+		}
+	}
+
 }

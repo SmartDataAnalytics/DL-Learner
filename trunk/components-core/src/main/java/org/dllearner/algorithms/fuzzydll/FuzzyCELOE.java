@@ -52,9 +52,7 @@ import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.FuzzyPosNegLP;
-import org.dllearner.learningproblems.FuzzyPosNegLPStandard;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.OperatorInverter;
@@ -831,35 +829,11 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 		return startNode;
 	}
 	
-	// central function for printing description
-	private String descriptionToString(Description description) {
-		return description.toManchesterSyntaxString(baseURI, prefixes);
-	}
-	
 	@SuppressWarnings("unused")
 	private String bestDescriptionToString() {
 		EvaluatedDescription best = bestEvaluatedDescriptions.getBest();
 		return best.getDescription().toManchesterSyntaxString(baseURI, prefixes) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
 	}	
-	
-	private String getSolutionString() {
-		int current = 1;
-		String str = "";
-		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
-			// temporary code
-			// changed by Josue
-			if(learningProblem instanceof PosNegLPStandard) {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
-			} else if (learningProblem instanceof FuzzyPosNegLPStandard) {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((FuzzyPosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((FuzzyPosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
-			} else {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
-//				System.out.println(ed);
-			}
-			current++;
-		}
-		return str;
-	}
 
 //	private String getTemporaryString(Description description) {
 //		return descriptionToString(description) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")";

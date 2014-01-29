@@ -17,12 +17,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.core.owl;
+package org.dllearner.algorithms.elcopy;
+
+import java.util.Set;
+
+import org.dllearner.core.owl.Property;
 
 /**
+ * Convenience class representing an EL description tree and a set of roles.
+ * 
  * @author Jens Lehmann
  *
  */
-public interface DataRange extends PropertyRange {
-	boolean isDatatype();
+public class TreeAndRoleSet {
+
+	private ELDescriptionTree tree;
+	private Set<Property> roles;
+	
+	public TreeAndRoleSet(ELDescriptionTree tree, Set<Property> roles) {
+		this.tree = tree;
+		this.roles = roles;
+	}
+
+	/**
+	 * @return the tree
+	 */
+	public ELDescriptionTree getTree() {
+		return tree;
+	}
+
+	/**
+	 * @return the roles
+	 */
+	public Set<Property> getRoles() {
+		return roles;
+	}
+	
+	@Override
+	public String toString() {
+		return "("+tree.toDescriptionString() + "," + roles.toString()+")";
+	}
+	
 }

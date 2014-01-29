@@ -47,6 +47,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
+import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
@@ -73,6 +74,7 @@ import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -80,6 +82,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLEntity;
@@ -122,6 +125,7 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
@@ -357,6 +361,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         if (!inconsistentOntology) {
             reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
         } else {
+        	PelletExplanation expGen = new PelletExplanation(ontology);
+        	System.out.println(expGen.getInconsistencyExplanation());
         	reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
             throw new ComponentInitException("Inconsistent ontologies.");
         }
@@ -692,6 +698,23 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
        return Thing.instance;
 
     }
+    
+    @Override
+    public DataRange getRangeImpl(DatatypeProperty datatypeProperty) {
+    	OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
+    	Set<OWLDataPropertyRangeAxiom> axioms = ontology.getDataPropertyRangeAxioms(prop);
+    	if(!axioms.isEmpty()){
+    		OWLDataPropertyRangeAxiom axiom = axioms.iterator().next();
+    		OWLDataRange range = axiom.getRange();
+    		if(range.isDatatype()){
+    			return new Datatype(range.asOWLDatatype().toStringID());
+    		} else {
+    			throw new UnsupportedOperationException("Can not handle data ranges.");
+    		}
+    	} else {
+    		return new Datatype(org.semanticweb.owlapi.vocab.OWL2Datatype.RDFS_LITERAL.getIRI().toString());
+    	}
+    }
 
     private Description getDescriptionFromReturnedDomain(NodeSet<OWLClass> set) {
         if (set.isEmpty()) return new Thing();
@@ -824,9 +847,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.getName()));
 
             // get all related values via OWL API
-            Set<OWLLiteral> constants = null;
-
-            constants = reasoner.getDataPropertyValues(ind, prop);
+            Set<OWLLiteral> constants = reasoner.getDataPropertyValues(ind, prop);
 
             // convert data back to DL-Learner structures
             SortedSet<Constant> is = new TreeSet<Constant>();

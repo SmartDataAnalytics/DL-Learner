@@ -75,6 +75,14 @@ public class DoubleMaxValue implements SimpleDoubleDataRange {
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
 		return " <= " + value;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.DataRange#isDatatype()
+	 */
+	@Override
+	public boolean isDatatype() {
+		return false;
 	}	
 	
 }
