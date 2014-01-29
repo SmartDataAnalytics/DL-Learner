@@ -879,7 +879,7 @@ public class Enrichment {
 	}
 	
 	private void filter(Model model) {
-		// filter out triples with String literals, as there often occur
+		// filter out triples with String literals, as therein often occur
 		// some syntax errors and they are not relevant for learning
 		List<Statement> statementsToRemove = new ArrayList<Statement>();
 		List<Statement> statementsToAdd = new ArrayList<Statement>();

@@ -436,12 +436,10 @@ public class EnrichmentServlet extends HttpServlet {
 		long startTime = System.currentTimeMillis();
 		System.out.print("finding negatives ... ");
 		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
-		SortedSet<String> negExStr = finder.getNegativeExamples(nc.getName(), posExStr);
-		negExStr = SetManipulation.fuzzyShrink(negExStr, 20);
-		SortedSet<Individual> negExamples = Helper.getIndividualSet(negExStr);
+		SortedSet<Individual> negExamples = finder.getNegativeExamples(nc, posExamples, 20);
 		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
 		long runTime = System.currentTimeMillis() - startTime;
-		System.out.println("done (" + negExStr.size()+ " examples fround in " + runTime + " ms)");
+		System.out.println("done (" + negExamples.size()+ " examples fround in " + runTime + " ms)");
 		
         SparqlKnowledgeSource ks2;
 		AbstractReasonerComponent rc;
