@@ -168,25 +168,30 @@ public class ConceptComparator implements Comparator<Description> {
 				int cmp = rc.compare(dp, dp2);
 
 				if(cmp == 0) {
-					SimpleDoubleDataRange dr = (SimpleDoubleDataRange) dsr.getDataRange();
-					SimpleDoubleDataRange dr2 = (SimpleDoubleDataRange) dsr2.getDataRange();					
-					
-					// equal classes
-					if((dr instanceof DoubleMaxValue && dr2 instanceof DoubleMaxValue)
-							|| (dr instanceof DoubleMinValue && dr2 instanceof DoubleMinValue)) {
-						double val1 = dr.getValue();
-						double val2 = dr2.getValue();
-						if(val1 > val2)
-							return 1;
-						else if(val1 == val2)
-							return 0;
-						else
-							return -1;		
+					if(dsr.getDataRange() instanceof SimpleDoubleDataRange && dsr2.getDataRange() instanceof SimpleDoubleDataRange){
+						SimpleDoubleDataRange dr = (SimpleDoubleDataRange) dsr.getDataRange();
+						SimpleDoubleDataRange dr2 = (SimpleDoubleDataRange) dsr2.getDataRange();					
 						
-					} else if(dr instanceof DoubleMaxValue)
-						return 1;
-					else
-						return -1;
+						// equal classes
+						if((dr instanceof DoubleMaxValue && dr2 instanceof DoubleMaxValue)
+								|| (dr instanceof DoubleMinValue && dr2 instanceof DoubleMinValue)) {
+							double val1 = dr.getValue();
+							double val2 = dr2.getValue();
+							if(val1 > val2)
+								return 1;
+							else if(val1 == val2)
+								return 0;
+							else
+								return -1;		
+							
+						} else if(dr instanceof DoubleMaxValue)
+							return 1;
+						else
+							return -1;
+					} else {
+						return dsr.getDataRange().toString().compareTo(dsr2.getDataRange().toString());
+					}
+					
 				} else
 					return cmp;				
 			} else

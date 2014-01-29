@@ -17,7 +17,7 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 	}
 
 	@Override
-	public double getRelevance(Entity entityA, Entity entityB){
+	public synchronized double getRelevance(Entity entityA, Entity entityB){
 		long nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
 		long nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
 		long nrOfDocumentsAB = index.getNumberOfDocumentsFor(entityA, entityB);
@@ -34,7 +34,7 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 	}
 	
 	@Override
-	public double getNormalizedRelevance(Entity entityA, Entity entityB){
+	public synchronized double getNormalizedRelevance(Entity entityA, Entity entityB){
 		long nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
 		long nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
 		long nrOfDocumentsAB = index.getNumberOfDocumentsFor(entityA, entityB);

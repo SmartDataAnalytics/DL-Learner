@@ -83,6 +83,17 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		return getModelChunked(resourceURI, depth);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#getConciseBoundedDescription(java.lang.String, int, boolean)
+	 */
+	@Override
+	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
+		String query = makeConstructQueryOptional(resourceURI, depth, withTypesForLeafs);
+		QueryExecution qe = qef.createQueryExecution(query);
+		Model model = qe.execConstruct();
+		return model;
+	}
+	
 	public void setChunkSize(int chunkSize) {
 		this.chunkSize = chunkSize;
 	}
@@ -140,6 +151,44 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		return sb.toString();
 	}
 	
+	/**
+	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given example with a specific recursion depth.
+	 * @param example The example resource for which a CONSTRUCT query is created.
+	 * @return The JENA ARQ Query object.
+	 */
+	private String makeConstructQueryOptional(String resource, int depth, boolean withTypesForLeafs){
+		int lastIndex = Math.max(0, depth - 1);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("CONSTRUCT {\n");
+		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
+//		sb.append("?p0 a ?type0.\n");
+		for(int i = 1; i < depth; i++){
+			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
+		}
+		if(withTypesForLeafs){
+			sb.append("?o").append(lastIndex).append(" a ?type.\n");
+		}
+		sb.append("}\n");
+		sb.append("WHERE {\n");
+		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
+		sb.append(createNamespacesFilter("?p0"));
+//		sb.append("?p0 a ?type0.\n");
+		for(int i = 1; i < depth; i++){
+			sb.append("OPTIONAL{\n");
+			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
+			sb.append(createNamespacesFilter("?p" + i));
+		}
+		if(withTypesForLeafs){
+			sb.append("OPTIONAL{?o").append(lastIndex).append(" a ?type.}\n");
+		}
+		for(int i = 1; i < depth; i++){
+			sb.append("}");
+		}
+		sb.append("}\n");
+		return sb.toString();
+	}
+	
 	private String createNamespacesFilter(String targetVar){
 		String filter = "";
 		if(namespaces != null){
@@ -164,5 +213,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 3);
 		System.out.println(cbd.size());
 	}
+
+	
 
 }

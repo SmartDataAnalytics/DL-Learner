@@ -125,8 +125,7 @@ public final class ComponentManager {
             "org.dllearner.algorithms.el.ELLearningAlgorithm",
             "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
             "org.dllearner.algorithms.celoe.CELOE",
-            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE", //added by Josue
-            "org.dllearner.algorithms.isle.ISLE"
+            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE" //added by Josue
      } ));
 
 	private static ComponentManager cm = null;	

@@ -81,5 +81,13 @@ public class BooleanDataRange implements DataRange {
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.DataRange#isDatatype()
+	 */
+	@Override
+	public boolean isDatatype() {
+		return false;
 	}	
 }

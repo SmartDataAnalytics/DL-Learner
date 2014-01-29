@@ -75,6 +75,29 @@ public class DatatypePropertyHierarchy {
 		return str;
 	}
 	
+	/**
+	 * Implements a subsumption check using the hierarchy (no further
+	 * reasoning checks are used).
+	 * @param subProperty The (supposedly) more special property.
+	 * @param superProperty The (supposedly) more general property.
+	 * @return True if <code>subProperty</code> is a subproperty of <code>superProperty</code>.
+	 */
+	public boolean isSubpropertyOf(DatatypeProperty subProperty, DatatypeProperty superProperty) {
+		if(subProperty.equals(superProperty)) {
+			return true;
+		} else {
+//			System.out.println("oph: " + subProperty + " " + superProperty);
+			for(DatatypeProperty moreGeneralProperty : roleHierarchyUp.get(subProperty)) {	
+				if(isSubpropertyOf(moreGeneralProperty, superProperty)) {
+					return true;
+				}
+			}
+			// we cannot reach the class via any of the upper classes,
+			// so it is not a super class
+			return false;
+		}
+	}	
+	
 	private String toString(TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> hierarchy, DatatypeProperty role, int depth) {
 		String str = "";
 		for(int i=0; i<depth; i++)

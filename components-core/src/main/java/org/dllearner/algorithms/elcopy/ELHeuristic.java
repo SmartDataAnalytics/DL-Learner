@@ -17,12 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.core.owl;
+package org.dllearner.algorithms.elcopy;
+
+import java.util.Comparator;
 
 /**
+ * Marker interface for heuristics in the EL learning
+ * algorithms. A heuristic implements a method
+ * to decide which one of two given nodes seems to be more
+ * promising with respect to the learning problem we consider.
+ * 
  * @author Jens Lehmann
  *
  */
-public interface DataRange extends PropertyRange {
-	boolean isDatatype();
+public interface ELHeuristic extends Comparator<SearchTreeNode> {
+
 }

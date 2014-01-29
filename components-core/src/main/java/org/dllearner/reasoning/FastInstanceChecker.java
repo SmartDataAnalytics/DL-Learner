@@ -44,6 +44,7 @@ import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
+import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
@@ -71,6 +72,8 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.semanticweb.owlapi.owllink.builtin.requests.IsDataPropertySatisfiable;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
@@ -119,6 +122,10 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	private Map<NamedClass, TreeSet<Individual>> classInstancesNeg = new TreeMap<NamedClass, TreeSet<Individual>>();
 	// object property mappings
 	private Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos = new TreeMap<ObjectProperty, Map<Individual, SortedSet<Individual>>>();
+	// data property mappings
+	private Map<DatatypeProperty, Map<Individual, SortedSet<Constant>>> dpPos = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Constant>>>();
+		
+	
 	// datatype property mappings
 	// we have one mapping for true and false for efficiency reasons
 	private Map<DatatypeProperty, TreeSet<Individual>> bdPos = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
@@ -282,6 +289,10 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			}
 			
 			logger.debug("dematerialising datatype properties");
+			
+			for (DatatypeProperty atomicRole : datatypeProperties) {
+				dpPos.put(atomicRole, rc.getDatatypeMembers(atomicRole));
+			}
 
 			for (DatatypeProperty dp : booleanDatatypeProperties) {
 				bdPos.put(dp, (TreeSet<Individual>) rc.getTrueDatatypeMembers(dp));
@@ -543,6 +554,13 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
 			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
 			DataRange dr = dsr.getDataRange();
+			if(dr.isDatatype() && ((Datatype)dr).isTopDatatype()){
+				 if(dpPos.get(dp).containsKey(individual)){
+					 return true;
+				 } else {
+					 return false;
+				 }
+			}
 			SortedSet<Double> values = dd.get(dp).get(individual);
 
 			// if there is no filler for this individual and property we
@@ -1042,6 +1060,11 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	public Description getRangeImpl(ObjectProperty objectProperty) {
 		return rc.getRange(objectProperty);
 	}
+	
+	@Override
+	public DataRange getRangeImpl(DatatypeProperty datatypeProperty) {
+		return rc.getRange(datatypeProperty);
+	}
 
 	@Override
 	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
@@ -1073,7 +1096,8 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	@Override
 	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(
 			DatatypeProperty datatypeProperty) {
-		return rc.getDatatypeMembersImpl(datatypeProperty);
+		return dpPos.get(datatypeProperty);
+//		return rc.getDatatypeMembersImpl(datatypeProperty);
 	}		
 	
 	@Override

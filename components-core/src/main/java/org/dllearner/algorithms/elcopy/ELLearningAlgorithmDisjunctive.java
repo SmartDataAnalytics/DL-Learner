@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.algorithms.el;
+package org.dllearner.algorithms.elcopy;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -41,7 +41,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.refinementoperators.ELDown2;
+import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
 
 /**
@@ -88,7 +88,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	String baseURI;
 	Map<String,String> prefixes;
 	
-	private ELDown2 operator;
+	private ELDown3 operator;
 	private DescriptionMinimizer minimizer;
 	
 	private boolean isRunning = false;
@@ -162,7 +162,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		if(startClass == null) {
 			startClass = Thing.instance;
 		}
-		operator = new ELDown2(reasoner, instanceBasedDisjoints);
+		operator = new ELDown3(reasoner, instanceBasedDisjoints);
 		
 //		noise = configurator.getNoisePercentage()/(double)100;
 		

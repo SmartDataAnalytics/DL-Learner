@@ -21,7 +21,10 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
+import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.IRI;
+
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 
 /**
@@ -31,13 +34,22 @@ import org.semanticweb.owlapi.model.IRI;
 public class Datatype implements DataRange, Comparable<Datatype> {
 	
     private IRI iri;
+    private boolean isTopDatatype = false;
 
     public Datatype(String iriString) {
     	iri = IRI.create(iriString);
+    	isTopDatatype = iriString.equals(RDFS.Literal.getURI());
     }
 
 	public IRI getIRI() {
 		return iri;
+	}
+	
+	/**
+	 * @return the isTopDatatype
+	 */
+	public boolean isTopDatatype() {
+		return isTopDatatype;
 	}
 
 	@Override
@@ -66,7 +78,7 @@ public class Datatype implements DataRange, Comparable<Datatype> {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return iri.toString();
+		return Helper.getAbbreviatedString(iri.toString(), baseURI, prefixes);
 	}
 
 	@Override
@@ -98,4 +110,12 @@ public class Datatype implements DataRange, Comparable<Datatype> {
 	public int compareTo(Datatype o) {
 		return this.getIRI().compareTo(o.getIRI());
 	}	
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.DataRange#isDatatype()
+	 */
+	@Override
+	public boolean isDatatype() {
+		return true;
+	}
 }

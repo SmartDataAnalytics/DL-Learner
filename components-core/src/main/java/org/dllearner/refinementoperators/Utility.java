@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -51,7 +52,7 @@ public final class Utility {
 		
 	private AbstractReasonerComponent reasoner;
 	ClassHierarchy sh; 
-	private Map<ObjectProperty,Description> opDomains;
+	
 	
 	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();	
@@ -65,6 +66,9 @@ public final class Utility {
 		
 	// cache for applicaple object properties
 	private Map<Description, SortedSet<ObjectProperty>> appOPCache = new TreeMap<Description, SortedSet<ObjectProperty>>(conceptComparator);
+	private Map<Description, SortedSet<DatatypeProperty>> appDPCache = new TreeMap<Description, SortedSet<DatatypeProperty>>(conceptComparator);
+	private Map<ObjectProperty,Description> opDomains;
+	private Map<DatatypeProperty, Description> dpDomains;
 	
 	public Utility(AbstractReasonerComponent rs) {
 		throw new Error("not implemented yet");
@@ -72,6 +76,15 @@ public final class Utility {
 	
 	public Utility(AbstractReasonerComponent rs, Map<ObjectProperty,Description> opDomains, boolean instanceBasedDisjoints) {
 		this.reasoner = rs;
+		sh = rs.getClassHierarchy();
+		// we cache object property domains
+		this.opDomains = opDomains;
+		this.instanceBasedDisjoints = instanceBasedDisjoints;
+	}
+	
+	public Utility(AbstractReasonerComponent rs, Map<ObjectProperty,Description> opDomains, Map<DatatypeProperty,Description> dpDomains, boolean instanceBasedDisjoints) {
+		this.reasoner = rs;
+		this.dpDomains = dpDomains;
 		sh = rs.getClassHierarchy();
 		// we cache object property domains
 		this.opDomains = opDomains;
@@ -106,6 +119,33 @@ public final class Utility {
 	}
 	
 	/**
+	 * Compute the set of applicable data properties for a 
+	 * given description. 
+	 * 
+	 * @param index The index is a description which determines
+	 * which of the properties are applicable. Exactly those which
+	 * where the index and property domain are not disjoint are 
+	 * applicable, where disjoint is defined by {@link #isDisjoint(Description, Description)}.
+	 * 
+	 */
+	public SortedSet<DatatypeProperty> computeApplicableDatatypeProperties(Description index) {
+		// use a cache, because large ontologies can have many data properties
+		SortedSet<DatatypeProperty> applicableDatatypeProperties = appDPCache.get(index);
+		if(applicableDatatypeProperties == null) {
+			Set<DatatypeProperty> datatypeProperties = reasoner.getDatatypeProperties();
+			applicableDatatypeProperties = new TreeSet<DatatypeProperty>();
+			for(DatatypeProperty op : datatypeProperties) {
+				Description domain = dpDomains.get(op);
+				if(!isDisjoint(index,domain)) {
+					applicableDatatypeProperties.add(op);
+				}
+			}
+			appDPCache.put(index, applicableDatatypeProperties);
+		}
+		return applicableDatatypeProperties;		
+	}
+	
+	/**
 	 * Given a set of applicable object properties, this method returns
 	 * the most general ones, i.e. those where more general ones do not
 	 * exist in the set of applicable properties. Due to the definition
@@ -119,6 +159,22 @@ public final class Utility {
 	 */
 	public Set<ObjectProperty> computeMgr(Set<ObjectProperty> applicableObjectProperties) {
 		return Helper.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties);
+	}
+	
+	/**
+	 * Given a set of applicable data properties, this method returns
+	 * the most general ones, i.e. those where more general ones do not
+	 * exist in the set of applicable properties. Due to the definition
+	 * of "applicable", the returned set is just the intersection of the most
+	 * general object properties and the applicable properties. (A non-applicable
+	 * property cannot have applicable subproperties, because subproperties
+	 * can only restrict, but not broaden their domain.)
+	 * 
+	 * @param applicableDatatypeProperties The set of applicable properties.
+	 * @return The most general applicable properties.
+	 */
+	public Set<DatatypeProperty> computeMgrDP(Set<DatatypeProperty> applicableDatatypeProperties) {
+		return Helper.intersection(reasoner.getMostGeneralDatatypeProperties(), applicableDatatypeProperties);
 	}
 	
 	public Set<NamedClass> getClassCandidates(Description index, Set<NamedClass> existingClasses) {

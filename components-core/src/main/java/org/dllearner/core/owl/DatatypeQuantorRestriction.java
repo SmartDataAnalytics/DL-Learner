@@ -34,6 +34,10 @@ public abstract class DatatypeQuantorRestriction extends QuantorRestriction {
 	 */
 	private static final long serialVersionUID = 7230621629431369625L;
 
+	public DatatypeProperty getRole() {
+		return (DatatypeProperty) restrictedPropertyExpression;
+	}
+	
 	/**
 	 * Creates a <code>DatatypeQuantorRestriction</code> along the 
 	 * given property.

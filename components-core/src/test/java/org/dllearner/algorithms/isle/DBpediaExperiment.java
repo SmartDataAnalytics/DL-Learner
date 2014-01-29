@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,19 +28,24 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.elcopy.ELLearningAlgorithm;
 import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.algorithms.isle.index.RelevanceMapGenerator;
 import org.dllearner.algorithms.isle.index.syntactic.SolrSyntacticIndex;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -47,15 +53,17 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.refinementoperators.CustomStartRefinementOperator;
+import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
+import org.dllearner.refinementoperators.OperatorInverter;
+import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.PrefixCCMap;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
-import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -67,6 +75,8 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -89,7 +99,7 @@ public class DBpediaExperiment {
 	private DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	HashFunction hf = Hashing.md5();
 	
-	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLOD2Cloud();
 	String namespace = "http://dbpedia.org/ontology/";
 	OWLOntology schema;
 	
@@ -97,7 +107,7 @@ public class DBpediaExperiment {
 	static final String searchField = "comment";
 	
 	String cacheDirectory = "cache/isle";
-	String testFolder = "experiments/logs/";
+	String testFolder = "experiments/isle/logs/";
 	
 	private SPARQLReasoner reasoner;
 	private AutomaticNegativeExampleFinderSPARQL2 negativeExampleFinder;
@@ -109,20 +119,27 @@ public class DBpediaExperiment {
 
 	//learning algorithm settings
 	private int maxNrOfResults = 50;
-	private int maxExecutionTimeInSeconds = 20;
+	private int maxExecutionTimeInSeconds = 10;
 	private boolean useNegation = false;
 	private boolean useAllConstructor = false;
 
 	private RelevanceMetric relevanceMetric;
 	
-	File resultsFolder = new File("experiments/isle/result3/");
+	String experimentsFolder = "experiments/isle/";
+	File resultsFolder = new File(experimentsFolder + "result/");
+	
+
+	private boolean useEL = true;
+	private boolean forceLongDescriptions = true;
 			
 	
 	public DBpediaExperiment() {
 		reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cacheDirectory);
-		negativeExampleFinder = new AutomaticNegativeExampleFinderSPARQL2(endpoint);
+		negativeExampleFinder = new AutomaticNegativeExampleFinderSPARQL2(endpoint, reasoner);
 		KnowledgebaseSampleGenerator.maxCBDDepth = maxCBDDepth;
-		RelevanceMapGenerator.cacheDirectory = "experiments/relevance/";
+		new File(experimentsFolder + "samples/").mkdirs();
+		KnowledgebaseSampleGenerator.cacheDir = experimentsFolder + "samples/";
+		RelevanceMapGenerator.cacheDirectory = experimentsFolder + "relevance/";
 		
 		loadSchema();
 		
@@ -140,7 +157,7 @@ public class DBpediaExperiment {
 		
 		for (NamedClass cls : classList) {
 			try {
-				File resultsFile = new File(resultsFolder, URLEncoder.encode(cls.getName(), "UTF-8"));
+				File resultsFile = new File(resultsFolder, URLEncoder.encode(cls.getName(), "UTF-8") + ".csv");
 				if(resultsFile.exists()){
 					continue;
 				}
@@ -171,6 +188,7 @@ public class DBpediaExperiment {
 		
 		//generate a sample of the knowledge base based on the examples
 		OWLOntology knowledgebaseSample = loadKnowledgebaseSample(Sets.union(positiveExamples, negativeExamples));
+//		Map<Entity, Double> entityRelevance = RelevanceMapGenerator.generateRelevanceMap(cls, schema, relevanceMetric, true);
 		
 		//set up the learning
 		try {
@@ -196,50 +214,81 @@ public class DBpediaExperiment {
 			}
 			lp.init();
 			
-			
+			/**
+			Monitor mon = MonitorFactory.getTimeMonitor("time");
+			Individual ex = positiveExamples.iterator().next();
+			Description r = new DatatypeSomeRestriction(new DatatypeProperty("http://dbpedia.org/ontology/Astronaut/timeInSpace"), new Datatype("http://www.w3.org/2000/01/rdf-schema#Literal"));
+			mon.start();
+			reasoner.hasType(r, ex);
+//			lp.getAccuracyOrTooWeak(r, 0.3d);
+			mon.stop();
+			System.out.println(mon.getLastValue());
+			r = new ObjectSomeRestriction(new ObjectProperty("http://dbpedia.org/ontology/nationality"), new NamedClass("http://dbpedia.org/ontology/Country"));
+			mon.start();
+			reasoner.hasType(r, ex);
+//			lp.getAccuracyOrTooWeak(r, 0.3d);
+			mon.stop();
+			System.out.println(mon.getLastValue());
+			**/
+			// 1. run basic algorithm
+			//set up the refinement operator and the allowed OWL constructs
 			RhoDRDown rop = new RhoDRDown();
 			rop.setReasoner(reasoner);
 			rop.setUseNegation(useNegation);
 			rop.setUseAllConstructor(useAllConstructor);
 			rop.init();
 			
-			//
-			Map<Entity, Double> entityRelevance = RelevanceMapGenerator.generateRelevanceMap(cls, schema, relevanceMetric, true);
-			
 			//get the start class for the learning algorithms
-//			Description startClass = getStartClass(cls, equivalence, true);
-			
-			// 1. run basic ISLE
-			CELOE la = new CELOE(lp, reasoner);
-			la.setMaxNrOfResults(maxNrOfResults);
-			la.setOperator(rop);
-			la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-//			isle.setStartClass(startClass);
-			new File(testFolder).mkdirs();
-			la.setSearchTreeFile(testFolder  + "searchTreeISLE.txt");
-			la.setWriteSearchTree(true);
-//			isle.setTerminateOnNoiseReached(true);
-			la.setIgnoredConcepts(Collections.singleton(cls));
-			la.setReplaceSearchTree(true);
-			la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-			la.setExpandAccuracy100Nodes(true);
+			Description startClass = getStartClass(rop, reasoner, cls, true, true);
+			AbstractCELA la;
+			if(useEL){
+				la = new ELLearningAlgorithm(lp, reasoner);
+				((ELLearningAlgorithm)la).setNoisePercentage(30);
+				((ELLearningAlgorithm)la).setStartClass(startClass);
+				((ELLearningAlgorithm)la).setIgnoredConcepts(Sets.newHashSet(cls));
+				((ELLearningAlgorithm)la).setClassToDescribe(cls);
+				((ELLearningAlgorithm)la).setTreeSearchTimeSeconds(maxExecutionTimeInSeconds);
+//				la = new ELLearningAlgorithmDisjunctive(lp, reasoner);
+			} else {
+				//build CELOE la
+				CELOE laTmp = new CELOE(lp, reasoner);
+				laTmp.setMaxNrOfResults(maxNrOfResults);
+				laTmp.setOperator(rop);
+				laTmp.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+				laTmp.setStartClass(startClass);
+				new File(testFolder).mkdirs();
+				laTmp.setSearchTreeFile(testFolder  + "searchTree.txt");
+				laTmp.setWriteSearchTree(true);
+//				isle.setTerminateOnNoiseReached(true);
+				laTmp.setIgnoredConcepts(Collections.singleton(cls));
+				laTmp.setReplaceSearchTree(true);
+				laTmp.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+				laTmp.setExpandAccuracy100Nodes(true);
+				la = laTmp;
+			}
 			la.init();
 			la.start();
+			Map<Entity, Double> entityRelevance = RelevanceMapGenerator.generateRelevanceMap(cls, schema, relevanceMetric, true);
+			
 			int current = 1;
 			StringBuilder sb = new StringBuilder();
 			for(EvaluatedDescription ed : la.getCurrentlyBestEvaluatedDescriptions().descendingSet()) {
 				if(lp instanceof PosNegLPStandard) {
-					sb.append(current + ": " + ed.getDescription().toManchesterSyntaxString(reasoner.getBaseURI(), reasoner.getPrefixes()) + "," 
-							+ ((PosNegLPStandard)lp).getPredAccuracyOrTooWeakExact(ed.getDescription(),1) + "," 
-							+ ((PosNegLPStandard)lp).getFMeasureOrTooWeakExact(ed.getDescription(),1));
+					double fMeasure = ((PosNegLPStandard)lp).getFMeasureOrTooWeakExact(ed.getDescription(),1);
+					sb.append(ed.getDescription().toManchesterSyntaxString(reasoner.getBaseURI(), reasoner.getPrefixes()) + "," 
+//							+ ((PosNegLPStandard)lp).getPredAccuracyOrTooWeakExact(ed.getDescription(),1) + "," 
+							+ fMeasure);
+					double relevanceScore = getRelevanceScore(ed.getDescription(), entityRelevance);
+					sb.append(",").append(relevanceScore);
+					sb.append(",").append(fMeasure + relevanceScore);
+					sb.append("\n");
 				} 
-				sb.append(",").append(getRelevanceScore(ed.getDescription(), entityRelevance));
-				sb.append("\n");
+				
 				
 				current++;
 			}
 			try {
-				Files.write(sb.toString(), new File(resultsFolder, URLEncoder.encode(cls.getName(), "UTF-8")), Charsets.UTF_8);
+				Files.write(sb.toString(), new File(resultsFolder, URLEncoder.encode(cls.getName(), "UTF-8") + ".csv"), Charsets.UTF_8);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -258,13 +307,89 @@ public class DBpediaExperiment {
 		}
 	}
 	
+	/**
+	 * Computes a better start class instead of owl:Thing.
+	 * @param operator
+	 * @param reasoner
+	 * @param cls
+	 * @param isEquivalenceProblem
+	 * @param reuseExistingDescription
+	 * @return
+	 */
+	private Description getStartClass(RefinementOperator operator, AbstractReasonerComponent reasoner, NamedClass cls, boolean isEquivalenceProblem, boolean reuseExistingDescription){
+		//get instances of class to describe
+		SortedSet<Individual> individuals = reasoner.getIndividuals(cls);
+		
+		//set start class to owl:Thing first
+		Description startClass = Thing.instance;
+		if(operator instanceof CustomStartRefinementOperator) {
+			((CustomStartRefinementOperator)operator).setStartClass(startClass);
+		}
+		if(isEquivalenceProblem) {
+			Set<Description> existingDefinitions = reasoner.getAssertedDefinitions(cls);
+			if(reuseExistingDescription && (existingDefinitions.size() > 0)) {
+				// the existing definition is reused, which in the simplest case means to
+				// use it as a start class or, if it is already too specific, generalise it
+				
+				// pick the longest existing definition as candidate
+				Description existingDefinition = null;
+				int highestLength = 0;
+				for(Description exDef : existingDefinitions) {
+					if(exDef.getLength() > highestLength) {
+						existingDefinition = exDef;
+						highestLength = exDef.getLength();
+					}
+				}
+				
+				LinkedList<Description> startClassCandidates = new LinkedList<Description>();
+				startClassCandidates.add(existingDefinition);
+				// hack for RhoDRDown
+				if(operator instanceof RhoDRDown) {
+					((RhoDRDown)operator).setDropDisjuncts(true);
+				}
+				LengthLimitedRefinementOperator upwardOperator = (LengthLimitedRefinementOperator) new OperatorInverter((LengthLimitedRefinementOperator) operator);
+				
+				// use upward refinement until we find an appropriate start class
+				boolean startClassFound = false;
+				Description candidate;
+				do {
+					candidate = startClassCandidates.pollFirst();
+					SortedSet<Individual> candidateIndividuals = reasoner.getIndividuals(candidate);
+					double recall = Sets.intersection(individuals, candidateIndividuals).size() / (double)individuals.size();
+					if(recall < 1.0) {
+						// add upward refinements to list
+						Set<Description> refinements = upwardOperator.refine(candidate, candidate.getLength());
+						LinkedList<Description> refinementList = new LinkedList<Description>(refinements);
+//						Collections.reverse(refinementList);
+//						System.out.println("list: " + refinementList);
+						startClassCandidates.addAll(refinementList);
+//						System.out.println("candidates: " + startClassCandidates);
+					} else {
+						startClassFound = true;
+					}
+				} while(!startClassFound);
+				startClass = candidate;
+			} else {
+				Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(cls);
+				if(superClasses.size() > 1) {
+					startClass = new Intersection(new LinkedList<Description>(superClasses));
+				} else if(superClasses.size() == 1){
+					startClass = (Description) superClasses.toArray()[0];
+				} else {
+					startClass = Thing.instance;
+				}		
+			}
+		}
+		return startClass;
+	}
+	
 	private double getRelevanceScore(Description desc, Map<Entity, Double> entityRelevance){
 		Set<Entity> entities = desc.getSignature();
 		double score = 0;
 		for (Entity entity : entities) {
 			double relevance = entityRelevance.containsKey(entity) ? entityRelevance.get(entity) : 0;//System.out.println(entity + ":" + relevance);
 			if(!Double.isInfinite(relevance)){
-				score += relevance;
+				score += relevance/entities.size();
 			}
 		}
 		return score;
@@ -272,14 +397,18 @@ public class DBpediaExperiment {
 	
 	private SortedSet<Individual> getPositiveExamples(NamedClass cls){
 		logger.info("Generating positive examples...");
-		SortedSet<Individual> individuals = reasoner.getIndividuals(cls, maxNrOfPositiveExamples);
+		SortedSet<Individual> individuals = reasoner.getIndividuals(cls, 1000);
+		List<Individual> individualsList = new ArrayList<>(individuals);
+//		Collections.shuffle(individualsList, new Random(1234));
+		individuals.clear();
+		individuals.addAll(individualsList.subList(0, Math.min(maxNrOfPositiveExamples, individualsList.size())));
 		logger.info("Done. Got " + individuals.size() + ": " + individuals);
 		return individuals;
 	}
 	
 	private SortedSet<Individual> getNegativeExamples(NamedClass classToDescribe, Set<Individual> positiveExamples){
 		logger.info("Generating positive examples...");
-		SortedSet<Individual> individuals = negativeExampleFinder.getNegativeExamples(classToDescribe, positiveExamples, Arrays.asList(SUPERCLASS, SIBLING), maxNrOfNegativeExamples);
+		SortedSet<Individual> individuals = negativeExampleFinder.getNegativeExamples(classToDescribe, positiveExamples, Arrays.asList(SIBLING, SUPERCLASS), maxNrOfNegativeExamples);
 		logger.info("Done. Got " + individuals.size() + ": " + individuals);
 		return individuals;
 	}
@@ -300,6 +429,12 @@ public class DBpediaExperiment {
 		sampleModel.setNsPrefix("dbo", "http://dbpedia.org/ontology/");
 		logger.info("Done. Size: " + sampleModel.size() + " triples");
 		cleanUp(sampleModel);
+		logger.info("Clean up. Size: " + sampleModel.size() + " triples");
+//		String query = "SELECT distinct ?s WHERE {?s a <http://dbpedia.org/ontology/Astronaut>. ?s <http://dbpedia.org/ontology/mission> ?o.}";
+//		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(query, sampleModel).execSelect()));
+//		query = "SELECT distinct ?s WHERE {?s a <http://dbpedia.org/ontology/Astronaut>. ?s <http://dbpedia.org/ontology/timeInSpace> ?o. }";
+//		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(query, sampleModel).execSelect()));
+		
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			sampleModel.write(baos, "TURTLE", null);
@@ -322,6 +457,12 @@ public class DBpediaExperiment {
 	}
 	
 	private void cleanUp(Model model){
+		String dbo = "http://dbpedia.org/ontology/";
+		Set<String> blackList = Sets.newHashSet(
+				dbo + "wikiPageDisambiguates",
+				dbo + "wikiPageExternalLink",
+				dbo + "wikiPageID", dbo + "wikiPageInterLanguageLink", dbo + "wikiPageRedirects", dbo + "wikiPageRevisionID",
+				dbo + "wikiPageWikiLink", dbo + "thumbnail", dbo + "abstract");System.out.println(blackList);
 			// filter out triples with String literals, as therein often occur
 			// some syntax errors and they are not relevant for learning
 			List<Statement> statementsToRemove = new ArrayList<Statement>();
@@ -331,8 +472,11 @@ public class DBpediaExperiment {
 				if (object.isLiteral()) {
 					// statementsToRemove.add(st);
 					Literal lit = object.asLiteral();
-					if (lit.getDatatype() == null || lit.getDatatype().equals(XSD.xstring)) {
-						st.changeObject("shortened", "en");
+					if (lit.getDatatype() == null ) {
+//						st.changeObject("shortened", "en");
+						st.changeObject("shortened");
+					} else if(lit.getDatatype().equals(XSD.xstring)){
+						st.changeObject("shortened");
 					} else if (lit.getDatatype().getURI().equals(XSD.gYear.getURI())) {
 						model.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createTypedLiteral(1111, XSDDatatype.XSDgYear)));
 						statementsToRemove.add(st);
@@ -344,17 +488,6 @@ public class DBpediaExperiment {
 				if (st.getPredicate().equals(RDF.type)) {
 					if (object.equals(RDFS.Class.asNode()) || object.equals(OWL.Class.asNode()) || object.equals(RDFS.Literal.asNode())
 							|| object.equals(RDFS.Resource)) {
-						statementsToRemove.add(st);
-					}
-				}
-
-				//remove unwanted properties
-				String dbo = "http://dbpedia.org/ontology/";
-				Set<String> blackList = Sets.newHashSet(dbo + "wikiPageDisambiguates",dbo + "wikiPageExternalLink",
-						dbo + "wikiPageID", dbo + "wikiPageInterLanguageLink", dbo + "wikiPageRedirects", dbo + "wikiPageRevisionID",
-						dbo + "wikiPageWikiLink");
-				for(String bl: blackList){
-					if (st.getPredicate().getURI().equals(bl)) {
 						statementsToRemove.add(st);
 					}
 				}
@@ -375,9 +508,24 @@ public class DBpediaExperiment {
 					}
 				} else if (!predicate.equals(RDFS.subClassOf) && !predicate.equals(OWL.sameAs) && !predicate.asResource().getURI().startsWith(namespace)) {
 					statementsToRemove.add(st);
+				} else {
+					//remove unwanted properties
+					for(String bl: blackList){
+						if (st.getPredicate().getURI().equals(bl)) {
+							statementsToRemove.add(st);
+						}
+					}
 				}
 			}
 			model.remove(statementsToRemove);
+			
+//			for (Iterator<Statement> iter = model.listStatements().toList().iterator(); iter.hasNext();) {
+//				Statement st = iter.next();
+//				RDFNode object = st.getObject();
+//				if (object.isLiteral()) {
+//					System.out.println(st);
+//				}
+//			}
 	}
 	
 	private Index getSyntacticIndex(){
@@ -419,7 +567,7 @@ public class DBpediaExperiment {
 //		la.start();
 		
 		
-//		new DBpediaExperiment().run();
-		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Sales"));
+		new DBpediaExperiment().run();
+//		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Astronaut"));
 	}
 }

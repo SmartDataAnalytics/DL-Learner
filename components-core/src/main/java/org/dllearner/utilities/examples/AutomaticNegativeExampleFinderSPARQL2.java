@@ -38,16 +38,15 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import com.google.common.collect.Sets;
@@ -72,15 +71,25 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	
 	// for re-using existing queries
 	private SPARQLReasoner sr;
-	private SPARQLTasks st;
 
 	private String namespace;
 	
-	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se) {
+	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se, SPARQLReasoner reasoner) {
+		this(se, reasoner, null);
+	}
+	
+	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se, SPARQLReasoner reasoner, String namespace) {
 		this.se = se;
-		SparqlEndpointKS ks = new SparqlEndpointKS(se);
-		sr = new SPARQLReasoner(ks);
-		st = new SPARQLTasks(se);
+		this.sr = reasoner;
+		this.namespace = namespace;
+	}
+	
+	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se) {
+		this(se, (String) null);
+	}
+	
+	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se, String namespace) {
+		this(se, new SPARQLReasoner(new SparqlEndpointKS(se)));
 	}
 	
 	public AutomaticNegativeExampleFinderSPARQL2(SPARQLReasoner reasoner, String namespace) {
@@ -92,40 +101,12 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		this.sr = reasoner;
 	}
 	
-	/**
-	 * Get negative examples when learning the description of a class, i.e.
-	 * all positives are from some known class.
-	 * 
-	 * Currently, the method implementation is preliminary and does not allow
-	 * to configure internals.
-	 * 
-	 * @param classURI The known class of all positive examples.
-	 * @param positiveExamples The existing positive examples.
-	 */
-	public SortedSet<String> getNegativeExamples(String classURI, SortedSet<String> positiveExamples) {
-		// get some individuals from parallel classes (we perform one query per class to avoid
-		// only getting individuals from a single class)
-		Set<String> parallelClasses = st.getParallelClasses(classURI, 5); // TODO: limit could be configurable
-		SortedSet<String> negEx = new TreeSet<String>();
-		for(String parallelClass : parallelClasses) {
-			Set<String> inds = Datastructures.individualSetToStringSet(sr.getIndividuals(new NamedClass(parallelClass), 10));
-			negEx.addAll(inds);
-			if(negEx.size()>100) {
-				return negEx;
-			}
-		}
-		// add some random instances
-		String query = "SELECT ?inst { ?inst <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x } LIMIT 20";
-		negEx.addAll(st.queryAsSet(query, "?inst"));
-        return negEx;
-	}
-	
 	public SortedSet<Individual> getNegativeExamples(NamedClass classToDescribe, Set<Individual> positiveExamples, int limit) {
 		return getNegativeExamples(classToDescribe, positiveExamples, Arrays.asList(SUPERCLASS, SIBLING, RANDOM), limit);
 	}
 	
 	public SortedSet<Individual> getNegativeExamples(NamedClass classToDescribe, Set<Individual> positiveExamples, Collection<Strategy> strategies, int limit) {
-		Map<Strategy, Double> strategiesWithWeight = new HashMap<Strategy, Double>();
+		Map<Strategy, Double> strategiesWithWeight = Maps.newLinkedHashMap();
 		double weight = 1d/strategies.size();
 		for (Strategy strategy : strategies) {
 			strategiesWithWeight.put(strategy, weight);
@@ -260,17 +241,24 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	
 	private void keepMostSpecificClasses(Multiset<NamedClass> classes){
 		HashMultiset<NamedClass> copy = HashMultiset.create(classes);
-		final ClassHierarchy hierarchy = sr.getClassHierarchy();
 		for (NamedClass nc1 : copy.elementSet()) {
 			for (NamedClass nc2 : copy.elementSet()) {
 				if(!nc1.equals(nc2)){
 					//remove class nc1 if it is superclass of another class nc2
-					if(hierarchy.isSubclassOf(nc2, nc1)){
+					boolean isSubClassOf = false;
+					if(sr.getClassHierarchy() != null){
+						isSubClassOf = sr.getClassHierarchy().isSubclassOf(nc2, nc1);
+					} else {
+						isSubClassOf = sr.isSuperClassOf(nc1, nc2);
+					}
+					if(isSubClassOf){
 						classes.remove(nc1, classes.count(nc1));
 						break;
 					}
 				}
 			}
 		}
+		
+		
 	}
 }

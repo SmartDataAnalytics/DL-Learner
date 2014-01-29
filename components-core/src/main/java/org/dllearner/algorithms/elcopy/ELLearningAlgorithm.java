@@ -17,33 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.algorithms.el;
+package org.dllearner.algorithms.elcopy;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
-import org.dllearner.refinementoperators.ELDown2;
+import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 /**
  * A learning algorithm for EL, which is based on an
@@ -60,7 +66,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
 //	private ELLearningAlgorithmConfigurator configurator;
 	
-	private ELDown2 operator;
+	private ELDown3 operator;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;
@@ -78,12 +84,26 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
 	
+	// the class with which we start the refinement process
+	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
+	private Description startClass;
+	
+	private Set<NamedClass> ignoredConcepts = null;
+	
+	private NamedClass classToDescribe;
+		
 	private double noise;
 	
 	// a set with limited size (currently the ordering is defined in the class itself)
 	private SearchTreeNode startNode;
 	private ELHeuristic heuristic;
 	private TreeSet<SearchTreeNode> candidates;
+
+	private boolean isEquivalenceProblem = true;
+	private Monitor timeMonitor;
+	
+	double max = -1d;
+	Description maxDescription;
 	
 	public ELLearningAlgorithm() {
 		
@@ -92,6 +112,8 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	public ELLearningAlgorithm(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 //		configurator = new ELLearningAlgorithmConfigurator(this);
+		
+		timeMonitor = MonitorFactory.getTimeMonitor("time");
 	}
 	
 	public static String getName() {
@@ -124,7 +146,15 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		heuristic = new StableHeuristic();
 		candidates = new TreeSet<SearchTreeNode>(heuristic);
 		
-		operator = new ELDown2(reasoner, instanceBasedDisjoints);
+		if(ignoredConcepts != null) {
+			Set<NamedClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
+			// copy class hierarchy and modify it such that each class is only
+			// reachable via a single path
+			ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
+			classHierarchy.thinOutSubsumptionHierarchy();
+		}
+		
+		operator = new ELDown3(reasoner, instanceBasedDisjoints);
 		
 		noise = noisePercentage/100d;
 	}	
@@ -137,7 +167,10 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		treeStartTime = System.nanoTime();
 		
 		// create start node
-		ELDescriptionTree top = new ELDescriptionTree(reasoner, Thing.instance);
+		if(startClass == null){
+			startClass = Thing.instance;
+		}
+		ELDescriptionTree top = new ELDescriptionTree(reasoner, startClass);
 		addDescriptionTree(top, null);
 		
 		// main loop
@@ -152,6 +185,12 @@ public class ELLearningAlgorithm extends AbstractCELA {
 //				System.out.println("refinement: " + refinement);
 				addDescriptionTree(refinement, best);
 			}
+//			System.out.println("Hits:" + timeMonitor.getHits());
+//			System.out.println("Total:" + timeMonitor.getTotal());
+//			System.out.println("Avg:" + timeMonitor.getAvg());
+//			System.out.println("Max:" + timeMonitor.getMax());
+//			System.out.println(maxDescription);
+			timeMonitor.reset();
 			loop++;
 			// logging
 			if(logger.isTraceEnabled()) {
@@ -174,48 +213,56 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		
 		// convert tree to standard description
 		Description description = descriptionTree.transformToDescription();
-		description = getNiceDescription(description);
-		
-		double accuracy = getLearningProblem().getAccuracyOrTooWeak(description, noise);
-		int negCovers = ((PosNegLP)getLearningProblem()).coveredNegativeExamplesOrTooWeak(description);
-//		if(negCovers == -1) {
-		if(accuracy == -1) {
-			node.setTooWeak();
-		} else {
-			node.setCoveredNegatives(negCovers);
-		}
-//		System.out.println(descriptionTree.transformToDescription() + "|" + negCovers);
-		// link to parent (unless start node)
-		if(parentNode == null) {
-			startNode = node;
-		} else {
-			parentNode.addChild(node);
-		}
-		
-//		System.out.println("TEST");
-		
-		if(!node.isTooWeak()) {
-			// add as candidate
-			candidates.add(node);
-		
-//			System.out.println("TEST2");
+		if(isDescriptionAllowed(description)){
+			description = getNiceDescription(description);
+			timeMonitor.start();
+			double accuracy = getLearningProblem().getAccuracyOrTooWeak(description, noise);
+			timeMonitor.stop();
+//			if(timeMonitor.getLastValue() > max){
+//				max = timeMonitor.getLastValue();
+//				maxDescription = description;
+//			}
+			int negCovers = ((PosNegLP)getLearningProblem()).coveredNegativeExamplesOrTooWeak(description);
+//			if(negCovers == -1) {
+			if(accuracy == -1) {
+				node.setTooWeak();
+			} else {
+				node.setCoveredNegatives(negCovers);
+			}
+			// link to parent (unless start node)
+			if(parentNode == null) {
+				startNode = node;
+			} else {
+				parentNode.addChild(node);
+			}
 			
-			// check whether we want to add it to the best evaluated descriptions;
-			// to do this we pick the worst considered evaluated description
-			// (remember that the set has limited size, so it's likely not the worst overall);
-			// the description has a chance to make it in the set if it has
-			// at least as high accuracy - if not we can save the reasoner calls
-			// for fully computing the evaluated description
-			if(bestEvaluatedDescriptions.size() == 0 || ((EvaluatedDescriptionPosNeg)bestEvaluatedDescriptions.getWorst()).getCoveredNegatives().size() >= node.getCoveredNegatives()) {
-				ScorePosNeg score = (ScorePosNeg) learningProblem.computeScore(description);
-				EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(description, score);
-				bestEvaluatedDescriptions.add(ed);
+			
+			if(!node.isTooWeak()) {
+				// add as candidate
+				candidates.add(node);
+				
+				// check whether we want to add it to the best evaluated descriptions;
+				// to do this we pick the worst considered evaluated description
+				// (remember that the set has limited size, so it's likely not the worst overall);
+				// the description has a chance to make it in the set if it has
+				// at least as high accuracy - if not we can save the reasoner calls
+				// for fully computing the evaluated description
+				if(bestEvaluatedDescriptions.size() == 0 || ((EvaluatedDescriptionPosNeg)bestEvaluatedDescriptions.getWorst()).getCoveredNegatives().size() >= node.getCoveredNegatives()) {
+					ScorePosNeg score = (ScorePosNeg) learningProblem.computeScore(description);
+					EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(description, score);
+					bestEvaluatedDescriptions.add(ed);
+				}
+				
 			}
 			
 		}
-		
 	}
 	
+	/**
+	 * Replace role fillers with the range of the property, if exists.
+	 * @param d
+	 * @return
+	 */
 	private Description getNiceDescription(Description d){
 		Description description = d.clone();
 		List<Description> children = description.getChildren();
@@ -262,6 +309,50 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		candidates.clear();
 		bestEvaluatedDescriptions.getSet().clear();
 	}
+	
+	private boolean isDescriptionAllowed(Description description) {
+		if(isEquivalenceProblem) {
+			// the class to learn must not appear on the outermost property level
+			if(occursOnFirstLevel(description, classToDescribe)) {
+				return false;
+			}
+		} else {
+			// none of the superclasses of the class to learn must appear on the
+			// outermost property level
+			TreeSet<Description> toTest = new TreeSet<Description>(descriptionComparator);
+			toTest.add(classToDescribe);
+			while(!toTest.isEmpty()) {
+				Description d = toTest.pollFirst();
+				if(occursOnFirstLevel(description, d)) {
+					return false;
+				}
+				toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
+			}
+		}	
+		return true;
+	}
+	
+	// determine whether a named class occurs on the outermost level, i.e. property depth 0
+		// (it can still be at higher depth, e.g. if intersections are nested in unions)
+		private boolean occursOnFirstLevel(Description description, Description clazz) {
+			if(description instanceof NamedClass) {
+				if(description.equals(clazz)) {
+					return true;
+				}
+			} 
+			
+			if(description instanceof Restriction) {
+				return false;
+			}
+			
+			for(Description child : description.getChildren()) {
+				if(occursOnFirstLevel(child, clazz)) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
 	
 	@Override
 	public void stop() {
@@ -335,6 +426,48 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	 */
 	public void setNoisePercentage(double noisePercentage) {
 		this.noisePercentage = noisePercentage;
+	}
+	
+	/**
+	 * @param startClass the startClass to set
+	 */
+	public void setStartClass(Description startClass) {
+		this.startClass = startClass;
+	}
+	
+	/**
+	 * @return the startClass
+	 */
+	public Description getStartClass() {
+		return startClass;
+	}
+	
+	/**
+	 * @param ignoredConcepts the ignoredConcepts to set
+	 */
+	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+		this.ignoredConcepts = ignoredConcepts;
+	}
+	
+	/**
+	 * @return the ignoredConcepts
+	 */
+	public Set<NamedClass> getIgnoredConcepts() {
+		return ignoredConcepts;
+	}
+	
+	/**
+	 * @param classToDescribe the classToDescribe to set
+	 */
+	public void setClassToDescribe(NamedClass classToDescribe) {
+		this.classToDescribe = classToDescribe;
+	}
+	
+	/**
+	 * @param treeSearchTimeSeconds the treeSearchTimeSeconds to set
+	 */
+	public void setTreeSearchTimeSeconds(double treeSearchTimeSeconds) {
+		this.treeSearchTimeSeconds = treeSearchTimeSeconds;
 	}
 
 }
