@@ -89,7 +89,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	}
 	
 	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se, String namespace) {
-		this(se, new SPARQLReasoner(new SparqlEndpointKS(se)));
+		this(se, new SPARQLReasoner(new SparqlEndpointKS(se)), namespace);
 	}
 	
 	public AutomaticNegativeExampleFinderSPARQL2(SPARQLReasoner reasoner, String namespace) {
