@@ -1583,7 +1583,7 @@ String query = String.format(queryTemplate, dp.getName());
 
 	@Override
 	public SortedSet<Description> getSubClasses(Description description) {
-		return getSubClasses(description, false);
+		return getSubClasses(description, true);
 	}
 
 	public SortedSet<Description> getSubClasses(Description description, boolean direct) {
