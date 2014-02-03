@@ -54,6 +54,8 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLVocabulary;
 import org.dllearner.utilities.owl.RoleComparator;
 
+import com.google.common.collect.Sets;
+
 /**
  * Abstract component representing a reasoner. Only a few reasoning operations
  * are guaranteed to be implemented by the underlying reasoner, while a
@@ -926,7 +928,11 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	protected SortedSet<Description> getSubClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
-	}	
+	}
+	
+	public final SortedSet<Description> getEquivalentClasses(Description concept) {
+		return new TreeSet<>(Sets.intersection(getClassHierarchy().getSubClasses(concept), getClassHierarchy().getSuperClasses(concept)));
+	}
 	
 	@Override
 	public final SortedSet<ObjectProperty> getSuperProperties(ObjectProperty role) {

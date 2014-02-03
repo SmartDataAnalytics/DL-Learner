@@ -565,6 +565,15 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         return getFirstClasses(classes);
     }
+    
+    protected SortedSet<Description> getEquivalentClassesImpl(Description concept) {
+    	SortedSet<Description> equivalentclasses = new TreeSet<>(conceptComparator);
+    	OWLClass cls = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept).asOWLClass();
+    	for (OWLClass eqCls : reasoner.getEquivalentClasses(cls).getEntitiesMinus(cls)) {
+    		equivalentclasses.add(new NamedClass(eqCls.toStringID()));
+		}
+        return equivalentclasses;
+    }
 
     @Override
     protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {

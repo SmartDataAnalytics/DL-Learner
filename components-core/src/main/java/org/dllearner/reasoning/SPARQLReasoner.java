@@ -647,6 +647,23 @@ String query = String.format(queryTemplate, dp.getName());
 		}
 		return types;
 	}
+	
+	public Set<NamedClass> getMostSpecificTypes(Individual individual) {
+		Set<NamedClass> types = new HashSet<NamedClass>();
+		String query = String.format(
+				"SELECT ?type WHERE {<%s> a ?type . "
+				+ "FILTER NOT EXISTS{<%s> a ?moreSpecificType ."
+				+ "?moreSpecificType <http://www.w3.org/2000/01/rdf-schema#subClassOf>+ ?type.}}", individual.getName(), individual.getName());
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			types.add(new NamedClass(qs.getResource("type").getURI()));
+		}
+		return types;
+	}
+	
+	
 
 	public Set<NamedClass> getTypes() {
 		return getTypes((String)null);
@@ -1569,23 +1586,16 @@ String query = String.format(queryTemplate, dp.getName());
 		return getSubClasses(description, false);
 	}
 
-	public SortedSet<Description> getSubClasses(Description description, boolean useVirtuoso) {
-		if(!(description instanceof NamedClass || description instanceof Thing)){
-			throw new IllegalArgumentException("Only named classes are supported.");
-		}
-		if(description instanceof Thing){
-			description = new NamedClass(Thing.instance.getURI());
-		}
+	public SortedSet<Description> getSubClasses(Description description, boolean direct) {
 		SortedSet<Description> subClasses = new TreeSet<Description>();
 		String query;
-		if(useVirtuoso){
-			query = getAllSubClassesVirtuosoQuery(description);
-		} else {
+		if(direct){
 			query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
 					RDFS.subClassOf.getURI(),
-					((NamedClass)description).getURI().toString()
-
-					);
+					((NamedClass)description).getURI().toString());
+		} else {
+			query = String.format("SELECT ?sub {?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf>* <%s>. }", 
+					((NamedClass)description).getURI().toString());
 		}
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -1595,15 +1605,6 @@ String query = String.format(queryTemplate, dp.getName());
 		}
 		subClasses.remove(description);
 		return subClasses;
-	}
-
-	private String getAllSubClassesVirtuosoQuery(Description description){
-		String query = String.format(
-				"SELECT DISTINCT ?sub WHERE {"+
-						"{SELECT ?sub ?o where {?sub rdfs:subClassOf ?o.}}"+
-						"OPTION ( TRANSITIVE, t_distinct, t_in(?sub), t_out(?o), t_min (1), t_max (8), t_step ('step_no') as ?dist ) ."+
-						"FILTER(?o = <%s>)}", description.toString());
-		return query;
 	}
 
 	@Override

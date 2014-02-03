@@ -136,6 +136,11 @@ public class KnowledgebaseSampleGenerator {
 			Model cbd;
 			for (Individual individual : individuals) {
 				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				try {
 					cbd = cbdGen.getConciseBoundedDescription(individual.getName(), maxCBDDepth, true);
 					model.add(cbd);
 				} catch (Exception e) {

@@ -38,6 +38,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
@@ -94,18 +95,29 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	private boolean isRunning = false;
 	private boolean stop = false;
 	
-	private Description startClass;
 	private SearchTreeNode startNode;
 	private ELHeuristic heuristic;
 	private TreeSet<SearchTreeNode> candidates;
 	// all trees (for fast redundancy check)
 	private TreeSet<ELDescriptionTree> trees;
+	private NamedClass classToDescribe;
+	private double noise;
 	
 	@ConfigOption(name = "treeSearchTimeSeconds", defaultValue = "1.0", description="Specifies how long the algorithm should search for a partial solution (a tree).")
 	private double treeSearchTimeSeconds = 1.0;
 	
 	@ConfigOption(name = "tryFullCoverage", defaultValue = "false", description="If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, it may lead to overfitting.")
 	private boolean tryFullCoverage = false;
+	
+	@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
+	private boolean stopOnFirstDefinition = false;
+	
+	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
+	private double noisePercentage = 0.0;
+	
+	// the class with which we start the refinement process
+	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
+	private Description startClass;
 	
 //	private double noise = 0;
 	private List<ELDescriptionTree> currentSolution = new LinkedList<ELDescriptionTree>();
@@ -170,6 +182,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		prefixes = reasoner.getPrefixes();
 		
 		minimizer = new DescriptionMinimizer(reasoner);
+		
+		noise = noisePercentage/100d;
 	}	
 	
 	@Override
@@ -483,5 +497,25 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	public void setTryFullCoverage(boolean tryFullCoverage) {
 		this.tryFullCoverage = tryFullCoverage;
 	}	
-
+	
+	/**
+	 * @return the noisePercentage
+	 */
+	public double getNoisePercentage() {
+		return noisePercentage;
+	}
+	
+	/**
+	 * @param noisePercentage the noisePercentage to set
+	 */
+	public void setNoisePercentage(double noisePercentage) {
+		this.noisePercentage = noisePercentage;
+	}
+	
+	/**
+	 * @param classToDescribe the classToDescribe to set
+	 */
+	public void setClassToDescribe(NamedClass classToDescribe) {
+		this.classToDescribe = classToDescribe;
+	}
 }

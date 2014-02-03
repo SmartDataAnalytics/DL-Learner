@@ -912,7 +912,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	@Override
 	protected SortedSet<Description> getSubClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
 		return rc.getSubClassesImpl(concept);
-	}		
+	}
 
 	@Override
 	protected SortedSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
