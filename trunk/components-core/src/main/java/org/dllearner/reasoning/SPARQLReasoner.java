@@ -1587,15 +1587,16 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	public SortedSet<Description> getSubClasses(Description description, boolean direct) {
-		SortedSet<Description> subClasses = new TreeSet<Description>();
+		SortedSet<Description> subClasses = new TreeSet<Description>(conceptComparator);
 		String query;
 		if(direct){
 			query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
-					RDFS.subClassOf.getURI(),
-					((NamedClass)description).getURI().toString());
+					RDFS.subClassOf.getURI(), ((description instanceof Thing) ? Thing.uri.toString() : ((NamedClass)description).getURI().toString())
+					);
 		} else {
 			query = String.format("SELECT ?sub {?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf>* <%s>. }", 
-					((NamedClass)description).getURI().toString());
+					((description instanceof Thing) ? Thing.uri.toString() : ((NamedClass)description).getURI().toString())
+					);
 		}
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
