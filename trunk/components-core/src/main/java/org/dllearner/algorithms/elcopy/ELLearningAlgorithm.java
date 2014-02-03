@@ -229,6 +229,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			} else {
 				node.setCoveredNegatives(negCovers);
 			}
+			node.setScore(accuracy);
 			// link to parent (unless start node)
 			if(parentNode == null) {
 				startNode = node;
@@ -315,6 +316,17 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			// the class to learn must not appear on the outermost property level
 			if(occursOnFirstLevel(description, classToDescribe)) {
 				return false;
+			}
+			
+			//non of the equivalent classes must occur on the first level
+			TreeSet<Description> toTest = new TreeSet<Description>(descriptionComparator);
+			toTest.add(classToDescribe);
+			while(!toTest.isEmpty()) {
+				Description d = toTest.pollFirst();
+				if(occursOnFirstLevel(description, d)) {
+					return false;
+				}
+				toTest.addAll(reasoner.getEquivalentClasses(d));
 			}
 		} else {
 			// none of the superclasses of the class to learn must appear on the

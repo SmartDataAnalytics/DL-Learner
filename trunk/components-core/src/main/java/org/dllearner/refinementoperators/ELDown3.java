@@ -180,7 +180,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 				refinements.addAll(refineLabel(tree, v, position));
 			}
 			refinements.addAll(refineEdge(tree, v, position));
-			if(v.isClassNode() && v.getLevel() < 2){
+			if(v.isClassNode() && v.getLevel() < 4){
 				refinements.addAll(attachSubtree2(tree, v, position));
 				refinements.addAll(attachSubtreeDatatypeProperties(tree, v, position));
 			}
