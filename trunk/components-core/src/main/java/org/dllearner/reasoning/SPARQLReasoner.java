@@ -150,6 +150,10 @@ public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
 		}
 	}
 	
+	public SPARQLReasoner(SparqlEndpoint endpoint, String cacheDirectory) {
+		this(new SparqlEndpointKS(endpoint), cacheDirectory);
+	}
+	
 	public SPARQLReasoner(SparqlEndpointKS ks, CacheCoreEx cacheBackend) {
 		this(ks, new CacheExImpl(cacheBackend));
 	}
@@ -1299,6 +1303,34 @@ String query = String.format(queryTemplate, dp.getName());
 			return new Intersection(domains);
 		} 
 		return null;
+	}
+	
+	public Set<ObjectProperty> getObjectPropertiesWithDomain(NamedClass domain) {
+		Set<ObjectProperty> properties = new TreeSet<>();
+		
+		String query = "SELECT ?p WHERE {?p <http://www.w3.org/2000/01/rdf-schema#domain> <" + domain + ">.}";
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			properties.add(new ObjectProperty(qs.getResource("p").getURI()));
+		}
+		
+		return properties;
+	}
+	
+	public Set<ObjectProperty> getObjectProperties(NamedClass cls) {
+		Set<ObjectProperty> properties = new TreeSet<>();
+		
+		String query = "SELECT DISTINCT ?p WHERE {?s a <" + cls + ">. ?s ?p ?o}";
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			properties.add(new ObjectProperty(qs.getResource("p").getURI()));
+		}
+		
+		return properties;
 	}
 	
 	public SortedSet<NamedClass> getDomains(ObjectProperty objectProperty) {
