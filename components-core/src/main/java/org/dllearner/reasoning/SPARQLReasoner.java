@@ -791,6 +791,18 @@ String query = String.format(queryTemplate, dp.getName());
 		return types;
 	}
 	
+	public Set<NamedClass> getNonEmptyOWLClasses() {
+		Set<NamedClass> types = new HashSet<NamedClass>();
+		String query = String.format("SELECT DISTINCT ?class WHERE {?class a <%s>. FILTER EXISTS{?a a ?class}}",OWL.Class.getURI());
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			types.add(new NamedClass(qs.getResource("class").getURI()));
+		}
+		return types;
+	}
+	
 	public SortedSet<NamedClass> getOWLClasses(String namespace) {
 		SortedSet<NamedClass> types = new TreeSet<NamedClass>();
 		String query = "SELECT DISTINCT ?class WHERE {?class a <" + OWL.Class.getURI() + ">.";
@@ -851,7 +863,9 @@ String query = String.format(queryTemplate, dp.getName());
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			siblings.add(new NamedClass(qs.getResource("sub").getURI()));
+			if(qs.get("sub").isURIResource()){
+				siblings.add(new NamedClass(qs.getResource("sub").getURI()));
+			}
 		}
 		return siblings;
 	}
