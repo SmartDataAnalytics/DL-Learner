@@ -17,11 +17,12 @@ public class JaccardRelevanceMetric extends AbstractRelevanceMetric{
 	public double getRelevance(Entity entityA, Entity entityB) {
 		long nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
 		long nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
+		
+		if (nrOfDocumentsA==0 || nrOfDocumentsB==0)
+			return 0;
+		
 		double nrOfDocumentsAandB = index.getNumberOfDocumentsFor(entityA, entityB);
 		double nrOfDocumentsAorB = nrOfDocumentsA + nrOfDocumentsB - nrOfDocumentsAandB;
-		
-		if (nrOfDocumentsAorB==0)
-			return 1.0;
 		
 		double jaccard = nrOfDocumentsAandB / nrOfDocumentsAorB;
 		

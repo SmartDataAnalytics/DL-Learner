@@ -17,6 +17,10 @@ public class DiceRelevanceMetric extends AbstractRelevanceMetric{
 	public double getRelevance(Entity entityA, Entity entityB) {
 		double nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
 		double nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
+		
+		if (nrOfDocumentsA==0 || nrOfDocumentsB==0)
+			return 0;
+		
 		double nrOfDocumentsAandB = index.getNumberOfDocumentsFor(entityA, entityB);
 		
 		double dice = 2 * nrOfDocumentsAandB / (nrOfDocumentsA + nrOfDocumentsB);

@@ -18,15 +18,18 @@ public class SCIRelevanceMetric extends AbstractRelevanceMetric {
 
 	@Override
 	public synchronized double getRelevance(Entity entityA, Entity entityB){
-		long nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
-		long nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
-		long nrOfDocumentsAB = index.getNumberOfDocumentsFor(entityA, entityB);
+		double fA = index.getNumberOfDocumentsFor(entityA);
+		double fB = index.getNumberOfDocumentsFor(entityB);
+		double fAB = index.getNumberOfDocumentsFor(entityA, entityB);
+		double N = index.getTotalNumberOfDocuments();
 		
-		long nrOfDocuments = index.getTotalNumberOfDocuments();
+		if (fA==0 || fB==0 || fAB==0)
+			return 0;
 		
-		double pA = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsA / (double) nrOfDocuments);
-		double pB = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsB / (double) nrOfDocuments);
-		double pAB = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsAB / (double) nrOfDocuments);
+		
+		double pA = fA / N;
+		double pB = fB / N;
+		double pAB = fAB / N;
 		
 		double sci = pAB / (pA * Math.sqrt(pB));
 		
