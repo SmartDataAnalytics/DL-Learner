@@ -18,15 +18,19 @@ public class ChiSquareRelevanceMetric extends AbstractRelevanceMetric {
 	}
 	
 	private double chiSquareIteration(double fXY, double e_fXY) {
-		return Math.pow(fXY - e_fXY,2)/e_fXY;	
+		return Math.pow(fXY - e_fXY, 2)/e_fXY;	
 	}
 
 	@Override
 	public synchronized double getRelevance(Entity entityA, Entity entityB){
 		double fA = index.getNumberOfDocumentsFor(entityA);
 		double fB = index.getNumberOfDocumentsFor(entityB);
-		double fAB = index.getNumberOfDocumentsFor(entityA, entityB);
 		double N = index.getTotalNumberOfDocuments();
+		
+		if (N==0 || fA==0 || fB==0)
+			return 0;
+		
+		double fAB = index.getNumberOfDocumentsFor(entityA, entityB);
 		
 		double e_fAB = fA*fB/N; // Expected frequency of A and B assuming independence
 		

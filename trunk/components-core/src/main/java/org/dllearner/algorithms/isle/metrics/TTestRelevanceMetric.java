@@ -23,7 +23,10 @@ public class TTestRelevanceMetric extends AbstractRelevanceMetric {
 		double nrOfDocumentsAB = index.getNumberOfDocumentsFor(entityA, entityB);
 		
 		double nrOfDocuments = index.getTotalNumberOfDocuments();
-
+		
+		if (nrOfDocumentsA==0 || nrOfDocumentsB==0 || nrOfDocumentsAB==0)
+			return 0;
+		
 		double ttest = 	(nrOfDocumentsAB - (nrOfDocumentsA*nrOfDocumentsB)/nrOfDocuments) /
 						Math.sqrt(nrOfDocumentsAB*(1-nrOfDocumentsAB/nrOfDocuments));
 		

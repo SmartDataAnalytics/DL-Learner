@@ -18,6 +18,8 @@ public class LLRRelevanceMetric extends AbstractRelevanceMetric {
 	}
 	
 	private double llrIteration(double pXY, double pX, double pY) {
+		if (pXY==0 || pX==0 || pY==0)
+			return 0;
 		return pXY * Math.log(pXY/(pX*pY));
 	}
 
@@ -25,8 +27,13 @@ public class LLRRelevanceMetric extends AbstractRelevanceMetric {
 	public synchronized double getRelevance(Entity entityA, Entity entityB){
 		double fA = index.getNumberOfDocumentsFor(entityA);
 		double fB = index.getNumberOfDocumentsFor(entityB);
-		double fAB = index.getNumberOfDocumentsFor(entityA, entityB);
 		double N = index.getTotalNumberOfDocuments();
+		double fAB = index.getNumberOfDocumentsFor(entityA, entityB);
+		
+		if (N==0 || fA==0 || fB==0)
+			return 0;
+		
+		
 		
 		double pA = fA/N;
 		double pB = fB/N;
