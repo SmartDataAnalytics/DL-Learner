@@ -194,6 +194,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 					Set<Description> superClasses = sr.getSuperClasses(nc);
 					superClasses.remove(new NamedClass(Thing.instance.getURI()));
 					superClasses.remove(Thing.instance);
+					superClasses.remove(new NamedClass("http://www.w3.org/2000/01/rdf-schema#Resource"));
 					superClasses = filterByNamespace(superClasses);
 					logger.info("Super classes: " + superClasses);
 					
@@ -211,7 +212,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				logger.info("Negative examples(" + superClassNegativeExamples.size() + "): " + superClassNegativeExamples);
 				negativeExamples.addAll(superClassNegativeExamples);
 			} else if(strategy == RANDOM){//get some random examples
-				
+				String query = "SELECT ?s WHERE {?s a ?type. FILTER NOT EXIST{?type rdfs:subClassOf* }}";
 			}
 		}
         return negativeExamples;

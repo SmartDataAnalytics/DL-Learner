@@ -61,6 +61,12 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		qef = new QueryExecutionFactoryPaginated(qef, 10000);
 	}
 	
+	public ConciseBoundedDescriptionGeneratorImpl(Model model, int maxRecursionDepth) {
+		this.maxRecursionDepth = maxRecursionDepth;
+		
+		qef = new QueryExecutionFactoryModel(model);
+	}
+	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir) {
 		this(endpoint, cacheDir, MAX_RECURSION_DEPTH_DEFAULT);
 	}

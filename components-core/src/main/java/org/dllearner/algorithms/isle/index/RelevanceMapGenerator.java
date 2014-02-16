@@ -8,6 +8,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -17,7 +22,6 @@ import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.NamedClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 
-import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 
@@ -35,12 +39,13 @@ public abstract class RelevanceMapGenerator {
     public static String cacheDirectory = "cache/relevance";
     
     public static Map<Entity, Double> generateRelevanceMap(NamedClass cls, OWLOntology ontology, RelevanceMetric relevanceMetric, boolean cached){
+    	logger.info("Relevance Metric: " + relevanceMetric.getClass().getSimpleName());
     	Map<Entity, Double> relevanceMap = null;
     	File folder = new File(cacheDirectory);
     	folder.mkdirs();
     	File file = null;
 		try {
-			file = new File(folder, URLEncoder.encode(cls.getName(), "UTF-8") + ".rel");
+			file = new File(folder, URLEncoder.encode(cls.getName() + "-" + relevanceMetric.getClass().getSimpleName(), "UTF-8") + ".rel");
 		} catch (UnsupportedEncodingException e2) {
 			e2.printStackTrace();
 		}
@@ -67,6 +72,22 @@ public abstract class RelevanceMapGenerator {
     		logger.info("...done.");
     	}
     	return relevanceMap;
+    }
+    
+    public static Map<RelevanceMetric, Map<Entity, Double>> generateRelevanceMaps(NamedClass cls, OWLOntology ontology, List<RelevanceMetric> relevanceMetrics, boolean cached){
+    	Map<RelevanceMetric, Map<Entity, Double>> metric2Map = new LinkedHashMap<>();
+    	for (RelevanceMetric relevanceMetric : relevanceMetrics) {
+    		try {
+    			long start = System.currentTimeMillis();
+    			metric2Map.put(relevanceMetric, generateRelevanceMap(cls, ontology, relevanceMetric, cached));
+    			long end = System.currentTimeMillis();
+    			logger.info("Operation took " + (end - start) + "ms");
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+    	return metric2Map;
     }
     
     public static Map<Entity, Double> generateRelevanceMap(NamedClass cls, OWLOntology ontology, RelevanceMetric relevanceMetric){

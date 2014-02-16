@@ -554,7 +554,9 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
 			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
 			DataRange dr = dsr.getDataRange();
-			if(dr.isDatatype() && ((Datatype)dr).isTopDatatype()){
+			if(dr.isDatatype() 
+//					&& ((Datatype)dr).isTopDatatype()
+					){
 				 if(dpPos.get(dp).containsKey(individual)){
 					 return true;
 				 } else {

@@ -34,6 +34,10 @@ public class SignificantPMIRelevanceMetric extends AbstractRelevanceMetric {
 		
 		double N = index.getTotalNumberOfDocuments();
 		
+		if(fA == 0 || fB == 0 || fAB == 0){
+			return 0;
+		}
+		
 		double pmi = Math.log(fAB / (fA*fB/N + Math.sqrt(fA)*Math.sqrt(Math.log(delta)/-2)));
 		
 		return pmi;

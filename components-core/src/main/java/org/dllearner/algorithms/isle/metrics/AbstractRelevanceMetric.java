@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dllearner.algorithms.isle.index.Index;
-import org.semanticweb.owlapi.model.OWLEntity;
+import org.dllearner.core.owl.Entity;
 
 /**
  * @author Lorenz Buehmann
@@ -20,33 +20,32 @@ public abstract class AbstractRelevanceMetric implements RelevanceMetric {
 	public AbstractRelevanceMetric(Index index) {
 		this.index = index;
 	}
-	
-	public Map<OWLEntity,Double> normalizeMinMax( Map<OWLEntity,Double> hmEntity2Score ){
-		Map<OWLEntity,Double> hmEntity2Norm = new HashMap<OWLEntity,Double>();
-		double dMin = Double.MAX_VALUE;
-		Double dMax = Double.MIN_VALUE;
-		for( OWLEntity e : hmEntity2Score.keySet() )
-		{
-			double dValue = hmEntity2Score.get(e);
-			if( dValue < dMin ){
-				dMin = dValue;
-			}
-			else if( dValue > dMax ){
-				dMax = dValue;
+
+	public static Map<Entity, Double> normalizeMinMax(Map<Entity, Double> hmEntity2Score) {
+		Map<Entity, Double> hmEntity2Norm = new HashMap<Entity, Double>();
+
+		double min = Double.MAX_VALUE;
+		double max = Double.MIN_VALUE;
+
+		for (Entity e : hmEntity2Score.keySet()) {
+			double value = hmEntity2Score.get(e);
+			if (value < min) {
+				min = value;
+			} else if (value > max) {
+				max = value;
 			}
 		}
 		// System.out.println( "min="+ dMin +" max="+ dMax );
-		for( OWLEntity e : hmEntity2Score.keySet() )
-		{
-			double dValue = hmEntity2Score.get(e);
-			double dNorm = 0;
-			if( dMin == dMax ){
-				dNorm = dValue;
-			} 
-			else {
-				dNorm = ( dValue - dMin ) / ( dMax - dMin );
+		for (Entity e : hmEntity2Score.keySet()) {
+			double value = hmEntity2Score.get(e);
+			double normalized = 0;
+			if (min == max) {
+				normalized = value;
+				normalized = 0.5;
+			} else {
+				normalized = (value - min) / (max - min);
 			}
-			hmEntity2Norm.put( e, dNorm );
+			hmEntity2Norm.put(e, normalized);
 		}
 		return hmEntity2Norm;
 	}

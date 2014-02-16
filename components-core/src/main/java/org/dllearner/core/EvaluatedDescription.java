@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
+import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.json.JSONException;
@@ -37,12 +38,13 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescription implements Serializable{
+public class EvaluatedDescription implements Serializable, Comparable<EvaluatedDescription>{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1106431570510815033L;
+	private static ConceptComparator conceptComparator = new ConceptComparator();
 	protected Description description;
 	protected Score score;
 	
@@ -137,6 +139,18 @@ public class EvaluatedDescription implements Serializable{
 	@Override
 	public String toString() {
 		return description.toString() + " " + dfPercent.format(getAccuracy());
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(EvaluatedDescription o) {
+		int diff = Double.compare(score.getAccuracy(), o.score.getAccuracy());
+		if(diff == 0){
+			conceptComparator.compare(description, o.getDescription());
+		}
+		return diff;
 	}
 
 }

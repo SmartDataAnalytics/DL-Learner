@@ -19,7 +19,10 @@
 
 package org.dllearner.algorithms.celoe;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -29,6 +32,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.elcopy.ELLearningAlgorithm;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -45,6 +49,7 @@ import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
@@ -62,9 +67,19 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.dllearner.utilities.owl.PropertyContext;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.query.Syntax;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -578,6 +593,7 @@ public class CELOE extends AbstractCELA {
 //		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
 		TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
+		System.out.println(refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
 		nodes.add(node);
@@ -1120,15 +1136,43 @@ public class CELOE extends AbstractCELA {
 	}
 
 	public static void main(String[] args) throws Exception{
-		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
+		String cls = "http://purl.org/procurement/public-contracts#Tender";
+		String file = "/home/me/work/datasets/e-procurement/dl-learner-sample-with-classes-pco.rdf";
+		Model model = ModelFactory.createDefaultModel();
+		model.read(new FileInputStream(file), null);
+		OWLEntityTypeAdder.addEntityTypes(model);
+		Query query = QueryFactory.create("SELECT (COUNT(distinct ?s) as ?cnt)  WHERE {" +
+				"?s a <" + cls + ">.}", Syntax.syntaxARQ);
+		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(query, model).execSelect()));
+		query = QueryFactory.create("SELECT ?p (COUNT(distinct ?s) AS ?cnt) WHERE {" +
+				"?s ?p ?o. ?p a <http://www.w3.org/2002/07/owl#ObjectProperty>." +
+				"?s a <" + cls + ">. " +
+//				"OPTIONAL{?x ?p ?o1. " +
+//				"FILTER NOT EXISTS{?x a <" + cls + ">.}}" +
+				
+						"}GROUP BY ?p ORDER BY DESC(?cnt)", Syntax.syntaxARQ);
+		
+		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(query, model).execSelect()));
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		model.write(baos, "TURTLE");
+		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new ByteArrayInputStream(baos.toByteArray()));
+		
+		AbstractKnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();
 		
 		AbstractReasonerComponent rc = new FastInstanceChecker(ks);
 		rc.init();
 		
 		ClassLearningProblem lp = new ClassLearningProblem(rc);
-		lp.setClassToDescribe(new NamedClass("http://example.com/father#father"));
+		lp.setClassToDescribe(new NamedClass("http://purl.org/procurement/public-contracts#Tender"));
 		lp.init();
+		
+//		ELLearningAlgorithm alg = new ELLearningAlgorithm(lp, rc);
+//		alg.setNoisePercentage(30);
+//		alg.setClassToDescribe(new NamedClass("http://purl.org/procurement/public-contracts#Tender"));
+//		alg.init();
+		
 		
 		CELOE alg = new CELOE(lp, rc);
 		alg.setMaxExecutionTimeInSeconds(10);

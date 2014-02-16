@@ -117,7 +117,6 @@ public class PCELOE extends AbstractCELA {
 //	private TreeSet<Description> descriptions;
 	private SortedSet<Description> descriptions;
 	
-	private EvaluatedDescriptionSet bestEvaluatedDescriptions;
 	
 	// if true, then each solution is evaluated exactly instead of approximately
 	// private boolean exactBestDescriptionEvaluation = false;
