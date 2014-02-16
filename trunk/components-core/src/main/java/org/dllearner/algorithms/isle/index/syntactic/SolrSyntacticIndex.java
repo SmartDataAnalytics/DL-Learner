@@ -4,14 +4,24 @@
 package org.dllearner.algorithms.isle.index.syntactic;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -28,17 +38,22 @@ import org.dllearner.algorithms.isle.textretrieval.AnnotationEntityTextRetriever
 import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 
 /**
  * @author Lorenz Buehmann
  *
  */
 public class SolrSyntacticIndex implements Index{
+	
+	private static final Logger logger = Logger.getLogger(SolrSyntacticIndex.class.getName());
 	
 	private SolrServer solr;
 	private AnnotationEntityTextRetriever textRetriever;
@@ -48,12 +63,77 @@ public class SolrSyntacticIndex implements Index{
 	long totalNumberOfDocuments = -1;
 	
 	Map<Entity, Long> cache = new HashMap<>();
+	Map<List<Entity>, Long> cache2 = new HashMap<>();
+	private OWLOntology ontology;
 	
 	public SolrSyntacticIndex(OWLOntology ontology, String solrServerURL, String searchField) {
+		this.ontology = ontology;
 		this.searchField = searchField;
 		solr = new HttpSolrServer(solrServerURL);
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 	}
+	
+	public void buildIndex(Set<NamedClass> classes){
+		logger.info("Building cache...");
+		
+		ExecutorService executor = Executors.newFixedThreadPool(6);
+		
+		final Set<OWLEntity> owlEntities = new TreeSet<OWLEntity>();
+		owlEntities.addAll(ontology.getClassesInSignature());
+		owlEntities.addAll(ontology.getDataPropertiesInSignature());
+		owlEntities.addAll(ontology.getObjectPropertiesInSignature());
+		
+		final Map<Set<Entity>, Long> cache = new HashMap<>();
+		
+		
+		for (final NamedClass cls : classes) {
+			executor.submit(new Runnable() {
+				
+				@Override
+				public void run() {
+					Set<Entity> entities;
+					logger.info(cls);
+					Set<Entity> otherEntities = OWLAPIConverter.getEntities(owlEntities);
+					otherEntities.remove(cls);
+					//fA
+					long fA = getNumberOfDocumentsFor(cls);
+					entities = new HashSet<>();
+					entities.add(cls);
+					cache.put(entities, fA);
+					for (Entity entity : otherEntities) {
+						//fB
+						long fB = getNumberOfDocumentsFor(entity);
+						entities = new HashSet<>();
+						entities.add(entity);
+						cache.put(entities, fB);
+						//fAB
+						long fAB = getNumberOfDocumentsFor(cls, entity);
+						entities = new HashSet<>();
+						entities.add(cls);
+						entities.add(entity);
+						cache.put(entities, fAB);
+					}
+				}
+			});
+		}
+		executor.shutdown();
+        try {
+			executor.awaitTermination(10, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("frequencies.obj"));
+			oos.writeObject(cache);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.isle.index.Index#getDocuments(org.dllearner.core.owl.Entity)
@@ -109,7 +189,7 @@ public class SolrSyntacticIndex implements Index{
 	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity)
 	 */
 	@Override
-	public long getNumberOfDocumentsFor(Entity entity) {
+	public synchronized long getNumberOfDocumentsFor(Entity entity) {
 		if(cache.containsKey(entity)){
 			return cache.get(entity);
 		}
@@ -146,7 +226,11 @@ public class SolrSyntacticIndex implements Index{
 	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity[])
 	 */
 	@Override
-	public long getNumberOfDocumentsFor(Entity... entities) {
+	public synchronized long getNumberOfDocumentsFor(Entity... entities) {
+		List<Entity> entitiesList = Arrays.asList(entities);
+		if(cache2.containsKey(entitiesList)){
+			return cache2.get(entitiesList);
+		}
 		
 		Set<String> queryStringParts = new HashSet<>();
 		
@@ -177,6 +261,7 @@ public class SolrSyntacticIndex implements Index{
     	try {
 			QueryResponse response = solr.query(query);
 			SolrDocumentList list = response.getResults();
+			cache2.put(entitiesList, list.getNumFound());
 			return list.getNumFound();
 		} catch (SolrServerException e) {
 			e.printStackTrace();
@@ -234,6 +319,11 @@ public class SolrSyntacticIndex implements Index{
 		System.out.println(n);
 		n = index.getNumberOfDocumentsForTyped(new NamedClass("http://dbpedia.org/ontology/Person"), new NamedClass("http://dbpedia.org/ontology/birthPlace"));
 		System.out.println(n);
+		
+		System.out.println(index.getNumberOfDocumentsFor(
+				new NamedClass("http://dbpedia.org/ontology/Person"), new ObjectProperty("http://dbpedia.org/ontology/birthPlace")));
+		System.out.println(index.getNumberOfDocumentsFor(
+				new NamedClass("http://dbpedia.org/ontology/Person"), new ObjectProperty("http://dbpedia.org/ontology/birthPlace")));
 	}
 
 }

@@ -242,9 +242,13 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				// form union of trees found so far with 
 				if(treeCount==0) {
 					bestEvaluatedDescription = learningProblem.evaluate(bestDescription);
+					bestEvaluatedDescriptions.add(bestEvaluatedDescription);
 				} else {
-					bestCombinedDescription = new Union(bestEvaluatedDescription.getDescription(), bestDescription);
+					if(!bestEvaluatedDescription.equals(Thing.instance)){
+						bestCombinedDescription = new Union(bestEvaluatedDescription.getDescription(), bestDescription);
+					}
 					bestEvaluatedDescription = learningProblem.evaluate(bestCombinedDescription);
+					bestEvaluatedDescriptions.add(bestEvaluatedDescription);
 				}
 				
 				// remove already covered examples
@@ -405,7 +409,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 //		return (bestNode.getCoveredNegatives() == 0);
 		
 		// stop if there are no more positive examples to cover
-		if(currentPosExamples.size()==0) {
+		if(stopOnFirstDefinition && currentPosExamples.size()==0) {
 			return true;
 		}
 		

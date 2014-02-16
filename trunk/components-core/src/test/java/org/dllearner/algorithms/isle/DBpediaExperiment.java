@@ -9,9 +9,17 @@ import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPA
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,19 +31,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
-import org.coode.owlapi.rdfxml.parser.DataSomeValuesFromTranslator;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.elcopy.ELLearningAlgorithm;
 import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.algorithms.isle.index.RelevanceMapGenerator;
 import org.dllearner.algorithms.isle.index.syntactic.SolrSyntacticIndex;
+import org.dllearner.algorithms.isle.metrics.ChiSquareRelevanceMetric;
+import org.dllearner.algorithms.isle.metrics.DiceRelevanceMetric;
+import org.dllearner.algorithms.isle.metrics.JaccardRelevanceMetric;
+import org.dllearner.algorithms.isle.metrics.LLRRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.PMIRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
+import org.dllearner.algorithms.isle.metrics.SCIRelevanceMetric;
+import org.dllearner.algorithms.isle.metrics.SignificantPMIRelevanceMetric;
+import org.dllearner.algorithms.isle.metrics.TTestRelevanceMetric;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -65,6 +81,8 @@ import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.PrefixCCMap;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
+import org.ini4j.IniPreferences;
+import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
@@ -78,6 +96,7 @@ import org.semanticweb.owlapi.util.OWLEntityRemover;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
+import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
@@ -108,9 +127,9 @@ public class DBpediaExperiment {
 	private static final Logger logger = Logger.getLogger(DBpediaExperiment.class.getName());
 	
 	private DecimalFormat dfPercent = new DecimalFormat("0.00%");
-	HashFunction hf = Hashing.md5();
+	final HashFunction hf = Hashing.md5();
 	
-	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	String namespace = "http://dbpedia.org/ontology/";
 	OWLOntology schema;
 	
@@ -120,7 +139,7 @@ public class DBpediaExperiment {
 	String cacheDirectory = "cache/isle";
 	String testFolder = "experiments/isle/logs/";
 	
-	private SPARQLReasoner reasoner;
+	private SPARQLReasoner sparqlReasoner;
 	private AutomaticNegativeExampleFinderSPARQL2 negativeExampleFinder;
 	
 	final int maxNrOfPositiveExamples = 100;
@@ -129,25 +148,33 @@ public class DBpediaExperiment {
 	int maxCBDDepth = 1;
 
 	//learning algorithm settings
-	private int maxNrOfResults = 50;
+	private int maxNrOfResults = 100;
 	private int maxExecutionTimeInSeconds = 10;
-	private double noiseInPercentage = 70;
+	private double noiseInPercentage = 50;
 	private boolean useNegation = false;
 	private boolean useAllConstructor = false;
 
-	private RelevanceMetric relevanceMetric;
-	
 	String experimentsFolder = "experiments/isle/";
 	File resultsFolder = new File(experimentsFolder + "result/");
 	
 
 	private boolean useEL = true;
 	private boolean forceLongDescriptions = true;
+
+	private List<RelevanceMetric> relevanceMetrics;
+
+	private PreparedStatement ps;
 			
 	
 	public DBpediaExperiment() {
-		reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cacheDirectory);
-		negativeExampleFinder = new AutomaticNegativeExampleFinderSPARQL2(endpoint, reasoner);
+		try {
+			endpoint = new SparqlEndpoint(new URL("http://[2001:638:902:2010:0:168:35:138]/sparql"), "http://dbpedia.org");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
+		sparqlReasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint), cacheDirectory);
+		negativeExampleFinder = new AutomaticNegativeExampleFinderSPARQL2(endpoint, sparqlReasoner);
 		KnowledgebaseSampleGenerator.maxCBDDepth = maxCBDDepth;
 		new File(experimentsFolder + "samples/").mkdirs();
 		KnowledgebaseSampleGenerator.cacheDir = experimentsFolder + "samples/";
@@ -155,18 +182,88 @@ public class DBpediaExperiment {
 		
 		loadSchema();
 		
-		relevanceMetric = new PMIRelevanceMetric(getSyntacticIndex());
+		Index syntacticIndex = getSyntacticIndex();
+		
+		relevanceMetrics = new ArrayList<>();
+		relevanceMetrics.add(new PMIRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new ChiSquareRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new DiceRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new JaccardRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new LLRRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new SCIRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new SignificantPMIRelevanceMetric(syntacticIndex, 0.5));
+		relevanceMetrics.add(new TTestRelevanceMetric(syntacticIndex));
 		
 		resultsFolder.mkdirs();
+		
+		initDBConnection();
+	}
+	
+	/**
+	 * Setup the database connection, create the table if not exists and prepare the INSERT statement.
+	 */
+	private void initDBConnection() {
+		try {
+			InputStream is = this.getClass().getClassLoader().getResourceAsStream("db_settings.ini");
+			Preferences prefs = new IniPreferences(is);
+			String dbServer = prefs.node("database").get("server", null);
+			String dbName = prefs.node("database").get("name", null);
+			String dbUser = prefs.node("database").get("user", null);
+			String dbPass = prefs.node("database").get("pass", null);
+
+			Class.forName("com.mysql.jdbc.Driver");
+			String url = "jdbc:mysql://" + dbServer + "/" + dbName;
+			Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
+			
+			java.sql.Statement st = conn.createStatement();
+			String sql = "CREATE TABLE IF NOT EXISTS ISLE_Evaluation (" 
+			        + "id VARCHAR(100),"
+					+ "class TEXT NOT NULL,"
+			        + "position TINYINT NOT NULL,"
+					+ "expression TEXT NOT NULL,"
+					+ "fscore DECIMAL(8,6) NOT NULL,";
+			for (RelevanceMetric metric : relevanceMetrics) {
+				sql += metric.getClass().getSimpleName().replace("RelevanceMetric", "") +  " DECIMAL(8,6) NOT NULL,";
+			}
+			sql += "PRIMARY KEY(id)," 
+					+ "INDEX(class(200))) DEFAULT CHARSET=utf8";
+			st.execute(sql);
+			
+			sql = "INSERT INTO ISLE_Evaluation (id, class, position, expression, fscore";
+			for (RelevanceMetric metric : relevanceMetrics) {
+				sql += "," + metric.getClass().getSimpleName().replace("RelevanceMetric", "");
+			}
+			sql += ") VALUES(?,?,?,?,?";
+			for(int i = 0 ; i < relevanceMetrics.size(); i++){
+				sql += ",?";
+			}
+			sql += ")";
+			ps = conn.prepareStatement(sql);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (InvalidFileFormatException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void run(){
 		Set<NamedClass> classes = getClasses(); 	
-		classes = reasoner.getMostSpecificClasses();
+		classes = sparqlReasoner.getMostSpecificClasses();
 		List<NamedClass> classList = new ArrayList<>(classes);
 //		Collections.reverse(classList);
+//		classList = classList.subList(0, 10);
 		
-		for (NamedClass cls : classList) {
+		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classes);
+		
+		ExecutorService executor = Executors.newFixedThreadPool(6);
+		
+		for (final NamedClass cls : classList) {
 			try {
 				File resultsFile = new File(resultsFolder, URLEncoder.encode(cls.getName(), "UTF-8") + ".csv");
 				if(resultsFile.exists()){
@@ -175,11 +272,22 @@ public class DBpediaExperiment {
 			} catch (UnsupportedEncodingException e1) {
 				e1.printStackTrace();
 			}
-			try {
-				run(cls);
-			} catch (Exception e) {
-				logger.error("Error when learning class " + cls, e);
-			}
+			executor.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						DBpediaExperiment.this.run(cls);
+					} catch (Exception e) {
+						logger.error("Error when learning class " + cls, e);
+					}
+				}
+			});
+		}
+		executor.shutdown();
+        try {
+			executor.awaitTermination(10, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -198,14 +306,15 @@ public class DBpediaExperiment {
 		SortedSet<Individual> negativeExamples = getNegativeExamples(cls, positiveExamples);
 		
 		//generate a sample of the knowledge base based on the examples
-		OWLOntology knowledgebaseSample = loadKnowledgebaseSample(Sets.union(positiveExamples, negativeExamples));
-//		Map<Entity, Double> entityRelevance = RelevanceMapGenerator.generateRelevanceMap(cls, schema, relevanceMetric, true);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	
+		OWLOntology knowledgebaseSample = loadKnowledgebaseSample(cls, Sets.union(positiveExamples, negativeExamples));
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+		
+		return;
+	/**
 		//set up the learning
 		try {
 			// set KB
@@ -230,22 +339,6 @@ public class DBpediaExperiment {
 			}
 			lp.init();
 			
-			/**
-			Monitor mon = MonitorFactory.getTimeMonitor("time");
-			Individual ex = positiveExamples.iterator().next();
-			Description r = new DatatypeSomeRestriction(new DatatypeProperty("http://dbpedia.org/ontology/Astronaut/timeInSpace"), new Datatype("http://www.w3.org/2000/01/rdf-schema#Literal"));
-			mon.start();
-			reasoner.hasType(r, ex);
-//			lp.getAccuracyOrTooWeak(r, 0.3d);
-			mon.stop();
-			System.out.println(mon.getLastValue());
-			r = new ObjectSomeRestriction(new ObjectProperty("http://dbpedia.org/ontology/nationality"), new NamedClass("http://dbpedia.org/ontology/Country"));
-			mon.start();
-			reasoner.hasType(r, ex);
-//			lp.getAccuracyOrTooWeak(r, 0.3d);
-			mon.stop();
-			System.out.println(mon.getLastValue());
-			**/
 			
 			// 1. run basic algorithm
 			//set up the refinement operator and the allowed OWL constructs
@@ -265,6 +358,7 @@ public class DBpediaExperiment {
 				((ELLearningAlgorithm)la).setIgnoredConcepts(Sets.newHashSet(cls));
 				((ELLearningAlgorithm)la).setClassToDescribe(cls);
 				((ELLearningAlgorithm)la).setTreeSearchTimeSeconds(maxExecutionTimeInSeconds);
+				((ELLearningAlgorithm)la).setMaxNrOfResults(maxNrOfResults);
 //				la = new ELLearningAlgorithmDisjunctive(lp, reasoner);
 			} else {
 				//build CELOE la
@@ -273,6 +367,7 @@ public class DBpediaExperiment {
 				laTmp.setOperator(rop);
 				laTmp.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 				laTmp.setStartClass(startClass);
+				laTmp.setNoisePercentage(noiseInPercentage);
 				new File(testFolder).mkdirs();
 				laTmp.setSearchTreeFile(testFolder  + "searchTree.txt");
 				laTmp.setWriteSearchTree(true);
@@ -285,19 +380,36 @@ public class DBpediaExperiment {
 			}
 			la.init();
 			la.start();
-			Map<Entity, Double> entityRelevance = RelevanceMapGenerator.generateRelevanceMap(cls, schema, relevanceMetric, true);
-			
+			//compute the relevance scores
+			Map<RelevanceMetric, Map<Entity, Double>> entityRelevances = RelevanceMapGenerator.generateRelevanceMaps(cls, schema, relevanceMetrics, true);
+			//Write to DB
+			try {
+				write2DB(reasoner, lp, cls, la.getCurrentlyBestEvaluatedDescriptions(), entityRelevances);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			//write to CSV file
 			int current = 1;
 			StringBuilder sb = new StringBuilder();
+			//the header line
+			sb.append("class expression,fmeasure");
+			for (RelevanceMetric metric : relevanceMetrics) {
+				sb.append(",").append(metric.getClass().getSimpleName());
+			}
+			sb.append("\n");
+			//the entries
 			for(EvaluatedDescription ed : la.getCurrentlyBestEvaluatedDescriptions().descendingSet()) {
 				if(lp instanceof PosNegLPStandard) {
 					double fMeasure = ((PosNegLPStandard)lp).getFMeasureOrTooWeakExact(ed.getDescription(),1);
 					sb.append(replaceDataPropertyRanges(ed.getDescription()).toManchesterSyntaxString(reasoner.getBaseURI(), reasoner.getPrefixes()) + "," 
 //							+ ((PosNegLPStandard)lp).getPredAccuracyOrTooWeakExact(ed.getDescription(),1) + "," 
 							+ fMeasure);
-					double relevanceScore = getRelevanceScore(ed.getDescription(), entityRelevance);
-					sb.append(",").append(relevanceScore);
-					sb.append(",").append(fMeasure + relevanceScore);
+					for (RelevanceMetric metric : relevanceMetrics) {
+						double relevanceScore = getRelevanceScore(ed.getDescription(), entityRelevances.get(metric));
+						sb.append(",").append(relevanceScore);
+					}
+					
+//					sb.append(",").append(fMeasure + relevanceScore);
 					sb.append("\n");
 				} 
 				
@@ -322,6 +434,7 @@ public class DBpediaExperiment {
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 	
 	/**
@@ -414,7 +527,7 @@ public class DBpediaExperiment {
 	
 	private SortedSet<Individual> getPositiveExamples(NamedClass cls){
 		logger.info("Generating positive examples...");
-		SortedSet<Individual> individuals = reasoner.getIndividuals(cls, 1000);
+		SortedSet<Individual> individuals = sparqlReasoner.getIndividuals(cls, 1000);
 		List<Individual> individualsList = new ArrayList<>(individuals);
 //		Collections.shuffle(individualsList, new Random(1234));
 		individuals.clear();
@@ -440,15 +553,14 @@ public class DBpediaExperiment {
 		logger.info("Done. Number of logical axioms: " + schema.getLogicalAxiomCount());
 	}
 	
-	private OWLOntology loadKnowledgebaseSample(Set<Individual> individuals){
+	private OWLOntology loadKnowledgebaseSample(NamedClass nc, Set<Individual> individuals){
 		logger.info("Generating knowledge base sample...");
 		Model sampleModel = KnowledgebaseSampleGenerator.createKnowledgebaseSample(endpoint, namespace, individuals);
 		sampleModel.setNsPrefix("dbo", "http://dbpedia.org/ontology/");
 		logger.info("Done. Size: " + sampleModel.size() + " triples");
 		cleanUp(sampleModel);
 		logger.info("Clean up. Size: " + sampleModel.size() + " triples");
-//		Query query = QueryFactory.create("SELECT ?p (COUNT(distinct ?s) AS ?cnt) WHERE {?s ?p ?o. ?s a <http://dbpedia.org/ontology/Cardinal>} GROUP BY ?p ORDER BY DESC(?cnt)", Syntax.syntaxARQ);
-//		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(query, sampleModel).execSelect()));
+		showPropertyDistribution(nc, sampleModel);
 		
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -462,6 +574,7 @@ public class DBpediaExperiment {
 			man.removeAxioms(ontology, ontology.getAxioms(AxiomType.DATA_PROPERTY_RANGE));
 			man.removeAxioms(ontology, ontology.getAxioms(AxiomType.DISJOINT_CLASSES));
 			man.removeAxioms(ontology, ontology.getAxioms(AxiomType.SAME_INDIVIDUAL));
+//			man.removeAxioms(ontology, ontology.getAxioms(AxiomType.OBJECT_PROPERTY_RANGE));
 			man.removeAxiom(ontology, df.getOWLObjectPropertyDomainAxiom(
 					df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/mission")), 
 					df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Aircraft"))));
@@ -478,6 +591,17 @@ public class DBpediaExperiment {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private void showPropertyDistribution(NamedClass cls, Model model){
+		Query query = QueryFactory.create("SELECT ?p (COUNT(distinct ?s) AS ?cnt) (COUNT(distinct ?x) AS ?negCnt) WHERE {" +
+				"?s ?p ?o. {?p a <http://www.w3.org/2002/07/owl#ObjectProperty>} UNION {?p a <http://www.w3.org/2002/07/owl#DatatypeProperty>}" +
+				"?s a <" + cls.getName() + ">. " +
+				"OPTIONAL{?x ?p ?o1. " +
+				"FILTER NOT EXISTS{?x a <" + cls.getName() + ">.}}} "
+						+ "GROUP BY ?p ORDER BY DESC(?cnt)", Syntax.syntaxARQ);
+		
+		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(query, model).execSelect()));
 	}
 	
 	private void cleanUp(Model model){
@@ -591,6 +715,33 @@ public class DBpediaExperiment {
 		return classes;
 	}
 	
+	private synchronized void write2DB(FastInstanceChecker reasoner, AbstractLearningProblem lp, NamedClass cls, TreeSet<? extends EvaluatedDescription> evaluatedDescriptions, Map<RelevanceMetric, Map<Entity, Double>> entityRelevances) throws SQLException{
+		int position = 1;
+		for(EvaluatedDescription ed : evaluatedDescriptions.descendingSet()) {
+			String clsName = cls.getName();
+			String expression = replaceDataPropertyRanges(ed.getDescription()).toManchesterSyntaxString(reasoner.getBaseURI(), reasoner.getPrefixes());
+			HashCode hc = hf.newHasher()
+				       .putString(clsName, Charsets.UTF_8)
+				       .putString(expression, Charsets.UTF_8)
+				       .hash();
+			String id = hc.toString();
+			double fMeasure = ((PosNegLPStandard)lp).getAccuracyOrTooWeakExact(ed.getDescription(), noiseInPercentage/100d);
+			ps.setString(1, id);
+			ps.setString(2, cls.getName());
+			ps.setInt(3, position++);
+			ps.setString(4, expression);
+			ps.setDouble(5, fMeasure);
+			int col = 6;
+			for (RelevanceMetric metric : relevanceMetrics) {
+				double relevanceScore = getRelevanceScore(ed.getDescription(), entityRelevances.get(metric));
+				ps.setDouble(col++, relevanceScore);
+			} 
+			
+			ps.addBatch();
+		}
+		ps.executeBatch();
+	}
+	
 	public static void main(String[] args) throws Exception {
 //		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 //		String cls = "http://dbpedia.org/ontology/Astronaut";
@@ -607,8 +758,11 @@ public class DBpediaExperiment {
 //		la.setPattern(DLLearnerAxiomConvertVisitor.getDLLearnerAxiom(pattern));
 //		la.start();
 		
-		
+		long start = System.currentTimeMillis();
 		new DBpediaExperiment().run();
-//		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Astronaut"));
+//		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/SoccerClub"));
+		long end = System.currentTimeMillis();
+		logger.info("Operation took " + (end - start) + "ms");
+		
 	}
 }

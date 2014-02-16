@@ -62,7 +62,7 @@ public class RelevanceMetricsTest {
 		relevance = metric.getRelevance(entity1, entity2);
 		System.out.println(relevance);
 		
-		// dbo:Person and dbo:Animal
+		// dbo:Person and dbo:birthPlace
 		entity1 = new NamedClass(DBPEDIA_NS + "Person");
 		entity2 = new ObjectProperty(DBPEDIA_NS + "birthPlace");
 		relevance = metric.getRelevance(entity1, entity2);

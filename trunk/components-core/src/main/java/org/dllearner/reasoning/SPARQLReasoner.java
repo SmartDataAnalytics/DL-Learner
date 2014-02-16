@@ -82,6 +82,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -657,7 +658,7 @@ String query = String.format(queryTemplate, dp.getName());
 		String query = String.format(
 				"SELECT ?type WHERE {<%s> a ?type . "
 				+ "FILTER NOT EXISTS{<%s> a ?moreSpecificType ."
-				+ "?moreSpecificType <http://www.w3.org/2000/01/rdf-schema#subClassOf>+ ?type.}}", individual.getName(), individual.getName());
+				+ "?moreSpecificType <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?type.}}", individual.getName(), individual.getName());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -858,7 +859,8 @@ String query = String.format(queryTemplate, dp.getName());
 		Set<NamedClass> siblings = new TreeSet<NamedClass>();
 		String query = "SELECT ?sub WHERE { <" + cls.getName() + "> <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
 		query += "?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super .";
-		query += "FILTER( !SAMETERM(?sub, <" + cls.getName() + ">)) . }";
+//		query += "FILTER NOT EXISTS{?sub2 <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super. ?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super.}";
+		query += "FILTER( !SAMETERM(?sub, <" + cls.getName() + ">) && !SAMETERM(?super, <http://www.w3.org/2000/01/rdf-schema#Resource>)) . }";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){

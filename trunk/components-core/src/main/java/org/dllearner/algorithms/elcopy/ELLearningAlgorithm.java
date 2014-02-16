@@ -47,6 +47,7 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -87,6 +88,10 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	// the class with which we start the refinement process
 	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
 	private Description startClass;
+	
+	private int maxClassExpressionDepth = 2;
+	
+	private int maxNrOfResults = 10;
 	
 	private Set<NamedClass> ignoredConcepts = null;
 	
@@ -155,8 +160,11 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		}
 		
 		operator = new ELDown3(reasoner, instanceBasedDisjoints);
+		operator.setMaxClassExpressionDepth(maxClassExpressionDepth);
 		
 		noise = noisePercentage/100d;
+		
+		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 	}	
 	
 	@Override
@@ -229,7 +237,8 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			} else {
 				node.setCoveredNegatives(negCovers);
 			}
-			node.setScore(accuracy);
+//			node.setScore(accuracy);
+//			System.out.println(description + ":" + accuracy);
 			// link to parent (unless start node)
 			if(parentNode == null) {
 				startNode = node;
@@ -480,6 +489,20 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	 */
 	public void setTreeSearchTimeSeconds(double treeSearchTimeSeconds) {
 		this.treeSearchTimeSeconds = treeSearchTimeSeconds;
+	}
+	
+	/**
+	 * @param maxNrOfResults the maxNrOfResults to set
+	 */
+	public void setMaxNrOfResults(int maxNrOfResults) {
+		this.maxNrOfResults = maxNrOfResults;
+	}
+	
+	/**
+	 * @param maxClassExpressionDepth the maxClassExpressionDepth to set
+	 */
+	public void setMaxClassExpressionDepth(int maxClassExpressionDepth) {
+		this.maxClassExpressionDepth = maxClassExpressionDepth;
 	}
 
 }

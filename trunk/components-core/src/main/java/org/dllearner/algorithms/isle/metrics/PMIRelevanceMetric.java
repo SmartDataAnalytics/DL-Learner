@@ -17,7 +17,7 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 	}
 
 	@Override
-	public synchronized double getRelevance(Entity entityA, Entity entityB){
+	public double getRelevance(Entity entityA, Entity entityB){
 		long nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
 		long nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
 		long nrOfDocumentsAB = index.getNumberOfDocumentsFor(entityA, entityB);
@@ -28,13 +28,17 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 		double pB = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsB / (double) nrOfDocuments);
 		double pAB = nrOfDocuments == 0 ? 0 : ((double) nrOfDocumentsAB / (double) nrOfDocuments);
 		
+		if(pAB == 0 || (pA * pB) == 0){
+			return 0;
+		}
+		
 		double pmi = Math.log(pAB / pA * pB);
 		
 		return pmi;
 	}
 	
 	@Override
-	public synchronized double getNormalizedRelevance(Entity entityA, Entity entityB){
+	public double getNormalizedRelevance(Entity entityA, Entity entityB){
 		long nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
 		long nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
 		long nrOfDocumentsAB = index.getNumberOfDocumentsFor(entityA, entityB);

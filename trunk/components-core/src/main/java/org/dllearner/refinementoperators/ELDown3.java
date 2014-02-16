@@ -111,6 +111,8 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	private ELDescriptionTreeComparator treeComp = new ELDescriptionTreeComparator();
 	private ELDescriptionEdgeComparator edgeComp = new ELDescriptionEdgeComparator();
 	private TreeAndRoleSetComparator mComp = new TreeAndRoleSetComparator();
+	
+	private int maxClassExpressionDepth = 2;
 
 	public ELDown3(AbstractReasonerComponent rs) {
 		this(rs, true);
@@ -180,7 +182,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 				refinements.addAll(refineLabel(tree, v, position));
 			}
 			refinements.addAll(refineEdge(tree, v, position));
-			if(v.isClassNode() && v.getLevel() < 4){
+			if(v.isClassNode() && v.getLevel() <= maxClassExpressionDepth){
 				refinements.addAll(attachSubtree2(tree, v, position));
 				refinements.addAll(attachSubtreeDatatypeProperties(tree, v, position));
 			}
@@ -654,6 +656,13 @@ public class ELDown3 extends RefinementOperatorAdapter {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * @param maxClassExpressionDepth the maxClassExpressionDepth to set
+	 */
+	public void setMaxClassExpressionDepth(int maxClassExpressionDepth) {
+		this.maxClassExpressionDepth = maxClassExpressionDepth;
 	}
 
 	@Override

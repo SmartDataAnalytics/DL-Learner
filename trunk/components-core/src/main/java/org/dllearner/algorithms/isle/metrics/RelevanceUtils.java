@@ -3,10 +3,12 @@
  */
 package org.dllearner.algorithms.isle.metrics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +27,7 @@ public class RelevanceUtils {
 	
 	private static final Logger logger = Logger.getLogger(RelevanceUtils.class.getName());
 	static int maxNrOfThreads = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
+	static boolean normalize = true;
 	
 	/**
 	 * Returns a map containing the relevance score based on the given metric between the entity and each other entity.
@@ -43,8 +46,9 @@ public class RelevanceUtils {
 			executor.submit(new Runnable() {
 				@Override
 				public void run() {
-					double relevance = metric.getNormalizedRelevance(entity, otherEntity);
-					logger.info(otherEntity + ":" + relevance);
+//					double relevance = metric.getNormalizedRelevance(entity, otherEntity);
+					double relevance = metric.getRelevance(entity, otherEntity);
+//					logger.info(otherEntity + ":" + relevance);
 					relevantEntities.put(otherEntity, relevance);
 				}
 			});
@@ -55,17 +59,21 @@ public class RelevanceUtils {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+		//normalize the values
+        if(normalize){
+        	return AbstractRelevanceMetric.normalizeMinMax(relevantEntities);
+        }
 		return relevantEntities;
 	}
 	
 	public static Map<Entity, Double> getRelevantEntities(Entity entity, OWLOntology ontology, RelevanceMetric metric){
-		Set<OWLEntity> owlEntities = new HashSet<OWLEntity>();
+		Set<OWLEntity> owlEntities = new TreeSet<OWLEntity>();
 		owlEntities.addAll(ontology.getClassesInSignature());
 		owlEntities.addAll(ontology.getDataPropertiesInSignature());
 		owlEntities.addAll(ontology.getObjectPropertiesInSignature());
 		
 		Set<Entity> otherEntities = OWLAPIConverter.getEntities(owlEntities);
+//		Set<Entity> otherEntities = OWLAPIConverter.getEntities(new HashSet<OWLEntity>(new ArrayList<OWLEntity>(owlEntities).subList(0, 20)));
 		otherEntities.remove(entity);
 		
 		return getRelevantEntities(entity, otherEntities, metric);

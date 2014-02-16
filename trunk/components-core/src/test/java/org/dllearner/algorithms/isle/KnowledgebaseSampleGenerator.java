@@ -136,7 +136,7 @@ public class KnowledgebaseSampleGenerator {
 			Model cbd;
 			for (Individual individual : individuals) {
 				try {
-					Thread.sleep(500);
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
