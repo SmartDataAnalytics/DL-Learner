@@ -83,7 +83,7 @@ public class SolrSyntacticIndex implements Index{
 		owlEntities.addAll(ontology.getDataPropertiesInSignature());
 		owlEntities.addAll(ontology.getObjectPropertiesInSignature());
 		
-		final Map<Set<Entity>, Long> cache = new HashMap<>();
+		final Map<Set<Entity>, Long> cache = Collections.synchronizedMap(new HashMap<Set<Entity>, Long>());
 		
 		
 		for (final NamedClass cls : classes) {
