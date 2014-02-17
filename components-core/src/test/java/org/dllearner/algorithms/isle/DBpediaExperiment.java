@@ -142,14 +142,14 @@ public class DBpediaExperiment {
 	private SPARQLReasoner sparqlReasoner;
 	private AutomaticNegativeExampleFinderSPARQL2 negativeExampleFinder;
 	
-	final int maxNrOfPositiveExamples = 10;
-	final int maxNrOfNegativeExamples = 20;
+	final int maxNrOfPositiveExamples = 100;
+	final int maxNrOfNegativeExamples = 200;
 	boolean posOnly = false;
 	int maxCBDDepth = 1;
 
 	//learning algorithm settings
 	private int maxNrOfResults = 100;
-	private int maxExecutionTimeInSeconds = 10;
+	private int maxExecutionTimeInSeconds = 60;
 	private double noiseInPercentage = 50;
 	private boolean useNegation = false;
 	private boolean useAllConstructor = false;
@@ -221,7 +221,9 @@ public class DBpediaExperiment {
 					+ "class TEXT NOT NULL,"
 			        + "position TINYINT NOT NULL,"
 					+ "expression TEXT NOT NULL,"
-					+ "fscore DECIMAL(8,6) NOT NULL,";
+					+ "fscore DECIMAL(8,6) NOT NULL,"
+					+ "expression_length TINYINT NOT NULL,";
+				
 			for (RelevanceMetric metric : relevanceMetrics) {
 				sql += metric.getClass().getSimpleName().replace("RelevanceMetric", "") +  " DECIMAL(8,6) NOT NULL,";
 			}
@@ -229,11 +231,11 @@ public class DBpediaExperiment {
 					+ "INDEX(class(200))) DEFAULT CHARSET=utf8";
 			st.execute(sql);
 			
-			sql = "INSERT INTO ISLE_Evaluation (id, class, position, expression, fscore";
+			sql = "INSERT INTO ISLE_Evaluation (id, class, position, expression, fscore, expression_length";
 			for (RelevanceMetric metric : relevanceMetrics) {
 				sql += "," + metric.getClass().getSimpleName().replace("RelevanceMetric", "");
 			}
-			sql += ") VALUES(?,?,?,?,?";
+			sql += ") VALUES(?,?,?,?,?,?";
 			for(int i = 0 ; i < relevanceMetrics.size(); i++){
 				sql += ",?";
 			}
@@ -259,8 +261,8 @@ public class DBpediaExperiment {
 //		Collections.reverse(classList);
 //		classList = classList.subList(0, 2);
 		
-		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classList);
-		System.exit(0);
+//		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classList);
+//		System.exit(0);
 		
 		ExecutorService executor = Executors.newFixedThreadPool(6);
 		
@@ -314,6 +316,7 @@ public class DBpediaExperiment {
 //			e.printStackTrace();
 //		}
 		
+		/**
 		//set up the learning
 		try {
 			// set KB
@@ -433,6 +436,7 @@ public class DBpediaExperiment {
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 	
 	/**
@@ -598,7 +602,7 @@ public class DBpediaExperiment {
 				"OPTIONAL{?x ?p ?o1. " +
 				"FILTER NOT EXISTS{?x a <" + cls.getName() + ">.}}} "
 						+ "GROUP BY ?p ORDER BY DESC(?cnt)", Syntax.syntaxARQ);
-		
+		System.out.println(query);
 		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(query, model).execSelect()));
 	}
 	
@@ -735,7 +739,8 @@ public class DBpediaExperiment {
 			ps.setInt(3, position++);
 			ps.setString(4, expression);
 			ps.setDouble(5, fMeasure);
-			int col = 6;
+			ps.setInt(6, ed.getDescriptionLength());
+			int col = 7;
 			for (RelevanceMetric metric : relevanceMetrics) {
 				double relevanceScore = getRelevanceScore(ed.getDescription(), entityRelevances.get(metric));
 				ps.setDouble(col++, relevanceScore);
@@ -763,8 +768,8 @@ public class DBpediaExperiment {
 //		la.start();
 		
 		long start = System.currentTimeMillis();
-		new DBpediaExperiment().run();
-//		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Case"));
+//		new DBpediaExperiment().run();
+		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Book"));
 		long end = System.currentTimeMillis();
 		logger.info("Operation took " + (end - start) + "ms");
 		
