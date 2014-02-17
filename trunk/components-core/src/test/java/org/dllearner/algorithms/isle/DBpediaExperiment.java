@@ -142,8 +142,8 @@ public class DBpediaExperiment {
 	private SPARQLReasoner sparqlReasoner;
 	private AutomaticNegativeExampleFinderSPARQL2 negativeExampleFinder;
 	
-	final int maxNrOfPositiveExamples = 100;
-	final int maxNrOfNegativeExamples = 200;
+	final int maxNrOfPositiveExamples = 10;
+	final int maxNrOfNegativeExamples = 20;
 	boolean posOnly = false;
 	int maxCBDDepth = 1;
 
@@ -257,9 +257,10 @@ public class DBpediaExperiment {
 		classes = sparqlReasoner.getMostSpecificClasses();
 		List<NamedClass> classList = new ArrayList<>(classes);
 //		Collections.reverse(classList);
-//		classList = classList.subList(0, 10);
+//		classList = classList.subList(0, 2);
 		
-		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classes);
+		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classList);
+		System.exit(0);
 		
 		ExecutorService executor = Executors.newFixedThreadPool(6);
 		
@@ -313,8 +314,6 @@ public class DBpediaExperiment {
 //			e.printStackTrace();
 //		}
 		
-		return;
-	/**
 		//set up the learning
 		try {
 			// set KB
@@ -434,7 +433,6 @@ public class DBpediaExperiment {
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
 		}
-		*/
 	}
 	
 	/**
@@ -694,7 +692,13 @@ public class DBpediaExperiment {
 	}
 	
 	private Index getSyntacticIndex(){
-		return new SolrSyntacticIndex(schema, solrServerURL, searchField);
+		SolrSyntacticIndex index = new SolrSyntacticIndex(schema, solrServerURL, searchField);
+//		try {
+//			index.loadCache(new File("src/test/resources/org/dllearner/algorithms/isle/dbpedia_entity_frequencies.obj"));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		return index;
 	}
 	
 	private Index getSemanticIndex(){
@@ -760,7 +764,7 @@ public class DBpediaExperiment {
 		
 		long start = System.currentTimeMillis();
 		new DBpediaExperiment().run();
-//		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/SoccerClub"));
+//		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Case"));
 		long end = System.currentTimeMillis();
 		logger.info("Operation took " + (end - start) + "ms");
 		

@@ -4,22 +4,24 @@
 package org.dllearner.algorithms.isle.index.syntactic;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -62,8 +64,7 @@ public class SolrSyntacticIndex implements Index{
 	
 	long totalNumberOfDocuments = -1;
 	
-	Map<Entity, Long> cache = new HashMap<>();
-	Map<List<Entity>, Long> cache2 = new HashMap<>();
+	Map<Set<Entity>, Long> cache = new HashMap<>();
 	private OWLOntology ontology;
 	
 	public SolrSyntacticIndex(OWLOntology ontology, String solrServerURL, String searchField) {
@@ -73,8 +74,21 @@ public class SolrSyntacticIndex implements Index{
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 	}
 	
-	public void buildIndex(Set<NamedClass> classes){
+	public void loadCache(File file) throws IOException{
+		logger.info("Loading cache...");
+		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
+			try {
+				cache = Collections.synchronizedMap((Map<Set<Entity>, Long>) ois.readObject());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		logger.info("...done.");
+	}
+	
+	public void buildIndex(Collection<NamedClass> classes){
 		logger.info("Building cache...");
+		logger.info("#Classes: " + classes.size());
 		
 		ExecutorService executor = Executors.newFixedThreadPool(6);
 		
@@ -83,7 +97,7 @@ public class SolrSyntacticIndex implements Index{
 		owlEntities.addAll(ontology.getDataPropertiesInSignature());
 		owlEntities.addAll(ontology.getObjectPropertiesInSignature());
 		
-		final Map<Set<Entity>, Long> cache = Collections.synchronizedMap(new HashMap<Set<Entity>, Long>());
+		final Map<Set<Entity>, Long> frequencyCache = Collections.synchronizedMap(new HashMap<Set<Entity>, Long>());
 		
 		
 		for (final NamedClass cls : classes) {
@@ -99,19 +113,20 @@ public class SolrSyntacticIndex implements Index{
 					long fA = getNumberOfDocumentsFor(cls);
 					entities = new HashSet<>();
 					entities.add(cls);
-					cache.put(entities, fA);
+					frequencyCache.put(entities, fA);
 					for (Entity entity : otherEntities) {
 						//fB
 						long fB = getNumberOfDocumentsFor(entity);
 						entities = new HashSet<>();
 						entities.add(entity);
-						cache.put(entities, fB);
+						frequencyCache.put(entities, fB);
 						//fAB
 						long fAB = getNumberOfDocumentsFor(cls, entity);
 						entities = new HashSet<>();
 						entities.add(cls);
 						entities.add(entity);
-						cache.put(entities, fAB);
+						frequencyCache.put(entities, fAB);
+						
 					}
 				}
 			});
@@ -122,9 +137,11 @@ public class SolrSyntacticIndex implements Index{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+        logger.info("Cache size: " + frequencyCache.size());
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("frequencies.obj"));
-			oos.writeObject(cache);
+			oos.writeObject(frequencyCache);
+			oos.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -190,8 +207,9 @@ public class SolrSyntacticIndex implements Index{
 	 */
 	@Override
 	public synchronized long getNumberOfDocumentsFor(Entity entity) {
-		if(cache.containsKey(entity)){
-			return cache.get(entity);
+		HashSet<Entity> entitySet = Sets.newHashSet(entity);
+		if(cache.containsKey(entitySet)){
+			return cache.get(entitySet);
 		}
 		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
 		
@@ -214,7 +232,7 @@ public class SolrSyntacticIndex implements Index{
     	try {
 			QueryResponse response = solr.query(query);
 			SolrDocumentList list = response.getResults();
-			cache.put(entity, list.getNumFound());
+			cache.put(entitySet, list.getNumFound());
 			return list.getNumFound();
 		} catch (SolrServerException e) {
 			e.printStackTrace();
@@ -227,9 +245,9 @@ public class SolrSyntacticIndex implements Index{
 	 */
 	@Override
 	public synchronized long getNumberOfDocumentsFor(Entity... entities) {
-		List<Entity> entitiesList = Arrays.asList(entities);
-		if(cache2.containsKey(entitiesList)){
-			return cache2.get(entitiesList);
+		Set<Entity> entitiesSet = Sets.newHashSet(entities);
+		if(cache.containsKey(entitiesSet)){
+			return cache.get(entitiesSet);
 		}
 		
 		Set<String> queryStringParts = new HashSet<>();
@@ -261,7 +279,7 @@ public class SolrSyntacticIndex implements Index{
     	try {
 			QueryResponse response = solr.query(query);
 			SolrDocumentList list = response.getResults();
-			cache2.put(entitiesList, list.getNumFound());
+			cache.put(entitiesSet, list.getNumFound());
 			return list.getNumFound();
 		} catch (SolrServerException e) {
 			e.printStackTrace();
@@ -271,8 +289,6 @@ public class SolrSyntacticIndex implements Index{
 	
 	
 	public long getNumberOfDocumentsForTyped(NamedClass resourceClass, Entity entity) {
-		
-		
 		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
 		
 		String queryString = "(";
@@ -311,19 +327,11 @@ public class SolrSyntacticIndex implements Index{
 		String searchField = "comment";
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("src/test/resources/org/dllearner/algorithms/isle/dbpedia_3.9.owl"));
 		SolrSyntacticIndex index = new SolrSyntacticIndex(ontology, solrServerURL, searchField);
-		long n = index.getNumberOfDocumentsFor(new NamedClass("http://dbpedia.org/ontology/Person"), new NamedClass("http://schema.org/Canal"));
+		index.loadCache(new File("frequencies.obj"));
+		long n = index.getNumberOfDocumentsFor(new NamedClass("http://dbpedia.org/ontology/Abbey"));
 		System.out.println(n);
-		n = index.getNumberOfDocumentsForTyped(new NamedClass("http://dbpedia.org/ontology/Person"), new NamedClass("http://schema.org/Canal"));
+		n = index.getNumberOfDocumentsFor(new NamedClass("http://dbpedia.org/ontology/Abbey"), new ObjectProperty("http://dbpedia.org/ontology/largestCity"));
 		System.out.println(n);
-		n = index.getNumberOfDocumentsForTyped(new NamedClass("http://dbpedia.org/ontology/Person"), new NamedClass("http://dbpedia.org/ontology/nationality"));
-		System.out.println(n);
-		n = index.getNumberOfDocumentsForTyped(new NamedClass("http://dbpedia.org/ontology/Person"), new NamedClass("http://dbpedia.org/ontology/birthPlace"));
-		System.out.println(n);
-		
-		System.out.println(index.getNumberOfDocumentsFor(
-				new NamedClass("http://dbpedia.org/ontology/Person"), new ObjectProperty("http://dbpedia.org/ontology/birthPlace")));
-		System.out.println(index.getNumberOfDocumentsFor(
-				new NamedClass("http://dbpedia.org/ontology/Person"), new ObjectProperty("http://dbpedia.org/ontology/birthPlace")));
 	}
 
 }
