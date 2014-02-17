@@ -37,7 +37,7 @@ public class StableHeuristic implements ELHeuristic {
 	public int compare(SearchTreeNode o1, SearchTreeNode o2) {
 	
 		int diff = o2.getCoveredNegatives() - o1.getCoveredNegatives();
-//		diff = Double.compare(o1.getScore(), o2.getScore());
+		diff = Double.compare(o1.getScore(), o2.getScore());
 		if(diff>0) {		
 			return 1;
 		} else if(diff<0) {

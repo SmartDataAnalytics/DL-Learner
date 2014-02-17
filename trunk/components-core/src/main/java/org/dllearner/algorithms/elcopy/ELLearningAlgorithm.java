@@ -237,7 +237,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			} else {
 				node.setCoveredNegatives(negCovers);
 			}
-//			node.setScore(accuracy);
+			node.setScore(accuracy);
 //			System.out.println(description + ":" + accuracy);
 			// link to parent (unless start node)
 			if(parentNode == null) {
