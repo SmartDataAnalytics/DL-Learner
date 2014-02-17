@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -448,6 +449,8 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 
 			// chose best node according to heuristics
 			nextNode = getNextNodeToExpand();
+			if(nextNode == null)
+				break;
 			int horizExp = nextNode.getHorizontalExpansion();
 						
 			// apply operator
@@ -561,7 +564,15 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 		
 		// this should practically never be called, since for any reasonable learning
 		// task, we will always have at least one node with less than 100% accuracy
-		return nodes.last();
+		// *** patch start ***
+		FuzzyOENode last;
+		try {
+			last = nodes.last();
+		} catch (NoSuchElementException e) {
+			return null;
+		}
+		return last;
+		// *** patch end ***
 	}
 	
 	// expand node horizontically

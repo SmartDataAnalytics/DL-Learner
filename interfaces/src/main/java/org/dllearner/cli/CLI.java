@@ -215,7 +215,7 @@ public class CLI {
 
             // Get the Root Error Message
             logger.error("An Error Has Occurred During Processing.");
-            logger.error(primaryCause.getMessage());
+//            logger.error(primaryCause.getMessage());
             logger.debug("Stack Trace: ", e);
             logger.error("Terminating DL-Learner...and writing stacktrace to: " + stacktraceFileName);
             FileOutputStream fos = new FileOutputStream(stacktraceFileName);
