@@ -99,37 +99,40 @@ public class SolrSyntacticIndex implements Index{
 		
 		final Map<Set<Entity>, Long> frequencyCache = Collections.synchronizedMap(new HashMap<Set<Entity>, Long>());
 		
-		
-		for (final NamedClass cls : classes) {
+		//fA resp. fB
+		final Set<Entity> otherEntities = OWLAPIConverter.getEntities(owlEntities);
+		otherEntities.addAll(classes);
+		for (final Entity entity : otherEntities) {
+			logger.info(entity);
 			executor.submit(new Runnable() {
 				
 				@Override
 				public void run() {
-					Set<Entity> entities;
-					logger.info(cls);
-					Set<Entity> otherEntities = OWLAPIConverter.getEntities(owlEntities);
-					otherEntities.remove(cls);
-					//fA
-					long fA = getNumberOfDocumentsFor(cls);
-					entities = new HashSet<>();
-					entities.add(cls);
-					frequencyCache.put(entities, fA);
-					for (Entity entity : otherEntities) {
-						//fB
-						long fB = getNumberOfDocumentsFor(entity);
-						entities = new HashSet<>();
-						entities.add(entity);
-						frequencyCache.put(entities, fB);
-						//fAB
-						long fAB = getNumberOfDocumentsFor(cls, entity);
-						entities = new HashSet<>();
-						entities.add(cls);
-						entities.add(entity);
-						frequencyCache.put(entities, fAB);
-						
-					}
+					Set<Entity> entities = new HashSet<>();
+					entities.add(entity);
+					long f = getNumberOfDocumentsFor(entity);
+					frequencyCache.put(entities, f);
 				}
 			});
+		}
+		//fAB
+		for (final NamedClass cls : classes) {
+			logger.info(cls);
+			for (final Entity entity : otherEntities) {
+				if(!cls.equals(entity)){
+					executor.submit(new Runnable() {
+						
+						@Override
+						public void run() {
+							Set<Entity> entities = new HashSet<>();
+							entities.add(cls);
+							entities.add(entity);
+							long fAB = getNumberOfDocumentsFor(cls, entity);
+							frequencyCache.put(entities, fAB);
+						}
+					});
+				}
+			}
 		}
 		executor.shutdown();
         try {
@@ -139,7 +142,7 @@ public class SolrSyntacticIndex implements Index{
 		}
         logger.info("Cache size: " + frequencyCache.size());
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("frequencies.obj"));
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("entity_frequencies.obj"));
 			oos.writeObject(frequencyCache);
 			oos.close();
 		} catch (FileNotFoundException e) {

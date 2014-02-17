@@ -602,7 +602,6 @@ public class DBpediaExperiment {
 				"OPTIONAL{?x ?p ?o1. " +
 				"FILTER NOT EXISTS{?x a <" + cls.getName() + ">.}}} "
 						+ "GROUP BY ?p ORDER BY DESC(?cnt)", Syntax.syntaxARQ);
-		System.out.println(query);
 		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(query, model).execSelect()));
 	}
 	
