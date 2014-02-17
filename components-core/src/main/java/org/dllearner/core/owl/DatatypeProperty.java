@@ -80,29 +80,36 @@ public class DatatypeProperty implements Comparable<DatatypeProperty>, Property,
 		return name.compareTo(o.name);
 	}	
 	
-	@Override
-	public boolean equals(Object nc) {
-		// standard equals code - always return true for object identity and
-		// false if classes differ
-		if(nc == this) {
-			return true;
-		} else if(getClass() != nc.getClass()) {
-			return false;
-		}
-		// compare on URIs
-		return ((DatatypeProperty)nc).name.equals(name);
-	}
-	
-	@Override
-	public int hashCode() {
-		return name.hashCode();
-	}
-
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
 		return Helper.getAbbreviatedString(name, baseURI, prefixes);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DatatypeProperty other = (DatatypeProperty) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}	
 }

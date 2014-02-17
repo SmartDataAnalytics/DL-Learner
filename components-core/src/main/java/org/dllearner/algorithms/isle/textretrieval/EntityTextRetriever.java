@@ -50,5 +50,11 @@ public interface EntityTextRetriever {
 	public Map<List<Token>, Double> getRelevantText(Entity entity);
 	
 	public Map<Entity, Set<List<Token>>> getRelevantText(OWLOntology ontology);
+
+	/**
+	 * @param entity
+	 * @return
+	 */
+	Map<String, Double> getRelevantTextSimple(Entity entity);
 	
 }
