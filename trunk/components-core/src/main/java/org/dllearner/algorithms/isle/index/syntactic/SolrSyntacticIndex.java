@@ -64,7 +64,7 @@ public class SolrSyntacticIndex implements Index{
 	
 	long totalNumberOfDocuments = -1;
 	
-	Map<Set<Entity>, Long> cache = new HashMap<>();
+	Map<Set<Entity>, Long> cache = Collections.synchronizedMap(new HashMap<Set<Entity>, Long>());
 	private OWLOntology ontology;
 	
 	public SolrSyntacticIndex(OWLOntology ontology, String solrServerURL, String searchField) {
@@ -84,6 +84,15 @@ public class SolrSyntacticIndex implements Index{
 			}
 		}
 		logger.info("...done.");
+		Entity e = new NamedClass("http://dbpedia.org/ontology/Comics");
+		int i = 0;
+		for (Set<Entity> entities : cache.keySet()) {
+			if(entities.contains(e)){
+				System.out.println(entities);
+				i++;
+			}
+		}
+		System.out.println(i);
 	}
 	
 	public void buildIndex(Collection<NamedClass> classes){
@@ -103,7 +112,6 @@ public class SolrSyntacticIndex implements Index{
 		final Set<Entity> otherEntities = OWLAPIConverter.getEntities(owlEntities);
 		otherEntities.addAll(classes);
 		for (final Entity entity : otherEntities) {
-			logger.info(entity);
 			executor.submit(new Runnable() {
 				
 				@Override
@@ -214,17 +222,13 @@ public class SolrSyntacticIndex implements Index{
 		if(cache.containsKey(entitySet)){
 			return cache.get(entitySet);
 		}
-		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
+		Map<String, Double> relevantText = textRetriever.getRelevantTextSimple(entity);
 		
 		String queryString = "(";
 		Set<String> terms = new HashSet<>();
-		for (Entry<List<Token>, Double> entry : relevantText.entrySet()) {
-			List<Token> tokens = entry.getKey();
-			String phrase = "";
-			for (Token token : tokens) {
-//				terms.add(token.getRawForm());
-				phrase += token.getRawForm() + " ";
-			}
+		for (Entry<String, Double> entry : relevantText.entrySet()) {
+			String tokens = entry.getKey();
+			String phrase = tokens;
 			phrase.trim();
 			terms.add(quotedString(phrase));
 		}
@@ -256,17 +260,13 @@ public class SolrSyntacticIndex implements Index{
 		Set<String> queryStringParts = new HashSet<>();
 		
 		for (Entity entity : entities) {
-			Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
+			Map<String, Double> relevantText = textRetriever.getRelevantTextSimple(entity);
 			
 			String queryString = "(";
 			Set<String> terms = new HashSet<>();
-			for (Entry<List<Token>, Double> entry : relevantText.entrySet()) {
-				List<Token> tokens = entry.getKey();
-				String phrase = "";
-				for (Token token : tokens) {
-//					terms.add(token.getRawForm());
-					phrase += token.getRawForm() + " ";
-				}
+			for (Entry<String, Double> entry : relevantText.entrySet()) {
+				String tokens = entry.getKey();
+				String phrase = tokens;
 				phrase.trim();
 				terms.add(quotedString(phrase));
 			}
@@ -330,10 +330,10 @@ public class SolrSyntacticIndex implements Index{
 		String searchField = "comment";
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("src/test/resources/org/dllearner/algorithms/isle/dbpedia_3.9.owl"));
 		SolrSyntacticIndex index = new SolrSyntacticIndex(ontology, solrServerURL, searchField);
-		index.loadCache(new File("frequencies.obj"));
-		long n = index.getNumberOfDocumentsFor(new NamedClass("http://dbpedia.org/ontology/Abbey"));
+		index.loadCache(new File("entity_frequencies.obj"));
+		long n = index.getNumberOfDocumentsFor(new NamedClass("http://dbpedia.org/ontology/Comics"));
 		System.out.println(n);
-		n = index.getNumberOfDocumentsFor(new NamedClass("http://dbpedia.org/ontology/Abbey"), new ObjectProperty("http://dbpedia.org/ontology/largestCity"));
+		n = index.getNumberOfDocumentsFor(new NamedClass("http://dbpedia.org/ontology/Comics"), new ObjectProperty("http://dbpedia.org/ontology/largestCity"));
 		System.out.println(n);
 	}
 

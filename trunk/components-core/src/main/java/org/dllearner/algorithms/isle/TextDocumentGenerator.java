@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.isle;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -26,11 +27,16 @@ public class TextDocumentGenerator {
 	private static TextDocumentGenerator instance;
 	
 	private StanfordCoreNLP pipeline;
+	private StanfordCoreNLP pipelineSimple;
 	private final String punctuationPattern = "\\p{Punct}";
 	private final StopWordFilter stopWordFilter = new StopWordFilter();
 	
 	private TextDocumentGenerator(){
 		Properties props = new Properties();
+	    props.put("annotators", "tokenize, ssplit");//, pos, lemma, parse");
+	    pipelineSimple = new StanfordCoreNLP(props);
+	    
+	    props = new Properties();
 	    props.put("annotators", "tokenize, ssplit, pos, lemma, parse");
 	    pipeline = new StanfordCoreNLP(props);
 	}
@@ -95,8 +101,7 @@ public class TextDocumentGenerator {
 	            String lemma = label.get(LemmaAnnotation.class);
 	            //check if token is punctuation
 	            boolean isPunctuation = word.matches(punctuationPattern) 
-	            		|| pos.equalsIgnoreCase("-lrb-")
-	            		|| pos.equalsIgnoreCase("-rrb-")
+	            		|| (pos != null && (pos.equalsIgnoreCase("-lrb-") || pos.equalsIgnoreCase("-rrb-")))
 	            		|| word.startsWith("'")
 	            		;
 	            //check if it is a stop word
@@ -113,6 +118,33 @@ public class TextDocumentGenerator {
 	    }
 		
 		return document;
+	}
+	
+	public List<String> generateDocumentSimple(String text) {
+		List<String> tokens = new ArrayList<>();
+		
+	    // create an empty Annotation just with the given text
+	    Annotation annotatedDocument = new Annotation(text);
+	    
+	    // run all Annotators on this text
+	    pipelineSimple.annotate(annotatedDocument);
+	    
+	    // these are all the sentences in this document
+	    // a CoreMap is essentially a Map that uses class objects as keys and has values with custom types
+	    List<CoreMap> sentences = annotatedDocument.get(SentencesAnnotation.class);
+	    
+	    for(CoreMap sentence: sentences) {
+	    	
+           
+	    	for (CoreLabel label: sentence.get(TokensAnnotation.class)) {
+	    		// this is the text of the token
+	            String word = label.get(TextAnnotation.class);
+	            
+	            tokens.add(word);
+	        }
+	    }
+		
+		return tokens;
 	}
 	
 	public static void main(String[] args) throws Exception {

@@ -95,6 +95,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.util.OWLEntityRemover;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
@@ -260,9 +261,12 @@ public class DBpediaExperiment {
 		List<NamedClass> classList = new ArrayList<>(classes);
 //		Collections.reverse(classList);
 //		classList = classList.subList(0, 2);
-		
-//		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classList);
-//		System.exit(0);
+//		classList = Lists.newArrayList(
+//				new NamedClass("http://dbpedia.org/ontology/Comics"), 
+//				new NamedClass("http://dbpedia.org/ontology/Actor"), 
+//				new NamedClass("http://dbpedia.org/ontology/Book"));
+		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classList);
+		System.exit(0);
 		
 		ExecutorService executor = Executors.newFixedThreadPool(6);
 		
@@ -316,7 +320,6 @@ public class DBpediaExperiment {
 //			e.printStackTrace();
 //		}
 		
-		/**
 		//set up the learning
 		try {
 			// set KB
@@ -436,7 +439,6 @@ public class DBpediaExperiment {
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
 		}
-		*/
 	}
 	
 	/**
@@ -697,7 +699,8 @@ public class DBpediaExperiment {
 	private Index getSyntacticIndex(){
 		SolrSyntacticIndex index = new SolrSyntacticIndex(schema, solrServerURL, searchField);
 //		try {
-//			index.loadCache(new File("src/test/resources/org/dllearner/algorithms/isle/dbpedia_entity_frequencies.obj"));
+////			index.loadCache(new File("src/test/resources/org/dllearner/algorithms/isle/dbpedia_entity_frequencies.obj"));
+//			index.loadCache(new File("frequencies.obj"));
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
@@ -767,8 +770,8 @@ public class DBpediaExperiment {
 //		la.start();
 		
 		long start = System.currentTimeMillis();
-//		new DBpediaExperiment().run();
-		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Book"));
+		new DBpediaExperiment().run();
+//		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Comics"));
 		long end = System.currentTimeMillis();
 		logger.info("Operation took " + (end - start) + "ms");
 		

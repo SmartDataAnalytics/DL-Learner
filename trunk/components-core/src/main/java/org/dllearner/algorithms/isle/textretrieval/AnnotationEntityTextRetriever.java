@@ -98,7 +98,11 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		            	}
 		            	//remove content in brackets like (...)
 		            	label = label.replaceAll("\\s?\\((.*?)\\)", "");
-		            	textWithWeight.put(TextDocumentGenerator.getInstance().generateDocument(label, determineHeadNoun), weight);
+		            	try {
+							textWithWeight.put(TextDocumentGenerator.getInstance().generateDocument(label, determineHeadNoun), weight);
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
 		            }
 		        }
 			}
@@ -109,6 +113,45 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromCamelCase(shortForm));
 			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromUnderscored(shortForm)).trim();
 			textWithWeight.put(TextDocumentGenerator.getInstance().generateDocument(shortForm, determineHeadNoun), weight);
+		}
+		
+		return textWithWeight;
+	}
+	
+	@Override
+	public Map<String, Double> getRelevantTextSimple(Entity entity) {
+		Map<String, Double> textWithWeight = new HashMap<String, Double>();
+		
+		OWLEntity e = OWLAPIConverter.getOWLAPIEntity(entity);
+		
+		for (OWLAnnotationProperty property : properties) {
+			Set<OWLAnnotation> annotations = e.getAnnotations(ontology, property);
+			for (OWLAnnotation annotation : annotations) {
+				if (annotation.getValue() instanceof OWLLiteral) {
+		            OWLLiteral val = (OWLLiteral) annotation.getValue();
+		            if (val.hasLang(language)) {
+		            	//trim
+		            	String label = val.getLiteral().trim();
+		            	if(entity instanceof NamedClass){
+		            		label = label.toLowerCase();
+		            	}
+		            	//remove content in brackets like (...)
+		            	label = label.replaceAll("\\s?\\((.*?)\\)", "");
+		            	try {
+							textWithWeight.put(label, weight);
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+		            }
+		        }
+			}
+		}
+		
+		if(textWithWeight.isEmpty() && useShortFormFallback){
+			String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
+			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromCamelCase(shortForm));
+			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromUnderscored(shortForm)).trim();
+			textWithWeight.put(shortForm, weight);
 		}
 		
 		return textWithWeight;
