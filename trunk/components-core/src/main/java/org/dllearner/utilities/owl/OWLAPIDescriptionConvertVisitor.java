@@ -25,6 +25,7 @@ import java.util.Stack;
 
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.owl.Constant;
+import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
@@ -312,20 +313,31 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 		// TODO: currently works only for double min/max
 		
 		DatatypeProperty dp = (DatatypeProperty) description.getRestrictedPropertyExpression();
-		// currently only double restrictions implemented
-		SimpleDoubleDataRange dr = (SimpleDoubleDataRange) description.getDataRange();
-		double value = dr.getValue();
 		
-		OWLDatatype doubleDataType = factory.getOWLDatatype(XSDVocabulary.DOUBLE.getIRI());
-        OWLLiteral constant = factory.getOWLLiteral(value);
+		//convert the datarange
+		OWLDataRange owlDataRange;
+		DataRange dataRange = description.getDataRange();
+		if(dataRange.isDatatype()){
+			owlDataRange = factory.getOWLDatatype(IRI.create(dataRange.toString()));
+		} else if(dataRange instanceof SimpleDoubleDataRange){
+			// currently only double restrictions implemented
+			SimpleDoubleDataRange dr = (SimpleDoubleDataRange) description.getDataRange();
+			double value = dr.getValue();
+			
+			OWLDatatype doubleDataType = factory.getOWLDatatype(XSDVocabulary.DOUBLE.getIRI());
+	        OWLLiteral constant = factory.getOWLLiteral(value);
 
-        OWLFacet facet;
-        if(dr instanceof DoubleMinValue)
-        	facet = OWLFacet.MIN_INCLUSIVE;
-        else 
-        	facet = OWLFacet.MAX_INCLUSIVE;
-        
-        OWLDataRange owlDataRange = factory.getOWLDatatypeRestriction(doubleDataType, facet, constant);
+	        OWLFacet facet;
+	        if(dr instanceof DoubleMinValue)
+	        	facet = OWLFacet.MIN_INCLUSIVE;
+	        else 
+	        	facet = OWLFacet.MAX_INCLUSIVE;
+	        
+	        owlDataRange = factory.getOWLDatatypeRestriction(doubleDataType, facet, constant);
+		} else {
+			throw new UnsupportedOperationException("Can not convert " + description);
+		}
+		
         OWLDataProperty odp = factory.getOWLDataProperty(IRI.create(dp.getName()));
         OWLClassExpression d = factory.getOWLDataSomeValuesFrom(odp, owlDataRange);
 

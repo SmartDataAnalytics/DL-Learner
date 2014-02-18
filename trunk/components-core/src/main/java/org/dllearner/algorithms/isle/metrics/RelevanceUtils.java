@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.isle.metrics;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,9 +37,9 @@ public class RelevanceUtils {
 	 * @param metric
 	 * @return
 	 */
-	public static Map<Entity, Double> getRelevantEntities(final Entity entity, Set<Entity> otherEntities, final RelevanceMetric metric){
+	public static synchronized Map<Entity, Double> getRelevantEntities(final Entity entity, Set<Entity> otherEntities, final RelevanceMetric metric){
 		logger.info("Get relevant entities for " + entity);
-		final Map<Entity, Double> relevantEntities = new HashMap<Entity, Double>();
+		final Map<Entity, Double> relevantEntities = Collections.synchronizedMap(new HashMap<Entity, Double>());
 		
 		ExecutorService executor = Executors.newFixedThreadPool(maxNrOfThreads);
 		
@@ -46,10 +47,14 @@ public class RelevanceUtils {
 			executor.submit(new Runnable() {
 				@Override
 				public void run() {
-//					double relevance = metric.getNormalizedRelevance(entity, otherEntity);
-					double relevance = metric.getRelevance(entity, otherEntity);
-//					logger.info(otherEntity + ":" + relevance);
-					relevantEntities.put(otherEntity, relevance);
+					try {
+//						double relevance = metric.getNormalizedRelevance(entity, otherEntity);
+						double relevance = metric.getRelevance(entity, otherEntity);
+//						logger.info(otherEntity + ":" + relevance);
+						relevantEntities.put(otherEntity, relevance);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			});
 		}
