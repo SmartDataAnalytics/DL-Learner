@@ -212,7 +212,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				logger.info("Negative examples(" + superClassNegativeExamples.size() + "): " + superClassNegativeExamples);
 				negativeExamples.addAll(superClassNegativeExamples);
 			} else if(strategy == RANDOM){//get some random examples
-				String query = "SELECT ?s WHERE {?s a ?type. FILTER NOT EXIST{?type rdfs:subClassOf* }}";
+				String query = "SELECT ?s WHERE {?s a ?type. FILTER NOT EXIST{?s a <> }} ORDER BY RAND() LIMIT " + maxNrOfReturnedInstances;
 			}
 		}
         return negativeExamples;

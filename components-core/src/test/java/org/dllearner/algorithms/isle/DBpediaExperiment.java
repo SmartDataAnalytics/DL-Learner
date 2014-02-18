@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -58,11 +59,13 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -81,11 +84,13 @@ import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.PrefixCCMap;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
+import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
@@ -143,6 +148,7 @@ public class DBpediaExperiment {
 	private SPARQLReasoner sparqlReasoner;
 	private AutomaticNegativeExampleFinderSPARQL2 negativeExampleFinder;
 	
+	final int minNrOfPositiveExamples = 3;
 	final int maxNrOfPositiveExamples = 100;
 	final int maxNrOfNegativeExamples = 200;
 	boolean posOnly = false;
@@ -228,6 +234,7 @@ public class DBpediaExperiment {
 			for (RelevanceMetric metric : relevanceMetrics) {
 				sql += metric.getClass().getSimpleName().replace("RelevanceMetric", "") +  " DECIMAL(8,6) NOT NULL,";
 			}
+			sql += "axiom TEXT NOT NULL,";
 			sql += "PRIMARY KEY(id)," 
 					+ "INDEX(class(200))) DEFAULT CHARSET=utf8";
 			st.execute(sql);
@@ -236,7 +243,8 @@ public class DBpediaExperiment {
 			for (RelevanceMetric metric : relevanceMetrics) {
 				sql += "," + metric.getClass().getSimpleName().replace("RelevanceMetric", "");
 			}
-			sql += ") VALUES(?,?,?,?,?,?";
+			sql += ",axiom";
+			sql += ") VALUES(?,?,?,?,?,?,?";
 			for(int i = 0 ; i < relevanceMetrics.size(); i++){
 				sql += ",?";
 			}
@@ -265,8 +273,8 @@ public class DBpediaExperiment {
 //				new NamedClass("http://dbpedia.org/ontology/Comics"), 
 //				new NamedClass("http://dbpedia.org/ontology/Actor"), 
 //				new NamedClass("http://dbpedia.org/ontology/Book"));
-		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classList);
-		System.exit(0);
+//		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classList);
+//		System.exit(0);
 		
 		ExecutorService executor = Executors.newFixedThreadPool(6);
 		
@@ -303,8 +311,8 @@ public class DBpediaExperiment {
 		//get some positive examples
 		SortedSet<Individual> positiveExamples = getPositiveExamples(cls);
 		
-		//we can stop if there are no positive examples
-		if(positiveExamples.isEmpty()){
+		//we can stop if there are not at least x positive examples
+		if(positiveExamples.size() < minNrOfPositiveExamples){
 			logger.info("Empty class.");
 			return;
 		}
@@ -725,6 +733,27 @@ public class DBpediaExperiment {
 		return classes;
 	}
 	
+	/**
+	 * Rewrite OWLAxiom into OWL Functional style syntax.
+	 * @param axiom
+	 * @return
+	 */
+	private String render(Axiom dllearnerAxiom){
+		try {
+			OWLAxiom axiom = OWLAPIConverter.getOWLAPIAxiom(dllearnerAxiom);
+			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			OWLOntology ontology = man.createOntology();
+			man.addAxiom(ontology, axiom);
+			StringWriter sw = new StringWriter();
+			org.coode.owlapi.functionalrenderer.OWLObjectRenderer r = new org.coode.owlapi.functionalrenderer.OWLObjectRenderer(man, ontology, sw);
+			axiom.accept(r);
+			return sw.toString();
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	private synchronized void write2DB(FastInstanceChecker reasoner, AbstractLearningProblem lp, NamedClass cls, TreeSet<? extends EvaluatedDescription> evaluatedDescriptions, Map<RelevanceMetric, Map<Entity, Double>> entityRelevances) throws SQLException{
 		int position = 1;
 		for(EvaluatedDescription ed : evaluatedDescriptions.descendingSet()) {
@@ -747,6 +776,7 @@ public class DBpediaExperiment {
 				double relevanceScore = getRelevanceScore(ed.getDescription(), entityRelevances.get(metric));
 				ps.setDouble(col++, relevanceScore);
 			} 
+			ps.setString(col, render(new EquivalentClassesAxiom(cls, ed.getDescription())));
 			
 			ps.addBatch();
 		}
@@ -770,8 +800,8 @@ public class DBpediaExperiment {
 //		la.start();
 		
 		long start = System.currentTimeMillis();
-		new DBpediaExperiment().run();
-//		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Comics"));
+//		new DBpediaExperiment().run();
+		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Astronaut"));
 		long end = System.currentTimeMillis();
 		logger.info("Operation took " + (end - start) + "ms");
 		

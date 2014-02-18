@@ -38,7 +38,7 @@ public abstract class RelevanceMapGenerator {
     private static final Logger logger = Logger.getLogger(RelevanceMapGenerator.class.getName());
     public static String cacheDirectory = "cache/relevance";
     
-    public static Map<Entity, Double> generateRelevanceMap(NamedClass cls, OWLOntology ontology, RelevanceMetric relevanceMetric, boolean cached){
+    public static synchronized Map<Entity, Double> generateRelevanceMap(NamedClass cls, OWLOntology ontology, RelevanceMetric relevanceMetric, boolean cached){
     	logger.info("Relevance Metric: " + relevanceMetric.getClass().getSimpleName());
     	Map<Entity, Double> relevanceMap = null;
     	File folder = new File(cacheDirectory);
