@@ -101,13 +101,14 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		}
 		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
 		mon.start();
-		QueryTree<N> lgg = getLGG(treeList.get(0), treeList.get(1), learnFilters);
+		QueryTree<N> lgg = computeLGG(treeList.get(0), treeList.get(1), learnFilters);
 		if(logger.isDebugEnabled()){
 			logger.debug("LGG for 1 and 2:\n" + lgg.getStringRepresentation());
 		}
 		
 		for(int i = 2; i < treeList.size(); i++){
-			lgg = getLGG(lgg, treeList.get(i), learnFilters);
+			nodeId = 0;
+			lgg = computeLGG(lgg, treeList.get(i), learnFilters);
 			if(logger.isDebugEnabled()){
 				logger.debug("LGG for 1-" + (i+1) + ":\n" + lgg.getStringRepresentation());
 			}
