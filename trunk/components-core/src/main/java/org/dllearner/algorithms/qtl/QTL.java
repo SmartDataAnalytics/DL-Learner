@@ -237,7 +237,13 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		lggInstances = getResources(lgg);
 		nbr.setLGGInstances(lggInstances);
 		
-		String question = nbr.getQuestion(lgg, negExampleTrees, getKnownResources());
+		String question;
+		if(negExamples.isEmpty()){
+			question = nbr.getQuestion(lgg, negExampleTrees, getKnownResources());
+		} else {
+			question = nbr.getQuestion(lgg, negExampleTrees, getKnownResources());
+		}
+		
 		
 		return question;
 	}
