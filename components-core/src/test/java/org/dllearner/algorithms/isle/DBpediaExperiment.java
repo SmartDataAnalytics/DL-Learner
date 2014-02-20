@@ -154,15 +154,15 @@ public class DBpediaExperiment {
 	private AutomaticNegativeExampleFinderSPARQL2 negativeExampleFinder;
 	
 	final int minNrOfPositiveExamples = 3;
-	final int maxNrOfPositiveExamples = 10;
-	final int maxNrOfNegativeExamples = 20;
+	final int maxNrOfPositiveExamples = 100;
+	final int maxNrOfNegativeExamples = 200;
 	List<Strategy> negExampleStrategies = Arrays.asList(SIBLING, SUPERCLASS);
 	boolean posOnly = false;
 	int maxCBDDepth = 1;
 
 	//learning algorithm settings
 	private int maxNrOfResults = 100;
-	private int maxExecutionTimeInSeconds = 10;
+	private int maxExecutionTimeInSeconds = 60;
 	private double noiseInPercentage = 50;
 	private boolean useNegation = false;
 	private boolean useAllConstructor = false;
@@ -277,7 +277,7 @@ public class DBpediaExperiment {
 	public void run(){
 		Set<NamedClass> classes = getClasses(); 	
 		classes = sparqlReasoner.getMostSpecificClasses();
-		List<NamedClass> classList = new ArrayList<>(classes);
+//		List<NamedClass> classList = new ArrayList<>(classes);
 //		Collections.reverse(classList);
 //		classList = classList.subList(0, 2);
 //		classList = Lists.newArrayList(
@@ -286,10 +286,14 @@ public class DBpediaExperiment {
 //				new NamedClass("http://dbpedia.org/ontology/Book"));
 //		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classList);
 //		System.exit(0);
+		run(classes, true);
 		
+	}
+	
+	public void run(Set<NamedClass> classes, boolean overwrite){
 		ExecutorService executor = Executors.newFixedThreadPool(6);
 		
-		for (final NamedClass cls : classList) {
+		for (final NamedClass cls : classes) {
 			try {
 				File resultsFile = new File(resultsFolder, URLEncoder.encode(cls.getName(), "UTF-8") + ".csv");
 				if(resultsFile.exists()){
@@ -822,10 +826,12 @@ public class DBpediaExperiment {
 		DBpediaExperiment experiment = new DBpediaExperiment();
 		long start = System.currentTimeMillis();
 		if(args.length == 1){
+			Set<NamedClass> classes = new HashSet<>();
 			List<String> lines = Files.readLines(new File(args[0]), Charsets.UTF_8);
 			for (String line : lines) {
-				experiment.run(new NamedClass(line.trim()), true);
+				classes.add(new NamedClass(line.trim()));
 			}
+			experiment.run(classes, true);
 		} else {
 			experiment.run();
 		}
