@@ -5,6 +5,7 @@ package org.dllearner.algorithms.isle;
 
 import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SIBLING;
 import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SUPERCLASS;
+import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.RANDOM;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -84,6 +85,7 @@ import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.PrefixCCMap;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.ini4j.IniPreferences;
 import org.ini4j.InvalidFileFormatException;
@@ -92,6 +94,7 @@ import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -99,8 +102,10 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.util.OWLEntityRemover;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
@@ -149,17 +154,19 @@ public class DBpediaExperiment {
 	private AutomaticNegativeExampleFinderSPARQL2 negativeExampleFinder;
 	
 	final int minNrOfPositiveExamples = 3;
-	final int maxNrOfPositiveExamples = 100;
-	final int maxNrOfNegativeExamples = 200;
+	final int maxNrOfPositiveExamples = 10;
+	final int maxNrOfNegativeExamples = 20;
+	List<Strategy> negExampleStrategies = Arrays.asList(SIBLING, SUPERCLASS);
 	boolean posOnly = false;
 	int maxCBDDepth = 1;
 
 	//learning algorithm settings
 	private int maxNrOfResults = 100;
-	private int maxExecutionTimeInSeconds = 60;
+	private int maxExecutionTimeInSeconds = 10;
 	private double noiseInPercentage = 50;
 	private boolean useNegation = false;
 	private boolean useAllConstructor = false;
+	private int maxClassExpressionDepth = 4;
 
 	String experimentsFolder = "experiments/isle/";
 	File resultsFolder = new File(experimentsFolder + "result/");
@@ -170,8 +177,9 @@ public class DBpediaExperiment {
 
 	private List<RelevanceMetric> relevanceMetrics;
 
-	private PreparedStatement ps;
-			
+	private PreparedStatement addPS;
+	private PreparedStatement removePS;
+
 	
 	public DBpediaExperiment() {
 		try {
@@ -193,13 +201,13 @@ public class DBpediaExperiment {
 		
 		relevanceMetrics = new ArrayList<>();
 		relevanceMetrics.add(new PMIRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new ChiSquareRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new DiceRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new JaccardRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new LLRRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new SCIRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new SignificantPMIRelevanceMetric(syntacticIndex, 0.5));
-		relevanceMetrics.add(new TTestRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new ChiSquareRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new DiceRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new JaccardRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new LLRRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new SCIRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new SignificantPMIRelevanceMetric(syntacticIndex, 0.5));
+//		relevanceMetrics.add(new TTestRelevanceMetric(syntacticIndex));
 		
 		resultsFolder.mkdirs();
 		
@@ -249,7 +257,10 @@ public class DBpediaExperiment {
 				sql += ",?";
 			}
 			sql += ")";
-			ps = conn.prepareStatement(sql);
+			addPS = conn.prepareStatement(sql);
+			
+			sql = "DELETE FROM ISLE_Evaluation WHERE class=?";
+			removePS = conn.prepareStatement(sql);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -291,7 +302,7 @@ public class DBpediaExperiment {
 				@Override
 				public void run() {
 					try {
-						DBpediaExperiment.this.run(cls);
+						DBpediaExperiment.this.run(cls, true);
 					} catch (Exception e) {
 						logger.error("Error when learning class " + cls, e);
 					}
@@ -306,7 +317,16 @@ public class DBpediaExperiment {
 		}
 	}
 	
-	public void run(NamedClass cls){
+	public void run(NamedClass cls, boolean overwrite){
+		//first of all, remove existing entries from database
+		if(overwrite){
+			try {
+				removeFromDB(cls);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		logger.info("Learning description of class " + cls);
 		//get some positive examples
 		SortedSet<Individual> positiveExamples = getPositiveExamples(cls);
@@ -322,6 +342,13 @@ public class DBpediaExperiment {
 		
 		//generate a sample of the knowledge base based on the examples
 		OWLOntology knowledgebaseSample = loadKnowledgebaseSample(cls, Sets.union(positiveExamples, negativeExamples));
+		
+		
+		PelletExplanation expGen = new PelletExplanation(knowledgebaseSample);
+		OWLDataFactory df = new OWLDataFactoryImpl();
+		OWLClassAssertionAxiom ax = df.getOWLClassAssertionAxiom(df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Person")), df.getOWLNamedIndividual(IRI.create("http://dbpedia.org/resource/Ontario_Australian_Football_League")));
+		Set<OWLAxiom> explanation = expGen.getEntailmentExplanation(ax);
+		System.out.println(explanation);
 //		try {
 //			Thread.sleep(2000);
 //		} catch (InterruptedException e) {
@@ -372,6 +399,7 @@ public class DBpediaExperiment {
 				((ELLearningAlgorithm)la).setClassToDescribe(cls);
 				((ELLearningAlgorithm)la).setTreeSearchTimeSeconds(maxExecutionTimeInSeconds);
 				((ELLearningAlgorithm)la).setMaxNrOfResults(maxNrOfResults);
+				((ELLearningAlgorithm)la).setMaxClassExpressionDepth(maxClassExpressionDepth);
 //				la = new ELLearningAlgorithmDisjunctive(lp, reasoner);
 			} else {
 				//build CELOE la
@@ -448,6 +476,8 @@ public class DBpediaExperiment {
 			e.printStackTrace();
 		}
 	}
+	
+	
 	
 	/**
 	 * Computes a better start class instead of owl:Thing.
@@ -550,7 +580,7 @@ public class DBpediaExperiment {
 	
 	private SortedSet<Individual> getNegativeExamples(NamedClass classToDescribe, Set<Individual> positiveExamples){
 		logger.info("Generating positive examples...");
-		SortedSet<Individual> individuals = negativeExampleFinder.getNegativeExamples(classToDescribe, positiveExamples, Arrays.asList(SIBLING, SUPERCLASS), maxNrOfNegativeExamples);
+		SortedSet<Individual> individuals = negativeExampleFinder.getNegativeExamples(classToDescribe, positiveExamples, negExampleStrategies, maxNrOfNegativeExamples);
 		logger.info("Done. Got " + individuals.size() + ": " + individuals);
 		return individuals;
 	}
@@ -765,45 +795,41 @@ public class DBpediaExperiment {
 				       .hash();
 			String id = hc.toString();
 			double fMeasure = ((PosNegLPStandard)lp).getAccuracyOrTooWeakExact(ed.getDescription(), noiseInPercentage/100d);
-			ps.setString(1, id);
-			ps.setString(2, cls.getName());
-			ps.setInt(3, position++);
-			ps.setString(4, expression);
-			ps.setDouble(5, fMeasure);
-			ps.setInt(6, ed.getDescriptionLength());
+			addPS.setString(1, id);
+			addPS.setString(2, cls.getName());
+			addPS.setInt(3, position++);
+			addPS.setString(4, expression);
+			addPS.setDouble(5, fMeasure);
+			addPS.setInt(6, ed.getDescriptionLength());
 			int col = 7;
 			for (RelevanceMetric metric : relevanceMetrics) {
 				double relevanceScore = getRelevanceScore(ed.getDescription(), entityRelevances.get(metric));
-				ps.setDouble(col++, relevanceScore);
+				addPS.setDouble(col++, relevanceScore);
 			} 
-			ps.setString(col, render(new EquivalentClassesAxiom(cls, ed.getDescription())));
+			addPS.setString(col, render(new EquivalentClassesAxiom(cls, ed.getDescription())));
 			
-			ps.addBatch();
+			addPS.addBatch();
 		}
-		ps.executeBatch();
+		addPS.executeBatch();
+	}
+	
+	private synchronized void removeFromDB(NamedClass cls) throws SQLException{
+		removePS.setString(1, cls.getName());
+		removePS.execute();
 	}
 	
 	public static void main(String[] args) throws Exception {
-//		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
-//		String cls = "http://dbpedia.org/ontology/Astronaut";
-//		OWLDataFactory df = new OWLDataFactoryImpl();
-//		OWLAxiom pattern = df.getOWLSubClassOfAxiom(
-//				df.getOWLClass(IRI.create("http://dllearner.org/pattern/A")),
-//				df.getOWLObjectIntersectionOf(
-//						df.getOWLClass(IRI.create("http://dllearner.org/pattern/B")),
-//						df.getOWLObjectSomeValuesFrom(
-//								df.getOWLObjectProperty(IRI.create("http://dllearner.org/pattern/p")),
-//								df.getOWLClass(IRI.create("http://dllearner.org/pattern/C")))));
-//		PatternBasedAxiomLearningAlgorithm la = new PatternBasedAxiomLearningAlgorithm(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()), "cache", FragmentExtractionStrategy.INDIVIDUALS);
-//		la.setClass(new NamedClass(cls));
-//		la.setPattern(DLLearnerAxiomConvertVisitor.getDLLearnerAxiom(pattern));
-//		la.start();
-		
+		DBpediaExperiment experiment = new DBpediaExperiment();
 		long start = System.currentTimeMillis();
-//		new DBpediaExperiment().run();
-		new DBpediaExperiment().run(new NamedClass("http://dbpedia.org/ontology/Astronaut"));
+		if(args.length == 1){
+			List<String> lines = Files.readLines(new File(args[0]), Charsets.UTF_8);
+			for (String line : lines) {
+				experiment.run(new NamedClass(line.trim()), true);
+			}
+		} else {
+			experiment.run();
+		}
 		long end = System.currentTimeMillis();
 		logger.info("Operation took " + (end - start) + "ms");
-		
 	}
 }

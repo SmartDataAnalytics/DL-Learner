@@ -23,6 +23,8 @@ import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPA
 import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SIBLING;
 import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SUPERCLASS;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,8 +33,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
-import org.dllearner.core.owl.ClassHierarchy;
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.extra.CacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -50,6 +59,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import com.google.common.collect.Sets;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 /**
  * 
  * Utility class for automatically retrieving negative examples from a 
@@ -67,21 +79,35 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		SUPERCLASS, SIBLING, RANDOM;
 	}
 
-	private SparqlEndpoint se;
 	
 	// for re-using existing queries
 	private SPARQLReasoner sr;
 
 	private String namespace;
+	private String cacheDirectory = "cache";
+	private QueryExecutionFactory qef;
 	
 	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se, SPARQLReasoner reasoner) {
 		this(se, reasoner, null);
 	}
 	
 	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se, SPARQLReasoner reasoner, String namespace) {
-		this.se = se;
 		this.sr = reasoner;
 		this.namespace = namespace;
+		
+		qef = new QueryExecutionFactoryHttp(se.getURL().toString(), se.getDefaultGraphURIs());
+		if(cacheDirectory != null){
+			try {
+				long timeToLive = TimeUnit.DAYS.toMillis(30);
+				CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+				CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se) {
@@ -119,7 +145,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		Multiset<NamedClass> types = HashMultiset.create();
 		types.add(classToDescribe);
 		
-		return computeNegativeExamples(types, strategiesWithWeight, maxNrOfReturnedInstances);
+		return computeNegativeExamples(classToDescribe, types, strategiesWithWeight, maxNrOfReturnedInstances);
 	}
 	
 	public SortedSet<Individual> getNegativeExamples(Set<Individual> positiveExamples, int limit) {
@@ -147,10 +173,10 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		
 		//keep the most specific types
 		keepMostSpecificClasses(types);
-		return computeNegativeExamples(types, strategiesWithWeight, maxNrOfReturnedInstances);
+		return computeNegativeExamples(null, types, strategiesWithWeight, maxNrOfReturnedInstances);
 	}
 	
-	private SortedSet<Individual> computeNegativeExamples(Multiset<NamedClass> positiveExamplesTypes, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
+	private SortedSet<Individual> computeNegativeExamples(NamedClass classToDescribe, Multiset<NamedClass> positiveExamplesTypes, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
 		SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
 		
 		for (Entry<Strategy, Double> entry : strategiesWithWeight.entrySet()) {
@@ -212,7 +238,29 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				logger.info("Negative examples(" + superClassNegativeExamples.size() + "): " + superClassNegativeExamples);
 				negativeExamples.addAll(superClassNegativeExamples);
 			} else if(strategy == RANDOM){//get some random examples
-				String query = "SELECT ?s WHERE {?s a ?type. FILTER NOT EXIST{?s a <> }} ORDER BY RAND() LIMIT " + maxNrOfReturnedInstances;
+				logger.info("Applying random strategy...");
+				SortedSet<Individual> randomNegativeExamples = new TreeSet<Individual>();
+				String query = "SELECT DISTINCT ?s WHERE {?s a ?type.";
+				if(classToDescribe != null){
+					query += "FILTER NOT EXISTS{?s a <" + classToDescribe + "> }";
+				} else {
+					for (NamedClass nc : positiveExamplesTypes.elementSet()) {
+						
+					}
+					throw new UnsupportedOperationException("Currently it's not possible to get random examples for unknown class to describe.");
+				}
+				
+				query += "} ORDER BY RAND() LIMIT " + maxNrOfReturnedInstances;
+				QueryExecution qe = qef.createQueryExecution(query);
+				ResultSet rs = qe.execSelect();
+				QuerySolution qs;
+				while(rs.hasNext()){
+					qs = rs.next();
+					randomNegativeExamples.add(new Individual(qs.getResource("s").getURI()));
+				}
+				randomNegativeExamples.removeAll(negativeExamples);
+				negativeExamples.addAll(new ArrayList<>(randomNegativeExamples).subList(0, Math.min(randomNegativeExamples.size(), maxNrOfReturnedInstances - negativeExamples.size())));
+				logger.info("Negative examples(" + randomNegativeExamples.size() + "): " + randomNegativeExamples);
 			}
 		}
         return negativeExamples;

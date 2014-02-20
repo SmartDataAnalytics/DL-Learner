@@ -27,14 +27,18 @@ public abstract class AbstractRelevanceMetric implements RelevanceMetric {
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
 
+		Entity minE=null;
+		Entity maxE=null;
 		for (Entity e : hmEntity2Score.keySet()) {
 			double value = hmEntity2Score.get(e);
 			if (value < min) {
-				min = value;
+				min = value;minE = e;
 			} else if (value > max) {
-				max = value;
+				max = value;maxE = e;
 			}
 		}
+//		System.err.println("Max: " + max + "-" + maxE);
+//		System.err.println("Min: " + min + "-" + minE);
 		// System.out.println( "min="+ dMin +" max="+ dMax );
 		for (Entity e : hmEntity2Score.keySet()) {
 			double value = hmEntity2Score.get(e);
