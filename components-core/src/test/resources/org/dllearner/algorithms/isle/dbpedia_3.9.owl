@@ -5247,8 +5247,6 @@
         <rdfs:label xml:lang="en">influenced by</rdfs:label>
         <rdfs:label xml:lang="fr">influencé par</rdfs:label>
         <rdfs:label xml:lang="nl">beïnvloed door</rdfs:label>
-        <rdfs:range rdf:resource="http://dbpedia.org/ontology/Person"/>
-        <rdfs:domain rdf:resource="http://dbpedia.org/ontology/Person"/>
     </owl:ObjectProperty>
     
 

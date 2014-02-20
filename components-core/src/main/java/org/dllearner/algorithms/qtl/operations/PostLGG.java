@@ -40,6 +40,7 @@ public class PostLGG<N> {
 		if(tree.getChildren().isEmpty()){
 			return;
 		}
+		System.out.println(tree.getStringRepresentation());
 		if(logger.isDebugEnabled()){
 			logger.debug("Making post LGG simplification");
 			logger.debug("LGG:\n" + TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
