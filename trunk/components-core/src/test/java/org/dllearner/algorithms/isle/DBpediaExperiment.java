@@ -296,7 +296,7 @@ public class DBpediaExperiment {
 		for (final NamedClass cls : classes) {
 			try {
 				File resultsFile = new File(resultsFolder, URLEncoder.encode(cls.getName(), "UTF-8") + ".csv");
-				if(resultsFile.exists()){
+				if(!overwrite && resultsFile.exists()){
 					continue;
 				}
 			} catch (UnsupportedEncodingException e1) {
@@ -348,11 +348,11 @@ public class DBpediaExperiment {
 		OWLOntology knowledgebaseSample = loadKnowledgebaseSample(cls, Sets.union(positiveExamples, negativeExamples));
 		
 		
-		PelletExplanation expGen = new PelletExplanation(knowledgebaseSample);
-		OWLDataFactory df = new OWLDataFactoryImpl();
-		OWLClassAssertionAxiom ax = df.getOWLClassAssertionAxiom(df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Person")), df.getOWLNamedIndividual(IRI.create("http://dbpedia.org/resource/Ontario_Australian_Football_League")));
-		Set<OWLAxiom> explanation = expGen.getEntailmentExplanation(ax);
-		System.out.println(explanation);
+//		PelletExplanation expGen = new PelletExplanation(knowledgebaseSample);
+//		OWLDataFactory df = new OWLDataFactoryImpl();
+//		OWLClassAssertionAxiom ax = df.getOWLClassAssertionAxiom(df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Person")), df.getOWLNamedIndividual(IRI.create("http://dbpedia.org/resource/Ontario_Australian_Football_League")));
+//		Set<OWLAxiom> explanation = expGen.getEntailmentExplanation(ax);
+//		System.out.println(explanation);
 //		try {
 //			Thread.sleep(2000);
 //		} catch (InterruptedException e) {
