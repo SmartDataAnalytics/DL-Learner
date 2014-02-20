@@ -36,14 +36,24 @@ public class PostLGG<N> {
 		this.endpoint = endpoint;
 	}
 	
+	public PostLGG(){
+		
+	}
+	
 	public void simplifyTree(QueryTree<N> tree, List<QueryTree<N>> negTrees){
 		if(tree.getChildren().isEmpty()){
 			return;
 		}
-		System.out.println(tree.getStringRepresentation());
+		
 		if(logger.isDebugEnabled()){
+			String s;
+			if(endpoint != null){
+				s = TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()); 
+			} else {
+				s= tree.getStringRepresentation();
+			}
 			logger.debug("Making post LGG simplification");
-			logger.debug("LGG:\n" + TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
+			logger.debug("LGG:\n" + s);
 			int i = 1;
 //			for(QueryTree<N> negTree : negTrees){
 //				logger.debug("Neg tree (" + i++ + "/" + negTrees.size() +"):\n" + TreeHelper.getAbbreviatedTreeRepresentation(negTree, endpoint.getBaseURI(), endpoint.getPrefixes()));

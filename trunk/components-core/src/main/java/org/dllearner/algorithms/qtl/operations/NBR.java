@@ -282,7 +282,13 @@ public class NBR<N> {
 		determiningNodeIds = getDeterminingNodeIds(lgg, negTrees);
 		logger.debug("Computing next question...");
 		postLGG = getFilteredTree(lgg);
-		PostLGG<N> postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
+		PostLGG<N> postGen;
+		if(endpoint != null){
+			postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
+		} else {
+			postGen = new PostLGG<N>();
+		}
+		
 		postGen.simplifyTree(postLGG, negTrees);
 		if(logger.isDebugEnabled()){
 			String treeString;
@@ -418,7 +424,7 @@ public class NBR<N> {
 	
 	private SortedSet<String> getAllResources(String query){
 		SortedSet<String> resources = new TreeSet<String>();
-		query = "SELECT DISTINCT " + query.substring(7) + " LIMIT 1000";
+		query = query + " LIMIT 1000";
 		
 		ResultSet rs;
 		if(selectCache == null){
