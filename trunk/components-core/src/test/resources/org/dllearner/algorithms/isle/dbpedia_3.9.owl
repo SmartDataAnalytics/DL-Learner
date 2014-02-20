@@ -2697,7 +2697,6 @@
         <rdfs:label xml:lang="nl">club</rdfs:label>
         <rdfs:domain rdf:resource="http://dbpedia.org/ontology/Athlete"/>
         <rdfs:range rdf:resource="http://dbpedia.org/ontology/SportsTeam"/>
-        <owl:equivalentProperty rdf:resource="http://dbpedia.org/ontology/team"/>
     </owl:ObjectProperty>
     
 
