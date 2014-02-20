@@ -5,7 +5,6 @@ package org.dllearner.algorithms.isle;
 
 import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SIBLING;
 import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SUPERCLASS;
-import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.RANDOM;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -94,7 +93,6 @@ import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -102,9 +100,6 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.util.OWLEntityRemover;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
-import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
@@ -201,13 +196,13 @@ public class DBpediaExperiment {
 		
 		relevanceMetrics = new ArrayList<>();
 		relevanceMetrics.add(new PMIRelevanceMetric(syntacticIndex));
-//		relevanceMetrics.add(new ChiSquareRelevanceMetric(syntacticIndex));
-//		relevanceMetrics.add(new DiceRelevanceMetric(syntacticIndex));
-//		relevanceMetrics.add(new JaccardRelevanceMetric(syntacticIndex));
-//		relevanceMetrics.add(new LLRRelevanceMetric(syntacticIndex));
-//		relevanceMetrics.add(new SCIRelevanceMetric(syntacticIndex));
-//		relevanceMetrics.add(new SignificantPMIRelevanceMetric(syntacticIndex, 0.5));
-//		relevanceMetrics.add(new TTestRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new ChiSquareRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new DiceRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new JaccardRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new LLRRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new SCIRelevanceMetric(syntacticIndex));
+		relevanceMetrics.add(new SignificantPMIRelevanceMetric(syntacticIndex, 0.5));
+		relevanceMetrics.add(new TTestRelevanceMetric(syntacticIndex));
 		
 		resultsFolder.mkdirs();
 		
