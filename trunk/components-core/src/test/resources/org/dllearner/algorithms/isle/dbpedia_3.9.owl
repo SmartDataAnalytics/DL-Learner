@@ -15,7 +15,9 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <owl:Ontology rdf:about="http://dbpedia.org/ontology/"/>
+    <owl:Ontology rdf:about="http://dbpedia.org/ontology/">
+        <owl:versionInfo xml:lang="en">Version 3.8</owl:versionInfo>
+    </owl:Ontology>
     
 
 
@@ -24464,7 +24466,6 @@
         <rdfs:label xml:lang="fr">année</rdfs:label>
         <rdfs:label xml:lang="it">anno</rdfs:label>
         <rdfs:label xml:lang="nl">jaar</rdfs:label>
-        <rdfs:domain rdf:resource="http://dbpedia.org/ontology/Sales"/>
         <rdfs:range rdf:resource="&xsd;gYear"/>
     </owl:DatatypeProperty>
     
@@ -33378,20 +33379,6 @@
     <!-- http://xmlns.com/foaf/0.1/Person -->
 
     <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Person"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Annotations
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    <rdf:Description rdf:about="http://dbpedia.org/ontology/">
-        <owl:versionInfo xml:lang="en">Version 3.8</owl:versionInfo>
-    </rdf:Description>
 </rdf:RDF>
 
 
