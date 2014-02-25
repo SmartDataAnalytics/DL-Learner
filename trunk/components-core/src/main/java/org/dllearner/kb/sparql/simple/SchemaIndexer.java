@@ -1,20 +1,16 @@
 package org.dllearner.kb.sparql.simple;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 public class SchemaIndexer {
     private static Logger log = LoggerFactory.getLogger(SchemaIndexer.class);

@@ -28,17 +28,17 @@ import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Union;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
+import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.owl.ConceptComparator;
 

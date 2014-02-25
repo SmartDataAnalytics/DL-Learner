@@ -19,11 +19,13 @@
 
 package org.dllearner.core.config;
 
-import org.dllearner.core.owl.ObjectProperty;
-
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
+
+import org.dllearner.core.owl.ObjectProperty;
 
 /**
  * Created by IntelliJ IDEA.

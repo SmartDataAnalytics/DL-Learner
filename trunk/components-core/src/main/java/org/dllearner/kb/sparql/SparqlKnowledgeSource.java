@@ -65,10 +65,10 @@ import org.dllearner.utilities.owl.OntologyToByteConverter;
 import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * Represents the SPARQL Endpoint Component.

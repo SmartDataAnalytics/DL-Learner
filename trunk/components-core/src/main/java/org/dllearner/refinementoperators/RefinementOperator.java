@@ -19,7 +19,6 @@
 
 package org.dllearner.refinementoperators;
 
-import java.util.List;
 import java.util.Set;
 
 import org.dllearner.core.Component;

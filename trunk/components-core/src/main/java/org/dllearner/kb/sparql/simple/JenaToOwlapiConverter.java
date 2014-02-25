@@ -3,7 +3,6 @@ package org.dllearner.kb.sparql.simple;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ReaderDocumentSource;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;

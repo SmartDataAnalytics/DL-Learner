@@ -3,11 +3,8 @@
  */
 package org.dllearner.kb.sparql.simple;
 
-import java.util.*;
+import java.util.Set;
 
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 

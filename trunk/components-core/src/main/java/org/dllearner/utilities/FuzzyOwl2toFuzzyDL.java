@@ -1,12 +1,51 @@
 package org.dllearner.utilities;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.semanticweb.owlapi.model.ClassExpressionType;
+import org.semanticweb.owlapi.model.DataRangeType;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
+import org.semanticweb.owlapi.model.OWLDataOneOf;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLFacetRestriction;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import fuzzydl.Concept;
-import fuzzyowl2.*;
-
-import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.vocab.*;
+import fuzzyowl2.ChoquetConcept;
+import fuzzyowl2.FuzzyLogic;
+import fuzzyowl2.FuzzyNominalConcept;
+import fuzzyowl2.LeftShoulderFunction;
+import fuzzyowl2.LinearFunction;
+import fuzzyowl2.LinearModifier;
+import fuzzyowl2.ModifiedConcept;
+import fuzzyowl2.ModifiedFunction;
+import fuzzyowl2.ModifiedProperty;
+import fuzzyowl2.OwaConcept;
+import fuzzyowl2.QowaConcept;
+import fuzzyowl2.QuasiSugenoConcept;
+import fuzzyowl2.RightShoulderFunction;
+import fuzzyowl2.SugenoConcept;
+import fuzzyowl2.TrapezoidalFunction;
+import fuzzyowl2.TriangularFunction;
+import fuzzyowl2.TriangularModifier;
+import fuzzyowl2.WeightedConcept;
+import fuzzyowl2.WeightedMaxConcept;
+import fuzzyowl2.WeightedMinConcept;
+import fuzzyowl2.WeightedSumConcept;
 
 
 /**

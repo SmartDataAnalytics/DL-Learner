@@ -23,8 +23,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;

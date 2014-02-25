@@ -19,12 +19,13 @@
 
 package org.dllearner.test.junit;
 
+import static org.junit.Assert.assertFalse;
+
 import java.util.List;
 
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentManager;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * A suite of JUnit tests related to the DL-Learner component architecture.

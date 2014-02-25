@@ -19,6 +19,8 @@
 
 package org.dllearner.test.junit;
 
+import junit.framework.TestCase;
+
 import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
@@ -29,8 +31,6 @@ import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-
-import junit.framework.TestCase;
 
 public class PropertyLearningTest extends TestCase{
 	

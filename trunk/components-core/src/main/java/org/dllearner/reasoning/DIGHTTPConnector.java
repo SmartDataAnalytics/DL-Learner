@@ -36,11 +36,11 @@ import org.dllearner.utilities.Files;
 import org.kr.dl.dig.v1_1.GetIdentifierDocument;
 import org.kr.dl.dig.v1_1.IdRespType;
 import org.kr.dl.dig.v1_1.IdentifierDocument;
+import org.kr.dl.dig.v1_1.KbDocument.Kb;
 import org.kr.dl.dig.v1_1.NewKBDocument;
 import org.kr.dl.dig.v1_1.ReleaseKBDocument;
 import org.kr.dl.dig.v1_1.ResponseDocument;
 import org.kr.dl.dig.v1_1.ResponsesDocument;
-import org.kr.dl.dig.v1_1.KbDocument.Kb;
 
 /**
  * Methods for sending messages to a DIG-capable reasoner and receiving answers

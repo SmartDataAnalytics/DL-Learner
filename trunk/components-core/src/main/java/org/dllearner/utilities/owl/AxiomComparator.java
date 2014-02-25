@@ -3,9 +3,6 @@ package org.dllearner.utilities.owl;
 import java.util.Collection;
 import java.util.Comparator;
 
-import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
-import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
-import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
 import org.dllearner.core.owl.AsymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassAssertionAxiom;

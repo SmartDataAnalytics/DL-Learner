@@ -42,7 +42,6 @@ import org.dllearner.core.options.fuzzydll.ObjectSetConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
-import org.dllearner.utilities.Helper;
 
 /**
  * @author Jens Lehmann

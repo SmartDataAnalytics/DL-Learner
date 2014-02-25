@@ -25,8 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 

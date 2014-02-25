@@ -22,11 +22,11 @@ package org.dllearner.utilities.learn;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentManager;
 
 public class LearnConfiguration {
 

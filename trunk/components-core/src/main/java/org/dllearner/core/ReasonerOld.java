@@ -23,17 +23,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 
