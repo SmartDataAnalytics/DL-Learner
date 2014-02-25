@@ -593,7 +593,7 @@ public class CELOE extends AbstractCELA {
 //		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
 		TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
-		System.out.println(refinements);
+//		System.out.println(refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
 		nodes.add(node);
