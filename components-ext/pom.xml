@@ -133,6 +133,36 @@
     </dependencies>
     <build>
         <plugins>
+       
+         <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<show>public</show>
+					<nohelp>true</nohelp>
+					<destDir>doc/javadoc</destDir>
+					<doctitle>DL-Learner Javadoc</doctitle>
+					<author>true</author>
+					<nodeprecated>false</nodeprecated>
+					<nodeprecatedlist>false</nodeprecatedlist>
+					<noindex>false</noindex>
+					<nonavbar>false</nonavbar>
+					<notree>false</notree>
+					<overview>src/etc/overview.html</overview>
+					<source>1.6</source>
+					<sourcepath>src/main/java</sourcepath>
+					<splitindex>true</splitindex>
+					<stylesheetfile>src/etc/javadoc.css</stylesheetfile>
+					<use>true</use>
+					<version>true</version>
+					<linksource>true</linksource>
+					<bottom>&lt;img style='float:right' src='http://sflogo.sourceforge.net/sflogo.php?group_id=203619&amp;type=1' width='88' height='31' border='0' alt='SourceForge.net Logo' /&gt; DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007-2011 Jens Lehmann</bottom>
+					<encoding>ISO-8859-1</encoding>
+					<windowtitle>DL-Learner Javadoc</windowtitle>
+				</configuration>
+			</plugin>
+      
             <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -151,6 +181,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.4.3</version>
                 <configuration>
                     <excludes>
                         <exclude>org/dllearner/algorithm/tbsl/*</exclude>
@@ -161,7 +192,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2</version>
+                <version>1.2.1</version>
                 <executions>
 
                     <execution>
