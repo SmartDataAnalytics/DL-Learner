@@ -105,8 +105,6 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)
 	private TreeSet<Description> descriptions;
 	
-	private EvaluatedDescriptionSet bestEvaluatedDescriptions;
-	
 	// if true, then each solution is evaluated exactly instead of approximately
 	// private boolean exactBestDescriptionEvaluation = false;
 	private boolean singleSuggestionMode;
@@ -174,7 +172,7 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 
 	private int maxClassDescriptionTests = 0;
 
-	private int maxExecutionTimeInSeconds = 200;
+	private int maxExecutionTimeInSeconds = 60;
 
 	private boolean terminateOnNoiseReached = false;
 	
