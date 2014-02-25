@@ -19,7 +19,8 @@
 
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;

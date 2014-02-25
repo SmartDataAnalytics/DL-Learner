@@ -24,8 +24,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.options.fuzzydll.FuzzyExample;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.utilities.owl.ConceptComparator;

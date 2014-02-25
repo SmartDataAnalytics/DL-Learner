@@ -21,7 +21,6 @@ package org.dllearner.utilities.owl;
 
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.owl.Description;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.parser.ManchesterSyntaxParser;
 import org.dllearner.parser.ParseException;
 import org.semanticweb.owlapi.apibinding.OWLManager;

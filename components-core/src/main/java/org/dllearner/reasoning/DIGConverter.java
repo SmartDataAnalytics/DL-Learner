@@ -22,30 +22,30 @@ package org.dllearner.reasoning;
 import java.net.URI;
 import java.util.Set;
 
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.ClassAssertionAxiom;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
-import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
-import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Union;
+import org.dllearner.core.owl.KB;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectPropertyInverse;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
+import org.dllearner.core.owl.Union;
 
 /**
  * Methods for converting internal representation to DIG and

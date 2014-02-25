@@ -23,16 +23,16 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.FlatABox;
 import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Union;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 

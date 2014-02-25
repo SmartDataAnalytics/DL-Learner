@@ -1,5 +1,11 @@
 package org.dllearner.kb.sparql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+
+import java.io.IOException;
+
 import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -8,13 +14,8 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 
 /**
  * Created by IntelliJ IDEA.

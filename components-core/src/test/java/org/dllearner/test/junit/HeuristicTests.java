@@ -19,18 +19,18 @@
 
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -43,7 +43,6 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.utilities.Helper;
 import org.junit.Test;
 
 /**

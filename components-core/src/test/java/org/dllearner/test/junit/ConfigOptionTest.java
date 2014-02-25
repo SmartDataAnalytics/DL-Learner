@@ -18,15 +18,6 @@
  */
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.core.config.ConfigHelper;
-import org.dllearner.core.config.ConfigOption;
 import org.junit.Test;
 
 /**

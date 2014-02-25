@@ -21,6 +21,16 @@
 
 package org.dllearner.kb.sparql.simple;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -28,11 +38,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.naming.ldap.ExtendedRequest;
-import java.util.*;
 
 
 /**

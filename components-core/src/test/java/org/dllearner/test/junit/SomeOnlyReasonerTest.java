@@ -20,7 +20,6 @@ import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.kb.sparql.simple.SparqlSimpleExtractor;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.reasoning.FastInstanceChecker.ForallSemantics;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
@@ -72,7 +71,7 @@ public class SomeOnlyReasonerTest {
         ks.init();
         
         AbstractReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
-        ((FastInstanceChecker)rc).setForAllSemantics(ForallSemantics.SomeOnly);
+//        ((FastInstanceChecker)rc).setForAllSemantics(ForallSemantics.SomeOnly);
         rc.init();
        
         

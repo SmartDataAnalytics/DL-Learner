@@ -9,8 +9,6 @@ import java.beans.PropertyEditor;
 import org.dllearner.core.owl.Description;
 import org.dllearner.parser.ManchesterSyntaxParser;
 import org.dllearner.parser.ParseException;
-import org.dllearner.utilities.owl.ManchesterOWLSyntaxParser;
-import org.semanticweb.owlapi.expression.ParserException;
 
 public class ClassExpressionPropertyEditor implements PropertyEditor {
 

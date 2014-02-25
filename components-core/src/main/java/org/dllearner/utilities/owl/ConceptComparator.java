@@ -27,24 +27,24 @@ import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DoubleMaxValue;
 import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
+import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.SimpleDoubleDataRange;
-import org.dllearner.core.owl.Union;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.Union;
 
 /**
  * Implements a total order on class descriptions. Note that the

@@ -21,16 +21,15 @@ package org.dllearner.test;
 
 import java.util.List;
 
-import com.hp.hpl.jena.query.QuerySolution;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 public class TripleTypeTest {
 

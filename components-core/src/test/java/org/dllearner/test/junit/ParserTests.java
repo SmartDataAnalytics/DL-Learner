@@ -19,7 +19,7 @@
 
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;

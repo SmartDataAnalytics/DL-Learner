@@ -44,7 +44,6 @@ import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.OperatorInverter;
-import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;

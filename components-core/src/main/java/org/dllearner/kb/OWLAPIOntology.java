@@ -30,7 +30,10 @@ import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.KB;
 import org.dllearner.utilities.owl.OntologyToByteConverter;
 import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * This class provides a wrapper around a single OWL Ontology.  However, due to threading issues it is not safe

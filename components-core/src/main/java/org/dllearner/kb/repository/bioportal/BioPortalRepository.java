@@ -12,9 +12,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.KXml2Driver;

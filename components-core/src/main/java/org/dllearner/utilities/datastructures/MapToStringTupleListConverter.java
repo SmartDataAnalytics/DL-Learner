@@ -1,12 +1,11 @@
 package org.dllearner.utilities.datastructures;
 
-import org.dllearner.utilities.datastructures.StringTuple;
-import org.springframework.core.convert.converter.Converter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.core.convert.converter.Converter;
 
 /**
  * Created by IntelliJ IDEA.

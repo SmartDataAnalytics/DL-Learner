@@ -3,9 +3,7 @@
  */
 package org.dllearner.kb.sparql.simple;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.hp.hpl.jena.ontology.OntModel;

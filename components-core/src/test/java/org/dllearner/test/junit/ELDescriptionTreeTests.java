@@ -19,7 +19,8 @@
 
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.TreeSet;
 
@@ -28,8 +29,8 @@ import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
 import org.dllearner.algorithms.el.Simulation;
 import org.dllearner.algorithms.el.TreeTuple;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;

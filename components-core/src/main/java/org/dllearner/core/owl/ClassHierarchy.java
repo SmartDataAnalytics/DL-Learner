@@ -20,11 +20,11 @@
 package org.dllearner.core.owl;
 
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.owl.ConceptComparator;

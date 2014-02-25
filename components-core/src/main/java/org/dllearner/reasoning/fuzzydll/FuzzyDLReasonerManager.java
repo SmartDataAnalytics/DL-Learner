@@ -20,7 +20,6 @@
 package org.dllearner.reasoning.fuzzydll;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -71,7 +70,6 @@ import org.semanticweb.owlapi.util.Version;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
-import edu.stanford.nlp.io.StringOutputStream;
 import fuzzydl.AllInstancesQuery;
 import fuzzydl.Concept;
 import fuzzydl.ConfigReader;
