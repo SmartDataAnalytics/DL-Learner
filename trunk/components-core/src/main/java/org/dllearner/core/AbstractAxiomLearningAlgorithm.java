@@ -563,12 +563,10 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		if(values == null){
 			try {
 				values = (T) value.getClass().newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				values.add(value);
 			}
-			values.add(value);
+			catch (InstantiationException e) {e.printStackTrace();return;}
+			catch (IllegalAccessException e) {e.printStackTrace();return;}
 		}
 		values.add(value);
 	}
