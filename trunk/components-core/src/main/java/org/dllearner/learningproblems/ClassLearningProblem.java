@@ -924,4 +924,12 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	public void setCheckConsistency(boolean checkConsistency) {
 		this.checkConsistency = checkConsistency;
 	}
+
+	public String getAccuracyMethod() {
+		return accuracyMethod;
+	}
+
+	public void setAccuracyMethod(String accuracyMethod) {
+		this.accuracyMethod = accuracyMethod;
+	}
 }
