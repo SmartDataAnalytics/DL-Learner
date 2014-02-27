@@ -1,0 +1,1136 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY ace_lexicon "http://attempto.ifi.uzh.ch/ace_lexicon#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.example.com/fuzzyTrains.owl#"
+     xml:base="http://www.example.com/fuzzyTrains.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:ace_lexicon="http://attempto.ifi.uzh.ch/ace_lexicon#">
+    <owl:Ontology rdf:about="http://www.example.com/fuzzyTrains.owl">
+        <rdfs:comment xml:lang="en">Fuzzy adaptation of Michalsky&apos;s trains problem [1]
+Original idea from [2]
+
+Developed by Josue Iglesias (josue at grpss.ssr.upm.es)
+
+[1] http://www.mli.gmu.edu/papers/79-80/80-05.pdf
+[2] http://users.iit.demokritos.gr/~konstant/dload/Pubs/fuzz10.pdf</rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://attempto.ifi.uzh.ch/ace_lexicon#CN_pl -->
+
+    <owl:AnnotationProperty rdf:about="&ace_lexicon;CN_pl"/>
+    
+
+
+    <!-- http://attempto.ifi.uzh.ch/ace_lexicon#CN_sg -->
+
+    <owl:AnnotationProperty rdf:about="&ace_lexicon;CN_sg"/>
+    
+
+
+    <!-- http://attempto.ifi.uzh.ch/ace_lexicon#PN_sg -->
+
+    <owl:AnnotationProperty rdf:about="&ace_lexicon;PN_sg"/>
+    
+
+
+    <!-- http://attempto.ifi.uzh.ch/ace_lexicon#TV_pl -->
+
+    <owl:AnnotationProperty rdf:about="&ace_lexicon;TV_pl"/>
+    
+
+
+    <!-- http://attempto.ifi.uzh.ch/ace_lexicon#TV_sg -->
+
+    <owl:AnnotationProperty rdf:about="&ace_lexicon;TV_sg"/>
+    
+
+
+    <!-- http://attempto.ifi.uzh.ch/ace_lexicon#TV_vbg -->
+
+    <owl:AnnotationProperty rdf:about="&ace_lexicon;TV_vbg"/>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#fuzzyLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.example.com/fuzzyTrains.owl#fuzzyLabel"/>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#comment -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#noFuzzyLongCar -->
+
+    <rdfs:Datatype rdf:about="http://www.example.com/fuzzyTrains.owl#noFuzzyLongCar">
+        <owl:equivalentClass>
+            <rdfs:Datatype>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdfs:Datatype>
+                        <owl:onDatatype rdf:resource="&xsd;double"/>
+                        <owl:withRestrictions rdf:parseType="Collection">
+                            <rdf:Description>
+                                <xsd:minInclusive rdf:datatype="&xsd;double">40.0</xsd:minInclusive>
+                            </rdf:Description>
+                        </owl:withRestrictions>
+                    </rdfs:Datatype>
+                    <rdfs:Datatype>
+                        <owl:onDatatype rdf:resource="&xsd;double"/>
+                        <owl:withRestrictions rdf:parseType="Collection">
+                            <rdf:Description>
+                                <xsd:maxInclusive rdf:datatype="&xsd;double">50.0</xsd:maxInclusive>
+                            </rdf:Description>
+                        </owl:withRestrictions>
+                    </rdfs:Datatype>
+                </owl:intersectionOf>
+            </rdfs:Datatype>
+        </owl:equivalentClass>
+    </rdfs:Datatype>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#noFuzzyMediumLengthCar -->
+
+    <rdfs:Datatype rdf:about="http://www.example.com/fuzzyTrains.owl#noFuzzyMediumLengthCar">
+        <owl:equivalentClass>
+            <rdfs:Datatype>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdfs:Datatype>
+                        <owl:onDatatype rdf:resource="&xsd;double"/>
+                        <owl:withRestrictions rdf:parseType="Collection">
+                            <rdf:Description>
+                                <xsd:minInclusive rdf:datatype="&xsd;double">15.0</xsd:minInclusive>
+                            </rdf:Description>
+                        </owl:withRestrictions>
+                    </rdfs:Datatype>
+                    <rdfs:Datatype>
+                        <owl:onDatatype rdf:resource="&xsd;double"/>
+                        <owl:withRestrictions rdf:parseType="Collection">
+                            <rdf:Description>
+                                <xsd:maxExclusive rdf:datatype="&xsd;double">40.0</xsd:maxExclusive>
+                            </rdf:Description>
+                        </owl:withRestrictions>
+                    </rdfs:Datatype>
+                </owl:intersectionOf>
+            </rdfs:Datatype>
+        </owl:equivalentClass>
+    </rdfs:Datatype>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#noFuzzyShortCar -->
+
+    <rdfs:Datatype rdf:about="http://www.example.com/fuzzyTrains.owl#noFuzzyShortCar">
+        <owl:equivalentClass>
+            <rdfs:Datatype>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdfs:Datatype>
+                        <owl:onDatatype rdf:resource="&xsd;double"/>
+                        <owl:withRestrictions rdf:parseType="Collection">
+                            <rdf:Description>
+                                <xsd:minInclusive rdf:datatype="&xsd;double">5.0</xsd:minInclusive>
+                            </rdf:Description>
+                        </owl:withRestrictions>
+                    </rdfs:Datatype>
+                    <rdfs:Datatype>
+                        <owl:onDatatype rdf:resource="&xsd;double"/>
+                        <owl:withRestrictions rdf:parseType="Collection">
+                            <rdf:Description>
+                                <xsd:maxExclusive rdf:datatype="&xsd;double">15.0</xsd:maxExclusive>
+                            </rdf:Description>
+                        </owl:withRestrictions>
+                    </rdfs:Datatype>
+                </owl:intersectionOf>
+            </rdfs:Datatype>
+        </owl:equivalentClass>
+    </rdfs:Datatype>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#hasCar -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.com/fuzzyTrains.owl#hasCar">
+        <ace_lexicon:TV_vbg>hasCared</ace_lexicon:TV_vbg>
+        <ace_lexicon:TV_sg>hasCars</ace_lexicon:TV_sg>
+        <ace_lexicon:TV_pl>hasCar</ace_lexicon:TV_pl>
+        <rdfs:range rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <rdfs:domain rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#hasLoad -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.com/fuzzyTrains.owl#hasLoad">
+        <ace_lexicon:TV_sg>hasLoads</ace_lexicon:TV_sg>
+        <ace_lexicon:TV_vbg>hasLoaded</ace_lexicon:TV_vbg>
+        <ace_lexicon:TV_pl>hasLoad</ace_lexicon:TV_pl>
+        <rdfs:domain rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <rdfs:range rdf:resource="http://www.example.com/fuzzyTrains.owl#Load"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#isInFrontOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.com/fuzzyTrains.owl#isInFrontOf">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <ace_lexicon:TV_vbg>isInFrontOfed</ace_lexicon:TV_vbg>
+        <ace_lexicon:TV_pl>isInFrontOf</ace_lexicon:TV_pl>
+        <ace_lexicon:TV_sg>isInFrontOfs</ace_lexicon:TV_sg>
+        <rdfs:range rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.com/fuzzyTrains.owl#Car"/>
+                    <rdf:Description rdf:about="http://www.example.com/fuzzyTrains.owl#Train"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#hasCarLength -->
+
+    <owl:DatatypeProperty rdf:about="http://www.example.com/fuzzyTrains.owl#hasCarLength">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <ace_lexicon:TV_pl>hasCarLength</ace_lexicon:TV_pl>
+        <ace_lexicon:TV_sg>hasCarLengths</ace_lexicon:TV_sg>
+        <ace_lexicon:TV_vbg>hasCarLengthed</ace_lexicon:TV_vbg>
+        <rdfs:domain rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdfs:Datatype>
+                        <owl:onDatatype rdf:resource="&xsd;double"/>
+                        <owl:withRestrictions rdf:parseType="Collection">
+                            <rdf:Description>
+                                <xsd:minInclusive rdf:datatype="&xsd;double">5.0</xsd:minInclusive>
+                            </rdf:Description>
+                        </owl:withRestrictions>
+                    </rdfs:Datatype>
+                    <rdfs:Datatype>
+                        <owl:onDatatype rdf:resource="&xsd;double"/>
+                        <owl:withRestrictions rdf:parseType="Collection">
+                            <rdf:Description>
+                                <xsd:maxInclusive rdf:datatype="&xsd;double">50.0</xsd:maxInclusive>
+                            </rdf:Description>
+                        </owl:withRestrictions>
+                    </rdfs:Datatype>
+                </owl:intersectionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#Car -->
+
+    <owl:Class rdf:about="http://www.example.com/fuzzyTrains.owl#Car">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <owl:disjointWith rdf:resource="http://www.example.com/fuzzyTrains.owl#Load"/>
+        <owl:disjointWith rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:CN_pl>Cars</ace_lexicon:CN_pl>
+        <ace_lexicon:CN_sg>Car</ace_lexicon:CN_sg>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#Load -->
+
+    <owl:Class rdf:about="http://www.example.com/fuzzyTrains.owl#Load">
+        <owl:disjointWith rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:CN_pl>Loads</ace_lexicon:CN_pl>
+        <ace_lexicon:CN_sg>Load</ace_lexicon:CN_sg>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#LongCar -->
+
+    <owl:Class rdf:about="http://www.example.com/fuzzyTrains.owl#LongCar">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.com/fuzzyTrains.owl#hasCarLength"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.com/fuzzyTrains.owl#noFuzzyLongCar"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <ace_lexicon:CN_sg>LongCar</ace_lexicon:CN_sg>
+        <ace_lexicon:CN_pl>LongCars</ace_lexicon:CN_pl>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#MediumLenghtCar -->
+
+    <owl:Class rdf:about="http://www.example.com/fuzzyTrains.owl#MediumLenghtCar">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.com/fuzzyTrains.owl#hasCarLength"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.com/fuzzyTrains.owl#noFuzzyMediumLengthCar"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <ace_lexicon:CN_sg>MediumLenghtCar</ace_lexicon:CN_sg>
+        <ace_lexicon:CN_pl>MediumLenghtCars</ace_lexicon:CN_pl>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#Rectangle -->
+
+    <owl:Class rdf:about="http://www.example.com/fuzzyTrains.owl#Rectangle">
+        <rdfs:subClassOf rdf:resource="http://www.example.com/fuzzyTrains.owl#Load"/>
+        <owl:disjointWith rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:CN_sg>Rectangle</ace_lexicon:CN_sg>
+        <ace_lexicon:CN_pl>Rectangles</ace_lexicon:CN_pl>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#ShortCar -->
+
+    <owl:Class rdf:about="http://www.example.com/fuzzyTrains.owl#ShortCar">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.com/fuzzyTrains.owl#hasCarLength"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.com/fuzzyTrains.owl#noFuzzyShortCar"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <ace_lexicon:CN_sg>ShortCar</ace_lexicon:CN_sg>
+        <ace_lexicon:CN_pl>ShortCars</ace_lexicon:CN_pl>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#Train -->
+
+    <owl:Class rdf:about="http://www.example.com/fuzzyTrains.owl#Train">
+        <ace_lexicon:CN_sg>Train</ace_lexicon:CN_sg>
+        <ace_lexicon:CN_pl>Trains</ace_lexicon:CN_pl>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#Triangle -->
+
+    <owl:Class rdf:about="http://www.example.com/fuzzyTrains.owl#Triangle">
+        <rdfs:subClassOf rdf:resource="http://www.example.com/fuzzyTrains.owl#Load"/>
+        <ace_lexicon:CN_sg>Triangle</ace_lexicon:CN_sg>
+        <ace_lexicon:CN_pl>Triangles</ace_lexicon:CN_pl>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car01 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car01">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">9.0</hasCarLength>
+        <ace_lexicon:PN_sg>car01</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car02"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load011"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load012"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car02 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car02">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">16.0</hasCarLength>
+        <ace_lexicon:PN_sg>car02</ace_lexicon:PN_sg>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load021"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load022"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car11">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">49.0</hasCarLength>
+        <ace_lexicon:PN_sg>car11</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car12"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load11a"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load11b"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load11c"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car12">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">25.0</hasCarLength>
+        <ace_lexicon:PN_sg>car12</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car13"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load12a"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car13">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">13.0</hasCarLength>
+        <ace_lexicon:PN_sg>car13</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car21 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car21">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">47.0</hasCarLength>
+        <ace_lexicon:PN_sg>car21</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car22"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load12a"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load21a"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car22 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car22">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">7.0</hasCarLength>
+        <ace_lexicon:PN_sg>car22</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car31 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car31">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">41.0</hasCarLength>
+        <ace_lexicon:PN_sg>car31</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car32"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load311"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car32">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">50.0</hasCarLength>
+        <ace_lexicon:PN_sg>car32</ace_lexicon:PN_sg>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load321"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load322"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car41 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car41">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">50.0</hasCarLength>
+        <ace_lexicon:PN_sg>car41</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car42"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load411"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car42 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car42">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">6.0</hasCarLength>
+        <ace_lexicon:PN_sg>car42</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car43"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load421"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car43 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car43">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">5.0</hasCarLength>
+        <ace_lexicon:PN_sg>car43</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car51 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car51">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">41.0</hasCarLength>
+        <ace_lexicon:PN_sg>car51</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car52"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load511"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load512"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load513"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car52 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car52">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">34.0</hasCarLength>
+        <ace_lexicon:PN_sg>car52</ace_lexicon:PN_sg>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load521"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car61 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car61">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">45.0</hasCarLength>
+        <ace_lexicon:PN_sg>car61</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car62"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car62 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car62">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">8.0</hasCarLength>
+        <ace_lexicon:PN_sg>car62</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car63"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load62a"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load62b"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car63 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car63">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">25.0</hasCarLength>
+        <ace_lexicon:PN_sg>car63</ace_lexicon:PN_sg>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load63a"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load63b"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car71 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car71">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">7.0</hasCarLength>
+        <ace_lexicon:PN_sg>car71</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car72"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load71a"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load71b"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car72 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car72">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">6.0</hasCarLength>
+        <ace_lexicon:PN_sg>car72</ace_lexicon:PN_sg>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load72a"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load72b"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load72c"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car81 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car81">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">21.0</hasCarLength>
+        <ace_lexicon:PN_sg>car81</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car82"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car82 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car82">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">6.0</hasCarLength>
+        <ace_lexicon:PN_sg>car82</ace_lexicon:PN_sg>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load821"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car91 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car91">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">31.0</hasCarLength>
+        <ace_lexicon:PN_sg>car91</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car92"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load911"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car92 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car92">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">48.0</hasCarLength>
+        <ace_lexicon:PN_sg>car92</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car93"/>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load921"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#car93 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#car93">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Car"/>
+        <hasCarLength rdf:datatype="&xsd;double">10.0</hasCarLength>
+        <ace_lexicon:PN_sg>car93</ace_lexicon:PN_sg>
+        <hasLoad rdf:resource="http://www.example.com/fuzzyTrains.owl#load931"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#east1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#east1">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:PN_sg>east1</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car11"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car11"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car12"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#east2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#east2">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:PN_sg>east2</ace_lexicon:PN_sg>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car21"/>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car21"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car22"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#east3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#east3">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:PN_sg>east3</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car31"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car31"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#east4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#east4">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:PN_sg>east4</ace_lexicon:PN_sg>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car41"/>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car41"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car42"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car43"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#east5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#east5">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:PN_sg>east5</ace_lexicon:PN_sg>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car51"/>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car51"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car52"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load011 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load011">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load011</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load012 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load012">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load012</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load021 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load021">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load021</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load022 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load022">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load022</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load11a -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load11a">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load11a</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load11b -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load11b">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load11b</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load11c -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load11c">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load11c</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load12a -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load12a">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load12a</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load21a -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load21a">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load21a</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load21b -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load21b">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load21b</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load311 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load311">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load311</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load321 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load321">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load321</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load322 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load322">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load322</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load411 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load411">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load411</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load421 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load421">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load421</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load511 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load511">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load511</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load512 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load512">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load512</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load513 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load513">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load513</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load521 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load521">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load521</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load62a -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load62a">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load62a</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load62b -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load62b">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load62b</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load63a -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load63a">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load63a</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load63b -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load63b">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load63b</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load71a -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load71a">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load71a</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load71b -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load71b">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load71b</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load72a -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load72a">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load72a</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load72b -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load72b">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load72b</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load72c -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load72c">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load72c</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load821 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load821">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load821</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load911 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load911">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load911</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load921 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load921">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Rectangle"/>
+        <ace_lexicon:PN_sg>load921</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#load931 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#load931">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Triangle"/>
+        <ace_lexicon:PN_sg>load931</ace_lexicon:PN_sg>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#west0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#west0">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:PN_sg>west0</ace_lexicon:PN_sg>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car01"/>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car01"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car02"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#west6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#west6">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:PN_sg>west6</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car61"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car61"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car62"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car63"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#west7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#west7">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:PN_sg>west7</ace_lexicon:PN_sg>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car71"/>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car71"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car72"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#west8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#west8">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:PN_sg>west8</ace_lexicon:PN_sg>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car81"/>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car81"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car82"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.com/fuzzyTrains.owl#west9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.com/fuzzyTrains.owl#west9">
+        <rdf:type rdf:resource="http://www.example.com/fuzzyTrains.owl#Train"/>
+        <ace_lexicon:PN_sg>west9</ace_lexicon:PN_sg>
+        <isInFrontOf rdf:resource="http://www.example.com/fuzzyTrains.owl#car91"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car91"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car92"/>
+        <hasCar rdf:resource="http://www.example.com/fuzzyTrains.owl#car93"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.com/fuzzyTrains.owl#LongCar"/>
+            <rdf:Description rdf:about="http://www.example.com/fuzzyTrains.owl#MediumLenghtCar"/>
+            <rdf:Description rdf:about="http://www.example.com/fuzzyTrains.owl#ShortCar"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
+
