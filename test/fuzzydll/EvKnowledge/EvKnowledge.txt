@@ -1,75 +1,105 @@
 
-- Train has changed to EvKnowledge
+Fuzzy_Train example is considered as EvKnowledge
+- Train has changed to school
 - Car has changed to User
 - Lengh has changed to Success
+- Knowledge has changed to Knowledge
 - Short has changed to Unsuccessful
 - Long has changed to Successful
-- Load is still Load . And can have several shapes
+
+
+
+
+We need fuzzy annotation properties for properties like 
+
+<!-- http://www.example.com/EvKnowledge.owl#fuzzySuccessfulUser -->
+<!-- http://www.example.com/EvKnowledge.owl#fuzzyMediumSuccessUser -->
+<!-- http://www.example.com/EvKnowledge.owl#fuzzyUnSuccessfulUser -->
+<!-- http://www.example.com/EvKnowledge.owl#hasUser -->
+<!-- http://www.example.com/EvKnowledge.owl#hasKnowledge -->
+<!-- http://www.example.com/EvKnowledge.owl#isInFrontOf --> ???
+<!-- http://www.example.com/EvKnowledge.owl#hasUserSuccess -->
+<!-- http://www.example.com/EvKnowledge.owl#User -->
+<!-- http://www.example.com/EvKnowledge.owl#Knowledge -->
+<!-- http://www.example.com/EvKnowledge.owl#SuccessfulUser -->
+<!-- http://www.example.com/EvKnowledge.owl#MediumSuccessfulUser -->
+<!-- http://www.example.com/EvKnowledge.owl#Rectangle -->
+<!-- http://www.example.com/EvKnowledge.owl#UnSuccessfulUser -->
+<!-- http://www.example.com/EvKnowledge.owl#School -->
+<!-- http://www.example.com/EvKnowledge.owl#Triangle -->
+<!-- http://www.w3.org/2002/07/owl#Thing -->
+
+And Annotation properties like:
+<!-- http://www.example.com/EvKnowledge.owl#User120 -->
+
+
+
+
 
 (define-fuzzy-concept fuzzySuccessfulUser right-shoulder(0.2, 0.4, 0.7, 1.0) )
 (define-fuzzy-concept fuzzyUnsuccessfulUser left-shoulder(1.0, 0.7, 0.4, 0.2) )
 (define-fuzzy-concept fuzzyMediumSuccessfulUser trapezoidal(-50.0, 50.0, 0.4, 0.2, 0.7, 1.0) )
 (functional isInFrontOf)
 (functional hasUserSuccess)
-(domain hasLoad User )
+(domain hasKnowledge User )
 (domain isInFrontOf (or User EvKnowledge ) )
 (domain hasUser EvKnowledge )
 (range hasUser User )
 (range isInFrontOf User )
-(range hasLoad Load )
+(range hasKnowledge Knowledge )
 (domain hasUserSuccess User )
 (range hasUserSuccess *real*  0  1 )
 
-(instance load63a Rectangle 1.0)
-(instance load21a Triangle 1.0)
+(instance Knowledge63a Rectangle 1.0)
+(instance Knowledge21a Triangle 1.0)
 (instance User72 User 1.0)
 (instance User22 User 1.0)
 (instance User13 User 1.0)
-(instance load72c Triangle 1.0)
-(instance load63b Triangle 1.0)
+(instance Knowledge72c Triangle 1.0)
+(instance Knowledge63b Triangle 1.0)
 (instance User61 User 1.0)
 (instance User21 User 1.0)
 (instance User62 User 1.0)
-(instance load71b Rectangle 1.0)
+(instance Knowledge71b Rectangle 1.0)
 (instance User63 User 1.0)
-(instance load72b Rectangle 1.0)
-(instance load11a Rectangle 1.0)
+(instance Knowledge72b Rectangle 1.0)
+(instance Knowledge11a Rectangle 1.0)
 (instance User11 User 1.0)
 (instance User12 User 1.0)
 (instance User7 EvKnowledge 1.0)
-(instance load61a Triangle 0.4)
-(instance load11c Triangle 1.0)
-(instance load62a Rectangle 1.0)
-(instance load11b Rectangle 1.0)
-(instance load71a Triangle 1.0)
-(instance load22a Rectangle 0.8)
+(instance Knowledge61a Triangle 0.4)
+(instance Knowledge11c Triangle 1.0)
+(instance Knowledge62a Rectangle 1.0)
+(instance Knowledge11b Rectangle 1.0)
+(instance Knowledge71a Triangle 1.0)
+(instance Knowledge22a Rectangle 0.8)
 (instance User71 User 1.0)
 (instance west6 EvKnowledge 1.0)
-(instance load22a Triangle 0.2)
-(instance load12a Rectangle 1.0)
-(instance load61a Rectangle 0.6)
+(instance Knowledge22a Triangle 0.2)
+(instance Knowledge12a Rectangle 1.0)
+(instance Knowledge61a Rectangle 0.6)
 (instance east1 EvKnowledge 1.0)
-(instance load72a Rectangle 1.0)
+(instance Knowledge72a Rectangle 1.0)
 
 (related west6 User61 isInFrontOf 1.0)
-(related car63 load63a hasLoad 1.0)
+(related car63 Knowledge63a hasKnowledge 1.0)
 (related west6 User63 hasUser 1.0)
 (related east1 User13 hasUser 1.0)
 (related east2 User21 hasUser 1.0)
-(related User72 load72b hasLoad 1.0)
+(related User72 Knowledge72b hasKnowledge 1.0)
 (related east1 User11 hasUser 1.0)
-(related User61 load61a hasLoad 0.1)
+(related User61 Knowledge61a hasKnowledge 0.1)
 (related west7 User72 hasUser 1.0)
-(related User62 load62a hasLoad 1.0)
-(related User11 load11a hasLoad 1.0)
+(related User62 Knowledge62a hasKnowledge 1.0)
+(related User11 Knowledge11a hasKnowledge 1.0)
 (related west6 User61 hasUser 1.0)
-(related User71 load71a hasLoad 1.0)
+(related User71 Knowledge71a hasKnowledge 1.0)
 (related west7 User71 isInFrontOf 1.0)
-(related User11 load11c hasLoad 1.0)
+(related User11 Knowledge11c hasKnowledge 1.0)
 (related west7 User71 hasUser 1.0)
 (related east2 User22 hasUser 1.0)
 (related User21 User22 isInFrontOf 1.0)
-(related User63 load63b hasLoad 1.0)
+(related User63 Knowledge63b hasKnowledge 1.0)
 (related west6 User62 hasUser 1.0)
 (related west6 User62 hasUser 1.0)
 (related west7 User70 hasUser 1.0)
@@ -83,11 +113,11 @@
 (related east1 User11 isInFrontOf 1.0)
 (related User12 User13 isInFrontOf 1.0)
 (related User61 User62 isInFrontOf 1.0)
-(related User12 load12a hasLoad 1.0)
+(related User12 Knowledge12a hasKnowledge 1.0)
 (related User11 User12 isInFrontOf 1.0)
 (related east1 User12 hasUser 1.0)
-(related User72 load72c hasLoad 1.0)
-(related User22 load22a hasLoad 1.0)
+(related User72 Knowledge72c hasKnowledge 1.0)
+(related User22 Knowledge22a hasKnowledge 1.0)
 (related east2 User21 isInFrontOf 1.0)
 (related east2 User221 isInFrontOf 1.0)
 (related east2 User215 isInFrontOf 1.0)
@@ -100,11 +130,11 @@
 (related east1 User191 isInFrontOf 1.0)
 (related east1 User199 isInFrontOf 1.0)
 (related User71 User72 isInFrontOf 1.0)
-(related User71 load71b hasLoad 1.0)
-(related User21 load21a hasLoad 1.0)
+(related User71 Knowledge71b hasKnowledge 1.0)
+(related User21 Knowledge21a hasKnowledge 1.0)
 (related User62 User63 isInFrontOf 1.0)
-(related User11 load11b hasLoad 1.0)
-(related User72 load72a hasLoad 1.0)
+(related User11 Knowledge11b hasKnowledge 1.0)
+(related User72 Knowledge72a hasKnowledge 1.0)
 
 (instance User197 (= hasUserSuccessVeryLow) 1.0 )
 (instance User208 (= hasUserSuccessMiddle) 1.0 )
@@ -121,9 +151,9 @@
 (instance User17 (= hasUserSuccessVeryLow) 1.0 )
 (instance User13 (= hasUserSuccessLow) 1.0 )
 
-(disjoint User Load )
+(disjoint User Knowledge )
 (disjoint User EvKnowledge )
-(disjoint Load EvKnowledge )
+(disjoint Knowledge EvKnowledge )
 (define-concept SuccessfulUser (and User (some hasUserSuccess fuzzySuccessfulUser)))
 (define-concept UnsuccessfulUser (and User (some hasUserSuccess fuzzyUnsuccessfulUser)))
 (define-concept MediumSuccessUser (and User (some hasUserSuccess fuzzyMediumSuccessUser)))
