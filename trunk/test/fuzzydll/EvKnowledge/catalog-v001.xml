@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1391542859855" name="http://example.com/" uri="EvKnowledge.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1391542859855" name="http://owl.man.ac.uk/2006/07/sssw/people" uri="People.owl"/>
+    </group>
+</catalog>

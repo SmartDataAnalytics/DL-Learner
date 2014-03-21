@@ -1,0 +1,67 @@
+Instructions:
+=============
+
+Instruction of first installation of Fuzzy DL
+
+ 1.   Download from http://gaia.isti.cnr.it/~straccia/software/fuzzyDL/fuzzyDL.html
+
+ 2.   Unzip the folder
+
+ 3.   the "FuzzyDL" folder is the main folder
+
+ 4.   Locating the SolverLinux dynamic libraries at |/usr/lib|, |lib| or |/usr/local/lib| directories, 
+      4.1. But you can add the path of the binary file to the library path by modifying the variable |LD_LIBRARY_PATH|. 
+      For instance, if the libraries are in the same directory as the binary file, you can write in a terminal: export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+
+ 5.   Must be ready for the execution as follow
+     5.a. java -jar FuzzyDL.jar filename
+     5.b. To read in the file. Some parameters are taken from the CONFIG file
+     5.c. To select the semantics, change the 'solver' parameter in the CONFIG file z (for Zadeh)    / l (for Luaksiewicz)/ c (for Classical)
+
+ 6.   Alternatively, leave the dynamic libraries in solverLinux and define:
+      export    LD_LIBRARY_PATH=$HOME/Linux/FuzzyDL/solverLinux
+
+----------------------------------------------------------------------------
+
+Instruction of first installation of Gurobi Optimizer
+
+1. To Register and download from 
+http://pages.gurobi.com/DownloadRegistration.html?/download/gurobi-optimizer
+
+Note: Maybe it only works with an older release like 5.0.2. Still needs to be verified.
+
+2. Choose a destination directory. Actually,  /opt is used for installation. 
+
+3. To copy the Gurobi distribution to that directory and extract the contents. 
+    Extraction will create a sub-directory gurobi560/linux64 . Also, The <installdir> would be /opt/gurobi560/linux64.
+ 
+4. In order to allow executable files to be found when needed, you have to modify a few environment variables:
+    • GUROBI_HOME should point to the <installdir>.
+    • PATH should be extended to include <installdir>/bin.
+    • LD_LIBRARY_PATH should be extended to include <installdir>/lib.
+ 
+5. In the case of using bash shell, need to add the following lines to the .bashrc files as follow:
+    • export GUROBI_HOME="/opt/gurobi560/linux64"
+    • export PATH="${PATH}:${GUROBI_HOME}/bin"
+    • export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${GUROBI_HOME}/lib"
+
+6. If LD_LIBRARY_PATH is not already set, you would use the following instead:
+   export LD_LIBRARY_PATH="${GUROBI_HOME}/lib" (for Eclipse projects, this path has to be added to the environment variables).
+ 
+7. Ready to proceed to Obtain and Install the Gurobi License.
+7.1.  see the Licenses page: http://www.gurobi.com/de/download/licenses/current
+
+7.2.  Free Academic tab -> Accept Agreement -> Request License -> clicking on the License ID
+7.3.  Run the grbgetkey command like: grbgetkey 253e22f3-...
+      
+7.4.  In order to save the license key, recommended to accept the default location (hitting Enter)
+ 
+8. When you run the Gurobi Optimizer, it will look for the gurobi.lic key file in /opt/gurobi and /opt/gurobi560.
+
+9. If you choose to put the license key file in a non-default location, you should add a line like the following to you .bashrc file
+   (For setting the environment variable)
+
+    export GRB_LICENSE_FILE=/usr/home/jones/gurobi.lic
+
+
+
