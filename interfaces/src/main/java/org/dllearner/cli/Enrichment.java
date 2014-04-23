@@ -25,6 +25,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -116,6 +117,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.SubClassAxiom;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
@@ -214,6 +216,7 @@ public class Enrichment {
 	private SecureRandom random = new SecureRandom();
 
 	// enrichment parameters
+	private SparqlEndpointKS ks;
 	private SparqlEndpoint se;
 	private Entity resource;
 	private boolean verbose;
@@ -316,6 +319,74 @@ public class Enrichment {
 		
 		learnedOWLAxioms = new HashSet<OWLAxiom>();
 		learnedEvaluatedAxioms = new HashSet<EvaluatedAxiom>();
+		
+		// instantiate SPARQL endpoint wrapper component
+				ks = new SparqlEndpointKS(se);
+				try {
+					ks.init();
+					ks.setSupportsSPARQL_1_1(!iterativeMode);
+				} catch (ComponentInitException e) {
+					e.printStackTrace();
+				}
+				
+	}
+	
+	public Enrichment(SparqlEndpointKS ks, Entity resource, double threshold, int nrOfAxiomsToLearn, 
+			boolean useInference, boolean verbose, int chunksize, 
+			int maxExecutionTimeInSeconds, boolean omitExistingAxioms) {
+		this.ks = ks;
+		this.resource = resource;
+		this.verbose = verbose;
+		this.threshold = threshold;
+		this.nrOfAxiomsToLearn = nrOfAxiomsToLearn;
+		this.useInference = useInference;
+		this.chunksize = chunksize;
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+		this.omitExistingAxioms = omitExistingAxioms;
+		
+		if(ks.isRemote()){
+			try {
+				cacheDir = "cache" + File.separator + URLEncoder.encode(((SparqlEndpointKS)ks).getEndpoint().getURL().toString(), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			cache = new ExtractionDBCache(cacheDir);
+		}
+		
+		
+		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
+		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(ObjectPropertyDomainAxiomLearner.class);
+		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
+		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
+		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(AsymmetricObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(InverseObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
+		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
+
+		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
+		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
+		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
+		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class); 
+		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
+		
+		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
+//		classAlgorithms.add(DisjointClassesLearner.class);
+//		classAlgorithms.add(SimpleSubclassLearner.class);
+		classAlgorithms.add(CELOE.class);		
+		
+		algorithmRuns = new LinkedList<AlgorithmRun>();
+		
+		learnedOWLAxioms = new HashSet<OWLAxiom>();
+		learnedEvaluatedAxioms = new HashSet<EvaluatedAxiom>();
 	}
 	
 	public void setAllowedNamespaces(List<String> allowedNamespaces) {
@@ -331,11 +402,6 @@ public class Enrichment {
 	
 	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
 						
-		// instantiate SPARQL endpoint wrapper component
-		SparqlEndpointKS ks = new SparqlEndpointKS(se);
-		ks.init();
-		ks.setSupportsSPARQL_1_1(!iterativeMode);
-		
 		// common helper objects
 		SPARQLTasks st = new SPARQLTasks(se);
 		
@@ -344,7 +410,7 @@ public class Enrichment {
 //		ks.setSupportsSPARQL_1_1(supportsSPARQL_1_1);
 		
 		if(useInference){
-			reasoner = new SPARQLReasoner(ks, cache);
+			reasoner = new SPARQLReasoner(ks, cacheDir);
 			System.out.print("Precomputing subsumption hierarchy ... ");
 			long startTime = System.currentTimeMillis();
 			reasoner.prepareSubsumptionHierarchy();
@@ -459,6 +525,7 @@ public class Enrichment {
 	}
 	
 	private void filterByNamespaces(Model model){
+		List<Statement> toRemove = new ArrayList<>();
 		if(allowedNamespaces != null && !allowedNamespaces.isEmpty()){
 			for (StmtIterator iterator = model.listStatements(); iterator.hasNext();) {
 				Statement st = iterator.next();
@@ -485,10 +552,11 @@ public class Enrichment {
 					}
 				}
 				if(!startsWithAllowedNamespace){
-					iterator.remove();
+					toRemove.add(st);
 				}
 			}
 		}
+		model.remove(toRemove);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -549,7 +617,13 @@ public class Enrichment {
 		} else {
 			System.out.print("extracting fragment ... ");//com.hp.hpl.jena.shared.impl.JenaParameters.enableEagerLiteralValidation = true;
 			startTime = System.currentTimeMillis();
-			Model model = getFragmentMultithreaded(ks, Sets.union(posExamples, negExamples));
+			Model model;
+			if(ks.isRemote()){
+				model = getFragmentMultithreaded(ks, Sets.union(posExamples, negExamples));
+			} else {
+				model = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
+			}
+			
 			filter(model);
 			filterByNamespaces(model);
 			OWLEntityTypeAdder.addEntityTypes(model);
@@ -1136,6 +1210,7 @@ public class Enrichment {
 				System.exit(0);
 			}			
 					
+			SparqlEndpointKS ks = null;
 			// create SPARQL endpoint object (check that indeed a URL was given)
 			URL endpoint = null;
 			try {
@@ -1144,13 +1219,33 @@ public class Enrichment {
 				System.out.println("The specified endpoint appears not be a proper URL.");
 				System.exit(0);
 			}
-			URI graph = null;
+			//check if the URL is a file and if exists load it into a JENA model
 			try {
-				graph = (URI) options.valueOf("graph");
-			} catch(OptionException e) {
-				System.out.println("The specified graph appears not be a proper URL.");
-				System.exit(0);
+				File file = new File(endpoint.toURI());
+				if(file.exists()){
+					Model kbModel = ModelFactory.createDefaultModel();
+					kbModel.read(new FileInputStream(file), null);
+					ks = new LocalModelBasedSparqlEndpointKS(kbModel);
+				} else {
+					URI graph = null;
+					try {
+						graph = (URI) options.valueOf("graph");
+					} catch(OptionException e) {
+						System.out.println("The specified graph appears not be a proper URL.");
+						System.exit(0);
+					}
+					
+					LinkedList<String> defaultGraphURIs = new LinkedList<String>();
+					if(graph != null) {
+						defaultGraphURIs.add(graph.toString());
+					}
+					SparqlEndpoint se = new SparqlEndpoint(endpoint, defaultGraphURIs, new LinkedList<String>());
+					ks = new SparqlEndpointKS(se);
+				}
+			} catch (URISyntaxException e2) {
+				e2.printStackTrace();
 			}
+			
 			URI resourceURI = null;
 			try {
 				resourceURI = (URI) options.valueOf("resource");
@@ -1170,30 +1265,25 @@ public class Enrichment {
 				});
 			}
 			
-			
-			LinkedList<String> defaultGraphURIs = new LinkedList<String>();
-			if(graph != null) {
-				defaultGraphURIs.add(graph.toString());
-			}
-			SparqlEndpoint se = new SparqlEndpoint(endpoint, defaultGraphURIs, new LinkedList<String>());
-			
-			// sanity check that endpoint/graph returns at least one triple
-			String query = "SELECT * WHERE {?s ?p ?o} LIMIT 1";
-			SparqlQuery sq = new SparqlQuery(query, se);
-			try {
-				ResultSet q = sq.send();
-				while (q.hasNext()) {
-					q.next();
+			if(ks.isRemote()){
+				// sanity check that endpoint/graph returns at least one triple
+				String query = "SELECT * WHERE {?s ?p ?o} LIMIT 1";
+				SparqlQuery sq = new SparqlQuery(query, ks.getEndpoint());
+				try {
+					ResultSet q = sq.send();
+					while (q.hasNext()) {
+						q.next();
+					}
+				} catch(QueryExceptionHTTP e) {
+					System.out.println("Endpoint not reachable (check spelling).");
+					System.exit(0);
 				}
-			} catch(QueryExceptionHTTP e) {
-				System.out.println("Endpoint not reachable (check spelling).");
-				System.exit(0);
 			}
 			
 			// map resource to correct type
 			Entity resource = null;
 			if(options.valueOf("resource") != null) {
-				resource = new SPARQLTasks(se).guessResourceType(resourceURI.toString(), true);
+				resource = new SPARQLTasks(((SparqlEndpointKS)ks).getEndpoint()).guessResourceType(resourceURI.toString(), true);
 				if(resource == null) {
 					throw new IllegalArgumentException("Could not determine the type (class, object property or data property) of input resource " + options.valueOf("resource"));
 				}
@@ -1229,7 +1319,7 @@ public class Enrichment {
 			boolean processDataProperties = (Boolean) options.valueOf("dp");
 			boolean processClasses = (Boolean) options.valueOf("cls");
 			
-			Enrichment e = new Enrichment(se, resource, threshold, maxNrOfResults, useInference, false, chunksize, maxExecutionTimeInSeconds, omitExistingAxioms);
+			Enrichment e = new Enrichment(ks, resource, threshold, maxNrOfResults, useInference, false, chunksize, maxExecutionTimeInSeconds, omitExistingAxioms);
 			e.setAllowedNamespaces(allowedNamespaces);
 			e.setIterativeMode(iterativeMode);
 			e.setProcessObjectProperties(processObjectProperties);
@@ -1237,8 +1327,6 @@ public class Enrichment {
 			e.setProcessClasses(processClasses);
 			e.start();
 
-			SparqlEndpointKS ks = new SparqlEndpointKS(se);
-			
 			// print output in correct format
 			if(options.has("f")) {
 				List<AlgorithmRun> runs = e.getAlgorithmRuns();
