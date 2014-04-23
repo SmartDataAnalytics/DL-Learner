@@ -21,6 +21,7 @@ package org.dllearner.confparser3;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 
 import org.dllearner.cli.ConfFileOption2;
 import org.junit.Test;
@@ -34,7 +35,7 @@ import org.junit.Test;
 public class ParseTest {
 
 	@Test
-	public void test() throws FileNotFoundException, ParseException {
+	public void test() throws FileNotFoundException, ParseException, UnsupportedEncodingException {
 		ConfParser parser = ConfParser.parseFile(new File("../examples/family/father.conf"));
 		for(ConfFileOption2 option : parser.getConfOptions()) {
 			System.out.print(option.getBeanName() + "." + option.getPropertyName() + " = " + option.getValue().toString());

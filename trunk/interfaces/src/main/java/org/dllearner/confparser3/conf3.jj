@@ -26,6 +26,7 @@
 options {
   JDK_VERSION = "1.6";
   STATIC = false; 
+  UNICODE_INPUT=true;
 }
 
 PARSER_BEGIN(ConfParser)
@@ -33,7 +34,9 @@ package org.dllearner.confparser3;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -88,8 +91,8 @@ public class ConfParser {
 		return confOptionsByBean.get(beanName);
 	}
 	
-	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException {
-		ConfParser parser = new ConfParser(new FileInputStream(filename));
+	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException, UnsupportedEncodingException {
+		ConfParser parser = new ConfParser(new InputStreamReader(new FileInputStream(filename),"UTF-8"));
 		parser.Start();
 		return parser;
 	}
