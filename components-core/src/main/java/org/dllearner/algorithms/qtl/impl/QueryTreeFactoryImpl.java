@@ -48,6 +48,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
@@ -69,7 +70,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	private int maxDepth = 3;
 	
 	private Set<String> allowedNamespaces = Sets.newHashSet(RDF.getURI());
-	private Set<String> ignoredProperties = Sets.newHashSet();
+	private Set<String> ignoredProperties = Sets.newHashSet(OWL.sameAs.getURI());
 	
 	public QueryTreeFactoryImpl(){
 		comparator = new StatementComparator();
@@ -242,19 +243,26 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		SortedSet<Statement> statements;
 		while(it.hasNext()){
 			st = it.next();
-			statements = resource2Statements.get(st.getSubject().toString());
-			if(statements == null){
-				statements = new TreeSet<Statement>(comparator);
-				resource2Statements.put(st.getSubject().toString(), statements);
-			}
-			statements.add(st);
-			if((st.getObject().isResource()) && !resource2Statements.containsKey(st.getObject().toString())){
-				fillMap(st.getObject().asResource(), model, resource2Statements);
+			if(!ignoredProperties.contains(st.getPredicate().getURI())){
+				statements = resource2Statements.get(st.getSubject().toString());
+				if(statements == null){
+					statements = new TreeSet<Statement>(comparator);
+					resource2Statements.put(st.getSubject().toString(), statements);
+				}
+				statements.add(st);
+				if((st.getObject().isResource()) && !resource2Statements.containsKey(st.getObject().toString())){
+					fillMap(st.getObject().asResource(), model, resource2Statements);
+				}
 			}
 		}
 	}
 	
+	private void filter(Model model){
+		model.remove(model.listStatements(null, RDF.type, OWL.Class));
+	}
+	
 	private QueryTreeImpl<String> createTree(Resource s, Model model){
+		filter(model);
 		nodeId = 0;
 		SortedMap<String, SortedSet<Statement>> resource2Statements = new TreeMap<String, SortedSet<Statement>>();
 		
@@ -274,6 +282,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		fillMap(s, model, resource2Statements);	
 		
 		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
+		tree.setId(nodeId++);
 		int depth = 0;
 		fillTree(tree, resource2Statements, depth);
 				
@@ -283,7 +292,6 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	
 	private void fillTree(QueryTreeImpl<String> tree, SortedMap<String, SortedSet<Statement>> resource2Statements, int depth){
 		depth++;
-			tree.setId(nodeId++);
 			if(resource2Statements.containsKey(tree.getUserObject())){
 				QueryTreeImpl<String> subTree;
 				Property predicate;
@@ -327,6 +335,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 						if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 							subTree = new QueryTreeImpl<String>(st.getObject().toString());
 							subTree.setIsResourceNode(true);
+							subTree.setId(nodeId++);
 							tree.addChild(subTree, st.getPredicate().toString());
 							if(depth < maxDepth){
 								fillTree(subTree, resource2Statements, depth);
@@ -341,6 +350,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 								!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 							subTree = new QueryTreeImpl<String>(st.getObject().toString());
 							subTree.setIsResourceNode(true);
+							subTree.setId(nodeId++);
 							tree.addChild(subTree, st.getPredicate().toString());
 							fillTree(subTree, resource2Statements, depth);
 						}

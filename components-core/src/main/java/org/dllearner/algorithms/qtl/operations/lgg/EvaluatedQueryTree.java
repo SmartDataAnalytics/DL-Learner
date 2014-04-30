@@ -3,6 +3,7 @@ package org.dllearner.algorithms.qtl.operations.lgg;
 import java.util.Collection;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.learningproblems.ScoreTwoValued;
 
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
@@ -10,6 +11,7 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	private Collection<QueryTree<N>> falseNegatives;
 	private Collection<QueryTree<N>> falsePositives;
 	private double score;
+//	private ScoreTwoValued score;
 
 	public EvaluatedQueryTree(QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, Collection<QueryTree<N>> falsePositives, double score) {
 		this.tree = tree;
@@ -17,6 +19,11 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 		this.falsePositives = falsePositives;
 		this.score = score;
 	}
+//	
+//	public EvaluatedQueryTree(QueryTree<N> tree, ScoreTwoValued score) {
+//		this.tree = tree;
+//		this.score = score;
+//	}
 	
 	public QueryTree<N> getTree() {
 		return tree;

@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.qtl.operations;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -18,6 +20,13 @@ import java.util.TreeSet;
 
 import javax.xml.ws.http.HTTPException;
 
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.extra.CacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.GeneralisedQueryTree;
@@ -27,6 +36,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.exception.TimeOutException;
 import org.dllearner.algorithms.qtl.util.SPARQLEndpointEx;
 import org.dllearner.algorithms.qtl.util.TreeHelper;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -34,6 +44,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -63,9 +74,9 @@ public class NBR<N> {
 	private int maxExecutionTimeInSeconds = 100;
 	private long startTime;
 	
-	private ExtractionDBCache selectCache;
 	private SparqlEndpoint endpoint;
 	private Model model;
+	private org.aksw.jena_sparql_api.core.QueryExecutionFactory qef;
 	
 	private String query;
 	private int limit;
@@ -91,17 +102,32 @@ public class NBR<N> {
 		this(endpoint, null);
 	}
 	
-	public NBR(SparqlEndpoint endpoint, ExtractionDBCache selectCache){
+	public NBR(SparqlEndpoint endpoint, String cacheDirectory){
 		this.endpoint = endpoint;
-		this.selectCache = selectCache;
 		
 		noSequences = new ArrayList<List<QueryTreeChange>>();
+		
+		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+		if(cacheDirectory != null){
+			try {
+				long timeToLive = TimeUnit.DAYS.toMillis(30);
+				CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+				CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public NBR(Model model){
 		this.model = model;
 		
 		noSequences = new ArrayList<List<QueryTreeChange>>();
+		
+		qef = new QueryExecutionFactoryModel(model);
 	}
 	
 	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds){
@@ -284,7 +310,7 @@ public class NBR<N> {
 		postLGG = getFilteredTree(lgg);
 		PostLGG<N> postGen;
 		if(endpoint != null){
-			postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
+			postGen = new PostLGG<N>(endpoint);
 		} else {
 			postGen = new PostLGG<N>();
 		}
@@ -426,21 +452,15 @@ public class NBR<N> {
 		SortedSet<String> resources = new TreeSet<String>();
 		query = query + " LIMIT 1000";
 		
-		ResultSet rs;
-		if(selectCache == null){
-			rs = executeSelectQuery(query);
-		} else {
-			String result = selectCache.executeSelectQuery(endpoint, query);
-			rs = SparqlQuery.convertJSONtoResultSet(result);
-		}
+		QueryExecution qe = qef.createQueryExecution(query);
+		ResultSet rs = qe.execSelect();
 		
-		String uri;
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			uri = qs.getResource("x0").getURI();
-			resources.add(uri);
+			resources.add(qs.getResource("x0").getURI());
 		}
+		qe.close();
 		return resources;
 	}
 	
@@ -741,25 +761,15 @@ public class NBR<N> {
 			logger.debug("Testing query\n" + getLimitedQuery(query, limit, offset) + "\n");
 		}
 		
-		ResultSet rs;
-		if(selectCache == null){
-			rs = executeSelectQuery(getLimitedQuery(query, limit, offset));
-		} else {
-			String result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(query, limit, offset));
-			rs = SparqlQuery.convertJSONtoResultSet(result);
-		}
+		QueryExecution qe = qef.createQueryExecution(getLimitedQuery(query, limit, offset));
+		ResultSet rs = qe.execSelect();
 		
-		String uri;
 		QuerySolution qs;
-		RDFNode node;
 		while(rs.hasNext()){
 			qs = rs.next();
-			node = qs.get("x0");
-			if(node.isURIResource()){
-				uri = qs.getResource("x0").getURI();
-				resources.add(uri);
-			}
+			resources.add(qs.getResource("x0").getURI());
 		}
+		qe.close();
 		
 		return resources;
 	}

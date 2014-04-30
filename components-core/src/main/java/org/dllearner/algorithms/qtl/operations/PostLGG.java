@@ -9,8 +9,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
-import org.dllearner.algorithms.qtl.util.SPARQLEndpointEx;
 import org.dllearner.algorithms.qtl.util.TreeHelper;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 
 /**
  * This class can be used to simplify a query tree. In general we use it after the LGG is computed, 
@@ -30,9 +30,9 @@ public class PostLGG<N> {
 	
 	private static final Logger logger = Logger.getLogger(PostLGG.class);
 	
-	private SPARQLEndpointEx endpoint;
+	private SparqlEndpoint endpoint;
 	
-	public PostLGG(SPARQLEndpointEx endpoint){
+	public PostLGG(SparqlEndpoint endpoint){
 		this.endpoint = endpoint;
 	}
 	
@@ -46,12 +46,7 @@ public class PostLGG<N> {
 		}
 		
 		if(logger.isDebugEnabled()){
-			String s;
-			if(endpoint != null){
-				s = TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()); 
-			} else {
-				s= tree.getStringRepresentation();
-			}
+			String s = tree.getStringRepresentation();
 			logger.debug("Making post LGG simplification");
 			logger.debug("LGG:\n" + s);
 			int i = 1;

@@ -19,6 +19,7 @@
  */
 package org.dllearner.algorithms.qtl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,7 +32,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.extra.CacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.apache.commons.collections15.ListUtils;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
@@ -46,34 +55,36 @@ import org.dllearner.algorithms.qtl.operations.NBR;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.algorithms.qtl.util.SPARQLEndpointEx;
-import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentManager;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.SparqlQueryLearningAlgorithm;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.CachingConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.semanticweb.owlapi.owllink.parser.OWLlinkDescriptionElementHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -89,7 +100,7 @@ import com.hp.hpl.jena.util.iterator.Filter;
  *
  */
 @ComponentAnn(name="query tree learner", shortName="qtl", version=0.8)
-public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorithm {
+public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 	
 	private static final Logger logger = Logger.getLogger(QTL.class);
 	
@@ -99,7 +110,8 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	
 	private SparqlEndpoint endpoint;
 	private Model model;
-	private ExtractionDBCache cache;
+	private org.aksw.jena_sparql_api.core.QueryExecutionFactory qef;
+	private String cacheDirectory;
 	
 	private QueryTreeCache treeCache;
 	
@@ -123,6 +135,7 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	private SortedSet<String> lggInstances;
 	
 	private Set<String> objectNamespacesToIgnore = new HashSet<String>();
+	private Set<String> allowedNamespaces = new HashSet<String>();
 	private Map<String, String> prefixes = new HashMap<String, String>();
 	private boolean enableNumericLiteralFilters = false;
 
@@ -137,52 +150,44 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	}
 	
 	public QTL(AbstractLearningProblem learningProblem, SparqlEndpointKS endpointKS) throws LearningProblemUnsupportedException{
+		this(learningProblem, endpointKS, null);
+	}
+	
+	public QTL(AbstractLearningProblem learningProblem, SparqlEndpointKS endpointKS, String cacheDirectory) throws LearningProblemUnsupportedException{
 		if(!(learningProblem instanceof PosOnlyLP || learningProblem instanceof PosNegLP)){
 			throw new LearningProblemUnsupportedException(learningProblem.getClass(), getClass());
 		}
 		this.learningProblem = learningProblem;
 		this.endpointKS = endpointKS;
-		
-//		this.configurator = new QTLConfigurator(this);
+		this.cacheDirectory = cacheDirectory;
 	}
 	
-	public QTL(AbstractLearningProblem learningProblem, SparqlEndpointKS endpointKS, ExtractionDBCache cache) throws LearningProblemUnsupportedException{
-		if(!(learningProblem instanceof PosOnlyLP || learningProblem instanceof PosNegLP)){
-			throw new LearningProblemUnsupportedException(learningProblem.getClass(), getClass());
-		}
-		this.learningProblem = learningProblem;
-		this.endpointKS = endpointKS;
-		this.cache = cache;
-		
-//		this.configurator = new QTLConfigurator(this);
-	}
-	
-	public QTL(SPARQLEndpointEx endpoint, ExtractionDBCache cache) {
+	public QTL(SPARQLEndpointEx endpoint, String cacheDirectory) {
 		this.endpoint = endpoint;
-		this.cache = cache;
+		this.cacheDirectory = cacheDirectory;
 		
 		treeCache = new QueryTreeCache();
-		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, cache));
+		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDirectory));
 		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
 		
 		lggGenerator = new LGGGeneratorImpl<String>();
-		nbr = new NBR<String>(endpoint, cache);
+		nbr = new NBR<String>(endpoint, cacheDirectory);
 		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		
 		posExampleTrees = new ArrayList<QueryTree<String>>();
 		negExampleTrees = new ArrayList<QueryTree<String>>();
 	}
 	
-	public QTL(SparqlEndpointKS endpointKS, ExtractionDBCache cache) {
+	public QTL(SparqlEndpointKS endpointKS, String cacheDirectory) {
 		this.endpointKS = endpointKS;
-		this.cache = cache;
+		this.cacheDirectory = cacheDirectory;
 		
 		treeCache = new QueryTreeCache();
-		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, cache));
+		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDirectory));
 		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
 		
 		lggGenerator = new LGGGeneratorImpl<String>();
-		nbr = new NBR<String>(endpoint, cache);
+		nbr = new NBR<String>(endpoint, cacheDirectory);
 		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		
 		posExampleTrees = new ArrayList<QueryTree<String>>();
@@ -369,20 +374,15 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	private SortedSet<String> getResources(QueryTree<String> tree){
 		SortedSet<String> resources = new TreeSet<String>();
 		String query = getDistinctSPARQLQuery(tree);
-		ResultSet rs;
-		if(endpoint != null){
-			rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-		} else {
-			rs = QueryExecutionFactory.create(query, model).execSelect();
-		}
+		QueryExecution qe = qef.createQueryExecution(query);
+		ResultSet rs = qe.execSelect();
 		
-		String uri;
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			uri = qs.getResource("x0").getURI();
-			resources.add(uri);
+			resources.add(qs.getResource("x0").getURI());
 		}
+		qe.close();
 		return resources;
 	}
 	
@@ -392,12 +392,30 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		return query;
 	}
 
+//	@Override
+//	public void start(){
+//		generatePositiveExampleTrees();
+//		
+//		lgg = lggGenerator.getLGG(posExampleTrees);
+//		
+//		if(queryTreeFilter != null){
+//			lgg = queryTreeFilter.getFilteredQueryTree(lgg);
+//		}
+//		if(logger.isDebugEnabled()){
+//			logger.debug("LGG: \n" + lgg.getStringRepresentation());
+//		}
+//		if(logger.isInfoEnabled()){
+//			logger.info("Generated SPARQL query:\n" + lgg.toSPARQLQueryString(true, enableNumericLiteralFilters, prefixes));
+//		}
+//	}
+	
 	@Override
 	public void start(){
+		//build the query trees for the positive examples
 		generatePositiveExampleTrees();
 		
+		//compute the LGG
 		lgg = lggGenerator.getLGG(posExampleTrees);
-		
 		if(queryTreeFilter != null){
 			lgg = queryTreeFilter.getFilteredQueryTree(lgg);
 		}
@@ -405,7 +423,35 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 			logger.debug("LGG: \n" + lgg.getStringRepresentation());
 		}
 		if(logger.isInfoEnabled()){
-			logger.info(lgg.toSPARQLQueryString(true, enableNumericLiteralFilters, prefixes));
+			logger.info("Generated SPARQL query:\n" + lgg.toSPARQLQueryString(true, enableNumericLiteralFilters, prefixes));
+		}
+		
+		//build the query trees for the negative examples
+		if(!negExamples.isEmpty()){
+			generateNegativeExampleTrees();
+			
+			try {
+				//check if the LGG covers a negative example
+				int index = coversNegativeQueryTree(lgg);
+				if(index != -1){
+					throw new NegativeTreeCoverageExecption(negExamples.get(index));
+				}
+				
+				lggInstances = getResources(lgg);
+				nbr.setLGGInstances(lggInstances);
+				
+				String question;
+				if(negExamples.isEmpty()){
+					question = nbr.getQuestion(lgg, negExampleTrees, getKnownResources());
+				} else {
+					question = nbr.getQuestion(lgg, negExampleTrees, getKnownResources());
+				}
+				logger.info("Question:\n" + question);
+			} catch (NegativeTreeCoverageExecption e) {
+				e.printStackTrace();
+			} catch (TimeOutException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -428,19 +474,43 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 	}
 
 	public void init() {
+		if(endpointKS.isRemote()){
+			SparqlEndpoint endpoint = endpointKS.getEndpoint();
+			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+			if(cacheDirectory != null){
+				try {
+					long timeToLive = TimeUnit.DAYS.toMillis(30);
+					CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+//			qef = new QueryExecutionFactoryPaginated(qef, 10000);
+			
+		} else {
+			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)endpointKS).getModel());
+		}
+		
+		
 		if(learningProblem instanceof PosOnlyLP){
 			this.posExamples = convert(((PosOnlyLP)learningProblem).getPositiveExamples());
+			this.negExamples = new ArrayList<String>();
 		} else if(learningProblem instanceof PosNegLP){
 			this.posExamples = convert(((PosNegLP)learningProblem).getPositiveExamples());
 			this.negExamples = convert(((PosNegLP)learningProblem).getNegativeExamples());
 		}
 		treeCache = new QueryTreeCache();
+		treeCache.addAllowedNamespaces(allowedNamespaces);
 		
 		if(endpointKS instanceof LocalModelBasedSparqlEndpointKS){
 			cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(((LocalModelBasedSparqlEndpointKS) endpointKS).getModel()));
 		} else {
 			endpoint = endpointKS.getEndpoint();
-			cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, cache));
+			cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, endpointKS.getCache()));
 		}
 		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
 		
@@ -464,27 +534,6 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		return lgg;
 	}
 	
-	public static void main(String[] args) throws Exception {
-		Set<String> positiveExamples = new HashSet<String>();
-		positiveExamples.add("http://dbpedia.org/resource/Liverpool_F.C.");
-		positiveExamples.add("http://dbpedia.org/resource/Chelsea_F.C.");
-		
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
-		ks.init();
-		PosOnlyLP lp = new PosOnlyLP();	
-		lp.setPositiveExamples(Helper.getIndividualSet(positiveExamples));
-		QTL qtl = new QTL(lp, ks);
-		qtl.addQueryTreeFilter(new QuestionBasedQueryTreeFilter(Arrays.asList("soccer club", "Premier League")));
-		qtl.init();
-		qtl.start();
-		String query = qtl.getBestSPARQLQuery();
-		System.out.println(query);
-	}
-
-	public LearningProblem getLearningProblem() {
-		return learningProblem;
-	}
-
 	@Autowired
 	public void setLearningProblem(LearningProblem learningProblem) {
 		this.learningProblem = learningProblem;
@@ -499,5 +548,61 @@ public class QTL extends AbstractComponent implements SparqlQueryLearningAlgorit
 		this.endpointKS = endpointKS;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.StoppableLearningAlgorithm#stop()
+	 */
+	@Override
+	public void stop() {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.StoppableLearningAlgorithm#isRunning()
+	 */
+	@Override
+	public boolean isRunning() {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractCELA#getCurrentlyBestDescription()
+	 */
+	@Override
+	public Description getCurrentlyBestDescription() {
+		return (lgg == null) ? null : DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(lgg.asOWLClassExpression());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractCELA#getCurrentlyBestEvaluatedDescription()
+	 */
+	@Override
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		return null;
+	}
+	
+	/**
+	 * @param allowedNamespaces the allowedNamespaces to set
+	 */
+	public void setAllowedNamespaces(Set<String> allowedNamespaces) {
+		this.allowedNamespaces = allowedNamespaces;
+	}
+
+	public static void main(String[] args) throws Exception {
+		Set<String> positiveExamples = new HashSet<String>();
+		positiveExamples.add("http://dbpedia.org/resource/Liverpool_F.C.");
+		positiveExamples.add("http://dbpedia.org/resource/Chelsea_F.C.");
+		
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
+		ks.init();
+		PosOnlyLP lp = new PosOnlyLP();	
+		lp.setPositiveExamples(Helper.getIndividualSet(positiveExamples));
+		QTL qtl = new QTL(lp, ks, "cache");
+		qtl.setAllowedNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/"));
+		qtl.addQueryTreeFilter(new QuestionBasedQueryTreeFilter(Arrays.asList("soccer club", "Premier League")));
+		qtl.init();
+		qtl.start();
+		String query = qtl.getBestSPARQLQuery();
+		System.out.println(query);
+		System.out.println(qtl.getCurrentlyBestDescription());
+	}
 	
 }
