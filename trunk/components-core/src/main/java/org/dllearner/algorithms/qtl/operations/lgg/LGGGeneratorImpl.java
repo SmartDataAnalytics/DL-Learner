@@ -140,7 +140,8 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			if(logger.isDebugEnabled()){
 				logger.debug("Early termination. Tree 1(" + tree1 + ") and tree 2(" + tree2 + ") describe the same resource.");
 			}
-			return tree1;
+			return new QueryTreeImpl<N>(tree1);
+//			return tree1;
 		}
 		//if NO we have to create a new tree as LGG and compute the LGG for the all child node pairs having the same edge to the parent nodes
 		lgg = new QueryTreeImpl<N>(tree1.getUserObject());

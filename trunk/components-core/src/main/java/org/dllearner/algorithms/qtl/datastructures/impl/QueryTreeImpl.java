@@ -19,8 +19,12 @@
  */
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,20 +40,35 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.transform.TransformerConfigurationException;
 
 import org.dllearner.algorithms.qtl.datastructures.NodeRenderer;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
+import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
 import org.dllearner.algorithms.qtl.filters.Filters;
+import org.dllearner.utilities.PrefixCCMap;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.ext.EdgeNameProvider;
+import org.jgrapht.ext.GraphMLExporter;
+import org.jgrapht.ext.VertexNameProvider;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLFacetRestriction;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.semanticweb.owlapi.vocab.OWLFacet;
+import org.xml.sax.SAXException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -59,9 +78,14 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
+import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * 
@@ -70,8 +94,30 @@ import com.hp.hpl.jena.vocabulary.RDF;
  */
 public class QueryTreeImpl<N> implements QueryTree<N>{
 	
-	enum NodeType{
+	public enum NodeType{
 		RESOURCE, LITERAL, BLANK, VARIABLE;
+	}
+	
+	public enum LiteralNodeSubsumptionStrategy {
+		DATATYPE,
+		INTERVAL,
+		ENUMERATION,
+		OFF
+	}
+	
+	public enum LiteralNodeConversionStrategy{
+		/**
+		 * Literals in form of an enumeration, e.g. {3, 4, 10}
+		 */
+		DATA_ONE_OF, 
+		/**
+		 * Literals as an interval on the datatype, e.g. [>= 5 <=10]
+		 */
+		FACET_RESTRICTION, 
+		/**
+		 * Literals as datatype, e.g. xsd:integer
+		 */
+		SOME_VALUES_FROM
 	}
 	
 	private N userObject;
@@ -97,7 +143,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     private Set<Literal> literals = new HashSet<Literal>();
     
-
     public QueryTreeImpl(N userObject) {
         this.userObject = userObject;
         children = new ArrayList<QueryTreeImpl<N>>();
@@ -116,9 +161,40 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
             			label += "Values: " + object.getLiterals();
             		}
             	}
+            	label += object.isResourceNode() + "," + object.isLiteralNode();
+                return label;
+            }
+        };
+        
+    }
+    
+    public QueryTreeImpl(N userObject, NodeType nodeType) {
+        this.userObject = userObject;
+        children = new ArrayList<QueryTreeImpl<N>>();
+        child2EdgeMap = new HashMap<QueryTree<N>, Object>();
+        edge2ChildrenMap = new HashMap<String, List<QueryTree<N>>>();
+        toStringRenderer = new NodeRenderer<N>() {
+            public String render(QueryTree<N> object) {
+            	String label = object.toString() + "(" + object.getId() + ")";
+            	if(object.isLiteralNode()){
+//            		if(object.getLiterals().size() == 1){
+//            			label += object.getLiterals().iterator().next();
+//            		} else if(object.getLiterals().size() > 1){
+//            			label += "Values: " + object.getLiterals();
+//            		}
+            		if(!object.getLiterals().isEmpty()){
+            			label += "Values: " + object.getLiterals();
+            		}
+            	}
+            	label += object.isResourceNode() + "," + object.isLiteralNode();
                 return  label;
             }
         };
+        if(nodeType == NodeType.RESOURCE){
+        	isResourceNode = true;
+        } else if(nodeType == NodeType.LITERAL){
+        	isResourceNode = true;
+        }
     }
     
     public QueryTreeImpl(QueryTree<N> tree){
@@ -130,8 +206,10 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		subTree.setId(child.getId());
     		subTree.setIsLiteralNode(child.isLiteralNode());
     		subTree.setIsResourceNode(child.isResourceNode());
+    		subTree.addLiterals(child.getLiterals());
     		addChild(subTree, tree.getEdge(child));
     	}
+    	setIsResourceNode(tree.isResourceNode());
     }
     
     public boolean sameType(QueryTree<N> tree){
@@ -279,6 +357,29 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
             child.parent = null;
     	}
     }
+    
+    /**
+     * Removes all children connected by the given edge.
+     */
+    public void removeChildren(Object edge) {
+    	List<QueryTree<N>> children = edge2ChildrenMap.remove(edge);
+    	if(children != null){
+    		this.children.removeAll(children);
+    	}
+//    	List<QueryTree<N>> list = edge2ChildrenMap.get("http://dl-learner.org/carcinogenesis#hasAtom");
+//    	List<QueryTree<N>> newList = new ArrayList<QueryTree<N>>();
+//    	for (int i = 0; i < Math.min(list.size(), 11); i++) {
+//    		QueryTreeImpl<N> keep = (QueryTreeImpl<N>) list.get(i);
+//    		newList.add(keep);
+//		}
+//    	list.clear();
+//    	list.addAll(newList);
+//    	this.children.clear();
+//    	this.children = new ArrayList<QueryTreeImpl<N>>();
+//    	this.children.addAll((Collection<? extends QueryTreeImpl<N>>) list);
+//    	edge2ChildrenMap.clear();
+//    	edge2ChildrenMap.put("http://dl-learner.org/carcinogenesis#hasAtom", list);
+    }
 
 
     public Object getEdge(QueryTree<N> child) {
@@ -342,13 +443,15 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     @Override
     public boolean isSubsumedBy(QueryTree<N> tree) {
-//    	if(!sameType(tree)){
-//    		return false;
-//    	}
+//    	System.out.println("++++++++++++++++++++++++++++");
+//    	System.out.println(tree + "-" + this.userObject);
+//    	System.out.println(tree.isResourceNode() + "," + tree.isLiteralNode() + "---" + this.isResourceNode + "," + this.isLiteralNode);
+//    	if(tree.getParent() != null && getParent() != null)
+//    		System.out.println(tree.getParent().getEdge(tree) + "#" + getParent().getEdge(this));
+//    	System.out.println(tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject));
     	if(!(tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject))){
     		return false;
     	}
-    	
     	Object edge;
     	for(QueryTree<N> child : tree.getChildren()){
     		boolean isSubsumed = false;
@@ -362,6 +465,110 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		if(!isSubsumed){
 				return false;
 			}
+    	}
+    	return true;
+//    	return isSubsumedBy(tree, LiteralNodeSubsumptionStrategy.OFF);
+    }
+    
+    public boolean isSubsumedBy(QueryTree<N> tree, LiteralNodeSubsumptionStrategy strategy) {
+//    	System.out.println("++++++++++++++++++++++++++++");
+//    	System.out.println(tree + "-" + this.userObject);
+//    	System.out.println(tree.isResourceNode() + "," + tree.isLiteralNode() + "---" + this.isResourceNode + "," + this.isLiteralNode);
+//    	if(tree.getParent() != null && getParent() != null)
+//    		System.out.println(tree.getParent().getEdge(tree) + "#" + getParent().getEdge(this));
+//    	System.out.println(tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject));
+    	
+    	if(tree.isResourceNode() && this.isResourceNode){
+    		if(!(tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject))){
+        		return false;
+        	}
+    	} else if(tree.isLiteralNode() && this.isLiteralNode){
+    		if(!tree.getUserObject().equals(this.userObject)){
+    			if(strategy == LiteralNodeSubsumptionStrategy.OFF){
+        			return tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject);
+        		} else {
+        			return subsumes(tree.getLiterals(), this.getLiterals(), strategy);
+        		}
+    		}
+    	} else if(!tree.isVarNode() && this.isVarNode()){
+    		return false;
+    	} else if(tree.isResourceNode() && this.isLiteralNode || tree.isLiteralNode() && this.isResourceNode){//node type mismatch
+    		return false;
+    	}
+    	Object edge;
+    	for(QueryTree<N> child : tree.getChildren()){
+    		boolean isSubsumed = false;
+    		edge = tree.getEdge(child);
+    		for(QueryTree<N> child2 : this.getChildren(edge)){
+    			if(child2.isSubsumedBy(child, strategy)){
+    				isSubsumed = true;
+    				break;
+    			}
+    		}
+    		if(!isSubsumed){
+				return false;
+			}
+    	}
+    	return true;
+    }
+    
+    private boolean subsumes(Set<Literal> subsumer, Set<Literal> subsumee, LiteralNodeSubsumptionStrategy strategy){
+    	if(strategy == LiteralNodeSubsumptionStrategy.DATATYPE){
+			
+		} else if(strategy == LiteralNodeSubsumptionStrategy.ENUMERATION){
+			return subsumer.containsAll(subsumee);
+		} else if(strategy == LiteralNodeSubsumptionStrategy.INTERVAL){
+			//check if both datatypes are the same
+			RDFDatatype subsumerDatatype = getDatatype(subsumer);
+			RDFDatatype subsumeeDatatype = getDatatype(subsumee);
+			if(!subsumerDatatype.equals(subsumeeDatatype)){
+				return false;
+			}
+			
+			//avoid boolean datatypes for interval check as there are only 2 possible values
+			if(subsumerDatatype.equals(XSDDatatype.XSDboolean)){
+				return true;
+			}
+			
+			//check if subsumee interval is contained in subsumer interval
+			Literal subsumerMin = getMin(subsumer);
+			Literal subsumerMax = getMax(subsumer);
+			
+			Literal subsumeeMin = getMin(subsumee);
+			Literal subsumeeMax = getMax(subsumee);
+			
+			boolean leftMoreGeneral = isLessOrEqual(subsumerMin, subsumeeMin);
+			boolean rightMoreGeneral = isGreaterOrEqual(subsumerMax, subsumeeMax);
+			
+			if(!(leftMoreGeneral && rightMoreGeneral)){
+//				System.out.println("[" + subsumeeMin + "," + subsumeeMax + "] not in interval " + "[" + subsumerMin + "," + subsumerMax + "]");
+				return false;
+			}
+		}
+    	return true;
+    }
+    
+    /**
+     * Returns the datatype of the literals. Throws exception if there are multiple datatypes.
+     * @param literals
+     */
+    private RDFDatatype getDatatype(Set<Literal> literals){
+    	RDFDatatype datatype = literals.iterator().next().getDatatype();
+    	return datatype;
+    }
+    
+    /**
+     * Checks if all literals have the same datatype. 
+     * @param literals
+     * @return
+     */
+    private boolean sameDatatype(Set<Literal> literals){
+    	Iterator<Literal> iterator = literals.iterator();
+    	RDFDatatype datatype = iterator.next().getDatatype();
+    	while(iterator.hasNext()){
+    		if(!iterator.next().getDatatype().equals(datatype)){
+    			return false;
+    		}
     	}
     	return true;
     }
@@ -515,6 +722,15 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     public String getStringRepresentation(){
+    	return getStringRepresentation(false);
+    }
+    
+    /**
+     * Prints the query tree and shows children of resources only if enabled.
+     * @param stopWhenLeafNode
+     * @return
+     */
+    public String getStringRepresentation(boolean stopIfChildIsResourceNode){
     	int depth = getPathToRoot().size();
         StringBuilder sb = new StringBuilder();
         if(isRoot()){
@@ -524,17 +740,19 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         ren = ren.replace("\n", "\n" + sb);
         sb.append(ren);
         sb.append("\n");
-        for (QueryTree<N> child : getChildren()) {
-            for (int i = 0; i < depth; i++) {
-                sb.append("\t");
+        if(isRoot() || !isResourceNode || (isResourceNode && !stopIfChildIsResourceNode)){
+        	for (QueryTree<N> child : getChildren()) {
+                for (int i = 0; i < depth; i++) {
+                    sb.append("\t");
+                }
+                Object edge = getEdge(child);
+                if (edge != null) {
+                	sb.append("  ");
+                	sb.append(edge);
+                	sb.append(" ---> ");
+                }
+                sb.append(((QueryTreeImpl<N>)child).getStringRepresentation(stopIfChildIsResourceNode));
             }
-            Object edge = getEdge(child);
-            if (edge != null) {
-            	sb.append("  ");
-            	sb.append(edge);
-            	sb.append(" ---> ");
-            }
-            sb.append(((QueryTreeImpl<N>)child).getStringRepresentation());
         }
         return sb.toString();
     }
@@ -766,16 +984,66 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	}
     	sb.append("}");
     	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxARQ);
-    	query.setPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-    	query.setPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
     	
+    	//get the used resources in the query
+    	Set<String> usedResources = getUsedResources(query);
+    	
+    	//add a prefix for each used namespace
 		for (Entry<String, String> entry : prefixMap.entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue();
-			query.setPrefix(key, value);
+			String prefix = entry.getKey();
+			String namespace = entry.getValue();
+			for (String res : usedResources) {
+				if(res.startsWith(namespace)){
+					query.setPrefix(prefix, namespace);
+					break;
+				}
+			}
 		}
     	return query.toString();
     }
+    
+	private Set<String> getUsedResources(Query query) {
+		final Set<String> resources = Sets.newHashSet();
+		query.getQueryPattern().visit(new ElementVisitorBase() {
+			@Override
+			public void visit(ElementGroup el) {
+				el.getElements().get(0).visit(this);
+			}
+
+			@Override
+			public void visit(ElementPathBlock el) {
+				for (Iterator<TriplePath> it = el.patternElts(); it.hasNext();) {
+					Triple t = it.next().asTriple();
+					if (t.getSubject().isURI()) {
+						resources.add(t.getSubject().getURI());
+					}
+					if (t.getPredicate().isURI()) {
+						resources.add(t.getPredicate().getURI());
+					}
+					if (t.getObject().isURI()) {
+						resources.add(t.getObject().getURI());
+					}
+				}
+			}
+
+			@Override
+			public void visit(ElementTriplesBlock el) {
+				for (Iterator<Triple> it = el.patternElts(); it.hasNext();) {
+					Triple t = it.next();
+					if (t.getSubject().isURI()) {
+						resources.add(t.getSubject().getURI());
+					}
+					if (t.getPredicate().isURI()) {
+						resources.add(t.getPredicate().getURI());
+					}
+					if (t.getObject().isURI()) {
+						resources.add(t.getObject().getURI());
+					}
+				}
+			}
+		});
+		return resources;
+	}
     
     private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb, boolean filterMeaninglessProperties, boolean useNumericalFilters, List<String> filters){
     	Object subject = null;
@@ -814,6 +1082,70 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	} 
     }
     
+    private void buildSPARQLQueryStringPretty(QueryTree<N> tree, StringBuilder sb, boolean filterMeaninglessProperties, boolean useNumericalFilters, List<String> filters){
+    	Object subject = null;
+    	if(tree.getUserObject().equals("?")){
+    		subject = "?x" + cnt++;
+    		if(useNumericalFilters){
+    			if(tree.isLiteralNode() && !tree.getLiterals().isEmpty()){
+        			filters.add(getFilter(subject.toString(), tree.getLiterals()));
+        		}
+    		}
+    	} else {
+    		subject = "<" + tree.getUserObject() + ">";
+    	}
+    	boolean first = true;
+    	Object predicate;
+    	Object object;
+    	if(!tree.isLeaf()){
+    		for(Iterator<QueryTree<N>> iter = tree.getChildren().iterator(); iter.hasNext();){
+    			QueryTree<N> child = iter.next();
+    			//get the predicate
+        		predicate = tree.getEdge(child);
+        		if(filterMeaninglessProperties){
+        			if(Filters.getAllFilterProperties().contains(predicate.toString())){
+        				continue;
+        			}
+        		}
+        		//get the object
+        		object = child.getUserObject();
+        		boolean objectIsResource = !object.equals("?");
+        		if(!objectIsResource){
+        			object = "?x" + cnt;
+        		} else if(((String)object).startsWith("http://")){
+        			object = "<" + object + ">";
+        		}
+        		//attach the triple pattern
+        		if(first){
+        			sb.append(subject).append(" <").append(predicate).append("> ").append(object);
+        			if(iter.hasNext() && (objectIsResource || child.isLeaf())){
+        				sb.append(";");
+        			} else {
+        				sb.append(".");
+        			}
+        			sb.append("\n");
+        			first = false;
+        		} else {
+        			sb.append(" <").append(predicate).append("> ").append(object);
+        			if(iter.hasNext() && (objectIsResource || child.isLeaf())){
+        				sb.append(";");
+        			} else {
+        				sb.append(".");
+        			}
+        			sb.append("\n");
+        		}
+        		
+        		//recursive call if object is not a resource or literal
+        		if(!child.isResourceNode() && !child.isLeaf()){
+        			buildSPARQLQueryString(child, sb, filterMeaninglessProperties, useNumericalFilters, filters);
+        			if(child.isVarNode()){
+        				first = true;
+        			}
+        		}
+        	}
+    	} 
+    }
+    
     private String getFilter(String varName, Set<Literal> literals){
     	String filter = "FILTER(";
     	
@@ -829,6 +1161,42 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return filter;
     }
     
+    private boolean isLessOrEqual(Literal l1, Literal l2){
+    	if((l1.getDatatype() == XSDDatatype.XSDinteger || l1.getDatatype() == XSDDatatype.XSDint) &&
+    			(l2.getDatatype() == XSDDatatype.XSDinteger || l2.getDatatype() == XSDDatatype.XSDint)){
+			return (l1.getInt() <= l2.getInt());
+		} else if((l1.getDatatype() == XSDDatatype.XSDdouble || l1.getDatatype() == XSDDatatype.XSDdecimal) &&
+    			(l2.getDatatype() == XSDDatatype.XSDdouble || l2.getDatatype() == XSDDatatype.XSDdecimal)){
+			return l1.getDouble() <= l2.getDouble();
+		} else if(l1.getDatatype() == XSDDatatype.XSDfloat && l2.getDatatype() == XSDDatatype.XSDfloat){
+			return l1.getFloat() <= l2.getFloat();
+		} else if(l1.getDatatype() == XSDDatatype.XSDdate && l2.getDatatype() == XSDDatatype.XSDdate){
+			Calendar date1 = DatatypeConverter.parseDate(l1.getLexicalForm());
+			Calendar date2 = DatatypeConverter.parseDate(l2.getLexicalForm());
+			int comp = date1.compareTo(date2);
+			return comp <= 0;
+		} 
+    	return false;
+    }
+    
+    private boolean isGreaterOrEqual(Literal l1, Literal l2){
+    	if((l1.getDatatype() == XSDDatatype.XSDinteger || l1.getDatatype() == XSDDatatype.XSDint) &&
+    			(l2.getDatatype() == XSDDatatype.XSDinteger || l2.getDatatype() == XSDDatatype.XSDint)){
+			return (l1.getInt() >= l2.getInt());
+		} else if((l1.getDatatype() == XSDDatatype.XSDdouble || l1.getDatatype() == XSDDatatype.XSDdecimal) &&
+    			(l2.getDatatype() == XSDDatatype.XSDdouble || l2.getDatatype() == XSDDatatype.XSDdecimal)){
+			return l1.getDouble() >= l2.getDouble();
+		} else if(l1.getDatatype() == XSDDatatype.XSDfloat && l2.getDatatype() == XSDDatatype.XSDfloat){
+			return l1.getFloat() >= l2.getFloat();
+		} else if(l1.getDatatype() == XSDDatatype.XSDdate && l2.getDatatype() == XSDDatatype.XSDdate){
+			Calendar date1 = DatatypeConverter.parseDate(l1.getLexicalForm());
+			Calendar date2 = DatatypeConverter.parseDate(l2.getLexicalForm());
+			int comp = date1.compareTo(date2);
+			return comp >= 0;
+		} 
+    	return false;
+    }
+    
     private Literal getMin(Set<Literal> literals){
     	Iterator<Literal> iter = literals.iterator();
     	Literal min = iter.next();
@@ -839,6 +1207,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			min = (l.getInt() < min.getInt()) ? l : min;
     		} else if(l.getDatatype() == XSDDatatype.XSDdouble || l.getDatatype() == XSDDatatype.XSDdecimal){
     			min = (l.getDouble() < min.getDouble()) ? l : min;
+    		} else if(l.getDatatype() == XSDDatatype.XSDfloat){
+    			min = (l.getFloat() < min.getFloat()) ? l : min;
     		} else if(l.getDatatype() == XSDDatatype.XSDdate){
     			min = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(min.getLexicalForm())) == -1) ? l : min;
     		} 
@@ -856,6 +1226,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			max = (l.getInt() > max.getInt()) ? l : max;
     		} else if(l.getDatatype() == XSDDatatype.XSDdouble || l.getDatatype() == XSDDatatype.XSDdecimal){
     			max = (l.getDouble() > max.getDouble()) ? l : max;
+    		} else if(l.getDatatype() == XSDDatatype.XSDfloat){
+    			max = (l.getFloat() > max.getFloat()) ? l : max;
     		} else if(l.getDatatype() == XSDDatatype.XSDdate){
     			max = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(max.getLexicalForm())) == 1) ? l : max;
     		} 
@@ -953,10 +1325,22 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	}
     }
     
+    /**
+     * Converts the query tree in a corresponding OWL class expression. Literal nodes
+     * are transformed into existential restrictions.
+     */
     public OWLClassExpression asOWLClassExpression(){
+    	return asOWLClassExpression(LiteralNodeConversionStrategy.SOME_VALUES_FROM);
+    }
+    
+    /**
+     * Converts the query tree in a corresponding OWL class expression. Literal nodes
+     * are transformed following the given strategy.
+     */
+    public OWLClassExpression asOWLClassExpression(LiteralNodeConversionStrategy literalNodeConversionStrategy){
     	OWLDataFactory df = new OWLDataFactoryImpl();
     	QueryTree<N> root = getRoot();
-    	Set<OWLClassExpression> classExpressions = buildOWLClassExpressions(df, root);
+    	Set<OWLClassExpression> classExpressions = buildOWLClassExpressions(df, root, literalNodeConversionStrategy);
     	if(classExpressions.size() == 1){
     		return classExpressions.iterator().next();
     	} else {
@@ -964,7 +1348,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	}
     }
     
-    private Set<OWLClassExpression> buildOWLClassExpressions(OWLDataFactory df, QueryTree<N> tree){
+    private Set<OWLClassExpression> buildOWLClassExpressions(OWLDataFactory df, QueryTree<N> tree, LiteralNodeConversionStrategy literalNodeConversionStrategy){
     	Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
     	
     	List<QueryTree<N>> children = tree.getChildren();
@@ -972,38 +1356,59 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		String childLabel = (String) child.getUserObject();
     		String predicateString = (String) tree.getEdge(child);
     		if(predicateString.equals(RDF.type.getURI())){
-    			classExpressions.add(df.getOWLClass(IRI.create(childLabel)));
+    			if(child.isVarNode()){
+    				classExpressions.addAll(buildOWLClassExpressions(df, child, literalNodeConversionStrategy));
+    			} else {
+    				if(!childLabel.equals(OWL.Thing.getURI())){//avoid trivial owl:Thing statements
+    					classExpressions.add(df.getOWLClass(IRI.create(childLabel)));
+    				}
+    			}
+    		} else if(predicateString.equals(RDFS.subClassOf.getURI())){
+    			if(child.isVarNode()){
+    				classExpressions.addAll(buildOWLClassExpressions(df, child, literalNodeConversionStrategy));
+    			} else {
+    				if(!childLabel.equals(OWL.Thing.getURI())){//avoid trivial owl:Thing statements
+    					classExpressions.add(df.getOWLClass(IRI.create(childLabel)));
+    				}
+    			}
     		} else {
     			if(child.isLiteralNode()){
     				OWLDataProperty p = df.getOWLDataProperty(IRI.create((String) tree.getEdge(child)));
     				if(childLabel.equals("?")){
     					Set<Literal> literals = child.getLiterals();
-            			Literal lit = literals.iterator().next();
-            			RDFDatatype datatype = lit.getDatatype();
-            			String datatypeURI;
-            			if(datatype == null){
-            				datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getURI().toString();
-            			} else {
-            				datatypeURI = datatype.getURI();
-            			}
-            			classExpressions.add(df.getOWLDataSomeValuesFrom(p, df.getOWLDatatype(IRI.create(datatypeURI))));
+    					OWLDataRange dataRange = null;
+    					if(literals.isEmpty()){//happens if there are heterogeneous datatypes
+    						String datatypeURI = OWL2Datatype.RDFS_LITERAL.getURI().toString();
+    						dataRange = df.getOWLDatatype(IRI.create(datatypeURI));
+    					} else {
+    						if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.SOME_VALUES_FROM){
+    							Literal lit = literals.iterator().next();
+                    			RDFDatatype datatype = lit.getDatatype();
+                    			String datatypeURI;
+                    			if(datatype == null){
+                    				datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getURI().toString();
+                    			} else {
+                    				datatypeURI = datatype.getURI();
+                    			}
+                    			dataRange = df.getOWLDatatype(IRI.create(datatypeURI));
+    						} else if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.DATA_ONE_OF){
+    							dataRange = asDataOneOf(df, literals);
+    						} else if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.FACET_RESTRICTION){
+    							dataRange = asFacet(df, literals);
+    						}
+    					}
+            			classExpressions.add(df.getOWLDataSomeValuesFrom(p, dataRange));
     				} else {
     					Set<Literal> literals = child.getLiterals();
             			Literal lit = literals.iterator().next();
-            			RDFDatatype datatype = lit.getDatatype();
-            			OWLLiteral owlLiteral;
-            			if(datatype == null){
-            				owlLiteral = df.getOWLLiteral(lit.getLexicalForm(), lit.getLanguage());
-            			} else {
-            				owlLiteral = df.getOWLLiteral(lit.getLexicalForm(), df.getOWLDatatype(IRI.create(datatype.getURI())));
-            			}
+            			OWLLiteral owlLiteral = asOWLLiteral(df, lit);
             			classExpressions.add(df.getOWLDataHasValue(p, owlLiteral));
     				}
         		} else {
         			OWLObjectProperty p = df.getOWLObjectProperty(IRI.create((String) tree.getEdge(child)));
         			OWLClassExpression filler;
         			if(child.isVarNode()){
-            			Set<OWLClassExpression> fillerClassExpressions = buildOWLClassExpressions(df, child);
+            			Set<OWLClassExpression> fillerClassExpressions = buildOWLClassExpressions(df, child, literalNodeConversionStrategy);
             			if(fillerClassExpressions.isEmpty()){
             				filler = df.getOWLThing();
             			} else if(fillerClassExpressions.size() == 1){
@@ -1021,5 +1426,118 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return classExpressions;
     }
     
+    private OWLDataRange asFacet(OWLDataFactory df, Set<Literal> literals){
+    	//return Boolean datatype because it doesn't make sense to return a facet of Boolean values
+    	if(getOWLDatatype(df, literals).equals(df.getBooleanOWLDatatype())){
+    		return df.getBooleanOWLDatatype();
+    	}
+    	Literal min = getMin(literals);
+    	Literal max = getMax(literals);
+    	
+    	OWLFacetRestriction minRestriction = df.getOWLFacetRestriction(OWLFacet.MIN_INCLUSIVE, asOWLLiteral(df, min));
+    	OWLFacetRestriction maxRestriction = df.getOWLFacetRestriction(OWLFacet.MAX_INCLUSIVE, asOWLLiteral(df, max));
+    	
+    	return df.getOWLDatatypeRestriction(getOWLDatatype(df, literals), minRestriction, maxRestriction);
+    }
+    
+    private OWLDataRange asDataOneOf(OWLDataFactory df, Set<Literal> literals){
+    	//return Boolean datatype because it doesn't make sense to return a enumeration of Boolean values
+    	if(getOWLDatatype(df, literals).equals(df.getBooleanOWLDatatype())){
+    		return df.getBooleanOWLDatatype();
+    	}
+    	return df.getOWLDataOneOf(asOWLLiterals(df, literals));
+    }
+    
+    private Set<OWLLiteral> asOWLLiterals(OWLDataFactory df, Set<Literal> literals){
+    	Set<OWLLiteral> owlLiterals = new HashSet<OWLLiteral>(literals.size());
+    	for (Literal literal : literals) {
+			owlLiterals.add(asOWLLiteral(df, literal));
+		}
+    	return owlLiterals;
+    }
+    
+    private OWLLiteral asOWLLiteral(OWLDataFactory df, Literal literal){
+    	OWLLiteral owlLiteral;
+		if(literal.getDatatypeURI() == null){
+			owlLiteral = df.getOWLLiteral(literal.getLexicalForm(), literal.getLanguage());
+		} else {
+			owlLiteral = df.getOWLLiteral(literal.getLexicalForm(), df.getOWLDatatype(IRI.create(literal.getDatatypeURI())));
+		}
+    	return owlLiteral;
+    }
+    
+    private OWLDatatype getOWLDatatype(OWLDataFactory df, Set<Literal> literals){
+    	return df.getOWLDatatype(IRI.create(literals.iterator().next().getDatatypeURI()));
+    }
+    
+    private void buildGraph(DirectedGraph<Vertex, Edge> graph, QueryTree<N> tree){
+    	PrefixCCMap prefixes = PrefixCCMap.getInstance();
+    	List<QueryTree<N>> children = tree.getChildren();
+    	Vertex parent = new Vertex(tree.getId(), prefixed(prefixes, tree.getUserObject().toString()));
+    	graph.addVertex(parent);
+    	for (QueryTree<N> child : children) {
+    		Vertex childVertex = new Vertex(child.getId(), prefixed(prefixes, child.getUserObject().toString()));
+    		graph.addVertex(childVertex);
+    		Edge edge = new Edge(Integer.valueOf(parent.getId() + "000" + childVertex.getId()), prefixed(prefixes, tree.getEdge(child).toString()));
+			graph.addEdge(parent, childVertex, edge);
+			buildGraph(graph, child);
+		}
+    }
+    
+    private String prefixed(Map<String, String> prefixes, String uri){
+    	if(uri.startsWith("http://")){
+    		for (Entry<String, String> entry : prefixes.entrySet()) {System.out.println(entry);
+    			String prefix = entry.getKey();
+    			String ns = entry.getValue();
+    			if(uri.startsWith(ns)){
+    				return uri.replace(ns, prefix + ":");
+    			}
+    		}
+    	}
+    	return uri;
+    }
+    
+	public void asGraph() {
+		final DirectedGraph<Vertex, Edge> graph = new DefaultDirectedGraph<Vertex, Edge>(Edge.class);
+		buildGraph(graph, this);
+		VertexNameProvider<Vertex> vertexIDProvider = new VertexNameProvider<Vertex>() {
+			@Override
+			public String getVertexName(Vertex vertex) {
+				return String.valueOf(vertex.getId());
+			}
+		};
 
+		VertexNameProvider<Vertex> vertexNameProvider = new VertexNameProvider<Vertex>() {
+			@Override
+			public String getVertexName(Vertex vertex) {
+				return vertex.getLabel();
+			}
+		};
+
+		EdgeNameProvider<Edge> edgeIDProvider = new EdgeNameProvider<Edge>() {
+			@Override
+			public String getEdgeName(Edge edge) {
+				return String.valueOf(edge.getId());
+			}
+		};
+
+		EdgeNameProvider<Edge> edgeLabelProvider = new EdgeNameProvider<Edge>() {
+			@Override
+			public String getEdgeName(Edge edge) {
+				return edge.getLabel();
+			}
+		};
+		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<Vertex, Edge>(vertexIDProvider,
+				vertexNameProvider, edgeIDProvider, edgeLabelProvider);
+		try {
+			exporter.export(new FileWriter(new File("tree.graphml")), graph);
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

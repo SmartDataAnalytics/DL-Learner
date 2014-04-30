@@ -164,7 +164,7 @@ public class NoiseSensitiveLGG<N> {
 //		todoList.add(dummy);
 		//compute distinct trees
 		Collection<QueryTree<N>> distinctTrees = new ArrayList<QueryTree<N>>();
-		for (QueryTree<N> queryTree : posExamples) {//System.out.println(queryTree.getStringRepresentation());
+		for (QueryTree<N> queryTree : posExamples) {
 			boolean distinct = true;
 			for (QueryTree<N> otherTree : distinctTrees) {
 				if(!queryTree.equals(otherTree)){
@@ -178,7 +178,7 @@ public class NoiseSensitiveLGG<N> {
 				distinctTrees.add(queryTree);
 			}
 		}
-		for (QueryTree<N> queryTree : distinctTrees) {
+		for (QueryTree<N> queryTree : distinctTrees) {//System.out.println(queryTree.getStringRepresentation());
 			//compute positive examples which are not covered by LGG
 			Collection<QueryTree<N>> uncoveredPositiveExamples = getUncoveredTrees(queryTree, posExamples);
 			//compute negative examples which are covered by LGG

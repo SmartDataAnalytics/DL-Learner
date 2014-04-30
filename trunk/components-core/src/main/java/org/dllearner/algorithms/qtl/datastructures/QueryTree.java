@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -148,5 +150,29 @@ public interface QueryTree<N> {
     RDFDatatype getDatatype();
     
     Set<Literal> getLiterals();
+
+	/**
+	 * @param edge
+	 */
+	void removeChildren(Object edge);
+
+	/**
+	 * @param stopIfChildIsResourceNode
+	 * @return
+	 */
+	String getStringRepresentation(boolean stopIfChildIsResourceNode);
+
+	/**
+	 * @param literalNodeConversionStrategy
+	 * @return
+	 */
+	OWLClassExpression asOWLClassExpression(LiteralNodeConversionStrategy literalNodeConversionStrategy);
+
+	/**
+	 * @param tree
+	 * @param s
+	 * @return
+	 */
+	boolean isSubsumedBy(QueryTree<N> tree, LiteralNodeSubsumptionStrategy s);
     
 }
