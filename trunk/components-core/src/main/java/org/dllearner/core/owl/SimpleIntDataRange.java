@@ -20,38 +20,14 @@
 package org.dllearner.core.owl;
 
 /**
- * Visitor for all elements of a knowledge base.
+ * A int data range with a single value used for restrictions,
+ * e.g. hasAge >= 18 (but not 65 >= hasAge >= 18).
  * 
  * @author Jens Lehmann
  *
  */
-public interface KBElementVisitor extends AxiomVisitor, DescriptionVisitor, PropertyExpressionVisitor {
+public interface SimpleIntDataRange extends IntDataRange {
 
-	void visit(Datatype datatype);	
+	public int getValue();
 	
-	void visit(BooleanDataRange booleanDataRange);
-
-	void visit(DoubleMaxValue doubleMaxValue);
-
-	void visit(DoubleMinValue doubleMinValue);
-	
-	void visit(IntMaxValue doubleMaxValue);
-
-	void visit(IntMinValue doubleMinValue);
-
-	void visit(Individual individual);
-
-	void visit(KB kb);
-
-	void visit(TypedConstant typedConstant);
-
-	void visit(UntypedConstant untypedConstant);
-
-	void visit(Annotation annotation);
-
-	/**
-	 * @param doubleMinMaxRange
-	 */
-	void visit(DoubleMinMaxRange doubleMinMaxRange);
-
 }

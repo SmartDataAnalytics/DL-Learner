@@ -22,70 +22,73 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 /**
- * Restricts the value of an object property to a single individual
- * (corresponds to owl:hasValue)
+ * Double data range restricted by a maximum value, e.g. 
+ * hasAge <= 65.
  * 
  * @author Jens Lehmann
  *
  */
-public class ObjectValueRestriction extends ValueRestriction {
+public class DoubleMinMaxRange implements DoubleDataRange {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2437223709767096950L;
-
-	/**
-	 * @param property
-	 */
-	public ObjectValueRestriction(Property property, Individual value) {
-		super(property, value);
+	private static final long serialVersionUID = 465847501541695475L;
+	
+	private double minValue;
+	private double maxValue;
+	
+	public DoubleMinMaxRange(double minValue, double maxValue) {
+		this.minValue = minValue;
+		this.maxValue = maxValue;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString(java.lang.String, java.util.Map)
+	/**
+	 * @return The minimum value.
 	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return restrictedPropertyExpression.toString(baseURI, prefixes) + " value " + value.toString(baseURI, prefixes);
+	public double getMinValue() {
+		return minValue;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#getArity()
+	
+	/**
+	 * @return The maximum value.
 	 */
-	@Override
-	public int getArity() {
-		return 0;
+	public double getMaxValue() {
+		return maxValue;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#getLength()
 	 */
 	public int getLength() {
-		return 3;
+		return 2;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return restrictedPropertyExpression.toString(baseURI, prefixes) + " VALUE " + value.toString(baseURI, prefixes);
-	}	
-	
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "(" + restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + " VALUE " + value.toKBSyntaxString(baseURI, prefixes) + ")";
-	}	
-	
-	public Individual getIndividual() {
-		return (Individual) value;
+		return " [>= " + minValue + " <= " + maxValue + "]";
 	}
 	
-	@Override
-	public void accept(DescriptionVisitor visitor) {
-		visitor.visit(this);
-	}	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return " [>= " + minValue + " <= " + maxValue + "]";
+	}
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}	
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return " [>= " + minValue + " <= " + maxValue + "]";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.DataRange#isDatatype()
+	 */
+	@Override
+	public boolean isDatatype() {
+		return false;
+	}
 }

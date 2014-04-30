@@ -48,4 +48,5 @@ public abstract class Score implements Serializable{
 	 */	
 	public abstract double getAccuracy();
 	
+	
 }
