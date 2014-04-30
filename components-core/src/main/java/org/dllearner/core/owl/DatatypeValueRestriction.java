@@ -29,7 +29,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public abstract class DatatypeValueRestriction extends ValueRestriction {
+public class DatatypeValueRestriction extends ValueRestriction {
 
 	/**
 	 * 
@@ -94,5 +94,13 @@ public abstract class DatatypeValueRestriction extends ValueRestriction {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#getLength()
+	 */
+	@Override
+	public int getLength() {
+		return 2;
 	}	
 }

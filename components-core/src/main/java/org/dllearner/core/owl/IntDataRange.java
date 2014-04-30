@@ -20,38 +20,11 @@
 package org.dllearner.core.owl;
 
 /**
- * Visitor for all elements of a knowledge base.
+ * Ranges of type double for use in datatye restrictions.
  * 
  * @author Jens Lehmann
  *
  */
-public interface KBElementVisitor extends AxiomVisitor, DescriptionVisitor, PropertyExpressionVisitor {
-
-	void visit(Datatype datatype);	
+public interface IntDataRange extends DataRange {
 	
-	void visit(BooleanDataRange booleanDataRange);
-
-	void visit(DoubleMaxValue doubleMaxValue);
-
-	void visit(DoubleMinValue doubleMinValue);
-	
-	void visit(IntMaxValue doubleMaxValue);
-
-	void visit(IntMinValue doubleMinValue);
-
-	void visit(Individual individual);
-
-	void visit(KB kb);
-
-	void visit(TypedConstant typedConstant);
-
-	void visit(UntypedConstant untypedConstant);
-
-	void visit(Annotation annotation);
-
-	/**
-	 * @param doubleMinMaxRange
-	 */
-	void visit(DoubleMinMaxRange doubleMinMaxRange);
-
 }
