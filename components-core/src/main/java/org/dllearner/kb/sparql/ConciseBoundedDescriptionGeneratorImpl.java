@@ -42,6 +42,14 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		this(endpoint, cache.getCacheDirectory(), maxRecursionDepth);
 	}
 	
+	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheEx cache) {
+		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+		if(cache != null){
+			qef = new QueryExecutionFactoryCacheEx(qef, cache);
+		}
+		qef = new QueryExecutionFactoryPaginated(qef, 10000);
+	}
+	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir, int maxRecursionDepth) {
 		this.maxRecursionDepth = maxRecursionDepth;
 		
