@@ -69,6 +69,13 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	}
 	
 	/**
+	 * @return the score
+	 */
+	public Score getScore() {
+		return score;
+	}
+	
+	/**
 	 * Used for rewriting (simplification, beautification) of 
 	 * evaluated descriptions returned by the learning algorithm.
 	 * @param description The description to set.
