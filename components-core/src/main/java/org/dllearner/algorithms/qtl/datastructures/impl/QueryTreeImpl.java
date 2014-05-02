@@ -210,6 +210,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		addChild(subTree, tree.getEdge(child));
     	}
     	setIsResourceNode(tree.isResourceNode());
+    	setIsLiteralNode(tree.isLiteralNode());
+    	addLiterals(tree.getLiterals());
     }
     
     public boolean sameType(QueryTree<N> tree){

@@ -3,17 +3,21 @@ package org.dllearner.algorithms.qtl.operations.lgg;
 import java.util.Collection;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
-import org.dllearner.learningproblems.ScoreTwoValued;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
+import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.learningproblems.QueryTreeScore;
+import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
 	private QueryTree<N> tree;
 	private Collection<QueryTree<N>> falseNegatives;
 	private Collection<QueryTree<N>> falsePositives;
-	private double score;
+	private QueryTreeScore score;
 //	private ScoreTwoValued score;
 
-	public EvaluatedQueryTree(QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, Collection<QueryTree<N>> falsePositives, double score) {
+	public EvaluatedQueryTree(QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, 
+			Collection<QueryTree<N>> falsePositives, QueryTreeScore score) {
 		this.tree = tree;
 		this.falseNegatives = falseNegatives;
 		this.falsePositives = falsePositives;
@@ -44,12 +48,16 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	}
 	
 	public double getScore() {
+		return score.getScore();
+	}
+	
+	public QueryTreeScore getTreeScore() {
 		return score;
 	}
 
 	@Override
 	public int compareTo(EvaluatedQueryTree<N> other) {
-		double diff = score - other.getScore();
+		double diff = getScore() - other.getScore();
 		if(diff == 0){
 			return -1;
 		} else if(diff > 0){
@@ -57,6 +65,11 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 		} else {
 			return 1;
 		}
+	}
+	
+	public EvaluatedDescription asEvaluatedDescription(){
+		return new EvaluatedDescription(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
+				getTree().asOWLClassExpression(LiteralNodeConversionStrategy.FACET_RESTRICTION)), score);
 	}
 	
 	/* (non-Javadoc)
