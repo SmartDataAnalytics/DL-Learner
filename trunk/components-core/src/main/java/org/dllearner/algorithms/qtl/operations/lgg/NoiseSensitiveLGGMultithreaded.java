@@ -20,6 +20,7 @@ import org.dllearner.learningproblems.Heuristics;
 import com.google.common.collect.Lists;
 import com.hp.hpl.jena.rdf.model.Model;
 
+@Deprecated
 public class NoiseSensitiveLGGMultithreaded<N> {
 	
 	private LGGGenerator<N> lggGenerator = new LGGGeneratorImpl<N>();
@@ -80,8 +81,8 @@ public class NoiseSensitiveLGGMultithreaded<N> {
 				//compute score
 				double score = Heuristics.getConfidenceInterval95WaldAverage(trees.size(), trees.size() - uncoveredExamples.size());
 				//add to todo list, if not already contained in todo list or solution list
-				EvaluatedQueryTree<N> solution = new EvaluatedQueryTree<N>(lgg, uncoveredExamples, null, score);
-				todo(solution);
+//				EvaluatedQueryTree<N> solution = new EvaluatedQueryTree<N>(lgg, uncoveredExamples, null, score);
+//				todo(solution);
 			}
 			solutions.add(evaluatedQueryTree);
 		}
@@ -110,7 +111,7 @@ public class NoiseSensitiveLGGMultithreaded<N> {
 			Collection<QueryTree<N>> uncoveredExamples = new ArrayList<QueryTree<N>>(distinctTrees);
 			uncoveredExamples.remove(queryTree);
 			double score = (trees.size() - uncoveredExamples.size()) / (double)trees.size();
-			todoList.add(new EvaluatedQueryTree<N>(queryTree, uncoveredExamples, null, score));
+//			todoList.add(new EvaluatedQueryTree<N>(queryTree, uncoveredExamples, null, score));
 		}
 	}
 	

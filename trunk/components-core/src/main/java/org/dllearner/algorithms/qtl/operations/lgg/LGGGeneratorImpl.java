@@ -168,7 +168,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 //				}
 //			}
 //		}
-		if(!lgg.sameType(tree2) || !lgg.getUserObject().equals(tree2.getUserObject())){
+		if(!(lgg.sameType(tree2) || lgg.getUserObject().equals(tree2.getUserObject()))){
 			lgg.setUserObject((N)"?");
 			lgg.setIsLiteralNode(false);
 			lgg.setIsResourceNode(false);
@@ -178,7 +178,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			RDFDatatype d1 = tree1.getDatatype();
 			RDFDatatype d2 = tree2.getDatatype();
 //			if(d1 != null && d2 != null && d1 == d2){
-			if(d1 == d2){
+			if(d1.equals(d2)){
 				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree1).getLiterals());
 				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree2).getLiterals());
 			}
@@ -194,6 +194,10 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			addedChildren = new HashSet<QueryTreeImpl<N>>();
 			for(QueryTree<N> child1 : tree1.getChildren(edge)){
 				for(QueryTree<N> child2 : tree2.getChildren(edge)){
+//					if(edge.equals("http://dl-learner.org/carcinogenesis#amesTestPositive")){
+//						System.out.println(child1);
+//						System.out.println(child1.isLiteralNode());System.out.println(child2.isLiteralNode() + "\n#######");
+//					}
 					lggChild = (QueryTreeImpl<N>) computeLGG(child1, child2, learnFilters);
 					boolean add = true;
 					for(QueryTreeImpl<N> addedChild : addedChildren){
