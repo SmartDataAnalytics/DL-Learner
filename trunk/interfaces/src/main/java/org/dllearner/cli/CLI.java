@@ -27,18 +27,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
 import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
+import org.dllearner.algorithms.qtl.QTL2;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.confparser3.ParseException;
-import org.dllearner.core.*;
+import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Files;
 import org.slf4j.Logger;
@@ -136,7 +141,11 @@ public class CLI {
 			}
 			catch (BeansException be) {
 				PosNegLP lp = context.getBean(PosNegLP.class);
-				new CrossValidation(la,lp,rs,nrOfFolds,false);				
+				if(la instanceof QTL2){
+					new SPARQLCrossValidation((QTL2) la,lp,nrOfFolds,false);	
+				} else {
+					new CrossValidation(la,lp,rs,nrOfFolds,false);	
+				}
 			}
 			
 		} else {
