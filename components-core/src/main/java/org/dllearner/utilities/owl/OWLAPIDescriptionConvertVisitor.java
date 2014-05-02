@@ -35,6 +35,7 @@ import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DescriptionVisitor;
+import org.dllearner.core.owl.DoubleMinMaxRange;
 import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -334,6 +335,10 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	        	facet = OWLFacet.MAX_INCLUSIVE;
 	        
 	        owlDataRange = factory.getOWLDatatypeRestriction(doubleDataType, facet, constant);
+		} else if(dataRange instanceof DoubleMinMaxRange){
+			// currently only double restrictions implemented
+	        owlDataRange = factory.getOWLDatatypeMinMaxInclusiveRestriction(
+	        		((DoubleMinMaxRange) dataRange).getMinValue(), ((DoubleMinMaxRange) dataRange).getMaxValue());
 		} else {
 			throw new UnsupportedOperationException("Can not convert " + description);
 		}
