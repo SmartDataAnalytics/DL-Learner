@@ -136,5 +136,12 @@ public class ScoreTwoValued extends ScorePosNeg {
 	public ScorePosNeg getModifiedLengthScore(int newLength) {
 		return new ScoreTwoValued(newLength, percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
 	}
+	
+	/**
+	 * @param accuracy the accuracy to set
+	 */
+	public void setAccuracy(double accuracy) {
+		this.accuracy = accuracy;
+	}
 
 }
