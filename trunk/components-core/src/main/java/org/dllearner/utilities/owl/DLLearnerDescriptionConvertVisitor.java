@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMinCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
+import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -55,6 +57,7 @@ import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
 import org.semanticweb.owlapi.model.OWLDataMinCardinality;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
@@ -191,7 +194,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 	public void visit(OWLDataSomeValuesFrom description) {
 		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDatatype());
+		DataRange dataRange = OWLDataRangeConverter.convert(description.getFiller());
 		stack.push(new DatatypeSomeRestriction(property, dataRange));
 	}
 
@@ -206,20 +209,16 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLDataHasValue description) {
-//		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
-//				.getURI().toString());
-//		Constant c = OWLAPIConverter.convertConstant(description.getValue());
-//		
-//		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDataType());
-//		stack.push(new DatatypeValueRestriction(property, dataRange));
-		
+		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty().getIRI().toString());
+		Constant value = OWLAPIConverter.convertConstant(description.getValue());
+		stack.push(new DatatypeValueRestriction(property, value));
 	}
 
 	@Override
 	public void visit(OWLDataMinCardinality description) {
 		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDatatype());
+		DataRange dataRange = OWLDataRangeConverter.convert(description.getFiller());
 		int min = description.getCardinality();
 		stack.push(new DatatypeMinCardinalityRestriction(property, dataRange,min));
 		
@@ -229,7 +228,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 	public void visit(OWLDataExactCardinality description) {
 		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDatatype());
+		DataRange dataRange = OWLDataRangeConverter.convert(description.getFiller());
 		int minmax = description.getCardinality();
 		stack.push(new DatatypeExactCardinalityRestriction(property, dataRange, minmax));
 		
@@ -239,7 +238,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 	public void visit(OWLDataMaxCardinality description) {
 		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDatatype());
+		DataRange dataRange = OWLDataRangeConverter.convert(description.getFiller());
 		int max = description.getCardinality();
 		stack.push(new DatatypeMaxCardinalityRestriction(property, dataRange, max));
 		
