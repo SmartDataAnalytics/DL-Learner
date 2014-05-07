@@ -38,6 +38,7 @@ public class SearchTreeNode {
 	private boolean tooWeak = false;
 	
 	private double score;
+	protected double accuracy;
 	
 	public SearchTreeNode(ELDescriptionTree descriptionTree) {
 		this.descriptionTree = descriptionTree;
@@ -126,5 +127,19 @@ public class SearchTreeNode {
 	public void setScore(double score) {
 		this.score = score;
 	}	
+	
+	/**
+	 * @return the accuracy
+	 */
+	public double getAccuracy() {
+		return accuracy;
+	}
+	
+	/**
+	 * @param accuracy the accuracy to set
+	 */
+	public void setAccuracy(double accuracy) {
+		this.accuracy = accuracy;
+	}
 	
 }

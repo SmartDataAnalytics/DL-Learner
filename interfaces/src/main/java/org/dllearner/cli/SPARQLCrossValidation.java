@@ -33,7 +33,9 @@ import org.dllearner.algorithms.qtl.QTL2;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.IndividualReasoner;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.Heuristics;
@@ -77,7 +79,7 @@ public class SPARQLCrossValidation {
 		
 	}
 	
-	public SPARQLCrossValidation(QTL2 la, AbstractLearningProblem lp, int folds, boolean leaveOneOut) {		
+	public SPARQLCrossValidation(QTL2 la, AbstractLearningProblem lp, IndividualReasoner rs, int folds, boolean leaveOneOut) {		
 		
 		DecimalFormat df = new DecimalFormat();	
 
@@ -186,6 +188,7 @@ public class SPARQLCrossValidation {
 			outputWriter("test set errors neg: " + tmp3);
 			
 			// calculate training accuracies 
+			System.out.println(getCorrectPosClassified(rs, concept, trainingSetsPos.get(currFold)));
 //			int trainingCorrectPosClassified = getCorrectPosClassified(rs, concept, trainingSetsPos.get(currFold));
 			int trainingCorrectPosClassified = getCorrectPosClassified(trainingSetsPos.get(currFold), la);
 //			int trainingCorrectNegClassified = getCorrectNegClassified(rs, concept, trainingSetsNeg.get(currFold));
@@ -241,7 +244,7 @@ public class SPARQLCrossValidation {
 			
 	}
 	
-	protected int getCorrectPosClassified(SPARQLReasoner rs, Description concept, Set<Individual> testSetPos) {
+	protected int getCorrectPosClassified(IndividualReasoner rs, Description concept, Set<Individual> testSetPos) {
 		return rs.hasType(concept, testSetPos).size();
 	}
 	

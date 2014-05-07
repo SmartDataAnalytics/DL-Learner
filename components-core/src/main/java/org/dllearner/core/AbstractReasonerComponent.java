@@ -1006,7 +1006,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 * @throws ReasoningMethodUnsupportedException If any method needed to
 	 * create the hierarchy is not supported by the underlying reasoner.
 	 */
-	public final ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
+	public ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
 		ConceptComparator conceptComparator = new ConceptComparator();
 		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, SortedSet<Description>>(
 				conceptComparator);

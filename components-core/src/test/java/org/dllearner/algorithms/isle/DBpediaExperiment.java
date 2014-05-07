@@ -41,9 +41,11 @@ import java.util.prefs.Preferences;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.elcopy.ELLearningAlgorithm;
+import org.dllearner.algorithms.elcopy.RelevanceWeightedStableHeuristic;
 import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.algorithms.isle.index.RelevanceMapGenerator;
 import org.dllearner.algorithms.isle.index.syntactic.SolrSyntacticIndex;
+import org.dllearner.algorithms.isle.metrics.AbstractRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.ChiSquareRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.DiceRelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.JaccardRelevanceMetric;
@@ -149,15 +151,15 @@ public class DBpediaExperiment {
 	private AutomaticNegativeExampleFinderSPARQL2 negativeExampleFinder;
 	
 	final int minNrOfPositiveExamples = 3;
-	final int maxNrOfPositiveExamples = 100;
-	final int maxNrOfNegativeExamples = 200;
+	final int maxNrOfPositiveExamples = 10;
+	final int maxNrOfNegativeExamples = 20;
 	List<Strategy> negExampleStrategies = Arrays.asList(SIBLING, SUPERCLASS);
 	boolean posOnly = false;
 	int maxCBDDepth = 1;
 
 	//learning algorithm settings
 	private int maxNrOfResults = 100;
-	private int maxExecutionTimeInSeconds = 60;
+	private int maxExecutionTimeInSeconds = 10;
 	private double noiseInPercentage = 50;
 	private boolean useNegation = false;
 	private boolean useAllConstructor = false;
@@ -195,14 +197,14 @@ public class DBpediaExperiment {
 		Index syntacticIndex = getSyntacticIndex();
 		
 		relevanceMetrics = new ArrayList<>();
-		relevanceMetrics.add(new PMIRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new ChiSquareRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new DiceRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new JaccardRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new LLRRelevanceMetric(syntacticIndex));
-		relevanceMetrics.add(new SCIRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new PMIRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new ChiSquareRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new DiceRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new JaccardRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new LLRRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new SCIRelevanceMetric(syntacticIndex));
 		relevanceMetrics.add(new SignificantPMIRelevanceMetric(syntacticIndex, 0.5));
-		relevanceMetrics.add(new TTestRelevanceMetric(syntacticIndex));
+//		relevanceMetrics.add(new TTestRelevanceMetric(syntacticIndex));
 		
 		resultsFolder.mkdirs();
 		
@@ -272,15 +274,16 @@ public class DBpediaExperiment {
 	public void run(){
 		Set<NamedClass> classes = getClasses(); 	
 		classes = sparqlReasoner.getMostSpecificClasses();
-//		List<NamedClass> classList = new ArrayList<>(classes);
-//		Collections.reverse(classList);
-//		classList = classList.subList(0, 2);
-//		classList = Lists.newArrayList(
-//				new NamedClass("http://dbpedia.org/ontology/Comics"), 
-//				new NamedClass("http://dbpedia.org/ontology/Actor"), 
-//				new NamedClass("http://dbpedia.org/ontology/Book"));
-//		new SolrSyntacticIndex(schema, solrServerURL, searchField).buildIndex(classList);
-//		System.exit(0);
+		logger.info("#Leaf classes:" + classes.size());
+		
+		for (Iterator<NamedClass> iter = classes.iterator(); iter.hasNext();) {
+			NamedClass cls = iter.next();
+			SortedSet<Individual> individuals = sparqlReasoner.getIndividuals(cls, 1000);
+			if(individuals.size() < minNrOfPositiveExamples){
+				iter.remove();
+			}
+		}
+		logger.info("#Leaf classes with at least " + minNrOfPositiveExamples + " instances:" + classes.size());
 		run(classes, true);
 		
 	}
@@ -399,6 +402,7 @@ public class DBpediaExperiment {
 				((ELLearningAlgorithm)la).setTreeSearchTimeSeconds(maxExecutionTimeInSeconds);
 				((ELLearningAlgorithm)la).setMaxNrOfResults(maxNrOfResults);
 				((ELLearningAlgorithm)la).setMaxClassExpressionDepth(maxClassExpressionDepth);
+				((ELLearningAlgorithm)la).setHeuristic(new RelevanceWeightedStableHeuristic(cls, relevanceMetrics));
 //				la = new ELLearningAlgorithmDisjunctive(lp, reasoner);
 			} else {
 				//build CELOE la
@@ -826,6 +830,9 @@ public class DBpediaExperiment {
 			for (String line : lines) {
 				classes.add(new NamedClass(line.trim()));
 			}
+			experiment.run(classes, true);
+		} if(args.length == 2){
+			Set<NamedClass> classes = Sets.newHashSet(new NamedClass(args[1].trim()));
 			experiment.run(classes, true);
 		} else {
 			experiment.run();

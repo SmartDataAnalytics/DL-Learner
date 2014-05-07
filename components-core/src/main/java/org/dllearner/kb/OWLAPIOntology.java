@@ -120,4 +120,11 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
     public void setConverter(OntologyToByteConverter converter) {
         this.converter = converter;
     }
+    
+    /**
+	 * @return the ontology
+	 */
+	public OWLOntology getOntology() {
+		return ontology;
+	}
 }

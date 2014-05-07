@@ -76,6 +76,7 @@
 		<dependency>
 			<groupId>org.aksw.commons</groupId>
 			<artifactId>sparql</artifactId>
+			<version>0.2-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-api</artifactId>

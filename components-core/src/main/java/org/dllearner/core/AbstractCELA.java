@@ -52,7 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractCELA extends AbstractComponent implements ClassExpressionLearningAlgorithm, StoppableLearningAlgorithm {
+public abstract class AbstractCELA extends AbstractComponent implements ClassExpressionLearningAlgorithm, StoppableLearningAlgorithm, Cloneable {
 	
 	protected EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(AbstractCELA.MAX_NR_OF_RESULTS);
 	protected DecimalFormat dfPercent = new DecimalFormat("0.00%");

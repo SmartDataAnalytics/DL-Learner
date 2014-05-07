@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.qtl;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,14 +29,19 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.Score;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Union;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.QueryTreeScore;
+import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.io.ToStringRenderer;
@@ -51,12 +57,12 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 @ComponentAnn(name="query tree learner with noise (disjunctive)", shortName="qtl2dis", version=0.8)
-public class QTL2Disjunctive extends AbstractCELA {
+public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	
 	private static final Logger logger = Logger.getLogger(QTL2Disjunctive.class.getName());
 	
-	private LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
+	private LGGGenerator<String> lggGenerator;
 	
 	private Queue<EvaluatedQueryTree<String>> todoList;
 	private SortedSet<EvaluatedQueryTree<String>> currentPartialSolutions;
@@ -69,17 +75,12 @@ public class QTL2Disjunctive extends AbstractCELA {
 	private Set<Individual> currentNegExamples;
 	
 	private Map<QueryTree<String>, Individual> tree2Individual;
-
-	private double coverageWeight = 0.8;
-	private double specifityWeight = 0.2;
 	
 	private QueryTreeCache treeCache;
 
 	private PosNegLP lp;
 
 	private Model model;
-
-	private AbstractReasonerComponent reasoner;
 
 	private volatile boolean stop;
 	private boolean isRunning;
@@ -89,16 +90,39 @@ public class QTL2Disjunctive extends AbstractCELA {
 
 	private List<EvaluatedQueryTree<String>> partialSolutions;
 	
+	private EvaluatedDescription currentBestSolution;
+	
+	
+	
+	//Parameters
+	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
+	private double noisePercentage = 0.0;
+	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
+	private int maxExecutionTimeInSeconds = 10;
+	private double minimumTreeScore = 0.2;
+	private double coverageWeight = 0.8;
+	private double specifityWeight = 0.1;
+	private double noise = 0.3;
+	private double coverageBeta = 0.7;
+	
+	private double posExampleWeight = 1;
+	
 	public QTL2Disjunctive() {}
 	
 	public QTL2Disjunctive(PosNegLP learningProblem, AbstractReasonerComponent reasoner) throws LearningProblemUnsupportedException{
-		this.lp = learningProblem;
-		this.reasoner = reasoner;
+		super(learningProblem, reasoner);
+		loadModel();
 	}
 	
-	public QTL2Disjunctive(PosNegLP lp, Model model) {
-		this.lp = lp;
-		this.model = model;
+//	public QTL2Disjunctive(PosNegLP lp, Model model) {
+//		this.learningProblem = lp;
+//		this.model = model;
+//	}
+	
+	public QTL2Disjunctive(QTL2Disjunctive qtl) {
+		super(qtl.getLearningProblem(), qtl.getReasoner());
+		this.model = ModelFactory.createDefaultModel();
+		this.model.add(qtl.model);
 	}
 	
 	public EvaluatedQueryTree<String> getBestSolution(){
@@ -110,6 +134,14 @@ public class QTL2Disjunctive extends AbstractCELA {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		
+		if(!(learningProblem instanceof PosNegLP)){
+			throw new IllegalArgumentException("Only PosNeg learning problems are supported");
+		}
+		lp = (PosNegLP) learningProblem;
+		
+		lggGenerator = new LGGGeneratorImpl<String>();
+		
 		logger.info("Initializing...");
 		treeCache = new QueryTreeCache(model);
 		tree2Individual = new HashMap<QueryTree<String>, Individual>(lp.getPositiveExamples().size()+lp.getNegativeExamples().size());
@@ -120,6 +152,18 @@ public class QTL2Disjunctive extends AbstractCELA {
 		currentNegExamples =  new TreeSet<Individual>(lp.getNegativeExamples());
 		
 		//get the query trees
+		generateTrees();
+		
+		//some logging
+		subMon = MonitorFactory.getTimeMonitor("subsumption-mon");
+		lggMon = MonitorFactory.getTimeMonitor("lgg-mon");
+		
+		//console rendering of class expressions
+		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
+		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
+	}
+	
+	private void generateTrees(){
 		QueryTree<String> queryTree;
 		for (Individual ind : lp.getPositiveExamples()) {
 			queryTree = treeCache.getQueryTree(ind.getName());
@@ -131,14 +175,6 @@ public class QTL2Disjunctive extends AbstractCELA {
 			tree2Individual.put(queryTree, ind);
 			currentNegExampleTrees.add(queryTree);
 		}
-		
-		//some logging
-		subMon = MonitorFactory.getTimeMonitor("subsumption-mon");
-		lggMon = MonitorFactory.getTimeMonitor("lgg-mon");
-		
-		//console rendering of class expressions
-		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
-		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
 	}
 	
 	/* (non-Javadoc)
@@ -146,6 +182,11 @@ public class QTL2Disjunctive extends AbstractCELA {
 	 */
 	@Override
 	public void start() {
+		String setup = "Setup:";
+		setup += "#Pos. examples:" + currentPosExamples.size();
+		setup += "#Neg. examples:" + currentNegExamples.size();
+		setup += "Coverage beta:" + coverageBeta;
+		logger.info(setup);
 		logger.info("Running...");
 		long startTime = System.currentTimeMillis();
 		
@@ -180,6 +221,7 @@ public class QTL2Disjunctive extends AbstractCELA {
 					currentNegExamples.remove(tree2Individual.get(tree));
 				}
 			}
+			currentBestSolution = buildCombinedSolution();
 		} while (!(stop || currentPosExampleTrees.isEmpty()));
 		
 		isRunning = false;
@@ -187,22 +229,53 @@ public class QTL2Disjunctive extends AbstractCELA {
 		long endTime = System.currentTimeMillis();
 		logger.info("Finished in " + (endTime-startTime) + "ms.");
 		
-		EvaluatedDescription combinedSolution = buildCombinedSolution();
-		System.out.println(OWLAPIConverter.getOWLAPIDescription(combinedSolution.getDescription()));
+		logger.info("Combined solution:\n" + OWLAPIConverter.getOWLAPIDescription(currentBestSolution.getDescription()));
+		logger.info(currentBestSolution.getScore());
 		
 	}
 	
 	private EvaluatedDescription buildCombinedSolution(){
+		if(partialSolutions.size() == 1){
+			EvaluatedDescription combinedSolution = partialSolutions.get(0).asEvaluatedDescription();
+			double accuracy = lp.getAccuracy(combinedSolution.getDescription());
+			System.out.println(accuracy);
+			return combinedSolution;
+		}
 		List<Description> disjuncts = new ArrayList<Description>();
+		
+		Set<Individual> posCovered = new HashSet<Individual>();
+		Set<Individual> negCovered = new HashSet<Individual>();
+		
+		//build the union of all class expressions
 		Description partialDescription;
 		for (EvaluatedQueryTree<String> partialSolution : partialSolutions) {
 			partialDescription = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
 					partialSolution.getTree().asOWLClassExpression(LiteralNodeConversionStrategy.FACET_RESTRICTION));
 			disjuncts.add(partialDescription);
+			posCovered.addAll(partialSolution.getTreeScore().getCoveredPositives());
+			negCovered.addAll(partialSolution.getTreeScore().getCoveredNegatives());
 		}
 		Description unionDescription = new Union(disjuncts);
 		
-		return new EvaluatedDescription(unionDescription, null);
+		Set<Individual> posNotCovered = Sets.difference(lp.getPositiveExamples(), posCovered);
+		Set<Individual> negNotCovered = Sets.difference(lp.getNegativeExamples(), negCovered);
+		
+		double accuracy = lp.getAccuracy(unionDescription);
+		System.out.println(accuracy);
+		
+		//compute the coverage
+		double recall = posCovered.size() / (double)lp.getPositiveExamples().size();
+		double precision = (posCovered.size() + negCovered.size() == 0) 
+						? 0 
+						: posCovered.size() / (double)(posCovered.size() + negCovered.size());
+		
+		double coverageScore = Heuristics.getFScore(recall, precision, coverageBeta);
+		
+//		ScoreTwoValued score = new ScoreTwoValued(posCovered, posNotCovered, negCovered, negNotCovered);
+//		score.setAccuracy(coverageScore);
+		QueryTreeScore score = new QueryTreeScore(coverageScore, coverageScore, posCovered, posNotCovered, negCovered, negNotCovered, -1, -1);
+		
+		return new EvaluatedDescription(unionDescription, score);
 	}
 	
 	private void reset(){
@@ -216,6 +289,7 @@ public class QTL2Disjunctive extends AbstractCELA {
 	}
 	
 	private void computeLGG(){
+		logger.info("Computing best partial solution...");
 		currentlyBestScore = 0d;
 		
 		initTodoList(currentPosExampleTrees, currentNegExampleTrees);
@@ -246,16 +320,17 @@ public class QTL2Disjunctive extends AbstractCELA {
 					}
 					currentlyBestScore = solution.getScore();
 				}
+				currentPartialSolutions.add(currentElement);
 				
 			}
 			currentPartialSolutions.add(currentElement);
 //			todoList.remove(currentElement);
 		} while(!terminationCriteriaSatisfied());
 		long endTime = System.currentTimeMillis();
-		logger.info("Finished in " + (endTime-startTime) + "ms.");
-		EvaluatedDescription bestSolution = getCurrentlyBestEvaluatedDescription();
+		logger.info("...finished in " + (endTime-startTime) + "ms.");
+		EvaluatedDescription bestPartialSolution = currentPartialSolutions.first().asEvaluatedDescription();
 		
-		logger.info("Best solution:\n" + OWLAPIConverter.getOWLAPIDescription(bestSolution.getDescription()) + "\n(" + bestSolution.getScore() + ")");
+		logger.info("Best partial solution:\n" + OWLAPIConverter.getOWLAPIDescription(bestPartialSolution.getDescription()) + "\n(" + bestPartialSolution.getScore() + ")");
 		
 		logger.trace("LGG time: " + lggMon.getTotal() + "ms");
 		logger.trace("Avg. LGG time: " + lggMon.getAvg() + "ms");
@@ -278,7 +353,7 @@ public class QTL2Disjunctive extends AbstractCELA {
 	 */
 	@Override
 	public Description getCurrentlyBestDescription() {
-		return getCurrentlyBestEvaluatedDescription().getDescription();
+		return currentBestSolution.getDescription();
 	}
 	
 	/* (non-Javadoc)
@@ -286,8 +361,7 @@ public class QTL2Disjunctive extends AbstractCELA {
 	 */
 	@Override
 	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		EvaluatedQueryTree<String> bestSolution = currentPartialSolutions.first();
-		return bestSolution.asEvaluatedDescription();
+		return currentBestSolution;
 	}
 	
 	/* (non-Javadoc)
@@ -298,19 +372,31 @@ public class QTL2Disjunctive extends AbstractCELA {
 		return isRunning;
 	}
 	
-	@Autowired
-	public void setLearningProblem(PosNegLP learningProblem) {
-		this.lp = learningProblem;
-	}
+//	@Autowired
+//	public void setLearningProblem(PosNegLP learningProblem) {
+//		this.lp = learningProblem;
+//	}
 	
 	@Autowired
 	public void setReasoner(AbstractReasonerComponent reasoner){
-		this.reasoner = reasoner;
+		super.setReasoner(reasoner);
+		loadModel();
+	}
+	
+	private void loadModel(){
 		model = ModelFactory.createDefaultModel();
 		for (KnowledgeSource ks : reasoner.getSources()) {
 			if(ks instanceof OWLFile){
 				try {
 					model.read(((OWLFile) ks).getURL().openStream(), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else if(ks instanceof OWLAPIOntology){
+				ByteArrayInputStream bais = new ByteArrayInputStream(((OWLAPIOntology) ks).getConverter().convert(((OWLAPIOntology) ks).getOntology()));
+				model.read(bais, null);
+				try {
+					bais.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -328,14 +414,14 @@ public class QTL2Disjunctive extends AbstractCELA {
 	private EvaluatedQueryTree<String> evaluate(QueryTree<String> tree, boolean useSpecifity){
 		//1. get a score for the coverage = recall oriented
 		//compute positive examples which are not covered by LGG
-		Set<QueryTree<String>> uncoveredPositiveExampleTrees = getUncoveredTrees(tree, currentPosExampleTrees);
-		Set<Individual> uncoveredPosExamples = new HashSet<Individual>();
+		List<QueryTree<String>> uncoveredPositiveExampleTrees = getUncoveredTrees(tree, currentPosExampleTrees);
+		Set<Individual> uncoveredPosExamples = new TreeSet<Individual>();
 		for (QueryTree<String> queryTree : uncoveredPositiveExampleTrees) {
 			uncoveredPosExamples.add(tree2Individual.get(queryTree));
 		}
 		//compute negative examples which are covered by LGG
 		Collection<QueryTree<String>> coveredNegativeExampleTrees = getCoveredTrees(tree, currentNegExampleTrees);
-		Set<Individual> coveredNegExamples = new HashSet<Individual>();
+		Set<Individual> coveredNegExamples = new TreeSet<Individual>();
 		for (QueryTree<String> queryTree : coveredNegativeExampleTrees) {
 			coveredNegExamples.add(tree2Individual.get(queryTree));
 		}
@@ -346,7 +432,8 @@ public class QTL2Disjunctive extends AbstractCELA {
 						? 0 
 						: coveredPositiveExamples / (double)(coveredPositiveExamples + coveredNegativeExampleTrees.size());
 		
-		double coverageScore = Heuristics.getFScore(recall, precision);
+		double beta = 0.5;
+		double coverageScore = Heuristics.getFScore(recall, precision, beta);
 		
 		//2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
 		int nrOfSpecificNodes = 0;
@@ -364,8 +451,8 @@ public class QTL2Disjunctive extends AbstractCELA {
 		double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 		
 		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
-				Sets.difference(currentPosExamples, uncoveredPosExamples), uncoveredPosExamples,
-				coveredNegExamples, Sets.difference(currentNegExamples, coveredNegExamples),
+				new TreeSet<Individual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
+				coveredNegExamples, new TreeSet<Individual>(Sets.difference(currentNegExamples, coveredNegExamples)),
 				specifityScore, nrOfSpecificNodes);
 		
 //		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
@@ -400,8 +487,8 @@ public class QTL2Disjunctive extends AbstractCELA {
 	 * @param allTrees
 	 * @return
 	 */
-	private Set<QueryTree<String>> getUncoveredTrees(QueryTree<String> tree, List<QueryTree<String>> allTrees){
-		Set<QueryTree<String>> uncoveredTrees = new LinkedHashSet<QueryTree<String>>();
+	private List<QueryTree<String>> getUncoveredTrees(QueryTree<String> tree, List<QueryTree<String>> allTrees){
+		List<QueryTree<String>> uncoveredTrees = new ArrayList<QueryTree<String>>();
 		for (QueryTree<String> queryTree : allTrees) {
 			boolean subsumed = queryTree.isSubsumedBy(tree);
 			if(!subsumed){
@@ -469,5 +556,34 @@ public class QTL2Disjunctive extends AbstractCELA {
 			}
 		}
 		todoList.add(solution);
+	}
+	
+	/**
+	 * @param noisePercentage the noisePercentage to set
+	 */
+	public void setNoisePercentage(double noisePercentage) {
+		this.noisePercentage = noisePercentage;
+	}
+	
+	/**
+	 * @param maxExecutionTimeInSeconds the maxExecutionTimeInSeconds to set
+	 */
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+	}
+	
+	/**
+	 * @param coverageBeta the coverageBeta to set
+	 */
+	public void setCoverageBeta(double coverageBeta) {
+		this.coverageBeta = coverageBeta;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return new QTL2Disjunctive(this);
 	}
 }

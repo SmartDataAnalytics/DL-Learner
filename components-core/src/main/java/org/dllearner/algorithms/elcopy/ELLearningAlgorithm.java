@@ -45,6 +45,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
@@ -148,7 +149,10 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	@Override
 	public void init() throws ComponentInitException {
 		// currently we use the stable heuristic
-		heuristic = new StableHeuristic();
+		if(heuristic == null){
+			heuristic = new StableHeuristic();
+		}
+		
 		candidates = new TreeSet<SearchTreeNode>(heuristic);
 		
 		if(ignoredConcepts != null) {
@@ -166,6 +170,13 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 	}	
+	
+	/**
+	 * @param heuristic the heuristic to set
+	 */
+	public void setHeuristic(ELHeuristic heuristic) {
+		this.heuristic = heuristic;
+	}
 	
 	@Override
 	public void start() {
@@ -237,7 +248,13 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			} else {
 				node.setCoveredNegatives(negCovers);
 			}
-			node.setScore(accuracy);
+			node.setAccuracy(accuracy);
+			if(heuristic instanceof RelevanceWeightedStableHeuristic){
+				node.setScore(((RelevanceWeightedStableHeuristic)heuristic).getNodeScore(node));
+			} else {
+				node.setScore(accuracy);
+			}
+			
 //			System.out.println(description + ":" + accuracy);
 			// link to parent (unless start node)
 			if(parentNode == null) {
@@ -259,6 +276,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				// for fully computing the evaluated description
 				if(bestEvaluatedDescriptions.size() == 0 || ((EvaluatedDescriptionPosNeg)bestEvaluatedDescriptions.getWorst()).getCoveredNegatives().size() >= node.getCoveredNegatives()) {
 					ScorePosNeg score = (ScorePosNeg) learningProblem.computeScore(description);
+					((ScoreTwoValued)score).setAccuracy(node.getScore());
 					EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(description, score);
 					bestEvaluatedDescriptions.add(ed);
 				}
@@ -329,7 +347,9 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			
 			//non of the equivalent classes must occur on the first level
 			TreeSet<Description> toTest = new TreeSet<Description>(descriptionComparator);
-			toTest.add(classToDescribe);
+			if(classToDescribe != null){
+				toTest.add(classToDescribe);
+			}
 			while(!toTest.isEmpty()) {
 				Description d = toTest.pollFirst();
 				if(occursOnFirstLevel(description, d)) {
@@ -341,7 +361,9 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			// none of the superclasses of the class to learn must appear on the
 			// outermost property level
 			TreeSet<Description> toTest = new TreeSet<Description>(descriptionComparator);
-			toTest.add(classToDescribe);
+			if(classToDescribe != null){
+				toTest.add(classToDescribe);
+			}
 			while(!toTest.isEmpty()) {
 				Description d = toTest.pollFirst();
 				if(occursOnFirstLevel(description, d)) {

@@ -49,6 +49,7 @@ import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
@@ -259,6 +260,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	
 	private void filter(Model model){
 		model.remove(model.listStatements(null, RDF.type, OWL.Class));
+		model.remove(model.listStatements(null, RDF.type, OWL2.NamedIndividual));
 	}
 	
 	private QueryTreeImpl<String> createTree(Resource s, Model model){

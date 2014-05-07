@@ -39,12 +39,14 @@ import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.confparser3.ParseException;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +81,12 @@ public class CLI {
 	
 	private String logLevel = "INFO";
 
+	private AbstractLearningProblem lp;
+
+	private AbstractReasonerComponent rs;
+
+	private AbstractCELA la;
+
 
 	public CLI() {
 		
@@ -101,6 +109,9 @@ public class CLI {
             context =  builder.buildApplicationContext(configuration,springConfigResources);	
             
             knowledgeSource = context.getBean(KnowledgeSource.class);
+            rs = context.getBean(AbstractReasonerComponent.class);
+    		la = context.getBean(AbstractCELA.class);
+    		lp = context.getBean(AbstractLearningProblem.class);
     	}
 	}
 	
@@ -129,10 +140,10 @@ public class CLI {
         		Files.createFile(springFile, xml.toString());
         	}		
 		}    	
-    	
+		rs = context.getBean(AbstractReasonerComponent.class);
+		la = context.getBean(AbstractCELA.class);
 		if (performCrossValidation) {
-			AbstractReasonerComponent rs = context.getBean(AbstractReasonerComponent.class);
-			AbstractCELA la = context.getBean(AbstractCELA.class);
+			
 			
 			//this test is added for PDLL algorithm since it does not use the PosNegLP			
 			try {
@@ -142,13 +153,14 @@ public class CLI {
 			catch (BeansException be) {
 				PosNegLP lp = context.getBean(PosNegLP.class);
 				if(la instanceof QTL2){
-					new SPARQLCrossValidation((QTL2) la,lp,nrOfFolds,false);	
+					new SPARQLCrossValidation((QTL2) la,lp,rs,nrOfFolds,false);	
 				} else {
 					new CrossValidation(la,lp,rs,nrOfFolds,false);	
 				}
 			}
 			
 		} else {
+			lp = context.getBean(AbstractLearningProblem.class);
 //			knowledgeSource = context.getBeansOfType(Knowledge1Source.class).entrySet().iterator().next().getValue();
 			for(Entry<String, LearningAlgorithm> entry : context.getBeansOfType(LearningAlgorithm.class).entrySet()){
 				algorithm = entry.getValue();
@@ -166,6 +178,27 @@ public class CLI {
 	public void setWriteSpringConfiguration(boolean writeSpringConfiguration) {
 		this.writeSpringConfiguration = writeSpringConfiguration;
 	}    
+	
+	/**
+	 * @return the lp
+	 */
+	public AbstractLearningProblem getLearningProblem() {
+		return lp;
+	}
+	
+	/**
+	 * @return the rs
+	 */
+	public AbstractReasonerComponent getReasonerComponent() {
+		return rs;
+	}
+	
+	/**
+	 * @return the la
+	 */
+	public AbstractCELA getLearningAlgorithm() {
+		return la;
+	}
     
 	/**
 	 * @param args
@@ -297,9 +330,9 @@ public class CLI {
 		return logLevel;
 	}
 	
-	public LearningAlgorithm getLearningAlgorithm() {
-		return algorithm;
-	}
+//	public LearningAlgorithm getLearningAlgorithm() {
+//		return algorithm;
+//	}
 	
 	public KnowledgeSource getKnowledgeSource() {
 		return knowledgeSource;
