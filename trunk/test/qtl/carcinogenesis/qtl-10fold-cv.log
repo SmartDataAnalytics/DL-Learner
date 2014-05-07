@@ -1,0 +1,514 @@
+2014-04-25 16:15:56,983 [main] INFO  org.dllearner.algorithms.qtl.operations.lgg.QTL2 - Initializing...
+	?(0)
+	--- http://dl-learner.org/carcinogenesis#amesTestPositive ---
+		?(1)Values: [true^^http://www.w3.org/2001/XMLSchema#boolean, false^^http://www.w3.org/2001/XMLSchema#boolean]
+	--- http://dl-learner.org/carcinogenesis#hasAtom ---
+		?(2)
+		--- http://dl-learner.org/carcinogenesis#charge ---
+			?(3)Values: [0.208^^http://www.w3.org/2001/XMLSchema#double, -0.014^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(4)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Carbon(5)
+	--- http://dl-learner.org/carcinogenesis#hasBond ---
+		?(6)
+		--- http://dl-learner.org/carcinogenesis#inBond ---
+			?(7)
+			--- http://dl-learner.org/carcinogenesis#charge ---
+				?(8)Values: [0.297^^http://www.w3.org/2001/XMLSchema#double, -0.123^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+			--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+				?(9)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			http://dl-learner.org/carcinogenesis#Bond-1(10)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Bond(11)
+	--- http://dl-learner.org/carcinogenesis#isMutagenic ---
+		?(12)
+	--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+		http://dl-learner.org/carcinogenesis#Compound(13)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Atom(14)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Bond(15)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(16)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Structure(17)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Structure(18)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(19)
+(http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+test set errors pos: [http://dl-learner.org/carcinogenesis#d100, http://dl-learner.org/carcinogenesis#d139, http://dl-learner.org/carcinogenesis#d199, http://dl-learner.org/carcinogenesis#d202, http://dl-learner.org/carcinogenesis#d203, http://dl-learner.org/carcinogenesis#d205, http://dl-learner.org/carcinogenesis#d233, http://dl-learner.org/carcinogenesis#d238, http://dl-learner.org/carcinogenesis#d245, http://dl-learner.org/carcinogenesis#d248, http://dl-learner.org/carcinogenesis#d25, http://dl-learner.org/carcinogenesis#d252, http://dl-learner.org/carcinogenesis#d283, http://dl-learner.org/carcinogenesis#d32, http://dl-learner.org/carcinogenesis#d329, http://dl-learner.org/carcinogenesis#d42, http://dl-learner.org/carcinogenesis#d49, http://dl-learner.org/carcinogenesis#d5, http://dl-learner.org/carcinogenesis#d97]
+test set errors neg: []
+fold 0:
+  training: 163 positive and 139 negative examples
+  testing: 19/19 correct positives, 1/16 correct negatives
+  concept: (http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+  accuracy: 57.143% (55.298% on training set)
+  length: 26
+  runtime: 665.816s
+2014-04-25 16:27:06,667 [main] INFO  org.dllearner.algorithms.qtl.operations.lgg.QTL2 - Initializing...
+	?(0)
+	--- http://dl-learner.org/carcinogenesis#amesTestPositive ---
+		?(1)Values: [true^^http://www.w3.org/2001/XMLSchema#boolean, false^^http://www.w3.org/2001/XMLSchema#boolean]
+	--- http://dl-learner.org/carcinogenesis#hasAtom ---
+		?(2)
+		--- http://dl-learner.org/carcinogenesis#charge ---
+			?(3)Values: [0.208^^http://www.w3.org/2001/XMLSchema#double, -0.014^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(4)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Carbon(5)
+	--- http://dl-learner.org/carcinogenesis#hasBond ---
+		?(6)
+		--- http://dl-learner.org/carcinogenesis#inBond ---
+			?(7)
+			--- http://dl-learner.org/carcinogenesis#charge ---
+				?(8)Values: [0.297^^http://www.w3.org/2001/XMLSchema#double, -0.123^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+			--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+				?(9)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			http://dl-learner.org/carcinogenesis#Bond-1(10)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Bond(11)
+	--- http://dl-learner.org/carcinogenesis#isMutagenic ---
+		?(12)
+	--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+		http://dl-learner.org/carcinogenesis#Compound(13)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Atom(14)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Bond(15)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(16)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Structure(17)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Structure(18)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(19)
+(http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+test set errors pos: [http://dl-learner.org/carcinogenesis#d105, http://dl-learner.org/carcinogenesis#d135, http://dl-learner.org/carcinogenesis#d141, http://dl-learner.org/carcinogenesis#d143, http://dl-learner.org/carcinogenesis#d147, http://dl-learner.org/carcinogenesis#d20, http://dl-learner.org/carcinogenesis#d22, http://dl-learner.org/carcinogenesis#d228, http://dl-learner.org/carcinogenesis#d241, http://dl-learner.org/carcinogenesis#d243, http://dl-learner.org/carcinogenesis#d296, http://dl-learner.org/carcinogenesis#d30, http://dl-learner.org/carcinogenesis#d315, http://dl-learner.org/carcinogenesis#d4, http://dl-learner.org/carcinogenesis#d43, http://dl-learner.org/carcinogenesis#d45, http://dl-learner.org/carcinogenesis#d85_1, http://dl-learner.org/carcinogenesis#d92]
+test set errors neg: []
+fold 1:
+  training: 164 positive and 140 negative examples
+  testing: 18/18 correct positives, 0/15 correct negatives
+  concept: (http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+  accuracy: 54.545% (55.592% on training set)
+  length: 26
+  runtime: 650.804s
+2014-04-25 16:37:58,268 [main] INFO  org.dllearner.algorithms.qtl.operations.lgg.QTL2 - Initializing...
+	?(0)
+	--- http://dl-learner.org/carcinogenesis#amesTestPositive ---
+		?(1)Values: [true^^http://www.w3.org/2001/XMLSchema#boolean, false^^http://www.w3.org/2001/XMLSchema#boolean]
+	--- http://dl-learner.org/carcinogenesis#hasAtom ---
+		?(2)
+		--- http://dl-learner.org/carcinogenesis#charge ---
+			?(3)Values: [0.208^^http://www.w3.org/2001/XMLSchema#double, -0.014^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(4)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Carbon(5)
+	--- http://dl-learner.org/carcinogenesis#hasBond ---
+		?(6)
+		--- http://dl-learner.org/carcinogenesis#inBond ---
+			?(7)
+			--- http://dl-learner.org/carcinogenesis#charge ---
+				?(8)Values: [0.297^^http://www.w3.org/2001/XMLSchema#double, -0.123^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+			--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+				?(9)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			http://dl-learner.org/carcinogenesis#Bond-1(10)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Bond(11)
+	--- http://dl-learner.org/carcinogenesis#isMutagenic ---
+		?(12)
+	--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+		http://dl-learner.org/carcinogenesis#Compound(13)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Atom(14)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Bond(15)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(16)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Structure(17)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Structure(18)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(19)
+(http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+test set errors pos: [http://dl-learner.org/carcinogenesis#d102, http://dl-learner.org/carcinogenesis#d104, http://dl-learner.org/carcinogenesis#d107, http://dl-learner.org/carcinogenesis#d11, http://dl-learner.org/carcinogenesis#d140, http://dl-learner.org/carcinogenesis#d142, http://dl-learner.org/carcinogenesis#d144, http://dl-learner.org/carcinogenesis#d195, http://dl-learner.org/carcinogenesis#d206, http://dl-learner.org/carcinogenesis#d236, http://dl-learner.org/carcinogenesis#d240, http://dl-learner.org/carcinogenesis#d246, http://dl-learner.org/carcinogenesis#d273, http://dl-learner.org/carcinogenesis#d305, http://dl-learner.org/carcinogenesis#d314, http://dl-learner.org/carcinogenesis#d333, http://dl-learner.org/carcinogenesis#d37, http://dl-learner.org/carcinogenesis#d53]
+test set errors neg: []
+fold 2:
+  training: 164 positive and 139 negative examples
+  testing: 18/18 correct positives, 1/16 correct negatives
+  concept: (http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+  accuracy: 55.882% (55.446% on training set)
+  length: 26
+  runtime: 615.954s
+2014-04-25 16:48:15,040 [main] INFO  org.dllearner.algorithms.qtl.operations.lgg.QTL2 - Initializing...
+	?(0)
+	--- http://dl-learner.org/carcinogenesis#amesTestPositive ---
+		?(1)Values: [true^^http://www.w3.org/2001/XMLSchema#boolean, false^^http://www.w3.org/2001/XMLSchema#boolean]
+	--- http://dl-learner.org/carcinogenesis#hasAtom ---
+		?(2)
+		--- http://dl-learner.org/carcinogenesis#charge ---
+			?(3)Values: [0.208^^http://www.w3.org/2001/XMLSchema#double, 0.507^^http://www.w3.org/2001/XMLSchema#double, -0.014^^http://www.w3.org/2001/XMLSchema#double]
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(4)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Carbon(5)
+	--- http://dl-learner.org/carcinogenesis#hasBond ---
+		?(6)
+		--- http://dl-learner.org/carcinogenesis#inBond ---
+			?(7)
+			--- http://dl-learner.org/carcinogenesis#charge ---
+				?(8)Values: [0.297^^http://www.w3.org/2001/XMLSchema#double, -0.123^^http://www.w3.org/2001/XMLSchema#double, 0.407^^http://www.w3.org/2001/XMLSchema#double]
+			--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+				?(9)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			http://dl-learner.org/carcinogenesis#Bond-1(10)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Bond(11)
+	--- http://dl-learner.org/carcinogenesis#hasStructure ---
+		?(12)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(13)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				?(14)
+	--- http://dl-learner.org/carcinogenesis#isMutagenic ---
+		?(15)
+	--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+		http://dl-learner.org/carcinogenesis#Compound(16)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Atom(17)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Bond(18)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(19)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Structure(20)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Structure(21)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(22)
+(http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasStructure.EXISTS http://www.w3.org/2000/01/rdf-schema#subClassOf.TOP AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+test set errors pos: [http://dl-learner.org/carcinogenesis#d18, http://dl-learner.org/carcinogenesis#d229, http://dl-learner.org/carcinogenesis#d234, http://dl-learner.org/carcinogenesis#d237, http://dl-learner.org/carcinogenesis#d253, http://dl-learner.org/carcinogenesis#d27, http://dl-learner.org/carcinogenesis#d272, http://dl-learner.org/carcinogenesis#d275, http://dl-learner.org/carcinogenesis#d28, http://dl-learner.org/carcinogenesis#d286, http://dl-learner.org/carcinogenesis#d331, http://dl-learner.org/carcinogenesis#d34, http://dl-learner.org/carcinogenesis#d44, http://dl-learner.org/carcinogenesis#d55, http://dl-learner.org/carcinogenesis#d56, http://dl-learner.org/carcinogenesis#d57, http://dl-learner.org/carcinogenesis#d7, http://dl-learner.org/carcinogenesis#d98]
+test set errors neg: []
+fold 3:
+  training: 164 positive and 140 negative examples
+  testing: 17/18 correct positives, 1/15 correct negatives
+  concept: (http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasStructure.EXISTS http://www.w3.org/2000/01/rdf-schema#subClassOf.TOP AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+  accuracy: 54.545% (55.592% on training set)
+  length: 32
+  runtime: 696.22s
+2014-04-25 16:59:52,024 [main] INFO  org.dllearner.algorithms.qtl.operations.lgg.QTL2 - Initializing...
+	?(0)
+	--- http://dl-learner.org/carcinogenesis#amesTestPositive ---
+		?(1)Values: [true^^http://www.w3.org/2001/XMLSchema#boolean, false^^http://www.w3.org/2001/XMLSchema#boolean]
+	--- http://dl-learner.org/carcinogenesis#hasAtom ---
+		?(2)
+		--- http://dl-learner.org/carcinogenesis#charge ---
+			?(3)Values: [0.208^^http://www.w3.org/2001/XMLSchema#double, -0.014^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(4)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Carbon(5)
+	--- http://dl-learner.org/carcinogenesis#hasBond ---
+		?(6)
+		--- http://dl-learner.org/carcinogenesis#inBond ---
+			?(7)
+			--- http://dl-learner.org/carcinogenesis#charge ---
+				?(8)Values: [0.297^^http://www.w3.org/2001/XMLSchema#double, -0.123^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+			--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+				?(9)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			http://dl-learner.org/carcinogenesis#Bond-1(10)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Bond(11)
+	--- http://dl-learner.org/carcinogenesis#isMutagenic ---
+		?(12)
+	--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+		http://dl-learner.org/carcinogenesis#Compound(13)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Atom(14)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Bond(15)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(16)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Structure(17)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Structure(18)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(19)
+(http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+test set errors pos: [http://dl-learner.org/carcinogenesis#d106, http://dl-learner.org/carcinogenesis#d136, http://dl-learner.org/carcinogenesis#d201, http://dl-learner.org/carcinogenesis#d21, http://dl-learner.org/carcinogenesis#d230, http://dl-learner.org/carcinogenesis#d231, http://dl-learner.org/carcinogenesis#d232, http://dl-learner.org/carcinogenesis#d239, http://dl-learner.org/carcinogenesis#d251, http://dl-learner.org/carcinogenesis#d291, http://dl-learner.org/carcinogenesis#d308, http://dl-learner.org/carcinogenesis#d316, http://dl-learner.org/carcinogenesis#d50, http://dl-learner.org/carcinogenesis#d54, http://dl-learner.org/carcinogenesis#d8, http://dl-learner.org/carcinogenesis#d84, http://dl-learner.org/carcinogenesis#d86, http://dl-learner.org/carcinogenesis#d88]
+test set errors neg: []
+fold 4:
+  training: 164 positive and 139 negative examples
+  testing: 18/18 correct positives, 1/16 correct negatives
+  concept: (http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+  accuracy: 55.882% (55.446% on training set)
+  length: 26
+  runtime: 629.774s
+2014-04-25 17:10:22,528 [main] INFO  org.dllearner.algorithms.qtl.operations.lgg.QTL2 - Initializing...
+	?(0)
+	--- http://dl-learner.org/carcinogenesis#amesTestPositive ---
+		?(1)Values: [true^^http://www.w3.org/2001/XMLSchema#boolean, false^^http://www.w3.org/2001/XMLSchema#boolean]
+	--- http://dl-learner.org/carcinogenesis#hasAtom ---
+		?(2)
+		--- http://dl-learner.org/carcinogenesis#charge ---
+			?(3)Values: [0.208^^http://www.w3.org/2001/XMLSchema#double, -0.014^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(4)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Carbon(5)
+	--- http://dl-learner.org/carcinogenesis#hasBond ---
+		?(6)
+		--- http://dl-learner.org/carcinogenesis#inBond ---
+			?(7)
+			--- http://dl-learner.org/carcinogenesis#charge ---
+				?(8)Values: [0.297^^http://www.w3.org/2001/XMLSchema#double, -0.123^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+			--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+				?(9)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			http://dl-learner.org/carcinogenesis#Bond-1(10)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Bond(11)
+	--- http://dl-learner.org/carcinogenesis#isMutagenic ---
+		?(12)
+	--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+		http://dl-learner.org/carcinogenesis#Compound(13)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Atom(14)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Bond(15)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(16)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Structure(17)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Structure(18)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(19)
+(http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+test set errors pos: [http://dl-learner.org/carcinogenesis#d10, http://dl-learner.org/carcinogenesis#d103, http://dl-learner.org/carcinogenesis#d109, http://dl-learner.org/carcinogenesis#d137, http://dl-learner.org/carcinogenesis#d14, http://dl-learner.org/carcinogenesis#d15, http://dl-learner.org/carcinogenesis#d197, http://dl-learner.org/carcinogenesis#d235, http://dl-learner.org/carcinogenesis#d284, http://dl-learner.org/carcinogenesis#d325, http://dl-learner.org/carcinogenesis#d336, http://dl-learner.org/carcinogenesis#d39, http://dl-learner.org/carcinogenesis#d41, http://dl-learner.org/carcinogenesis#d48, http://dl-learner.org/carcinogenesis#d51, http://dl-learner.org/carcinogenesis#d85_2, http://dl-learner.org/carcinogenesis#d90, http://dl-learner.org/carcinogenesis#d93, http://dl-learner.org/carcinogenesis#d96]
+test set errors neg: []
+fold 5:
+  training: 163 positive and 140 negative examples
+  testing: 19/19 correct positives, 1/15 correct negatives
+  concept: (http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+  accuracy: 58.824% (55.116% on training set)
+  length: 26
+  runtime: 632.564s
+2014-04-25 17:20:55,802 [main] INFO  org.dllearner.algorithms.qtl.operations.lgg.QTL2 - Initializing...
+	?(0)
+	--- http://dl-learner.org/carcinogenesis#amesTestPositive ---
+		?(1)Values: [true^^http://www.w3.org/2001/XMLSchema#boolean, false^^http://www.w3.org/2001/XMLSchema#boolean]
+	--- http://dl-learner.org/carcinogenesis#hasAtom ---
+		?(2)
+		--- http://dl-learner.org/carcinogenesis#charge ---
+			?(3)Values: [0.1^^http://www.w3.org/2001/XMLSchema#double, -0.113^^http://www.w3.org/2001/XMLSchema#double, -0.014^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(4)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Carbon(5)
+	--- http://dl-learner.org/carcinogenesis#hasBond ---
+		?(6)
+		--- http://dl-learner.org/carcinogenesis#inBond ---
+			?(7)
+			--- http://dl-learner.org/carcinogenesis#charge ---
+				?(8)Values: [0.297^^http://www.w3.org/2001/XMLSchema#double, 0.1^^http://www.w3.org/2001/XMLSchema#double, -0.113^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+			--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+				?(9)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			http://dl-learner.org/carcinogenesis#Bond-1(10)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Bond(11)
+	--- http://dl-learner.org/carcinogenesis#isMutagenic ---
+		?(12)
+	--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+		http://dl-learner.org/carcinogenesis#Compound(13)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Atom(14)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Bond(15)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(16)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Structure(17)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Structure(18)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(19)
+(http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+test set errors pos: [http://dl-learner.org/carcinogenesis#d101, http://dl-learner.org/carcinogenesis#d13, http://dl-learner.org/carcinogenesis#d16, http://dl-learner.org/carcinogenesis#d19, http://dl-learner.org/carcinogenesis#d192, http://dl-learner.org/carcinogenesis#d24, http://dl-learner.org/carcinogenesis#d249, http://dl-learner.org/carcinogenesis#d255, http://dl-learner.org/carcinogenesis#d278, http://dl-learner.org/carcinogenesis#d289, http://dl-learner.org/carcinogenesis#d29, http://dl-learner.org/carcinogenesis#d320, http://dl-learner.org/carcinogenesis#d322, http://dl-learner.org/carcinogenesis#d332, http://dl-learner.org/carcinogenesis#d337, http://dl-learner.org/carcinogenesis#d35, http://dl-learner.org/carcinogenesis#d38, http://dl-learner.org/carcinogenesis#d9]
+test set errors neg: []
+fold 6:
+  training: 164 positive and 139 negative examples
+  testing: 18/18 correct positives, 0/16 correct negatives
+  concept: (http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+  accuracy: 52.941% (55.776% on training set)
+  length: 26
+  runtime: 637.785s
+2014-04-25 17:31:34,295 [main] INFO  org.dllearner.algorithms.qtl.operations.lgg.QTL2 - Initializing...
+	?(0)
+	--- http://dl-learner.org/carcinogenesis#amesTestPositive ---
+		?(1)Values: [true^^http://www.w3.org/2001/XMLSchema#boolean, false^^http://www.w3.org/2001/XMLSchema#boolean]
+	--- http://dl-learner.org/carcinogenesis#hasAtom ---
+		?(2)
+		--- http://dl-learner.org/carcinogenesis#charge ---
+			?(3)Values: [0.208^^http://www.w3.org/2001/XMLSchema#double, -0.014^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(4)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Carbon(5)
+	--- http://dl-learner.org/carcinogenesis#hasBond ---
+		?(6)
+		--- http://dl-learner.org/carcinogenesis#inBond ---
+			?(7)
+			--- http://dl-learner.org/carcinogenesis#charge ---
+				?(8)Values: [0.297^^http://www.w3.org/2001/XMLSchema#double, -0.123^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+			--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+				?(9)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			http://dl-learner.org/carcinogenesis#Bond-1(10)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Bond(11)
+	--- http://dl-learner.org/carcinogenesis#isMutagenic ---
+		?(12)
+	--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+		http://dl-learner.org/carcinogenesis#Compound(13)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Atom(14)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Bond(15)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(16)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Structure(17)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Structure(18)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(19)
+(http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+test set errors pos: [http://dl-learner.org/carcinogenesis#d108, http://dl-learner.org/carcinogenesis#d138, http://dl-learner.org/carcinogenesis#d145, http://dl-learner.org/carcinogenesis#d146, http://dl-learner.org/carcinogenesis#d193, http://dl-learner.org/carcinogenesis#d200, http://dl-learner.org/carcinogenesis#d227, http://dl-learner.org/carcinogenesis#d244, http://dl-learner.org/carcinogenesis#d254, http://dl-learner.org/carcinogenesis#d26, http://dl-learner.org/carcinogenesis#d274, http://dl-learner.org/carcinogenesis#d288, http://dl-learner.org/carcinogenesis#d311, http://dl-learner.org/carcinogenesis#d40, http://dl-learner.org/carcinogenesis#d46, http://dl-learner.org/carcinogenesis#d47, http://dl-learner.org/carcinogenesis#d91, http://dl-learner.org/carcinogenesis#d94]
+test set errors neg: []
+fold 7:
+  training: 164 positive and 140 negative examples
+  testing: 18/18 correct positives, 0/15 correct negatives
+  concept: (http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+  accuracy: 54.545% (55.592% on training set)
+  length: 26
+  runtime: 671.263s
+2014-04-25 17:42:46,270 [main] INFO  org.dllearner.algorithms.qtl.operations.lgg.QTL2 - Initializing...
+	?(0)
+	--- http://dl-learner.org/carcinogenesis#amesTestPositive ---
+		?(1)Values: [true^^http://www.w3.org/2001/XMLSchema#boolean, false^^http://www.w3.org/2001/XMLSchema#boolean]
+	--- http://dl-learner.org/carcinogenesis#hasAtom ---
+		?(2)
+		--- http://dl-learner.org/carcinogenesis#charge ---
+			?(3)Values: [0.208^^http://www.w3.org/2001/XMLSchema#double, -0.014^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(4)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Carbon(5)
+	--- http://dl-learner.org/carcinogenesis#hasBond ---
+		?(6)
+		--- http://dl-learner.org/carcinogenesis#inBond ---
+			?(7)
+			--- http://dl-learner.org/carcinogenesis#charge ---
+				?(8)Values: [0.297^^http://www.w3.org/2001/XMLSchema#double, -0.123^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+			--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+				?(9)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			http://dl-learner.org/carcinogenesis#Bond-1(10)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Bond(11)
+	--- http://dl-learner.org/carcinogenesis#isMutagenic ---
+		?(12)
+	--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+		http://dl-learner.org/carcinogenesis#Compound(13)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Atom(14)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Bond(15)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(16)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Structure(17)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Structure(18)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(19)
+(http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+test set errors pos: [http://dl-learner.org/carcinogenesis#d1, http://dl-learner.org/carcinogenesis#d12, http://dl-learner.org/carcinogenesis#d134, http://dl-learner.org/carcinogenesis#d148, http://dl-learner.org/carcinogenesis#d17, http://dl-learner.org/carcinogenesis#d191, http://dl-learner.org/carcinogenesis#d2, http://dl-learner.org/carcinogenesis#d23_2, http://dl-learner.org/carcinogenesis#d242, http://dl-learner.org/carcinogenesis#d250, http://dl-learner.org/carcinogenesis#d292, http://dl-learner.org/carcinogenesis#d306, http://dl-learner.org/carcinogenesis#d31, http://dl-learner.org/carcinogenesis#d330, http://dl-learner.org/carcinogenesis#d36, http://dl-learner.org/carcinogenesis#d52, http://dl-learner.org/carcinogenesis#d87, http://dl-learner.org/carcinogenesis#d95]
+test set errors neg: []
+fold 8:
+  training: 164 positive and 139 negative examples
+  testing: 18/18 correct positives, 0/16 correct negatives
+  concept: (http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+  accuracy: 52.941% (55.776% on training set)
+  length: 26
+  runtime: 640.282s
+2014-04-25 17:53:27,268 [main] INFO  org.dllearner.algorithms.qtl.operations.lgg.QTL2 - Initializing...
+	?(0)
+	--- http://dl-learner.org/carcinogenesis#amesTestPositive ---
+		?(1)Values: [true^^http://www.w3.org/2001/XMLSchema#boolean, false^^http://www.w3.org/2001/XMLSchema#boolean]
+	--- http://dl-learner.org/carcinogenesis#hasAtom ---
+		?(2)
+		--- http://dl-learner.org/carcinogenesis#charge ---
+			?(3)Values: [0.108^^http://www.w3.org/2001/XMLSchema#double, -0.0070^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			?(4)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Carbon(5)
+	--- http://dl-learner.org/carcinogenesis#hasBond ---
+		?(6)
+		--- http://dl-learner.org/carcinogenesis#inBond ---
+			?(7)
+			--- http://dl-learner.org/carcinogenesis#charge ---
+				?(8)Values: [-0.0070^^http://www.w3.org/2001/XMLSchema#double, -0.652^^http://www.w3.org/2001/XMLSchema#double, 0.103^^http://www.w3.org/2001/XMLSchema#double]
+			--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+				?(9)
+		--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+			http://dl-learner.org/carcinogenesis#Bond-1(10)
+			--- http://www.w3.org/2000/01/rdf-schema#subClassOf ---
+				http://dl-learner.org/carcinogenesis#Bond(11)
+	--- http://dl-learner.org/carcinogenesis#isMutagenic ---
+		?(12)
+	--- http://www.w3.org/1999/02/22-rdf-syntax-ns#type ---
+		http://dl-learner.org/carcinogenesis#Compound(13)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Atom(14)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Bond(15)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(16)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Structure(17)
+		--- http://www.w3.org/2002/07/owl#disjointWith ---
+			http://dl-learner.org/carcinogenesis#Structure(18)
+			--- http://www.w3.org/2002/07/owl#disjointWith ---
+				http://dl-learner.org/carcinogenesis#Atom(19)
+(http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+test set errors pos: [http://dl-learner.org/carcinogenesis#d196, http://dl-learner.org/carcinogenesis#d198, http://dl-learner.org/carcinogenesis#d204, http://dl-learner.org/carcinogenesis#d226, http://dl-learner.org/carcinogenesis#d23_1, http://dl-learner.org/carcinogenesis#d247, http://dl-learner.org/carcinogenesis#d277, http://dl-learner.org/carcinogenesis#d279, http://dl-learner.org/carcinogenesis#d281, http://dl-learner.org/carcinogenesis#d290, http://dl-learner.org/carcinogenesis#d3, http://dl-learner.org/carcinogenesis#d307, http://dl-learner.org/carcinogenesis#d323, http://dl-learner.org/carcinogenesis#d33, http://dl-learner.org/carcinogenesis#d58, http://dl-learner.org/carcinogenesis#d6, http://dl-learner.org/carcinogenesis#d89, http://dl-learner.org/carcinogenesis#d99]
+test set errors neg: []
+fold 9:
+  training: 164 positive and 140 negative examples
+  testing: 18/18 correct positives, 0/15 correct negatives
+  concept: (http://dl-learner.org/carcinogenesis#Compound AND EXISTS http://dl-learner.org/carcinogenesis#hasAtom.(http://www.w3.org/2000/01/rdf-schema#subClassOf hasValue http://dl-learner.org/carcinogenesis#Carbon AND http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#hasBond.(http://dl-learner.org/carcinogenesis#Bond-1 AND EXISTS http://dl-learner.org/carcinogenesis#inBond.http://dl-learner.org/carcinogenesis#charge.http://www.w3.org/2001/XMLSchema#double) AND EXISTS http://dl-learner.org/carcinogenesis#isMutagenic.TOP AND http://dl-learner.org/carcinogenesis#amesTestPositive.http://www.w3.org/2001/XMLSchema#boolean)
+  accuracy: 54.545% (55.592% on training set)
+  length: 26
+  runtime: 659.159s
+
+Finished 10-folds cross-validation.
+runtime: av. 649.962s (deviation 23.662s; min 615.954s; max 696.22s)
+length: av. 26.6 (deviation 1.897; min 26; max 32)
+F-Measure on training set: av. 70.832% (deviation 0.125%; min 70.563%; max 70.996%)
+F-Measure: av. 70.557% (deviation 1.18%; min 69.231%; max 73.077%)
+predictive accuracy on training set: av. 55.522% (deviation 0.204%; min 55.116%; max 55.776%)
+predictive accuracy: av. 55.18% (deviation 1.818%; min 52.941%; max 58.824%)
