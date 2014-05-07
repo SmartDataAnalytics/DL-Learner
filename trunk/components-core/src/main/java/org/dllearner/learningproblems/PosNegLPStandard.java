@@ -54,7 +54,7 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
  * 
  */
 @ComponentAnn(name = "PosNegLPStandard", shortName = "posNegStandard", version = 0.8)
-public class PosNegLPStandard extends PosNegLP {
+public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	
 
 	// approximation and F-measure
@@ -81,6 +81,22 @@ public class PosNegLPStandard extends PosNegLP {
     public PosNegLPStandard(AbstractReasonerComponent reasoningService){
         super(reasoningService);
     }
+    
+    /**
+     * Copy constructor
+     * @param lp
+     */
+    public PosNegLPStandard(PosNegLPStandard lp) {
+    	this.positiveExamples = lp.getPositiveExamples();
+    	this.negativeExamples = lp.getNegativeExamples();
+    	
+    	this.reasoner = lp.getReasoner();
+    	this.approxDelta = lp.getApproxDelta();
+    	this.useApproximations = lp.isUseApproximations();
+    	this.accuracyMethod = lp.getAccuracyMethod();
+    	setUseMultiInstanceChecks(lp.getUseMultiInstanceChecks());
+    	setUseRetrievalForClassification(lp.isUseRetrievalForClassification());
+	}
 
 	public PosNegLPStandard(AbstractReasonerComponent reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
 		this.setReasoner(reasoningService);
@@ -729,5 +745,13 @@ public class PosNegLPStandard extends PosNegLP {
 
     public void setAccuracyMethod(String accuracyMethod) {
         this.accuracyMethod = accuracyMethod;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+    	return new PosNegLPStandard(this);
     }
 }

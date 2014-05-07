@@ -43,7 +43,9 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.IndividualReasoner;
 import org.dllearner.core.SchemaReasoner;
 import org.dllearner.core.config.BooleanEditor;
@@ -93,7 +95,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 @ComponentAnn(name = "SPARQL Reasoner", shortName = "spr", version = 0.1)
-public class SPARQLReasoner implements SchemaReasoner, IndividualReasoner {
+public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaReasoner, IndividualReasoner {
 
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
 
@@ -368,12 +370,12 @@ String query = String.format(queryTemplate, dp.getName());
 					conceptComparator);
 
 			// parents/children of top ...
-			SortedSet<Description> tmp = getSubClasses(Thing.instance);
+			SortedSet<Description> tmp = getSubClassesImpl(Thing.instance);
 			subsumptionHierarchyUp.put(Thing.instance, new TreeSet<Description>(conceptComparator));
 			subsumptionHierarchyDown.put(Thing.instance, tmp);
 
 			// ... bottom ...
-			tmp = getSuperClasses(Nothing.instance);
+			tmp = getSuperClassesImpl(Nothing.instance);
 			subsumptionHierarchyUp.put(Nothing.instance, tmp);
 			subsumptionHierarchyDown.put(Nothing.instance, new TreeSet<Description>(conceptComparator));
 
@@ -391,14 +393,14 @@ String query = String.format(queryTemplate, dp.getName());
 			}
 
 			for (NamedClass atom : atomicConcepts) {
-				tmp = getSubClasses(atom);
+				tmp = getSubClassesImpl(atom);
 				// quality control: we explicitly check that no reasoner implementation returns null here
 				if(tmp == null) {
 					logger.error("Class hierarchy: getSubClasses returned null instead of empty set."); 
 				}			
 				subsumptionHierarchyDown.put(atom, tmp);
 
-				tmp = getSuperClasses(atom);
+				tmp = getSuperClassesImpl(atom);
 				// quality control: we explicitly check that no reasoner implementation returns null here
 				if(tmp == null) {
 					logger.error("Class hierarchy: getSuperClasses returned null instead of empty set."); 
@@ -625,7 +627,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public Set<NamedClass> getTypes(Individual individual) {
+	public Set<NamedClass> getTypesImpl(Individual individual) {
 		Set<NamedClass> types = new HashSet<NamedClass>();
 		String query = String.format("SELECT DISTINCT ?class WHERE {<%s> a ?class.}", individual.getName());
 		ResultSet rs = executeSelectQuery(query);
@@ -911,7 +913,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public boolean hasType(Description description, Individual individual) {
+	public boolean hasTypeImpl(Description description, Individual individual) {
 		if(!(description instanceof NamedClass)){
 			throw new UnsupportedOperationException("Only named classes are supported.");
 		}
@@ -921,21 +923,26 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public SortedSet<Individual> hasType(Description description, Set<Individual> individuals) {
-		throw new UnsupportedOperationException();
+	public SortedSet<Individual> hasTypeImpl(Description description, Set<Individual> individuals) {
+		SortedSet<Individual> allIndividuals = getIndividuals(description);
+		allIndividuals.retainAll(individuals);
+		return allIndividuals;
 	}
 
 	@Override
-	public SortedSet<Individual> getIndividuals(Description description) {
+	public SortedSet<Individual> getIndividualsImpl(Description description) {
 		return getIndividuals(description, 0);
 	}
 
 	public SortedSet<Individual> getIndividuals(Description description, int limit) {
-		if(!(description instanceof NamedClass)){
-			throw new UnsupportedOperationException("Only named classes are supported.");
-		}
+		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+		
+//		if(!(description instanceof NamedClass)){
+//			throw new UnsupportedOperationException("Only named classes are supported.");
+//		}
 		SortedSet<Individual> individuals = new TreeSet<Individual>();
-		String query = String.format("SELECT DISTINCT ?ind WHERE {?ind a <%s>}", ((NamedClass)description).getName());
+//		String query = String.format("SELECT DISTINCT ?ind WHERE {?ind a <%s>}", ((NamedClass)description).getName());
+		String query = converter.asQuery("?ind", description, false).toString();//System.out.println(query);
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
@@ -1079,12 +1086,12 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public SortedSetTuple<Individual> doubleRetrieval(Description description) {
+	public SortedSetTuple<Individual> doubleRetrievalImpl(Description description) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Set<Individual> getRelatedIndividuals(Individual individual, ObjectProperty objectProperty) {
+	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) {
 		Set<Individual> individuals = new HashSet<Individual>();
 		String query = String.format("SELECT ?ind WHERE {<%s> <%s> ?ind, FILTER(isIRI(?ind))}", individual.getName(), objectProperty.getName());
 
@@ -1098,13 +1105,13 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty) {
+	public Set<Constant> getRelatedValuesImpl(Individual individual, DatatypeProperty datatypeProperty) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Map<ObjectProperty, Set<Individual>> getObjectPropertyRelationships(Individual individual) {
+	public Map<ObjectProperty, Set<Individual>> getObjectPropertyRelationshipsImpl(Individual individual) {
 		Map<ObjectProperty, Set<Individual>> prop2individuals = new HashMap<ObjectProperty, Set<Individual>>();
 		String query = String.format("SELECT ?prop ?ind WHERE {" +
 				"<%s> ?prop ?ind." +
@@ -1132,7 +1139,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public Map<Individual, SortedSet<Individual>> getPropertyMembers(ObjectProperty objectProperty) {
+	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty objectProperty) {
 		Map<Individual, SortedSet<Individual>> subject2objects = new HashMap<Individual, SortedSet<Individual>>();
 		String query = String.format("SELECT ?s ?o WHERE {" +
 				"?s <%s> ?o." +
@@ -1160,13 +1167,13 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public Map<Individual, SortedSet<Constant>> getDatatypeMembers(DatatypeProperty datatypeProperty) {
+	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(DatatypeProperty datatypeProperty) {
+	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
 		Map<Individual, SortedSet<Double>> subject2objects = new HashMap<Individual, SortedSet<Double>>();
 		String query = String.format("SELECT ?s ?o WHERE {" +
 				"?s <%s> ?o." +
@@ -1194,7 +1201,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public Map<Individual, SortedSet<Integer>> getIntDatatypeMembers(DatatypeProperty datatypeProperty) {
+	public Map<Individual, SortedSet<Integer>> getIntDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
 		Map<Individual, SortedSet<Integer>> subject2objects = new HashMap<Individual, SortedSet<Integer>>();
 		String query = String.format("SELECT ?s ?o WHERE {" +
 				"?s <%s> ?o." +
@@ -1222,7 +1229,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembers(DatatypeProperty datatypeProperty) {
+	public Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
 		Map<Individual, SortedSet<Boolean>> subject2objects = new HashMap<Individual, SortedSet<Boolean>>();
 		String query = String.format("SELECT ?s ?o WHERE {" +
 				"?s <%s> ?o." +
@@ -1250,7 +1257,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public SortedSet<Individual> getTrueDatatypeMembers(DatatypeProperty datatypeProperty) {
+	public SortedSet<Individual> getTrueDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
 		SortedSet<Individual> members = new TreeSet<Individual>();
 		String query = String.format("SELECT ?ind WHERE {" +
 				"?ind <%s> ?o." +
@@ -1269,7 +1276,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public SortedSet<Individual> getFalseDatatypeMembers(DatatypeProperty datatypeProperty) {
+	public SortedSet<Individual> getFalseDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
 		SortedSet<Individual> members = new TreeSet<Individual>();
 		String query = String.format("SELECT ?ind WHERE {" +
 				"?ind <%s> ?o." +
@@ -1288,18 +1295,18 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public Map<Individual, SortedSet<String>> getStringDatatypeMembers(DatatypeProperty datatypeProperty) {
+	public Map<Individual, SortedSet<String>> getStringDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Set<NamedClass> getInconsistentClasses() {
+	public Set<NamedClass> getInconsistentClassesImpl() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Description getDomain(ObjectProperty objectProperty) {
+	public Description getDomainImpl(ObjectProperty objectProperty) {
 		String query = String.format("SELECT ?domain WHERE {" +
 				"<%s> <%s> ?domain. FILTER(isIRI(?domain))" +
 				"}", 
@@ -1367,7 +1374,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public Description getDomain(DatatypeProperty datatypeProperty) {
+	public Description getDomainImpl(DatatypeProperty datatypeProperty) {
 		String query = String.format("SELECT ?domain WHERE {" +
 				"<%s> <%s> ?domain. FILTER(isIRI(?domain))" +
 				"}", 
@@ -1390,7 +1397,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public Description getRange(ObjectProperty objectProperty) {
+	public Description getRangeImpl(ObjectProperty objectProperty) {
 		String query = String.format("SELECT ?range WHERE {" +
 				"<%s> <%s> ?range. FILTER(isIRI(?range))" +
 				"}", 
@@ -1495,7 +1502,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public DataRange getRange(DatatypeProperty datatypeProperty) {
+	public DataRange getRangeImpl(DatatypeProperty datatypeProperty) {
 		String query = String.format("SELECT ?range WHERE {" +
 				"<%s> <%s> ?range. FILTER(isIRI(?range))" +
 				"}", 
@@ -1513,7 +1520,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public boolean isSuperClassOf(Description superClass, Description subClass) {
+	public boolean isSuperClassOfImpl(Description superClass, Description subClass) {
 		if(!(superClass instanceof NamedClass) && !(subClass instanceof NamedClass)){
 			throw new IllegalArgumentException("Only named classes are supported.");
 		}
@@ -1526,7 +1533,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public boolean isEquivalentClass(Description class1, Description class2) {
+	public boolean isEquivalentClassImpl(Description class1, Description class2) {
 		if(!(class1 instanceof NamedClass) && !(class2 instanceof NamedClass)){
 			throw new IllegalArgumentException("Only named classes are supported.");
 		}
@@ -1557,15 +1564,11 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public Set<Description> isSuperClassOf(Set<Description> superClasses, Description subClasses) {
+	public Set<Description> isSuperClassOfImpl(Set<Description> superClasses, Description subClasses) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
-	public ClassHierarchy getClassHierarchy() {
-		return hierarchy;
-	}
 	
 	public SortedSet<Description> getMostGeneralClasses() {
 		return hierarchy.getMostGeneralClasses();
@@ -1585,7 +1588,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public SortedSet<Description> getSuperClasses(Description description) {
+	public SortedSet<Description> getSuperClassesImpl(Description description) {
 		if(!(description instanceof NamedClass || description instanceof Thing || description instanceof Nothing)){
 			throw new IllegalArgumentException("Only named classes are supported.");
 		}
@@ -1630,7 +1633,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public SortedSet<Description> getSubClasses(Description description) {
+	public SortedSet<Description> getSubClassesImpl(Description description) {
 		return getSubClasses(description, true);
 	}
 
@@ -1657,13 +1660,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public ObjectPropertyHierarchy getObjectPropertyHierarchy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public SortedSet<ObjectProperty> getSuperProperties(ObjectProperty objectProperty) {
+	public SortedSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty objectProperty) {
 		SortedSet<ObjectProperty> superProperties = new TreeSet<ObjectProperty>();
 		String query = String.format("SELECT ?sup {<%s> <%s> ?sup. FILTER(isIRI(?sup))}", 
 				objectProperty.getURI().toString(),
@@ -1679,7 +1676,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public SortedSet<ObjectProperty> getSubProperties(ObjectProperty objectProperty) {
+	public SortedSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty objectProperty) {
 		SortedSet<ObjectProperty> subProperties = new TreeSet<ObjectProperty>();
 		String query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
 				RDFS.subPropertyOf.getURI(),
@@ -1726,22 +1723,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public TreeSet<ObjectProperty> getMostGeneralProperties() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public TreeSet<ObjectProperty> getMostSpecialProperties() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public SortedSet<DatatypeProperty> getSuperProperties(DatatypeProperty dataProperty) {
+	public SortedSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty dataProperty) {
 		SortedSet<DatatypeProperty> superProperties = new TreeSet<DatatypeProperty>();
 		String query = String.format("SELECT ?sup {<%s> <%s> ?sup. FILTER(isIRI(?sup))}", 
 				dataProperty.getURI().toString(),
@@ -1757,7 +1739,7 @@ String query = String.format(queryTemplate, dp.getName());
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getSubProperties(DatatypeProperty dataProperty) {
+	public SortedSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty dataProperty) {
 		SortedSet<DatatypeProperty> subProperties = new TreeSet<DatatypeProperty>();
 		String query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
 				RDFS.subPropertyOf.getURI(),
@@ -1771,16 +1753,6 @@ String query = String.format(queryTemplate, dp.getName());
 			subProperties.add(new DatatypeProperty(qs.getResource("sub").getURI()));
 		}
 		return subProperties;
-	}
-
-	@Override
-	public TreeSet<DatatypeProperty> getMostGeneralDatatypeProperties() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public TreeSet<DatatypeProperty> getMostSpecialDatatypeProperties() {
-		throw new UnsupportedOperationException();
 	}
 
 	private ResultSet executeSelectQuery(String query){
@@ -1846,6 +1818,68 @@ String query = String.format(queryTemplate, dp.getName());
 		System.out.println(h.getSubClasses(new NamedClass("http://dbpedia.org/ontology/Bridge"), false));
 		System.out.println("Time needed: " + (System.currentTimeMillis()-startTime) + "ms");
 
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.BaseReasoner#getNamedClasses()
+	 */
+	@Override
+	public Set<NamedClass> getNamedClasses() {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.BaseReasoner#getObjectProperties()
+	 */
+	@Override
+	public Set<ObjectProperty> getObjectProperties() {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.BaseReasoner#getIndividuals()
+	 */
+	@Override
+	public SortedSet<Individual> getIndividuals() {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.BaseReasoner#getBaseURI()
+	 */
+	@Override
+	public String getBaseURI() {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.BaseReasoner#getPrefixes()
+	 */
+	@Override
+	public Map<String, String> getPrefixes() {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() throws ComponentInitException {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getReasonerType()
+	 */
+	@Override
+	public ReasonerType getReasonerType() {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#releaseKB()
+	 */
+	@Override
+	public void releaseKB() {
 	}
 
 }

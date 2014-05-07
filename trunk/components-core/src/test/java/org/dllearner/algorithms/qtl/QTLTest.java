@@ -1,57 +1,63 @@
 package org.dllearner.algorithms.qtl;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import static org.junit.Assert.fail;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.dllearner.algorithms.qtl.exception.EmptyLGGException;
-import org.dllearner.algorithms.qtl.exception.NegativeTreeCoverageExecption;
-import org.dllearner.algorithms.qtl.exception.TimeOutException;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedQueryTreeFilterAggressive;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedStatementFilter;
-import org.dllearner.algorithms.qtl.operations.NBR;
-import org.dllearner.algorithms.qtl.operations.PostLGG;
-import org.dllearner.algorithms.qtl.util.SPARQLEndpointEx;
-import org.dllearner.kb.sparql.ExtractionDBCache;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.extra.CacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.utilities.PrefixCCMap;
+import org.junit.Before;
+import org.junit.Test;
 
+import com.google.common.collect.Sets;
 
 public class QTLTest {
-	
-	public static void main(String[] args) throws EmptyLGGException, NegativeTreeCoverageExecption, TimeOutException {
-		Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
-		Logger.getLogger(PostLGG.class).setLevel(Level.DEBUG);
-		List<String> predicateFilters = Arrays.asList(new String[]{"http://dbpedia.org/ontology/wikiPageWikiLink",
-				"http://dbpedia.org/ontology/wikiPageExternalLink", "http://dbpedia.org/property/wikiPageUsesTemplate"});
-		SPARQLEndpointEx endpoint = new SPARQLEndpointEx(SparqlEndpoint.getEndpointDBpediaLiveAKSW(), "", "", new HashSet<String>(predicateFilters));
-		
-		QTL qtl = new QTL(endpoint, new ExtractionDBCache("cache"));
-		
-//		List<String> relevantWords = Arrays.asList(new String[]{"film", "star", "Brad Pitt"});
-//		List<String> posExamples = Arrays.asList(new String[]{
-//				"http://dbpedia.org/resource/Interview_with_the_Vampire:_The_Vampire_Chronicles",
-//				"http://dbpedia.org/resource/Megamind"});
-//		List<String> negExamples = Arrays.asList(new String[]{"http://dbpedia.org/resource/Shukriya:_Till_Death_Do_Us_Apart"});
-		
-		List<String> relevantWords = Arrays.asList(new String[]{"soccer club", "Premier League"});
-		List<String> posExamples = Arrays.asList(new String[]{
-				"http://dbpedia.org/resource/Arsenal_F.C.",
-				"http://dbpedia.org/resource/Chelsea_F.C."});
-		List<String> negExamples = Arrays.asList(new String[]{});
-		
-		QuestionBasedStatementFilter stmtFilter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
-		qtl.addStatementFilter(stmtFilter);
-		
-		QuestionBasedQueryTreeFilterAggressive treeFilter = new QuestionBasedQueryTreeFilterAggressive(new HashSet<String>(relevantWords));
-		qtl.addQueryTreeFilter(treeFilter);
-		
-		
-		
-		
-		String suggestion = qtl.getQuestion(posExamples, negExamples);
-		System.out.println(suggestion);
+	String cacheDirectory = "cache";
+	CacheEx cache;
+
+	@Before
+	public void setUp() throws Exception {
+		try {
+			long timeToLive = TimeUnit.DAYS.toMillis(30);
+			CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+			cache = new CacheExImpl(cacheBackend);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testGetQuestion() throws Exception {
+		PosOnlyLP lp = new PosOnlyLP();
+		lp.setPositiveExamples(new TreeSet<Individual>(Sets.newHashSet(
+				new Individual("http://dbpedia.org/resource/Digital_Fortress"),
+				new Individual("http://dbpedia.org/resource/The_Da_Vinci_Code")
+				)));
+		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://[2001:638:902:2010:0:168:35:138]/sparql"), "http://dbpedia.org"));
+		ks.setCache(cache);
+		QTL qtl = new QTL(lp, ks);
+		qtl.setPrefixes(PrefixCCMap.getInstance());
+		qtl.init();
+		qtl.start();
+	}
+
+	@Test
+	public void testStart() {
+		fail("Not yet implemented");
 	}
 
 }

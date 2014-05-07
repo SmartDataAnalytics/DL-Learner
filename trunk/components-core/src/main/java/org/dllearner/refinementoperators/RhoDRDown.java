@@ -207,6 +207,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(name = "useDoubleDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useDoubleDatatypes = true;
 	
+	@ConfigOption(name = "useIntDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	private boolean useIntDatatypes = true;
+	
 	@ConfigOption(name = "useStringDatatypes", defaultValue="false", propertyEditorClass = BooleanEditor.class)
 	private boolean useStringDatatypes = false;
 	
@@ -227,6 +230,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 	
 	private boolean isInitialised = false;
+
+	private boolean useObjectValueNegation = false;
 	
 	public RhoDRDown() {
 		
@@ -328,19 +333,19 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// determine the maximum number of fillers for each role
 		// (up to a specified cardinality maximum)
 		if(useCardinalityRestrictions) {
-		for(ObjectProperty op : reasoner.getObjectProperties()) {
-			int maxFillers = 0;
-			Map<Individual,SortedSet<Individual>> opMembers = reasoner.getPropertyMembers(op);
-			for(SortedSet<Individual> inds : opMembers.values()) {
-				if(inds.size()>maxFillers)
-					maxFillers = inds.size();
-				if(maxFillers >= cardinalityLimit) {
-					maxFillers = cardinalityLimit;
-					break;
-				}	
+			for(ObjectProperty op : reasoner.getObjectProperties()) {
+				int maxFillers = 0;
+				Map<Individual,SortedSet<Individual>> opMembers = reasoner.getPropertyMembers(op);
+				for(SortedSet<Individual> inds : opMembers.values()) {
+					if(inds.size()>maxFillers)
+						maxFillers = inds.size();
+					if(maxFillers >= cardinalityLimit) {
+						maxFillers = cardinalityLimit;
+						break;
+					}	
+				}
+				maxNrOfFillers.put(op, maxFillers);
 			}
-			maxNrOfFillers.put(op, maxFillers);
-		}
 		
 			isInitialised = true;
 		
@@ -564,6 +569,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					for(Individual ind : frequentInds) {
 						ObjectValueRestriction ovr = new ObjectValueRestriction((ObjectProperty)role, ind);
 						refinements.add(ovr);
+						if(useObjectValueNegation ){
+							refinements.add(new Negation(ovr));
+						}
+						
 					}			
 				}
 			}
@@ -1425,7 +1434,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				result = isDisjointInstanceBased(d1,d2);
 			} else {
 				Description d = new Intersection(d1, d2);
-				result = reasoner.isSuperClassOf(new Nothing(), d);		System.out.println("TEST");		
+				result = reasoner.isSuperClassOf(new Nothing(), d);		
 			}
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
@@ -1620,6 +1629,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public void setUseStringDatatypes(boolean useStringDatatypes) {
 		this.useStringDatatypes = useStringDatatypes;
 	}
+	
+	/**
+	 * @param useIntDatatypes the useIntDatatypes to set
+	 */
+	public void setUseIntDatatypes(boolean useIntDatatypes) {
+		this.useIntDatatypes = useIntDatatypes;
+	}
+	
+	/**
+	 * @return the useIntDatatypes
+	 */
+	public boolean isUseIntDatatypes() {
+		return useIntDatatypes;
+	}
 
 	public boolean isInstanceBasedDisjoints() {
 		return instanceBasedDisjoints;
@@ -1686,5 +1709,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@Override
 	public void setClassHierarchy(ClassHierarchy classHierarchy) {
 		subHierarchy = classHierarchy;
+	}
+	
+	/**
+	 * @param useObjectValueNegation the useObjectValueNegation to set
+	 */
+	public void setUseObjectValueNegation(boolean useObjectValueNegation) {
+		this.useObjectValueNegation = useObjectValueNegation;
 	}
 }

@@ -5,8 +5,10 @@ package org.dllearner.algorithms.isle.metrics;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.dllearner.algorithms.isle.index.Index;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 
 /**
@@ -16,9 +18,12 @@ import org.dllearner.core.owl.Entity;
 public abstract class AbstractRelevanceMetric implements RelevanceMetric {
 
 	protected Index index;
+	protected String name;
 
 	public AbstractRelevanceMetric(Index index) {
 		this.index = index;
+		
+		name = getClass().getSimpleName().replace("RelevanceMetric", "");
 	}
 
 	public static Map<Entity, Double> normalizeMinMax(Map<Entity, Double> hmEntity2Score) {
@@ -53,5 +58,47 @@ public abstract class AbstractRelevanceMetric implements RelevanceMetric {
 		}
 		return hmEntity2Norm;
 	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public double getRelevance(Entity entity, Description desc){
+		Set<Entity> entities = desc.getSignature();
+		double score = 0;
+		for (Entity otherEntity : entities) {
+			double relevance = getRelevance(entity, otherEntity);
+			if(!Double.isInfinite(relevance)){
+				score += relevance/entities.size();
+			}
+		}
+		return score;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AbstractRelevanceMetric other = (AbstractRelevanceMetric) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+	
 
 }

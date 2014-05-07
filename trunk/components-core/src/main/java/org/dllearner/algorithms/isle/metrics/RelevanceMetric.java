@@ -20,6 +20,7 @@
 
 package org.dllearner.algorithms.isle.metrics;
 
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 
 
@@ -38,4 +39,6 @@ public interface RelevanceMetric {
 	 * @return
 	 */
 	double getNormalizedRelevance(Entity entity1, Entity entity2);
+	
+	double getRelevance(Entity entity, Description desc);
 }

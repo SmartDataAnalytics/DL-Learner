@@ -496,13 +496,13 @@ public class QTLEvaluation {
 		lp.setReasoner(reasoner);
 		lp.init();
 		QTL2Disjunctive la = new QTL2Disjunctive(lp, reasoner);
-		la.init();
-		la.start();
+//		la.init();
+//		la.start();
 		
-//		CrossValidation.outputFile = new File("log/qtl-cv.log");
-//		CrossValidation.writeToFile = true;
-//		CrossValidation.multiThreaded = multiThreaded;
-//		CrossValidation cv = new CrossValidation(la, lp, reasoner, nrOfFolds, false);
+		CrossValidation.outputFile = new File("log/qtl-cv.log");
+		CrossValidation.writeToFile = true;
+		CrossValidation.multiThreaded = multiThreaded;
+		CrossValidation cv = new CrossValidation(la, lp, reasoner, nrOfFolds, false);
 		long endTime = System.currentTimeMillis();
 		System.err.println((endTime - startTime) + "ms");
 	}

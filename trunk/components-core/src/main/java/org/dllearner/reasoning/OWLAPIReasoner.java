@@ -396,7 +396,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 						booleanDatatypeProperties.add(dtp);
 					else if (iri.equals(OWL2Datatype.DOUBLE.getIRI()))
 						doubleDatatypeProperties.add(dtp);
-					else if (iri.equals(OWL2Datatype.INT.getIRI()))
+					else if (iri.equals(OWL2Datatype.INT.getIRI()) || iri.equals(OWL2Datatype.INTEGER.getIRI()))
 						intDatatypeProperties.add(dtp);
 					else if (iri.equals(OWL2Datatype.STRING.getIRI()))
 						stringDatatypeProperties.add(dtp);

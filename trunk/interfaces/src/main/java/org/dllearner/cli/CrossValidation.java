@@ -20,6 +20,7 @@
 package org.dllearner.cli;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,6 +29,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.ComponentInitException;
@@ -40,8 +44,13 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.statistics.Stat;
 import org.dllearner.utilities.Files;
+import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 /**
  * Performs cross validation for the given problem. Supports
@@ -59,9 +68,9 @@ public class CrossValidation {
 	protected Stat accuracyTraining = new Stat();
 	protected Stat fMeasure = new Stat();
 	protected Stat fMeasureTraining = new Stat(); 
-	protected static boolean writeToFile = false;
-	protected static File outputFile;
-	
+	public static boolean writeToFile = false;
+	public static File outputFile;
+	public static boolean multiThreaded = false;
 	
 	protected Stat trainingCompletenessStat = new Stat();
 	protected Stat trainingCorrectnessStat = new Stat();
@@ -69,14 +78,20 @@ public class CrossValidation {
 	protected Stat testingCompletenessStat = new Stat();
 	protected Stat testingCorrectnessStat = new Stat();
 	
+	DecimalFormat df = new DecimalFormat();	
+	
+	
+	
 	public CrossValidation() {
 		
 	}
 	
-	public CrossValidation(AbstractCELA la, AbstractLearningProblem lp, AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {		
-		
-		DecimalFormat df = new DecimalFormat();	
-
+	public CrossValidation(AbstractCELA la, AbstractLearningProblem lp, final AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {		
+		//console rendering of class expressions
+		ManchesterOWLSyntaxOWLObjectRendererImpl renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+		ToStringRenderer.getInstance().setRenderer(renderer);
+		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
+				
 		// the training and test sets used later on
 		List<Set<Individual>> trainingSetsPos = new LinkedList<Set<Individual>>();
 		List<Set<Individual>> trainingSetsNeg = new LinkedList<Set<Individual>>();
@@ -145,78 +160,69 @@ public class CrossValidation {
 			}
 
 		// run the algorithm
-		for(int currFold=0; currFold<folds; currFold++) {
-
-			Set<String> pos = Datastructures.individualSetToStringSet(trainingSetsPos.get(currFold));
-			Set<String> neg = Datastructures.individualSetToStringSet(trainingSetsNeg.get(currFold));
-			if(lp instanceof PosNegLP){
-				((PosNegLP)lp).setPositiveExamples(trainingSetsPos.get(currFold));
-				((PosNegLP)lp).setNegativeExamples(trainingSetsNeg.get(currFold));
-			} else if(lp instanceof PosOnlyLP){
-				((PosOnlyLP)lp).setPositiveExamples(new TreeSet<Individual>(trainingSetsPos.get(currFold)));
-			}
-			
-
-			try {			
-				lp.init();
-				la.init();
-			} catch (ComponentInitException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			long algorithmStartTime = System.nanoTime();
-			la.start();
-			long algorithmDuration = System.nanoTime() - algorithmStartTime;
-			runtime.addNumber(algorithmDuration/(double)1000000000);
-			
-			Description concept = la.getCurrentlyBestDescription();
-			
-			Set<Individual> tmp = rs.hasType(concept, testSetsPos.get(currFold));
-			Set<Individual> tmp2 = Helper.difference(testSetsPos.get(currFold), tmp);
-			Set<Individual> tmp3 = rs.hasType(concept, testSetsNeg.get(currFold));
-			
-			outputWriter("test set errors pos: " + tmp2);
-			outputWriter("test set errors neg: " + tmp3);
-			
-			// calculate training accuracies 
-			int trainingCorrectPosClassified = getCorrectPosClassified(rs, concept, trainingSetsPos.get(currFold));
-			int trainingCorrectNegClassified = getCorrectNegClassified(rs, concept, trainingSetsNeg.get(currFold));
-			int trainingCorrectExamples = trainingCorrectPosClassified + trainingCorrectNegClassified;
-			double trainingAccuracy = 100*((double)trainingCorrectExamples/(trainingSetsPos.get(currFold).size()+
-					trainingSetsNeg.get(currFold).size()));			
-			accuracyTraining.addNumber(trainingAccuracy);
-			// calculate test accuracies
-			int correctPosClassified = getCorrectPosClassified(rs, concept, testSetsPos.get(currFold));
-			int correctNegClassified = getCorrectNegClassified(rs, concept, testSetsNeg.get(currFold));
-			int correctExamples = correctPosClassified + correctNegClassified;
-			double currAccuracy = 100*((double)correctExamples/(testSetsPos.get(currFold).size()+
-					testSetsNeg.get(currFold).size()));
-			accuracy.addNumber(currAccuracy);
-			// calculate training F-Score
-			int negAsPosTraining = rs.hasType(concept, trainingSetsNeg.get(currFold)).size();
-			double precisionTraining = trainingCorrectPosClassified + negAsPosTraining == 0 ? 0 : trainingCorrectPosClassified / (double) (trainingCorrectPosClassified + negAsPosTraining);
-			double recallTraining = trainingCorrectPosClassified / (double) trainingSetsPos.get(currFold).size();
-			fMeasureTraining.addNumber(100*Heuristics.getFScore(recallTraining, precisionTraining));
-			// calculate test F-Score
-			int negAsPos = rs.hasType(concept, testSetsNeg.get(currFold)).size();
-			double precision = correctPosClassified + negAsPos == 0 ? 0 : correctPosClassified / (double) (correctPosClassified + negAsPos);
-			double recall = correctPosClassified / (double) testSetsPos.get(currFold).size();
-//			System.out.println(precision);System.out.println(recall);
-			fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));			
-			
-			length.addNumber(concept.getLength());
-			
-			outputWriter("fold " + currFold + ":");
-			outputWriter("  training: " + pos.size() + " positive and " + neg.size() + " negative examples");
-			outputWriter("  testing: " + correctPosClassified + "/" + testSetsPos.get(currFold).size() + " correct positives, " 
-					+ correctNegClassified + "/" + testSetsNeg.get(currFold).size() + " correct negatives");
-			outputWriter("  concept: " + concept);
-			outputWriter("  accuracy: " + df.format(currAccuracy) + "% (" + df.format(trainingAccuracy) + "% on training set)");
-			outputWriter("  length: " + df.format(concept.getLength()));
-			outputWriter("  runtime: " + df.format(algorithmDuration/(double)1000000000) + "s");
+			if( multiThreaded && lp instanceof Cloneable && la instanceof Cloneable){
+				ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()-1);
+				for(int currFold=0; currFold<folds; currFold++) {
+					try {
+						final AbstractLearningProblem lpClone = (AbstractLearningProblem) lp.getClass().getMethod("clone").invoke(lp);
+						final Set<Individual> trainPos = trainingSetsPos.get(currFold);
+						final Set<Individual> trainNeg = trainingSetsNeg.get(currFold);
+						final Set<Individual> testPos = testSetsPos.get(currFold);
+						final Set<Individual> testNeg = testSetsNeg.get(currFold);
+						if(lp instanceof PosNegLP){
+							((PosNegLP)lpClone).setPositiveExamples(trainPos);
+							((PosNegLP)lpClone).setNegativeExamples(trainNeg);
+						} else if(lp instanceof PosOnlyLP){
+							((PosOnlyLP)lpClone).setPositiveExamples(new TreeSet<Individual>(trainPos));
+						}
+						final AbstractCELA laClone = (AbstractCELA) la.getClass().getMethod("clone").invoke(la);
+						final int i = currFold;
+						es.submit(new Runnable() {
+							
+							@Override
+							public void run() {
+								try {
+									validate(laClone, lpClone, rs, i, trainPos, trainNeg, testPos, testNeg);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						});
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					} catch (NoSuchMethodException e) {
+						e.printStackTrace();
+					} catch (SecurityException e) {
+						e.printStackTrace();
+					}
+				}
+				es.shutdown();
+				try {
+					es.awaitTermination(1, TimeUnit.DAYS);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else {
+				for(int currFold=0; currFold<folds; currFold++) {
+					final Set<Individual> trainPos = trainingSetsPos.get(currFold);
+					final Set<Individual> trainNeg = trainingSetsNeg.get(currFold);
+					final Set<Individual> testPos = testSetsPos.get(currFold);
+					final Set<Individual> testNeg = testSetsNeg.get(currFold);
 					
-		}
+					if(lp instanceof PosNegLP){
+						((PosNegLP)lp).setPositiveExamples(trainPos);
+						((PosNegLP)lp).setNegativeExamples(trainNeg);
+					} else if(lp instanceof PosOnlyLP){
+						((PosOnlyLP)lp).setPositiveExamples(new TreeSet<Individual>(trainPos));
+					}
+					
+					validate(la, lp, rs, currFold, trainPos, trainNeg, testPos, testNeg);
+				}
+			}
 		
 		outputWriter("");
 		outputWriter("Finished " + folds + "-folds cross-validation.");
@@ -227,6 +233,76 @@ public class CrossValidation {
 		outputWriter("predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%"));		
 		outputWriter("predictive accuracy: " + statOutput(df, accuracy, "%"));
 			
+	}
+	
+	private void validate(AbstractCELA la, AbstractLearningProblem lp, AbstractReasonerComponent rs,
+			int currFold, Set<Individual> trainPos, Set<Individual> trainNeg, Set<Individual> testPos, Set<Individual> testNeg){
+		Set<String> pos = Datastructures.individualSetToStringSet(trainPos);
+		Set<String> neg = Datastructures.individualSetToStringSet(trainNeg);
+		String output = "";
+		output += "+" + new TreeSet<String>(pos) + "\n";
+		output += "-" + new TreeSet<String>(neg) + "\n";
+		try {			
+			lp.init();
+			la.setLearningProblem(lp);
+			la.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		long algorithmStartTime = System.nanoTime();
+		la.start();
+		long algorithmDuration = System.nanoTime() - algorithmStartTime;
+		runtime.addNumber(algorithmDuration/(double)1000000000);
+		
+		Description concept = la.getCurrentlyBestDescription();
+		
+		Set<Individual> tmp = rs.hasType(concept, testPos);
+		Set<Individual> tmp2 = Helper.difference(testPos, tmp);
+		Set<Individual> tmp3 = rs.hasType(concept, testNeg);
+		
+		// calculate training accuracies 
+		int trainingCorrectPosClassified = getCorrectPosClassified(rs, concept, trainPos);
+		int trainingCorrectNegClassified = getCorrectNegClassified(rs, concept, trainNeg);
+		int trainingCorrectExamples = trainingCorrectPosClassified + trainingCorrectNegClassified;
+		double trainingAccuracy = 100*((double)trainingCorrectExamples/(trainPos.size()+
+				trainNeg.size()));			
+		accuracyTraining.addNumber(trainingAccuracy);
+		// calculate test accuracies
+		int correctPosClassified = getCorrectPosClassified(rs, concept, testPos);
+		int correctNegClassified = getCorrectNegClassified(rs, concept, testNeg);
+		int correctExamples = correctPosClassified + correctNegClassified;
+		double currAccuracy = 100*((double)correctExamples/(testPos.size()+
+				testNeg.size()));
+		accuracy.addNumber(currAccuracy);
+		// calculate training F-Score
+		int negAsPosTraining = rs.hasType(concept, trainNeg).size();
+		double precisionTraining = trainingCorrectPosClassified + negAsPosTraining == 0 ? 0 : trainingCorrectPosClassified / (double) (trainingCorrectPosClassified + negAsPosTraining);
+		double recallTraining = trainingCorrectPosClassified / (double) trainPos.size();
+		fMeasureTraining.addNumber(100*Heuristics.getFScore(recallTraining, precisionTraining));
+		// calculate test F-Score
+		int negAsPos = rs.hasType(concept, testNeg).size();
+		double precision = correctPosClassified + negAsPos == 0 ? 0 : correctPosClassified / (double) (correctPosClassified + negAsPos);
+		double recall = correctPosClassified / (double) testPos.size();
+//		System.out.println(precision);System.out.println(recall);
+		fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));			
+		
+		length.addNumber(concept.getLength());
+		
+		
+		output += "test set errors pos: " + tmp2 + "\n";
+		output += "test set errors neg: " + tmp3 + "\n";
+		output += "fold " + currFold + ":" + "\n";
+		output += "  training: " + pos.size() + " positive and " + neg.size() + " negative examples";
+		output += "  testing: " + correctPosClassified + "/" + testPos.size() + " correct positives, " 
+				+ correctNegClassified + "/" + testNeg.size() + " correct negatives" + "\n";
+		output += "  concept: " + OWLAPIConverter.getOWLAPIDescription(concept).toString().replace("\n", " ") + "\n";
+		output += "  accuracy: " + df.format(currAccuracy) + "% (" + df.format(trainingAccuracy) + "% on training set)" + "\n";
+		output += "  length: " + df.format(concept.getLength()) + "\n";
+		output += "  runtime: " + df.format(algorithmDuration/(double)1000000000) + "s" + "\n";
+		
+		outputWriter(output);
 	}
 	
 	protected int getCorrectPosClassified(AbstractReasonerComponent rs, Description concept, Set<Individual> testSetPos) {

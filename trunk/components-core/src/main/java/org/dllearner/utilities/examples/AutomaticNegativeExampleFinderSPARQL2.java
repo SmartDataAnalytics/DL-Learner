@@ -219,7 +219,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 					//get super classes
 					Set<Description> superClasses = sr.getSuperClasses(nc);
 					superClasses.remove(new NamedClass(Thing.instance.getURI()));
-					superClasses.remove(Thing.instance);
+//					superClasses.remove(Thing.instance);
 					superClasses.remove(new NamedClass("http://www.w3.org/2000/01/rdf-schema#Resource"));
 					superClasses = filterByNamespace(superClasses);
 					logger.info("Super classes: " + superClasses);

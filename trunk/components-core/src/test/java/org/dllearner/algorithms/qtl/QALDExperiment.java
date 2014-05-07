@@ -33,7 +33,6 @@ import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
-import org.dllearner.algorithms.qtl.operations.lgg.NoiseSensitiveLGG;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
@@ -105,7 +104,7 @@ public class QALDExperiment {
 	QueryTreeFactory<String> queryTreeFactory;
 	ConciseBoundedDescriptionGenerator cbdGen;
 //	private LGGGenerator<String> lggGenerator;
-	private NoiseSensitiveLGG<String> lggGenerator;
+	private QTL2 lggGenerator;
 	
 	private Random rnd = new Random(123);
 	
@@ -132,7 +131,7 @@ public class QALDExperiment {
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDirectory);
 		cbdGen.setRecursionDepth(maxDepth);
 		
-		lggGenerator = new NoiseSensitiveLGG<>();// LGGGeneratorImpl<String>();
+		lggGenerator = new QTL2();// LGGGeneratorImpl<String>();
 	}
 	
 	public void run(){
@@ -153,29 +152,29 @@ public class QALDExperiment {
 						logger.info(queryTree.getStringRepresentation());
 					}
 					
-					//run LGG
-					List<EvaluatedQueryTree<String>> lggs = lggGenerator.computeLGG(queryTrees);
-					EvaluatedQueryTree<String> bestLGG = lggs.get(0);
-					logger.info("Got " + lggs.size() + " LGG query trees. Best computed LGG:\n" + bestLGG);
-					
-					//find the best extensionally matching tree in the list
-					EvaluatedQueryTree<String> bestTree = findBestMatchingTree(lggs, sparqlQuery);
-					
-					//convert to SPARQL query
-					String learnedSPARQLQuery = bestLGG.getTree().toSPARQLQueryString(true, false);
-					logger.info("Learned Query:\n" + learnedSPARQLQuery);
-					
-					
-					double precision = precision(sparqlQuery, learnedSPARQLQuery);
-					precisionStats.addValue(precision);
-					
-					double recall = recall(sparqlQuery, learnedSPARQLQuery);
-					recallStats.addValue(recall);
-					
-					double fmeasure = fMeasure(sparqlQuery, learnedSPARQLQuery);
-					fMeasureStats.addValue(fmeasure);
-					
-					logger.info(String.format("P=%f\nR=%f\nF-Score=%f", precision, recall, fmeasure));
+//					//run LGG
+//					List<EvaluatedQueryTree<String>> lggs = lggGenerator.computeLGG(queryTrees);
+//					EvaluatedQueryTree<String> bestLGG = lggs.get(0);
+//					logger.info("Got " + lggs.size() + " LGG query trees. Best computed LGG:\n" + bestLGG);
+//					
+//					//find the best extensionally matching tree in the list
+//					EvaluatedQueryTree<String> bestTree = findBestMatchingTree(lggs, sparqlQuery);
+//					
+//					//convert to SPARQL query
+//					String learnedSPARQLQuery = bestLGG.getTree().toSPARQLQueryString(true, false);
+//					logger.info("Learned Query:\n" + learnedSPARQLQuery);
+//					
+//					
+//					double precision = precision(sparqlQuery, learnedSPARQLQuery);
+//					precisionStats.addValue(precision);
+//					
+//					double recall = recall(sparqlQuery, learnedSPARQLQuery);
+//					recallStats.addValue(recall);
+//					
+//					double fmeasure = fMeasure(sparqlQuery, learnedSPARQLQuery);
+//					fMeasureStats.addValue(fmeasure);
+//					
+//					logger.info(String.format("P=%f\nR=%f\nF-Score=%f", precision, recall, fmeasure));
 			} catch (Exception e) {
 				logger.error("Error occured.", e);
 			}

@@ -49,6 +49,7 @@ import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DoubleMaxValue;
+import org.dllearner.core.owl.DoubleMinMaxRange;
 import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
@@ -65,6 +66,7 @@ import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
@@ -574,13 +576,28 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 				return (values.first() <= ((DoubleMaxValue) dr).getValue());
 			} else if (dr instanceof DoubleMinValue) {
 				return (values.last() >= ((DoubleMinValue) dr).getValue());
+			} else if (dr instanceof DoubleMinMaxRange){
+				return (values.first() <= ((DoubleMinMaxRange) dr).getMaxValue()) && (values.last() >= ((DoubleMinMaxRange) dr).getMinValue());
 			}
 		} else if (description instanceof DatatypeValueRestriction) {
-			String i = ((DatatypeValueRestriction)description).getValue().getLiteral();
+			Constant value = ((DatatypeValueRestriction)description).getValue();
 			DatatypeProperty dp = ((DatatypeValueRestriction)description).getRestrictedPropertyExpression();
-			
-			Set<String> inds = sd.get(dp).get(individual);
-			return inds == null ? false : inds.contains(i);
+			if(value instanceof TypedConstant){
+				Datatype datatype = ((TypedConstant) value).getDatatype();
+				if(datatype.equals(org.dllearner.core.owl.OWL2Datatype.BOOLEAN.getDatatype())){
+					boolean b = Boolean.valueOf(value.getLiteral());
+					return b && bdPos.get(dp).contains(individual) || !b && bdNeg.get(dp).contains(individual);
+				} else if(datatype.equals(org.dllearner.core.owl.OWL2Datatype.STRING.getDatatype())){
+					String s = value.getLiteral();
+					Set<String> stringValues = sd.get(dp).get(individual);
+					return stringValues == null ? false : stringValues.contains(s);
+				} else if(datatype.equals(org.dllearner.core.owl.OWL2Datatype.DOUBLE.getDatatype())){
+					double d = Double.valueOf(value.getLiteral());
+					SortedSet<Double> doubleValues = dd.get(dp).get(individual);
+					return doubleValues == null ? false : doubleValues.contains(d);
+				}
+			}
+			return false;
 		}
 
 		throw new ReasoningMethodUnsupportedException("Instance check for description "

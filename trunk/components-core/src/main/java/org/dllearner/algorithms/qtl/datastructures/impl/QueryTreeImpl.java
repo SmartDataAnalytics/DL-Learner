@@ -1488,7 +1488,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     private String prefixed(Map<String, String> prefixes, String uri){
     	if(uri.startsWith("http://")){
-    		for (Entry<String, String> entry : prefixes.entrySet()) {System.out.println(entry);
+    		for (Entry<String, String> entry : prefixes.entrySet()) {
     			String prefix = entry.getKey();
     			String ns = entry.getValue();
     			if(uri.startsWith(ns)){

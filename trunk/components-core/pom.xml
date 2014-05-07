@@ -232,10 +232,10 @@
         	<artifactId>commons-pool</artifactId>
         </dependency>
         <dependency>
-        	<groupId>org.semanticweb.elk</groupId>
-        	<artifactId>elk-owlapi</artifactId>
-        	<version>0.3.0</version>
-        </dependency>
+	<groupId>org.semanticweb.elk</groupId>
+	<artifactId>elk-owlapi</artifactId>
+	<version>0.4.1</version>
+</dependency>
            <dependency>
         	<groupId>de.tudresden.inf.lat.cel</groupId>
         	<artifactId>reasoner</artifactId>
@@ -281,7 +281,7 @@
 			<dependency>
       <groupId>org.aksw.jena-sparql-api</groupId>
       <artifactId>jena-sparql-api-core</artifactId>
-      <version>2.10.0-5-SNAPSHOT</version>
+      <version>2.10.0-8</version>
     </dependency>
     <dependency>
 			<groupId>org.apache.commons</groupId>

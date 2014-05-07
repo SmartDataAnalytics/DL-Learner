@@ -178,7 +178,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			RDFDatatype d1 = tree1.getDatatype();
 			RDFDatatype d2 = tree2.getDatatype();
 //			if(d1 != null && d2 != null && d1 == d2){
-			if(d1.equals(d2)){
+			if(d1 != null && d2 != null && d1.equals(d2)){
 				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree1).getLiterals());
 				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree2).getLiterals());
 			}
