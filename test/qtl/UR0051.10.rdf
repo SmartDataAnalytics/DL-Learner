@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xml:base="file:/home/hubert/Data/RNAprobing_models/ADDRSW_SHP_0001_3" xmlns:bioinf="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+<rdf:Description xmlns:ns1="http://www.w3.org/2002/07/owl#" rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede1">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+	<ns1:members rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede2"/>
+</rdf:Description>
+<rdf:Description rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede2">
+	<rdf:first rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+	<rdf:rest rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede3"/>
+</rdf:Description>
+<rdf:Description rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede3">
+	<rdf:first rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+	<rdf:rest rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede4"/>
+</rdf:Description>
+<rdf:Description rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede4">
+	<rdf:first rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+	<rdf:rest rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede5"/>
+</rdf:Description>
+<rdf:Description rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede5">
+	<rdf:first rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+	<rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+</rdf:Description>
+<rdf:Description xmlns:ns1="http://www.w3.org/2002/07/owl#" rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede6">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+	<ns1:members rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede7"/>
+</rdf:Description>
+<rdf:Description rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede7">
+	<rdf:first rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#HoogsteenEdge"/>
+	<rdf:rest rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede8"/>
+</rdf:Description>
+<rdf:Description rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede8">
+	<rdf:first rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#SugarEdge"/>
+	<rdf:rest rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede9"/>
+</rdf:Description>
+<rdf:Description rdf:nodeID="b7fa3dbb36fbf4afd8f9c69f38e06fede9">
+	<rdf:first rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#WatsonCrickEdge"/>
+	<rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+	<rdfs:subClassOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cis">
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#GlycosidicBondOrientation"/>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+	<rdfs:subClassOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+</rdf:Description>
+<rdf:Description xmlns:ns1="http://www.w3.org/2002/07/owl#" rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Edge">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+	<ns1:disjointWith rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#GlycosidicBondOrientation">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+	<rdfs:subClassOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#HoogsteenEdge">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+	<rdfs:subClassOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Edge"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#SugarEdge">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+	<rdfs:subClassOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Edge"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Trans">
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#GlycosidicBondOrientation"/>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A11">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.17089</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.83249</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A12"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U10"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A12">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.08399</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.77638</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U13"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A11"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A17">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04722</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.22956</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A18"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U16"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A18">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.05222</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.26010</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U19"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A17"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A21">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.09485</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.93716</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U22"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G20"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A23">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.17384</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.93716</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U24"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U22"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A33">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.07452</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.24415</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G34"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G32"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A40">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.09664</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.62772</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C41"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U39"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A43">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.03823</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.18410</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A44"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C42"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A44">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04994</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.13703</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G45"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A43"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A46">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.05844</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.03676</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G47"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G45"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A52">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.06721</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.85994</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A53"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U51"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A53">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.07541</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.90871</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A54"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A52"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A54">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.07791</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.90724</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C55"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A53"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A61">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.12547</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.76388</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U62"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G60"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A64">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.07086</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.03335</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U65"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U63"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A67">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.10596</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00100</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A68"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G66"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A68">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.10745</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00114</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G69"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A67"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A7">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.02462</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.03218</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U8"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C6"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A72">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.31702</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G71"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A9">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01313</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.22331</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U10"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U8"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Adenosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C1">
+	<bioinf:hasEdge rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C1W"/>
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04998</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00890</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G2"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C14">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.03304</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.02896</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C15"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U13"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C15">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04643</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.22295</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U16"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C14"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C1W">
+	<bioinf:hasGlycosidicBondOrientation rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cis"/>
+	<bioinf:isPairedWith rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G71W"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#WatsonCrickEdge"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C3">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00000</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00003</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U4"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G2"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C38">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.10141</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.88542</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U39"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U37"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C41">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04811</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.53111</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C42"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A40"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C42">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.03950</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.10417</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A43"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C41"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C48">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.08578</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.78017</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C49"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G47"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C49">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.12927</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.77513</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U50"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C48"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C55">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.05647</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.13592</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U56"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A54"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C57">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04256</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.19235</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U58"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U56"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C6">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01067</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00156</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A7"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U5"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cytidine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G2">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04353</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00208</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C3"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C1"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G20">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.16761</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.92508</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A21"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U19"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G25">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.14762</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.78653</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G26"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U24"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G26">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.08097</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.59596</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U27"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G25"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G30">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04487</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.08644</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G31"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U29"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G31">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.05807</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04254</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G32"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G30"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G32">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.07795</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.06279</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A33"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G31"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G34">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.07668</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.49693</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U35"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A33"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G45">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04968</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.05093</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A46"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A44"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G47">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.04420</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01444</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C48"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A46"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G60">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.09727</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.03910</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A61"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U59"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G66">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.07247</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00032</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A67"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U65"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G69">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01917</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00003</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U70"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A68"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G71">
+	<bioinf:hasEdge rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G71W"/>
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.16317</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00890</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A72"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U70"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Guanosine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G71W">
+	<bioinf:hasGlycosidicBondOrientation rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Cis"/>
+	<bioinf:isPairedWith rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C1W"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#WatsonCrickEdge"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U10">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.12673</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.89409</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A11"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A9"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U13">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.05714</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.05961</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C14"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A12"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U16">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.05923</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.24100</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A17"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C15"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U19">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.16746</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.82710</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G20"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A18"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U22">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.10499</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.92808</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A23"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A21"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U24">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.38136</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.99676</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G25"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A23"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U27">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.09641</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.64110</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U28"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G26"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U28">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.10689</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.10417</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U29"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U27"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U29">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.11390</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.07893</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G30"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U28"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U35">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.30766</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.54953</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U36"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G34"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U36">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.00000</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.90724</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U37"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U35"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U37">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.16914</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.92358</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C38"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U36"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U39">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.12729</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.90137</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A40"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C38"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U4">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.03043</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00114</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U5"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C3"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U5">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.05453</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00101</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C6"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U4"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U50">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.93924</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.90871</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U51"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C49"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U51">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.24896</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.85854</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A52"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U50"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U56">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01716</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.13904</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C57"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C55"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U58">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.05721</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.19998</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U59"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/C57"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U59">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.06050</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.20031</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G60"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U58"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U62">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.15926</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.75159</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U63"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A61"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U63">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.11450</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.14247</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A64"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U62"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U65">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.10119</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00945</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G66"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A64"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U70">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.09716</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00208</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G71"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/G69"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/U8">
+	<bioinf:hasExperimentalUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.02100</bioinf:hasExperimentalUnpairedProbability>
+	<bioinf:hasRNAupUnpairedProbability rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.11097</bioinf:hasRNAupUnpairedProbability>
+	<bioinf:isFivePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A9"/>
+	<bioinf:isThreePrimeOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#UR0051.1/A7"/>
+	<rdf:type rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Uridine">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+	<rdfs:subClassOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#WatsonCrickEdge">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+	<rdfs:subClassOf rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Edge"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#hasEdge">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+	<rdfs:domain rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+	<rdfs:range rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Edge"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#hasExperimentalUnpairedProbability">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+	<rdfs:domain rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#hasRNAupUnpairedProbability">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+	<rdfs:domain rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#hasTertiaryInteractionWith">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+	<rdfs:domain rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+	<rdfs:range rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#isFivePrimeOf">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+	<rdfs:domain rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+	<rdfs:range rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#isPairedWith">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+	<rdfs:domain rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Edge"/>
+	<rdfs:range rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Edge"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#isThreePrimeOf">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+	<rdfs:domain rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+	<rdfs:range rdf:resource="http://www.bioinf.uni-leipzig.de/~kaempf/RNAprobing.owl#Ribonucleotide"/>
+</rdf:Description>
+</rdf:RDF>

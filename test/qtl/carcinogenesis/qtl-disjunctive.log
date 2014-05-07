@@ -1,0 +1,1301 @@
+2014-04-30 13:47:22,073 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Initializing...
+2014-04-30 13:47:23,856 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Running...
+2014-04-30 13:47:24,544 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 13:47:25,232 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4210323659587112
+2014-04-30 13:47:25,992 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.459567216847611
+2014-04-30 13:47:26,831 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.503523260803655
+2014-04-30 13:47:29,407 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5211056783860726
+2014-04-30 13:47:29,419 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.652500866391851
+2014-04-30 13:47:29,949 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7166384328020141
+2014-04-30 13:47:53,013 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 13:47:57,546 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7908149078197795
+2014-04-30 13:48:08,535 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7952105122153839
+2014-04-30 13:48:15,452 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.838675600192562
+2014-04-30 13:48:46,136 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.866547568447758
+2014-04-30 13:48:46,231 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8969988937117468
+2014-04-30 13:50:36,344 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.9136607827103114
+2014-04-30 13:54:55,589 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.917065058577475
+2014-04-30 14:00:57,289 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 812980ms.
+2014-04-30 14:00:57,451 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (hasAtom some 
+    (Carbon-10
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Carbon-14
+     and (charge some double[>= 0.696 , <= 0.698])))
+ and (hasAtom some 
+    (Carbon-22
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-1
+     and (charge some double[>= 0.147 , <= 0.298])))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Nitrogen-36
+     and (charge some double[>= -0.303 , <= -0.302])))
+ and (hasAtom some 
+    (Oxygen-49
+     and (charge some double[>= -0.654 , <= -0.652])))
+ and (hasAtom some 
+    (Oxygen-51
+     and (charge some double[>= -0.553 , <= -0.552])))
+ and (hasBond some 
+    (Bond
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some (charge some Thing))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some double[>= 0.047 , <= 0.097])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-36
+         and (charge some double[>= -0.303 , <= -0.302])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some (charge some Thing))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some double[>= -0.103 , <= -0.003])))
+     and (inBond some 
+        (Carbon-14
+         and (charge some double[>= 0.696 , <= 0.698])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some double[>= 0.047 , <= 0.238])))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some double[>= 0.237 , <= 0.238])))
+     and (inBond some 
+        (Oxygen-49
+         and (charge some double[>= -0.654 , <= -0.652])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-14
+         and (charge some double[>= 0.696 , <= 0.698])))
+     and (inBond some 
+        (Oxygen-49
+         and (charge some double[>= -0.654 , <= -0.652])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-14
+         and (charge some double[>= 0.696 , <= 0.698])))
+     and (inBond some (charge some Thing))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some double[>= -0.133 , <= -0.003])))
+     and (inBond some (charge some Thing))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-1
+         and (charge some double[>= 0.147 , <= 0.298])))))
+ and (hasBond some 
+    (Bond-2
+     and (inBond some 
+        (Carbon-14
+         and (charge some double[>= 0.696 , <= 0.698])))
+     and (inBond some 
+        (Oxygen-51
+         and (charge some double[>= -0.553 , <= -0.552])))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasStructure some Ester)
+ and (hasStructure some Ether)
+ and (hasStructure some Ketone)
+ and (hasStructure some Methoxy)
+ and (hasStructure some Methyl)
+ and (hasStructure some Non_ar_6c_ring)
+ and (hasStructure some Non_ar_hetero_6_ring)
+ and (hasStructure some Six_ring)
+ and (isMutagenic some Thing)
+ and (salmonella some Thing)
+ and (cytogen_ca some boolean)
+ and (cytogen_sce some boolean)
+(2.0049642435027035)
+2014-04-30 14:00:57,452 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:180
+2014-04-30 14:00:57,602 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 14:00:57,906 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4230836480099933
+2014-04-30 14:00:58,471 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4622534195338137
+2014-04-30 14:00:59,206 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4978089750893693
+2014-04-30 14:01:01,533 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.524475641756036
+2014-04-30 14:01:01,546 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.6488867027776872
+2014-04-30 14:01:02,071 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.716589592753174
+2014-04-30 14:01:32,867 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 14:02:07,260 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8176771359400734
+2014-04-30 14:03:15,535 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8387732802902421
+2014-04-30 14:13:43,163 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 765606ms.
+2014-04-30 14:13:43,185 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (cytogen_ca some Thing)
+ and (cytogen_sce some Thing)
+ and (hasAtom some 
+    (Carbon-10
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Carbon-22
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-1
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Nitrogen-32
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Oxygen-50
+     and (charge some Thing)))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Oxygen-50
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Oxygen-50
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-1
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasStructure some Amine)
+ and (hasStructure some Amino)
+ and (hasStructure some Di10)
+ and (hasStructure some Ether)
+ and (hasStructure some Methoxy)
+ and (hasStructure some Methyl)
+ and (hasStructure some Non_ar_6c_ring)
+ and (hasStructure some Six_ring)
+ and (isMutagenic some Thing)
+ and (salmonella some Thing)
+ and (salmonella_n some boolean)
+(1.979790362951771)
+2014-04-30 14:13:43,186 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:178
+2014-04-30 14:13:43,313 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 14:13:43,609 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.416192262242203
+2014-04-30 14:13:44,185 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4560112222803805
+2014-04-30 14:13:44,926 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4919662784601557
+2014-04-30 14:13:47,269 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5189325705949872
+2014-04-30 14:13:47,281 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.645191322003655
+2014-04-30 14:13:47,815 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7165396551751466
+2014-04-30 14:14:10,548 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 14:14:47,852 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8178269486741556
+2014-04-30 14:15:36,244 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.838873155446297
+2014-04-30 14:22:16,117 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8972952265923493
+2014-04-30 14:26:26,680 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 763394ms.
+2014-04-30 14:26:26,697 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (cytogen_ca some Thing)
+ and (cytogen_sce some Thing)
+ and (hasAtom some 
+    (Carbon-10
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Carbon-22
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Carbon-29
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-1
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Nitrogen-32
+     and (charge some Thing)))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-29
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-1
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Carbon-29
+         and (charge some Thing)))))
+ and (hasStructure some Amine)
+ and (hasStructure some Amino)
+ and (hasStructure some Di10)
+ and (hasStructure some Methyl)
+ and (hasStructure some Non_ar_6c_ring)
+ and (hasStructure some Six_ring)
+ and (isMutagenic some Thing)
+ and (salmonella some Thing)
+(1.9172626138312099)
+2014-04-30 14:26:26,697 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:176
+2014-04-30 14:26:26,819 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 14:26:27,130 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4182351631615084
+2014-04-30 14:26:27,720 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4496271569075512
+2014-04-30 14:26:28,471 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4950817023620966
+2014-04-30 14:26:30,750 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5132635205439147
+2014-04-30 14:26:30,763 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.6414119553029398
+2014-04-30 14:26:31,276 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7164885826521639
+2014-04-30 14:27:08,006 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 14:29:14,459 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8668472687474582
+2014-04-30 14:36:09,568 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.9035702884487073
+2014-04-30 14:38:46,623 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 739831ms.
+2014-04-30 14:38:46,640 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (cytogen_ca some Thing)
+ and (cytogen_sce some Thing)
+ and (hasAtom some 
+    (Carbon-22
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-1
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-8
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Nitrogen-32
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Nitrogen-38
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Oxygen-40
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Oxygen-45
+     and (charge some Thing)))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-38
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Oxygen-45
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-1
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-8
+         and (charge some Thing)))
+     and (inBond some 
+        (Oxygen-45
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-2
+     and (inBond some 
+        (Nitrogen-38
+         and (charge some Thing)))
+     and (inBond some 
+        (Oxygen-40
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasStructure some Amine)
+ and (hasStructure some Amino)
+ and (hasStructure some Di10)
+ and (hasStructure some Nitro)
+ and (hasStructure some Non_ar_6c_ring)
+ and (hasStructure some Phenol)
+ and (hasStructure some Six_ring)
+ and (isMutagenic some Thing)
+ and (mouse_lymph some Thing)
+ and (salmonella some Thing)
+(1.9139604830100116)
+2014-04-30 14:38:46,641 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:174
+2014-04-30 14:38:46,759 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 14:38:47,053 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4111296250214875
+2014-04-30 14:38:47,638 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4430963314112084
+2014-04-30 14:38:48,379 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4890733429054612
+2014-04-30 14:38:50,598 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5074641475031623
+2014-04-30 14:38:50,612 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.6375457066091048
+2014-04-30 14:38:51,135 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7164363360481931
+2014-04-30 14:39:26,463 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 14:41:12,077 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8046499501917064
+2014-04-30 14:50:57,034 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 730302ms.
+2014-04-30 14:50:57,047 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (hasAtom some 
+    (Carbon-10
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Carbon-22
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Chlorine-93
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-1
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Nitrogen-32
+     and (charge some Thing)))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Chlorine-93
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-1
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasStructure some Amine)
+ and (hasStructure some Amino)
+ and (hasStructure some Ar_halide)
+ and (hasStructure some Di10)
+ and (hasStructure some Methyl)
+ and (hasStructure some Non_ar_6c_ring)
+ and (hasStructure some Six_ring)
+ and (isMutagenic some Thing)
+ and (salmonella some Thing)
+ and (cytogen_ca some boolean)
+ and (cytogen_sce some boolean)
+ and (mouse_lymph some boolean)
+(1.9036747816566488)
+2014-04-30 14:50:57,047 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:172
+2014-04-30 14:50:57,171 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 14:50:57,464 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.413161167389838
+2014-04-30 14:50:58,048 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4457159518335554
+2014-04-30 14:50:58,800 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.492227579740532
+2014-04-30 14:51:00,976 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5108322309033229
+2014-04-30 14:51:00,988 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.6335895451549483
+2014-04-30 14:51:01,502 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.716382874406921
+2014-04-30 14:51:27,465 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 14:53:13,759 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8047568734742512
+2014-04-30 14:54:01,106 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8391867169827485
+2014-04-30 15:01:52,744 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8670586852379445
+2014-04-30 15:02:57,720 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 720576ms.
+2014-04-30 15:02:57,763 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (cytogen_ca some Thing)
+ and (cytogen_sce some Thing)
+ and (hasAtom some 
+    (Carbon-10
+     and (charge some double[>= 0.028 , <= 0.13])))
+ and (hasAtom some 
+    (Carbon-22
+     and (charge some double[>= -0.102 , <= 0.24])))
+ and (hasAtom some 
+    (Carbon-27
+     and (charge some double[>= 0.028 , <= 0.04])))
+ and (hasAtom some 
+    (Carbon-29
+     and (charge some double[>= 0.028 , <= 0.04])))
+ and (hasAtom some 
+    (Hydrogen-1
+     and (charge some double[>= 0.429 , <= 0.44])))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some double[>= 0.159 , <= 0.17])))
+ and (hasAtom some 
+    (Hydrogen-8
+     and (charge some double[>= 0.429 , <= 0.44])))
+ and (hasAtom some 
+    (Nitrogen-32
+     and (charge some double[>= -0.371 , <= -0.36])))
+ and (hasAtom some 
+    (Oxygen-40
+     and (charge some double[>= -0.521 , <= -0.51])))
+ and (hasAtom some 
+    (Oxygen-45
+     and (charge some double[>= -0.621 , <= -0.61])))
+ and (hasAtom some 
+    (Oxygen-50
+     and (charge some double[>= -0.221 , <= -0.19])))
+ and (hasAtom some 
+    (Sulfur-78
+     and (charge some double[>= 0.779 , <= 0.79])))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some double[>= 0.028 , <= 0.13])))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some double[>= 0.078 , <= 0.09])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some double[>= -0.022 , <= -0.01])))
+     and (inBond some 
+        (Sulfur-78
+         and (charge some double[>= 0.779 , <= 0.79])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some double[>= -0.102 , <= -0.09])))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some double[>= 0.159 , <= 0.17])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some double[>= -0.102 , <= 0.24])))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some double[>= -0.371 , <= -0.36])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some double[>= 0.209 , <= 0.22])))
+     and (inBond some 
+        (Oxygen-50
+         and (charge some double[>= -0.221 , <= -0.19])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some double[>= 0.279 , <= 0.29])))
+     and (inBond some 
+        (Oxygen-45
+         and (charge some double[>= -0.621 , <= -0.61])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-29
+         and (charge some double[>= 0.028 , <= 0.04])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-1
+         and (charge some double[>= 0.429 , <= 0.44])))
+     and (inBond some 
+        (Oxygen-45
+         and (charge some double[>= -0.621 , <= -0.61])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-8
+         and (charge some double[>= 0.429 , <= 0.44])))
+     and (inBond some 
+        (Oxygen-45
+         and (charge some double[>= -0.621 , <= -0.61])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Oxygen-45
+         and (charge some double[>= -0.621 , <= -0.61])))
+     and (inBond some 
+        (Sulfur-78
+         and (charge some double[>= 0.779 , <= 0.79])))))
+ and (hasBond some 
+    (Bond-2
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some double[>= -0.371 , <= -0.36])))))
+ and (hasBond some 
+    (Bond-2
+     and (inBond some 
+        (Oxygen-40
+         and (charge some double[>= -0.521 , <= -0.51])))
+     and (inBond some 
+        (Sulfur-78
+         and (charge some double[>= 0.779 , <= 0.79])))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some double[>= -0.102 , <= -0.09])))
+     and (inBond some 
+        (Carbon-29
+         and (charge some double[>= 0.028 , <= 0.04])))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some double[>= -0.102 , <= 0.29])))
+     and (inBond some 
+        (Carbon-27
+         and (charge some double[>= 0.028 , <= 0.04])))))
+ and (hasStructure some Alcohol)
+ and (hasStructure some Di23)
+ and (hasStructure some Ether)
+ and (hasStructure some Methyl)
+ and (hasStructure some Non_ar_6c_ring)
+ and (hasStructure some Phenol)
+ and (hasStructure some Six_ring)
+ and (hasStructure some Sulfide)
+ and (hasStructure some Sulfo)
+ and (isMutagenic some Thing)
+ and (salmonella_reduc some Thing)
+ and (amesTestPositive some boolean)
+ and (salmonella some boolean)
+(1.8784338593661578)
+2014-04-30 15:02:57,763 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:170
+2014-04-30 15:02:57,879 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 15:02:58,182 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4152405107550914
+2014-04-30 15:02:58,765 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.448397210383487
+2014-04-30 15:02:59,506 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4860442692070164
+2014-04-30 15:03:01,545 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5142795633246635
+2014-04-30 15:03:01,562 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.629540297548929
+2014-04-30 15:03:02,066 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7163281548446774
+2014-04-30 15:03:23,474 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 15:05:20,890 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8048663125987383
+2014-04-30 15:05:45,672 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8392961561072356
+2014-04-30 15:14:07,414 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 669562ms.
+2014-04-30 15:14:07,422 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (hasAtom some 
+    (Carbon-10
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Chlorine-93
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some Thing)))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Chlorine-93
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasStructure some Alkyl_halide)
+ and (hasStructure some Ar_halide)
+ and (hasStructure some Halide10)
+ and (hasStructure some Methyl)
+ and (isMutagenic some Thing)
+(1.8671681243624316)
+2014-04-30 15:14:07,423 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:168
+2014-04-30 15:14:07,537 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 15:14:07,744 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4173693622957075
+2014-04-30 15:14:08,325 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4511423084227026
+2014-04-30 15:14:09,082 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4892375465179408
+2014-04-30 15:14:11,106 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5178089750893693
+2014-04-30 15:14:11,119 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.6349184488094333
+2014-04-30 15:14:11,613 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7162721324357137
+2014-04-30 15:14:32,238 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 15:15:16,295 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7311498468054776
+2014-04-30 15:15:17,516 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7878845048893766
+2014-04-30 15:15:44,465 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7926464096512813
+2014-04-30 15:24:19,891 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 612383ms.
+2014-04-30 15:24:19,909 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (hasAtom some 
+    (Carbon
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Carbon-10
+     and (charge some double[>= 0.01 , <= 0.1])))
+ and (hasAtom some 
+    (Carbon-14
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Carbon-22
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Nitrogen-32
+     and (charge some double[>= -0.771 , <= -0.391])))
+ and (hasAtom some 
+    (Oxygen-49
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Oxygen-51
+     and (charge some Thing)))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some double[>= 0.01 , <= 0.1])))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some double[>= 0.1 , <= 0.259])))
+     and (inBond some 
+        (Oxygen-49
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-14
+         and (charge some Thing)))
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-14
+         and (charge some Thing)))
+     and (inBond some 
+        (Oxygen-49
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some double[>= 0.209 , <= 0.21])))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some double[>= -0.771 , <= -0.391])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-2
+     and (inBond some 
+        (Carbon-14
+         and (charge some Thing)))
+     and (inBond some 
+        (Oxygen-51
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasStructure some Di10)
+ and (hasStructure some Ether)
+ and (hasStructure some Ketone)
+ and (hasStructure some Non_ar_6c_ring)
+ and (hasStructure some Six_ring)
+ and (isMutagenic some Thing)
+(1.8394082009251627)
+2014-04-30 15:24:19,909 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:166
+2014-04-30 15:24:20,020 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 15:24:20,231 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4195495114638086
+2014-04-30 15:24:20,820 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4539535534026222
+2014-04-30 15:24:21,540 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4876884931616585
+2014-04-30 15:24:23,517 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5214234329206946
+2014-04-30 15:24:23,529 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.6307876398593473
+2014-04-30 15:24:23,990 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7162147600891848
+2014-04-30 15:24:40,963 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 15:25:16,268 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.725822330676224
+2014-04-30 15:25:17,429 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7874255261171448
+2014-04-30 15:26:55,082 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7922448032255787
+2014-04-30 15:28:50,475 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8005732800081504
+2014-04-30 15:33:55,052 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 575059ms.
+2014-04-30 15:33:55,074 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (hasAtom some 
+    (Carbon
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Carbon-10
+     and (charge some double[>= -0.099 , <= 0.001])))
+ and (hasAtom some 
+    (Carbon-14
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-1
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Nitrogen-32
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Nitrogen-38
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Oxygen-40
+     and (charge some Thing)))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some double[>= -0.099 , <= 0.001])))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some double[>= -0.149 , <= 0.001])))
+     and (inBond some 
+        (Carbon-14
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-14
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-1
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))
+     and (inBond some (charge some Thing))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Nitrogen-38
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-2
+     and (inBond some 
+        (Carbon-14
+         and (charge some Thing)))
+     and (inBond some 
+        (Oxygen-40
+         and (charge some double[>= -0.549 , <= -0.548])))))
+ and (hasBond some 
+    (Bond-2
+     and (inBond some 
+        (Nitrogen-38
+         and (charge some Thing)))
+     and (inBond some 
+        (Oxygen-40
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some (charge some Thing))))
+ and (hasStructure some Amine)
+ and (hasStructure some Di10)
+ and (hasStructure some Ketone)
+ and (hasStructure some Nitro)
+ and (hasStructure some Ring)
+ and (isMutagenic some Thing)
+ and (salmonella some Thing)
+ and (cytogen_ca some boolean)
+ and (cytogen_sce some boolean)
+(1.8050931021097234)
+2014-04-30 15:33:55,075 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:164
+2014-04-30 15:33:55,186 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 15:33:55,384 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.421782835001863
+2014-04-30 15:33:55,968 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4568333653332717
+2014-04-30 15:33:56,674 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4861016580161985
+2014-04-30 15:33:58,551 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.525126048260101
+2014-04-30 15:33:58,563 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.631434128251942
+2014-04-30 15:33:59,015 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7161559884171307
+2014-04-30 15:34:11,227 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 15:34:39,184 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.725939874020332
+2014-04-30 15:34:53,375 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7313821348426437
+2014-04-30 15:34:54,523 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7869553527407123
+2014-04-30 15:36:30,829 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7918334015212
+2014-04-30 15:38:33,302 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.8006908233522585
+2014-04-30 15:43:17,097 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 561938ms.
+2014-04-30 15:43:17,115 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (cytogen_ca some Thing)
+ and (cytogen_sce some Thing)
+ and (hasAtom some 
+    (Carbon-10
+     and (charge some double[>= -0.157 , <= 0.083])))
+ and (hasAtom some 
+    (Carbon-22
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-1
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some double[>= 0.043 , <= 0.044])))
+ and (hasAtom some 
+    (Nitrogen-32
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Oxygen-40
+     and (charge some double[>= -0.557 , <= -0.407])))
+ and (hasAtom some 
+    (Oxygen-50
+     and (charge some Thing)))
+ and (hasAtom some (charge some Thing))
+ and (hasBond some 
+    (Bond
+     and (inBond some (charge some Thing))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some double[>= -0.106 , <= 0.083])))
+     and (inBond some 
+        (Oxygen-50
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some double[>= -0.157 , <= 0.083])))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some double[>= 0.043 , <= 0.044])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Oxygen-50
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some double[>= -0.137 , <= -0.136])))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some double[>= 0.123 , <= 0.124])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-1
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-2
+     and (inBond some 
+        (Oxygen-40
+         and (charge some double[>= -0.557 , <= -0.407])))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasStructure some Amine)
+ and (hasStructure some Amino)
+ and (hasStructure some Di10)
+ and (hasStructure some Ether)
+ and (hasStructure some Methyl)
+ and (hasStructure some Non_ar_6c_ring)
+ and (hasStructure some Six_ring)
+ and (salmonella some Thing)
+ and (isMutagenic some boolean)
+(1.8052106454538315)
+2014-04-30 15:43:17,115 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:162
+2014-04-30 15:43:17,220 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 15:43:17,425 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4191330307260426
+2014-04-30 15:43:18,000 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4548460121264064
+2014-04-30 15:43:18,697 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4795373701510977
+2014-04-30 15:43:20,553 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5239818145955422
+2014-04-30 15:43:20,565 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.627158307715959
+2014-04-30 15:43:21,011 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.71609576559268
+2014-04-30 15:43:54,780 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 15:43:55,965 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7864735701451084
+2014-04-30 15:45:53,997 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7914118417500469
+2014-04-30 15:52:13,980 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 536787ms.
+2014-04-30 15:52:13,993 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (hasAtom some 
+    (Carbon-10
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Carbon-14
+     and (charge some double[>= 0.611 , <= 0.711])))
+ and (hasAtom some 
+    (Carbon-22
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Chlorine-93
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Nitrogen-32
+     and (charge some Thing)))
+ and (hasAtom some 
+    (Oxygen
+     and (charge some Thing)))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-10
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-14
+         and (charge some double[>= 0.611 , <= 0.711])))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))
+     and (inBond some 
+        (Nitrogen-32
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Chlorine-93
+         and (charge some Thing)))))
+ and (hasBond some 
+    (Bond-2
+     and (inBond some 
+        (Carbon-14
+         and (charge some double[>= 0.611 , <= 0.711])))
+     and (inBond some (charge some Thing))))
+ and (hasBond some 
+    (Bond-7
+     and (inBond some 
+        (Carbon-22
+         and (charge some Thing)))))
+ and (hasStructure some Ar_halide)
+ and (hasStructure some Di10)
+ and (hasStructure some Ketone)
+ and (hasStructure some Methyl)
+ and (hasStructure some Non_ar_6c_ring)
+ and (hasStructure some Six_ring)
+ and (mouse_lymph some Thing)
+ and (salmonella some Thing)
+ and (isMutagenic some boolean)
+(1.8008112690011595)
+2014-04-30 15:52:13,994 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:160
+2014-04-30 15:52:14,096 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 15:52:14,292 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4164169813433265
+2014-04-30 15:52:14,865 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4528089750893693
+2014-04-30 15:52:15,490 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4778089750893693
+2014-04-30 15:52:17,322 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5228089750893692
+2014-04-30 15:52:17,334 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.6227755916665763
+2014-04-30 15:52:17,772 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7160340371976184
+2014-04-30 15:52:36,913 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7210340371976185
+2014-04-30 15:52:40,358 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.7859797429846147
+2014-04-30 16:00:39,082 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 505012ms.
+2014-04-30 16:00:39,085 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (hasAtom some 
+    (Carbon
+     and (charge some double[>= -0.041 , <= 0.122])))
+ and (hasAtom some 
+    (Hydrogen-3
+     and (charge some double[>= 0.073 , <= 0.22])))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some 
+        (Hydrogen-3
+         and (charge some double[>= 0.073 , <= 0.219])))))
+ and (amesTestPositive some boolean)
+ and (isMutagenic some boolean)
+(1.7909797429846148)
+2014-04-30 16:00:39,085 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:7
+2014-04-30 16:00:39,103 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:0.0
+2014-04-30 16:00:39,135 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.4827691149430886
+2014-04-30 16:00:39,146 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5318100437800215
+2014-04-30 16:00:39,148 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Got better solution:1.5653912313437717
+2014-04-30 16:00:39,305 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Finished in 212ms.
+2014-04-30 16:00:39,307 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - Best solution:
+Compound
+ and (amesTestPositive some Thing)
+ and (hasAtom some 
+    (Carbon
+     and (charge some double[>= -0.014 , <= 0.874])))
+ and (hasBond some 
+    (Bond-1
+     and (inBond some (charge some double[>= -0.2 , <= 0.874]))))
+ and (hasStructure some Thing)
+ and (isMutagenic some Thing)
+ and (salmonella some Thing)
+ and (cytogen_ca some boolean)
+(1.7210340371976185)
+2014-04-30 16:00:39,308 [main] INFO  org.dllearner.algorithms.qtl.QTL2Disjunctive - #Uncovered pos. examples:0
