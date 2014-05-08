@@ -53,8 +53,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class QTLEvaluation {
 	
 	int nrOfFolds = 10;
-	private int nrOfPosExamples = 100;
-	private int nrOfNegExamples = 100;
+	private int nrOfPosExamples = 300;
+	private int nrOfNegExamples = 300;
 	
 	List<String> posExamples = Lists.newArrayList(
 			"http://dl-learner.org/carcinogenesis#d1",
@@ -496,13 +496,13 @@ public class QTLEvaluation {
 		lp.setReasoner(reasoner);
 		lp.init();
 		QTL2Disjunctive la = new QTL2Disjunctive(lp, reasoner);
-//		la.init();
-//		la.start();
+		la.init();
+		la.start();
 		
 		CrossValidation.outputFile = new File("log/qtl-cv.log");
 		CrossValidation.writeToFile = true;
 		CrossValidation.multiThreaded = multiThreaded;
-		CrossValidation cv = new CrossValidation(la, lp, reasoner, nrOfFolds, false);
+//		CrossValidation cv = new CrossValidation(la, lp, reasoner, nrOfFolds, false);
 		long endTime = System.currentTimeMillis();
 		System.err.println((endTime - startTime) + "ms");
 	}

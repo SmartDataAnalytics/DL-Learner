@@ -19,43 +19,48 @@
  */
 package org.dllearner.scripts;
 
+import static java.util.Arrays.asList;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.cli.Start;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
+import org.dllearner.cli.CLI;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.TrainTestList;
 import org.dllearner.utilities.statistics.Stat;
 
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-
-import static java.util.Arrays.*;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 
 /**
  * Performs nested cross validation for the given problem. A k fold outer and l
@@ -93,6 +98,8 @@ import static java.util.Arrays.*;
  * 
  */
 public class NestedCrossValidation {
+	
+	private File outputFile = new File("log/nested-cv.log");
 
 	/**
 	 * Entry method, which uses JOptSimple to parse parameters.
@@ -115,6 +122,7 @@ public class NestedCrossValidation {
 		parser.acceptsAll(asList( "i", "innerfolds"), "Number of inner folds.").withRequiredArg().ofType(Integer.class).describedAs("#folds");
 		parser.acceptsAll(asList( "p", "parameter"), "Parameter to vary.").withRequiredArg();
 		parser.acceptsAll(asList( "r", "pvalues", "range"), "Values of parameter. $x-$y can be used for integer ranges.").withRequiredArg();
+		parser.acceptsAll(asList( "s", "stepsize", "steps"), "Step size of range.").withOptionalArg().ofType(Double.class).defaultsTo(1d);
 
 		// parse options and display a message for the user in case of problems
 		OptionSet options = null;
@@ -137,8 +145,9 @@ public class NestedCrossValidation {
 			String parameter = (String) options.valueOf("p");
 			String range = (String) options.valueOf("r");
 			String[] rangeSplit = range.split("-");
-			int rangeStart = new Integer(rangeSplit[0]);
-			int rangeEnd = new Integer(rangeSplit[1]);
+			double rangeStart = Double.valueOf(rangeSplit[0]);
+			double rangeEnd = Double.valueOf(rangeSplit[1]);
+			double stepsize = (Double) options.valueOf("s");
 			boolean verbose = options.has("v");
 			
 			// create logger (a simple logger which outputs
@@ -149,11 +158,13 @@ public class NestedCrossValidation {
 			logger.removeAllAppenders();
 			logger.addAppender(consoleAppender);
 			logger.setLevel(Level.WARN);
+			Logger.getLogger("org.dllearner.algorithms").setLevel(Level.INFO);
+//			logger.addAppender(new FileAppender(layout, "nested-cv.log", false));
 			// disable OWL API info output
 			java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.WARNING);
 			
 			System.out.println("Warning: The script is not well tested yet. (No known bugs, but needs more testing.)");
-			new NestedCrossValidation(confFile, outerFolds, innerFolds, parameter, rangeStart, rangeEnd, verbose);
+			new NestedCrossValidation(confFile, outerFolds, innerFolds, parameter, rangeStart, rangeEnd, stepsize, verbose);
 			
 		// an option is missing => print help screen and message
 		} else {
@@ -163,14 +174,24 @@ public class NestedCrossValidation {
 
 	}
 
-	public NestedCrossValidation(File confFile, int outerFolds, int innerFolds, String parameter, int startValue, int endValue, boolean verbose) throws FileNotFoundException, ComponentInitException, ParseException, org.dllearner.confparser.ParseException {
+	private void print(String s){
+		try {
+			Files.append(s + "\n", outputFile , Charsets.UTF_8);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println(s);
+	}
+
+	public NestedCrossValidation(File confFile, int outerFolds, int innerFolds, String parameter, double startValue, double endValue, double stepsize, boolean verbose) throws ComponentInitException, ParseException, org.dllearner.confparser.ParseException, IOException {
 		
 		DecimalFormat df = new DecimalFormat();	
 		ComponentManager cm = ComponentManager.getInstance();
 		
-		Start start = new Start(confFile);
+		CLI start = new CLI(confFile);
+		start.init();
 		AbstractLearningProblem lp = start.getLearningProblem();
-		
+		System.out.println(lp);
 		if(!(lp instanceof PosNegLP)) {
 			System.out.println("Positive only learning not supported yet.");
 			System.exit(0);
@@ -196,16 +217,16 @@ public class NestedCrossValidation {
 		
 		for(int currOuterFold=0; currOuterFold<outerFolds; currOuterFold++) {
 			
-			System.out.println("Outer fold " + currOuterFold);
+			print("Outer fold " + currOuterFold);
 			TrainTestList posList = posLists.get(currOuterFold);
 			TrainTestList negList = negLists.get(currOuterFold);
 			
 			// measure relevant criterion (accuracy, F-measure) over different parameter values
-			Map<Integer,Stat> paraStats = new HashMap<Integer,Stat>();
+			Map<Double,Stat> paraStats = new HashMap<Double,Stat>();
 			
-			for(int currParaValue=startValue; currParaValue<=endValue; currParaValue++) {
+			for(double currParaValue=startValue; currParaValue<=endValue; currParaValue+=stepsize) {
 				
-				System.out.println("  Parameter value " + currParaValue + ":");
+				print("  Parameter value " + currParaValue + ":");
 				// split train folds again (computation of inner folds for each parameter
 				// value is redundant, but not a big problem)
 				List<Individual> trainPosList = posList.getTrainList();
@@ -219,19 +240,24 @@ public class NestedCrossValidation {
 				
 				for(int currInnerFold=0; currInnerFold<innerFolds; currInnerFold++) {
 					
-					System.out.println("    Inner fold " + currInnerFold + ":");
+					print("    Inner fold " + currInnerFold + ":");
 					// get positive & negative examples for training run
 					Set<Individual> posEx = new TreeSet<Individual>(innerPosLists.get(currInnerFold).getTrainList());
 					Set<Individual> negEx = new TreeSet<Individual>(innerNegLists.get(currInnerFold).getTrainList());
 					
 					// read conf file and exchange options for pos/neg examples 
 					// and parameter to optimise
-					start = new Start(confFile);
+					start = new CLI(confFile);
+					start.init();
 					AbstractLearningProblem lpIn = start.getLearningProblem();
-					cm.applyConfigEntry(lpIn, "positiveExamples", Datastructures.individualSetToStringSet(posEx));
-					cm.applyConfigEntry(lpIn, "negativeExamples", Datastructures.individualSetToStringSet(negEx));
+					((PosNegLP)lpIn).setPositiveExamples(posEx);
+					((PosNegLP)lpIn).setNegativeExamples(negEx);
 					AbstractCELA laIn = start.getLearningAlgorithm();
-					cm.applyConfigEntry(laIn, parameter, (double)currParaValue);
+					try {
+						PropertyUtils.setSimpleProperty(laIn, parameter, currParaValue);
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						e.printStackTrace();
+					}
 					
 					lpIn.init();
 					laIn.init();
@@ -263,15 +289,15 @@ public class NestedCrossValidation {
 					
 					paraCriterionStat.addNumber(accuracy);
 					
-					System.out.println("      hypothesis: " + concept.toManchesterSyntaxString(baseURI, null));
-					System.out.println("      accuracy: " + df.format(accuracy) + "%");
-					System.out.println("      precision: " + df.format(precision) + "%");
-					System.out.println("      recall: " + df.format(recall) + "%");
-					System.out.println("      F measure: " + df.format(fmeasure) + "%");
+					print("      hypothesis: " + concept.toManchesterSyntaxString(baseURI, null));
+					print("      accuracy: " + df.format(accuracy) + "%");
+					print("      precision: " + df.format(precision) + "%");
+					print("      recall: " + df.format(recall) + "%");
+					print("      F measure: " + df.format(fmeasure) + "%");
 					
 					if(verbose) {
-						System.out.println("      false positives (neg. examples classified as pos.): " + formatIndividualSet(posError, baseURI));
-						System.out.println("      false negatives (pos. examples classified as neg.): " + formatIndividualSet(negError, baseURI));
+						print("      false positives (neg. examples classified as pos.): " + formatIndividualSet(posError, baseURI));
+						print("      false negatives (pos. examples classified as neg.): " + formatIndividualSet(negError, baseURI));
 					}
 					
 					// free memory
@@ -284,28 +310,33 @@ public class NestedCrossValidation {
 			}
 			
 			// decide for the best parameter
-			System.out.println("    Summary over parameter values:");
-			int bestPara = startValue;
+			print("    Summary over parameter values:");
+			double bestPara = startValue;
 			double bestValue = Double.NEGATIVE_INFINITY;
-			for(Entry<Integer,Stat> entry : paraStats.entrySet()) {
-				int para = entry.getKey();
+			for(Entry<Double,Stat> entry : paraStats.entrySet()) {
+				double para = entry.getKey();
 				Stat stat = entry.getValue();
-				System.out.println("      value " + para + ": " + stat.prettyPrint("%"));
+				print("      value " + para + ": " + stat.prettyPrint("%"));
 				if(stat.getMean() > bestValue) {
 					bestPara = para;
 					bestValue = stat.getMean();
 				}
 			}
-			System.out.println("      selected " + bestPara + " as best parameter value (criterion value " + df.format(bestValue) + "%)");
-			System.out.println("    Learn on Outer fold:");
+			print("      selected " + bestPara + " as best parameter value (criterion value " + df.format(bestValue) + "%)");
+			print("    Learn on Outer fold:");
 			
 			// start a learning process with this parameter and evaluate it on the outer fold
-			start = new Start(confFile);
+			start = new CLI(confFile);
+			start.init();
 			AbstractLearningProblem lpOut = start.getLearningProblem();
-			cm.applyConfigEntry(lpOut, "positiveExamples", Datastructures.individualListToStringSet(posLists.get(currOuterFold).getTrainList()));
-			cm.applyConfigEntry(lpOut, "negativeExamples", Datastructures.individualListToStringSet(negLists.get(currOuterFold).getTrainList()));
+			((PosNegLP)lpOut).setPositiveExamples(new TreeSet<Individual>(posLists.get(currOuterFold).getTrainList()));
+			((PosNegLP)lpOut).setNegativeExamples(new TreeSet<Individual>(negLists.get(currOuterFold).getTrainList()));
 			AbstractCELA laOut = start.getLearningAlgorithm();
-			cm.applyConfigEntry(laOut, parameter, (double)bestPara);
+			try {
+				PropertyUtils.setSimpleProperty(laOut, parameter, bestPara);
+			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+				e.printStackTrace();
+			}
 			
 			lpOut.init();
 			laOut.init();
@@ -332,15 +363,15 @@ public class NestedCrossValidation {
 			double recall = 100 * (double) posCorrect.size() / (posCorrect.size() + posError.size());
 			double fmeasure = 2 * (precision * recall) / (precision + recall);
 	
-			System.out.println("      hypothesis: " + concept.toManchesterSyntaxString(baseURI, null));
-			System.out.println("      accuracy: " + df.format(accuracy) + "%");
-			System.out.println("      precision: " + df.format(precision) + "%");
-			System.out.println("      recall: " + df.format(recall) + "%");
-			System.out.println("      F measure: " + df.format(fmeasure) + "%");
+			print("      hypothesis: " + concept.toManchesterSyntaxString(baseURI, null));
+			print("      accuracy: " + df.format(accuracy) + "%");
+			print("      precision: " + df.format(precision) + "%");
+			print("      recall: " + df.format(recall) + "%");
+			print("      F measure: " + df.format(fmeasure) + "%");
 			
 			if(verbose) {
-				System.out.println("      false positives (neg. examples classified as pos.): " + formatIndividualSet(posError, baseURI));
-				System.out.println("      false negatives (pos. examples classified as neg.): " + formatIndividualSet(negError, baseURI));
+				print("      false positives (neg. examples classified as pos.): " + formatIndividualSet(posError, baseURI));
+				print("      false negatives (pos. examples classified as neg.): " + formatIndividualSet(negError, baseURI));
 			}			
 			
 			// update overall statistics
@@ -355,14 +386,13 @@ public class NestedCrossValidation {
 		}
 		
 		// overall statistics
-		System.out.println();
-		System.out.println("*******************");
-		System.out.println("* Overall Results *");
-		System.out.println("*******************");
-		System.out.println("accuracy: " + accOverall.prettyPrint("%"));
-		System.out.println("F measure: " + fOverall.prettyPrint("%"));
-		System.out.println("precision: " + precisionOverall.prettyPrint("%"));
-		System.out.println("recall: " + recallOverall.prettyPrint("%"));
+		print("*******************");
+		print("* Overall Results *");
+		print("*******************");
+		print("accuracy: " + accOverall.prettyPrint("%"));
+		print("F measure: " + fOverall.prettyPrint("%"));
+		print("precision: " + precisionOverall.prettyPrint("%"));
+		print("recall: " + recallOverall.prettyPrint("%"));
 		
 	}
 	
