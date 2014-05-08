@@ -16,7 +16,7 @@ public class QueryTreeScore extends Score {
 	
 	private double score;
 	
-	private double coverageScore;
+	private double accuracy;
 	
 	private double specifityScore;
 	private int nrOfSpecificNodes;
@@ -26,12 +26,12 @@ public class QueryTreeScore extends Score {
     private Set<Individual> negAsPos;
     private Set<Individual> negAsNeg;    
 
-	public QueryTreeScore(double score, double coverageScore, 
+	public QueryTreeScore(double score, double accuracy, 
 			Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg,
 			double specifityScore, int nrOfSpecificNodes) {
 		super();
 		this.score = score;
-		this.coverageScore = coverageScore;
+		this.accuracy = accuracy;
 		this.posAsPos = posAsPos;
 		this.posAsNeg = posAsNeg;
 		this.negAsPos = negAsPos;
@@ -46,13 +46,27 @@ public class QueryTreeScore extends Score {
 	public double getScore() {
 		return score;
 	}
+	
+	/**
+	 * @param score the score to set
+	 */
+	public void setScore(double score) {
+		this.score = score;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Score#getAccuracy()
 	 */
 	@Override
 	public double getAccuracy() {
-		return score;
+		return accuracy;
+	}
+	
+	/**
+	 * @param accuracy the accuracy to set
+	 */
+	public void setAccuracy(double accuracy) {
+		this.accuracy = accuracy;
 	}
 	
 	public Set<Individual> getCoveredNegatives() {
@@ -77,7 +91,7 @@ public class QueryTreeScore extends Score {
 	@Override
 	public String toString() {
 		return score
-				 + "(coverage=" + coverageScore 
+				 + "(accuracy=" + accuracy 
 				 + "(+" + posAsPos.size() + "/" + (posAsPos.size() + posAsNeg.size())
 				 + "|-" + negAsPos.size() + "/" + (negAsPos.size() + negAsNeg.size()) + ")|"
 				 + "specifity=" + specifityScore + "(" + nrOfSpecificNodes + "))";   
