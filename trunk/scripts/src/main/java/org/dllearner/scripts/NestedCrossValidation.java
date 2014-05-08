@@ -334,9 +334,9 @@ public class NestedCrossValidation {
 //					double negErrorRate = 100*(negError.size()/posTest.size());
 					
 					double accuracy = 100*((double)(posCorrect.size()+negCorrect.size())/(posTest.size()+negTest.size()));
-					double precision = 100 * (double) posCorrect.size() / (posCorrect.size() + negError.size());
-					double recall = 100 * (double) posCorrect.size() / (posCorrect.size() + posError.size());
-					double fmeasure = 2 * (precision * recall) / (precision + recall);
+					double precision = 100 * (double) posCorrect.size() / (posCorrect.size() + negError.size()) == 0 ? 0 : (posCorrect.size() + negError.size());
+					double recall = 100 * (double) posCorrect.size() / (posCorrect.size() + posError.size()) == 0 ? 0 : (posCorrect.size() + posError.size());
+					double fmeasure = 2 * (precision * recall) / (precision + recall) == 0 ? 0 : (precision + recall);
 					
 					paraCriterionStat.addNumber(accuracy);
 					

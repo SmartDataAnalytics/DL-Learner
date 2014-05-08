@@ -110,7 +110,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	private double minCoveredPosExamplesFraction = 0.2;
 	// maximum execution time to compute a part of the solution
-	private double maxTreeComputationTimeInSeconds = 60;
+	private double maxTreeComputationTimeInSeconds = 10;
 	// how important not to cover negatives
 	private double posWeight = 2;
 	// minimum score a query tree must have to be part of the solution
