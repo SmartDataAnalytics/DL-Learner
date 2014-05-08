@@ -75,6 +75,14 @@ public class Stat {
     	}
     }
     
+    public void add(Stat stat){
+    	count += stat.count;
+		sum += stat.sum;
+    	squareSum += stat.squareSum;
+    	min = Math.min(min, stat.min);
+    	max = Math.max(max, stat.max);
+    }
+    
     /**
      * Add a number to this object.
      * 

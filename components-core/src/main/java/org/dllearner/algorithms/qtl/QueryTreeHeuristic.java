@@ -63,7 +63,7 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 			case FMEASURE : 
 				score = Heuristics.getFScore(tp/(tp+fn), tp/(tp+fp), posExamplesWeight);break;
 			case PRED_ACC : 
-				score = (posExamplesWeight * tp + tn) / (posExamplesWeight * (tp + fn) + tn + fp);break;
+				score = (tp + posExamplesWeight * tn) / ((tp + fn) + posExamplesWeight * (tn + fp));break;
 			case ENTROPY  :{
 				double total = tp + fn;
 				double pp = tp / total;

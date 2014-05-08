@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
@@ -69,7 +70,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private Queue<EvaluatedQueryTree<String>> todoList;
 	private SortedSet<EvaluatedQueryTree<String>> currentPartialSolutions;
 	
-	private double currentlyBestScore = 0d;
+	private double bestCurrentScore = 0d;
 
 	private List<QueryTree<String>> currentPosExampleTrees;
 	private List<QueryTree<String>> currentNegExampleTrees;
@@ -114,10 +115,16 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private double posWeight = 2;
 	// minimum score a query tree must have to be part of the solution
 	private double minimumTreeScore = 0.2;
+	//If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, 
+	//it may lead to overfitting
+	private boolean tryFullCoverage;
+	//algorithm will terminate immediately when a correct definition is found
+	private boolean stopOnFirstDefinition;
 	
 	private long startTime;
-
 	private long partialSolutionStartTime;
+	
+	private double startPosExamplesSize;
 	
 	public QTL2Disjunctive() {}
 	
@@ -156,7 +163,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		if(heuristic == null){
 			heuristic = new QueryTreeHeuristic();
-			heuristic.setPosExamplesWeight(2);
+			heuristic.setPosExamplesWeight(posWeight);
 		}
 		
 		logger.info("Initializing...");
@@ -168,6 +175,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		currentPosExamples = new TreeSet<Individual>(lp.getPositiveExamples());
 		currentNegExamples =  new TreeSet<Individual>(lp.getNegativeExamples());
 		
+		startPosExamplesSize = currentPosExamples.size();
+		
 		//get the query trees
 		generateTrees();
 		
@@ -178,6 +187,15 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		//console rendering of class expressions
 		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
 		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
+		
+		//compute the LGG for all examples
+		//this allows us to prune all other trees because we can omit paths in trees which are contained in all positive
+		//as well as negative examples
+//		List<QueryTree<String>> allExamplesTrees = new ArrayList<QueryTree<String>>();
+//		allExamplesTrees.addAll(currentPosExampleTrees);
+//		allExamplesTrees.addAll(currentNegExampleTrees);
+//		QueryTree<String> lgg = lggGenerator.getLGG(allExamplesTrees);
+//		lgg.dump();
 	}
 	
 	private void generateTrees(){
@@ -204,7 +222,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		String setup = "Setup:";
 		setup += "\n#Pos. examples:" + currentPosExamples.size();
 		setup += "\n#Neg. examples:" + currentNegExamples.size();
-		setup += "\nCoverage beta:" + coverageBeta;
+		setup += "\nPos. weight(beta):" + posWeight;
 		logger.info(setup);
 		logger.info("Running...");
 		startTime = System.currentTimeMillis();
@@ -268,7 +286,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	private void computeNextPartialSolution(){
 		logger.info("Computing best partial solution...");
-		currentlyBestScore = 0d;
+		bestCurrentScore = Double.NEGATIVE_INFINITY;
 		partialSolutionStartTime = System.currentTimeMillis();
 		initTodoList(currentPosExampleTrees, currentNegExampleTrees);
 		
@@ -291,14 +309,14 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				double score = solution.getScore();
 				double mas = heuristic.getMaximumAchievableScore(solution);
 				
-				if(score >= currentlyBestScore){
+				if(score >= bestCurrentScore){
 					//add to todo list, if not already contained in todo list or solution list
 					todo(solution);
-					if(solution.getScore() > currentlyBestScore){
+					if(solution.getScore() > bestCurrentScore){
 						logger.info("Got better solution:" + solution.getTreeScore());
 					}
-					currentlyBestScore = solution.getScore();
-				} else if(mas < currentlyBestScore){
+					bestCurrentScore = solution.getScore();
+				} else if(mas < bestCurrentScore){
 					todo(solution);
 				} else {
 					System.out.println("Too general");
@@ -431,6 +449,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		subMon.reset();
 		lggMon.reset();
+		
+		bestCurrentScore = minimumTreeScore;
 	}
 	
 	
@@ -578,8 +598,31 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		return tree1.isSubsumedBy(tree2) && tree2.isSubsumedBy(tree1);
 	}
 	
-	private boolean terminationCriteriaSatisfied(){
-		return stop || isTimeExpired() || currentPosExampleTrees.isEmpty();
+	private boolean terminationCriteriaSatisfied() {
+		//stop was called or time expired
+		if(stop || isTimeExpired()){
+			return true;
+		}
+		
+		// stop if there are no more positive examples to cover
+		if (stopOnFirstDefinition && currentPosExamples.isEmpty()) {
+			return true;
+		}
+
+		// we stop when the score of the last tree added is too low
+		// (indicating that the algorithm could not find anything appropriate
+		// in the timeframe set)
+		if (bestCurrentScore < minimumTreeScore) {
+			return true;
+		}
+
+		// stop when almost all positive examples have been covered
+		if (tryFullCoverage) {
+			return false;
+		} else {
+			int maxPosRemaining = (int) Math.ceil(startPosExamplesSize * 0.05d);
+			return (currentPosExamples.size() <= maxPosRemaining);
+		}
 	}
 	
 	private boolean partialSolutionTerminationCriteriaSatisfied(){
@@ -633,6 +676,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	public void setCoverageBeta(double coverageBeta) {
 		this.coverageBeta = coverageBeta;
+	}
+	
+	/**
+	 * @param posWeight the posWeight to set
+	 */
+	public void setPosWeight(double posWeight) {
+		this.posWeight = posWeight;
 	}
 	
 	/* (non-Javadoc)

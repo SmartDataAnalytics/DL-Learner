@@ -161,7 +161,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
             			label += "Values: " + object.getLiterals();
             		}
             	}
-            	label += object.isResourceNode() + "," + object.isLiteralNode();
+//            	label += object.isResourceNode() + "," + object.isLiteralNode();
                 return label;
             }
         };
@@ -801,13 +801,16 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         writer.println(ren);
         for (QueryTree<N> child : getChildren()) {
             Object edge = getEdge(child);
-            if (edge != null) {
+            boolean meaningful = !edge.equals(RDF.type.getURI()) || meaningful(child);
+            if (edge != null && meaningful) {
                 writer.print(sb.toString());
                 writer.print("--- ");
                 writer.print(edge);
                 writer.print(" ---\n");
             }
-            child.dump(writer, indent);
+            if(meaningful){
+            	child.dump(writer, indent);
+            }
         }
         writer.flush();
 //    	int depth = getPathToRoot().size();
@@ -832,6 +835,23 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 //        writer.flush();
     }
 
+    private boolean meaningful(QueryTree<N> tree){
+    	if(tree.isResourceNode() || tree.isLiteralNode()){
+    		return true;
+    	} else {
+    		for (QueryTree<N> child : tree.getChildren()) {
+    			Object edge = tree.getEdge(child);
+    			if(!edge.equals(RDFS.subClassOf.getURI())){
+    				return true;
+    			} else if(child.isResourceNode()){
+    				return true;
+    			} else if(meaningful(child)){
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
 
     public List<N> fillDepthFirst() {
         List<N> results = new ArrayList<N>();
