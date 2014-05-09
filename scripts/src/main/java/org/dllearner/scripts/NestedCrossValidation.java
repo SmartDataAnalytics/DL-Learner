@@ -22,7 +22,6 @@ package org.dllearner.scripts;
 import static java.util.Arrays.asList;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
@@ -43,15 +42,17 @@ import joptsimple.OptionSet;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.Priority;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.cli.CLI;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.PosNegLP;
@@ -101,7 +102,10 @@ import com.google.common.io.Files;
  */
 public class NestedCrossValidation {
 	
-	private File outputFile = new File("log/nested-cv.log");
+	
+	private static final Logger logger = Logger.getLogger(NestedCrossValidation.class.getName());
+	
+	private static File logFile = new File("log/nested-cv.log");
 	DecimalFormat df = new DecimalFormat();	
 	
 	// overall statistics
@@ -126,7 +130,7 @@ public class NestedCrossValidation {
 
 		OptionParser parser = new OptionParser();
 		parser.acceptsAll(asList("h", "?", "help"), "Show help.");
-		parser.acceptsAll(asList("c", "conf"), "The comma separated list of conffiles to be used.").withRequiredArg().describedAs("file1, file2, ...");
+		parser.acceptsAll(asList("c", "conf"), "The comma separated list of config files to be used.").withRequiredArg().describedAs("file1, file2, ...");
 		parser.acceptsAll(asList( "v", "verbose"), "Be more verbose.");
 		parser.acceptsAll(asList( "o", "outerfolds"), "Number of outer folds.").withRequiredArg().ofType(Integer.class).describedAs("#folds");
 		parser.acceptsAll(asList( "i", "innerfolds"), "Number of inner folds.").withRequiredArg().ofType(Integer.class).describedAs("#folds");
@@ -167,13 +171,18 @@ public class NestedCrossValidation {
 			
 			// create logger (a simple logger which outputs
 			// its messages to the console)
-			SimpleLayout layout = new SimpleLayout();
+			Layout layout = new PatternLayout("%m%n");
 			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 			Logger logger = Logger.getRootLogger();
 			logger.removeAllAppenders();
 			logger.addAppender(consoleAppender);
-			logger.setLevel(Level.WARN);
+			logger.setLevel(Level.ERROR);
 			Logger.getLogger("org.dllearner.algorithms").setLevel(Level.INFO);
+			Logger.getLogger("org.dllearner.scripts").setLevel(Level.INFO);
+			
+			FileAppender fileAppender = new FileAppender(layout, logFile.getPath(), false);
+			logger.addAppender(fileAppender);
+			fileAppender.setThreshold(Level.INFO);
 //			logger.addAppender(new FileAppender(layout, "nested-cv.log", false));
 			// disable OWL API info output
 			java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.WARNING);
@@ -188,15 +197,6 @@ public class NestedCrossValidation {
 		}
 
 	}
-
-	private void print(String s){
-		try {
-			Files.append(s + "\n", outputFile , Charsets.UTF_8);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		System.out.println(s);
-	}
 	
 	public NestedCrossValidation(File confFile, int outerFolds, int innerFolds, String parameter, double startValue, double endValue, double stepsize, boolean verbose) throws ComponentInitException, ParseException, org.dllearner.confparser.ParseException, IOException {
 		this(Lists.newArrayList(confFile), outerFolds, innerFolds, parameter, startValue, endValue, stepsize, verbose);
@@ -205,37 +205,38 @@ public class NestedCrossValidation {
 	public NestedCrossValidation(List<File> confFiles, int outerFolds, int innerFolds, String parameter, double startValue, double endValue, double stepsize, boolean verbose) throws ComponentInitException, ParseException, org.dllearner.confparser.ParseException, IOException {
 		
 		for (File confFile : confFiles) {
-			print(confFile.getPath());
+			logger.info("++++++++++++++++++++++++++++++++++++++++++++++");
+			logger.info(confFile.getPath());
+			logger.info("++++++++++++++++++++++++++++++++++++++++++++++");
 			validate(confFile, outerFolds, innerFolds, parameter, startValue, endValue, stepsize, verbose);		
 		}
 		
-		print("********************************************");
-		print("********************************************");
-		print("********************************************");
+		logger.info("############################################");
+		logger.info("############################################");
 		
 		// decide for the best parameter
-		print("    Summary over parameter values:");
+		logger.info("   Overall summary over parameter values:");
 		double bestPara = startValue;
 		double bestValue = Double.NEGATIVE_INFINITY;
 		for (Entry<Double, Stat> entry : globalParaStats.entrySet()) {
 			double para = entry.getKey();
 			Stat stat = entry.getValue();
-			print("      value " + para + ": " + stat.prettyPrint("%"));
+			logger.info("      value " + para + ": " + stat.prettyPrint("%"));
 			if (stat.getMean() > bestValue) {
 				bestPara = para;
 				bestValue = stat.getMean();
 			}
 		}
-		print("      selected " + bestPara + " as best parameter value (criterion value " + df.format(bestValue) + "%)");
+		logger.info("      selected " + bestPara + " as best parameter value (criterion value " + df.format(bestValue) + "%)");
 		
 		// overall statistics
-		print("*******************");
-		print("* Overall Results *");
-		print("*******************");
-		print("accuracy: " + globalAcc.prettyPrint("%"));
-		print("F measure: " + globalF.prettyPrint("%"));
-		print("precision: " + globalPrecision.prettyPrint("%"));
-		print("recall: " + globalRecall.prettyPrint("%"));
+		logger.info("*******************");
+		logger.info("* Overall Results *");
+		logger.info("*******************");
+		logger.info("accuracy: " + globalAcc.prettyPrint("%"));
+		logger.info("F measure: " + globalF.prettyPrint("%"));
+		logger.info("precision: " + globalPrecision.prettyPrint("%"));
+		logger.info("recall: " + globalRecall.prettyPrint("%"));
 		
 	}
 	
@@ -255,6 +256,7 @@ public class NestedCrossValidation {
 		Collections.shuffle(negExamples, new Random(2));	
 		
 		AbstractReasonerComponent rc = start.getReasonerComponent();
+		rc.init();
 		String baseURI = rc.getBaseURI();
 		
 		List<TrainTestList> posLists = getFolds(posExamples, outerFolds);
@@ -268,7 +270,7 @@ public class NestedCrossValidation {
 		
 		for(int currOuterFold=0; currOuterFold<outerFolds; currOuterFold++) {
 			
-			print("Outer fold " + currOuterFold);
+			logger.info("Outer fold " + currOuterFold);
 			TrainTestList posList = posLists.get(currOuterFold);
 			TrainTestList negList = negLists.get(currOuterFold);
 			
@@ -277,7 +279,7 @@ public class NestedCrossValidation {
 			
 			for(double currParaValue=startValue; currParaValue<=endValue; currParaValue+=stepsize) {
 				
-				print("  Parameter value " + currParaValue + ":");
+				logger.info("  Parameter value " + currParaValue + ":");
 				// split train folds again (computation of inner folds for each parameter
 				// value is redundant, but not a big problem)
 				List<Individual> trainPosList = posList.getTrainList();
@@ -291,7 +293,7 @@ public class NestedCrossValidation {
 				
 				for(int currInnerFold=0; currInnerFold<innerFolds; currInnerFold++) {
 					
-					print("    Inner fold " + currInnerFold + ":");
+					logger.info("    Inner fold " + currInnerFold + ":");
 					// get positive & negative examples for training run
 					Set<Individual> posEx = new TreeSet<Individual>(innerPosLists.get(currInnerFold).getTrainList());
 					Set<Individual> negEx = new TreeSet<Individual>(innerNegLists.get(currInnerFold).getTrainList());
@@ -320,13 +322,12 @@ public class NestedCrossValidation {
 					TreeSet<Individual> posTest = new TreeSet<Individual>(innerPosLists.get(currInnerFold).getTestList());
 					TreeSet<Individual> negTest = new TreeSet<Individual>(innerNegLists.get(currInnerFold).getTestList());
 					
-					AbstractReasonerComponent rs = start.getReasonerComponent();
 					// true positive
-					Set<Individual> posCorrect = rs.hasType(concept, posTest);
+					Set<Individual> posCorrect = rc.hasType(concept, posTest);
 					// false negative
 					Set<Individual> posError = Helper.difference(posTest, posCorrect);
 					// false positive
-					Set<Individual> negError = rs.hasType(concept, negTest);
+					Set<Individual> negError = rc.hasType(concept, negTest);
 					// true negative
 					Set<Individual> negCorrect = Helper.difference(negTest, negError);
 	
@@ -340,19 +341,16 @@ public class NestedCrossValidation {
 					
 					paraCriterionStat.addNumber(accuracy);
 					
-					print("      hypothesis: " + concept.toManchesterSyntaxString(baseURI, null));
-					print("      accuracy: " + df.format(accuracy) + "%");
-					print("      precision: " + df.format(precision) + "%");
-					print("      recall: " + df.format(recall) + "%");
-					print("      F measure: " + df.format(fmeasure) + "%");
+					logger.info("      hypothesis: " + concept.toManchesterSyntaxString(baseURI, null));
+					logger.info("      accuracy: " + df.format(accuracy) + "%");
+					logger.info("      precision: " + df.format(precision) + "%");
+					logger.info("      recall: " + df.format(recall) + "%");
+					logger.info("      F measure: " + df.format(fmeasure) + "%");
 					
 					if(verbose) {
-						print("      false positives (neg. examples classified as pos.): " + formatIndividualSet(posError, baseURI));
-						print("      false negatives (pos. examples classified as neg.): " + formatIndividualSet(negError, baseURI));
+						logger.info("      false positives (neg. examples classified as pos.): " + formatIndividualSet(posError, baseURI));
+						logger.info("      false negatives (pos. examples classified as neg.): " + formatIndividualSet(negError, baseURI));
 					}
-					
-					// free memory
-					rs.releaseKB();
 				}
 				
 				paraStats.put(currParaValue, paraCriterionStat);
@@ -365,20 +363,20 @@ public class NestedCrossValidation {
 			}
 			
 			// decide for the best parameter
-			print("    Summary over parameter values:");
+			logger.info("    Summary over parameter values:");
 			double bestPara = startValue;
 			double bestValue = Double.NEGATIVE_INFINITY;
 			for(Entry<Double,Stat> entry : paraStats.entrySet()) {
 				double para = entry.getKey();
 				Stat stat = entry.getValue();
-				print("      value " + para + ": " + stat.prettyPrint("%"));
+				logger.info("      value " + para + ": " + stat.prettyPrint("%"));
 				if(stat.getMean() > bestValue) {
 					bestPara = para;
 					bestValue = stat.getMean();
 				}
 			}
-			print("      selected " + bestPara + " as best parameter value (criterion value " + df.format(bestValue) + "%)");
-			print("    Learn on Outer fold:");
+			logger.info("      selected " + bestPara + " as best parameter value (criterion value " + df.format(bestValue) + "%)");
+			logger.info("    Learn on Outer fold:");
 			
 			// start a learning process with this parameter and evaluate it on the outer fold
 			start = new CLI(confFile);
@@ -418,15 +416,15 @@ public class NestedCrossValidation {
 			double recall = 100 * (double) posCorrect.size() / (posCorrect.size() + posError.size());
 			double fmeasure = 2 * (precision * recall) / (precision + recall);
 	
-			print("      hypothesis: " + concept.toManchesterSyntaxString(baseURI, null));
-			print("      accuracy: " + df.format(accuracy) + "%");
-			print("      precision: " + df.format(precision) + "%");
-			print("      recall: " + df.format(recall) + "%");
-			print("      F measure: " + df.format(fmeasure) + "%");
+			logger.info("      hypothesis: " + concept.toManchesterSyntaxString(baseURI, null));
+			logger.info("      accuracy: " + df.format(accuracy) + "%");
+			logger.info("      precision: " + df.format(precision) + "%");
+			logger.info("      recall: " + df.format(recall) + "%");
+			logger.info("      F measure: " + df.format(fmeasure) + "%");
 			
 			if(verbose) {
-				print("      false positives (neg. examples classified as pos.): " + formatIndividualSet(posError, baseURI));
-				print("      false negatives (pos. examples classified as neg.): " + formatIndividualSet(negError, baseURI));
+				logger.info("      false positives (neg. examples classified as pos.): " + formatIndividualSet(posError, baseURI));
+				logger.info("      false negatives (pos. examples classified as neg.): " + formatIndividualSet(negError, baseURI));
 			}			
 			
 			// update overall statistics
@@ -445,13 +443,13 @@ public class NestedCrossValidation {
 		globalRecall.add(recallOverall);
 		
 		// overall statistics
-		print("*******************");
-		print("* Overall Results *");
-		print("*******************");
-		print("accuracy: " + accOverall.prettyPrint("%"));
-		print("F measure: " + fOverall.prettyPrint("%"));
-		print("precision: " + precisionOverall.prettyPrint("%"));
-		print("recall: " + recallOverall.prettyPrint("%"));
+		logger.info("*******************");
+		logger.info("* Overall Results *");
+		logger.info("*******************");
+		logger.info("accuracy: " + accOverall.prettyPrint("%"));
+		logger.info("F measure: " + fOverall.prettyPrint("%"));
+		logger.info("precision: " + precisionOverall.prettyPrint("%"));
+		logger.info("recall: " + recallOverall.prettyPrint("%"));
 	}
 	
 	// convenience methods, which takes a list of examples and divides them in
