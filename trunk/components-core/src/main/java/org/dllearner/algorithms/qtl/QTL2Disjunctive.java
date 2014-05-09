@@ -102,19 +102,18 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
 	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
-	private int maxExecutionTimeInSeconds = -1;
+	private int maxExecutionTimeInSeconds = 60;
 	
 	private double coverageWeight = 0.8;
 	private double specifityWeight = 0.1;
-	private double coverageBeta = 0.5;
 	
 	private double minCoveredPosExamplesFraction = 0.2;
 	// maximum execution time to compute a part of the solution
 	private double maxTreeComputationTimeInSeconds = 10;
 	// how important not to cover negatives
-	private double posWeight = 2;
+	private double beta = 1;
 	// minimum score a query tree must have to be part of the solution
-	private double minimumTreeScore = 0.2;
+	private double minimumTreeScore = 0.3;
 	//If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, 
 	//it may lead to overfitting
 	private boolean tryFullCoverage;
@@ -161,10 +160,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		lggGenerator = new LGGGeneratorImpl<String>();
 		
-		if(heuristic == null){
+//		if(heuristic == null){
 			heuristic = new QueryTreeHeuristic();
-			heuristic.setPosExamplesWeight(posWeight);
-		}
+			heuristic.setPosExamplesWeight(beta);
+//		}
 		
 		logger.info("Initializing...");
 		treeCache = new QueryTreeCache(model);
@@ -222,7 +221,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		String setup = "Setup:";
 		setup += "\n#Pos. examples:" + currentPosExamples.size();
 		setup += "\n#Neg. examples:" + currentNegExamples.size();
-		setup += "\nPos. weight(beta):" + posWeight;
+		setup += "Heuristic:" + heuristic.getHeuristicType().name();
+		setup += "\nbeta=" + beta;
 		logger.info(setup);
 		logger.info("Running...");
 		startTime = System.currentTimeMillis();
@@ -236,7 +236,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			logger.info("#Remaining neg. examples:" + currentNegExampleTrees.size());
 			
 			//compute a (partial) solution
-			computeNextPartialSolution();
+			computeBestPartialSolution();
 			
 			//pick best (partial) solution computed so far
 			EvaluatedQueryTree<String> bestPartialSolution = currentPartialSolutions.first();
@@ -279,29 +279,31 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		long endTime = System.currentTimeMillis();
 		logger.info("Finished in " + (endTime-startTime) + "ms.");
 		
-		logger.info("Combined solution:\n" + OWLAPIConverter.getOWLAPIDescription(currentBestSolution.getDescription()));
+		logger.info("Combined solution:" + OWLAPIConverter.getOWLAPIDescription(currentBestSolution.getDescription()).toString().replace("\n", ""));
 		logger.info(currentBestSolution.getScore());
 		
 	}
 	
-	private void computeNextPartialSolution(){
+	private void computeBestPartialSolution(){
 		logger.info("Computing best partial solution...");
 		bestCurrentScore = Double.NEGATIVE_INFINITY;
 		partialSolutionStartTime = System.currentTimeMillis();
 		initTodoList(currentPosExampleTrees, currentNegExampleTrees);
 		
 		EvaluatedQueryTree<String> currentElement;
+		QueryTree<String> currentTree;
 		while(!partialSolutionTerminationCriteriaSatisfied()){
 			logger.trace("TODO list size: " + todoList.size());
 			//pick best element from todo list
 			currentElement = todoList.poll();
+			currentTree = currentElement.getTree();
 			//generate the LGG between the chosen tree and each uncovered positive example
-			for (QueryTree<String> example : currentElement.getFalseNegatives()) {
-				QueryTree<String> tree = currentElement.getTree();
-
+			Iterator<QueryTree<String>> it = currentElement.getFalseNegatives().iterator();
+			while (it.hasNext() && !isPartialSolutionTimeExpired() && !isTimeExpired()) {
+				QueryTree<String> uncoveredTree = it.next();
 				//compute the LGG
 				lggMon.start();
-				QueryTree<String> lgg = lggGenerator.getLGG(tree, example);
+				QueryTree<String> lgg = lggGenerator.getLGG(currentTree, uncoveredTree);
 				lggMon.stop();
 				
 				//evaluate the LGG
@@ -312,8 +314,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				if(score >= bestCurrentScore){
 					//add to todo list, if not already contained in todo list or solution list
 					todo(solution);
-					if(solution.getScore() > bestCurrentScore){
-						logger.info("Got better solution:" + solution.getTreeScore());
+					if(score > bestCurrentScore){
+						logger.info("\tGot better solution:" + solution.getTreeScore());
 					}
 					bestCurrentScore = solution.getScore();
 				} else if(mas < bestCurrentScore){
@@ -330,7 +332,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		logger.info("...finished in " + (endTime-partialSolutionStartTime) + "ms.");
 		EvaluatedDescription bestPartialSolution = currentPartialSolutions.first().asEvaluatedDescription();
 		
-		logger.info("Best partial solution:\n" + OWLAPIConverter.getOWLAPIDescription(bestPartialSolution.getDescription()) + "\n(" + bestPartialSolution.getScore() + ")");
+		logger.info("Best partial solution: " + OWLAPIConverter.getOWLAPIDescription(bestPartialSolution.getDescription()).toString().replace("\n", "") + "\n(" + bestPartialSolution.getScore() + ")");
 		
 		logger.trace("LGG time: " + lggMon.getTotal() + "ms");
 		logger.trace("Avg. LGG time: " + lggMon.getAvg() + "ms");
@@ -361,7 +363,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 						? 0 
 						: coveredPositiveExamples / (double)(coveredPositiveExamples + coveredNegativeExampleTrees.size());
 		
-		double coverageScore = Heuristics.getFScore(recall, precision, coverageBeta);
+		double coverageScore = Heuristics.getFScore(recall, precision, beta);
 		
 		//2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
 		int nrOfSpecificNodes = 0;
@@ -400,8 +402,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private EvaluatedDescription buildCombinedSolution(){
 		if(partialSolutions.size() == 1){
 			EvaluatedDescription combinedSolution = partialSolutions.get(0).asEvaluatedDescription();
-			double accuracy = lp.getAccuracy(combinedSolution.getDescription());
-			System.out.println(accuracy);
 			return combinedSolution;
 		}
 		List<Description> disjuncts = new ArrayList<Description>();
@@ -423,16 +423,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		Set<Individual> posNotCovered = Sets.difference(lp.getPositiveExamples(), posCovered);
 		Set<Individual> negNotCovered = Sets.difference(lp.getNegativeExamples(), negCovered);
 		
-		double accuracy = lp.getAccuracy(unionDescription);
-		System.out.println(accuracy);
-		
 		//compute the coverage
 		double recall = posCovered.size() / (double)lp.getPositiveExamples().size();
 		double precision = (posCovered.size() + negCovered.size() == 0) 
 						? 0 
 						: posCovered.size() / (double)(posCovered.size() + negCovered.size());
 		
-		double coverageScore = Heuristics.getFScore(recall, precision, coverageBeta);
+		double coverageScore = Heuristics.getFScore(recall, precision, beta);
 		
 //		ScoreTwoValued score = new ScoreTwoValued(posCovered, posNotCovered, negCovered, negNotCovered);
 //		score.setAccuracy(coverageScore);
@@ -442,6 +439,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private void reset(){
+		currentBestSolution = null;
 		partialSolutions = new ArrayList<EvaluatedQueryTree<String>>();
 		
 		stop = false;
@@ -672,17 +670,18 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	/**
-	 * @param coverageBeta the coverageBeta to set
+	 * Default value is 1. Lower values force importance of covering positive examples.
+	 * @param beta the beta to set
 	 */
-	public void setCoverageBeta(double coverageBeta) {
-		this.coverageBeta = coverageBeta;
+	public void setBeta(double beta) {
+		this.beta = beta;
 	}
 	
 	/**
-	 * @param posWeight the posWeight to set
+	 * @param maxTreeComputationTimeInSeconds the maxTreeComputationTimeInSeconds to set
 	 */
-	public void setPosWeight(double posWeight) {
-		this.posWeight = posWeight;
+	public void setMaxTreeComputationTimeInSeconds(double maxTreeComputationTimeInSeconds) {
+		this.maxTreeComputationTimeInSeconds = maxTreeComputationTimeInSeconds;
 	}
 	
 	/* (non-Javadoc)

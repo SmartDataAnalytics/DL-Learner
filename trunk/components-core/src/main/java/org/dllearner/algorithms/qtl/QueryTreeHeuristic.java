@@ -26,13 +26,6 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 	
 	private HeuristicType heuristicType = HeuristicType.PRED_ACC;
 	
-	// F score beta value
-	private double coverageBeta = 1;
-	
-	private double coverageWeight = 0.8;
-	
-	private double specifityWeight = 0.1;
-	
 	private double posExamplesWeight = 1;
 	
 	// syntactic comparison as final comparison criterion
@@ -63,7 +56,7 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 			case FMEASURE : 
 				score = Heuristics.getFScore(tp/(tp+fn), tp/(tp+fp), posExamplesWeight);break;
 			case PRED_ACC : 
-				score = (tp + posExamplesWeight * tn) / ((tp + fn) + posExamplesWeight * (tn + fp));break;
+				score = (1/posExamplesWeight * tp + tn) / (1/posExamplesWeight * (tp + fn) + (tn + fp));break;
 			case ENTROPY  :{
 				double total = tp + fn;
 				double pp = tp / total;
@@ -151,6 +144,13 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 	 */
 	public void setHeuristicType(HeuristicType heuristicType) {
 		this.heuristicType = heuristicType;
+	}
+	
+	/**
+	 * @return the heuristicType
+	 */
+	public HeuristicType getHeuristicType() {
+		return heuristicType;
 	}
 	
 	/**
