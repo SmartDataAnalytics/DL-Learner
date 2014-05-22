@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -17,11 +16,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
@@ -31,9 +31,7 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -43,7 +41,6 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.QueryTreeScore;
-import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.io.ToStringRenderer;
@@ -141,6 +138,11 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		super(qtl.getLearningProblem(), qtl.getReasoner());
 		this.model = ModelFactory.createDefaultModel();
 		this.model.add(qtl.model);
+		this.beta = qtl.beta;
+		this.maxExecutionTimeInSeconds = qtl.maxExecutionTimeInSeconds;
+		this.maxTreeComputationTimeInSeconds = qtl.maxTreeComputationTimeInSeconds;
+		this.tryFullCoverage = qtl.tryFullCoverage;
+		this.stopOnFirstDefinition = qtl.stopOnFirstDefinition;
 	}
 	
 	public EvaluatedQueryTree<String> getBestSolution(){
@@ -160,10 +162,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		lggGenerator = new LGGGeneratorImpl<String>();
 		
-//		if(heuristic == null){
+		if(heuristic == null){
 			heuristic = new QueryTreeHeuristic();
 			heuristic.setPosExamplesWeight(beta);
-//		}
+		}
 		
 		logger.info("Initializing...");
 		treeCache = new QueryTreeCache(model);
@@ -218,12 +220,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	@Override
 	public void start() {
-		String setup = "Setup:";
-		setup += "\n#Pos. examples:" + currentPosExamples.size();
-		setup += "\n#Neg. examples:" + currentNegExamples.size();
-		setup += "Heuristic:" + heuristic.getHeuristicType().name();
-		setup += "\nbeta=" + beta;
-		logger.info(setup);
+		showSetup();
 		logger.info("Running...");
 		startTime = System.currentTimeMillis();
 		
@@ -235,11 +232,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			logger.info("#Remaining pos. examples:" + currentPosExampleTrees.size());
 			logger.info("#Remaining neg. examples:" + currentNegExampleTrees.size());
 			
-			//compute a (partial) solution
-			computeBestPartialSolution();
-			
-			//pick best (partial) solution computed so far
-			EvaluatedQueryTree<String> bestPartialSolution = currentPartialSolutions.first();
+			//compute best (partial) solution computed so far
+			EvaluatedQueryTree<String> bestPartialSolution = computeBestPartialSolution();
 			
 			//add if some criteria are satisfied
 			if(bestPartialSolution.getScore() >= minimumTreeScore){
@@ -284,12 +278,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 	}
 	
-	private void computeBestPartialSolution(){
+	private EvaluatedQueryTree<String> computeBestPartialSolution(){
 		logger.info("Computing best partial solution...");
 		bestCurrentScore = Double.NEGATIVE_INFINITY;
 		partialSolutionStartTime = System.currentTimeMillis();
 		initTodoList(currentPosExampleTrees, currentNegExampleTrees);
 		
+		EvaluatedQueryTree<String> bestPartialSolutionTree = null;
 		EvaluatedQueryTree<String> currentElement;
 		QueryTree<String> currentTree;
 		while(!partialSolutionTerminationCriteriaSatisfied()){
@@ -307,30 +302,34 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				lggMon.stop();
 				
 				//evaluate the LGG
-				EvaluatedQueryTree<String> solution = evaluate(lgg, true);
-				double score = solution.getScore();
-				double mas = heuristic.getMaximumAchievableScore(solution);
-				
-				if(score >= bestCurrentScore){
-					//add to todo list, if not already contained in todo list or solution list
-					todo(solution);
-					if(score > bestCurrentScore){
-						logger.info("\tGot better solution:" + solution.getTreeScore());
+				Set<EvaluatedQueryTree<String>> solutions = evaluate(lgg, true);
+				for (EvaluatedQueryTree<String> solution : solutions) {
+					double score = solution.getScore();
+					double mas = heuristic.getMaximumAchievableScore(solution);
+					
+					if(score >= bestCurrentScore){
+						//add to todo list, if not already contained in todo list or solution list
+						todo(solution);
+						if(score > bestCurrentScore){
+							logger.info("\tGot better solution:" + solution.getTreeScore());
+							bestCurrentScore = score;
+							bestPartialSolutionTree = solution;
+						}
+						
+					} else if(mas >= bestCurrentScore){
+						todo(solution);
+					} else {
+//						System.out.println("Too general");
+//						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
 					}
-					bestCurrentScore = solution.getScore();
-				} else if(mas < bestCurrentScore){
-					todo(solution);
-				} else {
-					System.out.println("Too general");
+					currentPartialSolutions.add(currentElement);
 				}
-				currentPartialSolutions.add(currentElement);
-				
 			}
 			currentPartialSolutions.add(currentElement);
 		}
 		long endTime = System.currentTimeMillis();
 		logger.info("...finished in " + (endTime-partialSolutionStartTime) + "ms.");
-		EvaluatedDescription bestPartialSolution = currentPartialSolutions.first().asEvaluatedDescription();
+		EvaluatedDescription bestPartialSolution = bestPartialSolutionTree.asEvaluatedDescription(LiteralNodeConversionStrategy.SOME_VALUES_FROM);
 		
 		logger.info("Best partial solution: " + OWLAPIConverter.getOWLAPIDescription(bestPartialSolution.getDescription()).toString().replace("\n", "") + "\n(" + bestPartialSolution.getScore() + ")");
 		
@@ -340,9 +339,11 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		logger.trace("Subsumption test time: " + subMon.getTotal() + "ms");
 		logger.trace("Avg. subsumption test time: " + subMon.getAvg() + "ms");
 		logger.trace("#Subsumption tests: " + subMon.getHits());
+		
+		return bestPartialSolutionTree;
 	}
 	
-	private EvaluatedQueryTree<String> evaluate(QueryTree<String> tree, boolean useSpecifity){
+	private EvaluatedQueryTree<String> evaluateSimple(QueryTree<String> tree, boolean useSpecifity){
 		//1. get a score for the coverage = recall oriented
 		//compute positive examples which are not covered by LGG
 		List<QueryTree<String>> uncoveredPositiveExampleTrees = getUncoveredTrees(tree, currentPosExampleTrees);
@@ -399,43 +400,189 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		return evaluatedTree;
 	}
 	
+	/**
+	 * Returns a set of evaluated query trees. A set is returned because there are several ways how to convert literal nodes.
+	 * @param tree
+	 * @param useSpecifity
+	 * @return
+	 */
+	private Set<EvaluatedQueryTree<String>> evaluate(QueryTree<String> tree, boolean useSpecifity){
+		Set<EvaluatedQueryTree<String>> evaluatedTrees = new TreeSet<EvaluatedQueryTree<String>>();
+		
+		LiteralNodeSubsumptionStrategy[] strategies = LiteralNodeSubsumptionStrategy.values();
+		strategies = new LiteralNodeSubsumptionStrategy[]{LiteralNodeSubsumptionStrategy.DATATYPE, LiteralNodeSubsumptionStrategy.INTERVAL};
+		for (LiteralNodeSubsumptionStrategy strategy : strategies) {
+			//1. get a score for the coverage = recall oriented
+			List<QueryTree<String>> uncoveredPositiveExampleTrees = new ArrayList<QueryTree<String>>();
+			List<QueryTree<String>> coveredNegativeExampleTrees = new ArrayList<QueryTree<String>>();
+			
+			//compute positive examples which are not covered by LGG
+			for (QueryTree<String> posTree : currentPosExampleTrees) {
+				if(!posTree.isSubsumedBy(tree, strategy)){
+					uncoveredPositiveExampleTrees.add(posTree);
+				}
+			}
+			//compute negative examples which are covered by LGG
+			for (QueryTree<String> negTree : currentNegExampleTrees) {
+				if(negTree.isSubsumedBy(tree, strategy)){
+					coveredNegativeExampleTrees.add(negTree);
+				}
+			}
+			//convert to individuals
+			Set<Individual> uncoveredPosExamples = asIndividuals(uncoveredPositiveExampleTrees);
+			Set<Individual> coveredNegExamples = asIndividuals(coveredNegativeExampleTrees);
+			
+			//compute score
+			int coveredPositiveExamples = currentPosExampleTrees.size() - uncoveredPositiveExampleTrees.size();
+			double recall = coveredPositiveExamples / (double)currentPosExampleTrees.size();
+			double precision = (coveredNegativeExampleTrees.size() + coveredPositiveExamples == 0) 
+							? 0 
+							: coveredPositiveExamples / (double)(coveredPositiveExamples + coveredNegativeExampleTrees.size());
+			
+			double coverageScore = Heuristics.getFScore(recall, precision, beta);
+			
+			//2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
+			int nrOfSpecificNodes = 0;
+			for (QueryTree<String> childNode : tree.getChildrenClosure()) {
+				if(!childNode.getUserObject().equals("?")){
+					nrOfSpecificNodes++;
+				}
+			}
+			double specifityScore = 0d;
+			if(useSpecifity){
+				specifityScore = Math.log(nrOfSpecificNodes);
+			}
+			
+			//3.compute the total score
+			double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
+			
+			QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
+					new TreeSet<Individual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
+					coveredNegExamples, new TreeSet<Individual>(Sets.difference(currentNegExamples, coveredNegExamples)),
+					specifityScore, nrOfSpecificNodes);
+			
+			EvaluatedQueryTree<String> evaluatedTree = new EvaluatedQueryTree<String>(tree, uncoveredPositiveExampleTrees, coveredNegativeExampleTrees, queryTreeScore);
+			
+			//TODO use only the heuristic to compute the score
+			score = heuristic.getScore(evaluatedTree);
+			queryTreeScore.setScore(score);
+			queryTreeScore.setAccuracy(score);
+			
+			evaluatedTrees.add(evaluatedTree);
+		}
+		
+		return evaluatedTrees;
+	}
+	
+	/**
+	 * Returns a set of evaluated query trees. A set is returned because there are several ways how to convert literal nodes.
+	 * @param tree
+	 * @param useSpecifity
+	 * @return
+	 */
+	private Set<EvaluatedDescription> evaluate2(QueryTree<String> tree, boolean useSpecifity){
+		Set<EvaluatedDescription> evaluatedDescriptions = new TreeSet<EvaluatedDescription>();
+		
+		LiteralNodeConversionStrategy[] strategies = LiteralNodeConversionStrategy.values();
+		strategies = new LiteralNodeConversionStrategy[]{LiteralNodeConversionStrategy.SOME_VALUES_FROM, LiteralNodeConversionStrategy.FACET_RESTRICTION};
+		for (LiteralNodeConversionStrategy strategy : strategies) {
+			Description d = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(tree.asOWLClassExpression(strategy));
+			//convert to individuals
+			SortedSet<Individual> coveredExamples = reasoner.getIndividuals(d);
+			Set<Individual> coveredPosExamples = new TreeSet<Individual>(Sets.intersection(currentPosExamples, coveredExamples));
+			Set<Individual> uncoveredPosExamples = new TreeSet<Individual>(Sets.difference(currentPosExamples, coveredExamples));
+			Set<Individual> coveredNegExamples = new TreeSet<Individual>(Sets.intersection(currentNegExamples, coveredExamples));
+			
+			//compute score
+			double recall = coveredPosExamples.size() / (double)currentPosExamples.size();
+			double precision = (coveredNegExamples.size() + coveredPosExamples.size() == 0) 
+							? 0 
+							: coveredPosExamples.size() / (double)(coveredPosExamples.size() + coveredNegExamples.size());
+			
+			double coverageScore = Heuristics.getFScore(recall, precision, beta);
+			
+			//2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
+			int nrOfSpecificNodes = 0;
+			for (QueryTree<String> childNode : tree.getChildrenClosure()) {
+				if(!childNode.getUserObject().equals("?")){
+					nrOfSpecificNodes++;
+				}
+			}
+			double specifityScore = 0d;
+			if(useSpecifity){
+				specifityScore = Math.log(nrOfSpecificNodes);
+			}
+			
+			//3.compute the total score
+			double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
+			
+			QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
+					new TreeSet<Individual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
+					coveredNegExamples, new TreeSet<Individual>(Sets.difference(currentNegExamples, coveredNegExamples)),
+					specifityScore, nrOfSpecificNodes);
+			
+			//TODO use only the heuristic to compute the score
+//			score = heuristic.getScore(evaluatedTree);
+//			queryTreeScore.setScore(score);
+//			queryTreeScore.setAccuracy(score);
+//			
+//			EvaluatedDescription evaluatedDescription = new EvaluatedDescription(d, queryTreeScore);
+//			
+//			evaluatedDescriptions.add(evaluatedDescription);
+		}
+		
+		return evaluatedDescriptions;
+	}
+	
 	private EvaluatedDescription buildCombinedSolution(){
-		if(partialSolutions.size() == 1){
-			EvaluatedDescription combinedSolution = partialSolutions.get(0).asEvaluatedDescription();
-			return combinedSolution;
+		EvaluatedDescription bestCombinedSolution = null;
+		double bestScore = Double.NEGATIVE_INFINITY;
+		LiteralNodeConversionStrategy[] strategies = LiteralNodeConversionStrategy.values();
+		strategies = new LiteralNodeConversionStrategy[]{LiteralNodeConversionStrategy.SOME_VALUES_FROM};
+		for (LiteralNodeConversionStrategy strategy : strategies) {
+			EvaluatedDescription combinedSolution;
+			if(partialSolutions.size() == 1){
+				combinedSolution = partialSolutions.get(0).asEvaluatedDescription(strategy);
+			} else {
+				List<Description> disjuncts = new ArrayList<Description>();
+				
+				Set<Individual> posCovered = new HashSet<Individual>();
+				Set<Individual> negCovered = new HashSet<Individual>();
+				
+				//build the union of all class expressions
+				Description partialDescription;
+				for (EvaluatedQueryTree<String> partialSolution : partialSolutions) {
+					partialDescription = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
+							partialSolution.getTree().asOWLClassExpression(strategy));
+					disjuncts.add(partialDescription);
+					posCovered.addAll(partialSolution.getTreeScore().getCoveredPositives());
+					negCovered.addAll(partialSolution.getTreeScore().getCoveredNegatives());
+				}
+				Description unionDescription = new Union(disjuncts);
+				
+				Set<Individual> posNotCovered = Sets.difference(lp.getPositiveExamples(), posCovered);
+				Set<Individual> negNotCovered = Sets.difference(lp.getNegativeExamples(), negCovered);
+				
+				//compute the coverage
+				double recall = posCovered.size() / (double)lp.getPositiveExamples().size();
+				double precision = (posCovered.size() + negCovered.size() == 0) 
+								? 0 
+								: posCovered.size() / (double)(posCovered.size() + negCovered.size());
+				
+				double coverageScore = Heuristics.getFScore(recall, precision, beta);
+				
+//				ScoreTwoValued score = new ScoreTwoValued(posCovered, posNotCovered, negCovered, negNotCovered);
+//				score.setAccuracy(coverageScore);
+				QueryTreeScore score = new QueryTreeScore(coverageScore, coverageScore, posCovered, posNotCovered, negCovered, negNotCovered, -1, -1);
+				
+				combinedSolution = new EvaluatedDescription(unionDescription, score);
+			}
+			if(combinedSolution.getAccuracy() > bestScore){
+				bestCombinedSolution = combinedSolution;
+				bestCurrentScore = combinedSolution.getAccuracy();
+			}
 		}
-		List<Description> disjuncts = new ArrayList<Description>();
-		
-		Set<Individual> posCovered = new HashSet<Individual>();
-		Set<Individual> negCovered = new HashSet<Individual>();
-		
-		//build the union of all class expressions
-		Description partialDescription;
-		for (EvaluatedQueryTree<String> partialSolution : partialSolutions) {
-			partialDescription = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
-					partialSolution.getTree().asOWLClassExpression(LiteralNodeConversionStrategy.FACET_RESTRICTION));
-			disjuncts.add(partialDescription);
-			posCovered.addAll(partialSolution.getTreeScore().getCoveredPositives());
-			negCovered.addAll(partialSolution.getTreeScore().getCoveredNegatives());
-		}
-		Description unionDescription = new Union(disjuncts);
-		
-		Set<Individual> posNotCovered = Sets.difference(lp.getPositiveExamples(), posCovered);
-		Set<Individual> negNotCovered = Sets.difference(lp.getNegativeExamples(), negCovered);
-		
-		//compute the coverage
-		double recall = posCovered.size() / (double)lp.getPositiveExamples().size();
-		double precision = (posCovered.size() + negCovered.size() == 0) 
-						? 0 
-						: posCovered.size() / (double)(posCovered.size() + negCovered.size());
-		
-		double coverageScore = Heuristics.getFScore(recall, precision, beta);
-		
-//		ScoreTwoValued score = new ScoreTwoValued(posCovered, posNotCovered, negCovered, negNotCovered);
-//		score.setAccuracy(coverageScore);
-		QueryTreeScore score = new QueryTreeScore(coverageScore, coverageScore, posCovered, posNotCovered, negCovered, negNotCovered, -1, -1);
-		
-		return new EvaluatedDescription(unionDescription, score);
+		return bestCombinedSolution;
 	}
 	
 	private void reset(){
@@ -524,7 +671,20 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		return treeCache;
 	}
 
+	private Set<Individual> asIndividuals(Collection<QueryTree<String>> trees){
+		Set<Individual> individuals = new HashSet<Individual>(trees.size());
+		for (QueryTree<String> queryTree : trees) {
+			individuals.add(tree2Individual.get(queryTree));
+		}
+		return individuals;
+	}
 	
+	private void asTree(Description d){
+		QueryTree<String> tree = new QueryTreeImpl<String>("");
+		for (Description child : d.getChildren()) {
+			
+		}
+	}
 
 	/**
 	 * Return all trees from the given list {@code allTrees} which are not already subsumed by {@code tree}.
@@ -587,7 +747,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			}
 		}
 		for (QueryTree<String> queryTree : distinctTrees) {//System.out.println(queryTree.getStringRepresentation());
-			EvaluatedQueryTree<String> evaluatedQueryTree = evaluate(queryTree, false);
+			EvaluatedQueryTree<String> evaluatedQueryTree = evaluateSimple(queryTree, false);
 			todoList.add(evaluatedQueryTree);
 		}
 	}
@@ -656,6 +816,18 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	/**
+	 * Shows the current setup of the algorithm.
+	 */
+	private void showSetup(){
+		String setup = "Setup:";
+		setup += "\n#Pos. examples:" + currentPosExamples.size();
+		setup += "\n#Neg. examples:" + currentNegExamples.size();
+		setup += "\nHeuristic:" + heuristic.getHeuristicType().name();
+		setup += "\nbeta=" + beta;
+		logger.info(setup);
+	}
+	
+	/**
 	 * @param noisePercentage the noisePercentage to set
 	 */
 	public void setNoisePercentage(double noisePercentage) {
@@ -682,6 +854,20 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	public void setMaxTreeComputationTimeInSeconds(double maxTreeComputationTimeInSeconds) {
 		this.maxTreeComputationTimeInSeconds = maxTreeComputationTimeInSeconds;
+	}
+	
+	/**
+	 * @return the heuristic
+	 */
+	public QueryTreeHeuristic getHeuristic() {
+		return heuristic;
+	}
+	
+	/**
+	 * @param heuristic the heuristic to set
+	 */
+	public void setHeuristic(QueryTreeHeuristic heuristic) {
+		this.heuristic = heuristic;
 	}
 	
 	/* (non-Javadoc)

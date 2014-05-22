@@ -97,13 +97,16 @@ public class OWLDataRangeConverter implements OWLDataRangeVisitor{
 				max = OWLAPIConverter.convertConstant(value);
 			}
 		}
-		double minValue = Double.parseDouble(min.getLiteral());
-		double maxValue = Double.parseDouble(max.getLiteral());
+		
 		if(min != null && max != null){
+			double minValue = Double.parseDouble(min.getLiteral());
+			double maxValue = Double.parseDouble(max.getLiteral());
 			dataRange = new DoubleMinMaxRange(minValue, maxValue);
 		} else if(min != null && max == null){
+			double minValue = Double.parseDouble(min.getLiteral());
 			dataRange = new DoubleMinValue(minValue);
 		} else if(max != null && min == null){
+			double maxValue = Double.parseDouble(max.getLiteral());
 			dataRange = new DoubleMaxValue(maxValue);
 		} else {
 			

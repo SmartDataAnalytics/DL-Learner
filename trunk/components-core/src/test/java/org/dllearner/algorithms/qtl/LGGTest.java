@@ -67,7 +67,7 @@ public class LGGTest {
 			tree.dump();
 			System.out.println("-----------------------------");
 			cnt++;
-			System.out.println(((QueryTreeImpl<String>)tree).toQuery());
+//			System.out.println(((QueryTreeImpl<String>)tree).toQuery());
 		}
 		
 		
@@ -76,6 +76,7 @@ public class LGGTest {
 		
 		System.out.println("LGG");
 		lgg.dump();
+		System.out.println(((QueryTreeImpl<String>)lgg).asJSON());
 		
 		QueryTreeImpl<String> tree = factory.getQueryTree("?");
 		QueryTreeImpl<String> subTree1 = new QueryTreeImpl<String>("?");

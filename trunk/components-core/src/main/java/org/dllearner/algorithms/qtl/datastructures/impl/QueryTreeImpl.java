@@ -53,6 +53,9 @@ import org.jgrapht.ext.EdgeNameProvider;
 import org.jgrapht.ext.GraphMLExporter;
 import org.jgrapht.ext.VertexNameProvider;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -101,6 +104,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 	public enum LiteralNodeSubsumptionStrategy {
 		DATATYPE,
 		INTERVAL,
+		MIN,
+		MAX,
 		ENUMERATION,
 		OFF
 	}
@@ -117,7 +122,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 		/**
 		 * Literals as datatype, e.g. xsd:integer
 		 */
-		SOME_VALUES_FROM
+		SOME_VALUES_FROM,
+		
+		MIN,
+		
+		MAX,
 	}
 	
 	private N userObject;
@@ -169,7 +178,12 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     public QueryTreeImpl(N userObject, NodeType nodeType) {
+        this(userObject, nodeType, 0);
+    }
+    
+    public QueryTreeImpl(N userObject, NodeType nodeType, int id) {
         this.userObject = userObject;
+        this.id = id;
         children = new ArrayList<QueryTreeImpl<N>>();
         child2EdgeMap = new HashMap<QueryTree<N>, Object>();
         edge2ChildrenMap = new HashMap<String, List<QueryTree<N>>>();
@@ -305,12 +319,32 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         this.parent = parent;
         this.parent.children.add(this);
     }
-
+    
+    /* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.datastructures.QueryTree#setParent(org.dllearner.algorithms.qtl.datastructures.QueryTree)
+	 */
+	@Override
+	public void setParent(QueryTree<N> parent) {
+		setParent((QueryTreeImpl<N>)parent);
+	}
 
     public void addChild(QueryTreeImpl<N> child) {
         children.add(child);
         child.parent = this;
     }
+    
+    public void addChild(QueryTree<N> child) {
+        children.add((QueryTreeImpl<N>) child);
+        child.setParent(this);
+    }
+    
+    /* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.datastructures.QueryTree#addChild(org.dllearner.algorithms.qtl.datastructures.QueryTree, java.lang.Object)
+	 */
+	@Override
+	public void addChild(QueryTree<N> child, Object edge) {
+		addChild((QueryTreeImpl<N>)child, edge);
+	}
     
     @Override
     public void addChild(QueryTreeImpl<N> child, int position) {
@@ -516,10 +550,13 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     private boolean subsumes(Set<Literal> subsumer, Set<Literal> subsumee, LiteralNodeSubsumptionStrategy strategy){
     	if(strategy == LiteralNodeSubsumptionStrategy.DATATYPE){
-			
+    		//check if both datatypes are the same
+			RDFDatatype subsumerDatatype = getDatatype(subsumer);
+			RDFDatatype subsumeeDatatype = getDatatype(subsumee);
+			return subsumerDatatype.equals(subsumeeDatatype);
 		} else if(strategy == LiteralNodeSubsumptionStrategy.ENUMERATION){
 			return subsumer.containsAll(subsumee);
-		} else if(strategy == LiteralNodeSubsumptionStrategy.INTERVAL){
+		} else { 
 			//check if both datatypes are the same
 			RDFDatatype subsumerDatatype = getDatatype(subsumer);
 			RDFDatatype subsumeeDatatype = getDatatype(subsumee);
@@ -532,19 +569,35 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 				return true;
 			}
 			
-			//check if subsumee interval is contained in subsumer interval
-			Literal subsumerMin = getMin(subsumer);
-			Literal subsumerMax = getMax(subsumer);
+			if(strategy == LiteralNodeSubsumptionStrategy.INTERVAL){
+				//check if subsumee interval is contained in subsumer interval
+				Literal subsumerMin = getMin(subsumer);
+				Literal subsumerMax = getMax(subsumer);
+				
+				Literal subsumeeMin = getMin(subsumee);
+				Literal subsumeeMax = getMax(subsumee);
+				
+				boolean leftMoreGeneral = isLessOrEqual(subsumerMin, subsumeeMin);
+				boolean rightMoreGeneral = isGreaterOrEqual(subsumerMax, subsumeeMax);
+				
+				if(!(leftMoreGeneral && rightMoreGeneral)){
+	//				System.out.println("[" + subsumeeMin + "," + subsumeeMax + "] not in interval " + "[" + subsumerMin + "," + subsumerMax + "]");
+					return false;
+				}
+			} else if(strategy == LiteralNodeSubsumptionStrategy.MIN){
 			
-			Literal subsumeeMin = getMin(subsumee);
-			Literal subsumeeMax = getMax(subsumee);
+				//check if subsumee min is greater than subsumer min
+				Literal subsumerMin = getMin(subsumer);
+				Literal subsumeeMin = getMin(subsumee);
+				
+				return isGreaterOrEqual(subsumeeMin, subsumerMin);
+			} else if(strategy == LiteralNodeSubsumptionStrategy.MAX){
 			
-			boolean leftMoreGeneral = isLessOrEqual(subsumerMin, subsumeeMin);
-			boolean rightMoreGeneral = isGreaterOrEqual(subsumerMax, subsumeeMax);
-			
-			if(!(leftMoreGeneral && rightMoreGeneral)){
-//				System.out.println("[" + subsumeeMin + "," + subsumeeMax + "] not in interval " + "[" + subsumerMin + "," + subsumerMax + "]");
-				return false;
+				//check if subsumee min is greater than subsumer min
+				Literal subsumerMax = getMax(subsumer);
+				Literal subsumeeMax = getMax(subsumee);
+				
+				return isGreaterOrEqual(subsumerMax, subsumeeMax);
 			}
 		}
     	return true;
@@ -1417,6 +1470,10 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     							dataRange = asDataOneOf(df, literals);
     						} else if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.FACET_RESTRICTION){
     							dataRange = asFacet(df, literals);
+    						} else if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.MIN){
+    							dataRange = asMinFacet(df, literals);
+    						} else if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.MAX){
+    							dataRange = asMaxFacet(df, literals);
     						}
     					}
             			classExpressions.add(df.getOWLDataSomeValuesFrom(p, dataRange));
@@ -1462,6 +1519,30 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return df.getOWLDatatypeRestriction(getOWLDatatype(df, literals), minRestriction, maxRestriction);
     }
     
+    private OWLDataRange asMinFacet(OWLDataFactory df, Set<Literal> literals){
+    	//return Boolean datatype because it doesn't make sense to return a facet of Boolean values
+    	if(getOWLDatatype(df, literals).equals(df.getBooleanOWLDatatype())){
+    		return df.getBooleanOWLDatatype();
+    	}
+    	Literal min = getMin(literals);
+    	
+    	OWLFacetRestriction minRestriction = df.getOWLFacetRestriction(OWLFacet.MIN_INCLUSIVE, asOWLLiteral(df, min));
+    	
+    	return df.getOWLDatatypeRestriction(getOWLDatatype(df, literals), minRestriction);
+    }
+    
+    private OWLDataRange asMaxFacet(OWLDataFactory df, Set<Literal> literals){
+    	//return Boolean datatype because it doesn't make sense to return a facet of Boolean values
+    	if(getOWLDatatype(df, literals).equals(df.getBooleanOWLDatatype())){
+    		return df.getBooleanOWLDatatype();
+    	}
+    	Literal max = getMax(literals);
+    	
+    	OWLFacetRestriction maxRestriction = df.getOWLFacetRestriction(OWLFacet.MAX_INCLUSIVE, asOWLLiteral(df, max));
+    	
+    	return df.getOWLDatatypeRestriction(getOWLDatatype(df, literals), maxRestriction);
+    }
+    
     private OWLDataRange asDataOneOf(OWLDataFactory df, Set<Literal> literals){
     	//return Boolean datatype because it doesn't make sense to return a enumeration of Boolean values
     	if(getOWLDatatype(df, literals).equals(df.getBooleanOWLDatatype())){
@@ -1503,6 +1584,45 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		Edge edge = new Edge(Integer.valueOf(parent.getId() + "000" + childVertex.getId()), prefixed(prefixes, tree.getEdge(child).toString()));
 			graph.addEdge(parent, childVertex, edge);
 			buildGraph(graph, child);
+		}
+    }
+    
+    public String asJSON(){
+    	
+    	PrefixCCMap prefixes = PrefixCCMap.getInstance();
+    	JSONObject json = null;
+		try {
+			json = buildJSON(this, prefixes);
+			JSONArray array = new JSONArray();
+			buildJSON2(array, this, prefixes);
+			System.out.println(array);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		
+    	return json.toString();
+    }
+    
+    private JSONObject buildJSON(QueryTree<N> tree, PrefixCCMap prefixes) throws JSONException{
+    	JSONObject json = new JSONObject();
+    	json.put("name", prefixed(prefixes, tree.getUserObject().toString()));
+    	JSONArray children = new JSONArray();
+    	for (QueryTree<N> child : tree.getChildren()) {
+			children.put(buildJSON(child, prefixes));
+		}
+    	json.put("children", children);
+    	return json;
+    }
+    
+    private void buildJSON2(JSONArray array, QueryTree<N> tree, PrefixCCMap prefixes) throws JSONException{
+    	for (QueryTree<N> child : tree.getChildren()) {
+    		JSONObject json = new JSONObject();
+    		json.put("source", tree.getId());
+    		json.put("target", child.getId());
+    		json.put("type", prefixed(prefixes, tree.getEdge(child).toString()));
+    		array.put(json);
+    		buildJSON2(array, child, prefixes);
 		}
     }
     
@@ -1561,5 +1681,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 			e.printStackTrace();
 		}
 	}
+
+	
+
+	
 	
 }

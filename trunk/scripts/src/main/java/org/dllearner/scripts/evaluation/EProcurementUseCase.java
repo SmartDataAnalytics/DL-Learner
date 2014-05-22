@@ -63,12 +63,12 @@ public class EProcurementUseCase {
 	
 	
 	private static final Logger logger = Logger.getLogger(EProcurementUseCase.class.getName());
-	static final int maxNrOfPositiveExamples = 100;
-	static final int maxNrOfNegativeExamples = 200;
+	static final int maxNrOfPositiveExamples = 10000;
+	static final int maxNrOfNegativeExamples = 10000;
 	static boolean posOnly = false;
-	static int maxCBDDepth = 2;
+	static int maxCBDDepth = 3;
 	static int maxNrOfResults = 100;
-	static int maxExecutionTimeInSeconds = 200;
+	static int maxExecutionTimeInSeconds = 500;
 	static double noiseInPercentage = 50;
 	static boolean useNegation = false;
 	static boolean useAllConstructor = false;
@@ -117,10 +117,10 @@ public class EProcurementUseCase {
 //		schema.read(new URL("http://opendata.cz/pco/public-contracts.ttl").openStream(), null, "TURTLE");
 		model.add(schema);
 		// get positive examples
-		SortedSet<Individual> positiveExamples = getExamples(model, posClass);
+		SortedSet<Individual> positiveExamples = getExamples(model, posClass, maxNrOfPositiveExamples);
 		// get negative examples
 //		SortedSet<Individual> negativeExamples = getNegativeExamples(model, cls, positiveExamples);
-		SortedSet<Individual> negativeExamples = getExamples(model, negClass);
+		SortedSet<Individual> negativeExamples = getExamples(model, negClass, maxNrOfNegativeExamples);
 		//get the lgg of the pos. examples
 //		showLGG(model, positiveExamples);
 		// build a sample of the kb
@@ -205,14 +205,14 @@ public class EProcurementUseCase {
 		((QueryTreeImpl<String>) lgg).asGraph();
 	}
 	
-	private static SortedSet<Individual> getExamples(Model model, NamedClass cls){
+	private static SortedSet<Individual> getExamples(Model model, NamedClass cls, int limit){
 		logger.info("Generating examples...");
-		SortedSet<Individual> individuals = new SPARQLReasoner(new LocalModelBasedSparqlEndpointKS(model)).getIndividuals(cls, 1000);
+		SortedSet<Individual> individuals = new SPARQLReasoner(new LocalModelBasedSparqlEndpointKS(model)).getIndividuals(cls, limit);
 		List<Individual> individualsList = new ArrayList<>(individuals);
 //		Collections.shuffle(individualsList, new Random(1234));
 		individuals.clear();
 		individuals.addAll(individualsList.subList(0, Math.min(maxNrOfPositiveExamples, individualsList.size())));
-		logger.info("Done. Got " + individuals.size() + ": " + individuals);
+		logger.info("Done. Got " + individuals.size());
 		return individuals;
 	}
 	
