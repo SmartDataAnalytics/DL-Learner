@@ -106,15 +106,19 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 		double mas = 0d;
 		switch (heuristicType) {
 		case FMEASURE:
+			mas = Double.POSITIVE_INFINITY;
 			break;
 		case PRED_ACC:
 			mas = (posExamplesWeight * tp + tn - fp) / (posExamplesWeight * (tp + fn) + tn + fp);
 			break;
 		case ENTROPY:
+			mas = Double.POSITIVE_INFINITY;
 			break;
 		case MATTHEWS_CORRELATION:
+			mas = Double.POSITIVE_INFINITY;
 			break;
 		case YOUDEN_INDEX:
+			mas = Double.POSITIVE_INFINITY;
 			break;
 		default:
 			break;

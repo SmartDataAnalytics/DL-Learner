@@ -87,6 +87,8 @@ public interface QueryTree<N> {
     
     void addChild(QueryTreeImpl<N> child, Object edge);
     
+    void addChild(QueryTree<N> child, Object edge);
+    
     void addChild(QueryTreeImpl<N> child, Object edge, int position);
     
     int removeChild(QueryTreeImpl<N> child);
@@ -150,6 +152,8 @@ public interface QueryTree<N> {
     RDFDatatype getDatatype();
     
     Set<Literal> getLiterals();
+    
+    void setParent(QueryTree<N> parent);
 
 	/**
 	 * @param edge

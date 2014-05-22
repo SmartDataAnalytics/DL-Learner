@@ -8,6 +8,9 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.QueryTreeScore;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
+
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
 	private QueryTree<N> tree;
@@ -57,19 +60,27 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 
 	@Override
 	public int compareTo(EvaluatedQueryTree<N> other) {
-		double diff = getScore() - other.getScore();
-		if(diff == 0){
-			return -1;
-		} else if(diff > 0){
-			return -1;
-		} else {
-			return 1;
-		}
+		return ComparisonChain.start()
+		         .compare(this.getScore(), other.getScore())
+		         .result();
+//		double diff = getScore() - other.getScore();
+//		if(diff == 0){
+//			return -1;
+//		} else if(diff > 0){
+//			return -1;
+//		} else {
+//			return 1;
+//		}
 	}
 	
 	public EvaluatedDescription asEvaluatedDescription(){
 		return new EvaluatedDescription(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
 				getTree().asOWLClassExpression(LiteralNodeConversionStrategy.FACET_RESTRICTION)), score);
+	}
+	
+	public EvaluatedDescription asEvaluatedDescription(LiteralNodeConversionStrategy strategy){
+		return new EvaluatedDescription(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
+				getTree().asOWLClassExpression(strategy)), score);
 	}
 	
 	/* (non-Javadoc)

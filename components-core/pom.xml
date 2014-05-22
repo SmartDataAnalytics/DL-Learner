@@ -115,11 +115,14 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 
-		<!-- Latest JENA ARQ - we have to exclude XercesImpl and use an older version here because use version bei JENA leads to some errors  -->
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
-           
+        </dependency>
+        
+         <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
         </dependency>
 
 		<!--JSON is in Central -->

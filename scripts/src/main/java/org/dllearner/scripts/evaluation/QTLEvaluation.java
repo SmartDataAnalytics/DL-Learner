@@ -8,37 +8,30 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.dllearner.algorithms.qtl.QTL2Disjunctive;
 import org.dllearner.algorithms.qtl.QueryTreeFactory;
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
-import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.cli.CLI;
 import org.dllearner.cli.CrossValidation;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.scripts.NestedCrossValidation;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
@@ -48,11 +41,17 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  */
 public class QTLEvaluation {
 	
-	int nrOfFolds = 3;
+	int nrOfFolds = 10;
 	private int nrOfPosExamples = 300;
 	private int nrOfNegExamples = 300;
 	
-	CLI cli = new CLI(new File("../test/qtl/carcinogenesis/train.conf"));
+	CLI carcinogenesis = new CLI(new File("../test/qtl/carcinogenesis/train.conf"));
+	CLI mammographic = new CLI(new File("../test/qtl/mammographic/train.conf"));
+	CLI suramin = new CLI(new File("../test/qtl/suramin/train.conf"));
+	CLI heart = new CLI(new File("../test/qtl/heart/train.conf"));
+	CLI breasttissue = new CLI(new File("../test/qtl/breasttissue/train1.conf"));
+	CLI parkinsons = new CLI(new File("../test/qtl/parkinsons/train.conf"));
+	CLI mutagenesis = new CLI(new File("../test/qtl/mutagenesis/train1.conf"));
 	
 	private Model model;
 	private OWLOntology ontology;
@@ -65,7 +64,7 @@ public class QTLEvaluation {
 		queryTreeFactory = new QueryTreeFactoryImpl();
 		queryTreeFactory.setMaxDepth(3);
 		
-		loadDataset();
+//		loadDataset();
 		
 		loadExamples();
 	}
@@ -89,46 +88,100 @@ public class QTLEvaluation {
 	
 	private void loadExamples() throws ComponentInitException, IOException{
 		
-		cli.init();
-		lp = (PosNegLP) cli.getLearningProblem();
+//		cli.init();
+//		lp = (PosNegLP) cli.getLearningProblem();
 		
 		// get examples and shuffle them
-		List<Individual> posExamples = new LinkedList<Individual>(((PosNegLP)lp).getPositiveExamples());
-		Collections.shuffle(posExamples, new Random(1));			
-		List<Individual> negExamples = new LinkedList<Individual>(((PosNegLP)lp).getNegativeExamples());
-		Collections.shuffle(negExamples, new Random(2));
-		posExamples = posExamples.subList(0, Math.min(posExamples.size(), nrOfPosExamples));
-		negExamples = negExamples.subList(0, Math.min(negExamples.size(), nrOfNegExamples));
-		
-		Set<Individual> posSet = new TreeSet<Individual>(
-				NestedCrossValidation.getFolds(NestedCrossValidation.getFolds(posExamples, 3).get(0).getTrainList(), 3).get(0).getTrainList());
-		Set<Individual> negSet = new TreeSet<Individual>(
-				NestedCrossValidation.getFolds(NestedCrossValidation.getFolds(negExamples, 3).get(0).getTrainList(), 3).get(0).getTrainList());
-		
-		
-		
-		this.lp = new PosNegLPStandard();
-		this.lp.setPositiveExamples(posSet);
-		this.lp.setNegativeExamples(negSet);
+//		List<Individual> posExamples = new LinkedList<Individual>(((PosNegLP)lp).getPositiveExamples());
+//		Collections.shuffle(posExamples, new Random(1));			
+//		List<Individual> negExamples = new LinkedList<Individual>(((PosNegLP)lp).getNegativeExamples());
+//		Collections.shuffle(negExamples, new Random(2));
+//		posExamples = posExamples.subList(0, Math.min(posExamples.size(), nrOfPosExamples));
+//		negExamples = negExamples.subList(0, Math.min(negExamples.size(), nrOfNegExamples));
+//		
+//		Set<Individual> posSet = new TreeSet<Individual>(
+//				NestedCrossValidation.getFolds(NestedCrossValidation.getFolds(posExamples, 3).get(0).getTrainList(), 3).get(0).getTrainList());
+//		Set<Individual> negSet = new TreeSet<Individual>(
+//				NestedCrossValidation.getFolds(NestedCrossValidation.getFolds(negExamples, 3).get(0).getTrainList(), 3).get(0).getTrainList());
+//		
+//		
+//		
+//		this.lp = new PosNegLPStandard();
+//		this.lp.setPositiveExamples(posSet);
+//		this.lp.setNegativeExamples(negSet);
 	}
 	
-	public void run(boolean multiThreaded) throws ComponentInitException, LearningProblemUnsupportedException{
-		long startTime = System.currentTimeMillis();
-		FastInstanceChecker reasoner = new FastInstanceChecker(new OWLAPIOntology(ontology));
-		reasoner.init();
-		lp.setReasoner(reasoner);
-		lp.init();
-		QTL2Disjunctive la = new QTL2Disjunctive(lp, reasoner);
-		la.setBeta(0.5);
-		la.init();
-		la.start();
+	public void run(boolean multiThreaded) throws ComponentInitException, LearningProblemUnsupportedException, IOException{
+		Layout layout = new PatternLayout("%m%n");
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		Logger logger = Logger.getRootLogger();
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.setLevel(Level.ERROR);
+		Logger.getLogger("org.dllearner.algorithms").setLevel(Level.INFO);
+		Logger.getLogger("org.dllearner.scripts").setLevel(Level.INFO);
 		
+		FileAppender fileAppender = new FileAppender(layout, "log/qtl-eval.log", false);
+		logger.addAppender(fileAppender);
+		fileAppender.setThreshold(Level.INFO);
+		// disable OWL API info output
+		java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.WARNING);
+		long startTime = System.currentTimeMillis();
+//		FastInstanceChecker reasoner = new FastInstanceChecker(new OWLAPIOntology(ontology));
+//		reasoner.init();
+//		lp.setReasoner(reasoner);
+//		lp.init();
 		CrossValidation.outputFile = new File("log/qtl-cv.log");
 		CrossValidation.writeToFile = true;
-		CrossValidation.multiThreaded = multiThreaded;
-//		CrossValidation cv = new CrossValidation(la, lp, reasoner, nrOfFolds, false);
+//		CrossValidation.multiThreaded = multiThreaded;
+		CrossValidation.multiThreaded = true;
+		
+		StringBuilder sb = new StringBuilder();
+		CLI[] clis = new CLI[]{
+				carcinogenesis, 
+				breasttissue, 
+				heart, 
+				parkinsons, 
+				mammographic, 
+				mutagenesis
+				};
+//		clis = new CLI[]{parkinsons};
+		ArrayList<HeuristicType> heuristics = Lists.newArrayList(
+				HeuristicType.MATTHEWS_CORRELATION, 
+				HeuristicType.PRED_ACC, 
+				HeuristicType.FMEASURE
+//				HeuristicType.ENTROPY
+				);
+		double start = 0.1;
+		double end = 1.0;
+		double stepsize = 0.1;
+		for (CLI cli : clis) {
+			sb.append("############################################\n");
+			sb.append(cli.getConfFile().getPath()).append("\n");
+			cli.init();
+			lp = (PosNegLP) cli.getLearningProblem();
+			AbstractReasonerComponent reasoner = cli.getReasonerComponent();
+			QTL2Disjunctive la = new QTL2Disjunctive(lp, reasoner);
+			QueryTreeHeuristic heuristic = new QueryTreeHeuristic();
+			la.setHeuristic(heuristic);
+			
+			for(HeuristicType heuristicType : heuristics){
+				sb.append("Heuristic: " + heuristicType.name()).append("\n");
+				sb.append("Beta\t\tF-measure\t\tAccuracy").append("\n");
+				heuristic.setHeuristicType(heuristicType);
+				for(double beta = start; beta <= end; beta +=stepsize){
+					la.setBeta(Math.round(beta * 10d)/10d);
+					la.init();
+					CrossValidation cv = new CrossValidation(la, lp, reasoner, nrOfFolds, false);
+					sb.append(Math.round(beta * 10d)/10d + "\t\t" + cv.getfMeasure().getMean() + "\t\t" + cv.getAccuracy().getMean()).append("\n");
+				}
+				sb.append("******************************\n");
+			}
+		}
+		System.out.println(sb.toString());
+		
 		long endTime = System.currentTimeMillis();
-		System.err.println((endTime - startTime) + "ms");
+		System.out.println((endTime - startTime) + "ms");
 	}
 
 	

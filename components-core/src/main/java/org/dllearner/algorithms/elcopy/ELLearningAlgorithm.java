@@ -118,7 +118,6 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	public ELLearningAlgorithm(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 //		configurator = new ELLearningAlgorithmConfigurator(this);
-		
 		timeMonitor = MonitorFactory.getTimeMonitor("time");
 	}
 	
