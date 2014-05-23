@@ -53,6 +53,8 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DoubleMaxValue;
 import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.IntMaxValue;
+import org.dllearner.core.owl.IntMinValue;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
@@ -96,7 +98,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
 
 	private static Logger logger = Logger
-	.getLogger(RhoDRDown.class);	
+	.getLogger(RhoDRDown.class);
+	
+	private static final NamedClass OWL_THING = new NamedClass(Thing.uri);
 	
 	private AbstractReasonerComponent reasoner;
 	
@@ -152,18 +156,21 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private Map<NamedClass, Set<DatatypeProperty>> appBD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
 	private Map<NamedClass, Set<DatatypeProperty>> appDD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
 	private Map<NamedClass, Set<DatatypeProperty>> appSD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
+	private Map<NamedClass, Set<DatatypeProperty>> appID = new TreeMap<NamedClass, Set<DatatypeProperty>>();
 	
 	// most general applicable properties
 	private Map<NamedClass,Set<ObjectProperty>> mgr = new TreeMap<NamedClass,Set<ObjectProperty>>();
 	private Map<NamedClass,Set<DatatypeProperty>> mgbd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
 	private Map<NamedClass,Set<DatatypeProperty>> mgdd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
 	private Map<NamedClass,Set<DatatypeProperty>> mgsd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
+	private Map<NamedClass,Set<DatatypeProperty>> mgid = new TreeMap<NamedClass,Set<DatatypeProperty>>();
 	
 	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
-	// splits for double datatype properties in ascening order
+	// splits for double datatype properties in ascending order
 	private Map<DatatypeProperty,List<Double>> splits = new TreeMap<DatatypeProperty,List<Double>>();
+	private Map<DatatypeProperty,List<Integer>> splitsInt = new TreeMap<DatatypeProperty,List<Integer>>();
 	private int maxNrOfSplits = 10;
 	
 	// data structure for a simple frequent pattern matching preprocessing phase
@@ -330,6 +337,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			computeSplits(dp);
 		}
 		
+		// compute splits for integer datatype properties
+		for (DatatypeProperty dp : reasoner.getIntDatatypeProperties()) {
+			computeSplitsInt(dp);
+		}
+		
 		// determine the maximum number of fillers for each role
 		// (up to a specified cardinality maximum)
 		if(useCardinalityRestrictions) {
@@ -457,7 +469,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			tmp = subHierarchy.getSuperClasses(description.getChild(0));
 				
 			for(Description c : tmp) {
-				if(!(c instanceof Thing))
+				if(!(c instanceof Thing) && !c.equals(OWL_THING))
 					refinements.add(new Negation(c));
 			}
 		
@@ -674,6 +686,31 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					DatatypeSomeRestriction newDSR = new DatatypeSomeRestriction(dp,min);
 					refinements.add(newDSR);
 				}
+			} if(dr instanceof IntMaxValue) {
+				int value = ((IntMaxValue)dr).getValue();
+				// find out which split value was used
+				int splitIndex = splitsInt.get(dp).lastIndexOf(value);
+				if(splitIndex == -1)
+					throw new Error("split error");
+				int newSplitIndex = splitIndex - 1;
+				if(newSplitIndex >= 0) {
+					IntMaxValue max = new IntMaxValue(splitsInt.get(dp).get(newSplitIndex));
+					DatatypeSomeRestriction newDSR = new DatatypeSomeRestriction(dp,max);
+					refinements.add(newDSR);
+//					System.out.println(description + " => " + newDSR);
+				}
+			} else if(dr instanceof IntMinValue) {
+				int value = ((IntMinValue)dr).getValue();
+				// find out which split value was used
+				int splitIndex = splitsInt.get(dp).lastIndexOf(value);
+				if(splitIndex == -1)
+					throw new Error("split error");
+				int newSplitIndex = splitIndex + 1;
+				if(newSplitIndex < splitsInt.get(dp).size()) {
+					IntMinValue min = new IntMinValue(splitsInt.get(dp).get(newSplitIndex));
+					DatatypeSomeRestriction newDSR = new DatatypeSomeRestriction(dp,min);
+					refinements.add(newDSR);
+				}
 			}
 		} else if (description instanceof StringValueRestriction) {
 			StringValueRestriction svr = (StringValueRestriction) description;
@@ -786,6 +823,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		TreeSet<DatatypeProperty> occuredDP = new TreeSet<DatatypeProperty>();
 		// rule 4: no double occurences of hasValue restrictions
 		TreeSet<ObjectProperty> occuredVR = new TreeSet<ObjectProperty>();
+		// rule 5: max. restrictions at most once
+				boolean maxIntOccurence = false;
+				// rule 6: min restrictions at most once
+				boolean minIntOccurence = false;
 		
 		for(Description child : intersection.getChildren()) {
 			if(child instanceof DatatypeSomeRestriction) {
@@ -800,6 +841,16 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						return false;
 					else
 						minDoubleOccurence = true;
+				} else if(dr instanceof IntMaxValue) {
+					if(maxIntOccurence)
+						return false;
+					else
+						maxIntOccurence = true;
+				} else if(dr instanceof IntMinValue) {
+					if(minIntOccurence)
+						return false;
+					else
+						minIntOccurence = true;
 				}		
 			} else if(child instanceof BooleanValueRestriction) {
 				DatatypeProperty dp = (DatatypeProperty) ((BooleanValueRestriction)child).getRestrictedPropertyExpression();
@@ -978,7 +1029,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if(useNegation) {
 			Set<Description> m2tmp = subHierarchy.getSuperClasses(new Nothing());
 			for(Description c : m2tmp) {
-				if(!(c instanceof Thing)) {
+				if(!(c instanceof Thing) && !c.equals(OWL_THING)) {
 					m2.add(new Negation(c));	
 				}
 			}
@@ -1023,6 +1074,18 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 			}
 		}		
+		
+		if(useIntDatatypes) {
+			Set<DatatypeProperty> intDPs = reasoner.getIntDatatypeProperties();
+			for(DatatypeProperty dp : intDPs) {
+				if(splitsInt.get(dp).size() > 0) {
+					IntMaxValue max = new IntMaxValue(splitsInt.get(dp).get(splitsInt.get(dp).size()-1));
+					IntMinValue min = new IntMinValue(splitsInt.get(dp).get(0));
+					m3.add(new DatatypeSomeRestriction(dp,max));
+					m3.add(new DatatypeSomeRestriction(dp,min));
+				}
+			}
+		}
 		
 		if(useDataHasValueConstructor) {
 			Set<DatatypeProperty> stringDPs = reasoner.getStringDatatypeProperties();
@@ -1161,7 +1224,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					m3.add(new DatatypeSomeRestriction(dp,min));
 				}
 			}
-		}			
+		}
+		
+		if(useIntDatatypes) {
+			Set<DatatypeProperty> intDPs = mgid.get(nc);
+			
+			for(DatatypeProperty dp : intDPs) {
+				if(splitsInt.get(dp).size() > 0) {
+					IntMaxValue max = new IntMaxValue(splitsInt.get(dp).get(splitsInt.get(dp).size()-1));
+					IntMinValue min = new IntMinValue(splitsInt.get(dp).get(0));
+					m3.add(new DatatypeSomeRestriction(dp,max));
+					m3.add(new DatatypeSomeRestriction(dp,min));
+				}
+			}
+		}
 		
 		if(useDataHasValueConstructor) {
 			Set<DatatypeProperty> stringDPs = mgsd.get(nc);
@@ -1257,7 +1333,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		System.out.println("index " + index + " lower class " + lowerClass);
 		
 		for(Description candidate :  subHierarchy.getSuperClasses(lowerClass)) {
-			if(!(candidate instanceof Thing)) {
+			if(!(candidate instanceof Thing) && !candidate.equals(OWL_THING)) {
 //				System.out.println("candidate: " + candidate);
 				// check disjointness with index/range (should not be disjoint otherwise not useful)
 				if(!isDisjoint(new Negation(candidate),index)) {
@@ -1293,6 +1369,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		mgbd.put(domain, new TreeSet<DatatypeProperty>());
 		mgdd.put(domain, new TreeSet<DatatypeProperty>());
 		mgsd.put(domain, new TreeSet<DatatypeProperty>());
+		mgid.put(domain, new TreeSet<DatatypeProperty>());
 		
 		SortedSet<ObjectProperty> mostGeneral = reasoner.getMostGeneralProperties();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
@@ -1302,9 +1379,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		Set<DatatypeProperty> mostGeneralBDP = Helper.intersection(mostGeneralDP, reasoner.getBooleanDatatypeProperties());
 		Set<DatatypeProperty> mostGeneralDDP = Helper.intersection(mostGeneralDP, reasoner.getDoubleDatatypeProperties());
 		Set<DatatypeProperty> mostGeneralSDP = Helper.intersection(mostGeneralDP, reasoner.getStringDatatypeProperties());
+		Set<DatatypeProperty> mostGeneralIDP = Helper.intersection(mostGeneralDP, reasoner.getIntDatatypeProperties());
 		computeMgbdRecursive(domain, mostGeneralBDP, mgbd.get(domain));	
 		computeMgddRecursive(domain, mostGeneralDDP, mgdd.get(domain));
 		computeMgsdRecursive(domain, mostGeneralSDP, mgsd.get(domain));
+		computeMgidRecursive(domain, mostGeneralIDP, mgid.get(domain));
 	}
 	
 	private void computeMgrRecursive(NamedClass domain, Set<ObjectProperty> currProperties, Set<ObjectProperty> mgrTmp) {
@@ -1340,6 +1419,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				mgsdTmp.add(prop);
 			else
 				computeMgsdRecursive(domain, reasoner.getSubProperties(prop), mgsdTmp);
+		}
+	}	
+	
+	private void computeMgidRecursive(NamedClass domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgidTmp) {
+		for(DatatypeProperty prop : currProperties) {
+			if(appID.get(domain).contains(prop))
+				mgidTmp.add(prop);
+			else
+				computeMgidRecursive(domain, reasoner.getSubProperties(prop), mgidTmp);
 		}
 	}	
 	
@@ -1390,7 +1478,19 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(!isDisjoint(domain,d))
 				applicableSDPs.add(role);
 		}
-		appSD.put(domain, applicableSDPs);		
+		appSD.put(domain, applicableSDPs);	
+		
+		// integer datatype properties
+				Set<DatatypeProperty> mostGeneralIDPs = reasoner.getIntDatatypeProperties();
+				Set<DatatypeProperty> applicableIDPs = new TreeSet<DatatypeProperty>();
+				for(DatatypeProperty role : mostGeneralIDPs) {
+//					Description d = (NamedClass) rs.getDomain(role);
+					Description d = reasoner.getDomain(role);
+//					System.out.println("domain: " + d);
+					if(!isDisjoint(domain,d))
+						applicableIDPs.add(role);
+				}
+				appID.put(domain, applicableIDPs);
 	}
 	
 	// returns true of the intersection contains elements disjoint
@@ -1536,6 +1636,37 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			splitsDP.add(value);
 		}
 		splits.put(dp, splitsDP);
+		
+//		System.out.println(values);
+//		System.out.println(splits);
+//		System.exit(0);
+	}
+	
+	private void computeSplitsInt(DatatypeProperty dp) {
+		Set<Integer> valuesSet = new TreeSet<Integer>();
+//		Set<Individual> individuals = rs.getIndividuals();
+		Map<Individual,SortedSet<Integer>> valueMap = reasoner.getIntDatatypeMembers(dp);
+		// add all values to the set (duplicates will be remove automatically)
+		for(Entry<Individual,SortedSet<Integer>> e : valueMap.entrySet())
+			valuesSet.addAll(e.getValue());
+		// convert set to a list where values are sorted
+		List<Integer> values = new LinkedList<Integer>(valuesSet);
+		Collections.sort(values);
+		
+		int nrOfValues = values.size();
+		// create split set
+		List<Integer> splitsDP = new LinkedList<Integer>();
+		for(int splitNr=0; splitNr < Math.min(maxNrOfSplits,nrOfValues-1); splitNr++) {
+			int index;
+			if(nrOfValues<=maxNrOfSplits)
+				index = splitNr;
+			else
+				index = (int) Math.floor(splitNr * (double)nrOfValues/(maxNrOfSplits+1));
+			
+			int value = values.get(index);
+			splitsDP.add(value);
+		}
+		splitsInt.put(dp, splitsDP);
 		
 //		System.out.println(values);
 //		System.out.println(splits);
