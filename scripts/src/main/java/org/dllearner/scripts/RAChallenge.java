@@ -14,12 +14,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.algorithms.elcopy.ELLearningAlgorithm;
@@ -50,6 +53,9 @@ import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
+import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.DatasetFactory;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -59,9 +65,8 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.sparql.core.Quad;
+import com.hp.hpl.jena.sparql.util.ModelUtils;
 
 /**
  * @author Lorenz Buehmann
@@ -96,16 +101,32 @@ public class RAChallenge {
 		File[] files = dataDir.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				return name.endsWith(".nt") || name.endsWith(".ttl") || name.endsWith(".rdf") || name.endsWith(".owl");
+				return name.endsWith(".nt") || name.endsWith(".ttl") || name.endsWith(".rdf") || name.endsWith(".owl") || name.endsWith(".nq");
 			}
 		});
 		System.out.println("loading data...");
 		Model model = ModelFactory.createDefaultModel();
 		for (File file : files) {
-			model.read(new FileInputStream(file), null, "TURTLE");
+			if(file.getName().endsWith(".nq")){
+				Dataset ds = DatasetFactory.createMem() ;
+		        RDFDataMgr.read(ds, new FileInputStream(file), Lang.NQUADS) ;
+//				Model subModel = ds.getNamedModel("http://bio2rdf.org/bio2rdf.dataset:bio2rdf-ra.challenge-R3");
+//				model.add(subModel);
+				Iterator<Quad> find = ds.asDatasetGraph().find();
+				Triple t;
+				while(find.hasNext()){
+					t = find.next().asTriple();
+					Statement st = model.asStatement(t);
+					model.add(st);
+				}
+			} else {
+				model.read(new FileInputStream(file), null, "TURTLE");
+			}
+			
 		}
+		System.out.println("done. loaded " + model.size() + " triples.");
 		
-		analyzeData(model);
+//		analyzeData(model);
 		
 		//get the positive and negative examples via SPARQL
 		//<http://bio2rdf.org/ra.challenge:1877000> <http://bio2rdf.org/ra.challenge_vocabulary:non-responder> "true"^^<http://www.w3.org/2001/XMLSchema#boolean>  .
@@ -132,7 +153,12 @@ public class RAChallenge {
 		System.out.println("#neg examples: " + negExamples.size());
 		
 		//remove triples with property non-responder
+		System.out.println("Pruning data...");
 		model.remove(model.listStatements(null, model.createProperty("http://bio2rdf.org/ra.challenge_vocabulary:non-responder"), (RDFNode)null));
+		model.remove(model.listStatements(null, model.createProperty("http://rdfs.org/ns/void#inDataset"), (RDFNode)null));
+		model.remove(model.listStatements(null, model.createProperty("http://purl.org/dc/terms/description"), (RDFNode)null));
+		model.remove(model.listStatements(null, model.createProperty("http://www.w3.org/2000/01/rdf-schema#label"), (RDFNode)null));
+		System.out.println("done. remaining " + model.size() + " triples.");
 		
 		//enrich with additional data
 		enrich(model);
@@ -177,7 +203,7 @@ public class RAChallenge {
 		} else {
 			OEHeuristicRuntime heuristic = new OEHeuristicRuntime();
 			heuristic.setExpansionPenaltyFactor(0.1);
-			la = new CELOE(lp, rc);
+			la = new CELOE(lp, baseReasoner);
 			((CELOE) la).setHeuristic(heuristic);
 			((CELOE) la).setMaxExecutionTimeInSeconds(100);
 			((CELOE) la).setNoisePercentage(50);
@@ -188,7 +214,7 @@ public class RAChallenge {
 			RhoDRDown op = new RhoDRDown();
 			op.setUseHasValueConstructor(true);
 			op.setUseObjectValueNegation(true);
-			op.setReasoner(rc);
+			op.setReasoner(baseReasoner);
 			op.init();
 //			((CELOE) la).setOperator(op);
 		}
@@ -236,6 +262,12 @@ public class RAChallenge {
 				+ "?s <http://bio2rdf.org/ra.challenge_vocabulary:non-responder> \"false\"^^<http://www.w3.org/2001/XMLSchema#boolean>."
 				+ "}"
 				+ " GROUP BY ?o}} GROUP BY ?o ORDER BY DESC(?total)";
+		qe = QueryExecutionFactory.create(query, model);
+		rs = qe.execSelect();
+		System.out.println(ResultSetFormatter.asText(rs));
+		
+		query = "SELECT * WHERE {<http://bio2rdf.org/ra.challenge:825000> ?p ?o. "
+				+ "OPTIONAL{?o ?p1 ?o1.OPTIONAL{?o1 ?p2 ?o2. OPTIONAL{?o2 ?p3 ?o3.OPTIONAL{?o3 ?p4 ?o4.}}}}}";
 		qe = QueryExecutionFactory.create(query, model);
 		rs = qe.execSelect();
 		System.out.println(ResultSetFormatter.asText(rs));
@@ -293,7 +325,7 @@ public class RAChallenge {
 		
 		drugbankData.write(new FileOutputStream("drugbank.ttl"), "TURTLE", null);
 		model.add(drugbankData);
-		
+		System.out.println("done. remaining " + model.size() + " triples.");
 		
 	}
 }
