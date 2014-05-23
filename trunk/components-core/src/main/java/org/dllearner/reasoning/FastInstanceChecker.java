@@ -53,6 +53,8 @@ import org.dllearner.core.owl.DoubleMinMaxRange;
 import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.IntMaxValue;
+import org.dllearner.core.owl.IntMinValue;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
@@ -73,8 +75,6 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
-import org.semanticweb.owlapi.owllink.builtin.requests.IsDataPropertySatisfiable;
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
@@ -563,22 +563,39 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 				 } else {
 					 return false;
 				 }
-			}
-			SortedSet<Double> values = dd.get(dp).get(individual);
+			} else {
+				if(dr instanceof IntMaxValue || dr instanceof IntMinValue){
+					SortedSet<Integer> values = id.get(dp).get(individual);
 
-			// if there is no filler for this individual and property we
-			// need to return false
-			if (values == null) {
-				return false;
-			}
+					// if there is no filler for this individual and property we
+					// need to return false
+					if (values == null) {
+						return false;
+					}
+					if (dr instanceof IntMaxValue) {
+						return (values.first() <= ((IntMaxValue) dr).getValue());
+					} else if (dr instanceof IntMinValue) {
+						return (values.last() >= ((IntMinValue) dr).getValue());
+					}
+				} else {
+					SortedSet<Double> values = dd.get(dp).get(individual);
 
-			if (dr instanceof DoubleMaxValue) {
-				return (values.first() <= ((DoubleMaxValue) dr).getValue());
-			} else if (dr instanceof DoubleMinValue) {
-				return (values.last() >= ((DoubleMinValue) dr).getValue());
-			} else if (dr instanceof DoubleMinMaxRange){
-				return (values.first() <= ((DoubleMinMaxRange) dr).getMaxValue()) && (values.last() >= ((DoubleMinMaxRange) dr).getMinValue());
+					// if there is no filler for this individual and property we
+					// need to return false
+					if (values == null) {
+						return false;
+					}
+					if (dr instanceof DoubleMaxValue) {
+						return (values.first() <= ((DoubleMaxValue) dr).getValue());
+					} else if (dr instanceof DoubleMinValue) {
+						return (values.last() >= ((DoubleMinValue) dr).getValue());
+					} else if (dr instanceof DoubleMinMaxRange){
+						return (values.first() <= ((DoubleMinMaxRange) dr).getMaxValue()) && (values.last() >= ((DoubleMinMaxRange) dr).getMinValue());
+					}
+				}
+				
 			}
+			
 		} else if (description instanceof DatatypeValueRestriction) {
 			Constant value = ((DatatypeValueRestriction)description).getValue();
 			DatatypeProperty dp = ((DatatypeValueRestriction)description).getRestrictedPropertyExpression();

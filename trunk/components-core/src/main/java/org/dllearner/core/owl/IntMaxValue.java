@@ -58,11 +58,11 @@ public class IntMaxValue implements SimpleIntDataRange {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return " <= " + value;
+		return "integer[<= " + value + "]";
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " <= " + value;
+		return "integer[<= " + value + "]";
 	}
 	
 	public void accept(KBElementVisitor visitor) {
@@ -74,7 +74,7 @@ public class IntMaxValue implements SimpleIntDataRange {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " <= " + value;
+		return "integer[<= " + value + "]";
 	}
 
 	/* (non-Javadoc)
@@ -84,5 +84,13 @@ public class IntMaxValue implements SimpleIntDataRange {
 	public boolean isDatatype() {
 		return false;
 	}	
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return toString(null, null);
+	}
 	
 }

@@ -24,9 +24,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.owl.DataRange;
+import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.IntMaxValue;
+import org.dllearner.core.owl.IntMinValue;
 import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectAllRestriction;
@@ -59,7 +62,7 @@ public class DescriptionMinimizer {
 	}
 
 	/**
-	 * Method which minimzes the input description. The algorithm does not 
+	 * Method which minimizes the input description. The algorithm does not 
 	 * replace subdescriptions with named classes, e.g.
 	 * if the description "male \sqcap \exists hasChild.\top" is passed to the
 	 * algorithm and a class "father" is defined in the obvious way 
@@ -241,6 +244,15 @@ public class DescriptionMinimizer {
 	}
 	
 	private boolean isSubclassOf(Description d1, Description d2) {
+		if(beautify && (d1 instanceof DatatypeSomeRestriction) && (d2 instanceof DatatypeSomeRestriction)){
+			DataRange dr1 = ((DatatypeSomeRestriction)d1).getDataRange();
+			DataRange dr2 = ((DatatypeSomeRestriction)d2).getDataRange();
+			if(dr1 instanceof IntMinValue && dr2 instanceof IntMinValue){
+				return ((IntMinValue)dr1).getValue() >= ((IntMinValue)dr2).getValue();
+			} else if(dr1 instanceof IntMaxValue && dr2 instanceof IntMaxValue){
+				return ((IntMaxValue)dr1).getValue() <= ((IntMaxValue)dr2).getValue();
+			}
+		} 
 		if(!(d1.isNamedClass() && d2.isNamedClass())) return false;
 		// check whether we have cached this query
 		Map<Description,Boolean> tmp = cachedSubclassOf.get(d1);
@@ -249,7 +261,8 @@ public class DescriptionMinimizer {
 			tmp2 = tmp.get(d2);
 		
 		if(tmp2==null) {
-			Boolean result = reasoner.isSuperClassOf(d2, d1);	
+			
+			Boolean result = reasoner.isSuperClassOf(d2, d1);
 						
 			// create new entry if necessary
 			Map<Description,Boolean> map1 = new TreeMap<Description,Boolean>(conceptComparator);
