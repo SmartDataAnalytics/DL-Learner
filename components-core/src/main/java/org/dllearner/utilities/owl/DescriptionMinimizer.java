@@ -30,6 +30,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.IntMaxValue;
 import org.dllearner.core.owl.IntMinValue;
 import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectAllRestriction;
@@ -50,6 +51,8 @@ import org.dllearner.core.owl.Union;
  * 
  */
 public class DescriptionMinimizer {
+	
+	private static final NamedClass OWL_THING = new NamedClass(Thing.uri);
 
 	private AbstractReasonerComponent reasoner;
 	private ConceptComparator conceptComparator = new ConceptComparator();
@@ -152,7 +155,16 @@ public class DescriptionMinimizer {
 			
 			if(description instanceof Intersection) {
 				for(int i=0; i<children.size(); i++) {
-					for(int j=0; j<children.size(); j++) {						
+					for(int j=0; j<children.size(); j++) {
+//						if(children.get(j) instanceof ObjectSomeRestriction && children.get(i) instanceof ObjectSomeRestriction){
+//							System.out.println(children.get(j) + "::::" + children.get(i));
+////							System.out.println(children.get(j).getClass().getSimpleName() + "::::" + children.get(i).getClass().getSimpleName());
+//							System.out.println(children.get(j).getChild(0).getClass().getSimpleName() + "::::" + children.get(i).getChild(0).getClass().getSimpleName());
+//							Description d1 = children.get(j);
+//							Description d2 = children.get(i);
+//							boolean subclassOf = isSubclassOf(d1, d2);
+//							System.out.println(subclassOf);
+//						}
 						if(i != j && isSubclassOf(children.get(j), children.get(i))) {
 							// remove element because it is super class of another element
 							children.remove(i);
@@ -253,6 +265,8 @@ public class DescriptionMinimizer {
 				return ((IntMaxValue)dr1).getValue() <= ((IntMaxValue)dr2).getValue();
 			}
 		} 
+		if(d1.equals(d2)) return true;
+		if(d2 == Thing.instance || d2.equals(OWL_THING)) return true;
 		if(!(d1.isNamedClass() && d2.isNamedClass())) return false;
 		// check whether we have cached this query
 		Map<Description,Boolean> tmp = cachedSubclassOf.get(d1);
@@ -275,4 +289,11 @@ public class DescriptionMinimizer {
 			return tmp2;
 		}
 	}	
+	
+	public static void main(String[] args) throws Exception {
+		Description d1 = new ObjectSomeRestriction(new ObjectProperty("r"), Thing.instance);
+		Description d2 = new ObjectSomeRestriction(new ObjectProperty("r"), new NamedClass(Thing.uri.toString()));
+		
+		System.out.println(d1.equals(d2));
+	}
 }
