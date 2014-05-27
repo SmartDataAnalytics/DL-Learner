@@ -30,9 +30,6 @@ import java.util.Map;
  */
 public class ObjectValueRestriction extends ValueRestriction {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2437223709767096950L;
 
 	/**
@@ -87,5 +84,36 @@ public class ObjectValueRestriction extends ValueRestriction {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((getRestrictedPropertyExpression() == null) ? 0 : getRestrictedPropertyExpression().hashCode());
+		result = prime * result + ((getValue() == null) ? 0 : getValue().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ObjectValueRestriction other = (ObjectValueRestriction) obj;
+		if (getRestrictedPropertyExpression() == null) {
+			if (other.getRestrictedPropertyExpression() != null)
+				return false;
+		} else if (!getRestrictedPropertyExpression().equals(other.getRestrictedPropertyExpression()))
+			return false;
+		if (getValue() == null) {
+			if (other.getValue() != null)
+				return false;
+		} else if (!getValue().equals(other.getValue()))
+			return false;
+		return true;
 	}	
 }

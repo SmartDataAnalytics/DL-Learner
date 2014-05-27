@@ -111,6 +111,8 @@ public class NamedClass extends Description implements Entity, NamedKBElement, C
 			return true;
 		if (obj == null)
 			return false;
+		if(obj==Thing.instance && name.equals(Thing.uri.toString()))
+			return true;
 		if (getClass() != obj.getClass())
 			return false;
 		NamedClass other = (NamedClass) obj;

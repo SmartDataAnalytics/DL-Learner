@@ -37,9 +37,6 @@ import java.util.Map;
  */
 public class Thing extends Description {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -880276915058868775L;
 	public static final Thing instance = new Thing();
 	
@@ -87,5 +84,25 @@ public class Thing extends Description {
 		visitor.visit(this);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+		return result;
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if(obj.getClass() == getClass()){
+			return true;
+		}
+		if (obj.getClass() == NamedClass.class && ((NamedClass)obj).getName().equals(uri.toString()))
+			return true;
+		return false;
+	}
 }

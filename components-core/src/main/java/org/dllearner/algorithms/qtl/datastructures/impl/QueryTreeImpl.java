@@ -1581,7 +1581,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	for (QueryTree<N> child : children) {
     		Vertex childVertex = new Vertex(child.getId(), prefixed(prefixes, child.getUserObject().toString()));
     		graph.addVertex(childVertex);
-    		Edge edge = new Edge(Integer.valueOf(parent.getId() + "000" + childVertex.getId()), prefixed(prefixes, tree.getEdge(child).toString()));
+    		Edge edge = new Edge(Long.valueOf(parent.getId() + "0" + childVertex.getId()), prefixed(prefixes, tree.getEdge(child).toString()));
 			graph.addEdge(parent, childVertex, edge);
 			buildGraph(graph, child);
 		}
