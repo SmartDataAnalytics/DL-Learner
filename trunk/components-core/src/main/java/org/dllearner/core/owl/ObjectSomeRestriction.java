@@ -61,5 +61,37 @@ public class ObjectSomeRestriction extends ObjectQuantorRestriction {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((getChild(0) == null) ? 0 : getChild(0).hashCode());
+		result = prime * result + ((getRole() == null) ? 0 : getRole().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ObjectSomeRestriction other = (ObjectSomeRestriction) obj;
+		if (getChild(0) == null) {
+			if (other.getChild(0) != null)
+				return false;
+		} else if (!getChild(0).equals(other.getChild(0)))
+			return false;
+		if (getRole() == null) {
+			if (other.getRole() != null)
+				return false;
+		} else if (!getRole().equals(other.getRole()))
+			return false;
+		return true;
 	}	
+	
 }

@@ -1,10 +1,10 @@
 package org.dllearner.algorithms.qtl.datastructures.rendering;
 
 public class Edge {
-	int id;
+	long id;
 	String label;
 
-	public Edge(int id, String label) {
+	public Edge(long id, String label) {
 		this.id = id;
 		this.label = label;
 	}
@@ -12,7 +12,7 @@ public class Edge {
 	/**
 	 * @return the id
 	 */
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -27,7 +27,7 @@ public class Edge {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 
@@ -44,4 +44,6 @@ public class Edge {
 			return false;
 		return true;
 	}
+
+	
 }

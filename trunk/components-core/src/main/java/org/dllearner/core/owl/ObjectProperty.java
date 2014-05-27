@@ -33,9 +33,6 @@ import org.dllearner.utilities.Helper;
  */
 public class ObjectProperty extends ObjectPropertyExpression implements Property, Comparable<ObjectProperty>{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3343070247923446690L;
 
 	public ObjectProperty(String name) {
