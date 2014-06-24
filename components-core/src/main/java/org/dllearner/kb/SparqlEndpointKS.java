@@ -154,6 +154,11 @@ public class SparqlEndpointKS implements KnowledgeSource {
 
 	public void setSupportsSPARQL_1_1(boolean supportsSPARQL_1_1) {
 		this.supportsSPARQL_1_1 = supportsSPARQL_1_1;
+	}
+
+	@Override public String toString()
+	{
+		return endpoint.toString();
 	}	
 	
 }
