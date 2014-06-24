@@ -33,7 +33,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
@@ -75,7 +74,6 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -89,6 +87,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -1758,8 +1757,15 @@ String query = String.format(queryTemplate, dp.getName());
 	private ResultSet executeSelectQuery(String query){
 		logger.trace("Sending query \n {}", query);
 		QueryExecution qe = qef.createQueryExecution(query);
+		try
+		{
 		ResultSet rs = qe.execSelect();
 		return rs;
+		}
+		catch(QueryExceptionHTTP e)
+		{
+			throw new QueryExceptionHTTP("Error sending query \""+query+"\" to endpoint "+ks,e);
+		}
 	}
 
 	private ResultSet executeSelectQuery(String query, long timeout){
