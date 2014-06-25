@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
@@ -54,6 +53,7 @@ import org.dllearner.algorithms.qtl.filters.QuestionBasedQueryTreeFilter;
 import org.dllearner.algorithms.qtl.operations.NBR;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.qtl.util.SPARQLEndpointEx;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
@@ -101,39 +101,39 @@ import com.hp.hpl.jena.util.iterator.Filter;
  */
 @ComponentAnn(name="query tree learner", shortName="qtl", version=0.8)
 public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
-	
+
 	private static final Logger logger = Logger.getLogger(QTL.class);
-	
+
 	private LearningProblem learningProblem;
 	private SparqlEndpointKS endpointKS;
-//	private QTLConfigurator configurator;
-	
+	//	private QTLConfigurator configurator;
+
 	private SparqlEndpoint endpoint;
 	private Model model;
-	private org.aksw.jena_sparql_api.core.QueryExecutionFactory qef;
+	private QueryExecutionFactory qef;
 	private String cacheDirectory;
-	
+
 	private QueryTreeCache treeCache;
-	
+
 	private LGGGenerator<String> lggGenerator;
 	private NBR<String> nbr;
-	
+
 	private List<String> posExamples;
 	private List<String> negExamples;
-	
+
 	private List<QueryTree<String>> posExampleTrees;
 	private List<QueryTree<String>> negExampleTrees;
-	
+
 	private QueryTreeFilter queryTreeFilter;
-	
+
 	private ConciseBoundedDescriptionGenerator cbdGenerator;
-	
+
 	private int maxExecutionTimeInSeconds = 60;
 	private int maxQueryTreeDepth = 2;
-	
+
 	private QueryTree<String> lgg;
 	private SortedSet<String> lggInstances;
-	
+
 	private Set<String> objectNamespacesToIgnore = new HashSet<String>();
 	private Set<String> allowedNamespaces = new HashSet<String>();
 	private Map<String, String> prefixes = new HashMap<String, String>();
@@ -145,14 +145,14 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		options.add(new IntegerConfigOption("maxQueryTreeDepth", "recursion depth of query tree extraction", 2));
 		return options;
 	}
-	
-	public QTL() {
-	}
-	
+
+	//	public QTL() {
+	//	}
+
 	public QTL(AbstractLearningProblem learningProblem, SparqlEndpointKS endpointKS) throws LearningProblemUnsupportedException{
 		this(learningProblem, endpointKS, null);
 	}
-	
+
 	public QTL(AbstractLearningProblem learningProblem, SparqlEndpointKS endpointKS, String cacheDirectory) throws LearningProblemUnsupportedException{
 		if(!(learningProblem instanceof PosOnlyLP || learningProblem instanceof PosNegLP)){
 			throw new LearningProblemUnsupportedException(learningProblem.getClass(), getClass());
@@ -161,69 +161,69 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		this.endpointKS = endpointKS;
 		this.cacheDirectory = cacheDirectory;
 	}
-	
+
 	public QTL(SPARQLEndpointEx endpoint, String cacheDirectory) {
 		this.endpoint = endpoint;
 		this.cacheDirectory = cacheDirectory;
-		
+
 		treeCache = new QueryTreeCache();
 		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDirectory));
 		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
-		
+
 		lggGenerator = new LGGGeneratorImpl<String>();
 		nbr = new NBR<String>(endpoint, cacheDirectory);
 		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		
+
 		posExampleTrees = new ArrayList<QueryTree<String>>();
 		negExampleTrees = new ArrayList<QueryTree<String>>();
 	}
-	
+
 	public QTL(SparqlEndpointKS endpointKS, String cacheDirectory) {
 		this.endpointKS = endpointKS;
 		this.cacheDirectory = cacheDirectory;
-		
+
 		treeCache = new QueryTreeCache();
 		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDirectory));
 		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
-		
+
 		lggGenerator = new LGGGeneratorImpl<String>();
 		nbr = new NBR<String>(endpoint, cacheDirectory);
 		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		
+
 		posExampleTrees = new ArrayList<QueryTree<String>>();
 		negExampleTrees = new ArrayList<QueryTree<String>>();
 	}
-	
+
 	public QTL(Model model) {
 		this.model = model;
-		
+
 		treeCache = new QueryTreeCache();
 		cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(model));
 		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
-		
+
 		lggGenerator = new LGGGeneratorImpl<String>();
 		nbr = new NBR<String>(model);
 		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		
+
 		posExampleTrees = new ArrayList<QueryTree<String>>();
 		negExampleTrees = new ArrayList<QueryTree<String>>();
 	}
-	
+
 	public String getQuestion(List<String> posExamples, List<String> negExamples) throws EmptyLGGException, NegativeTreeCoverageExecption, TimeOutException {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
-		
+
 		generatePositiveExampleTrees();
 		generateNegativeExampleTrees();
-		
+
 		if(negExamples.isEmpty()){
 			QueryTree<String> dummyNegTree = new QueryTreeImpl<String>("?");
 			dummyNegTree.addChild(new QueryTreeImpl<String>("?"), "dummy");
 			negExampleTrees.add(dummyNegTree);
 		}
-		
+
 		lgg = lggGenerator.getLGG(posExampleTrees);
-		
+
 		if(queryTreeFilter != null){
 			lgg = queryTreeFilter.getFilteredQueryTree(lgg);
 		}
@@ -233,86 +233,86 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		if(lgg.isEmpty()){
 			throw new EmptyLGGException();
 		}
-		
+
 		int index = coversNegativeQueryTree(lgg);
 		if(index != -1){
 			throw new NegativeTreeCoverageExecption(negExamples.get(index));
 		}
-		
+
 		lggInstances = getResources(lgg);
 		nbr.setLGGInstances(lggInstances);
-		
+
 		String question;
 		if(negExamples.isEmpty()){
 			question = nbr.getQuestion(lgg, negExampleTrees, getKnownResources());
 		} else {
 			question = nbr.getQuestion(lgg, negExampleTrees, getKnownResources());
 		}
-		
-		
+
+
 		return question;
 	}
-	
+
 	public void setExamples(List<String> posExamples, List<String> negExamples){
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 	}
-	
+
 	public void addStatementFilter(Filter<Statement> filter){
 		treeCache.setStatementFilter(filter);
 	}
-	
+
 	public void addQueryTreeFilter(QueryTreeFilter queryTreeFilter){
 		this.queryTreeFilter = queryTreeFilter;
 	}
-	
+
 	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds){
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 	}
-	
+
 	public void setMaxQueryTreeDepth(int maxQueryTreeDepth){
 		this.maxQueryTreeDepth = maxQueryTreeDepth;
-//		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
+		//		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
 	}
-	
+
 	public int getMaxQueryTreeDepth() {
 		return maxQueryTreeDepth;
 	}
-	
+
 	public void setPrefixes(Map<String, String> prefixes) {
 		this.prefixes = prefixes;
 	}
-	
+
 	public Map<String, String> getPrefixes() {
 		return prefixes;
 	}
-	
+
 	public String getSPARQLQuery(){
 		if(lgg == null){
 			lgg = lggGenerator.getLGG(getQueryTrees(posExamples));
 		}
 		return lgg.toSPARQLQueryString();
 	}
-	
+
 	public void setObjectNamespacesToIgnore(Set<String> namespacesToIgnore){
 		this.objectNamespacesToIgnore = namespacesToIgnore;
 	}
-	
+
 	public void setRestrictToNamespaces(List<String> namespaces){
 		cbdGenerator.setRestrictToNamespaces(namespaces);
 	}
-	
+
 	private void generatePositiveExampleTrees(){
 		posExampleTrees.clear();
 		posExampleTrees.addAll(getQueryTrees(posExamples));
 	}
-	
+
 	private void generateNegativeExampleTrees(){
 		negExampleTrees.clear();
 		negExampleTrees.addAll(getQueryTrees(negExamples));
 	}
-	
+
 	private List<QueryTree<String>> getQueryTrees(List<String> resources){
 		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
 		Model model;
@@ -326,7 +326,7 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 				if(logger.isDebugEnabled()){
 					logger.debug("Tree for resource " + resource);
 					logger.debug(tree.getStringRepresentation());
-					
+
 				}
 				trees.add(tree);
 			} catch (Exception e) {
@@ -335,7 +335,7 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		}
 		return trees;
 	}
-	
+
 	private void applyFilters(Model model){
 		Statement st;
 		for(StmtIterator iter = model.listStatements(); iter.hasNext();){
@@ -348,20 +348,20 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 			}
 		}
 	}
-	
+
 	private List<String> getKnownResources(){
 		return ListUtils.union(posExamples, negExamples);
 	}
-	
-//	private boolean coversNegativeQueryTree(QueryTree<String> tree){
-//		for(QueryTree<String> negTree : negExampleTrees){
-//			if(negTree.isSubsumedBy(tree)){
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-	
+
+	//	private boolean coversNegativeQueryTree(QueryTree<String> tree){
+	//		for(QueryTree<String> negTree : negExampleTrees){
+	//			if(negTree.isSubsumedBy(tree)){
+	//				return true;
+	//			}
+	//		}
+	//		return false;
+	//	}
+
 	private int coversNegativeQueryTree(QueryTree<String> tree){
 		for(int i = 0; i < negExampleTrees.size(); i++){
 			if(negExampleTrees.get(i).isSubsumedBy(tree)){
@@ -370,13 +370,13 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		}
 		return -1;
 	}
-	
+
 	private SortedSet<String> getResources(QueryTree<String> tree){
 		SortedSet<String> resources = new TreeSet<String>();
 		String query = getDistinctSPARQLQuery(tree);
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
-		
+
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
@@ -385,35 +385,35 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		qe.close();
 		return resources;
 	}
-	
+
 	private String getDistinctSPARQLQuery(QueryTree<String> tree){
 		String query = tree.toSPARQLQueryString();
-//		query = "SELECT DISTINCT " + query.substring(7);
+		//		query = "SELECT DISTINCT " + query.substring(7);
 		return query;
 	}
 
-//	@Override
-//	public void start(){
-//		generatePositiveExampleTrees();
-//		
-//		lgg = lggGenerator.getLGG(posExampleTrees);
-//		
-//		if(queryTreeFilter != null){
-//			lgg = queryTreeFilter.getFilteredQueryTree(lgg);
-//		}
-//		if(logger.isDebugEnabled()){
-//			logger.debug("LGG: \n" + lgg.getStringRepresentation());
-//		}
-//		if(logger.isInfoEnabled()){
-//			logger.info("Generated SPARQL query:\n" + lgg.toSPARQLQueryString(true, enableNumericLiteralFilters, prefixes));
-//		}
-//	}
-	
+	//	@Override
+	//	public void start(){
+	//		generatePositiveExampleTrees();
+	//		
+	//		lgg = lggGenerator.getLGG(posExampleTrees);
+	//		
+	//		if(queryTreeFilter != null){
+	//			lgg = queryTreeFilter.getFilteredQueryTree(lgg);
+	//		}
+	//		if(logger.isDebugEnabled()){
+	//			logger.debug("LGG: \n" + lgg.getStringRepresentation());
+	//		}
+	//		if(logger.isInfoEnabled()){
+	//			logger.info("Generated SPARQL query:\n" + lgg.toSPARQLQueryString(true, enableNumericLiteralFilters, prefixes));
+	//		}
+	//	}
+
 	@Override
 	public void start(){
 		//build the query trees for the positive examples
 		generatePositiveExampleTrees();
-		
+
 		//compute the LGG
 		lgg = lggGenerator.getLGG(posExampleTrees);
 		if(queryTreeFilter != null){
@@ -425,21 +425,21 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		if(logger.isInfoEnabled()){
 			logger.info("Generated SPARQL query:\n" + lgg.toSPARQLQueryString(true, enableNumericLiteralFilters, prefixes));
 		}
-		
+
 		//build the query trees for the negative examples
 		if(!negExamples.isEmpty()){
 			generateNegativeExampleTrees();
-			
+
 			try {
 				//check if the LGG covers a negative example
 				int index = coversNegativeQueryTree(lgg);
 				if(index != -1){
 					throw new NegativeTreeCoverageExecption(negExamples.get(index));
 				}
-				
+
 				lggInstances = getResources(lgg);
 				nbr.setLGGInstances(lggInstances);
-				
+
 				String question;
 				if(negExamples.isEmpty()){
 					question = nbr.getQuestion(lgg, negExampleTrees, getKnownResources());
@@ -454,15 +454,15 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 			}
 		}
 	}
-	
+
 	public void setEnableNumericLiteralFilters(boolean enableNumericLiteralFilters) {
 		this.enableNumericLiteralFilters = enableNumericLiteralFilters;
 	}
-	
+
 	public boolean isEnableNumericLiteralFilters() {
 		return enableNumericLiteralFilters;
 	}
-	
+
 	@Override
 	public List<String> getCurrentlyBestSPARQLQueries(int nrOfSPARQLQueries) {
 		return Collections.singletonList(getBestSPARQLQuery());
@@ -473,29 +473,39 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		return lgg.toSPARQLQueryString();
 	}
 
-	public void init() {
-		if(endpointKS.isRemote()){
-			SparqlEndpoint endpoint = endpointKS.getEndpoint();
-			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			if(cacheDirectory != null){
-				try {
-					long timeToLive = TimeUnit.DAYS.toMillis(30);
-					CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
-					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-//			qef = new QueryExecutionFactoryPaginated(qef, 10000);
-			
-		} else {
-			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)endpointKS).getModel());
+	public void init() {// TODO: further improve code quality 
+		//	private QTL() {
+		if(endpointKS==null)
+		{
+			qef = new QueryExecutionFactoryModel(this.model);
+			cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(model));
+			nbr = new NBR<String>(model);
 		}
-		
-		
+		else
+		{	
+			if(endpointKS.isRemote())
+			{
+				SparqlEndpoint endpoint = endpointKS.getEndpoint();
+				QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+				if(cacheDirectory != null){
+					try {
+						long timeToLive = TimeUnit.DAYS.toMillis(30);
+						CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+						CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+						qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				//			qef = new QueryExecutionFactoryPaginated(qef, 10000);
+			} else
+			{
+				qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)endpointKS).getModel());
+			}
+		} 
+
 		if(learningProblem instanceof PosOnlyLP){
 			this.posExamples = convert(((PosOnlyLP)learningProblem).getPositiveExamples());
 			this.negExamples = new ArrayList<String>();
@@ -505,23 +515,30 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		}
 		treeCache = new QueryTreeCache();
 		treeCache.addAllowedNamespaces(allowedNamespaces);
-		
-		if(endpointKS instanceof LocalModelBasedSparqlEndpointKS){
-			cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(((LocalModelBasedSparqlEndpointKS) endpointKS).getModel()));
-		} else {
-			endpoint = endpointKS.getEndpoint();
-			cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, endpointKS.getCache()));
+
+		if(endpointKS==null) {}
+		else
+		{
+			nbr = new NBR<String>(endpoint);
+			nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+			
+			if(endpointKS instanceof LocalModelBasedSparqlEndpointKS){
+				cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(((LocalModelBasedSparqlEndpointKS) endpointKS).getModel()));
+			} else {
+				endpoint = endpointKS.getEndpoint();
+				cbdGenerator = new CachingConciseBoundedDescriptionGenerator(new ConciseBoundedDescriptionGeneratorImpl(endpoint, endpointKS.getCache()));
+			}
 		}
 		cbdGenerator.setRecursionDepth(maxQueryTreeDepth);
-		
+
 		lggGenerator = new LGGGeneratorImpl<String>();
-		nbr = new NBR<String>(endpoint);
-		nbr.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+
 		
+
 		posExampleTrees = new ArrayList<QueryTree<String>>();
 		negExampleTrees = new ArrayList<QueryTree<String>>();
 	}
-	
+
 	private List<String> convert(Set<Individual> individuals){
 		List<String> list = new ArrayList<String>();
 		for(Individual ind : individuals){
@@ -529,11 +546,11 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		}
 		return list;
 	}
-	
+
 	public QueryTree<String> getLgg() {
 		return lgg;
 	}
-	
+
 	@Autowired
 	public void setLearningProblem(LearningProblem learningProblem) {
 		this.learningProblem = learningProblem;
@@ -578,7 +595,7 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
 		return null;
 	}
-	
+
 	/**
 	 * @param allowedNamespaces the allowedNamespaces to set
 	 */
@@ -590,7 +607,7 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		Set<String> positiveExamples = new HashSet<String>();
 		positiveExamples.add("http://dbpedia.org/resource/Liverpool_F.C.");
 		positiveExamples.add("http://dbpedia.org/resource/Chelsea_F.C.");
-		
+
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		ks.init();
 		PosOnlyLP lp = new PosOnlyLP();	
@@ -604,5 +621,5 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		System.out.println(query);
 		System.out.println(qtl.getCurrentlyBestDescription());
 	}
-	
+
 }
