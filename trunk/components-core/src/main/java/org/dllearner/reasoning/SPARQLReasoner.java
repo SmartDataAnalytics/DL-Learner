@@ -54,14 +54,12 @@ import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.Property;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
@@ -82,7 +80,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -122,6 +119,15 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		this(ks, (String)null);
 	}
 	
+	public SPARQLReasoner(QueryExecutionFactory qef) {
+		this.qef = qef;
+		
+		classPopularityMap = new HashMap<NamedClass, Integer>();
+		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
+		dataPropertyPopularityMap = new HashMap<DatatypeProperty, Integer>();
+		individualPopularityMap = new HashMap<Individual, Integer>();
+	}
+	
 	public SPARQLReasoner(SparqlEndpointKS ks, String cacheDirectory) {
 		this.ks = ks;
 
@@ -140,9 +146,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
 					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 			}
 //			qef = new QueryExecutionFactoryPaginated(qef, 10000);
@@ -177,7 +183,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}
 	}
-
+	
 	public SPARQLReasoner(SparqlEndpointKS ks, ExtractionDBCache cache) {
 		this(ks, cache.getCacheDirectory());
 	}
@@ -1871,6 +1877,10 @@ String query = String.format(queryTemplate, dp.getName());
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		classPopularityMap = new HashMap<NamedClass, Integer>();
+		objectPropertyPopularityMap = new HashMap<ObjectProperty, Integer>();
+		dataPropertyPopularityMap = new HashMap<DatatypeProperty, Integer>();
+		individualPopularityMap = new HashMap<Individual, Integer>();
 	}
 
 	/* (non-Javadoc)
